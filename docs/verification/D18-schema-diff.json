@@ -1,0 +1,126 @@
+{
+  "productionQueried": false,
+  "forwardMigration": "20261023124149_staff_access_capabilities.sql",
+  "targets": {
+    "empty": {
+      "identity": {
+        "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+        "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+        "disposable": true,
+        "projectId": "adfocate-r1-empty-20261023",
+        "proxy": "none",
+        "apiPort": 56421,
+        "apiContainerId": "1b9c41318298d79308db7782f51474541ad5abf0120fa93b96a2a9ea59d043ee",
+        "databaseContainerId": "e7c8efa295cd5544a8b2a100a73b6953cd6ddd486aaf394f231482067523e12d",
+        "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+        "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+        "networkId": "9e5d3069e8255d70b8eef56020c8ea2618fdb2626d92d9a04e51ea2de41a98e0"
+      },
+      "historyBefore": 70,
+      "historyAfter": 71,
+      "checks": {
+        "oldHistory": true,
+        "oldTables": true,
+        "oldPolicies": true,
+        "oldFunctions": true,
+        "brandPrimaryKey": true
+      },
+      "newFunctions": [
+        {
+          "schema": "private",
+          "name": "apply_staff_access",
+          "args": "p_actor uuid, p_workspace uuid, p_subject uuid, p_role text, p_active boolean, p_expected_revision integer, p_request uuid, p_reason text, p_approval_ref text, p_owner_bootstrap boolean"
+        },
+        {
+          "schema": "private",
+          "name": "bootstrap_staff_access",
+          "args": "p_actor uuid, p_workspace uuid, p_subject uuid, p_role text, p_active boolean, p_expected_revision integer, p_request uuid, p_reason text, p_approval_ref text"
+        },
+        {
+          "schema": "public",
+          "name": "set_staff_workspace_role",
+          "args": "p_workspace uuid, p_actor uuid, p_subject uuid, p_role text, p_active boolean, p_expected_revision integer, p_request uuid, p_reason text"
+        }
+      ],
+      "newTables": [
+        "staff_workspace_roles",
+        "staff_platform_roles",
+        "staff_access_audit",
+        "staff_access_commands"
+      ],
+      "counts": {
+        "audit": 30,
+        "commands": 30,
+        "platformRoles": 3,
+        "workspaceRoles": 21
+      },
+      "priorActiveStaffScopeUnchanged": true,
+      "priorActiveStaff": 256,
+      "scope": "Compares active staff and membership scope present in the before export; does not claim a full row-data snapshot or production review."
+    },
+    "shaped": {
+      "identity": {
+        "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+        "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+        "disposable": true,
+        "projectId": "adfocate-r1-shaped-20261023",
+        "proxy": "none",
+        "apiPort": 56521,
+        "apiContainerId": "c96d960e276cb7c84ae5bf52fdf77e854865516d89d95ca2148a55b6137fa7e9",
+        "databaseContainerId": "34bd00cda4f4c91650795b83d4d48d5e46ecb90b310a3e409b31c02f99cec176",
+        "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+        "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+        "networkId": "fbf71b13e7f584b230b293383cccbd2157814168cbae1d9169b377d8f886f69d"
+      },
+      "historyBefore": 54,
+      "historyAfter": 55,
+      "checks": {
+        "oldHistory": true,
+        "oldTables": true,
+        "oldPolicies": true,
+        "oldFunctions": true,
+        "brandPrimaryKey": true
+      },
+      "newFunctions": [
+        {
+          "schema": "private",
+          "name": "apply_staff_access",
+          "args": "p_actor uuid, p_workspace uuid, p_subject uuid, p_role text, p_active boolean, p_expected_revision integer, p_request uuid, p_reason text, p_approval_ref text, p_owner_bootstrap boolean"
+        },
+        {
+          "schema": "private",
+          "name": "bootstrap_staff_access",
+          "args": "p_actor uuid, p_workspace uuid, p_subject uuid, p_role text, p_active boolean, p_expected_revision integer, p_request uuid, p_reason text, p_approval_ref text"
+        },
+        {
+          "schema": "public",
+          "name": "set_staff_workspace_role",
+          "args": "p_workspace uuid, p_actor uuid, p_subject uuid, p_role text, p_active boolean, p_expected_revision integer, p_request uuid, p_reason text"
+        }
+      ],
+      "newTables": [
+        "staff_workspace_roles",
+        "staff_platform_roles",
+        "staff_access_audit",
+        "staff_access_commands"
+      ],
+      "counts": {
+        "audit": 0,
+        "commands": 0,
+        "platformRoles": 0,
+        "workspaceRoles": 0
+      },
+      "priorActiveStaffScopeUnchanged": true,
+      "priorActiveStaff": 0,
+      "scope": "Compares active staff and membership scope present in the before export; does not claim a full row-data snapshot or production review."
+    }
+  },
+  "previousManifestDigest": "e9e801ff06c0c5382ec18e06ca0d9f05dc7a3d8a4ab1b68633e7f7bc5f14ca75",
+  "manifestDigest": "44909fc5e4981f81b57281326c7db3117e9e76b4dc2c94806b7aa52fca621d12",
+  "manifestEntries": 41,
+  "distinctCapabilities": 529,
+  "newCapabilities": 28,
+  "oldManifestEntriesPreserved": true,
+  "oldSqlChecksumsPreserved": true,
+  "productionWrites": false
+}

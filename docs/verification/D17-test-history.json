@@ -1,0 +1,17 @@
+{
+  "productRed": [
+    "D17-metrics-red-summary.json",
+    "logs/D17-api-contract-red.log",
+    "D17-outcome-hook-red-summary.json",
+    "D17-outcome-edges-red-summary.json",
+    "D17-browser-red.json"
+  ],
+  "intermediateBrowserFailures": "Attempt1: mobile header overflow, ambiguous composite FK, error contrast. Attempt2: 4 pass; performance harness waited for a response from a cached previous page, timed out. Final harness measures 24 distinct forward pages.",
+  "harnessCorrections": "Wrong cwd / missing cache attempt is not product RED. Initial real-API harness corrected existing insights envelope, window query and privacy 404; tests were not relaxed on auth/data/neutrality. Final written-byte bundle method replaces early generateBundle counts.",
+  "wrongCwd": "No parent product source changed; exact misplaced scratch files removed/moved. All subsequent commands bind the authorized worktree.",
+  "externalMocks": [
+    "Assistant /api/assistant/chat 503 is explicit mock, asserted exactly once; no paid AI request.",
+    "Insights unavailable read 503 is explicit transport mock; success/retry uses real local API/database."
+  ],
+  "screenshot": "Desktop screenshot visually inspected, kept private because it contains a synthetic account email; no unredacted D17 screenshot retained in public evidence."
+}

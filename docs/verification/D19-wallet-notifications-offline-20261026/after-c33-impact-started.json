@@ -1,0 +1,30 @@
+{
+  "startedAt": "2026-10-25T20:47:28.495364+00:00",
+  "command": [
+    "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "--config",
+    "docs/verification/D19-wallet-notifications-offline-20261026/vitest.offline.mjs",
+    "--reporter=default",
+    "--reporter=json",
+    "--outputFile.json=docs/verification/D19-wallet-notifications-offline-20261026/after-c33-impact-native.json"
+  ],
+  "node": "v22.23.4",
+  "resource": {
+    "at": "2026-10-25T20:47:28.419292+00:00",
+    "freePhysicalGiB": 6.269481658935547,
+    "freeCommitGiB": 5.480213165283203,
+    "minimumGiB": 3,
+    "freeDiskGiB": 21.851394653320312
+  },
+  "credentialsProxiesPreloadsStripped": true,
+  "integrationDisabled": true,
+  "label": "after-c33-impact",
+  "log": "docs/verification/D19-wallet-notifications-offline-20261026/after-c33-impact.log",
+  "runtimeTargetCallsRequested": false,
+  "sourceFingerprint": "4f2c3faa22bf835911a55dc7bb099910e4308fc1b7a5570d58f32386708934b9",
+  "sourceRecords": 793,
+  "npmExecpathProvided": "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+  "pid": 32284
+}

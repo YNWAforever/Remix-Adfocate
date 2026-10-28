@@ -1,0 +1,8 @@
+{
+  "at": "2026-10-25T19:51:06.257652+00:00",
+  "fingerprint": "7d2e014e5333b65fe5b6140e33a21a9cb7ff6810461f8962aba93e0e08c08d4c",
+  "records": 793,
+  "sourceMigrationFiles": 74,
+  "status": "IN_PROGRESS_LOCAL_C33_REPAIR; f5 proposal superseded, no runtime approval",
+  "artifactNote": "Default file tool could not delete own superseded doc test copies; retained nonexecuting note modules, exact RED sources in red-source. No data or original evidence deleted."
+}

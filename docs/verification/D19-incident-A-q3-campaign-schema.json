@@ -1,0 +1,215 @@
+{
+  "payload": {
+    "table": {
+      "acl": [
+        "postgres=arwdDxtm/postgres",
+        "anon=arwdDxt/postgres",
+        "authenticated=ardDxt/postgres",
+        "service_role=arwdDxt/postgres"
+      ],
+      "rls": true,
+      "name": "campaigns",
+      "schema": "public",
+      "forceRls": false
+    },
+    "columns": [
+      {
+        "name": "id",
+        "type": "uuid",
+        "notNull": true
+      },
+      {
+        "name": "workspace_id",
+        "type": "uuid",
+        "notNull": true
+      },
+      {
+        "name": "slug",
+        "type": "text",
+        "notNull": true
+      },
+      {
+        "name": "title",
+        "type": "text",
+        "notNull": true
+      },
+      {
+        "name": "description",
+        "type": "text",
+        "notNull": false
+      },
+      {
+        "name": "status",
+        "type": "text",
+        "notNull": true
+      },
+      {
+        "name": "starts_at",
+        "type": "timestamp with time zone",
+        "notNull": true
+      },
+      {
+        "name": "ends_at",
+        "type": "timestamp with time zone",
+        "notNull": true
+      },
+      {
+        "name": "goal_metric",
+        "type": "text",
+        "notNull": true
+      },
+      {
+        "name": "goal_target",
+        "type": "integer",
+        "notNull": true
+      },
+      {
+        "name": "completion_bonus_points",
+        "type": "integer",
+        "notNull": true
+      },
+      {
+        "name": "completion_bonus_xp",
+        "type": "integer",
+        "notNull": true
+      },
+      {
+        "name": "prize_tiers",
+        "type": "jsonb",
+        "notNull": true
+      },
+      {
+        "name": "published_at",
+        "type": "timestamp with time zone",
+        "notNull": false
+      },
+      {
+        "name": "closed_at",
+        "type": "timestamp with time zone",
+        "notNull": false
+      },
+      {
+        "name": "settled_at",
+        "type": "timestamp with time zone",
+        "notNull": false
+      },
+      {
+        "name": "created_by",
+        "type": "uuid",
+        "notNull": false
+      },
+      {
+        "name": "created_at",
+        "type": "timestamp with time zone",
+        "notNull": true
+      },
+      {
+        "name": "updated_at",
+        "type": "timestamp with time zone",
+        "notNull": true
+      }
+    ],
+    "triggers": [],
+    "inboundFks": [
+      {
+        "name": "campaign_missions_workspace_id_campaign_id_fkey",
+        "table": "campaign_missions",
+        "schema": "public",
+        "definition": "FOREIGN KEY (workspace_id, campaign_id) REFERENCES public.campaigns(workspace_id, id) ON DELETE CASCADE",
+        "childColumns": [
+          "workspace_id",
+          "campaign_id"
+        ],
+        "parentColumns": [
+          "workspace_id",
+          "id"
+        ]
+      },
+      {
+        "name": "campaign_participants_workspace_id_campaign_id_fkey",
+        "table": "campaign_participants",
+        "schema": "public",
+        "definition": "FOREIGN KEY (workspace_id, campaign_id) REFERENCES public.campaigns(workspace_id, id) ON DELETE CASCADE",
+        "childColumns": [
+          "workspace_id",
+          "campaign_id"
+        ],
+        "parentColumns": [
+          "workspace_id",
+          "id"
+        ]
+      },
+      {
+        "name": "campaign_rank_snapshots_campaign_id_fkey",
+        "table": "campaign_rank_snapshots",
+        "schema": "public",
+        "definition": "FOREIGN KEY (campaign_id) REFERENCES public.campaigns(id) ON DELETE CASCADE",
+        "childColumns": [
+          "campaign_id"
+        ],
+        "parentColumns": [
+          "id"
+        ]
+      }
+    ],
+    "constraints": [
+      {
+        "kind": "c",
+        "name": "campaigns_check",
+        "definition": "CHECK ((ends_at > starts_at))"
+      },
+      {
+        "kind": "c",
+        "name": "campaigns_completion_bonus_points_check",
+        "definition": "CHECK ((completion_bonus_points >= 0))"
+      },
+      {
+        "kind": "c",
+        "name": "campaigns_completion_bonus_xp_check",
+        "definition": "CHECK ((completion_bonus_xp >= 0))"
+      },
+      {
+        "kind": "c",
+        "name": "campaigns_goal_metric_check",
+        "definition": "CHECK ((goal_metric = 'approved_submissions'::text))"
+      },
+      {
+        "kind": "c",
+        "name": "campaigns_goal_target_check",
+        "definition": "CHECK ((goal_target >= 1))"
+      },
+      {
+        "kind": "p",
+        "name": "campaigns_pkey",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "kind": "c",
+        "name": "campaigns_status_check",
+        "definition": "CHECK ((status = ANY (ARRAY['draft'::text, 'active'::text, 'closed'::text, 'settled'::text])))"
+      },
+      {
+        "kind": "f",
+        "name": "campaigns_workspace_id_fkey",
+        "definition": "FOREIGN KEY (workspace_id) REFERENCES public.workspaces(id) ON DELETE CASCADE"
+      },
+      {
+        "kind": "u",
+        "name": "campaigns_workspace_id_id_key",
+        "definition": "UNIQUE (workspace_id, id)"
+      },
+      {
+        "kind": "u",
+        "name": "campaigns_workspace_id_slug_key",
+        "definition": "UNIQUE (workspace_id, slug)"
+      }
+    ]
+  },
+  "observedAt": "2026-10-24T14:02:30.284197+00:00",
+  "transactionReadOnly": "on",
+  "label": "q3-campaign-schema",
+  "query": "select jsonb_build_object(\n 'table',(select jsonb_build_object('schema',n.nspname,'name',c.relname,'rls',c.relrowsecurity,'forceRls',c.relforcerowsecurity,'acl',c.relacl)from pg_class c join pg_namespace n on n.oid=c.relnamespace where c.oid='public.campaigns'::regclass),\n 'columns',(select jsonb_agg(jsonb_build_object('name',a.attname,'type',format_type(a.atttypid,a.atttypmod),'notNull',a.attnotnull)order by a.attnum)from pg_attribute a where a.attrelid='public.campaigns'::regclass and a.attnum>0 and not a.attisdropped),\n 'triggers',(select coalesce(jsonb_agg(jsonb_build_object('name',t.tgname,'enabled',t.tgenabled,'definition',pg_get_triggerdef(t.oid))order by t.tgname),'[]')from pg_trigger t where t.tgrelid='public.campaigns'::regclass and not t.tgisinternal),\n 'constraints',(select jsonb_agg(jsonb_build_object('name',conname,'kind',contype,'definition',pg_get_constraintdef(oid))order by conname)from pg_constraint where conrelid='public.campaigns'::regclass),\n 'inboundFks',(select coalesce(jsonb_agg(jsonb_build_object('name',con.conname,'schema',n.nspname,'table',c.relname,'definition',pg_get_constraintdef(con.oid),'childColumns',(select jsonb_agg(a.attname order by k.ord)from unnest(con.conkey)with ordinality k(num,ord)join pg_attribute a on a.attrelid=con.conrelid and a.attnum=k.num),'parentColumns',(select jsonb_agg(a.attname order by k.ord)from unnest(con.confkey)with ordinality k(num,ord)join pg_attribute a on a.attrelid=con.confrelid and a.attnum=k.num))order by n.nspname,c.relname,con.conname),'[]')from pg_constraint con join pg_class c on c.oid=con.conrelid join pg_namespace n on n.oid=c.relnamespace where con.contype='f'and con.confrelid='public.campaigns'::regclass)\n)",
+  "identityEvidence": "D19-incident-A-identity.json",
+  "identityReverifiedBeforeQuery": true,
+  "authorization": "Explicit user approval of A/Q1-Q3 only; no write/create/delete/RPC/test"
+}

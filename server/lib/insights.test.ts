@@ -6,6 +6,7 @@ import {
   type InsightsEarningRow,
   type InsightsCreatorRow,
   type InsightsMissionRow,
+  type InsightsPointRow,
 } from "./insights";
 
 const TO = "2026-06-30T00:00:00.000Z"; // "now" for the window
@@ -29,6 +30,7 @@ function base(over: {
   earnings?: InsightsEarningRow[];
   creators?: InsightsCreatorRow[];
   missions?: InsightsMissionRow[];
+  points?: InsightsPointRow[];
 }) {
   return shapeInsights({
     to: TO,
@@ -37,6 +39,7 @@ function base(over: {
     earnings: over.earnings ?? [],
     creators: over.creators ?? [],
     missions: over.missions ?? [],
+    points: over.points ?? [],
   });
 }
 
@@ -66,6 +69,7 @@ describe("shapeInsights", () => {
 
   it("computes the funnel and its conversion percentages", () => {
     const r = base({
+      points: [{ type: "earn", delta: 100, created_at: inWin }, { type: "earn", delta: 50, created_at: inWin }],
       submissions: [
         sub({ creator_id: "a", status: "joined", created_at: inWin }),
         sub({ creator_id: "b", status: "submitted", created_at: inWin, submitted_at: inWin }),
@@ -84,6 +88,7 @@ describe("shapeInsights", () => {
 
   it("computes deltaPct vs the prior equal-length window", () => {
     const r = base({
+      points: [{ type: "earn", delta: 200, created_at: inWin }, { type: "earn", delta: 100, created_at: inPrior }],
       submissions: [
         sub({ creator_id: "a", status: "approved", created_at: inWin, submitted_at: inWin, reviewed_at: inWin, points_awarded: 200 }),
         sub({ creator_id: "b", status: "approved", created_at: inPrior, submitted_at: inPrior, reviewed_at: inPrior, points_awarded: 100 }),

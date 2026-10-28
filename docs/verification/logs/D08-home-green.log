@@ -1,0 +1,19 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ✓ src/lib/activationAnalytics.test.ts (35 tests) 16ms
+ ✓ src/routes/-_app.home.test.tsx (15 tests) 445ms
+ ✓ src/lib/i18n.test.tsx (12 tests) 59ms
+ ✓ src/components/creator-activation.test.tsx (10 tests) 141ms
+ ✓ src/components/CreatorWorkHome.test.tsx (14 tests) 820ms
+ ✓ src/lib/activeMission.test.ts (17 tests) 7ms
+ ✓ src/lib/creatorActivation.test.ts (12 tests) 5ms
+ ✓ src/lib/useCreatorActivation.test.tsx (4 tests) 18ms
+ ✓ src/components/SideNav.test.tsx (3 tests) 309ms
+ ✓ src/components/BottomNav.test.tsx (2 tests) 195ms
+
+ Test Files  10 passed (10)
+      Tests  124 passed (124)
+   Start at  04:04:31
+   Duration  11.84s (transform 438ms, setup 2.61s, collect 2.31s, tests 2.02s, environment 9.51s, prepare 1.24s)
+

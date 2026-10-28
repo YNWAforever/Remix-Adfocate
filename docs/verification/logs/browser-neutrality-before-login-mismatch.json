@@ -1,0 +1,26 @@
+{
+  "runId": "630c883a-1cef-4a40-96cd-87f987bb84e2",
+  "before": {
+    "xp": 0,
+    "points": 50,
+    "withdrawable": 0,
+    "budget": null,
+    "pointLedger": 0,
+    "cashLedger": 0,
+    "redemptions": 0,
+    "budgetLedger": 0,
+    "rewardInventory": []
+  },
+  "after": {
+    "xp": 10,
+    "budget": null,
+    "points": 50,
+    "cashLedger": 0,
+    "pointLedger": 0,
+    "redemptions": 0,
+    "budgetLedger": 0,
+    "withdrawable": 0,
+    "rewardInventory": []
+  },
+  "allEqual": false
+}

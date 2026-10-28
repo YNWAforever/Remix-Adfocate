@@ -1,0 +1,8 @@
+
+C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\docs\verification\D19-wallet-notifications-offline-20261026\wallet-notifications.test.tsx
+  15:16  error  '_jwt' is defined but never used                         @typescript-eslint/no-unused-vars
+  48:5   error  'observations' is never reassigned. Use 'const' instead  prefer-const
+
+✖ 2 problems (2 errors, 0 warnings)
+  1 error and 0 warnings potentially fixable with the `--fix` option.
+

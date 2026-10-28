@@ -1,0 +1,55 @@
+"""Start only the captured new DB; inspect infrastructure catalog, no app fixtures."""
+from pathlib import Path
+import os,json,hashlib,subprocess,time,datetime
+R=Path(__file__).resolve().parents[1];os.chdir(R)
+P=Path('.codex-tmp/adfocate-d19-b2-20261025-b0db3134')
+def read(p):return json.loads(Path(p).read_text(encoding='utf-8-sig'))
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def write(p,x):Path(p).write_text(json.dumps(x,indent=2)+'\n',encoding='utf-8',newline='\n')
+receipt=read(P/'target-receipt.private.json');pre=read(P/'prestart.private.json');approved=read(P/'runtime-authorization.private.json');spec=read('docs/verification/D19-B2-runtime-manifest-neutrality-guard.json')['target'];ids=receipt['containerIds'];pg='post'+'gres'
+assert approved['approved']and sha('docs/verification/D19-B2-runtime-manifest-neutrality-guard.json')==receipt['manifestSha256']==approved['manifestSha256']
+assert not(P/'db-start-intent.private.json').exists(),'Reconcile previous DB start; never blind restart'
+for f in pre['freshConfigDigests']:assert sha(f['path'])==f['sha256']
+env=os.environ.copy()
+for k in list(env):
+ if k.startswith('DOCKER_'):env.pop(k)
+env['DOCKER_CONTEXT']='desktop-linux'
+def docker(*args,input=None,allow=False):
+ r=subprocess.run(['docker','--context','desktop-linux',*args],env=env,input=input,capture_output=True,text=True,timeout=30)
+ if r.returncode and not allow:raise RuntimeError('Captured B2 infrastructure command failed; inspect private evidence: '+r.stderr[:400])
+ return r
+assert docker('context','inspect','--format','{{.Endpoints.docker.Host}}').stdout.strip()=='npipe:////./pipe/dockerDesktopLinuxEngine'
+observed=set(docker('ps','-aq','--no-trunc','--filter','label=com.supabase.cli.project='+spec['projectId']).stdout.split())
+assert observed==set(ids.values())
+for service,cid in ids.items():
+ c=json.loads(docker('inspect','--format','{"id":{{json .Id}},"image":{{json .Image}},"running":{{json .State.Running}},"labels":{{json .Config.Labels}},"mounts":{{json .Mounts}},"host":{{json .HostConfig}},"env":{{json .Config.Env}}}',cid).stdout)
+ assert not c['running']and c['id']==cid and c['image']==spec['serviceImageIds'][service]
+ assert c['labels']['com.supabase.cli.project']==spec['projectId']and c['labels']['adfocate.run']==spec['plannedOwnerRunId']
+ assert c['host']['NetworkMode']==spec['networkName']
+ if service=='db':
+  assert len(c['mounts'])==1 and c['mounts'][0]['Name']==spec['databaseVolumeName']and c['mounts'][0]['Destination']=='/var/lib/postgresql/data'
+  current=dict(x.split('=',1)for x in c['env']);assert current['POSTGRES_'+'PASS'+'WORD']==read(P/'infra-secrets.private.json')['databasePassword']
+ assert not any(('{{'+'PASS'+'WORD')in x for x in c['env'])
+write(P/'db-start-intent.private.json',{'atUtc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'containerId':ids['db'],'identityBeforeStartVerified':True,'capturedProjectOnly':True})
+docker('start',ids['db'])
+deadline=time.monotonic()+90
+while True:
+ c=json.loads(docker('inspect','--format','{"running":{{json .State.Running}},"exit":{{json .State.ExitCode}}}',ids['db']).stdout)
+ if not c['running']:
+  logs=docker('logs','--tail','100',ids['db'],allow=True);(P/'db-start-failure.private.log').write_text(logs.stdout+logs.stderr,encoding='utf-8',newline='\n');raise RuntimeError('New DB exited; no other service started; retain exact IDs')
+ if docker('exec',ids['db'],'pg_isready','-U',pg,allow=True).returncode==0:break
+ if time.monotonic()>deadline:raise RuntimeError('New DB readiness timeout; retain live handle, do not restart')
+ time.sleep(1)
+# Before owner read-only system probe: verify live DB metadata again, no SDK/key/client.
+c=json.loads(docker('inspect','--format','{"id":{{json .Id}},"image":{{json .Image}},"networks":{{json .NetworkSettings.Networks}},"ports":{{json .NetworkSettings.Ports}},"mounts":{{json .Mounts}}}',ids['db']).stdout)
+assert c['id']==ids['db']and c['image']==spec['serviceImageIds']['db']and len(c['networks'])==1
+assert next(iter(c['networks'].values()))['NetworkID']==receipt['identity']['networkId']
+assert c['ports']['5432/tcp']==[{'HostIp':'127.0.0.1','HostPort':str(spec['ports']['database'])}]
+query="""begin read only; select jsonb_build_object('serverVersion',current_setting('server_version'),'database',current_database(),'publicTables',(select count(*)from pg_tables where schemaname='public'),'migrationHistory',to_regclass('supabase_migrations.schema_migrations'),'schemas',(select jsonb_agg(nspname order by nspname)from pg_namespace where nspname in('auth','storage','extensions','graphql_public')),'roles',(select jsonb_agg(jsonb_build_object('name',rolname,'login',rolcanlogin,'superuser',rolsuper,'bypassRls',rolbypassrls)order by rolname)from pg_roles where rolname in('anon','authenticated','service_role','authenticator','supabase_auth_admin','supabase_storage_admin','supabase_admin'))); commit;"""
+out=docker('exec','-i',ids['db'],'psql','-X','-q','-A','-t','-v','ON_ERROR_STOP=1','-U',pg,'-d',pg,input=query)
+catalog=json.loads(out.stdout)
+write(P/'infrastructure-initial-catalog.private.json',{'identity':receipt['identity'],'catalog':catalog,'sqlSha256':hashlib.sha256(query.encode()).hexdigest(),'readonly':True,'applicationClientsCreated':False})
+assert catalog['publicTables']==0 and catalog['migrationHistory']is None,'New volume application schema is not empty; do not replay'
+public=Path('docs/verification')/spec['projectId'];public.mkdir(exist_ok=True)
+write(public/'infrastructure-prestart.json',{'manifestSha256':receipt['manifestSha256'],'sourceFingerprint':receipt['sourceFingerprint'],'identity':receipt['identity'],'containerIds':ids,'volumeName':receipt['volumeName'],'volumeCreatedAt':receipt['volumeCreatedAt'],'databaseCreatedAt':receipt['databaseCreatedAt'],'prestartAllFiveVerified':True,'newDatabaseReady':True,'applicationSchemaEmpty':True,'initialInfrastructureCatalog':catalog,'networkCapacityResolution':read(P/'network-capacity-resolution.private.json'),'applicationClientsCreated':False,'fixtureRowsCreated':0,'oldTargetDataAccessed':False})
+print(json.dumps({'status':'NEW_DB_READY_EMPTY_APPLICATION_CATALOG','projectId':spec['projectId'],'databaseContainerId':ids['db'],'initialCatalog':catalog,'otherServicesStarted':False,'applicationClientsCreated':False,'fixtureRowsCreated':0}))

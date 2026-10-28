@@ -1,0 +1,15 @@
+import {readFileSync,writeFileSync} from 'node:fs';
+import {createHash} from 'node:crypto';
+import assert from 'node:assert/strict';
+// @ts-expect-error Native verified existing target helper.
+import {verifiedTarget} from '../scripts/audit/local-targets.mjs';
+const target=verifiedTarget(),context=target.context,fixture=context.readPrivate('browser-fixture.private.json');
+const {createApp}=await import('../server/app');
+const response=await createApp().app.request('/api/missions/my',{headers:{Authorization:`Bearer ${fixture.creator.jwt}`,'X-Workspace-Slug':fixture.slug}});
+assert.equal(response.status,200);const body=await response.json(),row=body.submissions.find((r:{id:string})=>r.id===fixture.core.submissionId);assert(row);
+writeFileSync(context.privatePath('collection-readback-response.private.json'),JSON.stringify(body,null,2)+'\n');
+assert.equal(row.missions.slug,fixture.mission.slug);assert.equal(row.creator_workflow_mode,'active_workspace');assert.equal(row.active_workflow_id,fixture.core.workflowId);
+const journey=JSON.parse(readFileSync(context.publicPath('browser-roundtrip.json'),'utf8'));assert.equal(journey.submissionId,row.id);assert.equal(journey.workflowId,row.active_workflow_id);
+const result={at:new Date().toISOString(),identity:target.identity,lineage:context.lineage,scope:'Supplemental authenticated READ ONLY collection after handoff using the existing approved Creator session; no original role/core test rerun',api:'/api/missions/my',httpStatus:200,responseSha256:createHash('sha256').update(JSON.stringify(body)).digest('hex'),collectionRows:body.submissions.length,submissionId:row.id,boundFixtureMissionId:fixture.mission.id,missionSlug:row.missions.slug,workflowId:row.active_workflow_id,workflowMode:row.creator_workflow_mode,submissionStatus:row.status,sameSubmissionAsBrowserJourney:true,joinedCollectionContainsExistingWork:true,authSignIns:0,newSubjectsOrFixtures:0,originalApiCasesRerun:0,providerEnabled:false};
+writeFileSync(context.publicPath('creator-collection-after-handoff.json'),JSON.stringify(result,null,2)+'\n');
+process.stdout.write(JSON.stringify({status:'PASS_EXISTING_CREATOR_POST_JOIN_COLLECTION',httpStatus:200,collectionRows:body.submissions.length,existingWorkflowBound:true,authSignIns:0,newSubjectsOrFixtures:0})+'\n');

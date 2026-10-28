@@ -1,0 +1,122 @@
+{
+  "runId": "fd0d229b-39c3-451a-95f2-6fdb1174770f",
+  "data": [
+    {
+      "width": 360,
+      "operator": false,
+      "path": "/home",
+      "viewport": 360,
+      "scroll": 360
+    },
+    {
+      "width": 360,
+      "operator": false,
+      "path": "/my",
+      "viewport": 360,
+      "scroll": 360
+    },
+    {
+      "width": 360,
+      "operator": false,
+      "path": "/wallet",
+      "viewport": 360,
+      "scroll": 360
+    },
+    {
+      "width": 360,
+      "operator": true,
+      "path": "/admin/creators",
+      "viewport": 360,
+      "scroll": 360
+    },
+    {
+      "width": 360,
+      "operator": true,
+      "path": "/admin/insights",
+      "viewport": 360,
+      "scroll": 360
+    },
+    {
+      "width": 390,
+      "operator": false,
+      "path": "/home",
+      "viewport": 390,
+      "scroll": 390
+    },
+    {
+      "width": 390,
+      "operator": false,
+      "path": "/my",
+      "viewport": 390,
+      "scroll": 390
+    },
+    {
+      "width": 390,
+      "operator": false,
+      "path": "/wallet",
+      "viewport": 390,
+      "scroll": 390
+    },
+    {
+      "width": 390,
+      "operator": true,
+      "path": "/admin/creators",
+      "viewport": 390,
+      "scroll": 390
+    },
+    {
+      "width": 390,
+      "operator": true,
+      "path": "/admin/insights",
+      "viewport": 390,
+      "scroll": 390
+    },
+    {
+      "width": 768,
+      "operator": false,
+      "path": "/home",
+      "viewport": 768,
+      "scroll": 768
+    },
+    {
+      "width": 768,
+      "operator": false,
+      "path": "/my",
+      "viewport": 768,
+      "scroll": 768
+    },
+    {
+      "width": 768,
+      "operator": false,
+      "path": "/wallet",
+      "viewport": 768,
+      "scroll": 768
+    },
+    {
+      "width": 768,
+      "operator": true,
+      "path": "/admin/creators",
+      "viewport": 768,
+      "scroll": 768
+    },
+    {
+      "width": 768,
+      "operator": true,
+      "path": "/admin/insights",
+      "viewport": 768,
+      "scroll": 768
+    },
+    {
+      "operator": false,
+      "zoom": "200% desktop reflow simulation: 1280x900 physical => 640x450 CSS at DPR2; not native browser zoom",
+      "viewport": 640,
+      "scroll": 640
+    },
+    {
+      "operator": true,
+      "zoom": "200% desktop reflow simulation: 1280x900 physical => 640x450 CSS at DPR2; not native browser zoom",
+      "viewport": 640,
+      "scroll": 640
+    }
+  ]
+}

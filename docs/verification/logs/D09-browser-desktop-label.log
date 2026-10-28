@@ -1,0 +1,274 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract
+GoTrueClient@sb-127-auth-token:1 (2.108.1) 2026-10-22T21:31:54.847Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract
+GoTrueClient@sb-127-auth-token:2 (2.108.1) 2026-10-22T21:31:55.125Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract
+GoTrueClient@sb-127-auth-token:3 (2.108.1) 2026-10-22T21:31:55.415Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract
+GoTrueClient@sb-127-auth-token:4 (2.108.1) 2026-10-22T21:31:55.647Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract
+GoTrueClient@sb-127-auth-token:5 (2.108.1) 2026-10-22T21:31:57.173Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract
+GoTrueClient@sb-127-auth-token:6 (2.108.1) 2026-10-22T21:31:57.270Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract
+GoTrueClient@sb-127-auth-token:7 (2.108.1) 2026-10-22T21:31:57.281Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract
+GoTrueClient@sb-127-auth-token:8 (2.108.1) 2026-10-22T21:31:57.365Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract
+GoTrueClient@sb-127-auth-token:9 (2.108.1) 2026-10-22T21:31:57.386Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract
+GoTrueClient@sb-127-auth-token:10 (2.108.1) 2026-10-22T21:31:57.471Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract > serializes all decision facts from real PostgREST list and detail, preserving zero/null
+GoTrueClient@sb-127-auth-token:11 (2.108.1) 2026-10-22T21:31:57.557Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract > serializes all decision facts from real PostgREST list and detail, preserving zero/null
+GoTrueClient@sb-127-auth-token:12 (2.108.1) 2026-10-22T21:31:57.619Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract > serializes all decision facts from real PostgREST list and detail, preserving zero/null
+GoTrueClient@sb-127-auth-token:13 (2.108.1) 2026-10-22T21:31:57.634Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract > serializes all decision facts from real PostgREST list and detail, preserving zero/null
+GoTrueClient@sb-127-auth-token:14 (2.108.1) 2026-10-22T21:31:57.734Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract > serializes all decision facts from real PostgREST list and detail, preserving zero/null
+GoTrueClient@sb-127-auth-token:15 (2.108.1) 2026-10-22T21:31:57.751Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract > serializes all decision facts from real PostgREST list and detail, preserving zero/null
+GoTrueClient@sb-127-auth-token:16 (2.108.1) 2026-10-22T21:31:57.819Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract > serializes all decision facts from real PostgREST list and detail, preserving zero/null
+GoTrueClient@sb-127-auth-token:17 (2.108.1) 2026-10-22T21:31:57.830Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract > serializes all decision facts from real PostgREST list and detail, preserving zero/null
+GoTrueClient@sb-127-auth-token:18 (2.108.1) 2026-10-22T21:31:57.883Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract > serializes all decision facts from real PostgREST list and detail, preserving zero/null
+GoTrueClient@sb-127-auth-token:19 (2.108.1) 2026-10-22T21:31:57.891Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract > serializes all decision facts from real PostgREST list and detail, preserving zero/null
+GoTrueClient@sb-127-auth-token:20 (2.108.1) 2026-10-22T21:31:57.938Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract > keeps pet/travel aliases and unknown categories findable without changing stored values
+GoTrueClient@sb-127-auth-token:21 (2.108.1) 2026-10-22T21:31:57.945Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract > keeps pet/travel aliases and unknown categories findable without changing stored values
+GoTrueClient@sb-127-auth-token:22 (2.108.1) 2026-10-22T21:31:57.989Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract > keeps pet/travel aliases and unknown categories findable without changing stored values
+GoTrueClient@sb-127-auth-token:23 (2.108.1) 2026-10-22T21:31:58.006Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract > keeps pet/travel aliases and unknown categories findable without changing stored values
+GoTrueClient@sb-127-auth-token:24 (2.108.1) 2026-10-22T21:31:58.064Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract > keeps pet/travel aliases and unknown categories findable without changing stored values
+GoTrueClient@sb-127-auth-token:25 (2.108.1) 2026-10-22T21:31:58.082Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract > keeps pet/travel aliases and unknown categories findable without changing stored values
+GoTrueClient@sb-127-auth-token:26 (2.108.1) 2026-10-22T21:31:58.142Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract > keeps pet/travel aliases and unknown categories findable without changing stored values
+GoTrueClient@sb-127-auth-token:27 (2.108.1) 2026-10-22T21:31:58.160Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract > keeps pet/travel aliases and unknown categories findable without changing stored values
+GoTrueClient@sb-127-auth-token:28 (2.108.1) 2026-10-22T21:31:58.216Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract > keeps pet/travel aliases and unknown categories findable without changing stored values
+GoTrueClient@sb-127-auth-token:29 (2.108.1) 2026-10-22T21:31:58.233Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract > keeps pet/travel aliases and unknown categories findable without changing stored values
+GoTrueClient@sb-127-auth-token:30 (2.108.1) 2026-10-22T21:31:58.288Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract > keeps the existing /match decision DTO backed and workspace-scoped
+GoTrueClient@sb-127-auth-token:31 (2.108.1) 2026-10-22T21:31:58.296Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract > keeps the existing /match decision DTO backed and workspace-scoped
+GoTrueClient@sb-127-auth-token:32 (2.108.1) 2026-10-22T21:31:58.359Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract > keeps the existing /match decision DTO backed and workspace-scoped
+GoTrueClient@sb-127-auth-token:33 (2.108.1) 2026-10-22T21:31:58.374Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract > keeps the existing /match decision DTO backed and workspace-scoped
+GoTrueClient@sb-127-auth-token:34 (2.108.1) 2026-10-22T21:31:58.457Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract > keeps the existing /match decision DTO backed and workspace-scoped
+GoTrueClient@sb-127-auth-token:35 (2.108.1) 2026-10-22T21:31:58.476Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract > keeps the existing /match decision DTO backed and workspace-scoped
+GoTrueClient@sb-127-auth-token:36 (2.108.1) 2026-10-22T21:31:58.547Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract > keeps the existing /match decision DTO backed and workspace-scoped
+GoTrueClient@sb-127-auth-token:37 (2.108.1) 2026-10-22T21:31:58.565Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract > keeps the existing /match decision DTO backed and workspace-scoped
+GoTrueClient@sb-127-auth-token:38 (2.108.1) 2026-10-22T21:31:58.679Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract > keeps the existing /onboarding/recommended-missions decision DTO backed and workspace-scoped
+GoTrueClient@sb-127-auth-token:39 (2.108.1) 2026-10-22T21:31:58.691Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract > keeps the existing /onboarding/recommended-missions decision DTO backed and workspace-scoped
+GoTrueClient@sb-127-auth-token:40 (2.108.1) 2026-10-22T21:31:58.742Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract > keeps the existing /onboarding/recommended-missions decision DTO backed and workspace-scoped
+GoTrueClient@sb-127-auth-token:41 (2.108.1) 2026-10-22T21:31:58.779Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract > keeps the existing /onboarding/recommended-missions decision DTO backed and workspace-scoped
+GoTrueClient@sb-127-auth-token:42 (2.108.1) 2026-10-22T21:31:58.839Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract > keeps the existing /onboarding/recommended-missions decision DTO backed and workspace-scoped
+GoTrueClient@sb-127-auth-token:43 (2.108.1) 2026-10-22T21:31:58.857Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract > keeps the existing /onboarding/recommended-missions decision DTO backed and workspace-scoped
+GoTrueClient@sb-127-auth-token:44 (2.108.1) 2026-10-22T21:31:58.915Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract > keeps the existing /onboarding/recommended-missions decision DTO backed and workspace-scoped
+GoTrueClient@sb-127-auth-token:45 (2.108.1) 2026-10-22T21:31:58.932Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract > keeps the existing /onboarding/recommended-missions decision DTO backed and workspace-scoped
+GoTrueClient@sb-127-auth-token:46 (2.108.1) 2026-10-22T21:31:58.992Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract > matches the existing XP/verified-handle join gate and never calls unverified L3 unlocked
+GoTrueClient@sb-127-auth-token:47 (2.108.1) 2026-10-22T21:31:59.008Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract > matches the existing XP/verified-handle join gate and never calls unverified L3 unlocked
+GoTrueClient@sb-127-auth-token:48 (2.108.1) 2026-10-22T21:31:59.070Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract > matches the existing XP/verified-handle join gate and never calls unverified L3 unlocked
+GoTrueClient@sb-127-auth-token:49 (2.108.1) 2026-10-22T21:31:59.086Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract > matches the existing XP/verified-handle join gate and never calls unverified L3 unlocked
+GoTrueClient@sb-127-auth-token:50 (2.108.1) 2026-10-22T21:31:59.147Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract > matches the existing XP/verified-handle join gate and never calls unverified L3 unlocked
+GoTrueClient@sb-127-auth-token:51 (2.108.1) 2026-10-22T21:31:59.163Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract > matches the existing XP/verified-handle join gate and never calls unverified L3 unlocked
+GoTrueClient@sb-127-auth-token:52 (2.108.1) 2026-10-22T21:31:59.218Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract > matches the existing XP/verified-handle join gate and never calls unverified L3 unlocked
+GoTrueClient@sb-127-auth-token:53 (2.108.1) 2026-10-22T21:31:59.243Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract > matches the existing XP/verified-handle join gate and never calls unverified L3 unlocked
+GoTrueClient@sb-127-auth-token:54 (2.108.1) 2026-10-22T21:31:59.303Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract > matches the existing XP/verified-handle join gate and never calls unverified L3 unlocked
+GoTrueClient@sb-127-auth-token:55 (2.108.1) 2026-10-22T21:31:59.337Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract > matches the existing XP/verified-handle join gate and never calls unverified L3 unlocked
+GoTrueClient@sb-127-auth-token:56 (2.108.1) 2026-10-22T21:31:59.397Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract > keeps draft/foreign details private, requires Auth, and reads the persisted fixture join status
+GoTrueClient@sb-127-auth-token:57 (2.108.1) 2026-10-22T21:31:59.410Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract > keeps draft/foreign details private, requires Auth, and reads the persisted fixture join status
+GoTrueClient@sb-127-auth-token:58 (2.108.1) 2026-10-22T21:31:59.477Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract > keeps draft/foreign details private, requires Auth, and reads the persisted fixture join status
+GoTrueClient@sb-127-auth-token:59 (2.108.1) 2026-10-22T21:31:59.484Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract > keeps draft/foreign details private, requires Auth, and reads the persisted fixture join status
+GoTrueClient@sb-127-auth-token:60 (2.108.1) 2026-10-22T21:31:59.536Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract > keeps draft/foreign details private, requires Auth, and reads the persisted fixture join status
+GoTrueClient@sb-127-auth-token:61 (2.108.1) 2026-10-22T21:31:59.553Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract > keeps draft/foreign details private, requires Auth, and reads the persisted fixture join status
+GoTrueClient@sb-127-auth-token:62 (2.108.1) 2026-10-22T21:31:59.622Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract > keeps draft/foreign details private, requires Auth, and reads the persisted fixture join status
+GoTrueClient@sb-127-auth-token:63 (2.108.1) 2026-10-22T21:31:59.652Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-list-contract.test.ts > D09 real disposable mission decision contract > keeps draft/foreign details private, requires Auth, and reads the persisted fixture join status
+GoTrueClient@sb-127-auth-token:64 (2.108.1) 2026-10-22T21:31:59.716Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+ ✓ server/test/audit-mission-list-contract.test.ts (6 tests) 6158ms
+   ✓ D09 real disposable mission decision contract > serializes all decision facts from real PostgREST list and detail, preserving zero/null 388ms
+   ✓ D09 real disposable mission decision contract > keeps pet/travel aliases and unknown categories findable without changing stored values 351ms
+   ✓ D09 real disposable mission decision contract > keeps the existing /match decision DTO backed and workspace-scoped 394ms
+   ✓ D09 real disposable mission decision contract > keeps the existing /onboarding/recommended-missions decision DTO backed and workspace-scoped 318ms
+   ✓ D09 real disposable mission decision contract > matches the existing XP/verified-handle join gate and never calls unverified L3 unlocked 401ms
+   ✓ D09 real disposable mission decision contract > keeps draft/foreign details private, requires Auth, and reads the persisted fixture join status 326ms
+
+ Test Files  1 passed (1)
+      Tests  6 passed (6)
+   Start at  05:31:52
+   Duration  7.49s (transform 693ms, setup 205ms, collect 63ms, tests 6.16s, environment 723ms, prepare 122ms)
+
+[WebServer] (node:30420) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[WebServer] Warning: Route file "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/_site.smoke.test.tsx" does not export a Route. This file will not be included in the route tree.
+[WebServer] 
+[WebServer] If this file is not intended to be a route, you can exclude it using one of these options:
+[WebServer]   1. Rename the file to "C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\src\routes\-_site.smoke.test.tsx" (prefix with "-")
+[WebServer]   2. Use 'routeFileIgnorePattern' in your config to match this file
+[WebServer] 
+[WebServer] Current configuration:
+[WebServer]   routeFileIgnorePrefix: "-"
+[WebServer]   routeFileIgnorePattern: undefined
+
+
+Running 1 test using 1 worker
+
+(node:40632) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] e2e\mission-discovery.spec.ts:7:1 › D09 real decision DTO, filters, retry and qualification stay consistent across list and detail
+[WebServer] [tanstack-router] These exports from "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/admin.reward-handoffs.tsx" will not be code-split and will increase your bundle size:
+
+[WebServer] - AdminRewardHandoffsRoute
+[WebServer] For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+
+[WebServer] [tanstack-router] These exports from "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/admin.active-missions.tsx" will not be code-split and will increase your bundle size:
+[WebServer] - AdminActiveMissionsLayout
+[WebServer] For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+[WebServer] [tanstack-router] These exports from "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/admin.active-missions.index.tsx" will not be code-split and will increase your bundle size:
+
+[WebServer] - AdminActiveMissionsRoute
+[WebServer] For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+[WebServer] [tanstack-router] These exports from "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/_app.news.index.tsx" will not be code-split and will increase your bundle size:
+[WebServer] - NewsFeed
+[WebServer] For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+
+[WebServer] [tanstack-router] These exports from "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/admin.active-missions.$workflowId.tsx" will not be code-split and will increase your bundle size:
+
+[WebServer] - AdminActiveMissionReviewRoute
+[WebServer] For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+[WebServer] [tanstack-router] These exports from "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/_app.my.$submissionId.tsx" will not be code-split and will increase your bundle size:
+
+[WebServer] - CreatorMissionWorkspace
+[WebServer] For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+  1) e2e\mission-discovery.spec.ts:7:1 › D09 real decision DTO, filters, retry and qualification stay consistent across list and detail 
+
+    TimeoutError: locator.click: Timeout 15000ms exceeded.
+    Call log:
+      - waiting for getByRole('link', { name: 'Find missions', exact: true })
+
+
+      79 |   await highContext.route("**/*",route=>new URL(route.request().url()).hostname==="127.0.0.1"?route.continue():route.abort());
+      80 |   const high=await highContext.newPage();await login(high,fixture.unverifiedCreator);
+    > 81 |   await high.getByRole("link",{name:"Find missions",exact:true}).click();
+         |                                                                  ^
+      82 |   await expect(high).toHaveURL(/\/mission$/);
+      83 |   const highPet=high.locator(`a[href="/mission/${fixture.missions[0].slug}"]`);
+      84 |   await expect(highPet).toContainText("Verify a social handle to unlock L2 missions");
+        at C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\e2e\mission-discovery.spec.ts:81:66
+
+    Error Context: test-results\mission-discovery-D09-real-a827f-tent-across-list-and-detail\error-context.md
+
+
+  1 failed
+    e2e\mission-discovery.spec.ts:7:1 › D09 real decision DTO, filters, retry and qualification stay consistent across list and detail 

@@ -1,0 +1,11 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ✓ server/test/staff-access-schema.embedded.test.ts (11 tests) 1691ms
+
+ Test Files  1 passed (1)
+      Tests  11 passed (11)
+   Start at  20:47:22
+   Duration  2.19s (transform 42ms, setup 188ms, collect 32ms, tests 1.69s, environment 0ms, prepare 89ms)
+
+JSON report written to C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/.codex-tmp/D18-schema-green.json

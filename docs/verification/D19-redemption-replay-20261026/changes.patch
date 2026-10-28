@@ -1,0 +1,640 @@
+--- a/scripts/release/contracts.ts
++++ b/scripts/release/contracts.ts
+@@ -6,7 +6,8 @@
+   | "operator_crm"
+   | "assistant_requests"
+   | "academy_learning"
+-  | "staff_access";
++  | "staff_access"
++  | "redemption";
+ 
+ export interface ReleaseMigration {
+   readonly version: string;
+--- a/scripts/release/manifest.test.ts
++++ b/scripts/release/manifest.test.ts
+@@ -65,6 +65,7 @@
+   "20261023124149_staff_access_capabilities.sql",
+   "20261023192141_pilot_legacy_access_hardening.sql",
+   "20261025120934_application_decisions.sql",
++  "20261025194402_redemption_intents.sql",
+ ] as const;
+ 
+ // Pinned by checksum in manifest.ts, so the fixture copies the repository's real bytes instead of
+@@ -135,6 +136,28 @@
+ }
+ 
+ describe("release migration manifest", () => {
++  it("classifies the redemption receipt contract without dropping ACL or uniqueness checks", async () => {
++    const manifest = await buildManifest(resolve("."));
++    const migration = manifest.migrations.find((item) => item.version === "20261025194402");
++    expect(migration).toMatchObject({
++      name: "redemption_intents",
++      phase: "redemption",
++      dependsOn: [], // Existing redemption tables/RPC are in the checksum-pinned baseline.
++      transactionExpectation: "transactional",
++      replayExpectation: "migration_history_noop",
++    });
++    expect(migration?.capabilities).toEqual(expect.arrayContaining([
++      "column:public.redemptions.client_request_id",
++      "index:public.redemptions.redemptions_creator_request_uniq",
++      "function:public.redeem_gift_with_request",
++      "grant:authenticated.public.redeem_gift_with_request(uuid,uuid)",
++      "grant:service_role.public.redeem_gift_with_request(uuid,uuid)",
++      "grant-removed:anon.public.redeem_gift_with_request(uuid,uuid)",
++      "grant-removed:public.public.redeem_gift_with_request(uuid,uuid)",
++    ]));
++    expect(await validateManifest(manifest, resolve("."))).toEqual([]);
++  });
++
+   it("orders, classifies, hashes, and digests the complete reviewed range", async () => {
+     const root = await fixture();
+     const manifest = await buildManifest(root);
+@@ -146,7 +169,8 @@
+     expect(manifest.migrations[13].phase).toBe("publication_proof");
+     expect(manifest.migrations[25].phase).toBe("reward_handoff");
+     expect(manifest.migrations.find((migration) => migration.version === "20261023192141")?.phase).toBe("staff_access");
+-    expect(manifest.migrations.at(-1)?.phase).toBe("operator_crm");
++    expect(manifest.migrations.find((migration) => migration.version === "20261025120934")?.phase).toBe("operator_crm");
++    expect(manifest.migrations.at(-1)?.phase).toBe("redemption");
+     expect(manifest.migrations[0].dependsOn).toEqual([]);
+     expect(manifest.migrations[1].dependsOn).toEqual(["20260715163350"]);
+     expect(
+--- a/scripts/release/manifest.ts
++++ b/scripts/release/manifest.ts
+@@ -1018,6 +1018,20 @@
+       "grant-removed:authenticated.public.decide_mission_application(uuid,uuid,uuid,uuid,bigint,text,text)"],
+     transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
+   },
++  {
++    version: "20261025194402", name: "redemption_intents", phase: "redemption",
++    dependsOn: [], // Existing tables and redeem_gift are in the pinned baseline.
++    capabilities: [
++      "column:public.redemptions.client_request_id",
++      "index:public.redemptions.redemptions_creator_request_uniq",
++      "function:public.redeem_gift_with_request",
++      "grant:authenticated.public.redeem_gift_with_request(uuid,uuid)",
++      "grant:service_role.public.redeem_gift_with_request(uuid,uuid)",
++      "grant-removed:anon.public.redeem_gift_with_request(uuid,uuid)",
++      "grant-removed:public.public.redeem_gift_with_request(uuid,uuid)",
++    ],
++    transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
++  },
+ ] as const satisfies readonly ReviewedMigration[];
+ 
+ const NON_RELEASE_TIMESTAMP_MIGRATIONS = new Set([
+@@ -1193,7 +1207,7 @@
+     if (
+       migration.phase !== "active_mission" &&
+       migration.phase !== "publication_proof" &&
+-      migration.phase !== "reward_handoff" && migration.phase !== "legacy_evidence" && migration.phase !== "operator_crm" && migration.phase !== "assistant_requests" && migration.phase !== "academy_learning" && migration.phase !== "staff_access"
++      migration.phase !== "reward_handoff" && migration.phase !== "legacy_evidence" && migration.phase !== "operator_crm" && migration.phase !== "assistant_requests" && migration.phase !== "academy_learning" && migration.phase !== "staff_access" && migration.phase !== "redemption"
+     ) {
+       invalid(`${path}.phase`, "is invalid");
+     }
+@@ -1365,7 +1379,7 @@
+     "active_mission",
+     "publication_proof",
+     "reward_handoff",
+-    "legacy_evidence", "operator_crm", "assistant_requests", "academy_learning", "staff_access",
++    "legacy_evidence", "operator_crm", "assistant_requests", "academy_learning", "staff_access", "redemption",
+   ] satisfies ReleasePhase[]) {
+     if (!parsed.migrations.some((migration) => migration.phase === phase)) {
+       pushUnique(errors, `missing release phase: ${phase}`);
+--- a/scripts/release/preflight.test.ts
++++ b/scripts/release/preflight.test.ts
+@@ -38,14 +38,24 @@
+       ...new Set(manifest.migrations.flatMap((migration) => migration.capabilities)),
+     ];
+ 
+-    // Retain all587 earlier capabilities and add the four application contracts.
+-    expect(capabilities).toHaveLength(591);
++    // Retain all587 earlier capabilities, four application and seven redemption contracts.
++    expect(capabilities).toHaveLength(598);
+     const applicationCapabilities = ["function:public.decide_mission_application",
+       "grant:service_role.public.decide_mission_application(uuid,uuid,uuid,uuid,bigint,text,text)",
+       "grant-removed:anon.public.decide_mission_application(uuid,uuid,uuid,uuid,bigint,text,text)",
+       "grant-removed:authenticated.public.decide_mission_application(uuid,uuid,uuid,uuid,bigint,text,text)"];
+     expect(capabilities).toEqual(expect.arrayContaining(applicationCapabilities));
+-    expect(capabilities.filter((capability) => !applicationCapabilities.includes(capability))).toHaveLength(587);
++    const redemptionCapabilities = [
++      "column:public.redemptions.client_request_id",
++      "index:public.redemptions.redemptions_creator_request_uniq",
++      "function:public.redeem_gift_with_request",
++      "grant:authenticated.public.redeem_gift_with_request(uuid,uuid)",
++      "grant:service_role.public.redeem_gift_with_request(uuid,uuid)",
++      "grant-removed:anon.public.redeem_gift_with_request(uuid,uuid)",
++      "grant-removed:public.public.redeem_gift_with_request(uuid,uuid)",
++    ];
++    expect(capabilities).toEqual(expect.arrayContaining(redemptionCapabilities));
++    expect(capabilities.filter((capability) => ![...applicationCapabilities, ...redemptionCapabilities].includes(capability))).toHaveLength(587);
+     expect(capabilities.filter((capability) => !hasCapabilityValidator(capability))).toEqual([]);
+   });
+ 
+--- a/server/routes/redemption.ts
++++ b/server/routes/redemption.ts
+@@ -8,7 +8,7 @@
+ 
+ // RPC raise-messages double as stable codes. Map them to HTTP; anything else is a 500.
+ const RPC_409 = new Set([
+-  "insufficient_points", "out_of_stock", "closed", "not_authenticated",
++  "insufficient_points", "out_of_stock", "closed", "not_authenticated", "request_conflict",
+ ]);
+ function rpcError(c: Context<Env>, error: PostgrestError) {
+   const msg = error.message ?? "";
+@@ -33,10 +33,16 @@
+ 
+ /** Redeem a gift → atomic point deduction + code claim. Returns the redemption (incl. code). */
+ redemptionRoutes.post("/redeem", async (c) => {
+-  const { gift_id } = await c.req.json<{ gift_id?: string }>().catch(() => ({ gift_id: undefined }));
++  const body = await c.req.json<{ gift_id?: string; client_request_id?: unknown }>().catch(() => null);
++  const { gift_id, client_request_id } = body ?? {};
+   if (!gift_id) return c.json({ error: "gift_id required", code: "bad_request" }, 400);
++  if (client_request_id !== undefined && (typeof client_request_id !== "string" || !/^[a-f0-9]{8}-(?:[a-f0-9]{4}-){3}[a-f0-9]{12}$/i.test(client_request_id))) {
++    return c.json({ error: "Valid client_request_id required", code: "bad_request" }, 400);
++  }
+   const supabase = makeUserClient(c.get("jwt"));
+-  const { data, error } = await supabase.rpc("redeem_gift", { p_gift: gift_id });
++  // Old callers without an intent retain their distinct-new-redemption contract.
++  const { data, error } = await supabase.rpc(client_request_id === undefined ? "redeem_gift" : "redeem_gift_with_request",
++    client_request_id === undefined ? { p_gift: gift_id } : { p_gift: gift_id, p_request_id: client_request_id });
+   if (error) return rpcError(c, error);
+   return c.json(data);
+ });
+--- a/src/components/RedeemGiftCard.tsx
++++ b/src/components/RedeemGiftCard.tsx
+@@ -8,13 +8,23 @@
+   const redeem = useRedeemGift();
+   const [open, setOpen] = useState(false);
+   const [code, setCode] = useState<string | null>(null);
++  const [intentError, setIntentError] = useState(false);
+   const soldOut = gift.stock_remaining <= 0;
+   const poor = balance < gift.points_cost;
+   const disabled = soldOut || poor;
+ 
+   function confirm() {
++    setIntentError(false);
+     redeem.mutate(gift.id, { onSuccess: (r) => setCode(r.code) });
+   }
++  function close() {
++    if (code !== null) {
++      try { redeem.acknowledge(); } catch { setIntentError(true); return; }
++    }
++    setOpen(false);
++  }
++  const sessionChanged = (redeem.error as { code?: string } | null)?.code === "redemption_session_changed";
++  const unsafeRetry = intentError || sessionChanged || ["redemption_intent_unavailable", "request_conflict"].includes((redeem.error as { code?: string } | null)?.code ?? "");
+ 
+   const btnLabel = soldOut
+     ? t("app.redemption.soldOut")
+@@ -35,7 +45,7 @@
+               type="button"
+               disabled={disabled}
+               aria-describedby={poor && !soldOut ? `need-more-${gift.id}` : undefined}
+-              onClick={() => { setCode(null); setOpen(true); }}
++              onClick={() => { setCode(null); setIntentError(false); setOpen(true); }}
+               className={
+                 disabled
+                   ? "mt-2 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-muted,#E4E4E4)] px-3 py-1.5 font-heading text-sm font-bold text-[var(--color-soft-ink)]"
+@@ -58,7 +68,7 @@
+             type="button"
+             aria-label={t("app.redemption.dialogTitle")}
+             className="fixed inset-0 z-50 bg-black/50"
+-            onClick={() => setOpen(false)}
++            onClick={close}
+           />
+           <div
+             role="dialog"
+@@ -67,15 +77,15 @@
+             className="pointer-events-none fixed inset-0 z-[51] grid place-items-center p-4"
+           >
+           <div className="pointer-events-auto w-full max-w-sm rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-5">
++            {(redeem.isError || intentError) && <p role="alert" className="mt-2 text-sm text-[var(--color-magenta)]">{t(sessionChanged ? "app.redemption.sessionChanged" : unsafeRetry ? "app.redemption.intentUnavailable" : "app.redemption.redeemError")}{unsafeRetry && <> <a href="/redemption/history" className="underline">{t("app.redemption.historyLabel")}</a></>}</p>}
+             {code === null ? (
+               <>
+                 <h2 className="font-display text-lg font-bold">{t("app.redemption.dialogTitle")}</h2>
+                 <p className="mt-2 text-sm">{t("app.redemption.dialogBody", { pts: gift.points_cost, name: gift.name })}</p>
+-                {redeem.isError && <p className="mt-2 text-sm text-[var(--color-magenta)]">{t("app.redemption.redeemError")}</p>}
+                 <div className="mt-4 flex gap-2">
+                   <button
+                     type="button"
+-                    onClick={() => setOpen(false)}
++                    onClick={close}
+                     className="flex-1 rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-3 py-2 font-heading text-sm font-bold"
+                   >
+                     {t("common.cancel")}
+@@ -106,7 +116,7 @@
+                 </button>
+                 <button
+                   type="button"
+-                  onClick={() => setOpen(false)}
++                  onClick={close}
+                   className="mt-2 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-ink)] px-3 py-2 font-heading text-sm font-bold text-white"
+                 >
+                   {t("app.redemption.done")}
+--- a/src/lib/i18n.dict.ts
++++ b/src/lib/i18n.dict.ts
+@@ -295,6 +295,8 @@
+     "app.redemption.dialogTitle": "Confirm Redemption",
+     "app.redemption.dialogBody": "Redeem \"{name}\" for {pts} points?",
+     "app.redemption.redeemError": "Redemption failed. Please try again.",
++    "app.redemption.intentUnavailable": "Unable to safely retry this redemption. Check your history before starting another.",
++    "app.redemption.sessionChanged": "Your account or workspace changed. Check the redemption in the original account before retrying.",
+     "app.redemption.confirm": "Confirm",
+     "app.redemption.successTitle": "Redeemed! 🎉",
+     "app.redemption.yourCode": "Your code:",
+@@ -1802,6 +1804,8 @@
+     "app.redemption.dialogTitle": "確認兌換",
+     "app.redemption.dialogBody": "用 {pts} 積分兌換「{name}」？",
+     "app.redemption.redeemError": "兌換失敗，請再試",
++    "app.redemption.intentUnavailable": "未能安全重試此兌換。開始另一筆前，請先查看兌換記錄。",
++    "app.redemption.sessionChanged": "帳戶或工作區已更改。重試前，請先在原本帳戶查看這筆兌換。",
+     "app.redemption.confirm": "確認",
+     "app.redemption.successTitle": "兌換成功 🎉",
+     "app.redemption.yourCode": "你的兌換碼：",
+--- a/src/lib/queries/kocmax.ts
++++ b/src/lib/queries/kocmax.ts
+@@ -1,5 +1,8 @@
+ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+-import { apiFetch } from "@/lib/api";
++import { useRef } from "react";
++import { apiFetch, ApiError, getWorkspaceSlug } from "@/lib/api";
++import { supabase } from "@/lib/supabase";
++import { acknowledgeRedemptionIntent, getRedemptionIntent, type RedemptionIntent } from "@/lib/redemptionIntent";
+ import type { NotificationRow } from "@/lib/notifications";
+ import type { SocialAccountPresentation } from "@/lib/socialAccountPresentation";
+ 
+@@ -484,9 +487,23 @@
+ 
+ export function useRedeemGift() {
+   const qc = useQueryClient();
+-  return useMutation({
+-    mutationFn: (giftId: string) =>
+-      apiFetch<RedeemResult>("/redemption/redeem", { method: "POST", body: JSON.stringify({ gift_id: giftId }) }),
++  const intent = useRef<RedemptionIntent | null>(null);
++  const mutation = useMutation({
++    mutationFn: async (giftId: string) => {
++      const workspace = getWorkspaceSlug();
++      const { data, error } = await supabase.auth.getSession();
++      const session = data.session, owner = session?.user?.id;
++      if (error || !session || !owner || !session.access_token) throw new ApiError(401, "no_auth", "Sign in to redeem");
++      intent.current = getRedemptionIntent(owner, workspace, giftId);
++      const result = await apiFetch<RedeemResult>("/redemption/redeem", { method: "POST",
++        headers: { Authorization: `Bearer ${session.access_token}`, "X-Workspace-Slug": workspace },
++        body: JSON.stringify({ gift_id: giftId, client_request_id: intent.current.requestId }) });
++      const current = await supabase.auth.getSession();
++      if (current.error || current.data.session?.user?.id !== owner || getWorkspaceSlug() !== workspace) {
++        throw new ApiError(409, "redemption_session_changed", "Account or workspace changed; original intent retained");
++      }
++      return result;
++    },
+     onSuccess: () => {
+       qc.invalidateQueries({ queryKey: ["gifts"] });
+       qc.invalidateQueries({ queryKey: ["balance"] });
+@@ -494,6 +511,10 @@
+       qc.invalidateQueries({ queryKey: ["history"] }); // points ledger gains a 'redeem' row
+     },
+   });
++  return { ...mutation, acknowledge: () => {
++    if (intent.current) acknowledgeRedemptionIntent(intent.current);
++    intent.current = null;
++  } };
+ }
+ 
+ export function useRedemptions() {
+--- a/supabase/release-manifest.json
++++ b/supabase/release-manifest.json
+@@ -1255,6 +1255,25 @@
+       ],
+       "transactionExpectation": "transactional",
+       "replayExpectation": "migration_history_noop"
++    },
++    {
++      "version": "20261025194402",
++      "name": "redemption_intents",
++      "path": "supabase/migrations/20261025194402_redemption_intents.sql",
++      "sha256": "c0bdf76d8d4dda6117c9aaeec537c238e95560c19b12ca20ab131dd89d8f78b6",
++      "phase": "redemption",
++      "dependsOn": [],
++      "capabilities": [
++        "column:public.redemptions.client_request_id",
++        "index:public.redemptions.redemptions_creator_request_uniq",
++        "function:public.redeem_gift_with_request",
++        "grant:authenticated.public.redeem_gift_with_request(uuid,uuid)",
++        "grant:service_role.public.redeem_gift_with_request(uuid,uuid)",
++        "grant-removed:anon.public.redeem_gift_with_request(uuid,uuid)",
++        "grant-removed:public.public.redeem_gift_with_request(uuid,uuid)"
++      ],
++      "transactionExpectation": "transactional",
++      "replayExpectation": "migration_history_noop"
+     }
+   ]
+ }
+--- a/server/test/redemption-intent-memory.test.ts
++++ b/server/test/redemption-intent-memory.test.ts
+@@ -0,0 +1,123 @@
++// @vitest-environment node
++import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from "vitest";
++import { PGlite } from "@electric-sql/pglite";
++import { Hono } from "hono";
++import { createHash } from "node:crypto";
++import { readFileSync, writeFileSync, existsSync } from "node:fs";
++import { resolve } from "node:path";
++import process from "node:process";
++
++const transport = vi.hoisted(() => ({ rpc: (jwt: string, name: string, args: Record<string, unknown>): Promise<unknown> => { void jwt; void name; void args; throw new Error("Memory transport not installed"); }, realClients: 0 }));
++vi.mock("@supabase/supabase-js", () => ({ createClient: () => { transport.realClients++; throw new Error("Real SDK forbidden"); } }));
++vi.mock("../../server/lib/supabase", () => ({ makeUserClient: (jwt: string) => ({ rpc: (name: string,args: Record<string,unknown>) => transport.rpc(jwt,name,args) }) }));
++import { redemptionRoutes } from "../../server/routes/redemption";
++import type { Env } from "../../server/app";
++
++const A="00000000-0000-4000-8000-000000000001",B="00000000-0000-4000-8000-000000000002",W="00000000-0000-4000-8000-000000000003";
++const G="00000000-0000-4000-8000-000000000010",G2="00000000-0000-4000-8000-000000000011";
++const R1="00000000-0000-4000-8000-000000000020",R2="00000000-0000-4000-8000-000000000021";
++type Redemption={id:string;creator_id:string;gift_id:string;code:string;points_spent:number;status:string;created_at:string;client_request_id?:string|null};
++type Snapshot={balances:Array<{creator_id:string;balance:number}>;ledger:Array<{creator_id:string;delta:number}>;stock:Array<{id:string;stock_remaining:number}>;codes:Array<{code:string;status:string;issued_to:string|null}>;redemptions:Redemption[]};
++let db:PGlite,app:Hono<Env>;
++let calls:Array<{owner:string;name:string;args:Record<string,unknown>}>;
++let events:Array<Record<string,unknown>>;
++const observations:unknown[]=[];
++const schemaSources:unknown[]=[];
++async function snapshot():Promise<Snapshot>{
++  const r=await db.query<{state:Snapshot}>(`select jsonb_build_object(
++    'balances',(select jsonb_agg(jsonb_build_object('creator_id',creator_id,'balance',balance)order by creator_id)from public.point_balances),
++    'ledger',(select coalesce(jsonb_agg(jsonb_build_object('creator_id',creator_id,'delta',delta)order by created_at,id),'[]'::jsonb)from public.point_transactions),
++    'stock',(select jsonb_agg(jsonb_build_object('id',id,'stock_remaining',stock_remaining)order by id)from public.redemption_gifts),
++    'codes',(select jsonb_agg(jsonb_build_object('code',code,'status',status,'issued_to',issued_to)order by code)from public.redemption_codes),
++    'redemptions',(select coalesce(jsonb_agg(to_jsonb(r)order by created_at,id),'[]'::jsonb)from public.redemptions r))as state`);
++  return r.rows[0].state;
++}
++async function post(request:string,gift=G,owner=A){
++  const response=await app.request("/api/redemption/redeem",{method:"POST",headers:{Authorization:`Bearer ${owner}`,"Content-Type":"application/json"},body:JSON.stringify({gift_id:gift,client_request_id:request})});
++  const result=await response.json()as Redemption&{code:string};events.push({request,gift,owner,status:response.status,result});return{status:response.status,result};
++}
++beforeEach(async()=>{
++  calls=[];events=[];transport.realClients=0;db=await PGlite.create();
++  await db.exec(`create schema auth;create table auth.users(id uuid primary key);
++    create role anon;create role authenticated;create role service_role;
++    grant usage on schema public,auth to anon,authenticated,service_role;
++    create function auth.uid()returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;`);
++  const initialPath="supabase/migrations/0001_init.sql",redemptionPath="supabase/migrations/0006_redemption.sql";
++  const initial=readFileSync(initialPath,"utf8"),redemption=readFileSync(redemptionPath,"utf8");
++  // Use exact current base-table DDL and the complete actual redemption migration.
++  // Realtime publication/RLS from0001 are outside this focused memory profile.
++  const tables=initial.split("-- Realtime for live balance")[0];
++  await db.exec(tables);await db.exec(redemption);
++  const forwardPath="supabase/migrations/20261025194402_redemption_intents.sql",forward=readFileSync(forwardPath,"utf8");
++  await db.exec(forward);
++  if(schemaSources.length===0)for(const[path,raw,used]of[[initialPath,initial,tables],[redemptionPath,redemption,redemption],[forwardPath,forward,forward]])schemaSources.push({path,rawSha256:createHash("sha256").update(raw).digest("hex"),executedSha256:createHash("sha256").update(used).digest("hex"),scope:path===initialPath?"Exact base-table prefix before Realtime":path===redemptionPath?"Complete original redeem_gift/ACL/RLS":"Complete forward request column/index/wrapper/ACL"});
++  await db.query("insert into public.workspaces(id,slug,name)values($1,'memory','Offline')",[W]);
++  await db.query("insert into auth.users(id)values($1),($2)",[A,B]);
++  await db.query("insert into public.creators(id,workspace_id)values($1,$3),($2,$3)",[A,B,W]);
++  await db.query("insert into public.point_balances(creator_id,workspace_id,balance)values($1,$3,200),($2,$3,200)",[A,B,W]);
++  await db.query("insert into public.redemption_gifts(id,workspace_id,name,points_cost,stock_qty,stock_remaining,gift_type)values($1,$3,'GiftA',50,4,4,'voucher'),($2,$3,'GiftB',70,2,2,'voucher')",[G,G2,W]);
++  for(const[g,codes]of[[G,["A1","A2","A3","A4"]],[G2,["B1","B2"]]]as const)for(const code of codes)await db.query("insert into public.redemption_codes(gift_id,workspace_id,code)values($1,$2,$3)",[g,W,code]);
++  transport.rpc=async(jwt,name,args)=>{
++    expect(["redeem_gift","redeem_gift_with_request"]).toContain(name);expect(Object.keys(args).sort()).toEqual(args.p_request_id===undefined?["p_gift"]:["p_gift","p_request_id"]);calls.push({owner:jwt,name,args});
++    try{
++      const data=await db.transaction(async tx=>{
++        await tx.query("select set_config('request.jwt.claim.sub',$1,true)",[jwt]);await tx.exec("set local role authenticated");
++        const r=await tx.query<{redemption:Redemption}>(args.p_request_id===undefined?"select to_jsonb(public.redeem_gift($1::uuid))as redemption":"select to_jsonb(public.redeem_gift_with_request($1::uuid,$2::uuid))as redemption",args.p_request_id===undefined?[args.p_gift]:[args.p_gift,args.p_request_id]);return r.rows[0].redemption;
++      });return{data,error:null};
++    }catch(cause){const e=cause as Error&{code?:string};return{data:null,error:{message:e.message,code:e.code??"XX000",details:null,hint:null}};}
++  };
++  app=new Hono<Env>();app.use("*",async(c,next)=>{const id=c.req.header("Authorization")?.slice(7);if(id!==A&&id!==B)return c.json({error:"Scripted identity required"},401);c.set("jwt",id);c.set("userId",id);c.set("workspaceId",W);await next();});app.route("/api/redemption",redemptionRoutes);
++});
++afterEach(async()=>{observations.push({test:expect.getState().currentTestName,events,calls,after:await snapshot(),realSdkClients:transport.realClients});await db.close();expect(transport.realClients).toBe(0);});
++afterAll(()=>{if(!process.env.REDEMPTION_READBACK)return;const out=resolve(process.env.REDEMPTION_READBACK);expect(out.startsWith(resolve("docs/verification/D19-redemption-replay-20261026"))).toBe(true);expect(existsSync(out)).toBe(false);writeFileSync(out,JSON.stringify({scope:"Fresh in-memory PostgreSQL/PGlite, actual current Hono route and SQL; scripted Auth/transport only. No isolated/live target, actual Auth/RLS service, independent-connection concurrency, payment or provider.",schemaSources,observations},null,2)+"\n");});
++
++describe("UC-C33 current actual redemption SQL/route intent replay",()=>{
++  it("same intent after a lost response returns the same saved code and debits only once",async()=>{
++    const first=await post(R1);expect(first.status).toBe(200);const retry=await post(R1);const state=await snapshot();events.push({readback:state});
++    expect(retry.status).toBe(200);expect(retry.result).toEqual(first.result);expect(retry.result.id).toBe(first.result.id);expect(retry.result.code).toBe(first.result.code);
++    expect(state.balances.find(r=>r.creator_id===A)!.balance).toBe(150);expect(state.ledger).toHaveLength(1);expect(state.redemptions).toHaveLength(1);expect(state.stock.find(r=>r.id===G)!.stock_remaining).toBe(3);
++  });
++  it("a deliberate second new intent still receives a DISTINCT code and its own debit",async()=>{
++    const first=await post(R1);const second=await post(R2);expect(first.status).toBe(200);expect(second.status).toBe(200);expect(second.result.id).not.toBe(first.result.id);expect(second.result.code).not.toBe(first.result.code);
++    const state=await snapshot();expect(state.balances.find(r=>r.creator_id===A)!.balance).toBe(100);expect(state.ledger).toHaveLength(2);expect(state.redemptions).toHaveLength(2);
++  });
++  it("retry recovers the original saved result even when that first action exhausted stock",async()=>{
++    await db.query("update public.redemption_gifts set stock_remaining=1 where id=$1",[G]);const first=await post(R1);expect(first.status).toBe(200);const retry=await post(R1);events.push({readback:await snapshot()});
++    expect(retry.status).toBe(200);expect(retry.result.id).toBe(first.result.id);expect((await snapshot()).ledger).toHaveLength(1);
++  });
++  it("the same intent cannot be changed to another gift and debit a second time",async()=>{
++    expect((await post(R1)).status).toBe(200);const changed=await post(R1,G2);events.push({readback:await snapshot()});expect(changed.status).toBe(409);expect(changed.result.code).toBe("request_conflict");expect((await snapshot()).ledger).toHaveLength(1);
++  });
++  it("a failed debit rolls back stock/code and the same intent can succeed after the balance fixture changes",async()=>{
++    await db.query("update public.point_balances set balance=0 where creator_id=$1",[A]);const before=await snapshot();expect((await post(R1)).status).toBe(409);expect(await snapshot()).toEqual(before);
++    await db.query("update public.point_balances set balance=100 where creator_id=$1",[A]);expect((await post(R1)).status).toBe(200);expect((await snapshot()).ledger).toHaveLength(1);
++  });
++  it("another recipient using the same client UUID never receives the first person's code",async()=>{
++    const first=await post(R1);const other=await post(R1,G,B);expect(first.status).toBe(200);expect(other.status).toBe(200);expect(other.result.creator_id).toBe(B);expect(other.result.code).not.toBe(first.result.code);
++    const state=await snapshot();expect(state.codes.find(r=>r.code===first.result.code)!.issued_to).toBe(A);expect(state.codes.find(r=>r.code===other.result.code)!.issued_to).toBe(B);
++  });
++  it("a late receipt-update failure rolls back the original financial operation before an exact retry",async()=>{
++    await db.exec(`create function public.fail_memory_receipt()returns trigger language plpgsql as $$begin raise exception 'memory_receipt_fault';end$$;
++      create trigger fail_memory_receipt before update of client_request_id on public.redemptions for each row execute function public.fail_memory_receipt();`);
++    const before=await snapshot();expect((await post(R1)).status).toBe(500);expect(await snapshot()).toEqual(before);
++    await db.exec("drop trigger fail_memory_receipt on public.redemptions;drop function public.fail_memory_receipt();");
++    expect((await post(R1)).status).toBe(200);expect((await post(R1)).status).toBe(200);expect((await snapshot()).ledger).toHaveLength(1);
++  });
++  it("legacy callers without a client ID retain two deliberately distinct redemption results",async()=>{
++    const one=await transport.rpc(A,"redeem_gift",{p_gift:G})as{data:Redemption;error:null};
++    const two=await transport.rpc(A,"redeem_gift",{p_gift:G})as{data:Redemption;error:null};
++    expect(one.error).toBeNull();expect(two.error).toBeNull();expect(two.data.id).not.toBe(one.data.id);expect(two.data.code).not.toBe(one.data.code);expect((await snapshot()).ledger).toHaveLength(2);
++  });
++  it("the wrapper denies anon, the pool stays private and SQL history RLS hides the other recipient",async()=>{
++    const q=await db.query<{anon:boolean;authenticated:boolean}>("select has_function_privilege('anon','public.redeem_gift_with_request(uuid,uuid)','execute')as anon,has_function_privilege('authenticated','public.redeem_gift_with_request(uuid,uuid)','execute')as authenticated");expect(q.rows[0]).toEqual({anon:false,authenticated:true});
++    const owner=await post(R1);expect(owner.status).toBe(200);
++    const other=await db.transaction(async tx=>{await tx.query("select set_config('request.jwt.claim.sub',$1,true)",[B]);await tx.exec("set local role authenticated");return tx.query("select code from public.redemptions");});expect(other.rows).toEqual([]);
++    await expect(db.transaction(async tx=>{await tx.exec("set local role authenticated");return tx.query("select code from public.redemption_codes");})).rejects.toMatchObject({code:"42501"});
++  });
++  it("malformed or null request bodies fail before the SQL command",async()=>{
++    for(const body of ["null",'{"gift_id":"'+G+'","client_request_id":null}','{"gift_id":"'+G+'","client_request_id":"bad"}',"{"]){
++      const r=await app.request("/api/redemption/redeem",{method:"POST",headers:{Authorization:`Bearer ${A}`,"Content-Type":"application/json"},body});expect(r.status).toBe(400);
++    }
++    expect(calls).toHaveLength(0);expect((await snapshot()).ledger).toHaveLength(0);
++  });
++});
+--- a/src/components/RedeemGiftCard.intent.test.tsx
++++ b/src/components/RedeemGiftCard.intent.test.tsx
+@@ -0,0 +1,90 @@
++import { afterAll,afterEach,beforeEach,describe,expect,it,vi } from "vitest";
++import { cleanup,fireEvent,render,screen } from "@testing-library/react";
++import { QueryClient,QueryClientProvider } from "@tanstack/react-query";
++import { createMemoryHistory,createRootRoute,createRoute,createRouter,Outlet,RouterProvider } from "@tanstack/react-router";
++import { randomUUID } from "node:crypto";
++import { writeFileSync,existsSync } from "node:fs";
++import { resolve } from "node:path";
++import process from "node:process";
++const state=vi.hoisted(()=>({owner:"creator-a",sdk:0,afterSession:null as null|(()=>void)}));
++vi.mock("@supabase/supabase-js",()=>({createClient:()=>{state.sdk++;throw new Error("Real SDK forbidden");}}));
++vi.mock("@/lib/supabase",()=>({supabase:{auth:{getSession:async()=>{const owner=state.owner,after=state.afterSession;state.afterSession=null;after?.();return{data:{session:{access_token:`offline-${owner}`,token_type:"bearer",expires_in:3600,refresh_token:"offline-nonrefresh",user:{id:owner,aud:"authenticated",role:"authenticated",app_metadata:{},user_metadata:{},created_at:"2026-10-25T00:00:00Z"}}},error:null};}}}}));
++import { RedeemGiftCard } from "./RedeemGiftCard";
++import { I18nProvider } from "../lib/i18n";
++import { setWorkspaceSlug } from "../lib/api";
++import { Route as GiftsRoute } from "../routes/_app.redemption.index";
++import { Route as HistoryRoute } from "../routes/_app.redemption.history";
++const gift={id:"00000000-0000-4000-8000-000000000010",name:"Offline gift",points_cost:50,stock_remaining:4,gift_type:"voucher",status:"available"};
++const saved={id:"00000000-0000-4000-8000-000000000100",gift_id:gift.id,code:"A-ONE",points_spent:50,status:"fulfilled",created_at:"2026-10-25T00:00:00Z"};
++const unavailable="Unable to safely retry this redemption. Check your history before starting another.";
++const uuid=/^[a-f0-9]{8}-(?:[a-f0-9]{4}-){3}[a-f0-9]{12}$/i;
++let storage:Map<string,string>,denyStorage:boolean,originalStorage:PropertyDescriptor|undefined;
++let requests:Array<{body:{gift_id:string;client_request_id?:string};authorization:string|null;workspace:string|null}>;
++let replies:Array<{kind:"lost"|"ok"|"conflict";code?:string}>;
++let clients:QueryClient[];
++let reads:string[];
++const observations:unknown[]=[];
++function mount(){const qc=new QueryClient({defaultOptions:{queries:{retry:false},mutations:{retry:false}}});clients.push(qc);render(<QueryClientProvider client={qc}><I18nProvider><RedeemGiftCard gift={gift} balance={200}/></I18nProvider></QueryClientProvider>);}
++function mountExhaustedCatalog(){
++  const qc=new QueryClient({defaultOptions:{queries:{retry:false},mutations:{retry:false}}});clients.push(qc);
++  const root=createRootRoute({component:Outlet});const tree=root.addChildren([createRoute({getParentRoute:()=>root,path:"/redemption",component:GiftsRoute.options.component}),createRoute({getParentRoute:()=>root,path:"/redemption/history",component:HistoryRoute.options.component})]);
++  const router=createRouter({routeTree:tree,history:createMemoryHistory({initialEntries:["/redemption"]})});render(<QueryClientProvider client={qc}><I18nProvider><RouterProvider router={router}/></I18nProvider></QueryClientProvider>);
++}
++async function open(){fireEvent.click(await screen.findByRole("button",{name:"Redeem"}));expect(await screen.findByRole("dialog")).toBeVisible();}
++function confirm(){fireEvent.click(screen.getByRole("button",{name:"Confirm"}));}
++beforeEach(()=>{
++  storage=new Map();denyStorage=false;requests=[];reads=[];replies=[];clients=[];state.owner="creator-a";state.sdk=0;state.afterSession=null;localStorage.setItem("lang","en");setWorkspaceSlug("offline-c33");
++  originalStorage=Object.getOwnPropertyDescriptor(window,"sessionStorage");Object.defineProperty(window,"sessionStorage",{configurable:true,value:{getItem:(k:string)=>{if(denyStorage)throw new Error("Scripted storage unavailable");return storage.get(k)??null;},setItem:(k:string,v:string)=>{if(denyStorage)throw new Error("Scripted storage unavailable");storage.set(k,v);},removeItem:(k:string)=>{if(denyStorage)throw new Error("Scripted storage unavailable");storage.delete(k);}}});
++  vi.stubGlobal("crypto",{randomUUID});
++  vi.stubGlobal("fetch",async(input:RequestInfo|URL,init?:RequestInit)=>{
++    if((init?.method??"GET")==="GET"){
++      const path=String(input);reads.push(path);
++      const bodies:Record<string,unknown>={"/api/wallet/points":{balance:150,available_to:null},"/api/redemption/gifts":{gifts:[{...gift,description:"Offline readback",category:"test",image_url:null,stock_remaining:0}]},"/api/redemption/history":{redemptions:[{id:saved.id,code:saved.code,points_spent:saved.points_spent,status:saved.status,created_at:saved.created_at,redemption_gifts:{name:gift.name}}]}};
++      expect(Object.hasOwn(bodies,path)).toBe(true);return new Response(JSON.stringify(bodies[path]),{status:200});
++    }
++    expect(String(input)).toBe("/api/redemption/redeem");expect(init?.method).toBe("POST");const body=JSON.parse(String(init?.body));requests.push({body,authorization:new Headers(init?.headers).get("Authorization"),workspace:new Headers(init?.headers).get("X-Workspace-Slug")});
++    const reply=replies.shift();expect(reply).toBeDefined();if(reply!.kind==="lost")throw new TypeError("Scripted lost HTTP response after unknown server outcome");
++    if(reply!.kind==="conflict")return new Response(JSON.stringify({code:"request_conflict",error:"request_conflict"}),{status:409});
++    return new Response(JSON.stringify({...saved,code:reply!.code??saved.code}),{status:200});
++  });
++});
++afterEach(async()=>{observations.push({test:expect.getState().currentTestName,requests,reads,storedIntents:[...storage.entries()],realSdkClients:state.sdk});cleanup();for(const c of clients){await c.cancelQueries();c.clear();}if(originalStorage)Object.defineProperty(window,"sessionStorage",originalStorage);vi.unstubAllGlobals();expect(state.sdk).toBe(0);});
++afterAll(()=>{if(!process.env.REDEMPTION_READBACK)return;const out=resolve(process.env.REDEMPTION_READBACK);expect(out.startsWith(resolve("docs/verification/D19-redemption-replay-20261026"))).toBe(true);expect(existsSync(out)).toBe(false);writeFileSync(out,JSON.stringify({scope:"Actual component/hook/apiFetch with scripted sessions/HTTP/sessionStorage; no SDK/SQL/target/provider/browser",observations},null,2)+"\n");});
++describe("UC-C33 actual redemption component/hook preserves a single unacknowledged intent",()=>{
++  it("manual retry after a lost response keeps the exact UUID and gift input",async()=>{
++    replies=[{kind:"lost"},{kind:"ok"}];mount();await open();confirm();expect(await screen.findByText("Redemption failed. Please try again.")).toBeVisible();
++    expect(requests[0].body.client_request_id).toEqual(expect.stringMatching(uuid));confirm();expect(await screen.findByText("A-ONE")).toBeVisible();expect(requests).toHaveLength(2);expect(requests[1].body).toEqual(requests[0].body);
++  });
++  it("closing and reopening an unknown result preserves the request",async()=>{
++    replies=[{kind:"lost"},{kind:"ok"}];mount();await open();confirm();await screen.findByText("Redemption failed. Please try again.");fireEvent.click(screen.getByRole("button",{name:"Cancel"}));await open();confirm();await screen.findByText("A-ONE");expect(requests[0].body.client_request_id).toEqual(expect.stringMatching(uuid));expect(requests[1].body).toEqual(requests[0].body);
++  });
++  it("a page/component reload keeps the same tab/owner/workspace/gift intent until acknowledged",async()=>{
++    replies=[{kind:"lost"},{kind:"ok"}];mount();await open();confirm();await screen.findByText("Redemption failed. Please try again.");cleanup();mount();await open();confirm();await screen.findByText("A-ONE");expect(requests[0].body.client_request_id).toEqual(expect.stringMatching(uuid));expect(requests[1].body).toEqual(requests[0].body);
++  });
++  it("acknowledging a confirmed code allows a deliberate new intent",async()=>{
++    replies=[{kind:"ok",code:"A-ONE"},{kind:"ok",code:"A-TWO"}];mount();await open();confirm();await screen.findByText("A-ONE");fireEvent.click(screen.getByRole("button",{name:"Done"}));await open();confirm();await screen.findByText("A-TWO");expect(requests[0].body.client_request_id).toEqual(expect.stringMatching(uuid));expect(requests[1].body.client_request_id).toEqual(expect.stringMatching(uuid));expect(requests[1].body.client_request_id).not.toBe(requests[0].body.client_request_id);
++  });
++  it("an account switch does not reuse another recipient's pending intent",async()=>{
++    replies=[{kind:"lost"},{kind:"lost"},{kind:"ok"}];mount();await open();confirm();await screen.findByText("Redemption failed. Please try again.");cleanup();state.owner="creator-b";mount();await open();confirm();await screen.findByText("Redemption failed. Please try again.");cleanup();state.owner="creator-a";mount();await open();confirm();await screen.findByText("A-ONE");
++    expect(requests[0].body.client_request_id).toEqual(expect.stringMatching(uuid));expect(requests[1].body.client_request_id).not.toBe(requests[0].body.client_request_id);expect(requests[2].body).toEqual(requests[0].body);expect(requests[1].authorization).toBe("Bearer offline-creator-b");
++  });
++  it("unavailable intent storage fails before a POST and offers history while retaining the gift",async()=>{
++    denyStorage=true;replies=[{kind:"ok"}];mount();await open();confirm();expect(await screen.findByText(unavailable)).toBeVisible();expect(screen.getByRole("link",{name:"Redemption History"})).toHaveAttribute("href","/redemption/history");expect(screen.getByRole("dialog")).toHaveTextContent("Offline gift");expect(requests).toHaveLength(0);
++  });
++  it("a request conflict retains the same intent and exposes a safe history recovery path",async()=>{
++    replies=[{kind:"conflict"},{kind:"ok"}];mount();await open();confirm();expect(await screen.findByText(unavailable)).toBeVisible();expect(screen.getByRole("link",{name:"Redemption History"})).toHaveAttribute("href","/redemption/history");confirm();await screen.findByText("A-ONE");expect(requests[0].body.client_request_id).toEqual(expect.stringMatching(uuid));expect(requests[1].body).toEqual(requests[0].body);
++  });
++  it("a corrupt unconfirmed intent cannot silently become a new debit request",async()=>{
++    replies=[{kind:"lost"}];mount();await open();confirm();await screen.findByText("Redemption failed. Please try again.");cleanup();storage.set([...storage.keys()][0],"{corrupt");mount();await open();confirm();expect(await screen.findByText(unavailable)).toBeVisible();expect(requests).toHaveLength(1);
++  });
++  it("a failed acknowledgement keeps the known code visible until storage recovers",async()=>{
++    replies=[{kind:"ok",code:"A-ONE"},{kind:"ok",code:"A-TWO"}];mount();await open();confirm();await screen.findByText("A-ONE");denyStorage=true;fireEvent.click(screen.getByRole("button",{name:"Done"}));expect(await screen.findByText(unavailable)).toBeVisible();expect(screen.getByText("A-ONE")).toBeVisible();expect(requests).toHaveLength(1);denyStorage=false;fireEvent.click(screen.getByRole("button",{name:"Done"}));await open();confirm();await screen.findByText("A-TWO");expect(requests[1].body.client_request_id).not.toBe(requests[0].body.client_request_id);
++  });
++  it("pins the authorized owner and workspace snapshot despite a subsequent session/navigation change",async()=>{
++    replies=[{kind:"ok"}];state.afterSession=()=>{state.owner="creator-b";setWorkspaceSlug("other-workspace");};mount();await open();confirm();expect(await screen.findByText("Your account or workspace changed. Check the redemption in the original account before retrying.")).toBeVisible();expect(screen.queryByText("A-ONE")).not.toBeInTheDocument();expect(requests[0].authorization).toBe("Bearer offline-creator-a");expect(requests[0].workspace).toBe("offline-c33");expect(storage.size).toBe(1);
++  });
++  it("after reload with exhausted stock the existing history entry recovers the saved code without another POST",async()=>{
++    replies=[{kind:"lost"}];mount();await open();confirm();await screen.findByText("Redemption failed. Please try again.");cleanup();mountExhaustedCatalog();expect(await screen.findByRole("button",{name:"Sold Out"})).toBeDisabled();
++    fireEvent.click(screen.getByRole("link",{name:"Redemption History"}));expect(await screen.findByText(/A-ONE/)).toBeVisible();expect(screen.getByText("Offline gift")).toBeVisible();expect(requests).toHaveLength(1);expect(reads).toContain("/api/redemption/history");expect(storage.size).toBe(1);
++  });
++});
+--- a/src/lib/redemptionIntent.ts
++++ b/src/lib/redemptionIntent.ts
+@@ -0,0 +1,34 @@
++/** One unacknowledged redemption per tab, owner, workspace and gift. */
++export type RedemptionIntent = { key: string; requestId: string };
++const uuid = /^[a-f0-9]{8}-(?:[a-f0-9]{4}-){3}[a-f0-9]{12}$/i;
++
++export class RedemptionIntentError extends Error {
++  readonly code = "redemption_intent_unavailable";
++  constructor() { super("Unable to preserve the redemption intent"); }
++}
++
++export function getRedemptionIntent(owner: string, workspace: string, gift: string): RedemptionIntent {
++  try {
++    const storage = window.sessionStorage;
++    const key = `adfocate:redemption-intent:v1:${JSON.stringify([owner, workspace, gift])}`;
++    const previous = storage.getItem(key);
++    if (previous !== null) {
++      const requestId: unknown = JSON.parse(previous).requestId;
++      if (typeof requestId !== "string" || !uuid.test(requestId)) throw new RedemptionIntentError();
++      return { key, requestId };
++    }
++    const requestId = crypto.randomUUID();
++    const value = JSON.stringify({ requestId });
++    storage.setItem(key, value);
++    if (storage.getItem(key) !== value) throw new RedemptionIntentError();
++    return { key, requestId };
++  } catch { throw new RedemptionIntentError(); }
++}
++
++export function acknowledgeRedemptionIntent(intent: RedemptionIntent): void {
++  try {
++    const storage = window.sessionStorage;
++    const current = storage.getItem(intent.key);
++    if (current !== null && JSON.parse(current).requestId === intent.requestId) storage.removeItem(intent.key);
++  } catch { throw new RedemptionIntentError(); }
++}
+--- a/supabase/migrations/20261025194402_redemption_intents.sql
++++ b/supabase/migrations/20261025194402_redemption_intents.sql
+@@ -0,0 +1,50 @@
++-- Replay receipts live on the existing redemption, never in a new ledger.
++-- Financial/code/stock work still runs through the original redeem_gift once.
++begin;
++
++alter table public.redemptions add column client_request_id uuid;
++create unique index redemptions_creator_request_uniq
++  on public.redemptions (creator_id, client_request_id)
++  where client_request_id is not null;
++
++-- A unique RPC name preserves the old one-argument API without API overloads.
++create function public.redeem_gift_with_request(p_gift uuid, p_request_id uuid)
++returns public.redemptions
++language plpgsql security definer set search_path = ''
++as $$
++declare
++  v_creator uuid := auth.uid();
++  v_ws uuid;
++  v_red public.redemptions;
++begin
++  if v_creator is null then raise exception 'not_authenticated'; end if;
++  if p_request_id is null then raise exception 'bad_request'; end if;
++  select workspace_id into v_ws from public.creators where id = v_creator;
++  if v_ws is null then raise exception 'not_found'; end if;
++
++  perform pg_catalog.pg_advisory_xact_lock(
++    pg_catalog.hashtextextended('redemption:' || v_creator::text || ':' || p_request_id::text, 0)
++  );
++  select * into v_red from public.redemptions
++    where creator_id = v_creator and client_request_id = p_request_id;
++  if v_red.id is not null then
++    if v_red.gift_id is distinct from p_gift or v_red.workspace_id is distinct from v_ws then
++      raise exception 'request_conflict';
++    end if;
++    -- A saved result is recoverable even if the first action exhausted stock.
++    return v_red;
++  end if;
++
++  v_red := public.redeem_gift(p_gift);
++  update public.redemptions as r set client_request_id = p_request_id
++    where r.id = v_red.id and r.creator_id = v_creator
++    returning r.* into v_red;
++  if v_red.id is null then raise exception 'redemption_receipt_failed'; end if;
++  return v_red;
++end;
++$$;
++
++revoke all on function public.redeem_gift_with_request(uuid, uuid) from public, anon;
++grant execute on function public.redeem_gift_with_request(uuid, uuid) to authenticated, service_role;
++
++commit;

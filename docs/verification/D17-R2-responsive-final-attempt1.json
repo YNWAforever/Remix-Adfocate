@@ -1,0 +1,346 @@
+{
+  "runId": "08530ddb-c357-4638-8ab8-af5854f42fa3",
+  "data": {
+    "cells": [
+      {
+        "path": "/home",
+        "width": 360,
+        "viewport": 360,
+        "scroll": 360,
+        "overflow": []
+      },
+      {
+        "path": "/home",
+        "width": 390,
+        "viewport": 390,
+        "scroll": 390,
+        "overflow": []
+      },
+      {
+        "path": "/home",
+        "width": 768,
+        "viewport": 768,
+        "scroll": 768,
+        "overflow": []
+      },
+      {
+        "path": "/home",
+        "width": 320,
+        "viewport": 320,
+        "scroll": 320,
+        "overflow": []
+      },
+      {
+        "path": "/my",
+        "width": 360,
+        "viewport": 360,
+        "scroll": 360,
+        "overflow": []
+      },
+      {
+        "path": "/my",
+        "width": 390,
+        "viewport": 390,
+        "scroll": 390,
+        "overflow": []
+      },
+      {
+        "path": "/my",
+        "width": 768,
+        "viewport": 768,
+        "scroll": 768,
+        "overflow": []
+      },
+      {
+        "path": "/my",
+        "width": 320,
+        "viewport": 320,
+        "scroll": 320,
+        "overflow": []
+      },
+      {
+        "path": "/wallet",
+        "width": 360,
+        "viewport": 360,
+        "scroll": 360,
+        "overflow": []
+      },
+      {
+        "path": "/wallet",
+        "width": 390,
+        "viewport": 390,
+        "scroll": 390,
+        "overflow": []
+      },
+      {
+        "path": "/wallet",
+        "width": 768,
+        "viewport": 768,
+        "scroll": 768,
+        "overflow": []
+      },
+      {
+        "path": "/wallet",
+        "width": 320,
+        "viewport": 320,
+        "scroll": 320,
+        "overflow": []
+      },
+      {
+        "path": "/redemption/history",
+        "width": 360,
+        "viewport": 360,
+        "scroll": 360,
+        "overflow": []
+      },
+      {
+        "path": "/redemption/history",
+        "width": 390,
+        "viewport": 390,
+        "scroll": 390,
+        "overflow": []
+      },
+      {
+        "path": "/redemption/history",
+        "width": 768,
+        "viewport": 768,
+        "scroll": 768,
+        "overflow": []
+      },
+      {
+        "path": "/redemption/history",
+        "width": 320,
+        "viewport": 320,
+        "scroll": 320,
+        "overflow": []
+      },
+      {
+        "path": "/campaigns",
+        "width": 360,
+        "viewport": 360,
+        "scroll": 360,
+        "overflow": []
+      },
+      {
+        "path": "/campaigns",
+        "width": 390,
+        "viewport": 390,
+        "scroll": 390,
+        "overflow": []
+      },
+      {
+        "path": "/campaigns",
+        "width": 768,
+        "viewport": 768,
+        "scroll": 768,
+        "overflow": []
+      },
+      {
+        "path": "/campaigns",
+        "width": 320,
+        "viewport": 320,
+        "scroll": 320,
+        "overflow": []
+      },
+      {
+        "path": "/guide",
+        "width": 360,
+        "viewport": 360,
+        "scroll": 360,
+        "overflow": []
+      },
+      {
+        "path": "/guide",
+        "width": 390,
+        "viewport": 390,
+        "scroll": 390,
+        "overflow": []
+      },
+      {
+        "path": "/guide",
+        "width": 768,
+        "viewport": 768,
+        "scroll": 768,
+        "overflow": []
+      },
+      {
+        "path": "/guide",
+        "width": 320,
+        "viewport": 320,
+        "scroll": 320,
+        "overflow": []
+      },
+      {
+        "path": "/admin/creators",
+        "width": 360,
+        "viewport": 360,
+        "scroll": 360,
+        "overflow": []
+      },
+      {
+        "path": "/admin/creators",
+        "width": 390,
+        "viewport": 390,
+        "scroll": 390,
+        "overflow": []
+      },
+      {
+        "path": "/admin/creators",
+        "width": 768,
+        "viewport": 768,
+        "scroll": 768,
+        "overflow": []
+      },
+      {
+        "path": "/admin/creators",
+        "width": 320,
+        "viewport": 320,
+        "scroll": 320,
+        "overflow": []
+      },
+      {
+        "path": "/admin/insights",
+        "width": 360,
+        "viewport": 360,
+        "scroll": 360,
+        "overflow": []
+      },
+      {
+        "path": "/admin/insights",
+        "width": 390,
+        "viewport": 390,
+        "scroll": 390,
+        "overflow": []
+      },
+      {
+        "path": "/admin/insights",
+        "width": 768,
+        "viewport": 768,
+        "scroll": 768,
+        "overflow": []
+      },
+      {
+        "path": "/admin/insights",
+        "width": 320,
+        "viewport": 320,
+        "scroll": 320,
+        "overflow": []
+      },
+      {
+        "path": "/admin/applications",
+        "width": 360,
+        "viewport": 360,
+        "scroll": 360,
+        "overflow": []
+      },
+      {
+        "path": "/admin/applications",
+        "width": 390,
+        "viewport": 390,
+        "scroll": 390,
+        "overflow": []
+      },
+      {
+        "path": "/admin/applications",
+        "width": 768,
+        "viewport": 768,
+        "scroll": 768,
+        "overflow": []
+      },
+      {
+        "path": "/admin/applications",
+        "width": 320,
+        "viewport": 320,
+        "scroll": 320,
+        "overflow": []
+      },
+      {
+        "path": "/admin/campaigns",
+        "width": 360,
+        "viewport": 360,
+        "scroll": 360,
+        "overflow": []
+      },
+      {
+        "path": "/admin/campaigns",
+        "width": 390,
+        "viewport": 390,
+        "scroll": 390,
+        "overflow": []
+      },
+      {
+        "path": "/admin/campaigns",
+        "width": 768,
+        "viewport": 768,
+        "scroll": 768,
+        "overflow": []
+      },
+      {
+        "path": "/admin/campaigns",
+        "width": 320,
+        "viewport": 320,
+        "scroll": 320,
+        "overflow": []
+      },
+      {
+        "path": "/admin/content",
+        "width": 360,
+        "viewport": 360,
+        "scroll": 360,
+        "overflow": []
+      },
+      {
+        "path": "/admin/content",
+        "width": 390,
+        "viewport": 390,
+        "scroll": 390,
+        "overflow": []
+      },
+      {
+        "path": "/admin/content",
+        "width": 768,
+        "viewport": 768,
+        "scroll": 768,
+        "overflow": []
+      },
+      {
+        "path": "/admin/content",
+        "width": 320,
+        "viewport": 320,
+        "scroll": 320,
+        "overflow": []
+      },
+      {
+        "path": "/admin/academy/3edb4527-3c0a-4999-a130-1a4f5aeefbf3",
+        "width": 360,
+        "viewport": 360,
+        "scroll": 360,
+        "overflow": []
+      },
+      {
+        "path": "/admin/academy/3edb4527-3c0a-4999-a130-1a4f5aeefbf3",
+        "width": 390,
+        "viewport": 390,
+        "scroll": 390,
+        "overflow": []
+      },
+      {
+        "path": "/admin/academy/3edb4527-3c0a-4999-a130-1a4f5aeefbf3",
+        "width": 768,
+        "viewport": 768,
+        "scroll": 768,
+        "overflow": []
+      },
+      {
+        "path": "/admin/academy/3edb4527-3c0a-4999-a130-1a4f5aeefbf3",
+        "width": 320,
+        "viewport": 320,
+        "scroll": 320,
+        "overflow": []
+      }
+    ],
+    "nativeZoom": false,
+    "physicalDevice": false,
+    "note": "320 CSS px is reflow coverage; no native browser zoom claim."
+  }
+}

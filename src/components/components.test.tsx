@@ -53,10 +53,12 @@ describe("presentational components", () => {
     expect(screen.getByText("87%")).toBeInTheDocument();
     expect(screen.getByText("可參加")).toBeInTheDocument();
   });
-  it("MissionCard omits optional fact labels when their values are absent", () => {
+  it("MissionCard labels missing decision facts as unknown and omits unavailable match rationale", () => {
     render(<MissionCard title="基本任務" points={100} />);
-    expect(screen.queryByText("現金獎勵")).not.toBeInTheDocument();
-    expect(screen.queryByText("平台")).not.toBeInTheDocument();
+    expect(screen.getByText("現金獎勵").parentElement).toHaveTextContent("未提供");
+    expect(screen.getByText("平台").parentElement).toHaveTextContent("未提供");
+    expect(screen.getByText("參加資格資料未齊")).toBeInTheDocument();
+    expect(screen.queryByText("HK$0.00")).not.toBeInTheDocument();
     expect(screen.queryByText("匹配原因")).not.toBeInTheDocument();
   });
   it("RewardCard shows name, cost and a sold-out badge when out of stock", () => {

@@ -1,0 +1,9 @@
+{
+  "kind": "B2_RUNTIME_AUTHORIZATION",
+  "approved": false,
+  "ownerReference": null,
+  "manifestSha256": "6b50350349aec21294f348d9d98ea0da2c396a67b935b94bb6a5974d2e16eac1",
+  "sourceFingerprint": "98d01c1c2c40e900b540f4c474a9725d5b4c8114104ee2524f5afc93be8f06ba",
+  "scope": "Unapproved current-source applications-only continuation on same C1; forward73 only, no forward74/redemption fixture/runtime. Old actual e8 approval remains true; prior f5 unapproved proposal superseded.",
+  "approvalEvidence": null
+}

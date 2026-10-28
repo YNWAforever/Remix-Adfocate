@@ -1,0 +1,32 @@
+{
+  "D02": {
+    "code": "Schema source unchanged; offline bootstrap/diff/scoped-family profile prepared.",
+    "test": "4 profile/3 inventory contracts.",
+    "deployment": "not-deployed",
+    "runtime": "NOT_RUN_B2; no real Docker/SQL/Auth/API/fixture/browser calls in P0"
+  },
+  "D05": {
+    "code": "Existing invalid-evidence guard retained; new exact pre-guard historical fixture adoption and negative API obligation prepared.",
+    "test": "Existing audit/memory contracts pass; target negative case not run.",
+    "deployment": "not-deployed",
+    "runtime": "NOT_RUN_B2; no real Docker/SQL/Auth/API/fixture/browser calls in P0"
+  },
+  "D07": {
+    "code": "Extend existing DraftEditor recovery; reuse workflow/proof/reward/next-action engine.",
+    "test": "2 recovery tests plus existing16 component tests; whole suite green.",
+    "deployment": "not-deployed",
+    "runtime": "NOT_RUN_B2; no real Docker/SQL/Auth/API/fixture/browser calls in P0"
+  },
+  "D18": {
+    "code": "No staff capability or membership guard weakened; extend only exact-owned fixture setup/journals.",
+    "test": "Original16/194 and identity retirement gates retained; real staff cutover blocked.",
+    "deployment": "not-deployed",
+    "runtime": "NOT_RUN_B2; no real Docker/SQL/Auth/API/fixture/browser calls in P0"
+  },
+  "D19": {
+    "code": "B2 target/fixture/E2E context, evidence, journals, scopes and runtime spec prepared in same worktree.",
+    "test": "Full suite/pass counts and commands in D19-B2-P0-gates.json. Runtime unapproved.",
+    "deployment": "not-deployed",
+    "runtime": "NOT_RUN_B2; no real Docker/SQL/Auth/API/fixture/browser calls in P0"
+  }
+}

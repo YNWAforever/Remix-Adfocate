@@ -1,0 +1,23 @@
+{
+  "at": "2026-10-25T18:25:47.650594+00:00",
+  "beforeFingerprint": "e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993",
+  "fingerprint": "ead55a808470f90d72290905db90933cb4a6df48eaba519d4587339a4659b71d",
+  "sourceRecords": 789,
+  "changedExisting": [
+    {
+      "path": "scripts/audit/local-targets.mjs",
+      "beforeSha256": "f1b41b4e419814a8bfa04cba743a0325e17ab17b490d7be24bf996df09b55be8",
+      "afterSha256": "962353d71d395dc0e1f0cb334c356fedd583f6b0eff8b1fef51997e740fef58a"
+    }
+  ],
+  "added": [
+    {
+      "path": "server/test/audit-docker-output-capture.test.ts",
+      "sha256": "eac74d685f04a7cb827e8187b3ca494615b90479fa7b650dc91c00b3bf5c4bee"
+    }
+  ],
+  "otherPriorRecordsUnchanged": 787,
+  "schemaBusinessUiAndAcceptanceSourcesUnchanged": true,
+  "runtimeApproval": "NOT_GRANTED_FOR_CURRENT_SOURCE",
+  "oldC2ApprovalPreserved": true
+}

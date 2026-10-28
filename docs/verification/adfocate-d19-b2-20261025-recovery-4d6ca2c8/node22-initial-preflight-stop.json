@@ -1,0 +1,11 @@
+{
+  "capturedAt": "2026-10-25T09:44:29.693858+00:00",
+  "observationReference": "exec_command chunk a39248; same turn exact failure-time output, before any suite process",
+  "observationTimestamp": "UNKNOWN precise UTC timestamp not emitted by original probe",
+  "physicalFreeGiB": 1.3420791625976562,
+  "commitHeadroomGiB": 3.5873146057128906,
+  "requiredPhysicalAndCommitGiB": 3,
+  "fullSuiteStarted": false,
+  "alsoObserved": "Python/Windows bare node resolution used parent search path despite child env PATH; guard assertion failed before launching any test. Explicit Node22 executable version probe had already passed.",
+  "correction": "Resource gate moved inside helper before heavy process; exact verified executable and task-process PATH used. No retries/restarts/cleanup performed."
+}

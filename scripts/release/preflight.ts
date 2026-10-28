@@ -4,7 +4,7 @@ import { isAbsolute, relative, resolve, sep } from "node:path";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 import type { CapabilityStatus, PreflightReport } from "./contracts";
-import { digestManifest, parseReleaseManifest } from "./manifest";
+import { currentReleaseCapabilities, digestManifest, parseReleaseManifest } from "./manifest";
 import { runCommand, type CommandRunner } from "./process";
 
 type CapabilityValidator = (schema: string) => CapabilityStatus;
@@ -61,8 +61,8 @@ function functionValidator(schemaName: string, name: string): CapabilityValidato
 function grantValidator(role: string, schemaName: string, object: string, privilege: string) {
   const target = qualified(schemaName, object);
   const grantee = identifier(role);
-  if (privilege === "select" || privilege === "all") {
-    const action = privilege === "all" ? "ALL(?: PRIVILEGES)?" : "SELECT";
+  if (["select", "insert", "update", "delete", "truncate", "all"].includes(privilege)) {
+    const action = privilege === "all" ? "ALL(?: PRIVILEGES)?" : `(?:${privilege.toUpperCase()}|ALL(?: PRIVILEGES)?)`;
     return (schema: string) =>
       presentIf(
         statementMatches(
@@ -81,6 +81,10 @@ function grantValidator(role: string, schemaName: string, object: string, privil
       const escapedBaseType = escapeRegExp(baseType);
       const optionalArgumentName =
         '(?:(?:[a-z][a-z0-9_]*|"[a-z][a-z0-9_]*")\\s+)?';
+      if (baseType.includes(".")) {
+        const [typeSchema, typeName] = baseType.split(".");
+        return `${optionalArgumentName}${qualified(typeSchema!, typeName!)}${arraySuffix}`;
+      }
       const qualifiedType = '(?:(?:pg_catalog|"pg_catalog")\\s*\\.\\s*)?';
       if (baseType === "timestamptz") {
         return `${optionalArgumentName}${qualifiedType}(?:timestamptz|"timestamptz"|timestamp\\s+with\\s+time\\s+zone|"timestamp with time zone")${arraySuffix}`;
@@ -98,6 +102,13 @@ function grantValidator(role: string, schemaName: string, object: string, privil
 }
 
 const CAPABILITY_VALIDATOR_REGISTRY: Record<string, CapabilityValidatorFactory> = {
+  "grant-removed": (parts) => {
+    const granted = CAPABILITY_VALIDATOR_REGISTRY.grant?.(parts);
+    if (!granted) return undefined;
+    // A dump cannot prove inherited/default ACL denial. Require catalog evidence;
+    // an explicit stale grant is definitely divergent, never silently treated as safe.
+    return (schema) => granted(schema) === "present" ? "divergent" : "unverifiable";
+  },
   table: ([schemaName, tableName]) => {
     if (!schemaName || !tableName) return undefined;
     const target = qualified(schemaName, tableName);
@@ -143,7 +154,8 @@ const CAPABILITY_VALIDATOR_REGISTRY: Record<string, CapabilityValidatorFactory> 
     if (!schemaName || !functionName) return undefined;
     return functionValidator(schemaName, functionName);
   },
-  grant: ([role, schemaName, objectAndPrivilege]) => {
+  grant: ([role, schemaName, ...objectParts]) => {
+    const objectAndPrivilege = objectParts.join(".");
     const openingParenthesis = objectAndPrivilege?.indexOf("(") ?? -1;
     if (
       !role ||
@@ -158,7 +170,7 @@ const CAPABILITY_VALIDATOR_REGISTRY: Record<string, CapabilityValidatorFactory> 
     if (
       !/^[a-z][a-z0-9_]*$/.test(object) ||
       !privilege ||
-      [...privilege].some((character) => !"abcdefghijklmnopqrstuvwxyz0123456789_,[]".includes(character))
+      !privilege.split(",").every(argument => /^[a-z][a-z0-9_]*(?:\.[a-z][a-z0-9_]*)?(?:\[\])?$/.test(argument))
     ) {
       return undefined;
     }
@@ -367,9 +379,7 @@ export async function runPreflightCli(
       databaseUrl,
       projectRef,
       manifestDigest: digestManifest(manifest),
-      expectedCapabilities: [
-        ...new Set(manifest.migrations.flatMap((migration) => migration.capabilities)),
-      ],
+      expectedCapabilities: currentReleaseCapabilities(manifest),
       now: new Date(),
     },
     deps,

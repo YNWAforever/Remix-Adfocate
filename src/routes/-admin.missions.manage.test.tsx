@@ -70,17 +70,17 @@ describe("MissionEditor active workflow authoring", () => {
       />,
     );
 
-    const workflow = screen.getByLabelText("Creator workflow");
+    const workflow = screen.getByLabelText("交付流程");
     expect(workflow).toHaveValue("legacy");
-    expect(screen.queryByRole("button", { name: "Add deliverable" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "新增交付項目" })).not.toBeInTheDocument();
 
     fireEvent.change(workflow, { target: { value: "active_workspace" } });
 
-    expect(screen.getByRole("button", { name: "Add deliverable" })).toBeEnabled();
-    expect(screen.getByLabelText("Fulfillment required")).toBeInTheDocument();
-    expect(screen.getByLabelText("Revision limit")).toBeInTheDocument();
-    expect(screen.getByLabelText("Review SLA hours")).toBeInTheDocument();
-    expect(screen.getByLabelText("Revision response hours")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "新增交付項目" })).toBeEnabled();
+    expect(screen.getByLabelText("交稿前須確認收貨")).toBeInTheDocument();
+    expect(screen.getByLabelText("修稿次數上限")).toBeInTheDocument();
+    expect(screen.getByLabelText("審稿時限（小時）")).toBeInTheDocument();
+    expect(screen.getByLabelText("修稿回覆時限（小時）")).toBeInTheDocument();
   });
 
   it("adds, edits, and removes deliverables and checklist items in the exact save payload", async () => {
@@ -93,37 +93,37 @@ describe("MissionEditor active workflow authoring", () => {
       />,
     );
 
-    fireEvent.change(screen.getByLabelText("Creator workflow"), { target: { value: "active_workspace" } });
-    fireEvent.click(screen.getByLabelText("Fulfillment required"));
-    fireEvent.change(screen.getByLabelText("Revision limit"), { target: { value: "3" } });
-    fireEvent.change(screen.getByLabelText("Review SLA hours"), { target: { value: "36" } });
-    fireEvent.change(screen.getByLabelText("Revision response hours"), { target: { value: "18" } });
+    fireEvent.change(screen.getByLabelText("交付流程"), { target: { value: "active_workspace" } });
+    fireEvent.click(screen.getByLabelText("交稿前須確認收貨"));
+    fireEvent.change(screen.getByLabelText("修稿次數上限"), { target: { value: "3" } });
+    fireEvent.change(screen.getByLabelText("審稿時限（小時）"), { target: { value: "36" } });
+    fireEvent.change(screen.getByLabelText("修稿回覆時限（小時）"), { target: { value: "18" } });
 
-    fireEvent.click(screen.getByRole("button", { name: "Add deliverable" }));
-    fireEvent.change(screen.getByLabelText("Deliverable title 1"), { target: { value: "Reel" } });
-    fireEvent.change(screen.getByLabelText("Deliverable platform 1"), { target: { value: "instagram" } });
-    fireEvent.click(screen.getByRole("button", { name: "Add checklist item to deliverable 1" }));
-    fireEvent.change(screen.getByLabelText("Checklist text 1 for deliverable 1"), { target: { value: "Use #ad" } });
+    fireEvent.click(screen.getByRole("button", { name: "新增交付項目" }));
+    fireEvent.change(screen.getByLabelText("交付標題 1"), { target: { value: "Reel" } });
+    fireEvent.change(screen.getByLabelText("交付平台 1"), { target: { value: "instagram" } });
+    fireEvent.click(screen.getByRole("button", { name: "新增交付 1 檢查要求" }));
+    fireEvent.change(screen.getByLabelText("交付 1 檢查 1 要求內容"), { target: { value: "Use #ad" } });
 
-    fireEvent.click(screen.getByRole("button", { name: "Add deliverable" }));
-    fireEvent.change(screen.getByLabelText("Deliverable title 2"), { target: { value: "Story" } });
-    fireEvent.click(screen.getByRole("button", { name: "Remove deliverable 1" }));
+    fireEvent.click(screen.getByRole("button", { name: "新增交付項目" }));
+    fireEvent.change(screen.getByLabelText("交付標題 2"), { target: { value: "Story" } });
+    fireEvent.click(screen.getByRole("button", { name: "移除交付項目 1" }));
 
     expect(screen.queryByDisplayValue("Reel")).not.toBeInTheDocument();
-    fireEvent.change(screen.getByLabelText("Deliverable title 1"), { target: { value: "Story post" } });
-    fireEvent.change(screen.getByLabelText("Deliverable platform 1"), { target: { value: "instagram" } });
+    fireEvent.change(screen.getByLabelText("交付標題 1"), { target: { value: "Story post" } });
+    fireEvent.change(screen.getByLabelText("交付平台 1"), { target: { value: "instagram" } });
     fireEvent.change(screen.getByLabelText("發佈指示 1"), { target: { value: "Publish the approved story" } });
     fireEvent.change(screen.getByLabelText("發佈時限小時 1"), { target: { value: "24" } });
     fireEvent.change(screen.getByLabelText("必須披露字句 1"), { target: { value: "#ad" } });
     fireEvent.change(screen.getByLabelText("預期帳戶 1"), { target: { value: "@creator" } });
     fireEvent.change(screen.getByLabelText("發佈證明要求 1"), { target: { value: '{"screenshots":1}' } });
-    fireEvent.click(screen.getByRole("button", { name: "Add checklist item to deliverable 1" }));
-    fireEvent.change(screen.getByLabelText("Checklist text 1 for deliverable 1"), { target: { value: "Use #ad" } });
-    fireEvent.change(screen.getByLabelText("Checklist category 1 for deliverable 1"), { target: { value: "compliance" } });
-    fireEvent.click(screen.getByRole("button", { name: "Add checklist item to deliverable 1" }));
-    fireEvent.change(screen.getByLabelText("Checklist text 2 for deliverable 1"), { target: { value: "Show product" } });
-    fireEvent.change(screen.getByLabelText("Checklist category 2 for deliverable 1"), { target: { value: "quality" } });
-    fireEvent.click(screen.getByRole("button", { name: "Remove checklist item 1 from deliverable 1" }));
+    fireEvent.click(screen.getByRole("button", { name: "新增交付 1 檢查要求" }));
+    fireEvent.change(screen.getByLabelText("交付 1 檢查 1 要求內容"), { target: { value: "Use #ad" } });
+    fireEvent.change(screen.getByLabelText("交付 1 檢查 1 要求類別"), { target: { value: "compliance" } });
+    fireEvent.click(screen.getByRole("button", { name: "新增交付 1 檢查要求" }));
+    fireEvent.change(screen.getByLabelText("交付 1 檢查 2 要求內容"), { target: { value: "Show product" } });
+    fireEvent.change(screen.getByLabelText("交付 1 檢查 2 要求類別"), { target: { value: "quality" } });
+    fireEvent.click(screen.getByRole("button", { name: "移除交付 1 檢查 1" }));
 
     fireEvent.click(screen.getByRole("button", { name: "儲存草稿" }));
 
@@ -201,7 +201,7 @@ describe("MissionEditor active workflow authoring", () => {
       />,
     );
 
-    expect(screen.queryByRole("button", { name: "Add deliverable" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "新增交付項目" })).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "儲存變更" }));
 
     await waitFor(() => expect(onSave).toHaveBeenCalledTimes(1));

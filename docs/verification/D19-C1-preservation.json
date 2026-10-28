@@ -1,0 +1,15 @@
+{
+  "priorEvidenceRecords": 1439,
+  "priorEvidenceByteUnchanged": 1434,
+  "changedPriorPaths": [
+    "docs/verification/adfocate-delivery.json",
+    "docs/verification/adfocate-task-ledger.md",
+    "docs/verification/audit_case_coverage.csv",
+    "docs/verification/code-fingerprint.json",
+    "docs/verification/implementation_backlog.csv"
+  ],
+  "originalApprovedB2AndC1ManifestsUnchanged": true,
+  "originalC1AuthorityAndReceiptUnchanged": true,
+  "originalCasesAndD15RowsPreserved": true,
+  "historicalCheckers": "Do not rerun old candidate-bound checkers as current acceptance; old results retained unchanged."
+}

@@ -1,0 +1,29 @@
+{
+  "sourceFingerprint": "4f2c3faa22bf835911a55dc7bb099910e4308fc1b7a5570d58f32386708934b9",
+  "originalCases": 107,
+  "originalFieldsPreserved": true,
+  "cases": [
+    {
+      "id": "UC-C29",
+      "newResult": "PARTIAL_OFFLINE_BOUNDARY11_PASS",
+      "wholeCurrentCaseVerified": false,
+      "evidence": {
+        "path": "docs/verification/D19-asset-offline-20261026/readback-summary.json",
+        "sha256": "2c402146d1ead77234f9e3e366d74dee9c3d7e1fbe85d39221a3be209ab023e9"
+      }
+    },
+    {
+      "id": "UC-A14",
+      "newAcceptanceCredit": false,
+      "remaining": "Current-attempt review and foreign private bytes not tested"
+    },
+    {
+      "id": "UC-S01",
+      "newAcceptanceCredit": false,
+      "remaining": "Owner argument forwarding is covered with a scripted owner predicate; actual repository/DB/read-write/proof isolation is not"
+    }
+  ],
+  "retainedNativeFullNotRerun": 2155,
+  "standaloneNotAddedToFull": 11,
+  "wholeR1Verified": false
+}

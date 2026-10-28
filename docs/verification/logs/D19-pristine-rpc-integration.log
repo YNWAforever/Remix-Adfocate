@@ -1,0 +1,13 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ✓ server/test/campaigns-s2.test.ts (5 tests | 3 skipped) 5026ms
+   ✓ close_due_campaigns > closes past-deadline active only, idempotent 3401ms
+   ✓ snapshot_campaign_leaderboards > captures active-campaign ranks 1624ms
+JSON report written to C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/.codex-tmp/D19-pristine-rpc-integration.private.json
+
+ Test Files  1 passed (1)
+      Tests  2 passed | 3 skipped (5)
+   Start at  17:28:53
+   Duration  7.43s (transform 117ms, setup 205ms, collect 273ms, tests 5.03s, environment 788ms, prepare 145ms)
+

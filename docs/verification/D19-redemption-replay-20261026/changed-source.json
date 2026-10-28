@@ -1,0 +1,35 @@
+{
+  "sourceFingerprint": "4f2c3faa22bf835911a55dc7bb099910e4308fc1b7a5570d58f32386708934b9",
+  "files": [
+    "scripts/release/contracts.ts",
+    "scripts/release/manifest.test.ts",
+    "scripts/release/manifest.ts",
+    "scripts/release/preflight.test.ts",
+    "server/routes/redemption.ts",
+    "src/components/RedeemGiftCard.tsx",
+    "src/lib/i18n.dict.ts",
+    "src/lib/queries/kocmax.ts",
+    "supabase/release-manifest.json",
+    "server/test/redemption-intent-memory.test.ts",
+    "src/components/RedeemGiftCard.intent.test.tsx",
+    "src/lib/redemptionIntent.ts",
+    "supabase/migrations/20261025194402_redemption_intents.sql"
+  ],
+  "baseline": "ead55a808470f90d72290905db90933cb4a6df48eaba519d4587339a4659b71d",
+  "beforeSources": {
+    "server/routes/redemption.ts": "docs/verification/D19-redemption-replay-20261026/before-source/server/routes/redemption.ts",
+    "src/lib/queries/kocmax.ts": "docs/verification/D19-redemption-replay-20261026/before-source/src/lib/queries/kocmax.ts",
+    "src/components/RedeemGiftCard.tsx": "docs/verification/D19-redemption-replay-20261026/before-source/src/components/RedeemGiftCard.tsx",
+    "src/lib/i18n.dict.ts": "docs/verification/D19-redemption-replay-20261026/before-source/src/lib/i18n.dict.ts",
+    "scripts/release/contracts.ts": "docs/verification/D19-redemption-replay-20261026/source-revisions/151b0b14fdb30e4b695b4e398dcc145e19a9cb345c469d72183840cd702b5d06/scripts/release/contracts.ts.txt",
+    "scripts/release/manifest.ts": "docs/verification/D19-redemption-replay-20261026/source-revisions/151b0b14fdb30e4b695b4e398dcc145e19a9cb345c469d72183840cd702b5d06/scripts/release/manifest.ts.txt",
+    "scripts/release/manifest.test.ts": "docs/verification/D19-redemption-replay-20261026/source-revisions/151b0b14fdb30e4b695b4e398dcc145e19a9cb345c469d72183840cd702b5d06/scripts/release/manifest.test.ts.txt",
+    "supabase/release-manifest.json": "docs/verification/D19-redemption-replay-20261026/source-revisions/151b0b14fdb30e4b695b4e398dcc145e19a9cb345c469d72183840cd702b5d06/supabase/release-manifest.json.txt",
+    "scripts/release/preflight.test.ts": "docs/verification/D19-redemption-replay-20261026/source-revisions/98d01c1c2c40e900b540f4c474a9725d5b4c8114104ee2524f5afc93be8f06ba/scripts/release/preflight.test.ts.txt"
+  },
+  "patch": {
+    "path": "docs/verification/D19-redemption-replay-20261026/changes.patch",
+    "sha256": "fa391470bd016e8e7b0404296ac410044552154dd8034c209e2dca681889f43c"
+  },
+  "commit": null
+}

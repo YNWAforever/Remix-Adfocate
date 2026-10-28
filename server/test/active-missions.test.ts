@@ -1,3 +1,5 @@
+import { FIXTURE_WORKSPACE_SLUG } from "./helpers";
+import { fixtureName } from "./helpers";
 import { randomUUID } from "node:crypto";
 import { readFileSync, readdirSync } from "node:fs";
 import { resolve } from "node:path";
@@ -56,7 +58,7 @@ const finalReviewMigration = () => readdirSync(resolve("supabase/migrations"))
   .sort()
   .at(-1);
 const mission = {
-  id: "mission-1", slug: "test-active-api", title: "Creator mission", mission_type: "ugc",
+  id: "mission-1", slug: fixtureName("test-active-api"), title: "Creator mission", mission_type: "ugc",
   description: "Make a short video", deliverables: ["One video"], requirements: ["Show product"],
   platforms: ["instagram"], effort: "medium", target_audience: "HK creators", dos: ["Be specific"],
   donts: ["No unsupported claims"], key_messages: ["Fast setup"], reference_links: ["https://example.com"],
@@ -1400,7 +1402,7 @@ const integrationSuite = skipReason === null ? describe : describe.skip;
 const { app } = createApp();
 function request(path: string, jwt: string, init: RequestInit = {}) {
   return app.request("/api" + path, { ...init, headers: {
-    Authorization: "Bearer " + jwt, "X-Workspace-Slug": "demo", "Content-Type": "application/json",
+    Authorization: "Bearer " + jwt, "X-Workspace-Slug": FIXTURE_WORKSPACE_SLUG, "Content-Type": "application/json",
     ...(init.headers ?? {}),
   } });
 }
@@ -1495,7 +1497,7 @@ integrationSuite("active mission API live integration", () => {
 
   it("supports owned workspace read and revision-safe autosave", async () => {
     const active = await seedActiveMission({
-      email: "active-api-" + randomUUID() + "@test.local", slug: "test-active-api-" + randomUUID(),
+      email: "active-api-" + randomUUID() + "@test.local", slug: fixtureName("test-active-api-") + randomUUID(),
       deliverables: [{ title: "Reel", platform: "instagram" }],
     });
     const other = await makeCreator("active-other-" + randomUUID() + "@test.local");
@@ -1705,7 +1707,7 @@ integrationSuite("active mission API live integration", () => {
 
   it("receives shipped fulfilment atomically without rewards or legacy status changes", async () => {
     const active = await seedActiveMission({
-      email: "active-receipt-" + randomUUID() + "@test.local", slug: "test-active-receipt-" + randomUUID(),
+      email: "active-receipt-" + randomUUID() + "@test.local", slug: fixtureName("test-active-receipt-") + randomUUID(),
       fulfillmentRequired: true, deliverables: [{ title: "Unboxing", platform: "instagram" }],
     });
     const created = await userForJwt(active.creator.jwt).rpc("create_mission_workflow", {
@@ -1733,7 +1735,7 @@ integrationSuite("active mission API live integration", () => {
   it("migrates only a pristine joined submission and records the explicit rollout event", async () => {
     const active = await seedActiveMission({
       email: "active-rollout-" + randomUUID() + "@test.local",
-      slug: "test-active-rollout-" + randomUUID(),
+      slug: fixtureName("test-active-rollout-") + randomUUID(),
       deliverables: [{ title: "Rollout reel", platform: "instagram" }],
     });
     const before = await creatorRewardSnapshot(active.creator.id);

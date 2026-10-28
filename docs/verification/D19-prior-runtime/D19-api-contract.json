@@ -1,0 +1,564 @@
+{
+  "runId": "282a722d-7fce-4d15-a5ac-e6ce12bde8f0",
+  "target": {
+    "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+    "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+    "disposable": true,
+    "projectId": "adfocate-r1-empty-20261023",
+    "proxy": "none",
+    "apiPort": 56421,
+    "apiContainerId": "1b9c41318298d79308db7782f51474541ad5abf0120fa93b96a2a9ea59d043ee",
+    "databaseContainerId": "e7c8efa295cd5544a8b2a100a73b6953cd6ddd486aaf394f231482067523e12d",
+    "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+    "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+    "networkId": "9e5d3069e8255d70b8eef56020c8ea2618fdb2626d92d9a04e51ea2de41a98e0"
+  },
+  "results": [
+    {
+      "path": "/admin/access",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/admin/creators/review",
+      "method": "GET",
+      "status": 403
+    },
+    {
+      "path": "/admin/creators/review",
+      "method": "GET",
+      "status": 403
+    },
+    {
+      "path": "/admin/reward-handoffs",
+      "method": "GET",
+      "status": 403
+    },
+    {
+      "path": "/admin/reward-handoffs",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/admin/reward-handoffs/settings",
+      "method": "PUT",
+      "status": 403
+    },
+    {
+      "path": "/admin/reward-handoffs/settings",
+      "method": "PUT",
+      "status": 403
+    },
+    {
+      "path": "/admin/reward-handoffs/settings",
+      "method": "PUT",
+      "status": 403
+    },
+    {
+      "path": "/admin/reward-handoffs/settings",
+      "method": "PUT",
+      "status": 200
+    },
+    {
+      "path": "/admin/creators/:id/notes",
+      "method": "POST",
+      "status": 403
+    },
+    {
+      "path": "/admin/creators/:id/notes",
+      "method": "POST",
+      "status": 403
+    },
+    {
+      "path": "/admin/active-missions/queue",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/admin/missions",
+      "method": "POST",
+      "status": 403
+    },
+    {
+      "path": "/admin/missions",
+      "method": "POST",
+      "status": 403
+    },
+    {
+      "path": "/admin/missions",
+      "method": "POST",
+      "status": 403
+    },
+    {
+      "path": "/admin/creators/:id/review",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "path": "/admin/staff-access",
+      "method": "GET",
+      "status": 403
+    },
+    {
+      "path": "/admin/staff-access/:id",
+      "method": "PUT",
+      "status": 403
+    },
+    {
+      "path": "/admin/staff-access/:id",
+      "method": "PUT",
+      "status": 403
+    },
+    {
+      "path": "/admin/staff-access/:id",
+      "method": "PUT",
+      "status": 403
+    },
+    {
+      "path": "/admin/staff-access/:id",
+      "method": "PUT",
+      "status": 200
+    },
+    {
+      "path": "/admin/staff-access/:id",
+      "method": "PUT",
+      "status": 200
+    },
+    {
+      "path": "/admin/staff-access/:id",
+      "method": "PUT",
+      "status": 200
+    },
+    {
+      "path": "/admin/staff-access/:id",
+      "method": "PUT",
+      "status": 409
+    },
+    {
+      "path": "/admin/staff-access/:id",
+      "method": "PUT",
+      "status": 409
+    },
+    {
+      "path": "/admin/staff-access/:id",
+      "method": "PUT",
+      "status": 403
+    },
+    {
+      "path": "/admin/staff-access/:id",
+      "method": "PUT",
+      "status": 404
+    },
+    {
+      "path": "/admin/staff-access",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/admin/creators/review",
+      "method": "GET",
+      "status": 403
+    },
+    {
+      "path": "/admin/creators/review",
+      "method": "GET",
+      "status": 403
+    },
+    {
+      "path": "/admin/staff-access/:id",
+      "method": "PUT",
+      "status": 200
+    },
+    {
+      "path": "/admin/creators/review",
+      "method": "GET",
+      "status": 403
+    },
+    {
+      "path": "/admin/staff-access/:id",
+      "method": "PUT",
+      "status": 200
+    },
+    {
+      "path": "/admin/creators/review",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/admin/academy",
+      "method": "POST",
+      "status": 201
+    },
+    {
+      "path": "/admin/academy/:id",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/admin/academy/:id",
+      "method": "GET",
+      "status": 403
+    },
+    {
+      "path": "/admin/content",
+      "method": "GET",
+      "status": 403
+    },
+    {
+      "path": "/admin/access",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/my-missions/:id/workspace",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/admin/active-missions/:id/fulfillment/shipped",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "path": "/my-missions/:id/fulfillment/received",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "path": "/my-missions/:id/workspace",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/my-missions/:id/work-items/:id/draft",
+      "method": "PATCH",
+      "status": 200
+    },
+    {
+      "path": "/my-missions/:id/workspace",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/my-missions/:id/work-items/:id/draft",
+      "method": "PATCH",
+      "status": 409
+    },
+    {
+      "path": "/my-missions/:id/work-items/:id/submit",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "path": "/my-missions/:id/work-items/:id/submit",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "path": "/my-missions/:id/workspace",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/admin/active-missions/:id/work-items/:id/start-review",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "path": "/admin/active-missions/:id/work-items/:id/request-revision",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "path": "/my-missions/:id/workspace",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/my-missions/:id/work-items/:id/draft",
+      "method": "PATCH",
+      "status": 200
+    },
+    {
+      "path": "/my-missions/:id/workspace",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/my-missions/:id/work-items/:id/submit",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "path": "/my-missions/:id/workspace",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/admin/active-missions/:id/work-items/:id/start-review",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "path": "/admin/active-missions/:id/work-items/:id/approve-to-publish",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "path": "/my-missions/:id/publication/:id",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/my-missions/:id/publication/:id/proofs",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "path": "/my-missions/:id/publication/:id",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/admin/active-missions/:id/work-items/:id/proof-review/start",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "path": "/my-missions/:id/publication/:id",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/admin/active-missions/:id/work-items/:id/proof-review/corrections",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "path": "/my-missions/:id/publication/:id",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/my-missions/:id/publication/:id/proofs",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "path": "/my-missions/:id/publication/:id",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/admin/active-missions/:id/work-items/:id/proof-review/start",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "path": "/my-missions/:id/publication/:id",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/admin/active-missions/:id/work-items/:id/proof-review/verify",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "path": "/my-missions/:id/workspace",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/admin/active-missions/:id/completion",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/admin/active-missions/:id/completion",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "path": "/admin/active-missions/:id/completion",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "path": "/my-missions/:id/workspace",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/admin/active-missions/:id/completion",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/admin/reward-handoffs",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/admin/active-missions/:id/reward-handoff/cancel",
+      "method": "POST",
+      "status": 403
+    }
+  ],
+  "roles": {
+    "admin": {
+      "id": "abd1f369-7f8a-46b1-9d53-33d93334e298"
+    },
+    "operator": {
+      "id": "b47fcb25-66f9-4651-9a59-9ae1a596cee1"
+    },
+    "reviewer": {
+      "id": "f25696d9-c77b-4cb9-814c-e9c32ca59875"
+    },
+    "finance_viewer": {
+      "id": "68456396-2482-410f-9dd4-91808ce95ed4"
+    },
+    "content_editor": {
+      "id": "86c33f8b-f604-4887-9698-447f4a411d3a"
+    },
+    "revocable": {
+      "id": "d0b5cfa1-b728-45ea-b11e-3bf94cf7d097"
+    },
+    "noRole": {
+      "id": "7731dc8f-e9a6-4be0-bc75-f55a76197a7c"
+    },
+    "foreign": {
+      "id": "b69534fb-bd27-48eb-8bdd-38fbf1cf09c5"
+    }
+  },
+  "neutrality": {
+    "initialBefore": [
+      {
+        "xp": 0,
+        "points": 50,
+        "withdrawable": 0,
+        "budget": null,
+        "pointLedger": 0,
+        "cashLedger": 0,
+        "redemptions": 0,
+        "budgetLedger": 0,
+        "rewardInventory": []
+      },
+      {
+        "xp": 0,
+        "points": 50,
+        "withdrawable": 0,
+        "budget": null,
+        "pointLedger": 0,
+        "cashLedger": 0,
+        "redemptions": 0,
+        "budgetLedger": 0,
+        "rewardInventory": []
+      }
+    ],
+    "joinBaseline": {
+      "before": [
+        {
+          "xp": 0,
+          "points": 50,
+          "withdrawable": 0,
+          "budget": null,
+          "pointLedger": 0,
+          "cashLedger": 0,
+          "redemptions": 0,
+          "budgetLedger": 0,
+          "rewardInventory": []
+        },
+        {
+          "xp": 0,
+          "points": 50,
+          "withdrawable": 0,
+          "budget": null,
+          "pointLedger": 0,
+          "cashLedger": 0,
+          "redemptions": 0,
+          "budgetLedger": 0,
+          "rewardInventory": []
+        }
+      ],
+      "after": [
+        {
+          "xp": 10,
+          "points": 50,
+          "withdrawable": 0,
+          "budget": null,
+          "pointLedger": 0,
+          "cashLedger": 0,
+          "redemptions": 0,
+          "budgetLedger": 0,
+          "rewardInventory": []
+        },
+        {
+          "xp": 0,
+          "points": 50,
+          "withdrawable": 0,
+          "budget": null,
+          "pointLedger": 0,
+          "cashLedger": 0,
+          "redemptions": 0,
+          "budgetLedger": 0,
+          "rewardInventory": []
+        }
+      ],
+      "creatorId": "55e86a14-5860-42ac-a87b-1a6f951e04e9",
+      "existingJoinXpDelta": 10,
+      "contract": "D18-existing-join-contract.json"
+    },
+    "before": [
+      {
+        "xp": 10,
+        "points": 50,
+        "withdrawable": 0,
+        "budget": null,
+        "pointLedger": 0,
+        "cashLedger": 0,
+        "redemptions": 0,
+        "budgetLedger": 0,
+        "rewardInventory": []
+      },
+      {
+        "xp": 0,
+        "points": 50,
+        "withdrawable": 0,
+        "budget": null,
+        "pointLedger": 0,
+        "cashLedger": 0,
+        "redemptions": 0,
+        "budgetLedger": 0,
+        "rewardInventory": []
+      }
+    ],
+    "after": [
+      {
+        "xp": 10,
+        "points": 50,
+        "withdrawable": 0,
+        "budget": null,
+        "pointLedger": 0,
+        "cashLedger": 0,
+        "redemptions": 0,
+        "budgetLedger": 0,
+        "rewardInventory": []
+      },
+      {
+        "xp": 0,
+        "points": 50,
+        "withdrawable": 0,
+        "budget": null,
+        "pointLedger": 0,
+        "cashLedger": 0,
+        "redemptions": 0,
+        "budgetLedger": 0,
+        "rewardInventory": []
+      }
+    ],
+    "allEqual": true
+  },
+  "provider": "proof metadata mocked unavailable; no real messages/payments/paid AI",
+  "scope": "Only new exact-owned fixture staff/memberships/roles changed; no production data or automatic migration grants"
+}

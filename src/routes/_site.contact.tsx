@@ -4,16 +4,12 @@ import { toast } from "sonner";
 import {
   Sparkles,
   Send,
-  CheckCircle2,
   Building2,
   User,
   Wallet,
   Store,
   Users,
-  Mail,
-  ArrowUpRight,
 } from "lucide-react";
-import { legacyContact } from "@/data/legacyAdfocateContent";
 import { useI18n } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
@@ -92,24 +88,20 @@ const incomeStreams = [
   "Other",
 ];
 
-const submitToastMessage = `Thanks! This preview form has recorded your interest locally. For live enquiries, email ${legacyContact.email}.`;
 
 function ContactPage() {
   const { lang } = useI18n();
   const tx = (en: string, zh: string) => (lang === "en" ? en : zh);
 
   const [activeTab, setActiveTab] = useState<TabId>("brand");
-  const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
-    toast.success(submitToastMessage);
+    toast.info(tx("Preview only. Nothing was sent or saved.", "僅供預覽，沒有發送或儲存任何資料。"));
   };
 
   const switchTab = (tab: TabId) => {
     setActiveTab(tab);
-    setSubmitted(false);
   };
 
   return (
@@ -118,9 +110,7 @@ function ContactPage() {
         tx={tx}
         activeTab={activeTab}
         switchTab={switchTab}
-        submitted={submitted}
         handleSubmit={handleSubmit}
-        setSubmitted={setSubmitted}
       />
     </div>
   );
@@ -130,16 +120,12 @@ function ContactLayout({
   tx,
   activeTab,
   switchTab,
-  submitted,
   handleSubmit,
-  setSubmitted,
 }: {
   tx: (en: string, zh: string) => string;
   activeTab: TabId;
   switchTab: (tab: TabId) => void;
-  submitted: boolean;
   handleSubmit: (e: React.FormEvent) => void;
-  setSubmitted: (v: boolean) => void;
 }) {
   const isCreatorPath = creatorTabs.includes(activeTab);
 
@@ -175,24 +161,12 @@ function ContactLayout({
             </h1>
             <p className="font-body text-[var(--color-soft-ink)] text-base sm:text-lg max-w-xl leading-relaxed">
               {tx(
-                "Brands, creators, partners — pick a path below and we'll route you to the right team. Hong Kong-based, fast to reply.",
-                "品牌、創作者、合作夥伴 —— 揀返條啱嘅路，我哋會幫你搵啱負責嘅團隊。香港團隊，回覆快。",
+                "Preview the enquiry fields below. This form does not send or save information; a receiving destination has not been enabled.",
+                "以下查詢欄位僅供預覽，不會發送或儲存資料；收件渠道尚未啟用。",
               )}
             </p>
 
-            <a
-              href={`mailto:${legacyContact.email}`}
-              className="group inline-flex items-center gap-2 mt-6 font-mono text-xs uppercase tracking-[0.18em] text-[var(--color-ink)] font-bold"
-            >
-              <Mail className="h-4 w-4 text-[var(--color-magenta)]" aria-hidden="true" />
-              <span className="border-b-2 border-[var(--color-ink)] pb-0.5">
-                {legacyContact.email}
-              </span>
-              <ArrowUpRight
-                className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-                aria-hidden="true"
-              />
-            </a>
+
           </div>
 
           {/* artifact: a small "routing card" mock built from primitives */}
@@ -233,28 +207,24 @@ function ContactLayout({
           <p className="mt-3 font-body text-sm text-[var(--color-soft-ink)] max-w-xl">
             {isCreatorPath
               ? tx(
-                  "Creator path — goes to the Creator Success team for onboarding and earnings.",
-                  "創作者路線 —— 交由創作者成長團隊跟進報名同收入安排。",
+                  "Creator enquiry preview — no message is sent.",
+                  "創作者查詢預覽 —— 不會發送訊息。",
                 )
               : tx(
-                  "Brand & partner path — goes to the Campaigns team for planning and scoping.",
-                  "品牌及合作路線 —— 交由活動策劃團隊跟進方案同報價。",
+                  "Brand and partner enquiry preview — no message is sent.",
+                  "品牌及合作查詢預覽 —— 不會發送訊息。",
                 )}
           </p>
         </div>
 
         {/* ── Form / Success card ── */}
-        {submitted ? (
-          <SuccessState tx={tx} setSubmitted={setSubmitted} />
-        ) : (
-          <div className="pastel-card p-6 sm:p-8 lg:p-10 bg-[var(--color-card)]">
-            {activeTab === "brand" && <BrandForm tx={tx} onSubmit={handleSubmit} />}
-            {activeTab === "creator" && <CreatorForm tx={tx} onSubmit={handleSubmit} />}
-            {activeTab === "adfoplace" && <AdfoplaceForm tx={tx} onSubmit={handleSubmit} />}
-            {activeTab === "capital" && <CapitalForm tx={tx} onSubmit={handleSubmit} />}
-            {activeTab === "partner" && <PartnerForm tx={tx} onSubmit={handleSubmit} />}
-          </div>
-        )}
+        <div className="pastel-card p-6 sm:p-8 lg:p-10 bg-[var(--color-card)]">
+          <div hidden={activeTab !== "brand"}><BrandForm tx={tx} onSubmit={handleSubmit} /></div>
+          <div hidden={activeTab !== "creator"}><CreatorForm tx={tx} onSubmit={handleSubmit} /></div>
+          <div hidden={activeTab !== "adfoplace"}><AdfoplaceForm tx={tx} onSubmit={handleSubmit} /></div>
+          <div hidden={activeTab !== "capital"}><CapitalForm tx={tx} onSubmit={handleSubmit} /></div>
+          <div hidden={activeTab !== "partner"}><PartnerForm tx={tx} onSubmit={handleSubmit} /></div>
+        </div>
       </div>
     </section>
   );
@@ -273,7 +243,7 @@ function RoutingArtifact({
       <div className="flex items-center justify-between mb-4">
         <span className="tag-mono">{tx("Routing", "分流")}</span>
         <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--color-soft-ink)]">
-          HK · 24h
+          {tx("Preview only", "僅供預覽")}
         </span>
       </div>
 
@@ -301,52 +271,13 @@ function RoutingArtifact({
           <Sparkles className="h-4 w-4 text-[var(--color-ink)]" aria-hidden="true" />
         </div>
         <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--color-ink)] font-bold leading-tight">
-          {tx("Real humans, fast", "真人回覆，夠快")}
+          {tx("No message is routed", "不會轉交訊息")}
         </p>
       </div>
     </div>
   );
 }
 
-/* ── Success state: centered confirmation (second-read = oversized stroked check echo) ── */
-function SuccessState({
-  tx,
-  setSubmitted,
-}: {
-  tx: (en: string, zh: string) => string;
-  setSubmitted: (v: boolean) => void;
-}) {
-  return (
-    <div className="pastel-card bg-[var(--color-ink)] p-10 sm:p-14 text-center relative overflow-hidden">
-      <span
-        aria-hidden="true"
-        className="pointer-events-none select-none absolute -right-6 -bottom-10 font-display text-[12rem] leading-none text-outline-yellow opacity-30"
-      >
-        ✓
-      </span>
-      <div className="relative">
-        <div className="mx-auto mb-5 grid h-16 w-16 place-items-center rounded-full bg-[var(--color-acid)] border-2 border-[var(--color-acid)]">
-          <CheckCircle2 className="h-9 w-9 text-[var(--color-ink)]" aria-hidden="true" />
-        </div>
-        <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[var(--color-acid)] font-bold mb-3">
-          {tx("Received", "已收到")}
-        </p>
-        <h2 className="font-display text-3xl sm:text-4xl text-[var(--color-paper)] mb-3">
-          {tx("Thanks — we got it.", "多謝你！收到喇。")}
-        </h2>
-        <p className="font-body text-sm text-[var(--color-paper)]/75 max-w-md mx-auto leading-relaxed mb-7">
-          {tx(
-            `This preview form recorded your interest locally. Live submissions connect in the next phase. For live enquiries, email ${legacyContact.email}.`,
-            `呢個預覽表格已經喺本機記低你嘅查詢。正式提交功能會喺下一階段接通。如要即時查詢，可電郵 ${legacyContact.email}。`,
-          )}
-        </p>
-        <button type="button" onClick={() => setSubmitted(false)} className="btn-primary">
-          {tx("Send another enquiry", "再發一個查詢")}
-        </button>
-      </div>
-    </div>
-  );
-}
 
 function FormHeader({
   icon: Icon,
@@ -479,7 +410,7 @@ function BrandForm({
         />
       </Field>
 
-      <SubmitButton icon={Send} label={tx("Send Brand Enquiry", "提交品牌查詢")} />
+      <SubmitButton icon={Send} label={tx("Preview form", "預覽表格")} />
       <PreviewNote tx={tx} />
     </form>
   );
@@ -606,7 +537,7 @@ function CreatorForm({
         </div>
       </Field>
 
-      <SubmitButton icon={Sparkles} label={tx("Join as Creator", "成為創作者")} />
+      <SubmitButton icon={Sparkles} label={tx("Preview form", "預覽表格")} />
       <PreviewNote tx={tx} />
     </form>
   );
@@ -696,7 +627,7 @@ function AdfoplaceForm({
         />
       </Field>
 
-      <SubmitButton icon={Store} label={tx("Submit Offer Request", "提交優惠申請")} />
+      <SubmitButton icon={Store} label={tx("Preview form", "預覽表格")} />
       <PreviewNote tx={tx} />
     </form>
   );
@@ -809,7 +740,7 @@ function CapitalForm({
         </span>
       </label>
 
-      <SubmitButton icon={Wallet} label={tx("Join Capital Waitlist", "加入資金候補")} />
+      <SubmitButton icon={Wallet} label={tx("Preview form", "預覽表格")} />
       <PreviewNote tx={tx} />
     </form>
   );
@@ -891,7 +822,7 @@ function PartnerForm({
         />
       </Field>
 
-      <SubmitButton icon={Send} label={tx("Send Partner Enquiry", "提交合作查詢")} />
+      <SubmitButton icon={Send} label={tx("Preview form", "預覽表格")} />
       <PreviewNote tx={tx} />
     </form>
   );
@@ -909,8 +840,8 @@ function PreviewNote({ tx }: { tx: (en: string, zh: string) => string }) {
   return (
     <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--color-soft-ink)]/70 text-center">
       {tx(
-        `Preview form — for live enquiries, email ${legacyContact.email}.`,
-        `預覽表格 —— 如要即時查詢，請電郵 ${legacyContact.email}。`,
+        "Preview only. Nothing is sent or saved. Avoid entering sensitive information.",
+        "僅供預覽，不會發送或儲存資料，請勿輸入敏感資料。",
       )}
     </p>
   );

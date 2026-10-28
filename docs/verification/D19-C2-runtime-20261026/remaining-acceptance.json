@@ -1,0 +1,266 @@
+{
+  "at": "2026-10-25T18:35:34.623493+00:00",
+  "sourceFingerprint": "ead55a808470f90d72290905db90933cb4a6df48eaba519d4587339a4659b71d",
+  "wholeR1Verified": false,
+  "releaseHold": true,
+  "nextTask": "Review the final transport-continuation manifest/source. If explicitly approved, archive only the three exact unconsumed local receipt/result files, reverify all five service identities and full readonly provenance, then execute the unchanged C2 scope once. Independently retain original R1 gaps and R2/external blockers; no696e/pristine rerun or automatic waiver.",
+  "runtimeRequirements": {
+    "path": "docs/verification/D19-application-decisions-20261025/runtime-requirements.json",
+    "sha256": "b15c9e798ee98c814ca331fde4df04d9c6f360e776f09df13e7d4ddf2d7ba3ef"
+  },
+  "remainingCaseGroups": [
+    {
+      "id": "CURRENT-BROWSER-HANDOFF",
+      "cases": [
+        "UC-A13",
+        "UC-A16",
+        "UC-A43",
+        "UC-C24",
+        "UC-C28",
+        "UC-C30",
+        "UC-C31",
+        "UC-C32",
+        "UC-S02"
+      ],
+      "kind": "required current-candidate pilot journey",
+      "knownEvidence": "Approved696e composite five browser cases and two recovery obligations pass; origin cold steps retained; exact pending/history and complete neutrality read back.",
+      "missing": "No missing facet within the approved composite scope. This is not a new cold journey or full107-case browser acceptance.",
+      "pendingManifestCovers": "Approved scope executed; actual evidence is linked below. No pending approval for696e.",
+      "next": "Completed approved scope; retain original and current receipts. Do not repeat logins/browser/legacy issuance under this completed continuation.",
+      "status": "RESOLVED_APPROVED_COMPOSITE_SCOPE",
+      "evidence": {
+        "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/68d510a8-82a8-42bd-b3e8-4561580a7a19/browser/browser-summary.json",
+        "sha256": "029bb8f8255a09ed276807216183b15c8b5a792e6cfe758fc3caa2c41cf065b3"
+      },
+      "neutrality": {
+        "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/68d510a8-82a8-42bd-b3e8-4561580a7a19/final-readback-after-collection.json",
+        "sha256": "d8293fc21dfad2bfaa7356a7922b0e6b4dfc3e3f9a9df16d495ad4946469e87d"
+      },
+      "historicalBefore696e": {
+        "knownEvidence": "Origin role8/core9 pass, browser2pass/1fail/2notrun; current local editor six cases pass.",
+        "missing": "Current real browser network retry/409/submit/revision/proof/completion/finance reload/history and complete pending-only financial window.",
+        "pendingManifestCovers": "Yes, composite original cold evidence plus exact existing draft continuation and four role UI cases; no fresh cold journey.",
+        "next": "Await the already-pending696e manifest decision; identity/provenance checks before any Auth/client or write."
+      }
+    },
+    {
+      "id": "POST-JOIN-COLLECTION",
+      "cases": [
+        "UC-C03",
+        "UC-C09"
+      ],
+      "kind": "specific uncovered readback facet",
+      "knownEvidence": "Authenticated existing Creator session returned the exact saved submission, selected mission slug and active_workflow_id after handoff; final readback remained neutral.",
+      "missing": "Authenticated API readback facet is resolved; collection keyboard/list-navigation browser behavior was not newly tested.",
+      "pendingManifestCovers": "Approved scope executed; actual evidence is linked below. No pending approval for696e.",
+      "next": "Retain the exact-ID API witness. Review any remaining list-navigation applicability separately without treating this GET as UI coverage.",
+      "status": "RESOLVED_AUTHENTICATED_API_READBACK_FACET",
+      "evidence": {
+        "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/68d510a8-82a8-42bd-b3e8-4561580a7a19/browser/creator-collection-after-handoff.json",
+        "sha256": "ce4882ba8d1191bd9c7a9aafa56ef3289bc8e557c551186b6e8f1fba70ae4c69"
+      },
+      "remainingLimit": "Collection keyboard/list-navigation behavior not newly browser-tested by this supplement.",
+      "historicalBefore696e": {
+        "knownEvidence": "CORE1 only asserts pre-join empty collection; active join/workspace results exist separately.",
+        "missing": "Authenticated Creator mission collection after joining contains the exact saved submission and continuation path/status.",
+        "pendingManifestCovers": "Not an explicit assertion in original five cases. It may be addressed as an exact-ID read-only supplemental readback after an authorized identity/client gate; no blind fresh setup.",
+        "next": "Preserve this gap explicitly. Do not treat the CORE1 title as proof. Do not call current target from this offline review."
+      }
+    },
+    {
+      "id": "APPLICATION-DECISIONS",
+      "cases": [
+        "UC-C25",
+        "UC-A10",
+        "UC-A06"
+      ],
+      "kind": "R1 behavior beyond public join",
+      "knownEvidence": "Original C2 was explicitly approved and attempted twice: default pipe identity denial, then complete identity pass and ENOBUFS at first provenance catalog SELECT. Subsequent identity-gated readonly checks prove72 migrations,84 Auth subjects,6 workspaces,6 missions,original70 family hashes and no new claim/function/fixture. Local regression reproduces2 RED and passes4 GREEN after bounded8MiB transport fix.",
+      "missing": "The entire new applications API and3 browser scenarios remain NOT_RUN; no forward73 or new fixture exists. Successful current-source raw catalog capture/nonempty migration preservation and real Auth/RLS/race/rollback/replay/notifications/reload still required.",
+      "pendingManifestCovers": "New transport-continuation manifest only after its exact source/digest is explicitly approved. Same target, exact planned fixture IDs/caps,zero new Docker resources; original actual approval remains historical and true.",
+      "next": "Review the final transport-continuation manifest/source. If explicitly approved, archive only the three exact unconsumed local receipt/result files, reverify all five service identities and full readonly provenance, then execute the unchanged C2 scope once. Independently retain original R1 gaps and R2/external blockers; no696e/pristine rerun or automatic waiver.",
+      "status": "APPROVED_E8_C2_STOPPED_PRECLAIM; TRANSPORT_REPAIR_PASS_LOCAL; NEW_SOURCE_RUNTIME_UNAPPROVED",
+      "wholeCurrentCaseVerified": false,
+      "currentEvidence": {
+        "path": "docs/verification/D19-C2-runtime-20261026/runtime-reconciliation.json",
+        "sha256": "ac94ea31024fcd5d3bfcae067f54bd30b97b8bf0583d22a96c5010e534cdbc8c"
+      }
+    },
+    {
+      "id": "BINARY-ASSET-OWNERSHIP",
+      "cases": [
+        "UC-C29",
+        "UC-A14"
+      ],
+      "kind": "R1 upload/proof storage boundary",
+      "knownEvidence": "C1 URL proof flow passes in API; all phase asset/object caps are0. Earlier proof asset grant results remain separately source/target-bound.",
+      "missing": "Real owned upload failure/recovery/limits plus existing foreign Creator or workspace denial on stored proof assets; exact owned cleanup only if separately authorized.",
+      "pendingManifestCovers": "No; zero asset caps cannot be expanded by a browser retry.",
+      "next": "Keep exact missing facets in review.json. Do not execute them under C2 applications-only or completed696e authority; any actual new fixture/asset/legacy financial scope needs a concrete separately approved manifest.",
+      "status": "LOCAL_EVIDENCE_SCOPE_REVIEW_COMPLETE; ORIGINAL_CURRENT_ACCEPTANCE_STILL_INCOMPLETE",
+      "reviewEvidence": "docs/verification/D19-R1-facet-review-20261025/review.json"
+    },
+    {
+      "id": "CROSS-CREATOR-WORKFLOW",
+      "cases": [
+        "UC-S01"
+      ],
+      "kind": "R1 Creator resource isolation",
+      "knownEvidence": "C1 staff cross-workspace denial and assistant stranger request null are not the same as cross-Creator active-workflow read/write denial.",
+      "missing": "Actual signed-in Creator B requests Creator A workflow/item/draft/proof, non-enumerating denial and unchanged A/B rows.",
+      "pendingManifestCovers": "Not explicitly; it renews one Creator plus five staff actors only.",
+      "next": "Keep exact missing facets in review.json. Do not execute them under C2 applications-only or completed696e authority; any actual new fixture/asset/legacy financial scope needs a concrete separately approved manifest.",
+      "status": "LOCAL_EVIDENCE_SCOPE_REVIEW_COMPLETE; ORIGINAL_CURRENT_ACCEPTANCE_STILL_INCOMPLETE",
+      "reviewEvidence": "docs/verification/D19-R1-facet-review-20261025/review.json"
+    },
+    {
+      "id": "LEGACY-APPROVAL-REPLAY",
+      "cases": [
+        "UC-A11"
+      ],
+      "kind": "R1 existing legacy financial idempotence",
+      "knownEvidence": "Current source: seven standalone memory SQL cases use the original final legacy function and evidence guard on selected original table definitions. Same committed submission replay/changed valid payload preserves saved note/rating/revision and points250/XP185/cash47.25/budget452.75 with one ledger each; late cash and XP faults roll back all nine compared data families. Earlier distinct C1 legacy issuances remain historical only.",
+      "missing": "Actual identity-gated signed-in operator/API flow, full migration/trigger stack including score persistence and any related side effects, independent-connection same-submission concurrency, saved score/note UI and reload. Core saved note/rating SQL evidence does not prove these full-case facets.",
+      "pendingManifestCovers": "No; frozen pending C2 expressly excludes legacy issuance/replay.",
+      "next": "Retain local readbacks without promoting whole-case acceptance. Do not execute legacy replay under completed696e or applications-only C2; any real target/fixture/financial replay needs its own concretely approved scope.",
+      "status": "CURRENT_MEMORY_SQL_CORE_PASS7; REAL_FULL_CASE_ACCEPTANCE_STILL_MISSING",
+      "reviewEvidence": "docs/verification/D19-R1-facet-review-20261025/review.json",
+      "memoryEvidence": {
+        "path": "docs/verification/D19-legacy-sql-memory-20261026/gates.json",
+        "sha256": "36000fb93ae3808bb33c1144a3ff50e12f99f03dff72ddf062d643124b76c345"
+      },
+      "readbackEvidence": {
+        "path": "docs/verification/D19-legacy-sql-memory-20261026/readback-summary.json",
+        "sha256": "9e810cd25fd82d9a0a71cea0890f944c7498e052b386ccfd320e2b81241aff62"
+      }
+    },
+    {
+      "id": "ASSISTANT-LAYER-REVIEW",
+      "cases": [
+        "UC-C19",
+        "UC-Q04",
+        "UC-Q05"
+      ],
+      "kind": "R1 disabled-provider implementation evidence review",
+      "knownEvidence": "Current source: standalone8/0/0 passes through actual Launcher/Panel/useAssistantChat/apiFetch/Hono route/RAG/tool dispatch, with scripted Auth/storage and injected mock provider; lint and isolated type-check pass. Explicit 429 UUID reuse, scoped chronological history, history503, unknown request GET and lost-save-response reconciliation are recorded. Original unit/embedded/C1 CORE7 witnesses retain their own bindings.",
+      "missing": "Actual browser/device interaction, real current-target Auth/RLS/ownership/persistence and independent-instance quota. Scripted save/claim/replay is not DB atomicity. No cross-close/navigation/refresh draft or conversation restoration is proven. Mock answers/citations or unknown-tool denial are not a real model hallucination/quality or cost evaluation; provider stays disabled.",
+      "pendingManifestCovers": "No additional assistant generation/quota requests.",
+      "next": "Retain current-source offline traces and unchanged C2. Do not execute assistant requests under applications-only C2 or completed696e authority. Any actual additional runtime must have explicit bounded session/request/fixture/provider scope; paid AI remains excluded.",
+      "status": "CURRENT_OFFLINE_UI_API_BOUNDARY8_PASS; REAL_AND_MODEL_ACCEPTANCE_LIMITS_RETAINED",
+      "offlineEvidence": {
+        "path": "docs/verification/D19-assistant-offline-20261026/gates.json",
+        "sha256": "c7677fa8bde022a9ef53fd94ca22c3f99130371dec9970a49df3a725942fc605"
+      },
+      "readbacks": {
+        "path": "docs/verification/D19-assistant-offline-20261026/readback-summary.json",
+        "sha256": "609f1208d85158579d0240988347e3ab03c2991e0a9dba369e8cf596dda721ec"
+      },
+      "wholeCurrentCaseVerified": false,
+      "actualProviderEvaluation": "NOT_RUN_DISABLED"
+    },
+    {
+      "id": "NONEMPTY-MIGRATION-SCOPE",
+      "cases": [
+        "UC-R04"
+      ],
+      "kind": "R1 migration preservation evidence review",
+      "knownEvidence": "Current source still has73 unchanged SQL files. Identity-gated post-failure readonly proof shows exact72 target history, no new function/history,8-section catalog/immutable seeds/service histories and original70 family hashes unchanged. ENOBUFS occurred before any migration write.",
+      "missing": "No successful full raw C2 catalog capture or actual72-to73 migration preservation under current source; no claim/setup.",
+      "pendingManifestCovers": "YES_AFTER_EXPLICIT_APPROVAL: existing frozen C2 adds forward73 once and compares original70-family data plus nine global financial ID/row-hash sets immediately afterward, before SDK/client/setup. Bootstrap does not replay the existing72/9 compatibility statements. This is not yet executed or approved.",
+      "next": "After exact new-source approval, unchanged forward73 before/after assertions must pass before new client/setup; no reset or historical checksum rewrite.",
+      "status": "READONLY72_BASELINE_PRESERVED; FORWARD73_AND_FULL_CATALOG_DIFF_NOT_RUN",
+      "reviewEvidence": "docs/verification/D19-migration-preservation-20261026/review.json",
+      "newTargetRequestedByThisReview": false,
+      "currentRuntimeVerified": false,
+      "wholeCurrentCaseVerified": false
+    },
+    {
+      "id": "GATE14-APPLICABILITY",
+      "cases": [
+        "UC-C13",
+        "UC-C14",
+        "UC-C15",
+        "UC-C16",
+        "UC-C17",
+        "UC-C33",
+        "UC-C36",
+        "UC-A09",
+        "UC-A18",
+        "UC-A19",
+        "UC-S04",
+        "UC-A45",
+        "UC-A46",
+        "UC-A49"
+      ],
+      "kind": "D19 explicit applicability decision, no automatic waiver",
+      "knownEvidence": "Original GATE14 include wallet, redemption, challenge, notifications, shortlist, content, queues and gifts. Some local/R2 evidence exists; the17 C1 API tests are not blanket107-case acceptance.",
+      "missing": "For each exposed pilot surface choose applicable acceptance evidence or explicitly reviewed pilot restriction; do not silently remove an original expectation.",
+      "pendingManifestCovers": "Only the original handoff/role browser scope; no wallet/redemption/shortlist/invitations/content/gift fixtures or global jobs.",
+      "next": "Use exact current local/historical facets without blanket acceptance; complete necessary authorized synthetic/runtime/UI evidence. No default pilot restriction or payment/message approval.",
+      "status": "ALL14_ORIGINAL_EXPECTATIONS_RETAINED_REQUIRED; NO_WAIVER_OR_WHOLE_CASE_ACCEPTANCE",
+      "reviewEvidence": "docs/verification/D19-R1-facet-review-20261025/gate14-applicability.json"
+    },
+    {
+      "id": "PRISTINE-JOB-LIMIT",
+      "cases": [
+        "UC-A18",
+        "UC-S04"
+      ],
+      "kind": "retained pristine RPC evidence, no rerun",
+      "knownEvidence": "Retained three real calls: close_due_campaigns returns1 then0; snapshot_campaign_leaderboards returns1; financial tables unchanged.",
+      "missing": "These results alone do not prove prize/ledger tie/qualification settlement or unauthorized cron HTTP rejection/last-success notification semantics.",
+      "pendingManifestCovers": "No global RPC calls.",
+      "next": "Retain the two passed original global RPC cases at their source/target. Do not rerun them or relabel them as complete UC-A18/UC-S04 acceptance.",
+      "status": "SCOPE_OR_EVIDENCE_REVIEW_REMAINS; no automatic extra runtime authority"
+    }
+  ],
+  "blockers": [
+    "D15 approved lesson content UC-C18/UC-A51",
+    "Named advisor owners, physical devices/manual AT and hosted candidate evidence",
+    "Formal staff membership/role owner handoff; active membership0 is a scope issue",
+    "Original3-campaign incident OPEN/unrestored; shaped target forensic-only",
+    "Original audit ZIP absent at the exact provided Downloads path; sealed original107 fields retained, no fresh archive hash verification",
+    "Release HOLD; not deployed; real provider disabled"
+  ],
+  "newSourceServerRuntimeExecuted": false,
+  "pristineGlobalRpcRerun": false,
+  "currentFacetReview": "docs/verification/D19-R1-facet-review-20261025/review.json",
+  "gate14Review": "docs/verification/D19-R1-facet-review-20261025/gate14-applicability.json",
+  "currentModelInterfaceSelection": {
+    "status": "OBSERVED_GPT_6_1_SOL_MAX",
+    "evidence": {
+      "path": "docs/verification/D19-R1-facet-review-20261025/model-ui-observation.json",
+      "sha256": "1be4f89e70855e1b63d9c0d9a27788e497be70b3ff25f50bc55710849acce29f"
+    },
+    "earlierTurnsOrProviderRouting": "NOT_RETROACTIVELY_VERIFIED",
+    "modelChanged": false
+  },
+  "previousReview": {
+    "path": "docs/verification/D19-assistant-offline-20261026/remaining-acceptance.json",
+    "sha256": "25a738992b666ab8494e93f5ed4764f71667ec824d7f41286b114f5ea890ac4f"
+  },
+  "historicalBlockerTextBeforeModelObservation": [
+    "Execution-interface model selection UNKNOWN; no inferred ID or switch"
+  ],
+  "memorySqlCoreComplete": true,
+  "newPhysicalTargetCalls": "Approved e8 C2 attempts plus19 completed read-only SQL calls and1 failed-capture read-only catalog attempt; no writes. No changed-source writer run.",
+  "migrationPreservationReview": {
+    "path": "docs/verification/D19-migration-preservation-20261026/review.json",
+    "sha256": "aa3b980e3d7b94449a9d99b9073894dc565e856ab8adb57ac9bd2ea1147f89bb"
+  },
+  "currentTransportRepair": {
+    "sourceDelta": {
+      "path": "docs/verification/D19-C2-runtime-20261026/source-after-transport-fix.json",
+      "sha256": "b334757e961afdf32a1bb03121909a4fc4cadb266bfc79ab584be38527692a19"
+    },
+    "manifest": {
+      "path": "docs/verification/D19-C2-transport-continuation-runtime-manifest.json",
+      "sha256": "f5caccfdc354e7209b320064f08c9a59ce73cc0ae4bdfca4bcde6e255b424ba0"
+    },
+    "runtimeApproved": false,
+    "reconciliation": {
+      "path": "docs/verification/D19-C2-runtime-20261026/runtime-reconciliation.json",
+      "sha256": "ac94ea31024fcd5d3bfcae067f54bd30b97b8bf0583d22a96c5010e534cdbc8c"
+    }
+  }
+}

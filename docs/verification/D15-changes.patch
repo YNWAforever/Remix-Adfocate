@@ -1,0 +1,1255 @@
+--- /dev/null
++++ b/e2e/academy-learning.spec.ts
+@@ -0,0 +1,119 @@
++import { expect, test, type Browser } from "@playwright/test";
++import { readFileSync, writeFileSync } from "node:fs";
++import process from "node:process";
++
++const fixture = process.env.ADFOCATE_BROWSER_SCOPE === "D15" ? JSON.parse(readFileSync(".codex-tmp/D15-fixture.private.json", "utf8")) : {};
++test.beforeEach(() => test.skip(process.env.ADFOCATE_BROWSER_SCOPE !== "D15", "Use the identity-gated Academy runner."));
++const record = (name: string, value: Record<string, unknown>) => writeFileSync(`docs/verification/D15-${name}.json`, JSON.stringify({ runId: fixture.runId, ...value }, null, 2) + "\n");
++async function context(browser: Browser, actor = fixture.creator, mobile = true) {
++  const ctx = await browser.newContext({ viewport: mobile ? { width: 390, height: 844 } : { width: 1280, height: 900 } });
++  await ctx.addInitScript(session => { localStorage.setItem("lang", "en"); localStorage.setItem("sb-127-auth-token", JSON.stringify(session)); }, actor.session);
++  await ctx.route("**/*", route => { const url = new URL(route.request().url()); return url.hostname === "127.0.0.1" && ["56400", "56421"].includes(url.port) ? route.continue() : route.abort(); });
++  return ctx;
++}
++async function api(path: string, actor = fixture.creator, method = "GET", body?: unknown) {
++  const response = await fetch(`http://127.0.0.1:56400/api${path}`, { method, headers: { Authorization: `Bearer ${actor.jwt}`, "X-Workspace-Slug": fixture.slug, "Content-Type": "application/json" }, ...(body === undefined ? {} : { body: JSON.stringify(body) }) });
++  expect(response.status).toBe(method === "POST" && path.endsWith("/lessons") ? 201 : 200); return response.json();
++}
++
++test("D15 operator authors, previews, reloads and publishes two synthetic units inside the existing editor", async ({ browser }) => {
++  const ctx = await context(browser, fixture.operator, false), page = await ctx.newPage();
++  await page.goto(`/admin/academy/${fixture.browserTrack.id}`);
++  const editor = page.getByRole("region", { name: "Lesson authoring", exact: true });
++  const owned: Record<string, unknown>[] = [];
++  for (let i = 1; i <= 2; i++) {
++    await editor.getByRole("button", { name: "New lesson", exact: true }).click();
++    await editor.getByRole("textbox", { name: "Lesson title (中文)", exact: true }).fill(`Synthetic browser unit ${i}`);
++    const body = `## Synthetic browser reading ${i}\n\nAcceptance fixture only. No real curriculum approval.`;
++    await editor.getByRole("textbox", { name: "Lesson body (中文)", exact: true }).fill(body);
++    await editor.getByRole("spinbutton", { name: "Lesson position", exact: true }).fill(String(i - 1));
++    await expect(editor.getByRole("heading", { name: `Synthetic browser reading ${i}`, exact: true })).toBeVisible();
++    const saved = page.waitForResponse(r => new URL(r.url()).pathname === `/api/admin/academy/${fixture.browserTrack.id}/lessons` && r.request().method() === "POST" && r.status() === 201);
++    await editor.getByRole("button", { name: "Save lesson", exact: true }).click();
++    const { item } = await (await saved).json(); owned.push(item);
++    await expect(editor.getByRole("button", { name: "Publish lesson", exact: true })).toBeDisabled();
++    await page.reload();
++    await editor.getByRole("button", { name: new RegExp(`^Synthetic browser unit ${i} · v1 · draft`) }).click();
++    await expect(editor.getByRole("textbox", { name: "Lesson body (中文)", exact: true })).toHaveValue(body);
++    await editor.getByRole("textbox", { name: "Approval reference", exact: true }).fill(`SYNTHETIC ONLY/browser/${fixture.runId}`);
++    const published = page.waitForResponse(r => new URL(r.url()).pathname === `/api/admin/academy/${fixture.browserTrack.id}/lessons/${item.id}/publish` && r.status() === 200);
++    await editor.getByRole("button", { name: "Publish lesson", exact: true }).click(); await published;
++    await expect(editor.getByText(/v1 · published · revision/)).toBeVisible();
++  }
++  const published = page.waitForResponse(r => new URL(r.url()).pathname === `/api/admin/academy/${fixture.browserTrack.id}/publish` && r.status() === 200);
++  await page.getByRole("button", { name: "Publish", exact: true }).click(); await published;
++  const learning = await api(`/academy/track/${fixture.browserTrack.slug}/lessons`);
++  expect(learning.progress).toEqual({ completed: 0, total: 2 }); expect(learning.lessons.map((l: { position: number }) => l.position)).toEqual([0, 1]);
++  record("author-ui", { owned, realPersistedBodies: true, approvalRefAutomaticallyGenerated: false, courseStatus: "published", content: "explicitly synthetic only" });
++  await page.screenshot({ path: "docs/verification/D15-author-editor.png" }); await ctx.close();
++});
++
++test("D15 Creator handles a mocked write failure, completes a real unit and refreshes the same saved progress", async ({ browser }) => {
++  const ctx = await context(browser), page = await ctx.newPage();
++  await page.goto(`/guide/track/${fixture.browserTrack.slug}`);
++  const course = page.getByRole("region", { name: "Course lessons", exact: true });
++  await expect(course.getByText("0 / 2 completed", { exact: true })).toBeVisible();
++  const pattern = "**/api/academy/track/*/lessons/*/complete";
++  let mocked = 0;
++  await page.route(pattern, route => { mocked++; return route.fulfill({ status: 503, contentType: "application/json", body: JSON.stringify({ error: "explicit mocked unavailable write" }) }); });
++  await course.getByRole("button", { name: "Mark complete", exact: true }).first().click();
++  await expect(course.getByRole("alert")).toContainText("completion has not been confirmed");
++  await expect(course.getByText("0 / 2 completed", { exact: true })).toBeVisible();
++  await expect(course.getByRole("heading", { name: "Synthetic browser reading 1", exact: true })).toBeVisible();
++  await page.unroute(pattern);
++  await course.getByRole("button", { name: "Reload lessons", exact: true }).click();
++  await expect(course.getByRole("alert")).toHaveCount(0);
++  await course.getByRole("button", { name: "Mark complete", exact: true }).first().click();
++  await expect(course.getByText("1 / 2 completed", { exact: true })).toBeVisible();
++  const first = await api(`/academy/track/${fixture.browserTrack.slug}/lessons`);
++  await page.reload(); await expect(course.getByText("1 / 2 completed", { exact: true })).toBeVisible();
++  const after = await api(`/academy/track/${fixture.browserTrack.slug}/lessons`);
++  expect(after).toEqual(first); expect(after.history).toHaveLength(1);
++  await page.screenshot({ path: "docs/verification/D15-creator-progress.png" });
++  record("creator-ui", { progress: after.progress, history: after.history, refreshEqual: true, mocked503Responses: mocked, successfulWrite: "real API/Auth/RLS/database" });
++  await ctx.close();
++});
++
++test("D15 separate Creator context has zero progress and ineligible Creator cannot read locked units", async ({ browser }) => {
++  const ctx = await context(browser, fixture.other), page = await ctx.newPage();
++  await page.goto(`/guide/track/${fixture.browserTrack.slug}`);
++  await expect(page.getByText("0 / 2 completed", { exact: true })).toBeVisible();
++  const learning = await api(`/academy/track/${fixture.browserTrack.slug}/lessons`, fixture.other);
++  expect(learning.history).toEqual([]); expect(learning.lessons.every((l: { completed: boolean }) => !l.completed)).toBe(true);
++  await ctx.close();
++  const low = await context(browser), lowPage = await low.newPage();
++  await lowPage.goto(`/guide/track/${fixture.locked.slug}`);
++  await expect(lowPage.getByRole("heading", { name: "Locked unit body", exact: true })).toHaveCount(0);
++  await expect(lowPage.getByRole("region", { name: "Course lessons", exact: true })).toHaveCount(0);
++  record("isolation-ui", { otherProgress: learning.progress, otherHistory: learning.history, contextsSeparated: true, lockedBodyHidden: true });
++  await low.close();
++});
++
++test("D15 real version conflict preserves reading and history before an explicit refresh and completion", async ({ browser }) => {
++  const ctx = await context(browser), page = await ctx.newPage();
++  await page.goto(`/guide/track/${fixture.browserTrack.slug}`);
++  const course = page.getByRole("region", { name: "Course lessons", exact: true });
++  await expect(course.getByText("1 / 2 completed", { exact: true })).toBeVisible();
++  const current = await api(`/academy/track/${fixture.browserTrack.slug}/lessons`), second = current.lessons[1];
++  const list = await api(`/admin/academy/${fixture.browserTrack.id}/lessons`, fixture.operator);
++  const row = list.items.find((r: { id: string; status: string }) => r.id === second.id && r.status === "published");
++  const { item: draft } = await api(`/admin/academy/${fixture.browserTrack.id}/lessons/${row.id}`, fixture.operator, "PATCH", { contentVersion: row.content_version, revision: row.revision, body_zh: "## Synthetic updated reading 2\n\nNew fixture version, explicit completion required." });
++  await api(`/admin/academy/${fixture.browserTrack.id}/lessons/${draft.id}/publish`, fixture.operator, "POST", { contentVersion: draft.content_version, revision: draft.revision, approvalRef: `SYNTHETIC ONLY/v2/${fixture.runId}` });
++  const conflict = page.waitForResponse(r => new URL(r.url()).pathname.endsWith(`/lessons/${row.id}/complete`) && r.status() === 409);
++  await course.getByRole("button", { name: "Mark complete", exact: true }).click(); await conflict;
++  await expect(course.getByRole("alert")).toContainText("This lesson version changed");
++  await expect(course.getByRole("heading", { name: "Synthetic browser reading 2", exact: true })).toBeVisible();
++  await expect(course.getByText("1 / 2 completed", { exact: true })).toBeVisible();
++  await course.getByRole("button", { name: "Reload lessons", exact: true }).click();
++  await expect(course.getByRole("heading", { name: "Synthetic updated reading 2", exact: true })).toBeVisible();
++  await expect(course.getByText("1 / 2 completed", { exact: true })).toBeVisible();
++  const updated = await api(`/academy/track/${fixture.browserTrack.slug}/lessons`);
++  expect(updated.history).toEqual(current.history); expect(updated.lessons[1].completed).toBe(false);
++  await course.getByRole("button", { name: "Mark complete", exact: true }).click();
++  await expect(course.getByText("2 / 2 completed", { exact: true })).toBeVisible();
++  await page.reload(); await expect(course.getByText("2 / 2 completed", { exact: true })).toBeVisible();
++  const after = await api(`/academy/track/${fixture.browserTrack.slug}/lessons`);
++  expect(after.history).toHaveLength(2); expect(after.history).toContainEqual(current.history[0]);
++  record("conflict-ui", { status: 409, transportMock: false, before: current.history, after: after.history, progress: after.progress, oldReadingPreservedUntilRefresh: true });
++  await ctx.close();
++});
+--- /dev/null
++++ b/scripts/audit/run-academy-browser.mjs
+@@ -0,0 +1,41 @@
++import process from "node:process";
++import { spawnSync } from "node:child_process";
++import { readFileSync, writeFileSync } from "node:fs";
++import { resolve } from "node:path";
++import { pathToFileURL } from "node:url";
++import { isDeepStrictEqual } from "node:util";
++import { verifiedTarget } from "./local-targets.mjs";
++import { neutralitySnapshot } from "./neutrality-snapshot.mjs";
++
++// Identity precedes reading fixture credentials, browser setup and application clients.
++const target = verifiedTarget("empty");
++const fixture = JSON.parse(readFileSync(".codex-tmp/D15-fixture.private.json", "utf8"));
++if (!isDeepStrictEqual(fixture.target, target.identity)) throw new Error("D15 fixture target identity drift");
++const actors = [fixture.creator.id, fixture.other.id];
++const before = actors.map(id => neutralitySnapshot(target, id, fixture.workspaceId));
++const env = { ...process.env, ...target.env, RUN_INTEGRATION: "0", RUN_AUDIT_INTEGRATION: "0", ADFOCATE_BROWSER_SCOPE: "D15",
++  OPENAI_API_KEY: "", ANTHROPIC_API_KEY: "", OPENROUTER_API_KEY: "",
++  VITE_SUPABASE_URL: target.env.SUPABASE_URL, VITE_SUPABASE_ANON_KEY: target.env.SUPABASE_ANON_KEY,
++  VITE_DEFAULT_WORKSPACE: fixture.slug, VITE_ENABLE_WHATSAPP: "false", VITE_ENABLE_GOOGLE: "false",
++  NODE_OPTIONS: `--import=${pathToFileURL(resolve("scripts/audit/deny-external-fetch.mjs")).href}` };
++const result = spawnSync(process.execPath, ["node_modules/@playwright/test/cli.js", "test", "e2e/academy-learning.spec.ts"], { env, stdio: "inherit" });
++const checked = verifiedTarget("empty");
++const after = actors.map(id => neutralitySnapshot(checked, id, fixture.workspaceId));
++const neutral = isDeepStrictEqual(before, after);
++writeFileSync("docs/verification/D15-browser-neutrality.json", JSON.stringify({ runId: fixture.runId, actorIds: actors, before, after, allEqual: neutral,
++  note: "Raw balances, XP, ledger counts and reward inventory; no normalization. No reward is awarded for learning." }, null, 2) + "\n");
++const raw = JSON.parse(readFileSync(".codex-tmp/browser-results.private.json", "utf8"));
++const tests = [];
++function visit(suites) { for (const suite of suites ?? []) { for (const spec of suite.specs ?? []) tests.push({ title: spec.title, ok: spec.ok,
++  results: spec.tests.flatMap(test => test.results.map(run => ({ status: run.status, duration: run.duration }))) }); visit(suite.suites); } }
++visit(raw.suites);
++if (!/^[a-f0-9-]{36}$/.test(fixture.browserTrack.id)) throw new Error("invalid exact course ID");
++const persisted = JSON.parse(checked.sql(`select jsonb_build_object(
++  'lessons',coalesce((select jsonb_agg(jsonb_build_object('id',id,'version',content_version,'revision',revision,'status',status,'position',position,'approvalRef',approval_ref) order by position,content_version) from public.academy_lessons where track_id='${fixture.browserTrack.id}'),'[]'::jsonb),
++  'progress',coalesce((select jsonb_agg(jsonb_build_object('creatorId',p.creator_id,'lessonId',p.lesson_id,'version',p.content_version,'completedAt',p.completed_at)) from public.creator_lesson_progress p join public.academy_lessons l on (l.id,l.content_version)=(p.lesson_id,p.content_version) where l.track_id='${fixture.browserTrack.id}'),'[]'::jsonb));`));
++writeFileSync("docs/verification/D15-browser-summary.json", JSON.stringify({ target: target.identity, runId: fixture.runId, tests, stats: raw.stats, persisted,
++  auth: "Real local Auth sessions from the identity-gated API fixture; separate Creator contexts.",
++  browser: "Installed Microsoft Edge; 1280x900 operator and 390x844 Creator viewport emulation.",
++  content: "Two explicitly synthetic lesson units; test approval references only. No approved curriculum claimed.",
++  limitations: ["No deployment, hosted runtime, physical device or Safari/WebKit acceptance.", "One completion 503 is an explicit transport mock; successful completion and version-conflict 409 use the real local API and database."] }, null, 2) + "\n");
++process.exit(result.status === 0 && neutral ? 0 : result.status || 1);
+--- a/scripts/audit/run-integration.mjs
++++ b/scripts/audit/run-integration.mjs
+@@ -5,8 +5,8 @@
+ import { pathToFileURL } from "node:url";
+ const target=verifiedTarget("empty");
+ const selected=process.argv[2];
+-if(selected && !["mission-list","authoring","identity","public-claims"].includes(selected))throw new Error("unsupported audit integration scope");
+-const file=selected==="mission-list"?"server/test/audit-mission-list-contract.test.ts":selected==="authoring"?"server/test/audit-mission-authoring-contract.test.ts":selected==="identity"?"server/test/audit-identity-contract.test.ts":selected==="public-claims"?"server/test/audit-public-claims-contract.test.ts":"server/test/audit-workflow-roundtrip.test.ts";
++if(selected && !["mission-list","authoring","identity","public-claims","academy"].includes(selected))throw new Error("unsupported audit integration scope");
++const file=selected==="mission-list"?"server/test/audit-mission-list-contract.test.ts":selected==="authoring"?"server/test/audit-mission-authoring-contract.test.ts":selected==="identity"?"server/test/audit-identity-contract.test.ts":selected==="public-claims"?"server/test/audit-public-claims-contract.test.ts":selected==="academy"?"server/test/audit-academy-progress.test.ts":"server/test/audit-workflow-roundtrip.test.ts";
+ const result=spawnSync(process.execPath,["node_modules/vitest/vitest.mjs","run","--maxWorkers=1","--minWorkers=1",file],{
+   env:{...process.env,...target.env,RUN_INTEGRATION:"0",RUN_AUDIT_INTEGRATION:"1",OPENAI_API_KEY:"",OPENROUTER_API_KEY:"",ANTHROPIC_API_KEY:"",
+     NODE_OPTIONS:`--import=${pathToFileURL(resolve("scripts/audit/deny-external-fetch.mjs")).href}`},stdio:"inherit"});
+--- a/scripts/release/contracts.ts
++++ b/scripts/release/contracts.ts
+@@ -4,7 +4,8 @@
+   | "reward_handoff"
+   | "legacy_evidence"
+   | "operator_crm"
+-  | "assistant_requests";
++  | "assistant_requests"
++  | "academy_learning";
+ 
+ export interface ReleaseMigration {
+   readonly version: string;
+--- a/scripts/release/manifest.test.ts
++++ b/scripts/release/manifest.test.ts
+@@ -59,6 +59,9 @@
+   "20261022171111_audit_creator_queue.sql",
+   "20261022171843_audit_assistant_requests.sql",
+   "20261022182544_audit_legacy_review_notes.sql",
++  "20261023091050_academy_learning.sql",
++  "20261023093445_academy_learning_conflicts.sql",
++  "20261023095521_academy_approval_index.sql",
+ ] as const;
+ 
+ // Pinned by checksum in manifest.ts, so the fixture copies the repository's real bytes instead of
+@@ -139,6 +142,7 @@
+     expect(manifest.migrations[0].phase).toBe("active_mission");
+     expect(manifest.migrations[13].phase).toBe("publication_proof");
+     expect(manifest.migrations[25].phase).toBe("reward_handoff");
++    expect(manifest.migrations.at(-1)?.phase).toBe("academy_learning");
+     expect(manifest.migrations[0].dependsOn).toEqual([]);
+     expect(manifest.migrations[1].dependsOn).toEqual(["20260715163350"]);
+     expect(
+--- a/scripts/release/manifest.ts
++++ b/scripts/release/manifest.ts
+@@ -867,6 +867,38 @@
+     capabilities: ["column:public.mission_submissions.reviewer_notes"],
+     transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
+   },
++  {
++    version: "20261023091050", name: "academy_learning", phase: "academy_learning",
++    dependsOn: ["20261022182544"],
++    capabilities: ["table:public.academy_lessons", "table:public.creator_lesson_progress",
++      "constraint:public.academy_lessons.academy_lessons_pkey", "constraint:public.creator_lesson_progress.creator_lesson_progress_pkey",
++      "constraint:public.creator_lesson_progress.creator_lesson_progress_lesson_id_content_version_fkey", "constraint:public.academy_lessons.academy_lesson_published_content",
++      "index:public.academy_lessons.academy_lessons_track_order", "index:public.creator_lesson_progress.creator_lesson_progress_lesson",
++      "grant:authenticated.public.academy_lessons(select)", "grant:authenticated.public.creator_lesson_progress(select)",
++      "grant:service_role.public.academy_lessons(select)", "grant:service_role.public.creator_lesson_progress(select)",
++      "rls:public.academy_lessons", "rls:public.creator_lesson_progress",
++      "policy:public.academy_lessons.academy_lessons_published_eligible", "policy:public.creator_lesson_progress.creator_lesson_progress_self",
++      "index:public.academy_lessons.academy_lesson_one_published", "index:public.academy_lessons.academy_lesson_one_draft",
++      "function:private.can_read_academy_track", "function:public.can_read_academy_track", "function:public.get_academy_learning",
++      "function:public.complete_academy_lesson", "function:public.author_academy_lesson", "function:private.guard_academy_lesson_history",
++      "trigger:public.academy_lesson_history_guard",
++      "grant:authenticated.public.get_academy_learning(uuid,text)", "grant:authenticated.public.complete_academy_lesson(uuid,uuid,integer)",
++      "grant:authenticated.public.can_read_academy_track(uuid)", "grant:service_role.public.author_academy_lesson(uuid,uuid,uuid,integer,integer,jsonb,text,text)"],
++    transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
++  },
++  {
++    version: "20261023093445", name: "academy_learning_conflicts", phase: "academy_learning",
++    dependsOn: ["20261023091050"],
++    capabilities: ["function:public.can_read_academy_track", "function:public.complete_academy_lesson", "function:public.author_academy_lesson",
++      "grant:authenticated.public.can_read_academy_track(uuid)", "grant:authenticated.public.complete_academy_lesson(uuid,uuid,integer)",
++      "grant:service_role.public.author_academy_lesson(uuid,uuid,uuid,integer,integer,jsonb,text,text)"],
++    transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
++  },
++  {
++    version: "20261023095521", name: "academy_approval_index", phase: "academy_learning",
++    dependsOn: ["20261023093445"], capabilities: ["index:public.academy_lessons.academy_lessons_approved_by"],
++    transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
++  },
+ ] as const satisfies readonly ReviewedMigration[];
+ 
+ const NON_RELEASE_TIMESTAMP_MIGRATIONS = new Set([
+@@ -1042,7 +1074,7 @@
+     if (
+       migration.phase !== "active_mission" &&
+       migration.phase !== "publication_proof" &&
+-      migration.phase !== "reward_handoff" && migration.phase !== "legacy_evidence" && migration.phase !== "operator_crm" && migration.phase !== "assistant_requests"
++      migration.phase !== "reward_handoff" && migration.phase !== "legacy_evidence" && migration.phase !== "operator_crm" && migration.phase !== "assistant_requests" && migration.phase !== "academy_learning"
+     ) {
+       invalid(`${path}.phase`, "is invalid");
+     }
+@@ -1214,7 +1246,7 @@
+     "active_mission",
+     "publication_proof",
+     "reward_handoff",
+-    "legacy_evidence", "operator_crm", "assistant_requests",
++    "legacy_evidence", "operator_crm", "assistant_requests", "academy_learning",
+   ] satisfies ReleasePhase[]) {
+     if (!parsed.migrations.some((migration) => migration.phase === phase)) {
+       pushUnique(errors, `missing release phase: ${phase}`);
+--- a/scripts/release/preflight.test.ts
++++ b/scripts/release/preflight.test.ts
+@@ -38,7 +38,8 @@
+       ...new Set(manifest.migrations.flatMap((migration) => migration.capabilities)),
+     ];
+ 
+-    expect(capabilities).toHaveLength(471);
++    // Retain all 471 earlier contracts and the 30 distinct D15 learning capabilities.
++    expect(capabilities).toHaveLength(501);
+     expect(capabilities.filter((capability) => !hasCapabilityValidator(capability))).toEqual([]);
+   });
+ 
+--- a/server/app.ts
++++ b/server/app.ts
+@@ -17,6 +17,7 @@
+ import { profileMediaRoutes } from "./routes/profileMedia.js";
+ import { contentRoutes } from "./routes/content.js";
+ import { academyRoutes } from "./routes/academy.js";
++import { academyLessonsRoutes } from "./routes/academyLessons.js";
+ import { brandRoutes } from "./routes/brand.js";
+ import { campaignRoutes } from "./routes/campaigns.js";
+ import { activeMissionRoutes } from "./routes/activeMissions.js";
+@@ -56,6 +57,7 @@
+   guarded.route("/workspace", workspaceRoutes);
+   guarded.route("/content", contentRoutes);
+   guarded.route("/academy", academyRoutes);
++  guarded.route("/academy", academyLessonsRoutes);
+   app.route("/", guarded);
+ 
+   return { app, guarded };
+--- a/server/routes/academy.ts
++++ b/server/routes/academy.ts
+@@ -48,7 +48,7 @@
+     title: pick(r.title_en, r.title_zh, lang),
+     excerpt: pick(r.excerpt_en, r.excerpt_zh, lang) || null,
+     ...(withBody ? { body: pick(r.body_en, r.body_zh, lang) } : {}),
+-    ...(r.kind === "track" ? { contentStatus: pick(r.body_en, r.body_zh, lang).trim() ? "available" : "preparing" } : {}),
++    ...(r.kind === "track" ? { contentStatus: pick(r.body_en, r.body_zh, lang).trim() ? "available" : "preparing", ...(withBody ? { learningEnabled: true } : {}) } : {}),
+     category: r.category, requiredLevel: r.required_level,
+     emoji: r.emoji, color: r.color, sort: r.sort,
+     meta: localizeMeta(r.metadata, lang),
+@@ -89,5 +89,7 @@
+   const { data, error } = await supabase.from("academy_content").select(FULL_COLS)
+     .eq("status", "published").eq("kind", "track").eq("slug", c.req.param("slug")).maybeSingle();
+   if (error || !data) return c.json({ error: "not found", code: "not_found" }, 404);
+-  return c.json({ item: shape(data as unknown as Row, lang, true) });
++  const { data: allowed, error: gateError } = await supabase.rpc("can_read_academy_track", { p_track: (data as unknown as Row).id });
++  if (gateError) return c.json({ code: "learning_unavailable", error: "Learning permissions are temporarily unavailable." }, 503);
++  return c.json({ item: { ...shape(data as unknown as Row, lang, true), ...(!allowed ? { body: "" } : {}) } });
+ });
+--- /dev/null
++++ b/server/routes/academyLessons.ts
+@@ -0,0 +1,65 @@
++import { Hono } from "hono";
++import type { Env } from "../app.js";
++import type { AdminEnv } from "../lib/staffAuth.js";
++import { makeUserClient, serviceClient } from "../lib/supabase.js";
++
++export const academyLessonsRoutes = new Hono<Env>();
++export const adminAcademyLessonsRoutes = new Hono<AdminEnv>();
++function failure(error: { code?: string; message?: string }) {
++  const status = error.code === "42501" ? 403 : error.code === "P0002" ? 404 : ["PT409", "40001", "23505"].includes(error.code ?? "") ? 409
++    : ["22023", "22P02", "23514", "23502"].includes(error.code ?? "") ? 422 : ["42P01", "42883", "PGRST202", "PGRST205"].includes(error.code ?? "") ? 503 : 500;
++  return { status: status as 403 | 404 | 409 | 422 | 503 | 500,
++    body: { code: status === 503 ? "learning_unavailable" : status === 409 ? "version_changed" : status === 403 ? "academy_locked" : status === 404 ? "not_found" : status === 422 ? "validation_error" : "learning_error",
++      error: status === 409 ? "The lesson or revision changed. Reload before retrying." : status === 503 ? "Learning storage is unavailable." : status === 403 ? "This course is locked." : status === 422 ? "Check the lesson content, revision and approval reference." : "Unable to load or save learning content." } };
++}
++async function trackFor(slug: string, jwt: string) {
++  return makeUserClient(jwt).from("academy_content").select("id").eq("kind", "track").eq("status", "published").eq("slug", slug).maybeSingle();
++}
++academyLessonsRoutes.get("/track/:slug/lessons", async c => {
++  if (c.req.query("creatorId") && c.req.query("creatorId") !== c.get("userId")) return c.json({ code: "forbidden", error: "Progress belongs to the signed-in Creator." }, 403);
++  const found = await trackFor(c.req.param("slug"), c.get("jwt"));
++  if (found.error) { const e = failure(found.error); return c.json(e.body, e.status); }
++  if (!found.data) return c.json({ code: "not_found", error: "Course not found." }, 404);
++  const { data, error } = await makeUserClient(c.get("jwt")).rpc("get_academy_learning", { p_track: found.data.id, p_lang: c.req.query("lang") === "en" ? "en" : "zh-HK" });
++  if (error) { const e = failure(error); return c.json(e.body, e.status); }
++  return c.json(data);
++});
++academyLessonsRoutes.post("/track/:slug/lessons/:lessonId/complete", async c => {
++  const input = await c.req.json().catch(() => null);
++  if (!input || !Number.isInteger(input.contentVersion) || input.contentVersion < 1) return c.json({ code: "validation_error", error: "A positive contentVersion is required." }, 422);
++  if (Object.keys(input).some(k => k !== "contentVersion")) return c.json({ code: "forbidden", error: "Only the signed-in Creator can complete their lesson." }, 403);
++  const found = await trackFor(c.req.param("slug"), c.get("jwt"));
++  if (found.error) { const e = failure(found.error); return c.json(e.body, e.status); }
++  if (!found.data) return c.json({ code: "not_found", error: "Course not found." }, 404);
++  const { data, error } = await makeUserClient(c.get("jwt")).rpc("complete_academy_lesson", { p_track: found.data.id, p_lesson: c.req.param("lessonId"), p_version: input.contentVersion });
++  if (error) { const e = failure(error); return c.json(e.body, e.status); }
++  return c.json(data);
++});
++
++adminAcademyLessonsRoutes.get("/academy/:id/lessons", async c => {
++  const { data, error } = await serviceClient().from("academy_lessons").select("*").eq("track_id", c.req.param("id")).order("position").order("content_version", { ascending: false });
++  if (error) { const e = failure(error); return c.json(e.body, e.status); }
++  return c.json({ items: data ?? [] });
++});
++const fields = ["title_zh", "title_en", "body_zh", "body_en", "position"];
++for (const action of ["save", "publish", "archive"] as const) {
++  const handler: import("hono").Handler<AdminEnv> = async c => {
++    const staff = c.get("staff");
++    if (!staff.userId || staff.viaSecret || staff.active === false) return c.json({ code: "staff_required", error: "Sign in as an active staff member." }, 403);
++    const body = await c.req.json().catch(() => null);
++    if (!body || typeof body !== "object" || Array.isArray(body)) return c.json({ code: "validation_error", error: "A lesson object is required." }, 422);
++    const id = c.req.param("lessonId") ?? null;
++    if (id && (!Number.isInteger(body.contentVersion) || body.contentVersion < 1 || !Number.isInteger(body.revision) || body.revision < 1)) return c.json({ code: "validation_error", error: "Current version and revision are required." }, 422);
++    const allowed = [...fields, "contentVersion", "revision", "approvalRef"];
++    if (Object.keys(body).some(k => !allowed.includes(k)) || fields.some(k => body[k] !== undefined && (k === "position" ? !Number.isInteger(body[k]) || body[k] < 0 || body[k] > 10000 : typeof body[k] !== "string" || body[k].length > (k.startsWith("body") ? 50000 : 200)))) return c.json({ code: "validation_error", error: "Check lesson fields and position." }, 422);
++    if (action === "publish" && (typeof body.approvalRef !== "string" || !body.approvalRef.trim() || body.approvalRef.length > 500)) return c.json({ code: "validation_error", error: "An approved content reference is required." }, 422);
++    const { data, error } = await serviceClient().rpc("author_academy_lesson", {
++      p_staff: staff.userId, p_track: c.req.param("id"), p_lesson: id, p_version: body.contentVersion ?? null,
++      p_revision: body.revision ?? null, p_input: Object.fromEntries(fields.filter(k => body[k] !== undefined).map(k => [k, body[k]])), p_action: action, p_approval_ref: action === "publish" ? body.approvalRef.trim() : null,
++    });
++    if (error) { const e = failure(error); return c.json(e.body, e.status); }
++    return c.json({ item: data }, id ? 200 : 201);
++  };
++  if (action === "save") { adminAcademyLessonsRoutes.post("/academy/:id/lessons", handler); adminAcademyLessonsRoutes.patch("/academy/:id/lessons/:lessonId", handler); }
++  else adminAcademyLessonsRoutes.post(`/academy/:id/lessons/:lessonId/${action}`, handler);
++}
+--- a/server/routes/adminAcademy.ts
++++ b/server/routes/adminAcademy.ts
+@@ -3,12 +3,14 @@
+ import { Hono } from "hono";
+ import type { AdminEnv } from "../lib/staffAuth.js";
+ import { serviceClient } from "../lib/supabase.js";
++import { adminAcademyLessonsRoutes } from "./academyLessons.js";
+ import {
+   type AcademyInput, type AcademyEditInput, type AcademyStatus,
+   validateAcademyInput, validateAcademyEdit,
+ } from "../lib/academyAuthoring.js";
+ 
+ export const adminAcademyRoutes = new Hono<AdminEnv>();
++adminAcademyRoutes.route("/", adminAcademyLessonsRoutes);
+ 
+ const COLS =
+   "id, kind, slug, status, title_zh, title_en, excerpt_zh, excerpt_en, body_zh, body_en, " +
+--- /dev/null
++++ b/server/test/audit-academy-progress.test.ts
+@@ -0,0 +1,158 @@
++import { randomUUID } from "node:crypto";
++import { writeFileSync } from "node:fs";
++import { afterAll, beforeAll, describe, expect, it } from "vitest";
++import type { createAuditFixture } from "./auditWorkflowFixture";
++
++describe.skipIf(process.env.RUN_AUDIT_INTEGRATION !== "1")("D15 owned Academy learning", () => {
++  let fx: Awaited<ReturnType<typeof createAuditFixture>>;
++  let app: ReturnType<(typeof import("../app"))["createApp"]>["app"];
++  let before: Awaited<ReturnType<Awaited<ReturnType<typeof createAuditFixture>>["neutrality"]>>;
++  let track: { id: string; slug: string }, locked: typeof track, browserTrack: typeof track;
++  let otherBefore: typeof before;
++  let firstCompletion: string;
++  const lessons: Record<string, unknown>[] = [];
++  async function request(path: string, method = "GET", data?: unknown, status = 200, actor?: { jwt: string }) {
++    const response = await app.request(`/api${path}`, { method, headers: {
++      Authorization: `Bearer ${(actor ?? fx.creators[0]).jwt}`, "X-Workspace-Slug": fx.slug, "Content-Type": "application/json",
++    }, ...(data === undefined ? {} : { body: JSON.stringify(data) }) });
++    expect(response.status, `${method} ${path}: ${await response.clone().text()}`).toBe(status);
++    return response.json();
++  }
++  beforeAll(async () => {
++    fx = await (await import("./auditWorkflowFixture")).createAuditFixture();
++    app = (await import("../app")).createApp().app;
++    before = await fx.neutrality(fx.creators[0].id);
++    fx.must(await fx.service.from("creators").update({ xp: 6000 }).eq("id", fx.creators[1].id).eq("workspace_id", fx.workspaceId));
++    otherBefore = await fx.neutrality(fx.creators[1].id);
++    for (const level of ["L0", "L2"]) {
++      const id = randomUUID(), slug = `d15-${level}-${fx.runId}`;
++      fx.must(await fx.service.from("academy_content").insert({ id, slug, kind: "track", status: "published", title_zh: `Synthetic learning ${level}`,
++        required_level: level, body_zh: level === "L2" ? "Locked overview body" : "Owned course introduction", metadata: { duration: "4 lessons" } }));
++      if (level === "L0") track = { id, slug }; else locked = { id, slug };
++    }
++    browserTrack = { id: randomUUID(), slug: `d15-browser-${fx.runId}` };
++    fx.must(await fx.service.from("academy_content").insert({ ...browserTrack, kind: "track", status: "draft", title_zh: "Synthetic browser curriculum", required_level: "L0", body_zh: "Synthetic browser overview" }));
++  }, 60000);
++  afterAll(async () => {
++    if (!fx || !before) return;
++    const after = await fx.neutrality(fx.creators[0].id);
++    const otherAfter = await fx.neutrality(fx.creators[1].id);
++    expect(after).toEqual(before);
++    expect(otherAfter).toEqual(otherBefore);
++    writeFileSync(".codex-tmp/D15-fixture.private.json", JSON.stringify({ runId: fx.runId, target: fx.target.identity, workspaceId: fx.workspaceId,
++      slug: fx.slug, creator: fx.creators[0], other: fx.creators[1], operator: fx.operator, track, locked, browserTrack, lessons }, (key,value) => key === "client" ? undefined : value));
++    writeFileSync("docs/verification/D15-api-contract.json", JSON.stringify({ runId: fx.runId, target: fx.target.identity, track, locked,
++      ownedLessonIds: lessons.map(row => row.id), neutrality: { before, after, allEqual: JSON.stringify(before) === JSON.stringify(after) },
++      otherNeutrality: { before: otherBefore, after: otherAfter, allEqual: JSON.stringify(otherBefore) === JSON.stringify(otherAfter) }, browserTrack,
++      content: "explicitly synthetic only; no real course or owner approval claimed", cleanup: "all exact IDs retained; no delete/reset" }, null, 2) + "\n");
++    fx.recordEvidence({ caseId: "N03", track, locked, lessonIds: lessons.map(row => row.id), before, after });
++  });
++  it("lists actual published lessons and a saved-progress total, never infers four lessons from metadata", async () => {
++    const value = await request(`/academy/track/${track.slug}/lessons`);
++    expect(value.lessons).toEqual([]); expect(value.progress).toMatchObject({ completed: 0, total: 0 });
++  });
++  it("lets the existing operator create and reload a lesson draft with real fixture body", async () => {
++    const { item } = await request(`/admin/academy/${track.id}/lessons`, "POST", { title_zh: "Synthetic first unit", body_zh: "## Fixture unit one\n\nRead the owned acceptance material.", position: 0 }, 201, fx.operator);
++    lessons.push(item);
++    const { items } = await request(`/admin/academy/${track.id}/lessons`, "GET", undefined, 200, fx.operator);
++    expect(items.find((row: { id: string }) => row.id === item.id)).toMatchObject({ status: "draft", body_zh: "## Fixture unit one\n\nRead the owned acceptance material." });
++  });
++  it("withholds locked overview bodies and rejects locked lesson reads at the API boundary", async () => {
++    const { item } = await request(`/academy/track/${locked.slug}`);
++    expect(item.body).toBe("");
++    await request(`/academy/track/${locked.slug}/lessons`, "GET", undefined, 403);
++  });
++  it("never shows draft lessons to a Creator, including direct RLS reads and completion", async () => {
++    expect((await request(`/academy/track/${track.slug}/lessons`)).lessons).toEqual([]);
++    const direct = fx.must(await fx.creators[0].client.from("academy_lessons").select("*").eq("track_id", track.id));
++    expect(direct).toEqual([]);
++    await request(`/academy/track/${track.slug}/lessons/${lessons[0].id}/complete`, "POST", { contentVersion: 1 }, 409);
++  });
++  it("requires real body and explicit approval reference; publishes two synthetic units with an idempotent publish replay", async () => {
++    const second = (await request(`/admin/academy/${track.id}/lessons`, "POST", { title_zh: "Synthetic second unit", body_zh: "## Fixture unit two\n\nOwned second reading.", position: 1 }, 201, fx.operator)).item;
++    lessons.push(second);
++    const invalid = (await request(`/admin/academy/${track.id}/lessons`, "POST", { title_zh: "Empty draft", body_zh: "", position: 2 }, 201, fx.operator)).item;
++    lessons.push(invalid);
++    const command = (row: Record<string, unknown>) => ({ contentVersion: row.content_version, revision: row.revision, approvalRef: `SYNTHETIC ONLY/${fx.runId}` });
++    await request(`/admin/academy/${track.id}/lessons/${lessons[0].id}/publish`, "POST", { ...command(lessons[0]), approvalRef: "" }, 422, fx.operator);
++    await request(`/admin/academy/${track.id}/lessons/${invalid.id}/publish`, "POST", command(invalid), 422, fx.operator);
++    for (let i = 0; i < 2; i++) {
++      const row = lessons[i], input = command(row);
++      const first = (await request(`/admin/academy/${track.id}/lessons/${row.id}/publish`, "POST", input, 200, fx.operator)).item;
++      const replay = (await request(`/admin/academy/${track.id}/lessons/${row.id}/publish`, "POST", input, 200, fx.operator)).item;
++      expect(replay).toEqual(first); lessons[i] = first;
++    }
++    const value = await request(`/academy/track/${track.slug}/lessons`);
++    expect(value.progress).toEqual({ completed: 0, total: 2 });
++    expect(value.lessons.map((row: { position: number }) => row.position)).toEqual([0, 1]);
++    expect(value.lessons.some((row: { id: string }) => row.id === invalid.id)).toBe(false);
++  });
++  it("four concurrent completion requests and replay create one durable completion; refresh reads 1/2", async () => {
++    const path = `/academy/track/${track.slug}/lessons/${lessons[0].id}/complete`;
++    const results = await Promise.all(Array.from({ length: 4 }, () => request(path, "POST", { contentVersion: 1 })));
++    firstCompletion = results[0].completedAt;
++    expect(new Set(results.map(row => row.completedAt)).size).toBe(1);
++    expect((await request(path, "POST", { contentVersion: 1 })).completedAt).toBe(firstCompletion);
++    expect((await request(`/academy/track/${track.slug}/lessons`)).progress).toEqual({ completed: 1, total: 2 });
++    const saved = fx.must(await fx.service.from("creator_lesson_progress").select("*").eq("creator_id", fx.creators[0].id).eq("lesson_id", lessons[0].id));
++    expect(saved).toHaveLength(1);
++  });
++  it("the other Creator has 0/2 and cannot read or forge the first Creator's progress", async () => {
++    const value = await request(`/academy/track/${track.slug}/lessons`, "GET", undefined, 200, fx.creators[1]);
++    expect(value.progress).toEqual({ completed: 0, total: 2 }); expect(value.history).toEqual([]);
++    expect(fx.must(await fx.creators[1].client.from("creator_lesson_progress").select("*").eq("creator_id", fx.creators[0].id))).toEqual([]);
++    const forged = await fx.creators[1].client.from("creator_lesson_progress").insert({ creator_id: fx.creators[0].id, lesson_id: lessons[0].id, content_version: 1 });
++    expect(forged.error).toBeTruthy();
++    await request(`/academy/track/${track.slug}/lessons?creatorId=${fx.creators[0].id}`, "GET", undefined, 403, fx.creators[1]);
++    await request(`/academy/track/${track.slug}/lessons/${lessons[0].id}/complete`, "POST", { contentVersion: 1, creatorId: fx.creators[0].id }, 403, fx.creators[1]);
++  });
++  it("raw XP without owner verification stays locked through API and direct lesson RLS", async () => {
++    let row = (await request(`/admin/academy/${locked.id}/lessons`, "POST", { title_zh: "Locked fixture", body_zh: "Locked unit body", position: 0 }, 201, fx.operator)).item;
++    row = (await request(`/admin/academy/${locked.id}/lessons/${row.id}/publish`, "POST", { contentVersion: 1, revision: row.revision, approvalRef: `SYNTHETIC ONLY/${fx.runId}` }, 200, fx.operator)).item;
++    lessons.push(row);
++    await request(`/academy/track/${locked.slug}/lessons`, "GET", undefined, 403, fx.creators[1]);
++    expect(fx.must(await fx.creators[1].client.from("academy_lessons").select("body_zh").eq("track_id", locked.id))).toEqual([]);
++    fx.must(await fx.service.from("creator_social_accounts").insert({ workspace_id: fx.workspaceId, creator_id: fx.creators[1].id, platform: "instagram", handle: `d15_${fx.runId.replaceAll("-", "")}`, owner_verified: true }));
++    const trusted = await request(`/academy/track/${locked.slug}/lessons`, "GET", undefined, 200, fx.creators[1]);
++    expect(trusted.lessons[0].body).toBe("Locked unit body");
++  });
++  it("new content remains a draft while the published version and its progress stay unchanged", async () => {
++    const first = lessons[0];
++    const draft = (await request(`/admin/academy/${track.id}/lessons/${first.id}`, "PATCH", { contentVersion: first.content_version, revision: first.revision, body_zh: "## Revised fixture unit one", position: 5 }, 200, fx.operator)).item;
++    expect(draft.content_version).toBe(2); expect(draft.status).toBe("draft"); expect(draft.approval_ref).toBeNull();
++    lessons.push(draft);
++    const value = await request(`/academy/track/${track.slug}/lessons`);
++    expect(value.lessons.find((row: { id: string }) => row.id === first.id).contentVersion).toBe(1);
++    expect(value.progress).toEqual({ completed: 1, total: 2 });
++  });
++  it("publishing v2 preserves the old completion timestamp and counts only current versions", async () => {
++    const draft = lessons.find(row => row.id === lessons[0].id && row.content_version === 2)!;
++    const published = (await request(`/admin/academy/${track.id}/lessons/${draft.id}/publish`, "POST", { contentVersion: 2, revision: draft.revision, approvalRef: `SYNTHETIC v2 ONLY/${fx.runId}` }, 200, fx.operator)).item;
++    lessons[0] = published;
++    let value = await request(`/academy/track/${track.slug}/lessons`);
++    expect(value.progress).toEqual({ completed: 0, total: 2 });
++    expect(value.history).toContainEqual({ lessonId: published.id, contentVersion: 1, completedAt: firstCompletion });
++    expect(value.lessons.map((row: { position: number }) => row.position)).toEqual([1, 5]);
++    await request(`/academy/track/${track.slug}/lessons/${published.id}/complete`, "POST", { contentVersion: 1 }, 409);
++    await request(`/academy/track/${track.slug}/lessons/${published.id}/complete`, "POST", { contentVersion: 2 });
++    value = await request(`/academy/track/${track.slug}/lessons`);
++    expect(value.progress).toEqual({ completed: 1, total: 2 }); expect(value.history).toHaveLength(2);
++  });
++  it("rejects stale author revisions and Creator writes without overwriting content", async () => {
++    const row = lessons[0];
++    await request(`/admin/academy/${track.id}/lessons/${row.id}`, "PATCH", { contentVersion: row.content_version, revision: -1, body_zh: "invalid" }, 422, fx.operator);
++    await request(`/admin/academy/${track.id}/lessons/${row.id}`, "PATCH", { contentVersion: row.content_version, revision: Number(row.revision) - 1, body_zh: "stale overwrite" }, 409, fx.operator);
++    await request(`/admin/academy/${track.id}/lessons`, "POST", { title_zh: "forbidden" }, 403, fx.creators[0]);
++    expect((await request(`/academy/track/${track.slug}/lessons`)).lessons.some((row: { body: string }) => row.body === "stale overwrite")).toBe(false);
++  });
++  it("published lesson snapshots under a draft parent stay hidden from Creators", async () => {
++    const row = (await request(`/admin/academy/${browserTrack.id}/lessons`, "POST", { title_zh: "Synthetic draft-parent unit", body_zh: "Never visible from a draft course", position: 100 }, 201, fx.operator)).item;
++    lessons.push(row);
++    await request(`/admin/academy/${browserTrack.id}/lessons/${row.id}/publish`, "POST", { contentVersion: 1, revision: row.revision, approvalRef: `SYNTHETIC hidden ONLY/${fx.runId}` }, 200, fx.operator);
++    await request(`/academy/track/${browserTrack.slug}/lessons`, "GET", undefined, 404);
++    expect(fx.must(await fx.creators[0].client.from("academy_lessons").select("*").eq("track_id", browserTrack.id))).toEqual([]);
++    // Retain the hidden snapshot but archive it before the separate browser two-unit fixture is published.
++    const current = (await request(`/admin/academy/${browserTrack.id}/lessons`, "GET", undefined, 200, fx.operator)).items[0];
++    await request(`/admin/academy/${browserTrack.id}/lessons/${row.id}/archive`, "POST", { contentVersion: 1, revision: current.revision }, 200, fx.operator);
++  });
++});
+--- /dev/null
++++ b/src/components/AcademyLearning.tsx
+@@ -0,0 +1,41 @@
++import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
++import { useI18n } from "@/lib/i18n";
++import { ApiError } from "@/lib/api";
++import { completeLesson, getLearning, learningKey, type Lesson } from "@/lib/academyProgress";
++import { Markdown } from "./Markdown";
++
++export function AcademyLearning({ creatorId, slug }: { creatorId: string; slug: string }) {
++  const { lang } = useI18n(), en = lang === "en", locale = en ? "en" : "zh-HK";
++  const qc = useQueryClient(), key = learningKey(creatorId, slug, locale);
++  const query = useQuery({ queryKey: key, queryFn: () => getLearning(slug, locale), retry: false });
++  const complete = useMutation({ mutationFn: (lesson: Lesson) => completeLesson(slug, lesson),
++    onSuccess: () => qc.invalidateQueries({ queryKey: key }) });
++  const refresh = async () => { await query.refetch(); complete.reset(); };
++  if (query.isPending) return <p role="status">{en ? "Loading lessons…" : "載入單元中…"}</p>;
++  if (!query.data) return <div role="alert" className="space-y-2">
++    <p>{en ? "Lessons could not be loaded. Please retry." : "暫時無法載入單元，請重試。"}</p>
++    <button className="underline" onClick={() => query.refetch()}>{en ? "Retry lessons" : "重試載入單元"}</button>
++  </div>;
++  const learning = query.data;
++  return <section aria-label={en ? "Course lessons" : "課程單元"} className="space-y-4">
++    <h2 className="font-heading text-lg font-bold">{en ? "Course lessons" : "課程單元"}</h2>
++    <p role="status">{learning.progress.completed} / {learning.progress.total} {en ? "completed" : "已完成"}</p>
++    {learning.progress.total === 0 && <p>{en ? "No published lessons yet. Content is being prepared." : "尚未有已發布單元，內容準備中。"}</p>}
++    {(query.isError || complete.error) && <div role="alert" className="space-y-2 border-2 border-[var(--color-ink)] p-3">
++      <p>{complete.error instanceof ApiError && complete.error.status === 409
++        ? en ? "This lesson version changed. Your earlier completion is preserved; reload before retrying." : "單元版本已更新，舊完成紀錄仍保留；請重新載入後再試。"
++        : en ? "Learning could not be updated. The last loaded content is shown; completion has not been confirmed." : "暫時無法更新學習資料，以下保留上次載入內容；尚未確認完成。"}</p>
++      <button onClick={refresh} className="underline">{en ? "Reload lessons" : "重新載入單元"}</button>
++    </div>}
++    {learning.lessons.map(lesson => <article key={`${lesson.id}:${lesson.contentVersion}`} className="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-4">
++      <h3 className="font-heading font-bold">{lesson.title} <span className="text-xs">v{lesson.contentVersion}</span></h3>
++      <Markdown source={lesson.body} />
++      {lesson.completed ? <p>{en ? "Completed" : "已完成"} · {lesson.completedAt}</p> : <button
++        disabled={complete.isPending || query.isFetching || Boolean(complete.error) || query.isError}
++        className="btn-primary disabled:opacity-50" onClick={() => complete.mutate(lesson)}>{en ? "Mark complete" : "標記完成"}</button>}
++    </article>)}
++    {learning.history.length > 0 && <details><summary>{en ? "Completion history" : "完成紀錄"}</summary><ul>
++      {learning.history.map(row => <li key={`${row.lessonId}:${row.contentVersion}`}>v{row.contentVersion} · {row.completedAt}</li>)}
++    </ul></details>}
++  </section>;
++}
+--- a/src/components/admin/AcademyEditor.tsx
++++ b/src/components/admin/AcademyEditor.tsx
+@@ -2,6 +2,7 @@
+ import { useNavigate } from "@tanstack/react-router";
+ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+ import { Markdown } from "@/components/Markdown";
++import { AcademyLessonsEditor } from "./AcademyLessonsEditor";
+ import {
+   getAdminAcademy, createAcademy, updateAcademy, academyAction, academyKeys,
+   type AdminAcademyRow, type AcademyKind,
+@@ -144,6 +145,7 @@
+             className="mt-1 w-full rounded border-2 border-[var(--color-ink)] p-2 font-mono text-xs" />
+           {metaErr && <span className="text-xs text-[var(--color-magenta)]">{metaErr}</span>}
+         </label>
++        {!isNew && form.kind === "track" && <AcademyLessonsEditor key={id} trackId={id} lang={lang} />}
+       </div>
+       <aside className="space-y-3">
+         <label className="block text-xs uppercase">Kind
+--- /dev/null
++++ b/src/components/admin/AcademyLessons.authoring.test.tsx
+@@ -0,0 +1,54 @@
++import { beforeEach, expect, it, vi } from "vitest";
++import { render, screen, fireEvent, waitFor } from "@testing-library/react";
++import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
++const h = vi.hoisted(() => ({ admin: vi.fn(), get: vi.fn() }));
++vi.mock("@tanstack/react-router", async original => ({ ...(await original<object>()), useNavigate: () => vi.fn() }));
++vi.mock("@/lib/admin", async original => ({ ...(await original<object>()), adminFetch: h.admin }));
++vi.mock("@/lib/academy", async original => ({ ...(await original<object>()), getAdminAcademy: h.get }));
++import { AcademyEditor } from "./AcademyEditor";
++import { ApiError } from "@/lib/api";
++beforeEach(() => {
++  vi.clearAllMocks();
++  h.get.mockResolvedValue({ item: { id: "track", kind: "track", title_zh: "Track draft", title_en: "", slug: "track", body_zh: "Overview", status: "draft", metadata: {}, updated_at: "2026-10-23T09:00:00Z" } });
++  h.admin.mockResolvedValue({ items: [] });
++});
++it("D15 a stale author revision retains the local body and explicitly rebases only edited fields", async () => {
++  const original = { id: "one", track_id: "track", content_version: 1, revision: 1, status: "draft", title_zh: "Original title", title_en: "", body_zh: "Original body", body_en: "", position: 0, approval_ref: null };
++  const latest = { ...original, revision: 2, title_zh: "Remote title", body_zh: "Remote body" };
++  let remote = original;
++  h.admin.mockImplementation(async (_path: string, options?: { method?: string; body?: string }) => {
++    if (options?.method === "PATCH") {
++      const input = JSON.parse(options.body!);
++      if (input.revision === 1) { remote = latest; throw new ApiError(409, "version_changed", "Reload before retrying"); }
++      expect(input).toMatchObject({ revision: 2, title_zh: "Remote title", body_zh: "My unsaved body" });
++      return { item: { ...latest, ...input, revision: 3 } };
++    }
++    return { items: [remote] };
++  });
++  render(<QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}><AcademyEditor id="track" /></QueryClientProvider>);
++  fireEvent.click(await screen.findByRole("button", { name: /Original title · v1 · draft/ }));
++  fireEvent.change(screen.getByRole("textbox", { name: "Lesson body (中文)" }), { target: { value: "My unsaved body" } });
++  fireEvent.click(screen.getByRole("button", { name: "Save lesson" }));
++  expect(await screen.findByRole("alert")).toHaveTextContent("Another revision exists");
++  expect(screen.getByRole("textbox", { name: "Lesson body (中文)" })).toHaveValue("My unsaved body");
++  fireEvent.click(screen.getByRole("button", { name: "Compare latest lesson" }));
++  await screen.findByText("Latest lesson revision 2");
++  expect(screen.getByRole("textbox", { name: "Lesson body (中文)" })).toHaveValue("My unsaved body");
++  fireEvent.click(screen.getByRole("button", { name: "Keep draft on latest revision" }));
++  expect(screen.getByRole("textbox", { name: "Lesson title (中文)" })).toHaveValue("Remote title");
++  fireEvent.click(screen.getByRole("button", { name: "Save lesson" }));
++  await waitFor(() => expect(screen.queryByRole("alert")).not.toBeInTheDocument());
++  expect(screen.getByRole("textbox", { name: "Lesson body (中文)" })).toHaveValue("My unsaved body");
++});
++it("D15 author creates a labelled lesson draft with preview; publishing requires an approval reference", async () => {
++  render(<QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}><AcademyEditor id="track" /></QueryClientProvider>);
++  fireEvent.click(await screen.findByRole("button", { name: "New lesson" }));
++  fireEvent.change(screen.getByRole("textbox", { name: "Lesson title (中文)" }), { target: { value: "實際單元草稿" } });
++  fireEvent.change(screen.getByRole("textbox", { name: "Lesson body (中文)" }), { target: { value: "## 尚未核准的草稿正文" } });
++  expect(screen.getByRole("heading", { name: "尚未核准的草稿正文" })).toBeInTheDocument();
++  expect(screen.queryByRole("button", { name: "Publish lesson" })).not.toBeInTheDocument();
++  h.admin.mockImplementation(async (_path: string, options?: { method?: string; body?: string }) => options?.method === "POST" ? { item: { id: "one", content_version: 1, revision: 1, status: "draft", ...JSON.parse(options.body!) } } : { items: [] });
++  fireEvent.click(screen.getByRole("button", { name: "Save lesson" }));
++  expect(await screen.findByRole("button", { name: "Publish lesson" })).toBeDisabled();
++  expect(screen.getByRole("textbox", { name: "Approval reference" })).toHaveValue("");
++});
+--- /dev/null
++++ b/src/components/admin/AcademyLessonsEditor.tsx
+@@ -0,0 +1,74 @@
++import { useState } from "react";
++import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
++import { adminLessonKey, getAdminLessons, saveLesson, lessonAction, type AdminLesson, type LessonDraft } from "@/lib/academyProgress";
++import { ApiError } from "@/lib/api";
++import { Markdown } from "../Markdown";
++const empty: LessonDraft = { title_zh: "", title_en: "", body_zh: "", body_en: "", position: 0 };
++const values = (row: LessonDraft): LessonDraft => ({ title_zh: row.title_zh, title_en: row.title_en, body_zh: row.body_zh, body_en: row.body_en, position: row.position });
++
++export function AcademyLessonsEditor({ trackId, lang }: { trackId: string; lang: "zh" | "en" }) {
++  const qc = useQueryClient(), key = adminLessonKey(trackId);
++  const query = useQuery({ queryKey: key, queryFn: () => getAdminLessons(trackId), retry: false });
++  const [editing, setEditing] = useState(false), [selected, setSelected] = useState<AdminLesson | null>(null);
++  const [form, setForm] = useState<LessonDraft>(empty), [approval, setApproval] = useState("");
++  const dirty = JSON.stringify(form) !== JSON.stringify(selected ? values(selected) : empty);
++  const update = (patch: Partial<LessonDraft>) => setForm(old => ({ ...old, ...patch }));
++  const saved = (row: AdminLesson) => { setSelected(row); setForm(values(row)); setApproval(""); qc.invalidateQueries({ queryKey: key }); };
++  const save = useMutation({ mutationFn: () => saveLesson(trackId, form, selected), onSuccess: ({ item }) => saved(item) });
++  const action = useMutation({ mutationFn: (type: "publish" | "archive") => lessonAction(trackId, selected!, type, approval), onSuccess: ({ item }) => saved(item) });
++  const busy = save.isPending || action.isPending;
++  const error = save.error ?? action.error;
++  const conflict = error instanceof ApiError && error.status === 409;
++  const latest = query.data?.items.find(row => row.id === selected?.id && row.content_version === selected.content_version);
++  function choose(row: AdminLesson | null) {
++    if (dirty && !window.confirm("Discard unsaved lesson edits? 放棄未儲存的單元修改？")) return;
++    setEditing(true); setSelected(row); setForm(row ? values(row) : empty); setApproval(""); save.reset(); action.reset();
++  }
++  function rebase() {
++    if (!latest || !selected || latest.status === "archived") return;
++    const next = values(latest);
++    for (const k of Object.keys(empty) as (keyof LessonDraft)[]) if (form[k] !== selected[k]) Object.assign(next, { [k]: form[k] });
++    setSelected(latest); setForm(next); save.reset(); action.reset();
++  }
++  const titleKey = lang === "zh" ? "title_zh" : "title_en", bodyKey = lang === "zh" ? "body_zh" : "body_en";
++  return <section className="space-y-3 rounded border-2 border-[var(--color-ink)] p-3" aria-label="Lesson authoring">
++    <h3 className="font-heading font-bold">課程單元 · Lessons</h3>
++    <p className="text-sm">只發布已核准教材並提供核准 reference。沒有教材請維持草稿。 Published lessons require approved material and its reference.</p>
++    {query.isPending && <p role="status">載入單元中… Loading lessons…</p>}
++    {query.isError && <div role="alert"><p>單元列表載入失敗，原有輸入仍保留。 Lesson list unavailable; draft preserved.</p><button onClick={() => query.refetch()}>Retry lesson list</button></div>}
++    <ul className="space-y-2">{query.data?.items.map(row => <li key={`${row.id}:${row.content_version}`}>
++      <button type="button" disabled={busy} onClick={() => choose(row)} className="underline">
++        {row.title_zh || "Untitled lesson"} · v{row.content_version} · {row.status} · {row.position}
++      </button>
++    </li>)}</ul>
++    <button type="button" disabled={busy || query.isError} onClick={() => choose(null)} className="btn-ink">New lesson</button>
++    {editing && <fieldset disabled={busy} className="space-y-3 border-t-2 border-dashed pt-3">
++      {selected && <p>v{selected.content_version} · {selected.status} · revision {selected.revision}</p>}
++      {error && <div role="alert"><p>{conflict ? "版本有更新，請重新載入列表比較；草稿仍保留。 Another revision exists; reload to compare." : "單元未能儲存或發布，輸入仍保留，可重試。 Lesson save/publish failed; draft preserved."} {error.message}</p></div>}
++      {conflict && <div className="space-y-2">
++        <button onClick={() => query.refetch()}>Compare latest lesson</button>
++        {latest && <details><summary>Latest lesson revision {latest.revision}</summary><Markdown source={latest[bodyKey]} /></details>}
++        {latest && latest.status !== "archived" && <button onClick={rebase}>Keep draft on latest revision</button>}
++      </div>}
++      <label className="block text-sm">Lesson title ({lang === "zh" ? "中文" : "EN"})
++        <input className="block w-full rounded border-2 p-2" value={form[titleKey]} onChange={e => update({ [titleKey]: e.target.value })} disabled={selected?.status === "archived"} />
++      </label>
++      <label className="block text-sm">Lesson body ({lang === "zh" ? "中文" : "EN"})
++        <textarea className="block w-full rounded border-2 p-2 font-mono" rows={10} value={form[bodyKey]} onChange={e => update({ [bodyKey]: e.target.value })} disabled={selected?.status === "archived"} />
++      </label>
++      <label className="block text-sm">Lesson position
++        <input type="number" min={0} max={10000} className="ml-2 rounded border-2 p-1" value={form.position} onChange={e => update({ position: Number(e.target.value) })} disabled={selected?.status === "archived"} />
++      </label>
++      <div className="rounded border-2 border-dashed p-3"><p className="text-xs">Lesson preview</p><Markdown source={form[bodyKey]} /></div>
++      {selected?.status !== "archived" && <button type="button" onClick={() => save.mutate()} className="btn-primary">{selected?.status === "published" ? "Save as new version" : "Save lesson"}</button>}
++      {selected?.status === "draft" && <>
++        <label className="block text-sm">Approval reference
++          <input className="block w-full rounded border-2 p-2" value={approval} maxLength={500} onChange={e => setApproval(e.target.value)} />
++        </label>
++        <button type="button" disabled={dirty || !approval.trim()} onClick={() => action.mutate("publish")} className="btn-primary disabled:opacity-50">Publish lesson</button>
++        {dirty && <p className="text-sm">先儲存單元修改，再發布。 Save lesson changes before publishing.</p>}
++      </>}
++      {selected && selected.status !== "archived" && <button type="button" disabled={dirty} onClick={() => action.mutate("archive")} className="ml-2 underline">Archive lesson</button>}
++    </fieldset>}
++  </section>;
++}
+--- a/src/lib/academy.ts
++++ b/src/lib/academy.ts
+@@ -16,6 +16,7 @@
+   meta: { duration?: string; levelLabel?: string; teaser_zh?: string; teaser_en?: string };
+   /** Body availability only; does not imply lessons or completion tracking. */
+   contentStatus?: "available" | "preparing";
++  learningEnabled?: boolean;
+ };
+ export type AcademyPlaybook = {
+   id: string; kind: AcademyKind; slug: string; title: string; emoji: string | null; color: string | null; sort: number;
+--- /dev/null
++++ b/src/lib/academyProgress.ts
+@@ -0,0 +1,14 @@
++import { apiFetch } from "@/lib/api";
++import { adminFetch } from "@/lib/admin";
++export type Lesson = { id: string; trackId: string; title: string; body: string; position: number; contentVersion: number; status: "published"; completed: boolean; completedAt: string | null };
++export type Completion = { lessonId: string; contentVersion: number; completedAt: string };
++export type Learning = { lessons: Lesson[]; progress: { completed: number; total: number }; history: Completion[] };
++export type LessonDraft = { title_zh: string; title_en: string; body_zh: string; body_en: string; position: number };
++export type AdminLesson = LessonDraft & { id: string; track_id: string; content_version: number; revision: number; status: "draft" | "published" | "archived"; approval_ref: string | null };
++export const learningKey = (creatorId: string, slug: string, lang: string) => ["academy-learning", creatorId, slug, lang] as const;
++export const getLearning = (slug: string, lang: string) => apiFetch<Learning>(`/academy/track/${encodeURIComponent(slug)}/lessons?lang=${lang}`);
++export const completeLesson = (slug: string, lesson: Pick<Lesson, "id" | "contentVersion">) => apiFetch<Completion>(`/academy/track/${encodeURIComponent(slug)}/lessons/${lesson.id}/complete`, { method: "POST", body: JSON.stringify({ contentVersion: lesson.contentVersion }) });
++export const adminLessonKey = (trackId: string) => ["admin", "academy-lessons", trackId] as const;
++export const getAdminLessons = (trackId: string) => adminFetch<{ items: AdminLesson[] }>(`/admin/academy/${trackId}/lessons`);
++export const saveLesson = (trackId: string, draft: LessonDraft, existing: AdminLesson | null) => adminFetch<{ item: AdminLesson }>(`/admin/academy/${trackId}/lessons${existing ? `/${existing.id}` : ""}`, { method: existing ? "PATCH" : "POST", body: JSON.stringify({ ...draft, ...(existing ? { contentVersion: existing.content_version, revision: existing.revision } : {}) }) });
++export const lessonAction = (trackId: string, item: AdminLesson, action: "publish" | "archive", approvalRef = "") => adminFetch<{ item: AdminLesson }>(`/admin/academy/${trackId}/lessons/${item.id}/${action}`, { method: "POST", body: JSON.stringify({ contentVersion: item.content_version, revision: item.revision, ...(action === "publish" ? { approvalRef } : {}) }) });
+--- /dev/null
++++ b/src/routes/-academy-learning.test.tsx
+@@ -0,0 +1,80 @@
++import type { ComponentType } from "react";
++import { beforeEach, describe, expect, it, vi } from "vitest";
++import { fireEvent, render, screen, waitFor } from "@testing-library/react";
++import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
++const h = vi.hoisted(() => ({ api: vi.fn(), completed: false, conflict: false, version: 1, actor: "creator-a" }));
++vi.mock("@tanstack/react-router", async original => ({ ...(await original<object>()),
++  useParams: () => ({ trackId: "owned-course" }), Link: ({ to, children }: { to: string; children: React.ReactNode }) => <a href={to}>{children}</a>,
++}));
++vi.mock("@/lib/queries/kocmax", () => ({ useMe: () => ({ data: { id: h.actor, level: "L0", is_trusted: false } }) }));
++vi.mock("@/lib/academy", async original => ({ ...(await original<object>()), fetchAcademyTrack: async () => ({ item: {
++  id: "track", slug: "owned-course", title: "Owned course", kind: "track", requiredLevel: "L0", body: "Course introduction", excerpt: "Overview", meta: { duration: "4 lessons" }, learningEnabled: true,
++} }) }));
++vi.mock("@/lib/api", async original => ({ ...(await original<object>()), apiFetch: h.api }));
++import { ApiError } from "@/lib/api";
++import { Route } from "./_app.guide.track.$trackId";
++
++function bundle() {
++  const completed = h.completed && h.actor === "creator-a" && h.version === 1;
++  return { lessons: [
++    { id: "first", trackId: "track", title: "First actual unit", body: `## Unit one v${h.version}\n\nActual lesson reading.`, position: 0, contentVersion: h.version, status: "published", completed, completedAt: completed ? "2026-10-23T09:00:00Z" : null },
++    { id: "second", trackId: "track", title: "Second actual unit", body: "Second lesson reading.", position: 1, contentVersion: 1, status: "published", completed: false, completedAt: null },
++  ], progress: { completed: completed ? 1 : 0, total: 2 }, history: h.completed ? [{ lessonId: "first", contentVersion: 1, completedAt: "2026-10-23T09:00:00Z" }] : [] };
++}
++function show() {
++  const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
++  const C = Route.options.component as ComponentType;
++  return { client, ...render(<QueryClientProvider client={client}><C /></QueryClientProvider>) };
++}
++beforeEach(() => {
++  vi.clearAllMocks(); h.completed = false; h.conflict = false; h.version = 1; h.actor = "creator-a";
++  h.api.mockImplementation(async (_path: string, options?: { method?: string }) => {
++    if (options?.method === "POST") {
++      if (h.conflict) throw new ApiError(409, "version_changed", "version_changed");
++      h.completed = true; return { completedAt: "2026-10-23T09:00:00Z" };
++    }
++    return bundle();
++  });
++});
++describe("D15 learning UI", () => {
++  it("renders actual units, completes one, and reads the same 1/2 on a fresh mount", async () => {
++    const first = show();
++    expect(await screen.findByText("0 / 2 已完成")).toBeInTheDocument();
++    expect(screen.getByRole("heading", { name: "Unit one v1" })).toBeInTheDocument();
++    expect(screen.queryByText(/4 lessons/)).not.toBeInTheDocument();
++    fireEvent.click(screen.getAllByRole("button", { name: "標記完成" })[0]);
++    expect(await screen.findByText("1 / 2 已完成")).toBeInTheDocument();
++    first.unmount(); show(); expect(await screen.findByText("1 / 2 已完成")).toBeInTheDocument();
++  });
++  it("409 preserves the reading and refreshes the new version without completing it", async () => {
++    h.conflict = true; show(); await screen.findByText("0 / 2 已完成");
++    fireEvent.click(screen.getAllByRole("button", { name: "標記完成" })[0]);
++    expect(await screen.findByRole("alert")).toHaveTextContent(/版本/);
++    expect(screen.getByRole("heading", { name: "Unit one v1" })).toBeInTheDocument();
++    h.version = 2; h.completed = true;
++    fireEvent.click(screen.getByRole("button", { name: "重新載入單元" }));
++    expect(await screen.findByRole("heading", { name: "Unit one v2" })).toBeInTheDocument();
++    expect(screen.getByText("0 / 2 已完成")).toBeInTheDocument();
++    expect(screen.getByRole("listitem")).toHaveTextContent("v1");
++  });
++  it("does not carry another Creator's cached progress into the new identity", async () => {
++    h.completed = true; const first = show(); await screen.findByText("1 / 2 已完成");
++    expect(first.client.getQueryCache().getAll().some(q => q.queryKey.includes("creator-a"))).toBe(true);
++    first.unmount(); h.actor = "creator-b"; show();
++    await waitFor(() => expect(screen.getByText("0 / 2 已完成")).toBeInTheDocument());
++  });
++  it("an unavailable read can retry and an unavailable write never advances completion", async () => {
++    h.api.mockRejectedValueOnce(new ApiError(503, "learning_unavailable", "Storage unavailable"));
++    show(); expect(await screen.findByRole("alert")).toHaveTextContent("無法載入單元");
++    fireEvent.click(screen.getByRole("button", { name: "重試載入單元" }));
++    await screen.findByText("0 / 2 已完成");
++    h.api.mockRejectedValueOnce(new ApiError(503, "learning_unavailable", "Storage unavailable"));
++    fireEvent.click(screen.getAllByRole("button", { name: "標記完成" })[0]);
++    expect(await screen.findByRole("alert")).toHaveTextContent("尚未確認完成");
++    expect(screen.getByText("0 / 2 已完成")).toBeInTheDocument();
++    expect(screen.getByRole("heading", { name: "Unit one v1" })).toBeInTheDocument();
++    fireEvent.click(screen.getByRole("button", { name: "重新載入單元" }));
++    await waitFor(() => expect(screen.queryByRole("alert")).not.toBeInTheDocument());
++    expect(screen.getByText("0 / 2 已完成")).toBeInTheDocument();
++  });
++});
+--- a/src/routes/_app.guide.track.$trackId.tsx
++++ b/src/routes/_app.guide.track.$trackId.tsx
+@@ -7,6 +7,7 @@
+ import { useI18n } from "@/lib/i18n";
+ import { Markdown } from "@/components/Markdown";
+ import { ApiError } from "@/lib/api";
++import { AcademyLearning } from "@/components/AcademyLearning";
+ 
+ export const Route = createFileRoute("/_app/guide/track/$trackId")({ component: TrackDetailPage });
+ 
+@@ -74,6 +75,7 @@
+             )}
+           </div>
+         )}
++        {unlocked && track.learningEnabled && me.data?.id && <AcademyLearning key={me.data.id} creatorId={me.data.id} slug={track.slug} />}
+       </div>
+     </div>
+   );
+--- /dev/null
++++ b/supabase/migrations/20261023091050_academy_learning.sql
+@@ -0,0 +1,188 @@
++-- D15: versioned lesson content and self-only progress. No content seed, XP or reward writes.
++begin;
++
++create table public.academy_lessons (
++  id uuid not null default gen_random_uuid(),
++  content_version integer not null default 1 check (content_version > 0),
++  track_id uuid not null references public.academy_content(id) on delete restrict,
++  title_zh text not null default '' check (length(title_zh) <= 200),
++  title_en text not null default '' check (length(title_en) <= 200),
++  body_zh text not null default '' check (length(body_zh) <= 50000),
++  body_en text not null default '' check (length(body_en) <= 50000),
++  position integer not null default 0 check (position between 0 and 10000),
++  status text not null default 'draft' check (status in ('draft','published','archived')),
++  revision integer not null default 1 check (revision > 0),
++  approval_ref text check (length(approval_ref) between 1 and 500),
++  approved_by uuid references auth.users(id) on delete restrict,
++  published_at timestamptz,
++  created_at timestamptz not null default now(),
++  updated_at timestamptz not null default now(),
++  primary key (id, content_version),
++  constraint academy_lesson_published_content check (status <> 'published' or
++    (nullif(btrim(title_zh),'') is not null and nullif(btrim(body_zh),'') is not null
++     and approval_ref is not null and approved_by is not null and published_at is not null))
++);
++create unique index academy_lesson_one_published on public.academy_lessons(id) where status='published';
++create unique index academy_lesson_one_draft on public.academy_lessons(id) where status='draft';
++create index academy_lessons_track_order on public.academy_lessons(track_id,status,position,id);
++
++create table public.creator_lesson_progress (
++  creator_id uuid not null references public.creators(id) on delete restrict,
++  lesson_id uuid not null,
++  content_version integer not null,
++  status text not null default 'completed' check (status='completed'),
++  completed_at timestamptz not null default now(),
++  primary key (creator_id,lesson_id,content_version),
++  foreign key (lesson_id,content_version) references public.academy_lessons(id,content_version) on delete restrict
++);
++create index creator_lesson_progress_lesson on public.creator_lesson_progress(lesson_id,content_version);
++alter table public.academy_lessons enable row level security;
++alter table public.creator_lesson_progress enable row level security;
++revoke all on public.academy_lessons,public.creator_lesson_progress from public,anon,authenticated,service_role;
++grant select on public.academy_lessons,public.creator_lesson_progress to authenticated,service_role;
++
++-- Reuse the existing raw-level ordinal and verified-owner trust authority.
++create function private.can_read_academy_track(p_track uuid) returns boolean
++language sql stable security definer set search_path='' as $$
++  select exists (
++    select 1 from public.academy_content t join public.creators c on c.id=(select auth.uid())
++    where t.id=p_track and t.kind='track' and t.status='published'
++      and coalesce(t.required_level,'L0') in ('L0','L1','L2','L3','L4','L5','L6')
++      and public.level_ordinal(c.level)>=public.level_ordinal(coalesce(t.required_level,'L0'))
++      and (public.level_ordinal(coalesce(t.required_level,'L0'))<public.level_ordinal('L2')
++        or private.creator_is_trusted(c.id))
++  );
++$$;
++revoke all on function private.can_read_academy_track(uuid) from public,anon,service_role;
++grant execute on function private.can_read_academy_track(uuid) to authenticated;
++create function public.can_read_academy_track(p_track uuid) returns boolean
++language sql stable security invoker set search_path='' as $$ select private.can_read_academy_track(p_track); $$;
++revoke all on function public.can_read_academy_track(uuid) from public,anon,service_role;
++grant execute on function public.can_read_academy_track(uuid) to authenticated;
++create policy academy_lessons_published_eligible on public.academy_lessons for select to authenticated
++using (status='published' and private.can_read_academy_track(track_id));
++create policy creator_lesson_progress_self on public.creator_lesson_progress for select to authenticated
++using (creator_id=(select auth.uid()));
++
++create function private.guard_academy_lesson_history() returns trigger
++language plpgsql set search_path='' as $$
++begin
++  if old.status in ('published','archived') and
++    (row(new.id,new.content_version,new.track_id,new.title_zh,new.title_en,new.body_zh,new.body_en,new.position,new.approval_ref,new.approved_by,new.published_at)
++     is distinct from row(old.id,old.content_version,old.track_id,old.title_zh,old.title_en,old.body_zh,old.body_en,old.position,old.approval_ref,old.approved_by,old.published_at)
++     or new.status not in ('published','archived') or (old.status='archived' and new.status<>'archived')) then
++    raise exception using errcode='23514',message='published_lesson_immutable';
++  end if;
++  return new;
++end;
++$$;
++revoke all on function private.guard_academy_lesson_history() from public,anon,authenticated,service_role;
++create trigger academy_lesson_history_guard before update on public.academy_lessons
++for each row execute function private.guard_academy_lesson_history();
++
++create function public.complete_academy_lesson(p_track uuid,p_lesson uuid,p_version integer) returns jsonb
++language plpgsql security definer set search_path='' as $$
++declare v_creator uuid:=auth.uid(); v_row public.creator_lesson_progress%rowtype;
++begin
++  -- Consistent lock order with author commands; a publish cannot swap versions mid-completion.
++  perform 1 from public.academy_content where id=p_track for share;
++  if v_creator is null or not private.can_read_academy_track(p_track) then
++    raise exception using errcode='42501',message='academy_locked';
++  end if;
++  perform 1 from public.academy_lessons where id=p_lesson and track_id=p_track and content_version=p_version and status='published' for share;
++  if not found then raise exception using errcode='40001',message='version_changed'; end if;
++  insert into public.creator_lesson_progress(creator_id,lesson_id,content_version)
++  values(v_creator,p_lesson,p_version) on conflict (creator_id,lesson_id,content_version) do nothing;
++  select * into strict v_row from public.creator_lesson_progress
++    where creator_id=v_creator and lesson_id=p_lesson and content_version=p_version;
++  return jsonb_build_object('lessonId',v_row.lesson_id,'contentVersion',v_row.content_version,'status',v_row.status,'completedAt',v_row.completed_at);
++end;
++$$;
++revoke all on function public.complete_academy_lesson(uuid,uuid,integer) from public,anon,service_role;
++grant execute on function public.complete_academy_lesson(uuid,uuid,integer) to authenticated;
++
++create function public.get_academy_learning(p_track uuid,p_lang text default 'zh-HK') returns jsonb
++language plpgsql security definer set search_path='' as $$
++declare v_creator uuid:=auth.uid(); v_lessons jsonb; v_history jsonb; v_total integer; v_completed integer;
++begin
++  perform 1 from public.academy_content where id=p_track for share;
++  if v_creator is null or not private.can_read_academy_track(p_track) then
++    raise exception using errcode='42501',message='academy_locked';
++  end if;
++  select coalesce(jsonb_agg(jsonb_build_object(
++    'id',l.id,'trackId',l.track_id,'contentVersion',l.content_version,'status',l.status,'position',l.position,
++    'title',case when p_lang='en' and l.title_en<>'' then l.title_en else l.title_zh end,
++    'body',case when p_lang='en' and l.body_en<>'' then l.body_en else l.body_zh end,
++    'completed',p.creator_id is not null,'completedAt',p.completed_at) order by l.position,l.id),'[]'::jsonb),
++    count(*),count(p.creator_id) into v_lessons,v_total,v_completed
++  from public.academy_lessons l left join public.creator_lesson_progress p
++    on p.lesson_id=l.id and p.content_version=l.content_version and p.creator_id=v_creator
++  where l.track_id=p_track and l.status='published';
++  select coalesce(jsonb_agg(jsonb_build_object('lessonId',p.lesson_id,'contentVersion',p.content_version,'completedAt',p.completed_at)
++    order by p.completed_at,p.lesson_id,p.content_version),'[]'::jsonb) into v_history
++  from public.creator_lesson_progress p join public.academy_lessons l on l.id=p.lesson_id and l.content_version=p.content_version
++  where p.creator_id=v_creator and l.track_id=p_track;
++  return jsonb_build_object('lessons',v_lessons,'progress',jsonb_build_object('completed',v_completed,'total',v_total),'history',v_history);
++end;
++$$;
++revoke all on function public.get_academy_learning(uuid,text) from public,anon,service_role;
++grant execute on function public.get_academy_learning(uuid,text) to authenticated;
++
++-- Service-only command; the API supplies its authenticated human staff identity.
++-- Parent row lock serializes edits/publish, revision checks reject stale drafts.
++create function public.author_academy_lesson(p_staff uuid,p_track uuid,p_lesson uuid,p_version integer,p_revision integer,p_input jsonb,p_action text,p_approval_ref text)
++returns jsonb language plpgsql security definer set search_path='' as $$
++declare v public.academy_lessons%rowtype; v_values jsonb; v_next integer;
++begin
++  if p_staff is null or not exists(select 1 from public.staff_users where user_id=p_staff and active) then
++    raise exception using errcode='42501',message='staff_required';
++  end if;
++  perform 1 from public.academy_content where id=p_track and kind='track' for update;
++  if not found then raise exception using errcode='P0002',message='track_not_found'; end if;
++  if p_action is null or p_action not in ('save','publish','archive') or p_input is null or jsonb_typeof(p_input)<>'object' then
++    raise exception using errcode='22023',message='invalid_lesson_command';
++  end if;
++  if p_lesson is null then
++    if p_action<>'save' then raise exception using errcode='22023',message='invalid_lesson_command'; end if;
++    insert into public.academy_lessons(track_id,title_zh,title_en,body_zh,body_en,position)
++      values(p_track,coalesce(p_input->>'title_zh',''),coalesce(p_input->>'title_en',''),coalesce(p_input->>'body_zh',''),coalesce(p_input->>'body_en',''),coalesce((p_input->>'position')::integer,0)) returning * into v;
++    return to_jsonb(v);
++  end if;
++  select * into v from public.academy_lessons where id=p_lesson and track_id=p_track and content_version=p_version for update;
++  if not found then raise exception using errcode='P0002',message='lesson_not_found'; end if;
++  -- Exact publish replay is a no-op; it never reapproves or rewrites the snapshot.
++  if p_action='publish' and v.status='published' and v.approval_ref=p_approval_ref and p_revision=v.revision-1 then return to_jsonb(v); end if;
++  if p_revision is null or v.revision<>p_revision or v.status='archived' then
++    raise exception using errcode='40001',message='lesson_revision_conflict';
++  end if;
++  if p_action='save' then
++    v_values:=to_jsonb(v)||p_input;
++    if v.status='published' then
++      if exists(select 1 from public.academy_lessons where id=p_lesson and status='draft') then
++        raise exception using errcode='40001',message='lesson_draft_exists';
++      end if;
++      select max(content_version)+1 into v_next from public.academy_lessons where id=p_lesson;
++      insert into public.academy_lessons(id,content_version,track_id,title_zh,title_en,body_zh,body_en,position)
++        values(p_lesson,v_next,p_track,v_values->>'title_zh',v_values->>'title_en',v_values->>'body_zh',v_values->>'body_en',(v_values->>'position')::integer) returning * into v;
++    else
++      update public.academy_lessons set title_zh=v_values->>'title_zh',title_en=v_values->>'title_en',body_zh=v_values->>'body_zh',body_en=v_values->>'body_en',position=(v_values->>'position')::integer,revision=revision+1,updated_at=clock_timestamp()
++        where id=p_lesson and content_version=p_version returning * into v;
++    end if;
++  elsif p_action='publish' then
++    if v.status<>'draft' or nullif(btrim(v.title_zh),'') is null or nullif(btrim(v.body_zh),'') is null or nullif(btrim(p_approval_ref),'') is null or length(p_approval_ref)>500 then
++      raise exception using errcode='22023',message='approved_content_required';
++    end if;
++    update public.academy_lessons set status='archived',revision=revision+1,updated_at=clock_timestamp() where id=p_lesson and status='published';
++    update public.academy_lessons set status='published',approval_ref=p_approval_ref,approved_by=p_staff,published_at=clock_timestamp(),revision=revision+1,updated_at=clock_timestamp()
++      where id=p_lesson and content_version=p_version returning * into v;
++  else
++    update public.academy_lessons set status='archived',revision=revision+1,updated_at=clock_timestamp()
++      where id=p_lesson and content_version=p_version returning * into v;
++  end if;
++  return to_jsonb(v);
++end;
++$$;
++revoke all on function public.author_academy_lesson(uuid,uuid,uuid,integer,integer,jsonb,text,text) from public,anon,authenticated;
++grant execute on function public.author_academy_lesson(uuid,uuid,uuid,integer,integer,jsonb,text,text) to service_role;
++notify pgrst,'reload schema';
++commit;
+--- /dev/null
++++ b/supabase/migrations/20261023093445_academy_learning_conflicts.sql
+@@ -0,0 +1,77 @@
++-- D15 forward correction: domain conflicts are terminal HTTP 409, not retryable serialization failures.
++-- The self-only Boolean wrapper crosses private-schema permissions without exposing schema usage.
++begin;
++alter function public.can_read_academy_track(uuid) security definer;
++create or replace function public.complete_academy_lesson(p_track uuid,p_lesson uuid,p_version integer) returns jsonb
++language plpgsql security definer set search_path='' as $$
++declare v_creator uuid:=auth.uid(); v_row public.creator_lesson_progress%rowtype;
++begin
++  -- Consistent lock order with author commands; a publish cannot swap versions mid-completion.
++  perform 1 from public.academy_content where id=p_track for share;
++  if v_creator is null or not private.can_read_academy_track(p_track) then
++    raise exception using errcode='42501',message='academy_locked';
++  end if;
++  perform 1 from public.academy_lessons where id=p_lesson and track_id=p_track and content_version=p_version and status='published' for share;
++  if not found then raise exception using errcode='PT409',message='version_changed'; end if;
++  insert into public.creator_lesson_progress(creator_id,lesson_id,content_version)
++  values(v_creator,p_lesson,p_version) on conflict (creator_id,lesson_id,content_version) do nothing;
++  select * into strict v_row from public.creator_lesson_progress
++    where creator_id=v_creator and lesson_id=p_lesson and content_version=p_version;
++  return jsonb_build_object('lessonId',v_row.lesson_id,'contentVersion',v_row.content_version,'status',v_row.status,'completedAt',v_row.completed_at);
++end;
++$$;
++
++create or replace function public.author_academy_lesson(p_staff uuid,p_track uuid,p_lesson uuid,p_version integer,p_revision integer,p_input jsonb,p_action text,p_approval_ref text)
++returns jsonb language plpgsql security definer set search_path='' as $$
++declare v public.academy_lessons%rowtype; v_values jsonb; v_next integer;
++begin
++  if p_staff is null or not exists(select 1 from public.staff_users where user_id=p_staff and active) then
++    raise exception using errcode='42501',message='staff_required';
++  end if;
++  perform 1 from public.academy_content where id=p_track and kind='track' for update;
++  if not found then raise exception using errcode='P0002',message='track_not_found'; end if;
++  if p_action is null or p_action not in ('save','publish','archive') or p_input is null or jsonb_typeof(p_input)<>'object' then
++    raise exception using errcode='22023',message='invalid_lesson_command';
++  end if;
++  if p_lesson is null then
++    if p_action<>'save' then raise exception using errcode='22023',message='invalid_lesson_command'; end if;
++    insert into public.academy_lessons(track_id,title_zh,title_en,body_zh,body_en,position)
++      values(p_track,coalesce(p_input->>'title_zh',''),coalesce(p_input->>'title_en',''),coalesce(p_input->>'body_zh',''),coalesce(p_input->>'body_en',''),coalesce((p_input->>'position')::integer,0)) returning * into v;
++    return to_jsonb(v);
++  end if;
++  select * into v from public.academy_lessons where id=p_lesson and track_id=p_track and content_version=p_version for update;
++  if not found then raise exception using errcode='P0002',message='lesson_not_found'; end if;
++  -- Exact publish replay is a no-op; it never reapproves or rewrites the snapshot.
++  if p_action='publish' and v.status='published' and v.approval_ref=p_approval_ref and p_revision=v.revision-1 then return to_jsonb(v); end if;
++  if p_revision is null or v.revision<>p_revision or v.status='archived' then
++    raise exception using errcode='PT409',message='lesson_revision_conflict';
++  end if;
++  if p_action='save' then
++    v_values:=to_jsonb(v)||p_input;
++    if v.status='published' then
++      if exists(select 1 from public.academy_lessons where id=p_lesson and status='draft') then
++        raise exception using errcode='PT409',message='lesson_draft_exists';
++      end if;
++      select max(content_version)+1 into v_next from public.academy_lessons where id=p_lesson;
++      insert into public.academy_lessons(id,content_version,track_id,title_zh,title_en,body_zh,body_en,position)
++        values(p_lesson,v_next,p_track,v_values->>'title_zh',v_values->>'title_en',v_values->>'body_zh',v_values->>'body_en',(v_values->>'position')::integer) returning * into v;
++    else
++      update public.academy_lessons set title_zh=v_values->>'title_zh',title_en=v_values->>'title_en',body_zh=v_values->>'body_zh',body_en=v_values->>'body_en',position=(v_values->>'position')::integer,revision=revision+1,updated_at=clock_timestamp()
++        where id=p_lesson and content_version=p_version returning * into v;
++    end if;
++  elsif p_action='publish' then
++    if v.status<>'draft' or nullif(btrim(v.title_zh),'') is null or nullif(btrim(v.body_zh),'') is null or nullif(btrim(p_approval_ref),'') is null or length(p_approval_ref)>500 then
++      raise exception using errcode='22023',message='approved_content_required';
++    end if;
++    update public.academy_lessons set status='archived',revision=revision+1,updated_at=clock_timestamp() where id=p_lesson and status='published';
++    update public.academy_lessons set status='published',approval_ref=p_approval_ref,approved_by=p_staff,published_at=clock_timestamp(),revision=revision+1,updated_at=clock_timestamp()
++      where id=p_lesson and content_version=p_version returning * into v;
++  else
++    update public.academy_lessons set status='archived',revision=revision+1,updated_at=clock_timestamp()
++      where id=p_lesson and content_version=p_version returning * into v;
++  end if;
++  return to_jsonb(v);
++end;
++$$;
++notify pgrst,'reload schema';
++commit;
+--- /dev/null
++++ b/supabase/migrations/20261023095521_academy_approval_index.sql
+@@ -0,0 +1,4 @@
++-- D15 local catalog review: cover the approval actor FK without changing lesson/history data.
++begin;
++create index academy_lessons_approved_by on public.academy_lessons(approved_by);
++commit;
+--- a/supabase/release-manifest.json
++++ b/supabase/release-manifest.json
+@@ -1043,6 +1043,84 @@
+       ],
+       "transactionExpectation": "transactional",
+       "replayExpectation": "migration_history_noop"
++    },
++    {
++      "version": "20261023091050",
++      "name": "academy_learning",
++      "path": "supabase/migrations/20261023091050_academy_learning.sql",
++      "sha256": "b11ea20f0e6e483bb59f582a66f3086aa71c03990c2ceafdc9466c65917602af",
++      "phase": "academy_learning",
++      "dependsOn": [
++        "20261022182544"
++      ],
++      "capabilities": [
++        "table:public.academy_lessons",
++        "table:public.creator_lesson_progress",
++        "constraint:public.academy_lessons.academy_lessons_pkey",
++        "constraint:public.creator_lesson_progress.creator_lesson_progress_pkey",
++        "constraint:public.creator_lesson_progress.creator_lesson_progress_lesson_id_content_version_fkey",
++        "constraint:public.academy_lessons.academy_lesson_published_content",
++        "index:public.academy_lessons.academy_lessons_track_order",
++        "index:public.creator_lesson_progress.creator_lesson_progress_lesson",
++        "grant:authenticated.public.academy_lessons(select)",
++        "grant:authenticated.public.creator_lesson_progress(select)",
++        "grant:service_role.public.academy_lessons(select)",
++        "grant:service_role.public.creator_lesson_progress(select)",
++        "rls:public.academy_lessons",
++        "rls:public.creator_lesson_progress",
++        "policy:public.academy_lessons.academy_lessons_published_eligible",
++        "policy:public.creator_lesson_progress.creator_lesson_progress_self",
++        "index:public.academy_lessons.academy_lesson_one_published",
++        "index:public.academy_lessons.academy_lesson_one_draft",
++        "function:private.can_read_academy_track",
++        "function:public.can_read_academy_track",
++        "function:public.get_academy_learning",
++        "function:public.complete_academy_lesson",
++        "function:public.author_academy_lesson",
++        "function:private.guard_academy_lesson_history",
++        "trigger:public.academy_lesson_history_guard",
++        "grant:authenticated.public.get_academy_learning(uuid,text)",
++        "grant:authenticated.public.complete_academy_lesson(uuid,uuid,integer)",
++        "grant:authenticated.public.can_read_academy_track(uuid)",
++        "grant:service_role.public.author_academy_lesson(uuid,uuid,uuid,integer,integer,jsonb,text,text)"
++      ],
++      "transactionExpectation": "transactional",
++      "replayExpectation": "migration_history_noop"
++    },
++    {
++      "version": "20261023093445",
++      "name": "academy_learning_conflicts",
++      "path": "supabase/migrations/20261023093445_academy_learning_conflicts.sql",
++      "sha256": "e95fcaa93204e33223a6324f4af2475f548db6491ac1d1ea489573339a04984b",
++      "phase": "academy_learning",
++      "dependsOn": [
++        "20261023091050"
++      ],
++      "capabilities": [
++        "function:public.can_read_academy_track",
++        "function:public.complete_academy_lesson",
++        "function:public.author_academy_lesson",
++        "grant:authenticated.public.can_read_academy_track(uuid)",
++        "grant:authenticated.public.complete_academy_lesson(uuid,uuid,integer)",
++        "grant:service_role.public.author_academy_lesson(uuid,uuid,uuid,integer,integer,jsonb,text,text)"
++      ],
++      "transactionExpectation": "transactional",
++      "replayExpectation": "migration_history_noop"
++    },
++    {
++      "version": "20261023095521",
++      "name": "academy_approval_index",
++      "path": "supabase/migrations/20261023095521_academy_approval_index.sql",
++      "sha256": "771fc8faab73eabc7677a07f9881690ba115bbb1e5618045d90c89199d025e34",
++      "phase": "academy_learning",
++      "dependsOn": [
++        "20261023093445"
++      ],
++      "capabilities": [
++        "index:public.academy_lessons.academy_lessons_approved_by"
++      ],
++      "transactionExpectation": "transactional",
++      "replayExpectation": "migration_history_noop"
+     }
+   ]
+ }

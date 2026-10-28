@@ -1,0 +1,43 @@
+{
+  "runId": "d9c86453-c8a7-42eb-9353-1df5dd59309c",
+  "owned": [
+    {
+      "id": "81237899-cb40-4f13-8f35-19b9c88a6e8a",
+      "status": "draft",
+      "body_en": "",
+      "body_zh": "## Synthetic browser reading 1\n\nAcceptance fixture only. No real curriculum approval.",
+      "position": 0,
+      "revision": 1,
+      "title_en": "",
+      "title_zh": "Synthetic browser unit 1",
+      "track_id": "0a704f36-1af0-4a22-bf42-65389846b853",
+      "created_at": "2026-10-23T10:03:56.629459+00:00",
+      "updated_at": "2026-10-23T10:03:56.629459+00:00",
+      "approved_by": null,
+      "approval_ref": null,
+      "published_at": null,
+      "content_version": 1
+    },
+    {
+      "id": "0d1e1a51-47d7-4bc8-b0d7-feb83b2f0b26",
+      "status": "draft",
+      "body_en": "",
+      "body_zh": "## Synthetic browser reading 2\n\nAcceptance fixture only. No real curriculum approval.",
+      "position": 1,
+      "revision": 1,
+      "title_en": "",
+      "title_zh": "Synthetic browser unit 2",
+      "track_id": "0a704f36-1af0-4a22-bf42-65389846b853",
+      "created_at": "2026-10-23T10:03:58.454989+00:00",
+      "updated_at": "2026-10-23T10:03:58.454989+00:00",
+      "approved_by": null,
+      "approval_ref": null,
+      "published_at": null,
+      "content_version": 1
+    }
+  ],
+  "realPersistedBodies": true,
+  "approvalRefAutomaticallyGenerated": false,
+  "courseStatus": "published",
+  "content": "explicitly synthetic only"
+}

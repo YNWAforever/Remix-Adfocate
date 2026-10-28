@@ -1,0 +1,53 @@
+{
+  "runId": "560c5421-28dc-45f0-bdd5-56f32cffdb02",
+  "before": {
+    "creator": {
+      "xp": 0,
+      "budget": null,
+      "points": 50,
+      "cashLedger": 0,
+      "pointLedger": 0,
+      "redemptions": 0,
+      "budgetLedger": 0,
+      "withdrawable": 0,
+      "rewardInventory": []
+    },
+    "untrusted": {
+      "xp": 6000,
+      "budget": null,
+      "points": 50,
+      "cashLedger": 0,
+      "pointLedger": 0,
+      "redemptions": 0,
+      "budgetLedger": 0,
+      "withdrawable": 0,
+      "rewardInventory": []
+    }
+  },
+  "after": {
+    "creator": {
+      "xp": 0,
+      "budget": null,
+      "points": 50,
+      "cashLedger": 0,
+      "pointLedger": 0,
+      "redemptions": 0,
+      "budgetLedger": 0,
+      "withdrawable": 0,
+      "rewardInventory": []
+    },
+    "untrusted": {
+      "xp": 6000,
+      "budget": null,
+      "points": 50,
+      "cashLedger": 0,
+      "pointLedger": 0,
+      "redemptions": 0,
+      "budgetLedger": 0,
+      "withdrawable": 0,
+      "rewardInventory": []
+    }
+  },
+  "allEqual": true,
+  "note": "All raw XP, points, ledgers, withdrawable, budgets, redemptions and gift inventory remain unchanged."
+}

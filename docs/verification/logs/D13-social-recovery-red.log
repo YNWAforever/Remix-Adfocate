@@ -1,0 +1,1010 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ❯ src/components/SocialTrustPanel.test.tsx (9 tests | 2 failed | 7 skipped) 1161ms
+   × SocialTrustPanel > retains a handle and offers a readable error when saving fails 1152ms
+     → Unable to find role="alert"
+
+Ignored nodes: comments, script, style, option
+<body>
+  <div>
+    <section
+      class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 shadow-[4px_4px_0_0_var(--color-ink)]"
+    >
+      <h2
+        class="font-heading font-bold"
+      >
+        Social trust
+      </h2>
+      <div
+        class="space-y-3"
+      >
+        <div
+          class="space-y-2 rounded-xl border-2 border-[var(--color-ink)] p-3"
+        >
+          <div
+            class="flex items-center justify-between gap-2"
+          >
+            <span
+              class="font-heading font-bold"
+            >
+              Instagram
+            </span>
+            <span
+              class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-2 py-0.5 text-xs font-bold"
+            >
+              API-synced
+            </span>
+          </div>
+          <div
+            class="flex items-center justify-between gap-3 text-sm"
+          >
+            <span
+              class="text-[var(--color-soft-ink)]"
+            >
+              @ming
+            </span>
+            <span
+              class="font-heading font-bold"
+            >
+              12,000
+            </span>
+          </div>
+          <div
+            class="grid grid-cols-2 gap-2 text-xs"
+          >
+            <span>
+              <span
+                class="text-[var(--color-soft-ink)]"
+              >
+                Engagement 
+              </span>
+              <span>
+                4.5%
+              </span>
+            </span>
+            <span>
+              <span
+                class="text-[var(--color-soft-ink)]"
+              >
+                Avg likes 
+              </span>
+              <span>
+                500
+              </span>
+            </span>
+            <span>
+              <span
+                class="text-[var(--color-soft-ink)]"
+              >
+                Avg comments 
+              </span>
+              <span>
+                40
+              </span>
+            </span>
+            <span>
+              <span
+                class="text-[var(--color-soft-ink)]"
+              >
+                Freshness 
+              </span>
+              <span>
+                —
+              </span>
+            </span>
+          </div>
+          <button
+            class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 text-xs font-bold disabled:opacity-50"
+            type="button"
+          >
+            Verify ownership
+          </button>
+          <p
+            class="text-xs text-[var(--color-soft-ink)]"
+          >
+            Last synced 
+            2026/6/17
+          </p>
+          <div
+            class="flex items-center gap-3"
+          >
+            <img
+              alt=""
+              class="h-10 w-10 rounded-full border-2 border-[var(--color-ink)] object-cover"
+              src="https://cdn.example.com/avatar.jpg"
+            />
+            <button
+              class="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-xs font-bold"
+              type="button"
+            >
+              Use as Adfocate avatar
+            </button>
+          </div>
+          <button
+            class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 text-xs font-bold"
+            type="button"
+          >
+            Refresh 
+            Instagram
+          </button>
+        </div>
+        <div
+          class="space-y-2 rounded-xl border-2 border-[var(--color-ink)] p-3"
+        >
+          <div
+            class="flex items-center justify-between gap-2"
+          >
+            <span
+              class="font-heading font-bold"
+            >
+              Threads
+            </span>
+          </div>
+          <div
+            class="flex gap-2"
+          >
+            <input
+              aria-label="Threads handle"
+              class="min-w-0 flex-1 rounded-xl border-2 border-[var(--color-ink)] bg-white px-3 py-2 text-sm"
+              value="@keepthis"
+            />
+            <button
+              class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 text-xs font-bold"
+              type="button"
+            >
+              Save 
+              Threads
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style, option
+<body>
+  <div>
+    <section
+      class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 shadow-[4px_4px_0_0_var(--color-ink)]"
+    >
+      <h2
+        class="font-heading font-bold"
+      >
+        Social trust
+      </h2>
+      <div
+        class="space-y-3"
+      >
+        <div
+          class="space-y-2 rounded-xl border-2 border-[var(--color-ink)] p-3"
+        >
+          <div
+            class="flex items-center justify-between gap-2"
+          >
+            <span
+              class="font-heading font-bold"
+            >
+              Instagram
+            </span>
+            <span
+              class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-2 py-0.5 text-xs font-bold"
+            >
+              API-synced
+            </span>
+          </div>
+          <div
+            class="flex items-center justify-between gap-3 text-sm"
+          >
+            <span
+              class="text-[var(--color-soft-ink)]"
+            >
+              @ming
+            </span>
+            <span
+              class="font-heading font-bold"
+            >
+              12,000
+            </span>
+          </div>
+          <div
+            class="grid grid-cols-2 gap-2 text-xs"
+          >
+            <span>
+              <span
+                class="text-[var(--color-soft-ink)]"
+              >
+                Engagement 
+              </span>
+              <span>
+                4.5%
+              </span>
+            </span>
+            <span>
+              <span
+                class="text-[var(--color-soft-ink)]"
+              >
+                Avg likes 
+              </span>
+              <span>
+                500
+              </span>
+            </span>
+            <span>
+              <span
+                class="text-[var(--color-soft-ink)]"
+              >
+                Avg comments 
+              </span>
+              <span>
+                40
+              </span>
+            </span>
+            <span>
+              <span
+                class="text-[var(--color-soft-ink)]"
+              >
+                Freshness 
+              </span>
+              <span>
+                —
+              </span>
+            </span>
+          </div>
+          <button
+            class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 text-xs font-bold disabled:opacity-50"
+            type="button"
+          >
+            Verify ownership
+          </button>
+          <p
+            class="text-xs text-[var(--color-soft-ink)]"
+          >
+            Last synced 
+            2026/6/17
+          </p>
+          <div
+            class="flex items-center gap-3"
+          >
+            <img
+              alt=""
+              class="h-10 w-10 rounded-full border-2 border-[var(--color-ink)] object-cover"
+              src="https://cdn.example.com/avatar.jpg"
+            />
+            <button
+              class="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-xs font-bold"
+              type="button"
+            >
+              Use as Adfocate avatar
+            </button>
+          </div>
+          <button
+            class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 text-xs font-bold"
+            type="button"
+          >
+            Refresh 
+            Instagram
+          </button>
+        </div>
+        <div
+          class="space-y-2 rounded-xl border-2 border-[var(--color-ink)] p-3"
+        >
+          <div
+            class="flex items-center justify-between gap-2"
+          >
+            <span
+              class="font-heading font-bold"
+            >
+              Threads
+            </span>
+          </div>
+          <div
+            class="flex gap-2"
+          >
+            <input
+              aria-label="Threads handle"
+              class="min-w-0 flex-1 rounded-xl border-2 border-[var(--color-ink)] bg-white px-3 py-2 text-sm"
+              value="@keepthis"
+            />
+            <button
+              class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 text-xs font-bold"
+              type="button"
+            >
+              Save 
+              Threads
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+   × SocialTrustPanel > keeps every canonical account on a platform visible 8ms
+     → Unable to find an element with the text: @second. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style, option
+<body>
+  <div>
+    <section
+      class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 shadow-[4px_4px_0_0_var(--color-ink)]"
+    >
+      <h2
+        class="font-heading font-bold"
+      >
+        Social trust
+      </h2>
+      <div
+        class="space-y-3"
+      >
+        <div
+          class="space-y-2 rounded-xl border-2 border-[var(--color-ink)] p-3"
+        >
+          <div
+            class="flex items-center justify-between gap-2"
+          >
+            <span
+              class="font-heading font-bold"
+            >
+              Instagram
+            </span>
+            <span
+              class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-2 py-0.5 text-xs font-bold"
+            >
+              API-synced
+            </span>
+          </div>
+          <div
+            class="flex items-center justify-between gap-3 text-sm"
+          >
+            <span
+              class="text-[var(--color-soft-ink)]"
+            >
+              @ming
+            </span>
+            <span
+              class="font-heading font-bold"
+            >
+              12,000
+            </span>
+          </div>
+          <div
+            class="grid grid-cols-2 gap-2 text-xs"
+          >
+            <span>
+              <span
+                class="text-[var(--color-soft-ink)]"
+              >
+                Engagement 
+              </span>
+              <span>
+                4.5%
+              </span>
+            </span>
+            <span>
+              <span
+                class="text-[var(--color-soft-ink)]"
+              >
+                Avg likes 
+              </span>
+              <span>
+                500
+              </span>
+            </span>
+            <span>
+              <span
+                class="text-[var(--color-soft-ink)]"
+              >
+                Avg comments 
+              </span>
+              <span>
+                40
+              </span>
+            </span>
+            <span>
+              <span
+                class="text-[var(--color-soft-ink)]"
+              >
+                Freshness 
+              </span>
+              <span>
+                —
+              </span>
+            </span>
+          </div>
+          <button
+            class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 text-xs font-bold disabled:opacity-50"
+            type="button"
+          >
+            Verify ownership
+          </button>
+          <p
+            class="text-xs text-[var(--color-soft-ink)]"
+          >
+            Last synced 
+            2026/6/17
+          </p>
+          <div
+            class="flex items-center gap-3"
+          >
+            <img
+              alt=""
+              class="h-10 w-10 rounded-full border-2 border-[var(--color-ink)] object-cover"
+              src="https://cdn.example.com/avatar.jpg"
+            />
+            <button
+              class="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-xs font-bold"
+              type="button"
+            >
+              Use as Adfocate avatar
+            </button>
+          </div>
+          <button
+            class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 text-xs font-bold"
+            type="button"
+          >
+            Refresh 
+            Instagram
+          </button>
+        </div>
+        <div
+          class="space-y-2 rounded-xl border-2 border-[var(--color-ink)] p-3"
+        >
+          <div
+            class="flex items-center justify-between gap-2"
+          >
+            <span
+              class="font-heading font-bold"
+            >
+              Threads
+            </span>
+          </div>
+          <div
+            class="flex gap-2"
+          >
+            <input
+              aria-label="Threads handle"
+              class="min-w-0 flex-1 rounded-xl border-2 border-[var(--color-ink)] bg-white px-3 py-2 text-sm"
+              value=""
+            />
+            <button
+              class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 text-xs font-bold"
+              type="button"
+            >
+              Save 
+              Threads
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+ ❯ src/lib/socialAccountPresentation.test.ts (1 test | 1 failed) 4ms
+   × social presentation compatibility > keeps unknown legacy platforms and ignores malformed old entries 4ms
+     → Cannot read properties of null (reading 'platform')
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/SocialTrustPanel.test.tsx > SocialTrustPanel > retains a handle and offers a readable error when saving fails
+TestingLibraryElementError: Unable to find role="alert"
+
+Ignored nodes: comments, script, style, option
+<body>
+  <div>
+    <section
+      class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 shadow-[4px_4px_0_0_var(--color-ink)]"
+    >
+      <h2
+        class="font-heading font-bold"
+      >
+        Social trust
+      </h2>
+      <div
+        class="space-y-3"
+      >
+        <div
+          class="space-y-2 rounded-xl border-2 border-[var(--color-ink)] p-3"
+        >
+          <div
+            class="flex items-center justify-between gap-2"
+          >
+            <span
+              class="font-heading font-bold"
+            >
+              Instagram
+            </span>
+            <span
+              class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-2 py-0.5 text-xs font-bold"
+            >
+              API-synced
+            </span>
+          </div>
+          <div
+            class="flex items-center justify-between gap-3 text-sm"
+          >
+            <span
+              class="text-[var(--color-soft-ink)]"
+            >
+              @ming
+            </span>
+            <span
+              class="font-heading font-bold"
+            >
+              12,000
+            </span>
+          </div>
+          <div
+            class="grid grid-cols-2 gap-2 text-xs"
+          >
+            <span>
+              <span
+                class="text-[var(--color-soft-ink)]"
+              >
+                Engagement 
+              </span>
+              <span>
+                4.5%
+              </span>
+            </span>
+            <span>
+              <span
+                class="text-[var(--color-soft-ink)]"
+              >
+                Avg likes 
+              </span>
+              <span>
+                500
+              </span>
+            </span>
+            <span>
+              <span
+                class="text-[var(--color-soft-ink)]"
+              >
+                Avg comments 
+              </span>
+              <span>
+                40
+              </span>
+            </span>
+            <span>
+              <span
+                class="text-[var(--color-soft-ink)]"
+              >
+                Freshness 
+              </span>
+              <span>
+                —
+              </span>
+            </span>
+          </div>
+          <button
+            class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 text-xs font-bold disabled:opacity-50"
+            type="button"
+          >
+            Verify ownership
+          </button>
+          <p
+            class="text-xs text-[var(--color-soft-ink)]"
+          >
+            Last synced 
+            2026/6/17
+          </p>
+          <div
+            class="flex items-center gap-3"
+          >
+            <img
+              alt=""
+              class="h-10 w-10 rounded-full border-2 border-[var(--color-ink)] object-cover"
+              src="https://cdn.example.com/avatar.jpg"
+            />
+            <button
+              class="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-xs font-bold"
+              type="button"
+            >
+              Use as Adfocate avatar
+            </button>
+          </div>
+          <button
+            class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 text-xs font-bold"
+            type="button"
+          >
+            Refresh 
+            Instagram
+          </button>
+        </div>
+        <div
+          class="space-y-2 rounded-xl border-2 border-[var(--color-ink)] p-3"
+        >
+          <div
+            class="flex items-center justify-between gap-2"
+          >
+            <span
+              class="font-heading font-bold"
+            >
+              Threads
+            </span>
+          </div>
+          <div
+            class="flex gap-2"
+          >
+            <input
+              aria-label="Threads handle"
+              class="min-w-0 flex-1 rounded-xl border-2 border-[var(--color-ink)] bg-white px-3 py-2 text-sm"
+              value="@keepthis"
+            />
+            <button
+              class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 text-xs font-bold"
+              type="button"
+            >
+              Save 
+              Threads
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style, option
+<body>
+  <div>
+    <section
+      class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 shadow-[4px_4px_0_0_var(--color-ink)]"
+    >
+      <h2
+        class="font-heading font-bold"
+      >
+        Social trust
+      </h2>
+      <div
+        class="space-y-3"
+      >
+        <div
+          class="space-y-2 rounded-xl border-2 border-[var(--color-ink)] p-3"
+        >
+          <div
+            class="flex items-center justify-between gap-2"
+          >
+            <span
+              class="font-heading font-bold"
+            >
+              Instagram
+            </span>
+            <span
+              class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-2 py-0.5 text-xs font-bold"
+            >
+              API-synced
+            </span>
+          </div>
+          <div
+            class="flex items-center justify-between gap-3 text-sm"
+          >
+            <span
+              class="text-[var(--color-soft-ink)]"
+            >
+              @ming
+            </span>
+            <span
+              class="font-heading font-bold"
+            >
+              12,000
+            </span>
+          </div>
+          <div
+            class="grid grid-cols-2 gap-2 text-xs"
+          >
+            <span>
+              <span
+                class="text-[var(--color-soft-ink)]"
+              >
+                Engagement 
+              </span>
+              <span>
+                4.5%
+              </span>
+            </span>
+            <span>
+              <span
+                class="text-[var(--color-soft-ink)]"
+              >
+                Avg likes 
+              </span>
+              <span>
+                500
+              </span>
+            </span>
+            <span>
+              <span
+                class="text-[var(--color-soft-ink)]"
+              >
+                Avg comments 
+              </span>
+              <span>
+                40
+              </span>
+            </span>
+            <span>
+              <span
+                class="text-[var(--color-soft-ink)]"
+              >
+                Freshness 
+              </span>
+              <span>
+                —
+              </span>
+            </span>
+          </div>
+          <button
+            class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 text-xs font-bold disabled:opacity-50"
+            type="button"
+          >
+            Verify ownership
+          </button>
+          <p
+            class="text-xs text-[var(--color-soft-ink)]"
+          >
+            Last synced 
+            2026/6/17
+          </p>
+          <div
+            class="flex items-center gap-3"
+          >
+            <img
+              alt=""
+              class="h-10 w-10 rounded-full border-2 border-[var(--color-ink)] object-cover"
+              src="https://cdn.example.com/avatar.jpg"
+            />
+            <button
+              class="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-xs font-bold"
+              type="button"
+            >
+              Use as Adfocate avatar
+            </button>
+          </div>
+          <button
+            class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 text-xs font-bold"
+            type="button"
+          >
+            Refresh 
+            Instagram
+          </button>
+        </div>
+        <div
+          class="space-y-2 rounded-xl border-2 border-[var(--color-ink)] p-3"
+        >
+          <div
+            class="flex items-center justify-between gap-2"
+          >
+            <span
+              class="font-heading font-bold"
+            >
+              Threads
+            </span>
+          </div>
+          <div
+            class="flex gap-2"
+          >
+            <input
+              aria-label="Threads handle"
+              class="min-w-0 flex-1 rounded-xl border-2 border-[var(--color-ink)] bg-white px-3 py-2 text-sm"
+              value="@keepthis"
+            />
+            <button
+              class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 text-xs font-bold"
+              type="button"
+            >
+              Save 
+              Threads
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/components/SocialTrustPanel.test.tsx:116:25
+    114|     fireEvent.change(screen.getByLabelText("Threads handle"), { target…
+    115|     fireEvent.click(screen.getByText("Save Threads"));
+    116|     expect(await screen.findByRole("alert")).toHaveTextContent("Your i…
+       |                         ^
+    117|     expect(screen.getByLabelText("Threads handle")).toHaveValue("@keep…
+    118|     expect(screen.queryByText("internal database details")).not.toBeIn…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  src/components/SocialTrustPanel.test.tsx > SocialTrustPanel > keeps every canonical account on a platform visible
+TestingLibraryElementError: Unable to find an element with the text: @second. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style, option
+<body>
+  <div>
+    <section
+      class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 shadow-[4px_4px_0_0_var(--color-ink)]"
+    >
+      <h2
+        class="font-heading font-bold"
+      >
+        Social trust
+      </h2>
+      <div
+        class="space-y-3"
+      >
+        <div
+          class="space-y-2 rounded-xl border-2 border-[var(--color-ink)] p-3"
+        >
+          <div
+            class="flex items-center justify-between gap-2"
+          >
+            <span
+              class="font-heading font-bold"
+            >
+              Instagram
+            </span>
+            <span
+              class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-2 py-0.5 text-xs font-bold"
+            >
+              API-synced
+            </span>
+          </div>
+          <div
+            class="flex items-center justify-between gap-3 text-sm"
+          >
+            <span
+              class="text-[var(--color-soft-ink)]"
+            >
+              @ming
+            </span>
+            <span
+              class="font-heading font-bold"
+            >
+              12,000
+            </span>
+          </div>
+          <div
+            class="grid grid-cols-2 gap-2 text-xs"
+          >
+            <span>
+              <span
+                class="text-[var(--color-soft-ink)]"
+              >
+                Engagement 
+              </span>
+              <span>
+                4.5%
+              </span>
+            </span>
+            <span>
+              <span
+                class="text-[var(--color-soft-ink)]"
+              >
+                Avg likes 
+              </span>
+              <span>
+                500
+              </span>
+            </span>
+            <span>
+              <span
+                class="text-[var(--color-soft-ink)]"
+              >
+                Avg comments 
+              </span>
+              <span>
+                40
+              </span>
+            </span>
+            <span>
+              <span
+                class="text-[var(--color-soft-ink)]"
+              >
+                Freshness 
+              </span>
+              <span>
+                —
+              </span>
+            </span>
+          </div>
+          <button
+            class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 text-xs font-bold disabled:opacity-50"
+            type="button"
+          >
+            Verify ownership
+          </button>
+          <p
+            class="text-xs text-[var(--color-soft-ink)]"
+          >
+            Last synced 
+            2026/6/17
+          </p>
+          <div
+            class="flex items-center gap-3"
+          >
+            <img
+              alt=""
+              class="h-10 w-10 rounded-full border-2 border-[var(--color-ink)] object-cover"
+              src="https://cdn.example.com/avatar.jpg"
+            />
+            <button
+              class="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-xs font-bold"
+              type="button"
+            >
+              Use as Adfocate avatar
+            </button>
+          </div>
+          <button
+            class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 text-xs font-bold"
+            type="button"
+          >
+            Refresh 
+            Instagram
+          </button>
+        </div>
+        <div
+          class="space-y-2 rounded-xl border-2 border-[var(--color-ink)] p-3"
+        >
+          <div
+            class="flex items-center justify-between gap-2"
+          >
+            <span
+              class="font-heading font-bold"
+            >
+              Threads
+            </span>
+          </div>
+          <div
+            class="flex gap-2"
+          >
+            <input
+              aria-label="Threads handle"
+              class="min-w-0 flex-1 rounded-xl border-2 border-[var(--color-ink)] bg-white px-3 py-2 text-sm"
+              value=""
+            />
+            <button
+              class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 text-xs font-bold"
+              type="button"
+            >
+              Save 
+              Threads
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/components/SocialTrustPanel.test.tsx:128:21
+    126|       renderEn(<SocialTrustPanel />);
+    127|       expect(screen.getByText("@ming")).toBeInTheDocument();
+    128|       expect(screen.getByText("@second")).toBeInTheDocument();
+       |                     ^
+    129|     } finally { hoisted.accounts.pop(); }
+    130|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  src/lib/socialAccountPresentation.test.ts > social presentation compatibility > keeps unknown legacy platforms and ignores malformed old entries
+TypeError: Cannot read properties of null (reading 'platform')
+ ❯ Module.projectSocialAccounts src/lib/socialAccountPresentation.ts:27:27
+     25|   });
+     26|   for (const item of legacy) {
+     27|     const platform = item.platform.toLowerCase();
+       |                           ^
+     28|     if (!item.handle.trim() || accounts.some((account) => account.plat…
+     29|     if (presentations.some((row) => row.platform === platform && ident…
+ ❯ src/lib/socialAccountPresentation.test.ts:7:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+ Test Files  2 failed (2)
+      Tests  3 failed | 7 skipped (10)
+   Start at  12:52:48
+   Duration  4.65s (transform 196ms, setup 656ms, collect 292ms, tests 1.17s, environment 1.91s, prepare 252ms)
+

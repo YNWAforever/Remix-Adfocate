@@ -1,0 +1,386 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ❯ src/routes/-admin.submissions-evidence.test.tsx (1 test | 1 failed) 83ms
+   × requires a reason before returning invalid legacy evidence for correction 82ms
+     → Unable to find an accessible element with the role "button" and name `/correction|修正/i`
+
+Here are the accessible roles:
+
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"font-heading font-bold"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"text-sm text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  alert:
+
+  Name "":
+  [36m<p[39m
+    [33mrole[39m=[32m"alert"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  list:
+
+  Name "":
+  [36m<ul[39m
+    [33mclass[39m=[32m"space-y-1 text-sm"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  listitem:
+
+  Name "":
+  [36m<li />[39m
+
+  --------------------------------------------------
+  combobox:
+
+  Name "app.admin.submissionsRatingLabel":
+  [36m<select[39m
+    [33maria-label[39m=[32m"app.admin.submissionsRatingLabel"[39m
+    [33mclass[39m=[32m"h-9 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white px-2 text-sm"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  option:
+
+  Name "app.admin.submissionsRatingPlaceholder":
+  [36m<option[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "1★":
+  [36m<option[39m
+    [33mvalue[39m=[32m"1"[39m
+  [36m/>[39m
+
+  Name "2★":
+  [36m<option[39m
+    [33mvalue[39m=[32m"2"[39m
+  [36m/>[39m
+
+  Name "3★":
+  [36m<option[39m
+    [33mvalue[39m=[32m"3"[39m
+  [36m/>[39m
+
+  Name "4★":
+  [36m<option[39m
+    [33mvalue[39m=[32m"4"[39m
+  [36m/>[39m
+
+  Name "5★":
+  [36m<option[39m
+    [33mvalue[39m=[32m"5"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  textbox:
+
+  Name "app.admin.submissionsNotesLabel":
+  [36m<input[39m
+    [33maria-label[39m=[32m"app.admin.submissionsNotesLabel"[39m
+    [33mclass[39m=[32m"h-9 min-w-0 flex-1 rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm"[39m
+    [33mplaceholder[39m=[32m"app.admin.submissionsNotesPlaceholder"[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "app.admin.submissionsApprove":
+  [36m<button[39m
+    [33maria-label[39m=[32m"app.admin.submissionsApprove"[39m
+    [33mclass[39m=[32m"rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 font-heading font-bold"[39m
+    [33mdisabled[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "app.admin.submissionsDecline":
+  [36m<button[39m
+    [33maria-label[39m=[32m"app.admin.submissionsDecline"[39m
+    [33mclass[39m=[32m"rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 font-heading font-bold"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style, option
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"space-y-3"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex flex-wrap items-center justify-between gap-2"[39m
+        [36m>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"font-heading font-bold"[39m
+          [36m>[39m
+            [0mSynthetic Creator[0m
+          [36m</p>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-sm text-[var(--color-soft-ink)]"[39m
+          [36m>[39m
+            [0mSynthetic Mission[0m
+          [36m</p>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mrole[39m=[32m"alert"[39m
+        [36m>[39m
+          [0m作品網址無效，請先要求 Creator 修正。 / Invalid work URL. Request correction before approval.[0m
+        [36m</p>[39m
+        [36m<ul[39m
+          [33mclass[39m=[32m"space-y-1 text-sm"[39m
+        [36m>[39m
+          [36m<li>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"break-all"[39m
+            [36m>[39m
+              [0mwwww[0m
+            [36m</span>[39m
+          [36m</li>[39m
+        [36m</ul>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex flex-wrap items-center gap-2"[39m
+        [36m>[39m
+          [36m<select[39m
+            [33maria-label[39m=[32m"app.admin.submissionsRatingLabel"[39m
+            [33mclass[39m=[32m"h-9 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white px-2 text-sm"[39m
+          [36m/>[39m
+          [36m<input[39m
+            [33maria-label[39m=[32m"app.admin.submissionsNotesLabel"[39m
+            [33mclass[39m=[32m"h-9 min-w-0 flex-1 rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm"[39m
+            [33mplaceholder[39m=[32m"app.admin.submissionsNotesPlaceholder"[39m
+            [33mvalue[39m=[32m""[39m
+          [36m/>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"app.admin.submissionsApprove"[39m
+            [33mclass[39m=[32m"rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 font-heading font-bold"[39m
+            [33mdisabled[39m=[32m""[39m
+          [36m>[39m
+            [0mapp.admin.submissionsApprove[0m
+          [36m</button>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"app.admin.submissionsDecline"[39m
+            [33mclass[39m=[32m"rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 font-heading font-bold"[39m
+          [36m>[39m
+            [0mapp.admin.submissionsDecline[0m
+          [36m</button>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/routes/-admin.submissions-evidence.test.tsx > requires a reason before returning invalid legacy evidence for correction
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name `/correction|修正/i`
+
+Here are the accessible roles:
+
+  paragraph:
+
+  Name "":
+  <p
+    class="font-heading font-bold"
+  />
+
+  Name "":
+  <p
+    class="text-sm text-[var(--color-soft-ink)]"
+  />
+
+  --------------------------------------------------
+  alert:
+
+  Name "":
+  <p
+    role="alert"
+  />
+
+  --------------------------------------------------
+  list:
+
+  Name "":
+  <ul
+    class="space-y-1 text-sm"
+  />
+
+  --------------------------------------------------
+  listitem:
+
+  Name "":
+  <li />
+
+  --------------------------------------------------
+  combobox:
+
+  Name "app.admin.submissionsRatingLabel":
+  <select
+    aria-label="app.admin.submissionsRatingLabel"
+    class="h-9 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white px-2 text-sm"
+  />
+
+  --------------------------------------------------
+  option:
+
+  Name "app.admin.submissionsRatingPlaceholder":
+  <option
+    value=""
+  />
+
+  Name "1★":
+  <option
+    value="1"
+  />
+
+  Name "2★":
+  <option
+    value="2"
+  />
+
+  Name "3★":
+  <option
+    value="3"
+  />
+
+  Name "4★":
+  <option
+    value="4"
+  />
+
+  Name "5★":
+  <option
+    value="5"
+  />
+
+  --------------------------------------------------
+  textbox:
+
+  Name "app.admin.submissionsNotesLabel":
+  <input
+    aria-label="app.admin.submissionsNotesLabel"
+    class="h-9 min-w-0 flex-1 rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm"
+    placeholder="app.admin.submissionsNotesPlaceholder"
+    value=""
+  />
+
+  --------------------------------------------------
+  button:
+
+  Name "app.admin.submissionsApprove":
+  <button
+    aria-label="app.admin.submissionsApprove"
+    class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 font-heading font-bold"
+    disabled=""
+  />
+
+  Name "app.admin.submissionsDecline":
+  <button
+    aria-label="app.admin.submissionsDecline"
+    class="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 font-heading font-bold"
+  />
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style, option
+<body>
+  <div>
+    <div
+      class="space-y-3"
+    >
+      <div
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <div
+          class="flex flex-wrap items-center justify-between gap-2"
+        >
+          <p
+            class="font-heading font-bold"
+          >
+            Synthetic Creator
+          </p>
+          <p
+            class="text-sm text-[var(--color-soft-ink)]"
+          >
+            Synthetic Mission
+          </p>
+        </div>
+        <p
+          role="alert"
+        >
+          作品網址無效，請先要求 Creator 修正。 / Invalid work URL. Request correction before approval.
+        </p>
+        <ul
+          class="space-y-1 text-sm"
+        >
+          <li>
+            <span
+              class="break-all"
+            >
+              wwww
+            </span>
+          </li>
+        </ul>
+        <div
+          class="flex flex-wrap items-center gap-2"
+        >
+          <select
+            aria-label="app.admin.submissionsRatingLabel"
+            class="h-9 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white px-2 text-sm"
+          />
+          <input
+            aria-label="app.admin.submissionsNotesLabel"
+            class="h-9 min-w-0 flex-1 rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm"
+            placeholder="app.admin.submissionsNotesPlaceholder"
+            value=""
+          />
+          <button
+            aria-label="app.admin.submissionsApprove"
+            class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 font-heading font-bold"
+            disabled=""
+          >
+            app.admin.submissionsApprove
+          </button>
+          <button
+            aria-label="app.admin.submissionsDecline"
+            class="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 font-heading font-bold"
+          >
+            app.admin.submissionsDecline
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/routes/-admin.submissions-evidence.test.tsx:19:29
+     17|   render(<QueryClientProvider client={new QueryClient()}><C /></QueryC…
+     18|   await screen.findByText("Synthetic Creator");
+     19|   const correction = screen.getByRole("button", { name: /correction|修…
+       |                             ^
+     20|   expect(correction).toBeDisabled();
+     21|   fireEvent.change(screen.getByLabelText("app.admin.submissionsNotesLa…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+ Test Files  1 failed (1)
+      Tests  1 failed (1)
+   Start at  01:40:53
+   Duration  1.67s (transform 69ms, setup 248ms, collect 152ms, tests 83ms, environment 857ms, prepare 118ms)
+

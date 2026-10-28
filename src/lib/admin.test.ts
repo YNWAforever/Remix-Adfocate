@@ -2,13 +2,16 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   AdminAuthError,
   AdminRequestError,
+  acceptApplication,
   adminFetch,
   approveActiveMissionVersion,
   approveSubmission,
   createMission,
+  declineApplication,
   fetchAdminMissions,
   fetchActiveMissionQueue,
   fetchCreatorDetail,
+  fetchCreatorPublicationProofs,
   fetchCreatorReviewQueue,
   fetchEngagedUsers,
   fetchMissionShortlist,
@@ -16,6 +19,7 @@ import {
   grantActiveMissionRevision,
   markActiveMissionShipped,
   postCreatorReview,
+  postCreatorNote,
   requestActiveMissionRevision,
   startActiveMissionReview,
 } from "./admin";
@@ -98,6 +102,23 @@ describe("admin client helpers", () => {
         }),
       }),
     );
+  });
+
+  it("binds creator case reads, review and notes to the selected workspace", async () => {
+    const fetchMock = vi.spyOn(globalThis, "fetch").mockImplementation(async (_url, init) => {
+      const workspace = new Headers(init?.headers).get("X-Workspace-Slug");
+      return workspace === "inaccessible"
+        ? Response.json({ code: "NOT_FOUND", error: "Not found" }, { status: 404 })
+        : Response.json({ creator: { id: "creator-1" } });
+    });
+    const calls = [
+      () => fetchCreatorDetail("creator-1", "inaccessible"),
+      () => fetchCreatorPublicationProofs("creator-1", "inaccessible"),
+      () => postCreatorReview("creator-1", { status: "approved", riskLevel: "low" }, "inaccessible"),
+      () => postCreatorNote("creator-1", { category: "other", body: "Retained note" }, "inaccessible"),
+    ];
+    for (const call of calls) await expect(call()).rejects.toMatchObject({ status: 404, code: "NOT_FOUND" });
+    expect(fetchMock).toHaveBeenCalledTimes(4);
   });
 
   it("reads mission shortlist responses from the shortlists key", async () => {
@@ -219,6 +240,20 @@ describe("admin client helpers", () => {
         body: JSON.stringify({ notes: "great", quality_rating: 5 }),
       }),
     );
+  });
+
+  it("sends caller-owned application request identities with the original decision payload", async () => {
+    const fetchMock = vi.spyOn(globalThis, "fetch").mockImplementation(async () => Response.json({ decision: {} }));
+    const acceptRequest = "00000000-0000-4000-8000-000000000041";
+    const declineRequest = "00000000-0000-4000-8000-000000000042";
+    await acceptApplication("application-1", acceptRequest);
+    await declineApplication("application-2", "Original decline reason", declineRequest);
+    expect(fetchMock).toHaveBeenNthCalledWith(1, "/api/admin/applications/application-1/accept", expect.objectContaining({
+      method: "POST", body: JSON.stringify({ request_id: acceptRequest }),
+    }));
+    expect(fetchMock).toHaveBeenNthCalledWith(2, "/api/admin/applications/application-2/decline", expect.objectContaining({
+      method: "POST", body: JSON.stringify({ notes: "Original decline reason", request_id: declineRequest }),
+    }));
   });
 
   it("fetchSubmissions encodes the status query", async () => {

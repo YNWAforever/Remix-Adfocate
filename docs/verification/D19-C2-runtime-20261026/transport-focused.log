@@ -1,0 +1,13 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ✓ server/test/application-supplement.test.ts (26 tests) 30ms
+ ✓ server/test/audit-docker-output-capture.test.ts (4 tests) 315ms
+ ✓ server/test/b2-runtime-manifest.test.ts (3 tests) 47ms
+
+ Test Files  3 passed (3)
+      Tests  33 passed (33)
+   Start at  02:25:49
+   Duration  13.94s (transform 81ms, setup 1.11s, collect 507ms, tests 392ms, environment 10.89s, prepare 487ms)
+
+JSON report written to C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/docs/verification/D19-C2-runtime-20261026/transport-focused-results.json

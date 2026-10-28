@@ -8,13 +8,23 @@ export function RedeemGiftCard({ gift, balance }: { gift: Gift; balance: number 
   const redeem = useRedeemGift();
   const [open, setOpen] = useState(false);
   const [code, setCode] = useState<string | null>(null);
+  const [intentError, setIntentError] = useState(false);
   const soldOut = gift.stock_remaining <= 0;
   const poor = balance < gift.points_cost;
   const disabled = soldOut || poor;
 
   function confirm() {
+    setIntentError(false);
     redeem.mutate(gift.id, { onSuccess: (r) => setCode(r.code) });
   }
+  function close() {
+    if (code !== null) {
+      try { redeem.acknowledge(); } catch { setIntentError(true); return; }
+    }
+    setOpen(false);
+  }
+  const sessionChanged = (redeem.error as { code?: string } | null)?.code === "redemption_session_changed";
+  const unsafeRetry = intentError || sessionChanged || ["redemption_intent_unavailable", "request_conflict"].includes((redeem.error as { code?: string } | null)?.code ?? "");
 
   const btnLabel = soldOut
     ? t("app.redemption.soldOut")
@@ -35,7 +45,7 @@ export function RedeemGiftCard({ gift, balance }: { gift: Gift; balance: number 
               type="button"
               disabled={disabled}
               aria-describedby={poor && !soldOut ? `need-more-${gift.id}` : undefined}
-              onClick={() => { setCode(null); setOpen(true); }}
+              onClick={() => { setCode(null); setIntentError(false); setOpen(true); }}
               className={
                 disabled
                   ? "mt-2 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-muted,#E4E4E4)] px-3 py-1.5 font-heading text-sm font-bold text-[var(--color-soft-ink)]"
@@ -58,7 +68,7 @@ export function RedeemGiftCard({ gift, balance }: { gift: Gift; balance: number 
             type="button"
             aria-label={t("app.redemption.dialogTitle")}
             className="fixed inset-0 z-50 bg-black/50"
-            onClick={() => setOpen(false)}
+            onClick={close}
           />
           <div
             role="dialog"
@@ -67,15 +77,15 @@ export function RedeemGiftCard({ gift, balance }: { gift: Gift; balance: number 
             className="pointer-events-none fixed inset-0 z-[51] grid place-items-center p-4"
           >
           <div className="pointer-events-auto w-full max-w-sm rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-5">
+            {(redeem.isError || intentError) && <p role="alert" className="mt-2 text-sm text-[var(--color-magenta)]">{t(sessionChanged ? "app.redemption.sessionChanged" : unsafeRetry ? "app.redemption.intentUnavailable" : "app.redemption.redeemError")}{unsafeRetry && <> <a href="/redemption/history" className="underline">{t("app.redemption.historyLabel")}</a></>}</p>}
             {code === null ? (
               <>
                 <h2 className="font-display text-lg font-bold">{t("app.redemption.dialogTitle")}</h2>
                 <p className="mt-2 text-sm">{t("app.redemption.dialogBody", { pts: gift.points_cost, name: gift.name })}</p>
-                {redeem.isError && <p className="mt-2 text-sm text-[var(--color-magenta)]">{t("app.redemption.redeemError")}</p>}
                 <div className="mt-4 flex gap-2">
                   <button
                     type="button"
-                    onClick={() => setOpen(false)}
+                    onClick={close}
                     className="flex-1 rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-3 py-2 font-heading text-sm font-bold"
                   >
                     {t("common.cancel")}
@@ -106,7 +116,7 @@ export function RedeemGiftCard({ gift, balance }: { gift: Gift; balance: number 
                 </button>
                 <button
                   type="button"
-                  onClick={() => setOpen(false)}
+                  onClick={close}
                   className="mt-2 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-ink)] px-3 py-2 font-heading text-sm font-bold text-white"
                 >
                   {t("app.redemption.done")}

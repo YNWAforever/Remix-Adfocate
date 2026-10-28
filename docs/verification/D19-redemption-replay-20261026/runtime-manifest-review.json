@@ -1,0 +1,32 @@
+{
+  "at": "2026-10-25T20:44:29.498846+00:00",
+  "manifest": {
+    "path": "docs/verification/D19-C2-current-source-runtime-manifest.json",
+    "sha256": "cb93361481d8d6a42785077809c4e5338745ffcb2c3e41ffc62ed72631f59a65"
+  },
+  "candidateSource": {
+    "path": "docs/verification/D19-redemption-replay-20261026/candidate-source.json",
+    "sha256": "b619e1d9c9bccc07bb524a34c71f7f5dd94f34d4fd338770128662dee42768bd"
+  },
+  "sourceDelta": {
+    "path": "docs/verification/D19-redemption-replay-20261026/source-delta-final.json",
+    "sha256": "8288edfb1b57182e8e2e69cb5b6296728d3952780d6fbfd9631df9cd49205e57"
+  },
+  "auth": {
+    "path": "docs/verification/D19-redemption-replay-20261026/runtime-authorization.json",
+    "sha256": "6ba3a4ba2d58ac36049e8ad478ae7ee7acf314beabb18faf66f5123a763dcb7d"
+  },
+  "approved": false,
+  "canExecute": false,
+  "physicalIdentityCheckedThisTurn": false,
+  "localArchiveHashesChecked": 3,
+  "archivesExecuted": false,
+  "targetResourceAdds": 0,
+  "schemaApplyScope": "forward73 only; excludes74",
+  "sameFixtureNamespaceIdsCaps": true,
+  "originalC2ActualApprovalPreserved": {
+    "path": "docs/verification/D19-application-runtime-preparation-20261025/runtime-authorization.json",
+    "sha256": "a909d1c60409db853da5949ee0b6ae29d6f69694fbd2c0bae313c3661557e894"
+  },
+  "f5Superseded": true
+}

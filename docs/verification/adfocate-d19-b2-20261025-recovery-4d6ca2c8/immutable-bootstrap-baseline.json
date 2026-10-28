@@ -1,0 +1,785 @@
+{
+  "at": "2026-10-25T07:22:35.289Z",
+  "identity": {
+    "runId": "4d6ca2c8-b9c2-4457-bda8-7c03ac533f61",
+    "ownerAuthorization": "2026-10-25 direct human reply call_2aaf171f8fd44d8a9eeb263ae8067e30; approved same existing C1 guarded source continuation, manifest a0f09af0a7bce75e6842a1d42042ac4471e757c184574d7e5dcf9a23fdc57989; ZERO additional resources/lifecycle; preserve old targets/OPEN/HOLD/provider disabled",
+    "disposable": true,
+    "projectId": "adfocate-d19-b2-20261025-recovery-4d6ca2c8",
+    "proxy": "none",
+    "apiPort": 56921,
+    "apiContainerId": "c68a68b5ea60116a998cf3b61f4cdfbf737101361ae0866a8d8f83d0313ba253",
+    "databaseContainerId": "a4e387ca84bfd11e815f697e0c407b12b8a610d29691517d8d8ecaef91957956",
+    "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+    "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+    "networkId": "bcc7bcc4cd4a519135d4e54d904024cbebb77786707dcecb6c994694b322e65c"
+  },
+  "lineage": {
+    "projectId": "adfocate-d19-b2-20261025-recovery-4d6ca2c8",
+    "ownerRunId": "4d6ca2c8-b9c2-4457-bda8-7c03ac533f61",
+    "sourceFingerprint": "6285bca02a74bedf3eda7259238366e9023fcc0cae24fe5e7c874ae9dd118d7b",
+    "manifestSha256": "a0f09af0a7bce75e6842a1d42042ac4471e757c184574d7e5dcf9a23fdc57989",
+    "phase": "role",
+    "namespace": "2ccc8831-7368-47d2-b0fd-f1c71b637bd6"
+  },
+  "profileDigest": "741ffaa255017fe377c416ce4ca3214793b0379db45001c15c8952ebd19fc41f",
+  "seeds": [
+    {
+      "table": "public.earnings_balances",
+      "keys": [
+        "id"
+      ],
+      "query": "begin read only;select jsonb_build_object('count',count(*),'ids',coalesce(jsonb_agg(coalesce(t.\"id\"::text,'') order by coalesce(t.\"id\"::text,'')),'[]'::jsonb),'rowHashes',coalesce(jsonb_object_agg(coalesce(t.\"id\"::text,''),md5(to_jsonb(t)::text)),'{}'::jsonb))from \"public\".\"earnings_balances\" t;commit;",
+      "ids": [],
+      "count": 0,
+      "rowHashes": {},
+      "policy": "Original exact IDs and hashes immutable; additions allowed only via exact-owned manifest fixture rows/caps."
+    },
+    {
+      "table": "storage.buckets",
+      "keys": [
+        "id"
+      ],
+      "query": "begin read only;select jsonb_build_object('count',count(*),'ids',coalesce(jsonb_agg(coalesce(t.\"id\"::text,'') order by coalesce(t.\"id\"::text,'')),'[]'::jsonb),'rowHashes',coalesce(jsonb_object_agg(coalesce(t.\"id\"::text,''),md5(to_jsonb(t)::text)),'{}'::jsonb))from \"storage\".\"buckets\" t;commit;",
+      "ids": [
+        "content-media",
+        "creator-avatars",
+        "mission-draft-assets",
+        "mission-publication-proof-assets"
+      ],
+      "count": 4,
+      "rowHashes": {
+        "content-media": "1de3ffdc3da386a2b080d75359ec195d",
+        "creator-avatars": "0a80fd3c79d03ab964fff372d9fdd9ad",
+        "mission-draft-assets": "066afb86aaf6911ca85048976bfd063d",
+        "mission-publication-proof-assets": "262456c94c45b254e464fe792c53aafa"
+      },
+      "literalInsertAttempts": 5,
+      "uniqueSeedIds": 4,
+      "explanation": "The final proof bucket statement upserts the same mission-publication-proof-assets ID. Sealed row count5 is an INSERT-attempt ceiling; exact persisted bucket IDs are4.",
+      "policy": "Original exact IDs and hashes immutable; additions allowed only via exact-owned manifest fixture rows/caps."
+    },
+    {
+      "table": "public.content_categories",
+      "keys": [
+        "id"
+      ],
+      "query": "begin read only;select jsonb_build_object('count',count(*),'ids',coalesce(jsonb_agg(coalesce(t.\"id\"::text,'') order by coalesce(t.\"id\"::text,'')),'[]'::jsonb),'rowHashes',coalesce(jsonb_object_agg(coalesce(t.\"id\"::text,''),md5(to_jsonb(t)::text)),'{}'::jsonb))from \"public\".\"content_categories\" t;commit;",
+      "ids": [
+        "4e32fb0a-10d1-4a92-baac-2dab3ec8a30d",
+        "9a9a4de0-3084-4328-ab0e-69ca9fabeafc"
+      ],
+      "count": 2,
+      "rowHashes": {
+        "4e32fb0a-10d1-4a92-baac-2dab3ec8a30d": "9d16062c7bdd5bfd82852f0d9b81beb8",
+        "9a9a4de0-3084-4328-ab0e-69ca9fabeafc": "edbe10a8d0ff83f8b169469be6990823"
+      },
+      "policy": "Original exact IDs and hashes immutable; additions allowed only via exact-owned manifest fixture rows/caps."
+    },
+    {
+      "table": "public.academy_content",
+      "keys": [
+        "id"
+      ],
+      "query": "begin read only;select jsonb_build_object('count',count(*),'ids',coalesce(jsonb_agg(coalesce(t.\"id\"::text,'') order by coalesce(t.\"id\"::text,'')),'[]'::jsonb),'rowHashes',coalesce(jsonb_object_agg(coalesce(t.\"id\"::text,''),md5(to_jsonb(t)::text)),'{}'::jsonb))from \"public\".\"academy_content\" t;commit;",
+      "ids": [
+        "0333fa53-8d94-49b1-a95f-465d99debadb",
+        "097ddeca-7853-4afe-aaf3-43588460cad3",
+        "16f17c36-f8eb-495d-bd42-20d1f9b647d8",
+        "1ded290a-ffcb-4e71-ab49-6e50fbe15b36",
+        "24ba68fa-2244-42b8-b6f3-acd60418739d",
+        "3a5db9e4-f044-4266-8e35-b8a81e4820ca",
+        "3afa1178-25af-4e0b-9499-6017758e7db0",
+        "3d0dd787-4612-4b0e-a16f-c570a3aecffa",
+        "3df79eee-b380-454e-a860-7b48fb5188c4",
+        "413f122c-7d9f-44b7-a270-964cd65efb92",
+        "4434cb2b-7a4a-4c31-804c-d10ad355cc43",
+        "4dc54612-c893-47c4-8b51-3bd44160d605",
+        "4f1c0b3a-295a-4fc1-925b-e11813f4520c",
+        "51c005fd-8355-41b8-b336-1f7337dd7d31",
+        "6282281f-774c-4cb1-82ff-807dc7207e97",
+        "6a22ec39-81d2-4e4f-94cf-78d371bc10b8",
+        "752ca8d5-405c-4e27-a3aa-78c7ca268e4a",
+        "7e70d43d-7aa5-47a0-8841-698d2b58f2a4",
+        "819b1187-debb-4e0f-8935-c218c10866cf",
+        "85bc0ae1-0e33-4a68-b0a3-6688af175ba5",
+        "9ae16b26-d895-4775-830e-26e4a3e99d63",
+        "9c66ccf2-f31a-42a1-8c05-6ac29af41d60",
+        "9faeba0e-c284-4b36-b8c5-d7124e07a5e3",
+        "a8f13286-7b7f-4321-aff6-f45a76a5093e",
+        "af2050e4-c506-491a-913e-fd5ab83c2d2d",
+        "afad870b-d8c2-4448-beca-2f828c489f76",
+        "c3a64378-3ece-411b-9ea1-a8b768cfcb3a",
+        "c78a4834-6eef-42c7-8e29-6607bdade539",
+        "c9360bf4-6edd-49b0-8809-37a619decce0",
+        "ceae05e1-a04f-4b83-9d0b-b7e4ae00d070",
+        "e3b92457-822f-444e-88d5-6aa749716825"
+      ],
+      "count": 31,
+      "rowHashes": {
+        "0333fa53-8d94-49b1-a95f-465d99debadb": "5bf28679c64c9f540f5f17311eb73bdd",
+        "097ddeca-7853-4afe-aaf3-43588460cad3": "18e11343bf85906e44a907f508ddc1ae",
+        "16f17c36-f8eb-495d-bd42-20d1f9b647d8": "6357b4e184fd341ee2104d482f37789f",
+        "1ded290a-ffcb-4e71-ab49-6e50fbe15b36": "b3a108293fc216ec6d56a1bc8b7fa8f4",
+        "24ba68fa-2244-42b8-b6f3-acd60418739d": "035cc7f4e5dc58696d11801ac1ca41e0",
+        "3a5db9e4-f044-4266-8e35-b8a81e4820ca": "fc7c40cb941124d5b9543dd4124703ec",
+        "3afa1178-25af-4e0b-9499-6017758e7db0": "8e7726c0599d15915202c09f3109d7bf",
+        "3d0dd787-4612-4b0e-a16f-c570a3aecffa": "b240b4a471dac6a3d08456670636d530",
+        "3df79eee-b380-454e-a860-7b48fb5188c4": "90a1cab2d9068e6e6650eb2225c68f47",
+        "413f122c-7d9f-44b7-a270-964cd65efb92": "a07bb9cccec425e762a6b8b64a36f63e",
+        "4434cb2b-7a4a-4c31-804c-d10ad355cc43": "0039be694fa96d9b8b38e996b4ef9f1b",
+        "4dc54612-c893-47c4-8b51-3bd44160d605": "6ffb9b4a739b44463f6fbbbbe31fd701",
+        "4f1c0b3a-295a-4fc1-925b-e11813f4520c": "4d658627a362eee418f151d0c1aecb72",
+        "51c005fd-8355-41b8-b336-1f7337dd7d31": "76af2a8589c46010e3a440b8333b068a",
+        "6282281f-774c-4cb1-82ff-807dc7207e97": "38fd682aa02ca0eb1be92ad8a623bf3a",
+        "6a22ec39-81d2-4e4f-94cf-78d371bc10b8": "d4977911ddacbd88ab9ec80b20c5a394",
+        "752ca8d5-405c-4e27-a3aa-78c7ca268e4a": "a5adf049f86709c19f076d9a7ab05e62",
+        "7e70d43d-7aa5-47a0-8841-698d2b58f2a4": "6077d51a4e403eab2cea560d7dff5e0e",
+        "819b1187-debb-4e0f-8935-c218c10866cf": "ed93ecc4fecbe7cdff9c6724cd83725d",
+        "85bc0ae1-0e33-4a68-b0a3-6688af175ba5": "517a6563f9d296807dfeeb1642afed6e",
+        "9ae16b26-d895-4775-830e-26e4a3e99d63": "8b492645a94823d683d1cd085f9c3557",
+        "9c66ccf2-f31a-42a1-8c05-6ac29af41d60": "d016345b2664d8eeb1e518bd01b6f124",
+        "9faeba0e-c284-4b36-b8c5-d7124e07a5e3": "74b3f4c0e33ceff6d8e99e085a6c43f0",
+        "a8f13286-7b7f-4321-aff6-f45a76a5093e": "10abce754a6195aaa2d80054b1bc9cfe",
+        "af2050e4-c506-491a-913e-fd5ab83c2d2d": "172004e5fb2d3407e65e1be03f7ab5f5",
+        "afad870b-d8c2-4448-beca-2f828c489f76": "307e1390352cf3be0f8e31c126f5c94d",
+        "c3a64378-3ece-411b-9ea1-a8b768cfcb3a": "7210442c3559ada8e050d194b4e5e406",
+        "c78a4834-6eef-42c7-8e29-6607bdade539": "d7ef097c7e60c1f76b58df66edc83f2b",
+        "c9360bf4-6edd-49b0-8809-37a619decce0": "36a7c7531cb98e9433e89a9889afd6ae",
+        "ceae05e1-a04f-4b83-9d0b-b7e4ae00d070": "eacdcc27e5d118e5f77179205d17c01d",
+        "e3b92457-822f-444e-88d5-6aa749716825": "5e983161810ceae0e1029176c3b7c693"
+      },
+      "policy": "Original exact IDs and hashes immutable; additions allowed only via exact-owned manifest fixture rows/caps."
+    }
+  ],
+  "serviceMigrationHistory": {
+    "query": "begin read only;select jsonb_build_object('authHistory',(select jsonb_agg(to_jsonb(t)order by to_jsonb(t)::text)from auth.schema_migrations t),'storageHistory',(select jsonb_agg(to_jsonb(t)order by to_jsonb(t)::text)from storage.migrations t));commit;",
+    "authHistory": [
+      {
+        "version": "00"
+      },
+      {
+        "version": "20171026211738"
+      },
+      {
+        "version": "20171026211808"
+      },
+      {
+        "version": "20171026211834"
+      },
+      {
+        "version": "20180103212743"
+      },
+      {
+        "version": "20180108183307"
+      },
+      {
+        "version": "20180119214651"
+      },
+      {
+        "version": "20180125194653"
+      },
+      {
+        "version": "20210710035447"
+      },
+      {
+        "version": "20210722035447"
+      },
+      {
+        "version": "20210730183235"
+      },
+      {
+        "version": "20210909172000"
+      },
+      {
+        "version": "20210927181326"
+      },
+      {
+        "version": "20211122151130"
+      },
+      {
+        "version": "20211124214934"
+      },
+      {
+        "version": "20211202183645"
+      },
+      {
+        "version": "20220114185221"
+      },
+      {
+        "version": "20220114185340"
+      },
+      {
+        "version": "20220224000811"
+      },
+      {
+        "version": "20220323170000"
+      },
+      {
+        "version": "20220429102000"
+      },
+      {
+        "version": "20220531120530"
+      },
+      {
+        "version": "20220614074223"
+      },
+      {
+        "version": "20220811173540"
+      },
+      {
+        "version": "20221003041349"
+      },
+      {
+        "version": "20221003041400"
+      },
+      {
+        "version": "20221011041400"
+      },
+      {
+        "version": "20221020193600"
+      },
+      {
+        "version": "20221021073300"
+      },
+      {
+        "version": "20221021082433"
+      },
+      {
+        "version": "20221027105023"
+      },
+      {
+        "version": "20221114143122"
+      },
+      {
+        "version": "20221114143410"
+      },
+      {
+        "version": "20221125140132"
+      },
+      {
+        "version": "20221208132122"
+      },
+      {
+        "version": "20221215195500"
+      },
+      {
+        "version": "20221215195800"
+      },
+      {
+        "version": "20221215195900"
+      },
+      {
+        "version": "20230116124310"
+      },
+      {
+        "version": "20230116124412"
+      },
+      {
+        "version": "20230131181311"
+      },
+      {
+        "version": "20230322519590"
+      },
+      {
+        "version": "20230402418590"
+      },
+      {
+        "version": "20230411005111"
+      },
+      {
+        "version": "20230508135423"
+      },
+      {
+        "version": "20230523124323"
+      },
+      {
+        "version": "20230818113222"
+      },
+      {
+        "version": "20230914180801"
+      },
+      {
+        "version": "20231027141322"
+      },
+      {
+        "version": "20231114161723"
+      },
+      {
+        "version": "20231117164230"
+      },
+      {
+        "version": "20240115144230"
+      },
+      {
+        "version": "20240214120130"
+      },
+      {
+        "version": "20240306115329"
+      },
+      {
+        "version": "20240314092811"
+      },
+      {
+        "version": "20240427152123"
+      },
+      {
+        "version": "20240612123726"
+      },
+      {
+        "version": "20240729123726"
+      },
+      {
+        "version": "20240802193726"
+      },
+      {
+        "version": "20240806073726"
+      },
+      {
+        "version": "20241009103726"
+      },
+      {
+        "version": "20250717082212"
+      },
+      {
+        "version": "20250731150234"
+      },
+      {
+        "version": "20250804100000"
+      },
+      {
+        "version": "20250901200500"
+      },
+      {
+        "version": "20250903112500"
+      },
+      {
+        "version": "20250904133000"
+      },
+      {
+        "version": "20250925093508"
+      },
+      {
+        "version": "20251007112900"
+      },
+      {
+        "version": "20251104100000"
+      },
+      {
+        "version": "20251111201300"
+      },
+      {
+        "version": "20251201000000"
+      },
+      {
+        "version": "20260115000000"
+      },
+      {
+        "version": "20260121000000"
+      },
+      {
+        "version": "20260219120000"
+      },
+      {
+        "version": "20260302000000"
+      },
+      {
+        "version": "20260625000000"
+      }
+    ],
+    "storageHistory": [
+      {
+        "id": 0,
+        "hash": "e18db593bcde2aca2a408c4d1100f6abba2195df",
+        "name": "create-migrations-table",
+        "executed_at": "2026-10-25T06:15:18.204175"
+      },
+      {
+        "id": 10,
+        "hash": "b595f05e92f7e91211af1bbfe9c6a13bb3391e16",
+        "name": "search-files-search-function",
+        "executed_at": "2026-10-25T06:15:18.239037"
+      },
+      {
+        "id": 11,
+        "hash": "7425bdb14366d1739fa8a18c83100636d74dcaa2",
+        "name": "add-trigger-to-auto-update-updated_at-column",
+        "executed_at": "2026-10-25T06:15:18.241315"
+      },
+      {
+        "id": 12,
+        "hash": "8e92e1266eb29518b6a4c5313ab8f29dd0d08df9",
+        "name": "add-automatic-avif-detection-flag",
+        "executed_at": "2026-10-25T06:15:18.244071"
+      },
+      {
+        "id": 13,
+        "hash": "cce962054138135cd9a8c4bcd531598684b25e7d",
+        "name": "add-bucket-custom-limits",
+        "executed_at": "2026-10-25T06:15:18.2474"
+      },
+      {
+        "id": 14,
+        "hash": "941c41b346f9802b411f06f30e972ad4744dad27",
+        "name": "use-bytes-for-max-size",
+        "executed_at": "2026-10-25T06:15:18.249455"
+      },
+      {
+        "id": 15,
+        "hash": "934146bc38ead475f4ef4b555c524ee5d66799e5",
+        "name": "add-can-insert-object-function",
+        "executed_at": "2026-10-25T06:15:18.26571"
+      },
+      {
+        "id": 16,
+        "hash": "76debf38d3fd07dcfc747ca49096457d95b1221b",
+        "name": "add-version",
+        "executed_at": "2026-10-25T06:15:18.268167"
+      },
+      {
+        "id": 17,
+        "hash": "f1cbb288f1b7a4c1eb8c38504b80ae2a0153d101",
+        "name": "drop-owner-foreign-key",
+        "executed_at": "2026-10-25T06:15:18.27043"
+      },
+      {
+        "id": 18,
+        "hash": "e7a511b379110b08e2f214be852c35414749fe66",
+        "name": "add_owner_id_column_deprecate_owner",
+        "executed_at": "2026-10-25T06:15:18.272909"
+      },
+      {
+        "id": 19,
+        "hash": "02e5e22a78626187e00d173dc45f58fa66a4f043",
+        "name": "alter-default-value-objects-id",
+        "executed_at": "2026-10-25T06:15:18.276045"
+      },
+      {
+        "id": 1,
+        "hash": "6ab16121fbaa08bbd11b712d05f358f9b555d777",
+        "name": "initialmigration",
+        "executed_at": "2026-10-25T06:15:18.210428"
+      },
+      {
+        "id": 20,
+        "hash": "cd694ae708e51ba82bf012bba00caf4f3b6393b7",
+        "name": "list-objects-with-delimiter",
+        "executed_at": "2026-10-25T06:15:18.279219"
+      },
+      {
+        "id": 21,
+        "hash": "8c804d4a566c40cd1e4cc5b3725a664a9303657f",
+        "name": "s3-multipart-uploads",
+        "executed_at": "2026-10-25T06:15:18.282612"
+      },
+      {
+        "id": 22,
+        "hash": "9737dc258d2397953c9953d9b86920b8be0cdb73",
+        "name": "s3-multipart-uploads-big-ints",
+        "executed_at": "2026-10-25T06:15:18.292052"
+      },
+      {
+        "id": 23,
+        "hash": "9d7e604cddc4b56a5422dc68c9313f4a1b6f132c",
+        "name": "optimize-search-function",
+        "executed_at": "2026-10-25T06:15:18.300696"
+      },
+      {
+        "id": 24,
+        "hash": "8312e37c2bf9e76bbe841aa5fda889206d2bf8aa",
+        "name": "operation-function",
+        "executed_at": "2026-10-25T06:15:18.302675"
+      },
+      {
+        "id": 25,
+        "hash": "d974c6057c3db1c1f847afa0e291e6165693b990",
+        "name": "custom-metadata",
+        "executed_at": "2026-10-25T06:15:18.304375"
+      },
+      {
+        "id": 26,
+        "hash": "215cabcb7f78121892a5a2037a09fedf9a1ae322",
+        "name": "objects-prefixes",
+        "executed_at": "2026-10-25T06:15:18.30672"
+      },
+      {
+        "id": 27,
+        "hash": "859ba38092ac96eb3964d83bf53ccc0b141663a6",
+        "name": "search-v2",
+        "executed_at": "2026-10-25T06:15:18.308933"
+      },
+      {
+        "id": 28,
+        "hash": "c73a2b5b5d4041e39705814fd3a1b95502d38ce4",
+        "name": "object-bucket-name-sorting",
+        "executed_at": "2026-10-25T06:15:18.310946"
+      },
+      {
+        "id": 29,
+        "hash": "ad2c1207f76703d11a9f9007f821620017a66c21",
+        "name": "create-prefixes",
+        "executed_at": "2026-10-25T06:15:18.312587"
+      },
+      {
+        "id": 2,
+        "hash": "f6a1fa2c93cbcd16d4e487b362e45fca157a8dbd",
+        "name": "storage-schema",
+        "executed_at": "2026-10-25T06:15:18.214293"
+      },
+      {
+        "id": 30,
+        "hash": "2be814ff05c8252fdfdc7cfb4b7f5c7e17f0bed6",
+        "name": "update-object-levels",
+        "executed_at": "2026-10-25T06:15:18.313824"
+      },
+      {
+        "id": 31,
+        "hash": "b40367c14c3440ec75f19bbce2d71e914ddd3da0",
+        "name": "objects-level-index",
+        "executed_at": "2026-10-25T06:15:18.314969"
+      },
+      {
+        "id": 32,
+        "hash": "e0c37182b0f7aee3efd823298fb3c76f1042c0f7",
+        "name": "backward-compatible-index-on-objects",
+        "executed_at": "2026-10-25T06:15:18.316455"
+      },
+      {
+        "id": 33,
+        "hash": "b480e99ed951e0900f033ec4eb34b5bdcb4e3d49",
+        "name": "backward-compatible-index-on-prefixes",
+        "executed_at": "2026-10-25T06:15:18.317616"
+      },
+      {
+        "id": 34,
+        "hash": "ca80a3dc7bfef894df17108785ce29a7fc8ee456",
+        "name": "optimize-search-function-v1",
+        "executed_at": "2026-10-25T06:15:18.318953"
+      },
+      {
+        "id": 35,
+        "hash": "458fe0ffd07ec53f5e3ce9df51bfdf4861929ccc",
+        "name": "add-insert-trigger-prefixes",
+        "executed_at": "2026-10-25T06:15:18.320412"
+      },
+      {
+        "id": 36,
+        "hash": "6ae5fca6af5c55abe95369cd4f93985d1814ca8f",
+        "name": "optimise-existing-functions",
+        "executed_at": "2026-10-25T06:15:18.321742"
+      },
+      {
+        "id": 37,
+        "hash": "3944135b4e3e8b22d6d4cbb568fe3b0b51df15c1",
+        "name": "add-bucket-name-length-trigger",
+        "executed_at": "2026-10-25T06:15:18.323026"
+      },
+      {
+        "id": 38,
+        "hash": "02716b81ceec9705aed84aa1501657095b32e5c5",
+        "name": "iceberg-catalog-flag-on-buckets",
+        "executed_at": "2026-10-25T06:15:18.325523"
+      },
+      {
+        "id": 39,
+        "hash": "6706c5f2928846abee18461279799ad12b279b78",
+        "name": "add-search-v2-sort-support",
+        "executed_at": "2026-10-25T06:15:18.339618"
+      },
+      {
+        "id": 3,
+        "hash": "2cb1b0004b817b29d5b0a971af16bafeede4b70d",
+        "name": "pathtoken-column",
+        "executed_at": "2026-10-25T06:15:18.221722"
+      },
+      {
+        "id": 40,
+        "hash": "7ad69982ae2d372b21f48fc4829ae9752c518f6b",
+        "name": "fix-prefix-race-conditions-optimized",
+        "executed_at": "2026-10-25T06:15:18.341729"
+      },
+      {
+        "id": 41,
+        "hash": "07fcf1a22165849b7a029deed059ffcde08d1ae0",
+        "name": "add-object-level-update-trigger",
+        "executed_at": "2026-10-25T06:15:18.343248"
+      },
+      {
+        "id": 42,
+        "hash": "771479077764adc09e2ea2043eb627503c034cd4",
+        "name": "rollback-prefix-triggers",
+        "executed_at": "2026-10-25T06:15:18.345491"
+      },
+      {
+        "id": 43,
+        "hash": "84b35d6caca9d937478ad8a797491f38b8c2979f",
+        "name": "fix-object-level",
+        "executed_at": "2026-10-25T06:15:18.34724"
+      },
+      {
+        "id": 44,
+        "hash": "99c20c0ffd52bb1ff1f32fb992f3b351e3ef8fb3",
+        "name": "vector-bucket-type",
+        "executed_at": "2026-10-25T06:15:18.349015"
+      },
+      {
+        "id": 45,
+        "hash": "049e27196d77a7cb76497a85afae669d8b230953",
+        "name": "vector-buckets",
+        "executed_at": "2026-10-25T06:15:18.351763"
+      },
+      {
+        "id": 46,
+        "hash": "fedeb96d60fefd8e02ab3ded9fbde05632f84aed",
+        "name": "buckets-objects-grants",
+        "executed_at": "2026-10-25T06:15:18.362434"
+      },
+      {
+        "id": 47,
+        "hash": "649df56855c24d8b36dd4cc1aeb8251aa9ad42c2",
+        "name": "iceberg-table-metadata",
+        "executed_at": "2026-10-25T06:15:18.366303"
+      },
+      {
+        "id": 48,
+        "hash": "e0e8b460c609b9999ccd0df9ad14294613eed939",
+        "name": "iceberg-catalog-ids",
+        "executed_at": "2026-10-25T06:15:18.368432"
+      },
+      {
+        "id": 49,
+        "hash": "072b1195d0d5a2f888af6b2302a1938dd94b8b3d",
+        "name": "buckets-objects-grants-postgres",
+        "executed_at": "2026-10-25T06:15:18.388718"
+      },
+      {
+        "id": 4,
+        "hash": "427c5b63fe1c5937495d9c635c263ee7a5905058",
+        "name": "add-migrations-rls",
+        "executed_at": "2026-10-25T06:15:18.227501"
+      },
+      {
+        "id": 50,
+        "hash": "6323ac4f850aa14e7387eb32102869578b5bd478",
+        "name": "search-v2-optimised",
+        "executed_at": "2026-10-25T06:15:18.391878"
+      },
+      {
+        "id": 51,
+        "hash": "2ee395d433f76e38bcd3856debaf6e0e5b674011",
+        "name": "index-backward-compatible-search",
+        "executed_at": "2026-10-25T06:15:18.404886"
+      },
+      {
+        "id": 52,
+        "hash": "5cc44c8696749ac11dd0dc37f2a3802075f3a171",
+        "name": "drop-not-used-indexes-and-functions",
+        "executed_at": "2026-10-25T06:15:18.406442"
+      },
+      {
+        "id": 53,
+        "hash": "d0cb18777d9e2a98ebe0bc5cc7a42e57ebe41854",
+        "name": "drop-index-lower-name",
+        "executed_at": "2026-10-25T06:15:18.413429"
+      },
+      {
+        "id": 54,
+        "hash": "6289e048b1472da17c31a7eba1ded625a6457e67",
+        "name": "drop-index-object-level",
+        "executed_at": "2026-10-25T06:15:18.415107"
+      },
+      {
+        "id": 55,
+        "hash": "262a4798d5e0f2e7c8970232e03ce8be695d5819",
+        "name": "prevent-direct-deletes",
+        "executed_at": "2026-10-25T06:15:18.416447"
+      },
+      {
+        "id": 56,
+        "hash": "b823ed1e418101032fa01374edc9a436e54e3ed4",
+        "name": "fix-optimized-search-function",
+        "executed_at": "2026-10-25T06:15:18.421743"
+      },
+      {
+        "id": 57,
+        "hash": "f127886e00d1b374fadbc7c6b31e09336aad5287",
+        "name": "s3-multipart-uploads-metadata",
+        "executed_at": "2026-10-25T06:15:18.426065"
+      },
+      {
+        "id": 58,
+        "hash": "00ca5d483b3fe0d522133d9002ccc5df98365120",
+        "name": "operation-ergonomics",
+        "executed_at": "2026-10-25T06:15:18.429389"
+      },
+      {
+        "id": 59,
+        "hash": "38456f13e39691c2bbb4b5151d0d1cdbabd4a8c4",
+        "name": "drop-unused-functions",
+        "executed_at": "2026-10-25T06:15:18.432943"
+      },
+      {
+        "id": 5,
+        "hash": "79e081a1455b63666c1294a440f8ad4b1e6a7f84",
+        "name": "add-size-functions",
+        "executed_at": "2026-10-25T06:15:18.230224"
+      },
+      {
+        "id": 60,
+        "hash": "db35e1c91a9201e59f4fef8d972c2f277d68b157",
+        "name": "optimize-existing-functions-again",
+        "executed_at": "2026-10-25T06:15:18.436502"
+      },
+      {
+        "id": 6,
+        "hash": "ded78e2f1b5d7e616117897e6443a925965b30d2",
+        "name": "change-column-name-in-get-size",
+        "executed_at": "2026-10-25T06:15:18.23222"
+      },
+      {
+        "id": 7,
+        "hash": "e7e7f86adbc51049f341dfe8d30256c1abca17aa",
+        "name": "add-rls-to-buckets",
+        "executed_at": "2026-10-25T06:15:18.234122"
+      },
+      {
+        "id": 8,
+        "hash": "fd670db39ed65f9d08b01db09d6202503ca2bab3",
+        "name": "add-public-to-buckets",
+        "executed_at": "2026-10-25T06:15:18.235698"
+      },
+      {
+        "id": 9,
+        "hash": "af597a1b590c70519b464a4ab3be54490712796b",
+        "name": "fix-search-function",
+        "executed_at": "2026-10-25T06:15:18.237412"
+      }
+    ]
+  },
+  "excludedCheckpointExactlyFiveRows": {
+    "phase": "core",
+    "workspaceId": "2bb528a0-bf68-4a3c-a7b1-708aeb517e81",
+    "missionId": "f40f4b8d-4cba-4fb9-b7f9-833218395753",
+    "creatorId": "02d2d080-bc2e-4dd5-b8ee-0006e91c7436",
+    "submissionId": "1bb5331f-8f98-44d6-86fb-e741b3ac727c",
+    "namespace": "bc1ba016-c483-4484-bb5b-706f9c74f2e6",
+    "contentUrls": [
+      "wwww"
+    ],
+    "queueIndex": 0,
+    "countedWithinCoreCaps": true,
+    "notIncidentBeforeImage": true
+  },
+  "checkpointQuery": "begin read only;select jsonb_build_object('workspace',w.id,'mission',m.id,'creator',c.id,'submission',s.id,'status',s.status,'contentUrls',s.content_urls,'mode',m.creator_workflow_mode)from public.workspaces w join public.missions m on m.workspace_id=w.id join public.creators c on c.workspace_id=w.id join public.mission_submissions s on s.mission_id=m.id and s.creator_id=c.id where w.id='2bb528a0-bf68-4a3c-a7b1-708aeb517e81'and m.id='f40f4b8d-4cba-4fb9-b7f9-833218395753'and c.id='02d2d080-bc2e-4dd5-b8ee-0006e91c7436'and s.id='1bb5331f-8f98-44d6-86fb-e741b3ac727c';commit;",
+  "checkpoint": {
+    "mode": "legacy",
+    "status": "submitted",
+    "creator": "02d2d080-bc2e-4dd5-b8ee-0006e91c7436",
+    "mission": "f40f4b8d-4cba-4fb9-b7f9-833218395753",
+    "workspace": "2bb528a0-bf68-4a3c-a7b1-708aeb517e81",
+    "submission": "1bb5331f-8f98-44d6-86fb-e741b3ac727c",
+    "contentUrls": [
+      "wwww"
+    ]
+  },
+  "fixtureClientsCreatedBeforeBaseline": 0
+}

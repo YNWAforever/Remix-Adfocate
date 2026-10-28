@@ -1,0 +1,11 @@
+test_captured_failed_catalog_refused_even_if_config_were_changed (__main__.GuardTests.test_captured_failed_catalog_refused_even_if_config_were_changed) ... ok
+test_captured_failed_target_refused_before_first_start (__main__.GuardTests.test_captured_failed_target_refused_before_first_start) ... ok
+test_correct_declared_prestart_configuration (__main__.GuardTests.test_correct_declared_prestart_configuration) ... ok
+test_existing_application_state_refused (__main__.GuardTests.test_existing_application_state_refused) ... ok
+test_expected_postinit_catalog_is_only_mock (__main__.GuardTests.test_expected_postinit_catalog_is_only_mock) ... ok
+test_unreviewed_image_refused (__main__.GuardTests.test_unreviewed_image_refused) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.014s
+
+OK

@@ -1,3 +1,4 @@
+import { fixtureName } from "./helpers";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { randomUUID } from "node:crypto";
 import { cleanup, DEMO_WS, hasSupabaseEnv, makeCreator, makeMission, serviceForTests, userForJwt } from "./helpers";
@@ -10,8 +11,8 @@ suite("operator CRM schema and RLS", () => {
 
   it("lets the service role write review, note, shortlist, and audit rows", async () => {
     const svc = serviceForTests();
-    const creator = await makeCreator("operator-crm-schema@test.local");
-    const mission = await makeMission({ slug: "test-operator-crm-schema" });
+    const creator = await makeCreator(fixtureName("operator-crm-schema@test.local"));
+    const mission = await makeMission({ slug: fixtureName("test-operator-crm-schema") });
 
     const review = await svc
       .from("creator_review_statuses")
@@ -69,8 +70,8 @@ suite("operator CRM schema and RLS", () => {
 
   it("denies authenticated creators direct read access to operator CRM tables", async () => {
     const svc = serviceForTests();
-    const creator = await makeCreator("operator-crm-hidden@test.local");
-    const mission = await makeMission({ slug: "test-operator-crm-hidden" });
+    const creator = await makeCreator(fixtureName("operator-crm-hidden@test.local"));
+    const mission = await makeMission({ slug: fixtureName("test-operator-crm-hidden") });
 
     await svc.from("creator_review_statuses").insert({
       creator_id: creator.userId,
@@ -118,8 +119,8 @@ suite("operator CRM schema and RLS", () => {
 
   it("enforces one shortlist row per mission and creator", async () => {
     const svc = serviceForTests();
-    const creator = await makeCreator("operator-crm-unique@test.local");
-    const mission = await makeMission({ slug: "test-operator-crm-unique" });
+    const creator = await makeCreator(fixtureName("operator-crm-unique@test.local"));
+    const mission = await makeMission({ slug: fixtureName("test-operator-crm-unique") });
     const row = {
       mission_id: mission.id,
       creator_id: creator.userId,
@@ -139,7 +140,7 @@ suite("operator CRM schema and RLS", () => {
 
   it("rejects shortlist rows when mission and creator workspaces differ", async () => {
     const svc = serviceForTests();
-    const creator = await makeCreator("operator-crm-workspace-guard@test.local");
+    const creator = await makeCreator(fixtureName("operator-crm-workspace-guard@test.local"));
     const workspaceId = randomUUID();
     const missionId = randomUUID();
 

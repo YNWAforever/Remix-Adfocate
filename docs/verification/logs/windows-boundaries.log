@@ -1,0 +1,34 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ✓ server/devApi.transport.test.ts (7 tests) 141ms
+ ✓ scripts/release/manifest.test.ts (16 tests) 5573ms
+   ✓ release migration manifest > normalizes LF, CRLF, and lone CR migration checkouts before hashing 372ms
+   ✓ release migration manifest > rejects unreviewed migrations before, inside, or after the reviewed range 360ms
+   ✓ release migration manifest > rejects empty, truncated, and interior-incomplete reviewed ranges 344ms
+   ✓ release migration manifest > does not replace an existing artifact on invalid write and leaves no temp file 350ms
+   ✓ release migration manifest > runs write as a direct vite-node CLI and prints its digest 926ms
+   ✓ release migration manifest > returns a nonzero usage error for a missing direct CLI command 899ms
+   ✓ release migration manifest > returns a nonzero usage error for a unsupported direct CLI command 838ms
+Warning: Route file "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/_site.smoke.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\src\routes\-_site.smoke.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+{"status":"failed","error":"RELEASE_PILOT_OBSERVATIONS_PATH is required"}
+ ✓ scripts/release/cli.test.ts (7 tests) 8034ms
+   ✓ release npm entrypoints > fails closed when release:execute runs without database configuration 2746ms
+   ✓ release npm entrypoints > fails closed when release:evidence runs without an input file 2424ms
+   ✓ guarded pilot/observer commands > executes the npm/vite-node evaluate boundary even when VITEST is inherited 1461ms
+   ✓ guarded pilot/observer commands > executes the real npm entrypoint and fails closed with JSON 1394ms
+ ✓ server/devApi.test.ts (2 tests) 53ms
+
+ Test Files  4 passed (4)
+      Tests  32 passed (32)
+   Start at  01:35:14
+   Duration  12.85s (transform 259ms, setup 884ms, collect 402ms, tests 13.80s, environment 3.32s, prepare 495ms)
+

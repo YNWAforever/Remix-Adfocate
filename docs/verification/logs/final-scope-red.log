@@ -1,0 +1,72 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ❯ server/test/audit-forward-migrations.embedded.test.ts (11 tests | 1 failed) 1415ms
+   × forward SQL contracts on an owned memory engine > does not let a browser role claim that a provider generation started 16ms
+     → promise resolved "{ rows: [ { …(1) } ], …(4) }" instead of rejecting
+ ❯ src/routes/-admin.creators-access.test.tsx (2 tests | 1 failed) 151ms
+   × removes cached rows immediately when refetch revokes workspace access 112ms
+     → expect(element).not.toBeInTheDocument()
+
+expected document not to contain element, found <p>
+  Previously authorized creator
+</p> instead
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  server/test/audit-forward-migrations.embedded.test.ts > forward SQL contracts on an owned memory engine > does not let a browser role claim that a provider generation started
+AssertionError: promise resolved "{ rows: [ { …(1) } ], …(4) }" instead of rejecting
+
+- Expected
++ Received
+
+- [Error: rejected promise]
++ Object {
++   "affectedRows": 0,
++   "command": "SELECT",
++   "fields": Array [
++     Object {
++       "dataTypeID": 16,
++       "name": "claim_assistant_request",
++     },
++   ],
++   "rowCount": 1,
++   "rows": Array [
++     Object {
++       "claim_assistant_request": true,
++     },
++   ],
++ }
+
+ ❯ rejected server/test/audit-forward-migrations.embedded.test.ts:50:37
+     48| async function rejected(sql: string, params: unknown[], message: strin…
+     49|   await db.exec("savepoint expected_failure");
+     50|   await expect(db.query(sql, params)).rejects.toThrow(message);
+       |                                     ^
+     51|   await db.exec("rollback to savepoint expected_failure");
+     52| }
+ ❯ server/test/audit-forward-migrations.embedded.test.ts:110:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/routes/-admin.creators-access.test.tsx > removes cached rows immediately when refetch revokes workspace access
+Error: expect(element).not.toBeInTheDocument()
+
+expected document not to contain element, found <p>
+  Previously authorized creator
+</p> instead
+ ❯ src/routes/-admin.creators-access.test.tsx:21:94
+     19| }
+     20| it("removes cached rows immediately when refetch revokes workspace acc…
+     21|   await refetchFailure(403); expect(screen.queryByText("Previously aut…
+       |                                                                                              ^
+     22| });
+     23| it("retains the previous rows with a stale warning during a temporary …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+ Test Files  2 failed (2)
+      Tests  2 failed | 11 passed (13)
+   Start at  01:50:12
+   Duration  3.75s (transform 95ms, setup 443ms, collect 345ms, tests 1.57s, environment 778ms, prepare 225ms)
+

@@ -1,0 +1,26 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ❯ src/components/RedeemGiftCard.intent.test.tsx (10 tests | 1 failed) 788ms
+   × UC-C33 actual redemption component/hook preserves a single unacknowledged intent > pins the authorized owner and workspace snapshot despite a subsequent session/navigation change 29ms
+     → expected 'Bearer offline-creator-b' to be 'Bearer offline-creator-a' // Object.is equality
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/RedeemGiftCard.intent.test.tsx > UC-C33 actual redemption component/hook preserves a single unacknowledged intent > pins the authorized owner and workspace snapshot despite a subsequent session/navigation change
+AssertionError: expected 'Bearer offline-creator-b' to be 'Bearer offline-creator-a' // Object.is equality
+
+Expected: "Bearer offline-creator-a"
+Received: "Bearer offline-creator-b"
+
+ ❯ src/components/RedeemGiftCard.intent.test.tsx:70:211
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 9 passed (10)
+   Start at  03:56:14
+   Duration  4.15s (transform 313ms, setup 370ms, collect 654ms, tests 788ms, environment 1.97s, prepare 171ms)
+
+JSON report written to C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/docs/verification/D19-redemption-replay-20261026/client-scope-red-native.json

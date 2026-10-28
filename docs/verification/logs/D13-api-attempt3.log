@@ -1,0 +1,37 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+stderr | server/test/audit-identity-contract.test.ts > D13 owned disposable identity contract
+GoTrueClient@sb-127-auth-token:1 (2.108.1) 2026-10-23T05:12:00.579Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-identity-contract.test.ts > D13 owned disposable identity contract
+GoTrueClient@sb-127-auth-token:2 (2.108.1) 2026-10-23T05:12:00.851Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-identity-contract.test.ts > D13 owned disposable identity contract
+GoTrueClient@sb-127-auth-token:3 (2.108.1) 2026-10-23T05:12:01.128Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-identity-contract.test.ts > D13 owned disposable identity contract
+GoTrueClient@sb-127-auth-token:4 (2.108.1) 2026-10-23T05:12:01.414Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+ ❯ server/test/audit-identity-contract.test.ts (8 tests | 8 skipped) 3102ms
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  server/test/audit-identity-contract.test.ts > D13 owned disposable identity contract
+Error: duplicate key value violates unique constraint "creator_social_accounts_verified_handle_uniq"
+ ❯ Object.must server/test/auditWorkflowFixture.ts:19:29
+     17|   const missionIds: string[] = [];
+     18|   const must = <T extends { data: unknown; error: { message: string } …
+     19|     if (result.error) throw new Error(result.error.message);
+       |                             ^
+     20|     return result.data;
+     21|   };
+ ❯ server/test/audit-identity-contract.test.ts:34:24
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+ Test Files  1 failed (1)
+      Tests  8 skipped (8)
+   Start at  13:11:58
+   Duration  3.95s (transform 596ms, setup 140ms, collect 28ms, tests 3.10s, environment 443ms, prepare 78ms)
+

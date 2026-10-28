@@ -1,3 +1,5 @@
+import { dict } from "./i18n.dict";
+
 const CREATOR_LOCALES = {
   en: "en-HK",
   zh: "zh-Hant-HK",
@@ -47,4 +49,9 @@ export function formatMissionReward(
   }
 
   return `${pointsReward} + ${formatCreatorCurrency(input.cash, locale)}`;
+}
+
+export function formatMissionDecisionReward(input: { points: number; cash?: number | null }, locale: "en" | "zh"): string {
+  const reward = formatMissionReward(input, locale);
+  return input.cash == null ? `${reward} · ${dict[locale]["app.mission.cardCashReward"]}: ${dict[locale]["app.mission.notProvided"]}` : reward;
 }

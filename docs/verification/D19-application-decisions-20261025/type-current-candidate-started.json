@@ -1,0 +1,22 @@
+{
+  "startedAt": "2026-10-25T12:44:52.811634+00:00",
+  "command": [
+    "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+    "node_modules/typescript/bin/tsc",
+    "--noEmit"
+  ],
+  "nodeVersion": "v22.23.4",
+  "npmExecpathProvided": true,
+  "childPathPrefersSameNode22": true,
+  "offlineOnly": true,
+  "actualTargetUsed": false,
+  "packageDownloadOrInstall": false,
+  "resource": {
+    "freePhysicalGiB": 8.595733642578125,
+    "freeCommitGiB": 11.841758728027344,
+    "minimumGiB": 3
+  },
+  "sourceFingerprint": "f3152ad56e24efa39763d75730d6035be25f09a9fb1d41327d37a2119d4fd34c",
+  "sourceRecords": 785,
+  "pid": 16760
+}

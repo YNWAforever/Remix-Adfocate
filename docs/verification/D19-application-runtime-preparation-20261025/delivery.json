@@ -1,0 +1,112 @@
+{
+  "at": "2026-10-25T14:56:03.490983+00:00",
+  "status": "PASS_LOCAL_APPLICATION_SUPPLEMENT_PREPARATION_RUNTIME_NOT_RUN",
+  "sourceFingerprint": "e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993",
+  "sourceRecords": 788,
+  "sourceBefore": "1d3df1fe48e87d784b18ff5bfde3ebe438411187bac6a28d83a3ff6d21f02191",
+  "allPrior785SourcesIdentical": true,
+  "changedSourceFiles": [
+    "scripts/audit/application-supplement.mjs",
+    "scripts/audit/execute-application-supplement.mjs",
+    "server/test/application-supplement.test.ts"
+  ],
+  "commit": null,
+  "branch": "codex/adfocate-r1-pilot-20261023",
+  "head": "7cfa3dc84c821719a4dff754229a591c81786c53",
+  "remote": "https://github.com/YNWAforever/Remix-Adfocate.git",
+  "tests": {
+    "passed": 2129,
+    "failed": 0,
+    "skipped": 363,
+    "files": 292
+  },
+  "originalAudit16": {
+    "passed": 16,
+    "failed": 0,
+    "skipped": 0,
+    "total": 16
+  },
+  "protected194": {
+    "passed": 194,
+    "failed": 0,
+    "skipped": 0,
+    "total": 194
+  },
+  "supplement26": {
+    "passed": 26,
+    "failed": 0,
+    "skipped": 0,
+    "total": 26
+  },
+  "gates": {
+    "path": "docs/verification/D19-application-runtime-preparation-20261025/gates.json",
+    "sha256": "461662c1cddfa8e6eb1a18d2b912ff321c3a35597edf1149a7f8eda5a83f800c"
+  },
+  "runtimeManifest": {
+    "path": "docs/verification/D19-C2-application-runtime-manifest.json",
+    "sha256": "eb5ca8f03a85c5589cc6cbf27ec0ca5524e8600fd2914ad1d4d73f17eec5009a"
+  },
+  "runtimeApproved": false,
+  "actualTargetCalls": 0,
+  "realClientsCreated": 0,
+  "authSubjectsCreated": 0,
+  "fixtureRowsCreated": 0,
+  "browserRuntimeScenariosExecuted": 0,
+  "schema": {
+    "at": "2026-10-25T14:56:03.490983+00:00",
+    "sourceMigrations": 73,
+    "prior72ChecksumsChanged": false,
+    "sourceSqlChangesThisTurn": 0,
+    "actualServerSqlCallsThisTurn": 0,
+    "currentTargetSchema": "UNKNOWN_THIS_TURN; historical C1 evidence72 only",
+    "proposedForwardMigration": {
+      "file": "supabase/migrations/20261025120934_application_decisions.sql",
+      "sha256": "abbfc0499afbe771e36540443a93c979521be1fe70c321f6fb8ff6996a45a35c",
+      "baselineMigrationCount": 72,
+      "forwardOnly": true,
+      "expectedBefore": "Exact72 history and no new function/history; any partial state stops. No replace/reset/history rewrite.",
+      "allowedWrites": [
+        "One new function with explicit ACL",
+        "One new history row in same transaction",
+        "Local PostgREST schema reload notification"
+      ]
+    },
+    "protectedReleaseManifest": {
+      "path": "supabase/release-manifest.json",
+      "sha256": "4659eda99773b5b1c8cd5e3b569de2e2240b1626d135f4843d0a8dded67e5997"
+    },
+    "manifestGate": "PASS_LOCAL",
+    "runtimeApproved": false
+  },
+  "financialNeutralityThisTurn": "NOT_MEASURED_NO_TARGET_CALLS; proposed supplement compares original70 families and9 financial families with original +10XP acceptance window separately. It does not revalidate pending rewards.",
+  "retainedRuntime": "Approved696e composite5 browser cases +2 obligations and neutrality remain bound only to e839; no original API/browser/global RPC rerun.",
+  "caseCoverage": {
+    "path": "docs/verification/D19-application-runtime-preparation-20261025/case-coverage.json",
+    "sha256": "714b2e52118067c53058a0d7d7c6c7b5f9ce15466e49ef0e50bc3956c8bc4afc"
+  },
+  "remaining": {
+    "path": "docs/verification/D19-application-runtime-preparation-20261025/remaining-acceptance.json",
+    "sha256": "42cf6113f79135abaacb398a45a7ed23fd905e15623492f319fe9647bb939e64"
+  },
+  "rollback": {
+    "path": "docs/verification/D19-application-runtime-preparation-20261025/rollback.json",
+    "sha256": "59424f7d48d725b0f475ffe3dc9f7a153f4eac73304bdd314c2e4138e952351c"
+  },
+  "deployment": "NOT_DEPLOYED",
+  "productionDataOrFormalMembershipWrites": 0,
+  "incidentOpen": true,
+  "restored": false,
+  "releaseHold": true,
+  "providerEnabled": false,
+  "wholeR1Verified": false,
+  "blockers": [
+    "D15 approved lesson content absent, UC-C18/A51 semantics preserved",
+    "Named advisor owner, physical device/manual AT and hosted evidence absent",
+    "Formal staff membership/handoff scope restriction",
+    "Current C2 Auth/RLS/race/notification/browser runtime not approved/executed",
+    "Binary assets/full cross-Creator proof/original107 applicability gaps",
+    "Model-interface verification UNKNOWN; no model ID inferred/switched",
+    "Audit ZIP absent at supplied exact path; no new archive SHA verification"
+  ],
+  "nextTask": "D19: review exact C2 manifest and obtain new source-bound runtime approval before identity/SQL/client/setup. Independently review binary asset, cross-Creator and original-case applicability evidence; do not replay696e."
+}

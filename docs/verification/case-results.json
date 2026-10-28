@@ -1,0 +1,2959 @@
+[
+  {
+    "caseId": "UC-P01",
+    "owner": "D14",
+    "title": "首頁可讀與主 CTA",
+    "originalAuditResult": "pass",
+    "originalEnvironment": "production browser",
+    "newResult": {
+      "code": "D14 truthful preview implemented; original lesson expectations preserved",
+      "test": "66 targeted; 1756 full pass / 338 skip; 6 API + 4 Edge",
+      "deployment": "not-deployed",
+      "runtime": "6 real local API cases; 4 Edge journeys; explicit 503 error-path transport fake"
+    },
+    "releaseScope": "R2 D14 local/disposable; not deployed",
+    "evidence": [
+      "D14-api-contract.json",
+      "D14-author-ui.json",
+      "D14-browser-neutrality.json",
+      "D14-browser-summary.json",
+      "D14-changes.patch",
+      "D14-contact-ui.json",
+      "D14-creator-ui.json",
+      "D14-delivery.json",
+      "D14-fixture-retention.json",
+      "D14-public-ui.json",
+      "D14-schema-diff.json",
+      "D14-schema-observation.json",
+      "logs/D14-build-node22.log",
+      "logs/D14-diff-check.log",
+      "logs/D14-full-suite.log",
+      "logs/D14-lint.log",
+      "logs/D14-manifest-check.log",
+      "logs/D14-runtime-verified.log",
+      "logs/D14-targeted.log",
+      "logs/D14-typecheck.log"
+    ],
+    "limitations": "Not deployed. No commit, push, merge, CI, production access, real memberships, messages/invitations, paid AI/social providers, payments or financing.; D14 is the approved local truthful-preview scope. UC-C18 and UC-A51 still require four real lesson units and persisted learning progress in D15; their original expectations remain open, not PASS. The reduced public promise still needs release-owner confirmation before publication.; One transient error scenario uses explicit 503 transport mocks (actual count in D14-creator-ui.json). Successful browser/API reads and writes use real owned local Auth/RLS/database. The browser reuses real local fixture sessions; this is not a fresh external login or provider acceptance.; Earlier R0/R1/D08/D09/D12/D13 runtime stays historical at its preserved fingerprints. This task does not rerun the entire legacy/active proof/reward handoff. The original 16 audit tests and 194 contracts are freshly rerun.; Skipped full-suite integration is not PASS. The broad legacy integration seed/cleanup exceeds exact-owned fixture scope; this task uses the guarded six-case owned Academy integration instead.; No Safari/WebKit, physical-device, full accessibility, 200% zoom, load/performance or multi-author race certification. Existing app lint warnings and build route/bundle warnings remain.; The original audit ZIP was not reopened this turn; original report/case/regression evidence and its expected SHA are preserved. Supplied implementation-package CSV original fields are rechecked unchanged."
+  },
+  {
+    "caseId": "UC-P02",
+    "owner": "D14",
+    "title": "等級示範與引擎一致",
+    "originalAuditResult": "fail",
+    "originalEnvironment": "production browser",
+    "newResult": {
+      "code": "D14 truthful preview implemented; original lesson expectations preserved",
+      "test": "66 targeted; 1756 full pass / 338 skip; 6 API + 4 Edge",
+      "deployment": "not-deployed",
+      "runtime": "6 real local API cases; 4 Edge journeys; explicit 503 error-path transport fake"
+    },
+    "releaseScope": "R2 D14 local/disposable; not deployed",
+    "evidence": [
+      "D14-api-contract.json",
+      "D14-author-ui.json",
+      "D14-browser-neutrality.json",
+      "D14-browser-summary.json",
+      "D14-changes.patch",
+      "D14-contact-ui.json",
+      "D14-creator-ui.json",
+      "D14-delivery.json",
+      "D14-fixture-retention.json",
+      "D14-public-ui.json",
+      "D14-schema-diff.json",
+      "D14-schema-observation.json",
+      "logs/D14-build-node22.log",
+      "logs/D14-diff-check.log",
+      "logs/D14-full-suite.log",
+      "logs/D14-lint.log",
+      "logs/D14-manifest-check.log",
+      "logs/D14-runtime-verified.log",
+      "logs/D14-targeted.log",
+      "logs/D14-typecheck.log"
+    ],
+    "limitations": "Not deployed. No commit, push, merge, CI, production access, real memberships, messages/invitations, paid AI/social providers, payments or financing.; D14 is the approved local truthful-preview scope. UC-C18 and UC-A51 still require four real lesson units and persisted learning progress in D15; their original expectations remain open, not PASS. The reduced public promise still needs release-owner confirmation before publication.; One transient error scenario uses explicit 503 transport mocks (actual count in D14-creator-ui.json). Successful browser/API reads and writes use real owned local Auth/RLS/database. The browser reuses real local fixture sessions; this is not a fresh external login or provider acceptance.; Earlier R0/R1/D08/D09/D12/D13 runtime stays historical at its preserved fingerprints. This task does not rerun the entire legacy/active proof/reward handoff. The original 16 audit tests and 194 contracts are freshly rerun.; Skipped full-suite integration is not PASS. The broad legacy integration seed/cleanup exceeds exact-owned fixture scope; this task uses the guarded six-case owned Academy integration instead.; No Safari/WebKit, physical-device, full accessibility, 200% zoom, load/performance or multi-author race certification. Existing app lint warnings and build route/bundle warnings remain.; The original audit ZIP was not reopened this turn; original report/case/regression evidence and its expected SHA are preserved. Supplied implementation-package CSV original fields are rechecked unchanged."
+  },
+  {
+    "caseId": "UC-P03",
+    "owner": "D14",
+    "title": "聯絡收件能力",
+    "originalAuditResult": "fail",
+    "originalEnvironment": "production browser",
+    "newResult": {
+      "code": "D14 truthful preview implemented; original lesson expectations preserved",
+      "test": "66 targeted; 1756 full pass / 338 skip; 6 API + 4 Edge",
+      "deployment": "not-deployed",
+      "runtime": "6 real local API cases; 4 Edge journeys; explicit 503 error-path transport fake"
+    },
+    "releaseScope": "R2 D14 local/disposable; not deployed",
+    "evidence": [
+      "D14-api-contract.json",
+      "D14-author-ui.json",
+      "D14-browser-neutrality.json",
+      "D14-browser-summary.json",
+      "D14-changes.patch",
+      "D14-contact-ui.json",
+      "D14-creator-ui.json",
+      "D14-delivery.json",
+      "D14-fixture-retention.json",
+      "D14-public-ui.json",
+      "D14-schema-diff.json",
+      "D14-schema-observation.json",
+      "logs/D14-build-node22.log",
+      "logs/D14-diff-check.log",
+      "logs/D14-full-suite.log",
+      "logs/D14-lint.log",
+      "logs/D14-manifest-check.log",
+      "logs/D14-runtime-verified.log",
+      "logs/D14-targeted.log",
+      "logs/D14-typecheck.log"
+    ],
+    "limitations": "Not deployed. No commit, push, merge, CI, production access, real memberships, messages/invitations, paid AI/social providers, payments or financing.; D14 is the approved local truthful-preview scope. UC-C18 and UC-A51 still require four real lesson units and persisted learning progress in D15; their original expectations remain open, not PASS. The reduced public promise still needs release-owner confirmation before publication.; One transient error scenario uses explicit 503 transport mocks (actual count in D14-creator-ui.json). Successful browser/API reads and writes use real owned local Auth/RLS/database. The browser reuses real local fixture sessions; this is not a fresh external login or provider acceptance.; Earlier R0/R1/D08/D09/D12/D13 runtime stays historical at its preserved fingerprints. This task does not rerun the entire legacy/active proof/reward handoff. The original 16 audit tests and 194 contracts are freshly rerun.; Skipped full-suite integration is not PASS. The broad legacy integration seed/cleanup exceeds exact-owned fixture scope; this task uses the guarded six-case owned Academy integration instead.; No Safari/WebKit, physical-device, full accessibility, 200% zoom, load/performance or multi-author race certification. Existing app lint warnings and build route/bundle warnings remain.; The original audit ZIP was not reopened this turn; original report/case/regression evidence and its expected SHA are preserved. Supplied implementation-package CSV original fields are rechecked unchanged."
+  },
+  {
+    "caseId": "UC-C01",
+    "owner": "D13",
+    "title": "登入入口清晰",
+    "originalAuditResult": "fail",
+    "originalEnvironment": "production browser",
+    "newResult": {
+      "code": "D13 implemented; original Auth, RLS and public-field authority retained",
+      "test": "126 targeted; final full suite; 8 real API + 4 Edge",
+      "deployment": "not-deployed",
+      "runtime": "real local Auth/Storage/API and Edge; PKCE UI exchange explicitly mocked"
+    },
+    "releaseScope": "R2 D13 local/disposable; not deployed",
+    "evidence": [
+      "D13-api-contract.json",
+      "D13-auth-recovery.json",
+      "D13-auth-runtime-config.json",
+      "D13-browser-neutrality.json",
+      "D13-browser-summary.json",
+      "D13-changes.patch",
+      "D13-delivery.json",
+      "D13-eslint-scope.json",
+      "D13-fixture-retention.json",
+      "D13-onboarding-roundtrip.json",
+      "D13-post-runtime-format.json",
+      "D13-profile-roundtrip.json",
+      "D13-recovery-ui.json",
+      "D13-schema-observation.json",
+      "logs/D13-browser-verified.log",
+      "logs/D13-build-node22.log",
+      "logs/D13-diff-check.log",
+      "logs/D13-full-suite.log",
+      "logs/D13-lint.log",
+      "logs/D13-manifest-check.log",
+      "logs/D13-native-esm-node22.log",
+      "logs/D13-targeted-final.log",
+      "logs/D13-typecheck.log"
+    ],
+    "limitations": "No deployment, CI, production queries, real memberships, external email/WhatsApp/Google/social provider acceptance or paid AI.; Canonical sync/ownership states were synthetic seeded fixtures; no real social ownership check or paid scan was performed.; PKCE UI exchange was mocked with a valid owned local session; real local Auth single-use/expired/recovery/password/session behavior was separately exercised. Full real email delivery/PKCE provider flow is not certified.; Existing welcome bonus is separately measured (+100 points, one ledger row); no mission pending-reward completion/payment was exercised or changed. Earlier R1/D08/D09/D12 runtime remains historical at its recorded fingerprint.; Skipped integration tests are not passes. The broad legacy integration command was not used because its cleanup/shared DEMO setup exceeds the exact-fixture scope; the guarded D13 integration suite replaces it for this task.; No Safari/WebKit, physical-device, 200% zoom, complete accessibility, load/performance or concurrent profile editing certification. Four existing app lint warnings and build route/bundle warnings remain."
+  },
+  {
+    "caseId": "UC-C02",
+    "owner": "D13",
+    "title": "Creator session 可進入",
+    "originalAuditResult": "pass",
+    "originalEnvironment": "production browser",
+    "newResult": {
+      "code": "D13 implemented; original Auth, RLS and public-field authority retained",
+      "test": "126 targeted; final full suite; 8 real API + 4 Edge",
+      "deployment": "not-deployed",
+      "runtime": "real local Auth/Storage/API and Edge; PKCE UI exchange explicitly mocked"
+    },
+    "releaseScope": "R2 D13 local/disposable; not deployed",
+    "evidence": [
+      "D13-api-contract.json",
+      "D13-auth-recovery.json",
+      "D13-auth-runtime-config.json",
+      "D13-browser-neutrality.json",
+      "D13-browser-summary.json",
+      "D13-changes.patch",
+      "D13-delivery.json",
+      "D13-eslint-scope.json",
+      "D13-fixture-retention.json",
+      "D13-onboarding-roundtrip.json",
+      "D13-post-runtime-format.json",
+      "D13-profile-roundtrip.json",
+      "D13-recovery-ui.json",
+      "D13-schema-observation.json",
+      "logs/D13-browser-verified.log",
+      "logs/D13-build-node22.log",
+      "logs/D13-diff-check.log",
+      "logs/D13-full-suite.log",
+      "logs/D13-lint.log",
+      "logs/D13-manifest-check.log",
+      "logs/D13-native-esm-node22.log",
+      "logs/D13-targeted-final.log",
+      "logs/D13-typecheck.log"
+    ],
+    "limitations": "No deployment, CI, production queries, real memberships, external email/WhatsApp/Google/social provider acceptance or paid AI.; Canonical sync/ownership states were synthetic seeded fixtures; no real social ownership check or paid scan was performed.; PKCE UI exchange was mocked with a valid owned local session; real local Auth single-use/expired/recovery/password/session behavior was separately exercised. Full real email delivery/PKCE provider flow is not certified.; Existing welcome bonus is separately measured (+100 points, one ledger row); no mission pending-reward completion/payment was exercised or changed. Earlier R1/D08/D09/D12 runtime remains historical at its recorded fingerprint.; Skipped integration tests are not passes. The broad legacy integration command was not used because its cleanup/shared DEMO setup exceeds the exact-fixture scope; the guarded D13 integration suite replaces it for this task.; No Safari/WebKit, physical-device, 200% zoom, complete accessibility, load/performance or concurrent profile editing certification. Four existing app lint warnings and build route/bundle warnings remain."
+  },
+  {
+    "caseId": "UC-C03",
+    "owner": "D04",
+    "title": "進行中任務載入",
+    "originalAuditResult": "fail",
+    "originalEnvironment": "production browser",
+    "newResult": {
+      "code": "D08 implemented; existing D04 behavior retained",
+      "test": "124 targeted and full Node22 suite pass; see D08 runtime evidence",
+      "deployment": "not-deployed",
+      "runtime": "disposable Edge: three canonical home states, wallet reload, navigation viewports"
+    },
+    "releaseScope": "R1 preserved plus D08 local/disposable acceptance",
+    "evidence": [
+      "D08-browser-neutrality.json",
+      "D08-browser-roundtrip.json",
+      "D08-home-roundtrip.json",
+      "D08-navigation.json",
+      "logs/D07-browser-full-ui-rerun.log",
+      "logs/D08-browser-final.log",
+      "logs/D08-full-suite.log",
+      "logs/D08-home-followup-red.log",
+      "logs/D08-home-green.log",
+      "logs/D08-home-red.log",
+      "logs/audit-16-final.log",
+      "logs/full-suite-candidate.log"
+    ],
+    "limitations": "No claim that original production audit result changed; current evidence is local/disposable only."
+  },
+  {
+    "caseId": "UC-C04",
+    "owner": "D04",
+    "title": "首頁收入 CTA",
+    "originalAuditResult": "fail",
+    "originalEnvironment": "production browser",
+    "newResult": {
+      "code": "D08 implemented; existing D04 behavior retained",
+      "test": "124 targeted and full Node22 suite pass; see D08 runtime evidence",
+      "deployment": "not-deployed",
+      "runtime": "disposable Edge: three canonical home states, wallet reload, navigation viewports"
+    },
+    "releaseScope": "R1 preserved plus D08 local/disposable acceptance",
+    "evidence": [
+      "D08-browser-neutrality.json",
+      "D08-browser-roundtrip.json",
+      "D08-home-roundtrip.json",
+      "D08-navigation.json",
+      "logs/D07-browser-full-ui-rerun.log",
+      "logs/D08-browser-final.log",
+      "logs/D08-full-suite.log",
+      "logs/D08-home-followup-red.log",
+      "logs/D08-home-green.log",
+      "logs/D08-home-red.log",
+      "logs/audit-16-final.log",
+      "logs/full-suite-candidate.log"
+    ],
+    "limitations": "No claim that original production audit result changed; current evidence is local/disposable only."
+  },
+  {
+    "caseId": "UC-C05",
+    "owner": "D04",
+    "title": "讀取失敗不可顯示空清單",
+    "originalAuditResult": "fail",
+    "originalEnvironment": "local mocked component",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-local-contract",
+      "deployment": "not-deployed",
+      "runtime": "local/offline contracts; see linked runtime evidence for exact subset"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/audit-16-final.log",
+      "logs/full-suite-candidate.log",
+      "logs/D07-browser-full-ui-rerun.log"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-C06",
+    "owner": "D04",
+    "title": "applied/declined 可追蹤",
+    "originalAuditResult": "fail",
+    "originalEnvironment": "local mocked component",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-local-contract",
+      "deployment": "not-deployed",
+      "runtime": "local/offline contracts; see linked runtime evidence for exact subset"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/audit-16-final.log",
+      "logs/full-suite-candidate.log",
+      "logs/D07-browser-full-ui-rerun.log"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-C07",
+    "owner": "D09",
+    "title": "任務決策資訊",
+    "originalAuditResult": "fail",
+    "originalEnvironment": "production browser",
+    "newResult": {
+      "code": "D09 decision projection, category and eligibility implemented",
+      "test": "90 contracts + 131 consumers + full suite; 6 real API and 35 existing integration; 1 browser pass",
+      "deployment": "not-deployed",
+      "runtime": "disposable Edge 360/1280; real serialized list/detail, category filtering, eligibility/409/reload and SQL neutrality"
+    },
+    "releaseScope": "R2 D09 verified local/disposable; not deployed",
+    "evidence": [
+      "D09-api-contract.json",
+      "D09-browser-neutrality.json",
+      "D09-browser-roundtrip.json",
+      "D09-browser-summary.json",
+      "D09-schema-observation.json",
+      "logs/D09-browser-final.log",
+      "logs/D09-build-node22.log",
+      "logs/D09-consumers.log",
+      "logs/D09-contract-green.log",
+      "logs/D09-diff-check.log",
+      "logs/D09-full-suite.log",
+      "logs/D09-general-card-green.log",
+      "logs/D09-integration-green.log",
+      "logs/D09-legacy-integration.log",
+      "logs/D09-lint-final.log",
+      "logs/D09-manifest-check.log",
+      "logs/D09-native-esm-node22.log",
+      "logs/D09-typecheck-final.log"
+    ],
+    "limitations": "No production audit outcome overwritten. No deployment, real provider, Safari/WebKit, physical-device or performance acceptance."
+  },
+  {
+    "caseId": "UC-C08",
+    "owner": "D09",
+    "title": "分類覆蓋現有任務",
+    "originalAuditResult": "fail",
+    "originalEnvironment": "production browser",
+    "newResult": {
+      "code": "D09 decision projection, category and eligibility implemented",
+      "test": "90 contracts + 131 consumers + full suite; 6 real API and 35 existing integration; 1 browser pass",
+      "deployment": "not-deployed",
+      "runtime": "disposable Edge 360/1280; real serialized list/detail, category filtering, eligibility/409/reload and SQL neutrality"
+    },
+    "releaseScope": "R2 D09 verified local/disposable; not deployed",
+    "evidence": [
+      "D09-api-contract.json",
+      "D09-browser-neutrality.json",
+      "D09-browser-roundtrip.json",
+      "D09-browser-summary.json",
+      "D09-schema-observation.json",
+      "logs/D09-browser-final.log",
+      "logs/D09-build-node22.log",
+      "logs/D09-consumers.log",
+      "logs/D09-contract-green.log",
+      "logs/D09-diff-check.log",
+      "logs/D09-full-suite.log",
+      "logs/D09-general-card-green.log",
+      "logs/D09-integration-green.log",
+      "logs/D09-legacy-integration.log",
+      "logs/D09-lint-final.log",
+      "logs/D09-manifest-check.log",
+      "logs/D09-native-esm-node22.log",
+      "logs/D09-typecheck-final.log"
+    ],
+    "limitations": "No production audit outcome overwritten. No deployment, real provider, Safari/WebKit, physical-device or performance acceptance."
+  },
+  {
+    "caseId": "UC-C09",
+    "owner": "D04",
+    "title": "已加入狀態一致",
+    "originalAuditResult": "fail",
+    "originalEnvironment": "production browser",
+    "newResult": {
+      "code": "D08 implemented; existing D04 behavior retained",
+      "test": "124 targeted and full Node22 suite pass; see D08 runtime evidence",
+      "deployment": "not-deployed",
+      "runtime": "disposable Edge: three canonical home states, wallet reload, navigation viewports"
+    },
+    "releaseScope": "R1 preserved plus D08 local/disposable acceptance",
+    "evidence": [
+      "D08-browser-neutrality.json",
+      "D08-browser-roundtrip.json",
+      "D08-home-roundtrip.json",
+      "D08-navigation.json",
+      "logs/D07-browser-full-ui-rerun.log",
+      "logs/D08-browser-final.log",
+      "logs/D08-full-suite.log",
+      "logs/D08-home-followup-red.log",
+      "logs/D08-home-green.log",
+      "logs/D08-home-red.log",
+      "logs/audit-16-final.log",
+      "logs/full-suite-candidate.log"
+    ],
+    "limitations": "No claim that original production audit result changed; current evidence is local/disposable only."
+  },
+  {
+    "caseId": "UC-C10",
+    "owner": "D13",
+    "title": "取消 profile 編輯",
+    "originalAuditResult": "pass",
+    "originalEnvironment": "production browser",
+    "newResult": {
+      "code": "D13 implemented; original Auth, RLS and public-field authority retained",
+      "test": "126 targeted; final full suite; 8 real API + 4 Edge",
+      "deployment": "not-deployed",
+      "runtime": "real local Auth/Storage/API and Edge; PKCE UI exchange explicitly mocked"
+    },
+    "releaseScope": "R2 D13 local/disposable; not deployed",
+    "evidence": [
+      "D13-api-contract.json",
+      "D13-auth-recovery.json",
+      "D13-auth-runtime-config.json",
+      "D13-browser-neutrality.json",
+      "D13-browser-summary.json",
+      "D13-changes.patch",
+      "D13-delivery.json",
+      "D13-eslint-scope.json",
+      "D13-fixture-retention.json",
+      "D13-onboarding-roundtrip.json",
+      "D13-post-runtime-format.json",
+      "D13-profile-roundtrip.json",
+      "D13-recovery-ui.json",
+      "D13-schema-observation.json",
+      "logs/D13-browser-verified.log",
+      "logs/D13-build-node22.log",
+      "logs/D13-diff-check.log",
+      "logs/D13-full-suite.log",
+      "logs/D13-lint.log",
+      "logs/D13-manifest-check.log",
+      "logs/D13-native-esm-node22.log",
+      "logs/D13-targeted-final.log",
+      "logs/D13-typecheck.log"
+    ],
+    "limitations": "No deployment, CI, production queries, real memberships, external email/WhatsApp/Google/social provider acceptance or paid AI.; Canonical sync/ownership states were synthetic seeded fixtures; no real social ownership check or paid scan was performed.; PKCE UI exchange was mocked with a valid owned local session; real local Auth single-use/expired/recovery/password/session behavior was separately exercised. Full real email delivery/PKCE provider flow is not certified.; Existing welcome bonus is separately measured (+100 points, one ledger row); no mission pending-reward completion/payment was exercised or changed. Earlier R1/D08/D09/D12 runtime remains historical at its recorded fingerprint.; Skipped integration tests are not passes. The broad legacy integration command was not used because its cleanup/shared DEMO setup exceeds the exact-fixture scope; the guarded D13 integration suite replaces it for this task.; No Safari/WebKit, physical-device, 200% zoom, complete accessibility, load/performance or concurrent profile editing certification. Four existing app lint warnings and build route/bundle warnings remain."
+  },
+  {
+    "caseId": "UC-C11",
+    "owner": "D13",
+    "title": "社交帳戶一致",
+    "originalAuditResult": "fail",
+    "originalEnvironment": "production browser",
+    "newResult": {
+      "code": "D13 implemented; original Auth, RLS and public-field authority retained",
+      "test": "126 targeted; final full suite; 8 real API + 4 Edge",
+      "deployment": "not-deployed",
+      "runtime": "real local Auth/Storage/API and Edge; PKCE UI exchange explicitly mocked"
+    },
+    "releaseScope": "R2 D13 local/disposable; not deployed",
+    "evidence": [
+      "D13-api-contract.json",
+      "D13-auth-recovery.json",
+      "D13-auth-runtime-config.json",
+      "D13-browser-neutrality.json",
+      "D13-browser-summary.json",
+      "D13-changes.patch",
+      "D13-delivery.json",
+      "D13-eslint-scope.json",
+      "D13-fixture-retention.json",
+      "D13-onboarding-roundtrip.json",
+      "D13-post-runtime-format.json",
+      "D13-profile-roundtrip.json",
+      "D13-recovery-ui.json",
+      "D13-schema-observation.json",
+      "logs/D13-browser-verified.log",
+      "logs/D13-build-node22.log",
+      "logs/D13-diff-check.log",
+      "logs/D13-full-suite.log",
+      "logs/D13-lint.log",
+      "logs/D13-manifest-check.log",
+      "logs/D13-native-esm-node22.log",
+      "logs/D13-targeted-final.log",
+      "logs/D13-typecheck.log"
+    ],
+    "limitations": "No deployment, CI, production queries, real memberships, external email/WhatsApp/Google/social provider acceptance or paid AI.; Canonical sync/ownership states were synthetic seeded fixtures; no real social ownership check or paid scan was performed.; PKCE UI exchange was mocked with a valid owned local session; real local Auth single-use/expired/recovery/password/session behavior was separately exercised. Full real email delivery/PKCE provider flow is not certified.; Existing welcome bonus is separately measured (+100 points, one ledger row); no mission pending-reward completion/payment was exercised or changed. Earlier R1/D08/D09/D12 runtime remains historical at its recorded fingerprint.; Skipped integration tests are not passes. The broad legacy integration command was not used because its cleanup/shared DEMO setup exceeds the exact-fixture scope; the guarded D13 integration suite replaces it for this task.; No Safari/WebKit, physical-device, 200% zoom, complete accessibility, load/performance or concurrent profile editing certification. Four existing app lint warnings and build route/bundle warnings remain."
+  },
+  {
+    "caseId": "UC-C12",
+    "owner": "D13",
+    "title": "護照頁可讀",
+    "originalAuditResult": "pass",
+    "originalEnvironment": "production browser",
+    "newResult": {
+      "code": "D13 implemented; original Auth, RLS and public-field authority retained",
+      "test": "126 targeted; final full suite; 8 real API + 4 Edge",
+      "deployment": "not-deployed",
+      "runtime": "real local Auth/Storage/API and Edge; PKCE UI exchange explicitly mocked"
+    },
+    "releaseScope": "R2 D13 local/disposable; not deployed",
+    "evidence": [
+      "D13-api-contract.json",
+      "D13-auth-recovery.json",
+      "D13-auth-runtime-config.json",
+      "D13-browser-neutrality.json",
+      "D13-browser-summary.json",
+      "D13-changes.patch",
+      "D13-delivery.json",
+      "D13-eslint-scope.json",
+      "D13-fixture-retention.json",
+      "D13-onboarding-roundtrip.json",
+      "D13-post-runtime-format.json",
+      "D13-profile-roundtrip.json",
+      "D13-recovery-ui.json",
+      "D13-schema-observation.json",
+      "logs/D13-browser-verified.log",
+      "logs/D13-build-node22.log",
+      "logs/D13-diff-check.log",
+      "logs/D13-full-suite.log",
+      "logs/D13-lint.log",
+      "logs/D13-manifest-check.log",
+      "logs/D13-native-esm-node22.log",
+      "logs/D13-targeted-final.log",
+      "logs/D13-typecheck.log"
+    ],
+    "limitations": "No deployment, CI, production queries, real memberships, external email/WhatsApp/Google/social provider acceptance or paid AI.; Canonical sync/ownership states were synthetic seeded fixtures; no real social ownership check or paid scan was performed.; PKCE UI exchange was mocked with a valid owned local session; real local Auth single-use/expired/recovery/password/session behavior was separately exercised. Full real email delivery/PKCE provider flow is not certified.; Existing welcome bonus is separately measured (+100 points, one ledger row); no mission pending-reward completion/payment was exercised or changed. Earlier R1/D08/D09/D12 runtime remains historical at its recorded fingerprint.; Skipped integration tests are not passes. The broad legacy integration command was not used because its cleanup/shared DEMO setup exceeds the exact-fixture scope; the guarded D13 integration suite replaces it for this task.; No Safari/WebKit, physical-device, 200% zoom, complete accessibility, load/performance or concurrent profile editing certification. Four existing app lint warnings and build route/bundle warnings remain."
+  },
+  {
+    "caseId": "UC-C13",
+    "owner": "D19",
+    "title": "直接錢包讀取",
+    "originalAuditResult": "pass",
+    "originalEnvironment": "production browser",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-isolated-support",
+      "deployment": "not-deployed",
+      "runtime": "support API contracts in owned integration target; broader UI UAT not claimed"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/full-suite-node22-complete.log",
+      "logs/full-suite-candidate.log",
+      "logs/legacy-owned-integration-complete.log",
+      "logs/release-check-complete.log",
+      "browser-summary.json"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-C14",
+    "owner": "D19",
+    "title": "不足積分與缺貨",
+    "originalAuditResult": "pass",
+    "originalEnvironment": "production browser",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-isolated-support",
+      "deployment": "not-deployed",
+      "runtime": "support API contracts in owned integration target; broader UI UAT not claimed"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/full-suite-node22-complete.log",
+      "logs/full-suite-candidate.log",
+      "logs/legacy-owned-integration-complete.log",
+      "logs/release-check-complete.log",
+      "browser-summary.json"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-C15",
+    "owner": "D19",
+    "title": "空兌換記錄",
+    "originalAuditResult": "pass",
+    "originalEnvironment": "production browser",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "partial-local-support",
+      "deployment": "not-deployed",
+      "runtime": "support API contracts in owned integration target; broader UI UAT not claimed"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/full-suite-node22-complete.log",
+      "logs/full-suite-candidate.log",
+      "logs/legacy-owned-integration-complete.log",
+      "logs/release-check-complete.log",
+      "browser-summary.json"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-C16",
+    "owner": "D19",
+    "title": "沒有 active challenge",
+    "originalAuditResult": "pass",
+    "originalEnvironment": "production browser",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "partial-local-support",
+      "deployment": "not-deployed",
+      "runtime": "support API contracts in owned integration target; broader UI UAT not claimed"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/full-suite-node22-complete.log",
+      "logs/full-suite-candidate.log",
+      "logs/legacy-owned-integration-complete.log",
+      "logs/release-check-complete.log",
+      "browser-summary.json"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-C17",
+    "owner": "D19",
+    "title": "學院列表與資格",
+    "originalAuditResult": "pass",
+    "originalEnvironment": "production browser",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "partial-local-support",
+      "deployment": "not-deployed",
+      "runtime": "support API contracts in owned integration target; broader UI UAT not claimed"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/full-suite-node22-complete.log",
+      "logs/full-suite-candidate.log",
+      "logs/legacy-owned-integration-complete.log",
+      "logs/release-check-complete.log",
+      "browser-summary.json"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-C18",
+    "owner": "D14",
+    "title": "四堂課可開始",
+    "originalAuditResult": "fail",
+    "originalEnvironment": "production browser",
+    "newResult": {
+      "code": "D15 versioned lessons and saved progress implemented; no approved curriculum fabricated",
+      "test": "140 targeted; 1762 full pass / 350 skip; 12 API + 4 Edge; original content blocked",
+      "deployment": "not-deployed",
+      "runtime": "12 real local API/RLS cases; 4 Edge journeys; raw financial neutrality; formal curriculum blocked"
+    },
+    "releaseScope": "D15 synthetic functional verification only; original four-lesson semantics retained; not deployed",
+    "evidence": [
+      "D14-api-contract.json",
+      "D14-author-ui.json",
+      "D14-browser-neutrality.json",
+      "D14-browser-summary.json",
+      "D14-changes.patch",
+      "D14-contact-ui.json",
+      "D14-creator-ui.json",
+      "D14-delivery.json",
+      "D14-fixture-retention.json",
+      "D14-public-ui.json",
+      "D14-schema-diff.json",
+      "D14-schema-observation.json",
+      "D15-api-contract.json",
+      "D15-author-ui.json",
+      "D15-browser-neutrality.json",
+      "D15-browser-summary.json",
+      "D15-changes.patch",
+      "D15-conflict-ui.json",
+      "D15-creator-ui.json",
+      "D15-db-lint.json",
+      "D15-delivery.json",
+      "D15-fixture-retention.json",
+      "D15-forward-correction.json",
+      "D15-forward-index.json",
+      "D15-forward-replay.json",
+      "D15-isolation-ui.json",
+      "D15-schema-after.json",
+      "D15-schema-before.json",
+      "D15-schema-diff.json",
+      "logs/D14-build-node22.log",
+      "logs/D14-diff-check.log",
+      "logs/D14-full-suite.log",
+      "logs/D14-lint.log",
+      "logs/D14-manifest-check.log",
+      "logs/D14-runtime-verified.log",
+      "logs/D14-targeted.log",
+      "logs/D14-typecheck.log",
+      "logs/D15-api-final.log",
+      "logs/D15-browser-final.log",
+      "logs/D15-build-node22.log",
+      "logs/D15-diff-check.log",
+      "logs/D15-full-suite.log",
+      "logs/D15-lint.log",
+      "logs/D15-manifest-check.log",
+      "logs/D15-targeted.log",
+      "logs/D15-typecheck.log"
+    ],
+    "limitations": "BLOCKED_CONTENT_NOT_PROVIDED: user confirmed no approved real curriculum. UC-C18/UC-A51 still require the original four real lesson units; neither is PASS. Two-unit synthetic N03 is functional evidence only.; Not deployed. No commit, push, merge, CI, hosted/production access, real membership changes, external messages/invites/publication, payments or paid AI/providers.; One completion 503 is an explicit browser transport mock. Successful reads/writes and the version-conflict 409 use real local Auth/RLS/API/database; sessions reused from the owned fixture. Manual approval references are recorded staff attestations, not independently verified content approvals.; Prior R0/R1 and D08/D09/D12/D13/D14 runtime remain historical at their preserved fingerprints. Full suite freshly protects 16 audit tests and 194 contracts; the entire legacy/active proof/reward handoff was not rerun for this D15 candidate.; Skipped broad integration is not PASS; legacy shared seeds and broad delete/reset remain excluded. Scoped owned Academy integration supplies the necessary D15 runtime evidence.; No Safari/WebKit, physical-device, full accessibility, load/performance, hosted advisors or production schema acceptance. Four prior app lint warnings and existing route/bundle build warnings remain. F27 remains partial: lesson fields use a labelled business form, while the existing parent track Metadata(JSON) editor is still exposed.; Original supplied CSV fields and originalAuditResult preserved. Original audit ZIP was not reopened this turn; expected audit SHA and prior evidence retained."
+  },
+  {
+    "caseId": "UC-C19",
+    "owner": "D16",
+    "title": "AI 面板開關",
+    "originalAuditResult": "pass",
+    "originalEnvironment": "production browser",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-mock-and-isolated",
+      "deployment": "not-deployed",
+      "runtime": "mock provider and actual local persistence/ownership; no paid provider"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/full-suite-candidate.log",
+      "logs/R1-disposable-complete.log",
+      "logs/legacy-owned-integration-complete.log"
+    ],
+    "limitations": "Reliability and ownership tested with mocks/local persistence; answer quality, external citations and a paid provider are not evaluated."
+  },
+  {
+    "caseId": "UC-A01",
+    "owner": "D03",
+    "title": "後台入口保護",
+    "originalAuditResult": "pass",
+    "originalEnvironment": "production browser",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-local-contract",
+      "deployment": "not-deployed",
+      "runtime": "local/offline contracts; see linked runtime evidence for exact subset"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/D03-scope-red.log",
+      "logs/D03-scope-green.log",
+      "logs/D03-session-race-red.log",
+      "logs/D05-real-schema-green.log",
+      "logs/R1-disposable-complete.log",
+      "logs/legacy-owned-integration-complete.log"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-A02",
+    "owner": "D03",
+    "title": "未授權帳戶拒絕",
+    "originalAuditResult": "pass",
+    "originalEnvironment": "production browser",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-local-contract",
+      "deployment": "not-deployed",
+      "runtime": "local/offline contracts; see linked runtime evidence for exact subset"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/D03-scope-red.log",
+      "logs/D03-scope-green.log",
+      "logs/D03-session-race-red.log",
+      "logs/D05-real-schema-green.log",
+      "logs/R1-disposable-complete.log",
+      "logs/legacy-owned-integration-complete.log"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-A03",
+    "owner": "D03",
+    "title": "授權管理員進入",
+    "originalAuditResult": "pass",
+    "originalEnvironment": "production browser",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-local-contract",
+      "deployment": "not-deployed",
+      "runtime": "local/offline contracts; see linked runtime evidence for exact subset"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/D03-scope-red.log",
+      "logs/D03-scope-green.log",
+      "logs/D03-session-race-red.log",
+      "logs/D05-real-schema-green.log",
+      "logs/R1-disposable-complete.log",
+      "logs/legacy-owned-integration-complete.log"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-A04",
+    "owner": "D10",
+    "title": "第26人可達",
+    "originalAuditResult": "fail",
+    "originalEnvironment": "local mocked component",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-local-and-isolated",
+      "deployment": "not-deployed",
+      "runtime": "real 51-creator DB paging plus component URL/filter/focus contracts"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/audit-16-final.log",
+      "logs/R1-disposable-complete.log",
+      "workflow-runtime.jsonl"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-A05",
+    "owner": "D04",
+    "title": "清單錯誤回饋",
+    "originalAuditResult": "fail",
+    "originalEnvironment": "local mocked component",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-local-contract",
+      "deployment": "not-deployed",
+      "runtime": "local/offline contracts; see linked runtime evidence for exact subset"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/audit-16-final.log",
+      "logs/full-suite-candidate.log",
+      "logs/D07-browser-full-ui-rerun.log"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-A06",
+    "owner": "D04",
+    "title": "接受申請失敗",
+    "originalAuditResult": "fail",
+    "originalEnvironment": "local mocked component",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-local-contract",
+      "deployment": "not-deployed",
+      "runtime": "local/offline contracts; see linked runtime evidence for exact subset"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/audit-16-final.log",
+      "logs/full-suite-candidate.log",
+      "logs/D07-browser-full-ui-rerun.log"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-R01",
+    "owner": "D01",
+    "title": "日期獨立性",
+    "originalAuditResult": "fail",
+    "originalEnvironment": "local",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-local-contract",
+      "deployment": "not-deployed",
+      "runtime": "local/offline contracts; see linked runtime evidence for exact subset"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/D01-baseline.log",
+      "logs/D01-clock-green.log",
+      "logs/audit-16-final.log",
+      "logs/original-194-final.log"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-R02",
+    "owner": "D01",
+    "title": "靜態 gates",
+    "originalAuditResult": "pass",
+    "originalEnvironment": "local",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-local-contract",
+      "deployment": "not-deployed",
+      "runtime": "local/offline contracts; see linked runtime evidence for exact subset"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/D01-baseline.log",
+      "logs/D01-clock-green.log",
+      "logs/audit-16-final.log",
+      "logs/original-194-final.log"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-C20",
+    "owner": "D13",
+    "title": "密碼正常/錯誤",
+    "originalAuditResult": "not-tested",
+    "originalEnvironment": "staging",
+    "newResult": {
+      "code": "D13 implemented; original Auth, RLS and public-field authority retained",
+      "test": "126 targeted; final full suite; 8 real API + 4 Edge",
+      "deployment": "not-deployed",
+      "runtime": "real local Auth/Storage/API and Edge; PKCE UI exchange explicitly mocked"
+    },
+    "releaseScope": "R2 D13 local/disposable; not deployed",
+    "evidence": [
+      "D13-api-contract.json",
+      "D13-auth-recovery.json",
+      "D13-auth-runtime-config.json",
+      "D13-browser-neutrality.json",
+      "D13-browser-summary.json",
+      "D13-changes.patch",
+      "D13-delivery.json",
+      "D13-eslint-scope.json",
+      "D13-fixture-retention.json",
+      "D13-onboarding-roundtrip.json",
+      "D13-post-runtime-format.json",
+      "D13-profile-roundtrip.json",
+      "D13-recovery-ui.json",
+      "D13-schema-observation.json",
+      "logs/D13-browser-verified.log",
+      "logs/D13-build-node22.log",
+      "logs/D13-diff-check.log",
+      "logs/D13-full-suite.log",
+      "logs/D13-lint.log",
+      "logs/D13-manifest-check.log",
+      "logs/D13-native-esm-node22.log",
+      "logs/D13-targeted-final.log",
+      "logs/D13-typecheck.log"
+    ],
+    "limitations": "No deployment, CI, production queries, real memberships, external email/WhatsApp/Google/social provider acceptance or paid AI.; Canonical sync/ownership states were synthetic seeded fixtures; no real social ownership check or paid scan was performed.; PKCE UI exchange was mocked with a valid owned local session; real local Auth single-use/expired/recovery/password/session behavior was separately exercised. Full real email delivery/PKCE provider flow is not certified.; Existing welcome bonus is separately measured (+100 points, one ledger row); no mission pending-reward completion/payment was exercised or changed. Earlier R1/D08/D09/D12 runtime remains historical at its recorded fingerprint.; Skipped integration tests are not passes. The broad legacy integration command was not used because its cleanup/shared DEMO setup exceeds the exact-fixture scope; the guarded D13 integration suite replaces it for this task.; No Safari/WebKit, physical-device, 200% zoom, complete accessibility, load/performance or concurrent profile editing certification. Four existing app lint warnings and build route/bundle warnings remain."
+  },
+  {
+    "caseId": "UC-C21",
+    "owner": "D13",
+    "title": "magic-link 過期與重放",
+    "originalAuditResult": "not-tested",
+    "originalEnvironment": "staging",
+    "newResult": {
+      "code": "D13 implemented; original Auth, RLS and public-field authority retained",
+      "test": "126 targeted; final full suite; 8 real API + 4 Edge",
+      "deployment": "not-deployed",
+      "runtime": "real local Auth/Storage/API and Edge; PKCE UI exchange explicitly mocked"
+    },
+    "releaseScope": "R2 D13 local/disposable; not deployed",
+    "evidence": [
+      "D13-api-contract.json",
+      "D13-auth-recovery.json",
+      "D13-auth-runtime-config.json",
+      "D13-browser-neutrality.json",
+      "D13-browser-summary.json",
+      "D13-changes.patch",
+      "D13-delivery.json",
+      "D13-eslint-scope.json",
+      "D13-fixture-retention.json",
+      "D13-onboarding-roundtrip.json",
+      "D13-post-runtime-format.json",
+      "D13-profile-roundtrip.json",
+      "D13-recovery-ui.json",
+      "D13-schema-observation.json",
+      "logs/D13-browser-verified.log",
+      "logs/D13-build-node22.log",
+      "logs/D13-diff-check.log",
+      "logs/D13-full-suite.log",
+      "logs/D13-lint.log",
+      "logs/D13-manifest-check.log",
+      "logs/D13-native-esm-node22.log",
+      "logs/D13-targeted-final.log",
+      "logs/D13-typecheck.log"
+    ],
+    "limitations": "No deployment, CI, production queries, real memberships, external email/WhatsApp/Google/social provider acceptance or paid AI.; Canonical sync/ownership states were synthetic seeded fixtures; no real social ownership check or paid scan was performed.; PKCE UI exchange was mocked with a valid owned local session; real local Auth single-use/expired/recovery/password/session behavior was separately exercised. Full real email delivery/PKCE provider flow is not certified.; Existing welcome bonus is separately measured (+100 points, one ledger row); no mission pending-reward completion/payment was exercised or changed. Earlier R1/D08/D09/D12 runtime remains historical at its recorded fingerprint.; Skipped integration tests are not passes. The broad legacy integration command was not used because its cleanup/shared DEMO setup exceeds the exact-fixture scope; the guarded D13 integration suite replaces it for this task.; No Safari/WebKit, physical-device, 200% zoom, complete accessibility, load/performance or concurrent profile editing certification. Four existing app lint warnings and build route/bundle warnings remain."
+  },
+  {
+    "caseId": "UC-C22",
+    "owner": "D13",
+    "title": "重設密碼",
+    "originalAuditResult": "not-tested",
+    "originalEnvironment": "staging",
+    "newResult": {
+      "code": "D13 implemented; original Auth, RLS and public-field authority retained",
+      "test": "126 targeted; final full suite; 8 real API + 4 Edge",
+      "deployment": "not-deployed",
+      "runtime": "real local Auth/Storage/API and Edge; PKCE UI exchange explicitly mocked"
+    },
+    "releaseScope": "R2 D13 local/disposable; not deployed",
+    "evidence": [
+      "D13-api-contract.json",
+      "D13-auth-recovery.json",
+      "D13-auth-runtime-config.json",
+      "D13-browser-neutrality.json",
+      "D13-browser-summary.json",
+      "D13-changes.patch",
+      "D13-delivery.json",
+      "D13-eslint-scope.json",
+      "D13-fixture-retention.json",
+      "D13-onboarding-roundtrip.json",
+      "D13-post-runtime-format.json",
+      "D13-profile-roundtrip.json",
+      "D13-recovery-ui.json",
+      "D13-schema-observation.json",
+      "logs/D13-browser-verified.log",
+      "logs/D13-build-node22.log",
+      "logs/D13-diff-check.log",
+      "logs/D13-full-suite.log",
+      "logs/D13-lint.log",
+      "logs/D13-manifest-check.log",
+      "logs/D13-native-esm-node22.log",
+      "logs/D13-targeted-final.log",
+      "logs/D13-typecheck.log"
+    ],
+    "limitations": "No deployment, CI, production queries, real memberships, external email/WhatsApp/Google/social provider acceptance or paid AI.; Canonical sync/ownership states were synthetic seeded fixtures; no real social ownership check or paid scan was performed.; PKCE UI exchange was mocked with a valid owned local session; real local Auth single-use/expired/recovery/password/session behavior was separately exercised. Full real email delivery/PKCE provider flow is not certified.; Existing welcome bonus is separately measured (+100 points, one ledger row); no mission pending-reward completion/payment was exercised or changed. Earlier R1/D08/D09/D12 runtime remains historical at its recorded fingerprint.; Skipped integration tests are not passes. The broad legacy integration command was not used because its cleanup/shared DEMO setup exceeds the exact-fixture scope; the guarded D13 integration suite replaces it for this task.; No Safari/WebKit, physical-device, 200% zoom, complete accessibility, load/performance or concurrent profile editing certification. Four existing app lint warnings and build route/bundle warnings remain."
+  },
+  {
+    "caseId": "UC-C23",
+    "owner": "D13",
+    "title": "首次啟用與中斷續填",
+    "originalAuditResult": "not-tested",
+    "originalEnvironment": "staging",
+    "newResult": {
+      "code": "D13 implemented; original Auth, RLS and public-field authority retained",
+      "test": "126 targeted; final full suite; 8 real API + 4 Edge",
+      "deployment": "not-deployed",
+      "runtime": "real local Auth/Storage/API and Edge; PKCE UI exchange explicitly mocked"
+    },
+    "releaseScope": "R2 D13 local/disposable; not deployed",
+    "evidence": [
+      "D13-api-contract.json",
+      "D13-auth-recovery.json",
+      "D13-auth-runtime-config.json",
+      "D13-browser-neutrality.json",
+      "D13-browser-summary.json",
+      "D13-changes.patch",
+      "D13-delivery.json",
+      "D13-eslint-scope.json",
+      "D13-fixture-retention.json",
+      "D13-onboarding-roundtrip.json",
+      "D13-post-runtime-format.json",
+      "D13-profile-roundtrip.json",
+      "D13-recovery-ui.json",
+      "D13-schema-observation.json",
+      "logs/D13-browser-verified.log",
+      "logs/D13-build-node22.log",
+      "logs/D13-diff-check.log",
+      "logs/D13-full-suite.log",
+      "logs/D13-lint.log",
+      "logs/D13-manifest-check.log",
+      "logs/D13-native-esm-node22.log",
+      "logs/D13-targeted-final.log",
+      "logs/D13-typecheck.log"
+    ],
+    "limitations": "No deployment, CI, production queries, real memberships, external email/WhatsApp/Google/social provider acceptance or paid AI.; Canonical sync/ownership states were synthetic seeded fixtures; no real social ownership check or paid scan was performed.; PKCE UI exchange was mocked with a valid owned local session; real local Auth single-use/expired/recovery/password/session behavior was separately exercised. Full real email delivery/PKCE provider flow is not certified.; Existing welcome bonus is separately measured (+100 points, one ledger row); no mission pending-reward completion/payment was exercised or changed. Earlier R1/D08/D09/D12 runtime remains historical at its recorded fingerprint.; Skipped integration tests are not passes. The broad legacy integration command was not used because its cleanup/shared DEMO setup exceeds the exact-fixture scope; the guarded D13 integration suite replaces it for this task.; No Safari/WebKit, physical-device, 200% zoom, complete accessibility, load/performance or concurrent profile editing certification. Four existing app lint warnings and build route/bundle warnings remain."
+  },
+  {
+    "caseId": "UC-C24",
+    "owner": "D07",
+    "title": "公開任務加入與重試",
+    "originalAuditResult": "not-tested",
+    "originalEnvironment": "staging",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-isolated",
+      "deployment": "not-deployed",
+      "runtime": "real local Auth/RLS/RPC plus UI where browser-summary specifies"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/R1-disposable-complete.log",
+      "logs/proof-review-real-final.log",
+      "logs/proof-assets-ownership-final.log",
+      "logs/legacy-owned-integration-complete.log",
+      "browser-summary.json",
+      "browser-roundtrip.json",
+      "browser-neutrality.json"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-C25",
+    "owner": "D07",
+    "title": "申請制任務",
+    "originalAuditResult": "not-tested",
+    "originalEnvironment": "staging",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-isolated",
+      "deployment": "not-deployed",
+      "runtime": "real local Auth/RLS/RPC plus UI where browser-summary specifies"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/R1-disposable-complete.log",
+      "logs/proof-review-real-final.log",
+      "logs/proof-assets-ownership-final.log",
+      "logs/legacy-owned-integration-complete.log",
+      "browser-summary.json",
+      "browser-roundtrip.json",
+      "browser-neutrality.json"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-C26",
+    "owner": "D07",
+    "title": "最後名額競爭",
+    "originalAuditResult": "not-tested",
+    "originalEnvironment": "staging",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-isolated",
+      "deployment": "not-deployed",
+      "runtime": "real local Auth/RLS/RPC plus UI where browser-summary specifies"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/R1-disposable-complete.log",
+      "logs/proof-review-real-final.log",
+      "logs/proof-assets-ownership-final.log",
+      "logs/legacy-owned-integration-complete.log",
+      "browser-summary.json",
+      "browser-roundtrip.json",
+      "browser-neutrality.json"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-C27",
+    "owner": "D07",
+    "title": "收貨→草稿",
+    "originalAuditResult": "not-tested",
+    "originalEnvironment": "staging",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-isolated",
+      "deployment": "not-deployed",
+      "runtime": "real local Auth/RLS/RPC plus UI where browser-summary specifies"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/R1-disposable-complete.log",
+      "logs/proof-review-real-final.log",
+      "logs/proof-assets-ownership-final.log",
+      "logs/legacy-owned-integration-complete.log",
+      "browser-summary.json",
+      "browser-roundtrip.json",
+      "browser-neutrality.json"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-C28",
+    "owner": "D07",
+    "title": "草稿競爭與斷線",
+    "originalAuditResult": "not-tested",
+    "originalEnvironment": "staging",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-isolated",
+      "deployment": "not-deployed",
+      "runtime": "real local Auth/RLS/RPC plus UI where browser-summary specifies"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/R1-disposable-complete.log",
+      "logs/proof-review-real-final.log",
+      "logs/proof-assets-ownership-final.log",
+      "logs/legacy-owned-integration-complete.log",
+      "browser-summary.json",
+      "browser-roundtrip.json",
+      "browser-neutrality.json"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-C29",
+    "owner": "D07",
+    "title": "媒體上載失敗",
+    "originalAuditResult": "not-tested",
+    "originalEnvironment": "staging",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-isolated",
+      "deployment": "not-deployed",
+      "runtime": "real local Auth/RLS/RPC plus UI where browser-summary specifies"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/R1-disposable-complete.log",
+      "logs/proof-review-real-final.log",
+      "logs/proof-assets-ownership-final.log",
+      "logs/legacy-owned-integration-complete.log",
+      "browser-summary.json",
+      "browser-roundtrip.json",
+      "browser-neutrality.json"
+    ],
+    "limitations": "PNG grant and GIF/MP4 upload/finalization passed with synthetic bytes; browser media chooser and physical-device acceptance not run."
+  },
+  {
+    "caseId": "UC-C30",
+    "owner": "D07",
+    "title": "交付審閱回圈",
+    "originalAuditResult": "not-tested",
+    "originalEnvironment": "staging",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-isolated",
+      "deployment": "not-deployed",
+      "runtime": "real local Auth/RLS/RPC plus UI where browser-summary specifies"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/R1-disposable-complete.log",
+      "logs/proof-review-real-final.log",
+      "logs/proof-assets-ownership-final.log",
+      "logs/legacy-owned-integration-complete.log",
+      "browser-summary.json",
+      "browser-roundtrip.json",
+      "browser-neutrality.json"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-C31",
+    "owner": "D07",
+    "title": "發布證明",
+    "originalAuditResult": "not-tested",
+    "originalEnvironment": "staging",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-isolated",
+      "deployment": "not-deployed",
+      "runtime": "real local Auth/RLS/RPC plus UI where browser-summary specifies"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/R1-disposable-complete.log",
+      "logs/proof-review-real-final.log",
+      "logs/proof-assets-ownership-final.log",
+      "logs/legacy-owned-integration-complete.log",
+      "browser-summary.json",
+      "browser-roundtrip.json",
+      "browser-neutrality.json"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-C32",
+    "owner": "D07",
+    "title": "等待獎賞中立性",
+    "originalAuditResult": "not-tested",
+    "originalEnvironment": "staging",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-isolated",
+      "deployment": "not-deployed",
+      "runtime": "real local Auth/RLS/RPC plus UI where browser-summary specifies"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/R1-disposable-complete.log",
+      "logs/proof-review-real-final.log",
+      "logs/proof-assets-ownership-final.log",
+      "logs/legacy-owned-integration-complete.log",
+      "browser-summary.json",
+      "browser-roundtrip.json",
+      "browser-neutrality.json"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-C33",
+    "owner": "D19",
+    "title": "正常兌換及重試",
+    "originalAuditResult": "not-tested",
+    "originalEnvironment": "staging",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-isolated-support",
+      "deployment": "not-deployed",
+      "runtime": "support API contracts in owned integration target; broader UI UAT not claimed"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/full-suite-node22-complete.log",
+      "logs/full-suite-candidate.log",
+      "logs/legacy-owned-integration-complete.log",
+      "logs/release-check-complete.log",
+      "browser-summary.json"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-C34",
+    "owner": "D13",
+    "title": "個人資料/媒體儲存",
+    "originalAuditResult": "not-tested",
+    "originalEnvironment": "staging",
+    "newResult": {
+      "code": "D13 implemented; original Auth, RLS and public-field authority retained",
+      "test": "126 targeted; final full suite; 8 real API + 4 Edge",
+      "deployment": "not-deployed",
+      "runtime": "real local Auth/Storage/API and Edge; PKCE UI exchange explicitly mocked"
+    },
+    "releaseScope": "R2 D13 local/disposable; not deployed",
+    "evidence": [
+      "D13-api-contract.json",
+      "D13-auth-recovery.json",
+      "D13-auth-runtime-config.json",
+      "D13-browser-neutrality.json",
+      "D13-browser-summary.json",
+      "D13-changes.patch",
+      "D13-delivery.json",
+      "D13-eslint-scope.json",
+      "D13-fixture-retention.json",
+      "D13-onboarding-roundtrip.json",
+      "D13-post-runtime-format.json",
+      "D13-profile-roundtrip.json",
+      "D13-recovery-ui.json",
+      "D13-schema-observation.json",
+      "logs/D13-browser-verified.log",
+      "logs/D13-build-node22.log",
+      "logs/D13-diff-check.log",
+      "logs/D13-full-suite.log",
+      "logs/D13-lint.log",
+      "logs/D13-manifest-check.log",
+      "logs/D13-native-esm-node22.log",
+      "logs/D13-targeted-final.log",
+      "logs/D13-typecheck.log"
+    ],
+    "limitations": "No deployment, CI, production queries, real memberships, external email/WhatsApp/Google/social provider acceptance or paid AI.; Canonical sync/ownership states were synthetic seeded fixtures; no real social ownership check or paid scan was performed.; PKCE UI exchange was mocked with a valid owned local session; real local Auth single-use/expired/recovery/password/session behavior was separately exercised. Full real email delivery/PKCE provider flow is not certified.; Existing welcome bonus is separately measured (+100 points, one ledger row); no mission pending-reward completion/payment was exercised or changed. Earlier R1/D08/D09/D12 runtime remains historical at its recorded fingerprint.; Skipped integration tests are not passes. The broad legacy integration command was not used because its cleanup/shared DEMO setup exceeds the exact-fixture scope; the guarded D13 integration suite replaces it for this task.; No Safari/WebKit, physical-device, 200% zoom, complete accessibility, load/performance or concurrent profile editing certification. Four existing app lint warnings and build route/bundle warnings remain."
+  },
+  {
+    "caseId": "UC-C35",
+    "owner": "D13",
+    "title": "公開連結與撤銷",
+    "originalAuditResult": "not-tested",
+    "originalEnvironment": "staging",
+    "newResult": {
+      "code": "D13 implemented; original Auth, RLS and public-field authority retained",
+      "test": "126 targeted; final full suite; 8 real API + 4 Edge",
+      "deployment": "not-deployed",
+      "runtime": "real local Auth/Storage/API and Edge; PKCE UI exchange explicitly mocked"
+    },
+    "releaseScope": "R2 D13 local/disposable; not deployed",
+    "evidence": [
+      "D13-api-contract.json",
+      "D13-auth-recovery.json",
+      "D13-auth-runtime-config.json",
+      "D13-browser-neutrality.json",
+      "D13-browser-summary.json",
+      "D13-changes.patch",
+      "D13-delivery.json",
+      "D13-eslint-scope.json",
+      "D13-fixture-retention.json",
+      "D13-onboarding-roundtrip.json",
+      "D13-post-runtime-format.json",
+      "D13-profile-roundtrip.json",
+      "D13-recovery-ui.json",
+      "D13-schema-observation.json",
+      "logs/D13-browser-verified.log",
+      "logs/D13-build-node22.log",
+      "logs/D13-diff-check.log",
+      "logs/D13-full-suite.log",
+      "logs/D13-lint.log",
+      "logs/D13-manifest-check.log",
+      "logs/D13-native-esm-node22.log",
+      "logs/D13-targeted-final.log",
+      "logs/D13-typecheck.log"
+    ],
+    "limitations": "No deployment, CI, production queries, real memberships, external email/WhatsApp/Google/social provider acceptance or paid AI.; Canonical sync/ownership states were synthetic seeded fixtures; no real social ownership check or paid scan was performed.; PKCE UI exchange was mocked with a valid owned local session; real local Auth single-use/expired/recovery/password/session behavior was separately exercised. Full real email delivery/PKCE provider flow is not certified.; Existing welcome bonus is separately measured (+100 points, one ledger row); no mission pending-reward completion/payment was exercised or changed. Earlier R1/D08/D09/D12 runtime remains historical at its recorded fingerprint.; Skipped integration tests are not passes. The broad legacy integration command was not used because its cleanup/shared DEMO setup exceeds the exact-fixture scope; the guarded D13 integration suite replaces it for this task.; No Safari/WebKit, physical-device, 200% zoom, complete accessibility, load/performance or concurrent profile editing certification. Four existing app lint warnings and build route/bundle warnings remain."
+  },
+  {
+    "caseId": "UC-C36",
+    "owner": "D19",
+    "title": "通知與深連結",
+    "originalAuditResult": "not-tested",
+    "originalEnvironment": "staging",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-isolated-support",
+      "deployment": "not-deployed",
+      "runtime": "support API contracts in owned integration target; broader UI UAT not claimed"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/full-suite-node22-complete.log",
+      "logs/full-suite-candidate.log",
+      "logs/legacy-owned-integration-complete.log",
+      "logs/release-check-complete.log",
+      "browser-summary.json"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-A07",
+    "owner": "D10",
+    "title": "篩選及搜尋",
+    "originalAuditResult": "not-tested",
+    "originalEnvironment": "staging",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-local-and-isolated",
+      "deployment": "not-deployed",
+      "runtime": "real 51-creator DB paging plus component URL/filter/focus contracts"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/audit-16-final.log",
+      "logs/R1-disposable-complete.log",
+      "workflow-runtime.jsonl"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-A08",
+    "owner": "D06",
+    "title": "個案審核",
+    "originalAuditResult": "not-tested",
+    "originalEnvironment": "staging",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-isolated",
+      "deployment": "not-deployed",
+      "runtime": "real local Auth/RLS/RPC plus UI where browser-summary specifies"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/D06-targeted.log",
+      "logs/audit-16-final.log",
+      "logs/R1-disposable-complete.log",
+      "workflow-runtime.jsonl"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-A09",
+    "owner": "D19",
+    "title": "短名單",
+    "originalAuditResult": "not-tested",
+    "originalEnvironment": "staging",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-isolated-support",
+      "deployment": "not-deployed",
+      "runtime": "support API contracts in owned integration target; broader UI UAT not claimed"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/full-suite-node22-complete.log",
+      "logs/full-suite-candidate.log",
+      "logs/legacy-owned-integration-complete.log",
+      "logs/release-check-complete.log",
+      "browser-summary.json"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-A10",
+    "owner": "D07",
+    "title": "接受/拒絕與併發",
+    "originalAuditResult": "not-tested",
+    "originalEnvironment": "staging",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-isolated",
+      "deployment": "not-deployed",
+      "runtime": "real local Auth/RLS/RPC plus UI where browser-summary specifies"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/R1-disposable-complete.log",
+      "logs/proof-review-real-final.log",
+      "logs/proof-assets-ownership-final.log",
+      "logs/legacy-owned-integration-complete.log",
+      "browser-summary.json",
+      "browser-roundtrip.json",
+      "browser-neutrality.json"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-A11",
+    "owner": "D07",
+    "title": "審稿與發分",
+    "originalAuditResult": "not-tested",
+    "originalEnvironment": "staging",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-isolated",
+      "deployment": "not-deployed",
+      "runtime": "real local Auth/RLS/RPC plus UI where browser-summary specifies"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/R1-disposable-complete.log",
+      "logs/proof-review-real-final.log",
+      "logs/proof-assets-ownership-final.log",
+      "logs/legacy-owned-integration-complete.log",
+      "browser-summary.json",
+      "browser-roundtrip.json",
+      "browser-neutrality.json"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-A12",
+    "owner": "D07",
+    "title": "工作佇列及SLA",
+    "originalAuditResult": "not-tested",
+    "originalEnvironment": "staging",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-isolated",
+      "deployment": "not-deployed",
+      "runtime": "real local Auth/RLS/RPC plus UI where browser-summary specifies"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/R1-disposable-complete.log",
+      "logs/proof-review-real-final.log",
+      "logs/proof-assets-ownership-final.log",
+      "logs/legacy-owned-integration-complete.log",
+      "browser-summary.json",
+      "browser-roundtrip.json",
+      "browser-neutrality.json"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-A13",
+    "owner": "D07",
+    "title": "修稿與版本防護",
+    "originalAuditResult": "not-tested",
+    "originalEnvironment": "staging",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-isolated",
+      "deployment": "not-deployed",
+      "runtime": "real local Auth/RLS/RPC plus UI where browser-summary specifies"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/R1-disposable-complete.log",
+      "logs/proof-review-real-final.log",
+      "logs/proof-assets-ownership-final.log",
+      "logs/legacy-owned-integration-complete.log",
+      "browser-summary.json",
+      "browser-roundtrip.json",
+      "browser-neutrality.json"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-A14",
+    "owner": "D07",
+    "title": "proof審核",
+    "originalAuditResult": "not-tested",
+    "originalEnvironment": "staging",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-isolated",
+      "deployment": "not-deployed",
+      "runtime": "real local Auth/RLS/RPC plus UI where browser-summary specifies"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/R1-disposable-complete.log",
+      "logs/proof-review-real-final.log",
+      "logs/proof-assets-ownership-final.log",
+      "logs/legacy-owned-integration-complete.log",
+      "browser-summary.json",
+      "browser-roundtrip.json",
+      "browser-neutrality.json"
+    ],
+    "limitations": "Tenant/claim/attempt ownership and correction tested live; the older operator-read fixture restorer was not run because it disables user triggers."
+  },
+  {
+    "caseId": "UC-A15",
+    "owner": "D07",
+    "title": "完成任務及歷史contract",
+    "originalAuditResult": "not-tested",
+    "originalEnvironment": "staging",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-isolated",
+      "deployment": "not-deployed",
+      "runtime": "real local Auth/RLS/RPC plus UI where browser-summary specifies"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/R1-disposable-complete.log",
+      "logs/proof-review-real-final.log",
+      "logs/proof-assets-ownership-final.log",
+      "logs/legacy-owned-integration-complete.log",
+      "browser-summary.json",
+      "browser-roundtrip.json",
+      "browser-neutrality.json"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-A16",
+    "owner": "D07",
+    "title": "獎賞交接清單",
+    "originalAuditResult": "not-tested",
+    "originalEnvironment": "staging",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-isolated",
+      "deployment": "not-deployed",
+      "runtime": "real local Auth/RLS/RPC plus UI where browser-summary specifies"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/R1-disposable-complete.log",
+      "logs/proof-review-real-final.log",
+      "logs/proof-assets-ownership-final.log",
+      "logs/legacy-owned-integration-complete.log",
+      "browser-summary.json",
+      "browser-roundtrip.json",
+      "browser-neutrality.json"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-A17",
+    "owner": "D12",
+    "title": "作者建檔與校驗",
+    "originalAuditResult": "not-tested",
+    "originalEnvironment": "staging",
+    "newResult": {
+      "code": "D12 authoring implemented; existing authority and rules retained",
+      "test": "106 targeted; final full suite; 6 real API + 3 browser",
+      "deployment": "not-deployed",
+      "runtime": "disposable Edge operator and Creator; preview/save/reload/workspace/publication guidance; retained unknown JSON; navigation guards"
+    },
+    "releaseScope": "R2 D12 verified local/disposable; not deployed",
+    "evidence": [
+      "D09-api-contract.json",
+      "D09-browser-neutrality.json",
+      "D09-browser-roundtrip.json",
+      "D09-browser-summary.json",
+      "D09-schema-observation.json",
+      "D12-api-contract.json",
+      "D12-authoring-roundtrip.json",
+      "D12-browser-neutrality.json",
+      "D12-browser-summary.json",
+      "D12-changes.patch",
+      "D12-fixture-retention.json",
+      "D12-navigation.json",
+      "D12-schema-observation.json",
+      "D12-unknown-policy-roundtrip.json",
+      "logs/D09-browser-final.log",
+      "logs/D09-build-node22.log",
+      "logs/D09-consumers.log",
+      "logs/D09-contract-green.log",
+      "logs/D09-diff-check.log",
+      "logs/D09-full-suite.log",
+      "logs/D09-general-card-green.log",
+      "logs/D09-integration-green.log",
+      "logs/D09-legacy-integration.log",
+      "logs/D09-lint-final.log",
+      "logs/D09-manifest-check.log",
+      "logs/D09-native-esm-node22.log",
+      "logs/D09-typecheck-final.log",
+      "logs/D12-authoring-final.log",
+      "logs/D12-browser-final.log",
+      "logs/D12-build-node22.log",
+      "logs/D12-diff-check.log",
+      "logs/D12-full-suite.log",
+      "logs/D12-lint.log",
+      "logs/D12-manage-consumer-green.log",
+      "logs/D12-manifest-check.log",
+      "logs/D12-native-esm-node22.log",
+      "logs/D12-typecheck.log"
+    ],
+    "limitations": "No original production outcome overwritten; D12 is mission authoring only. No deployment, physical-device, Safari/WebKit, paid-provider or concurrency/performance certification."
+  },
+  {
+    "caseId": "UC-A18",
+    "owner": "D19",
+    "title": "挑戰結算",
+    "originalAuditResult": "not-tested",
+    "originalEnvironment": "staging",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-isolated-support",
+      "deployment": "not-deployed",
+      "runtime": "support API contracts in owned integration target; broader UI UAT not claimed"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/full-suite-node22-complete.log",
+      "logs/full-suite-candidate.log",
+      "logs/legacy-owned-integration-complete.log",
+      "logs/release-check-complete.log",
+      "browser-summary.json"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-A19",
+    "owner": "D19",
+    "title": "內容作者流程",
+    "originalAuditResult": "not-tested",
+    "originalEnvironment": "staging",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "partial-local-support",
+      "deployment": "not-deployed",
+      "runtime": "support API contracts in owned integration target; broader UI UAT not claimed"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/full-suite-node22-complete.log",
+      "logs/full-suite-candidate.log",
+      "logs/legacy-owned-integration-complete.log",
+      "logs/release-check-complete.log",
+      "browser-summary.json"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-A20",
+    "owner": "D14",
+    "title": "學院作者流程",
+    "originalAuditResult": "not-tested",
+    "originalEnvironment": "staging",
+    "newResult": {
+      "code": "D14 truthful preview implemented; original lesson expectations preserved",
+      "test": "66 targeted; 1756 full pass / 338 skip; 6 API + 4 Edge",
+      "deployment": "not-deployed",
+      "runtime": "6 real local API cases; 4 Edge journeys; explicit 503 error-path transport fake"
+    },
+    "releaseScope": "R2 D14 local/disposable; not deployed",
+    "evidence": [
+      "D14-api-contract.json",
+      "D14-author-ui.json",
+      "D14-browser-neutrality.json",
+      "D14-browser-summary.json",
+      "D14-changes.patch",
+      "D14-contact-ui.json",
+      "D14-creator-ui.json",
+      "D14-delivery.json",
+      "D14-fixture-retention.json",
+      "D14-public-ui.json",
+      "D14-schema-diff.json",
+      "D14-schema-observation.json",
+      "logs/D14-build-node22.log",
+      "logs/D14-diff-check.log",
+      "logs/D14-full-suite.log",
+      "logs/D14-lint.log",
+      "logs/D14-manifest-check.log",
+      "logs/D14-runtime-verified.log",
+      "logs/D14-targeted.log",
+      "logs/D14-typecheck.log"
+    ],
+    "limitations": "Not deployed. No commit, push, merge, CI, production access, real memberships, messages/invitations, paid AI/social providers, payments or financing.; D14 is the approved local truthful-preview scope. UC-C18 and UC-A51 still require four real lesson units and persisted learning progress in D15; their original expectations remain open, not PASS. The reduced public promise still needs release-owner confirmation before publication.; One transient error scenario uses explicit 503 transport mocks (actual count in D14-creator-ui.json). Successful browser/API reads and writes use real owned local Auth/RLS/database. The browser reuses real local fixture sessions; this is not a fresh external login or provider acceptance.; Earlier R0/R1/D08/D09/D12/D13 runtime stays historical at its preserved fingerprints. This task does not rerun the entire legacy/active proof/reward handoff. The original 16 audit tests and 194 contracts are freshly rerun.; Skipped full-suite integration is not PASS. The broad legacy integration seed/cleanup exceeds exact-owned fixture scope; this task uses the guarded six-case owned Academy integration instead.; No Safari/WebKit, physical-device, full accessibility, 200% zoom, load/performance or multi-author race certification. Existing app lint warnings and build route/bundle warnings remain.; The original audit ZIP was not reopened this turn; original report/case/regression evidence and its expected SHA are preserved. Supplied implementation-package CSV original fields are rechecked unchanged."
+  },
+  {
+    "caseId": "UC-A21",
+    "owner": "D17",
+    "title": "數字與時間區間",
+    "originalAuditResult": "not-tested",
+    "originalEnvironment": "staging",
+    "newResult": {
+      "code": "HK calendar-day [from,to), HKD net ledger credits, cohort denominators and cancelled exclusions",
+      "test": "141 targeted; 1773 full pass / 355 skip; 16 audit +194 contracts; 5 API +5 Edge",
+      "deployment": "not-deployed",
+      "runtime": "5 real API role/data cases; 17 net points, HKD112.50; 10000 creators; pure boundaries/cohort tests"
+    },
+    "releaseScope": "D17 selected local/disposable scope; native/hosted gaps remain open, no waiver",
+    "evidence": [
+      "2026-10-23-adfocate-quality.md",
+      "D17-accessibility-scans.json",
+      "D17-advisor-catalog.json",
+      "D17-advisor-dispositions.csv",
+      "D17-advisor-review.json",
+      "D17-api-contract.json",
+      "D17-api-performance.json",
+      "D17-browser-final.json",
+      "D17-bundle-after.json",
+      "D17-bundle-unsplit.json",
+      "D17-changes.patch",
+      "D17-delivery.json",
+      "D17-dialog.json",
+      "D17-environment.json",
+      "D17-fixture-retention.json",
+      "D17-insights-ui.json",
+      "D17-neutrality-final.json",
+      "D17-performance-summary.json",
+      "D17-responsive.json",
+      "D17-runtime-performance.json",
+      "D17-scale-ids.json",
+      "D17-schema-after.json",
+      "D17-schema-diff.json",
+      "D17-test-history.json",
+      "logs/D17-api-final.log",
+      "logs/D17-browser-final.log",
+      "logs/D17-build-node22.log",
+      "logs/D17-diff-check.log",
+      "logs/D17-full-suite.log",
+      "logs/D17-lint-final.log",
+      "logs/D17-manifest-final.log",
+      "logs/D17-targeted-final.log",
+      "logs/D17-typecheck-final.log"
+    ],
+    "limitations": "D15 BLOCKED_CONTENT_NOT_PROVIDED is unchanged. Original UC-C18/UC-A51 require four real approved lessons and are not PASS.; Not deployed. No commit/push/merge/CI, production/hosted access, real membership changes, external messages/invitations/publication, payment or paid AI.; Selected five pages only; installed desktop Edge, 360/390/768 CSS viewports and 200% equivalent reflow simulation. Native browser zoom, physical mobile, Safari/WebKit and physical screen reader not tested. Automated axe checks do not certify the whole product.; Local loopback, no CPU/network throttling or field p75. Browser HTTP cache disabled by network routing; DB/server buffers warm and not reset. INP is a lab visit candidate. API/UI p95 timings have different definitions. No production performance acceptance.; Durable outcome formulas are covered by known-data tests; the owned runtime workflow joined today is excluded from complete-day reports, so it has no historical outcome observations. Missing saved operator start/decision data and unclear-state support-request source are unavailable, never fabricated zero. Existing analytics sink is preserved; no hosted collector or durable help-event store added.; 463 local advisor notices have owner-role/risk/validation dispositions; named human assignment and hosted acceptance remain pending. No index, RLS policy/grant, function or extension changes applied. Local unused-index stats and outer RPC EXPLAIN do not justify deletion or prove nested-plan performance.; Prior R0/R1/D19 and D08/D09/D12/D13/D14/D15 runtime remain historical at their recorded fingerprints. Fresh full suite protects 16 audit and 194 contracts; complete legacy/active proof/reward handoff was not recertified for this candidate.; Broad shared-seed integration is not run or labelled PASS. The scoped quality runner performs read-only cases on exact-owned fixtures after identity verification. All exact fixture IDs retained; no cleanup/reset.; Four pre-existing lint warnings and route-test discovery warning remain with disposition; no framework/provider upgrade. Original supplied CSV fields and originalAuditResult are unchanged."
+  },
+  {
+    "caseId": "UC-A22",
+    "owner": "D11",
+    "title": "優先工作準確性",
+    "originalAuditResult": "not-tested",
+    "originalEnvironment": "staging",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-local-contract",
+      "deployment": "not-deployed",
+      "runtime": "local/offline contracts; see linked runtime evidence for exact subset"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/D11-audit-green.log",
+      "logs/original-194-final.log",
+      "logs/audit-16-final.log"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-A23",
+    "owner": "D03",
+    "title": "全域與workspace切換",
+    "originalAuditResult": "not-tested",
+    "originalEnvironment": "staging",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-local-contract",
+      "deployment": "not-deployed",
+      "runtime": "local/offline contracts; see linked runtime evidence for exact subset"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/D03-scope-red.log",
+      "logs/D03-scope-green.log",
+      "logs/D03-session-race-red.log",
+      "logs/D05-real-schema-green.log",
+      "logs/R1-disposable-complete.log",
+      "logs/legacy-owned-integration-complete.log"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-A24",
+    "owner": "D03",
+    "title": "權限撤銷與斷線",
+    "originalAuditResult": "not-tested",
+    "originalEnvironment": "staging",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-local-contract",
+      "deployment": "not-deployed",
+      "runtime": "local/offline contracts; see linked runtime evidence for exact subset"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/D03-scope-red.log",
+      "logs/D03-scope-green.log",
+      "logs/D03-session-race-red.log",
+      "logs/D05-real-schema-green.log",
+      "logs/R1-disposable-complete.log",
+      "logs/legacy-owned-integration-complete.log"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-S01",
+    "owner": "D07",
+    "title": "跨Creator讀寫",
+    "originalAuditResult": "not-tested",
+    "originalEnvironment": "staging",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-isolated",
+      "deployment": "not-deployed",
+      "runtime": "real local Auth/RLS/RPC plus UI where browser-summary specifies"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/R1-disposable-complete.log",
+      "logs/proof-review-real-final.log",
+      "logs/proof-assets-ownership-final.log",
+      "logs/legacy-owned-integration-complete.log",
+      "browser-summary.json",
+      "browser-roundtrip.json",
+      "browser-neutrality.json"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-S02",
+    "owner": "D18",
+    "title": "角色workspace邊界",
+    "originalAuditResult": "not-tested",
+    "originalEnvironment": "staging",
+    "newResult": {
+      "code": "not-started",
+      "test": "not-run",
+      "deployment": "not-deployed",
+      "runtime": "not-run; outside selected R1 pilot"
+    },
+    "releaseScope": "outside R1; remains-open",
+    "evidence": [],
+    "limitations": "Remains open for its R2/R3 owner; excluded from this single-workspace R1 pilot, with no automatic waiver."
+  },
+  {
+    "caseId": "UC-S03",
+    "owner": "D13",
+    "title": "公開資料最少化",
+    "originalAuditResult": "not-tested",
+    "originalEnvironment": "staging",
+    "newResult": {
+      "code": "D13 implemented; original Auth, RLS and public-field authority retained",
+      "test": "126 targeted; final full suite; 8 real API + 4 Edge",
+      "deployment": "not-deployed",
+      "runtime": "real local Auth/Storage/API and Edge; PKCE UI exchange explicitly mocked"
+    },
+    "releaseScope": "R2 D13 local/disposable; not deployed",
+    "evidence": [
+      "D13-api-contract.json",
+      "D13-auth-recovery.json",
+      "D13-auth-runtime-config.json",
+      "D13-browser-neutrality.json",
+      "D13-browser-summary.json",
+      "D13-changes.patch",
+      "D13-delivery.json",
+      "D13-eslint-scope.json",
+      "D13-fixture-retention.json",
+      "D13-onboarding-roundtrip.json",
+      "D13-post-runtime-format.json",
+      "D13-profile-roundtrip.json",
+      "D13-recovery-ui.json",
+      "D13-schema-observation.json",
+      "logs/D13-browser-verified.log",
+      "logs/D13-build-node22.log",
+      "logs/D13-diff-check.log",
+      "logs/D13-full-suite.log",
+      "logs/D13-lint.log",
+      "logs/D13-manifest-check.log",
+      "logs/D13-native-esm-node22.log",
+      "logs/D13-targeted-final.log",
+      "logs/D13-typecheck.log"
+    ],
+    "limitations": "No deployment, CI, production queries, real memberships, external email/WhatsApp/Google/social provider acceptance or paid AI.; Canonical sync/ownership states were synthetic seeded fixtures; no real social ownership check or paid scan was performed.; PKCE UI exchange was mocked with a valid owned local session; real local Auth single-use/expired/recovery/password/session behavior was separately exercised. Full real email delivery/PKCE provider flow is not certified.; Existing welcome bonus is separately measured (+100 points, one ledger row); no mission pending-reward completion/payment was exercised or changed. Earlier R1/D08/D09/D12 runtime remains historical at its recorded fingerprint.; Skipped integration tests are not passes. The broad legacy integration command was not used because its cleanup/shared DEMO setup exceeds the exact-fixture scope; the guarded D13 integration suite replaces it for this task.; No Safari/WebKit, physical-device, 200% zoom, complete accessibility, load/performance or concurrent profile editing certification. Four existing app lint warnings and build route/bundle warnings remain."
+  },
+  {
+    "caseId": "UC-S04",
+    "owner": "D19",
+    "title": "排程保護與重跑",
+    "originalAuditResult": "not-tested",
+    "originalEnvironment": "staging",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-isolated-support",
+      "deployment": "not-deployed",
+      "runtime": "support API contracts in owned integration target; broader UI UAT not claimed"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/full-suite-node22-complete.log",
+      "logs/full-suite-candidate.log",
+      "logs/legacy-owned-integration-complete.log",
+      "logs/release-check-complete.log",
+      "browser-summary.json"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-Q01",
+    "owner": "D17",
+    "title": "核心流程responsive",
+    "originalAuditResult": "not-tested",
+    "originalEnvironment": "staging",
+    "newResult": {
+      "code": "Responsive header/controls, long text/URL wrapping, larger dialog targets",
+      "test": "141 targeted; 1773 full pass / 355 skip; 16 audit +194 contracts; 5 API +5 Edge",
+      "deployment": "not-deployed",
+      "runtime": "15 viewport/page cells +2 equivalent-200% reflow cells; dialog draft retained"
+    },
+    "releaseScope": "D17 selected local/disposable scope; native/hosted gaps remain open, no waiver",
+    "evidence": [
+      "2026-10-23-adfocate-quality.md",
+      "D08-browser-neutrality.json",
+      "D08-browser-roundtrip.json",
+      "D08-home-roundtrip.json",
+      "D08-navigation.json",
+      "D17-accessibility-scans.json",
+      "D17-advisor-catalog.json",
+      "D17-advisor-dispositions.csv",
+      "D17-advisor-review.json",
+      "D17-api-contract.json",
+      "D17-api-performance.json",
+      "D17-browser-final.json",
+      "D17-bundle-after.json",
+      "D17-bundle-unsplit.json",
+      "D17-changes.patch",
+      "D17-delivery.json",
+      "D17-dialog.json",
+      "D17-environment.json",
+      "D17-fixture-retention.json",
+      "D17-insights-ui.json",
+      "D17-neutrality-final.json",
+      "D17-performance-summary.json",
+      "D17-responsive.json",
+      "D17-runtime-performance.json",
+      "D17-scale-ids.json",
+      "D17-schema-after.json",
+      "D17-schema-diff.json",
+      "D17-test-history.json",
+      "logs/D08-browser-final.log",
+      "logs/D08-full-suite.log",
+      "logs/D08-home-followup-red.log",
+      "logs/D08-home-green.log",
+      "logs/D08-home-red.log",
+      "logs/D17-api-final.log",
+      "logs/D17-browser-final.log",
+      "logs/D17-build-node22.log",
+      "logs/D17-diff-check.log",
+      "logs/D17-full-suite.log",
+      "logs/D17-lint-final.log",
+      "logs/D17-manifest-final.log",
+      "logs/D17-targeted-final.log",
+      "logs/D17-typecheck-final.log"
+    ],
+    "limitations": "D15 BLOCKED_CONTENT_NOT_PROVIDED is unchanged. Original UC-C18/UC-A51 require four real approved lessons and are not PASS.; Not deployed. No commit/push/merge/CI, production/hosted access, real membership changes, external messages/invitations/publication, payment or paid AI.; Selected five pages only; installed desktop Edge, 360/390/768 CSS viewports and 200% equivalent reflow simulation. Native browser zoom, physical mobile, Safari/WebKit and physical screen reader not tested. Automated axe checks do not certify the whole product.; Local loopback, no CPU/network throttling or field p75. Browser HTTP cache disabled by network routing; DB/server buffers warm and not reset. INP is a lab visit candidate. API/UI p95 timings have different definitions. No production performance acceptance.; Durable outcome formulas are covered by known-data tests; the owned runtime workflow joined today is excluded from complete-day reports, so it has no historical outcome observations. Missing saved operator start/decision data and unclear-state support-request source are unavailable, never fabricated zero. Existing analytics sink is preserved; no hosted collector or durable help-event store added.; 463 local advisor notices have owner-role/risk/validation dispositions; named human assignment and hosted acceptance remain pending. No index, RLS policy/grant, function or extension changes applied. Local unused-index stats and outer RPC EXPLAIN do not justify deletion or prove nested-plan performance.; Prior R0/R1/D19 and D08/D09/D12/D13/D14/D15 runtime remain historical at their recorded fingerprints. Fresh full suite protects 16 audit and 194 contracts; complete legacy/active proof/reward handoff was not recertified for this candidate.; Broad shared-seed integration is not run or labelled PASS. The scoped quality runner performs read-only cases on exact-owned fixtures after identity verification. All exact fixture IDs retained; no cleanup/reset.; Four pre-existing lint warnings and route-test discovery warning remain with disposition; no framework/provider upgrade. Original supplied CSV fields and originalAuditResult are unchanged."
+  },
+  {
+    "caseId": "UC-Q02",
+    "owner": "D17",
+    "title": "鍵盤/焦點/對比",
+    "originalAuditResult": "not-tested",
+    "originalEnvironment": "staging",
+    "newResult": {
+      "code": "Existing focus trap restored trigger; 44px close target; announced recoverable errors and AA-compatible error contrast",
+      "test": "141 targeted; 1773 full pass / 355 skip; 16 audit +194 contracts; 5 API +5 Edge",
+      "deployment": "not-deployed",
+      "runtime": "5 selected page axe scans zero violations; keyboard wrap/Escape/return focus; explicit error mocks"
+    },
+    "releaseScope": "D17 selected local/disposable scope; native/hosted gaps remain open, no waiver",
+    "evidence": [
+      "2026-10-23-adfocate-quality.md",
+      "D17-accessibility-scans.json",
+      "D17-advisor-catalog.json",
+      "D17-advisor-dispositions.csv",
+      "D17-advisor-review.json",
+      "D17-api-contract.json",
+      "D17-api-performance.json",
+      "D17-browser-final.json",
+      "D17-bundle-after.json",
+      "D17-bundle-unsplit.json",
+      "D17-changes.patch",
+      "D17-delivery.json",
+      "D17-dialog.json",
+      "D17-environment.json",
+      "D17-fixture-retention.json",
+      "D17-insights-ui.json",
+      "D17-neutrality-final.json",
+      "D17-performance-summary.json",
+      "D17-responsive.json",
+      "D17-runtime-performance.json",
+      "D17-scale-ids.json",
+      "D17-schema-after.json",
+      "D17-schema-diff.json",
+      "D17-test-history.json",
+      "logs/D17-api-final.log",
+      "logs/D17-browser-final.log",
+      "logs/D17-build-node22.log",
+      "logs/D17-diff-check.log",
+      "logs/D17-full-suite.log",
+      "logs/D17-lint-final.log",
+      "logs/D17-manifest-final.log",
+      "logs/D17-targeted-final.log",
+      "logs/D17-typecheck-final.log"
+    ],
+    "limitations": "D15 BLOCKED_CONTENT_NOT_PROVIDED is unchanged. Original UC-C18/UC-A51 require four real approved lessons and are not PASS.; Not deployed. No commit/push/merge/CI, production/hosted access, real membership changes, external messages/invitations/publication, payment or paid AI.; Selected five pages only; installed desktop Edge, 360/390/768 CSS viewports and 200% equivalent reflow simulation. Native browser zoom, physical mobile, Safari/WebKit and physical screen reader not tested. Automated axe checks do not certify the whole product.; Local loopback, no CPU/network throttling or field p75. Browser HTTP cache disabled by network routing; DB/server buffers warm and not reset. INP is a lab visit candidate. API/UI p95 timings have different definitions. No production performance acceptance.; Durable outcome formulas are covered by known-data tests; the owned runtime workflow joined today is excluded from complete-day reports, so it has no historical outcome observations. Missing saved operator start/decision data and unclear-state support-request source are unavailable, never fabricated zero. Existing analytics sink is preserved; no hosted collector or durable help-event store added.; 463 local advisor notices have owner-role/risk/validation dispositions; named human assignment and hosted acceptance remain pending. No index, RLS policy/grant, function or extension changes applied. Local unused-index stats and outer RPC EXPLAIN do not justify deletion or prove nested-plan performance.; Prior R0/R1/D19 and D08/D09/D12/D13/D14/D15 runtime remain historical at their recorded fingerprints. Fresh full suite protects 16 audit and 194 contracts; complete legacy/active proof/reward handoff was not recertified for this candidate.; Broad shared-seed integration is not run or labelled PASS. The scoped quality runner performs read-only cases on exact-owned fixtures after identity verification. All exact fixture IDs retained; no cleanup/reset.; Four pre-existing lint warnings and route-test discovery warning remain with disposition; no framework/provider upgrade. Original supplied CSV fields and originalAuditResult are unchanged."
+  },
+  {
+    "caseId": "UC-Q03",
+    "owner": "D17",
+    "title": "代表性頁效能",
+    "originalAuditResult": "not-tested",
+    "originalEnvironment": "staging",
+    "newResult": {
+      "code": "Measured Vite vendor partition and preserved paged queue; no speculative index",
+      "test": "141 targeted; 1773 full pass / 355 skip; 16 audit +194 contracts; 5 API +5 Edge",
+      "deployment": "not-deployed",
+      "runtime": "100 reads at 1k, 100 at 10k, 100 final HTTP reads; 24 real forward-page UI interactions; raw/p50/p95 and lab vitals"
+    },
+    "releaseScope": "D17 selected local/disposable scope; native/hosted gaps remain open, no waiver",
+    "evidence": [
+      "2026-10-23-adfocate-quality.md",
+      "D17-accessibility-scans.json",
+      "D17-advisor-catalog.json",
+      "D17-advisor-dispositions.csv",
+      "D17-advisor-review.json",
+      "D17-api-contract.json",
+      "D17-api-performance.json",
+      "D17-browser-final.json",
+      "D17-bundle-after.json",
+      "D17-bundle-unsplit.json",
+      "D17-changes.patch",
+      "D17-delivery.json",
+      "D17-dialog.json",
+      "D17-environment.json",
+      "D17-fixture-retention.json",
+      "D17-insights-ui.json",
+      "D17-neutrality-final.json",
+      "D17-performance-summary.json",
+      "D17-responsive.json",
+      "D17-runtime-performance.json",
+      "D17-scale-ids.json",
+      "D17-schema-after.json",
+      "D17-schema-diff.json",
+      "D17-test-history.json",
+      "logs/D17-api-final.log",
+      "logs/D17-browser-final.log",
+      "logs/D17-build-node22.log",
+      "logs/D17-diff-check.log",
+      "logs/D17-full-suite.log",
+      "logs/D17-lint-final.log",
+      "logs/D17-manifest-final.log",
+      "logs/D17-targeted-final.log",
+      "logs/D17-typecheck-final.log"
+    ],
+    "limitations": "D15 BLOCKED_CONTENT_NOT_PROVIDED is unchanged. Original UC-C18/UC-A51 require four real approved lessons and are not PASS.; Not deployed. No commit/push/merge/CI, production/hosted access, real membership changes, external messages/invitations/publication, payment or paid AI.; Selected five pages only; installed desktop Edge, 360/390/768 CSS viewports and 200% equivalent reflow simulation. Native browser zoom, physical mobile, Safari/WebKit and physical screen reader not tested. Automated axe checks do not certify the whole product.; Local loopback, no CPU/network throttling or field p75. Browser HTTP cache disabled by network routing; DB/server buffers warm and not reset. INP is a lab visit candidate. API/UI p95 timings have different definitions. No production performance acceptance.; Durable outcome formulas are covered by known-data tests; the owned runtime workflow joined today is excluded from complete-day reports, so it has no historical outcome observations. Missing saved operator start/decision data and unclear-state support-request source are unavailable, never fabricated zero. Existing analytics sink is preserved; no hosted collector or durable help-event store added.; 463 local advisor notices have owner-role/risk/validation dispositions; named human assignment and hosted acceptance remain pending. No index, RLS policy/grant, function or extension changes applied. Local unused-index stats and outer RPC EXPLAIN do not justify deletion or prove nested-plan performance.; Prior R0/R1/D19 and D08/D09/D12/D13/D14/D15 runtime remain historical at their recorded fingerprints. Fresh full suite protects 16 audit and 194 contracts; complete legacy/active proof/reward handoff was not recertified for this candidate.; Broad shared-seed integration is not run or labelled PASS. The scoped quality runner performs read-only cases on exact-owned fixtures after identity verification. All exact fixture IDs retained; no cleanup/reset.; Four pre-existing lint warnings and route-test discovery warning remain with disposition; no framework/provider upgrade. Original supplied CSV fields and originalAuditResult are unchanged."
+  },
+  {
+    "caseId": "UC-Q04",
+    "owner": "D16",
+    "title": "AI來源及幻覺",
+    "originalAuditResult": "not-tested",
+    "originalEnvironment": "staging",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-mock-and-isolated",
+      "deployment": "not-deployed",
+      "runtime": "mock provider and actual local persistence/ownership; no paid provider"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/full-suite-candidate.log",
+      "logs/R1-disposable-complete.log",
+      "logs/legacy-owned-integration-complete.log"
+    ],
+    "limitations": "Reliability and ownership tested with mocks/local persistence; answer quality, external citations and a paid provider are not evaluated."
+  },
+  {
+    "caseId": "UC-Q05",
+    "owner": "D16",
+    "title": "AI故障/限流/保存",
+    "originalAuditResult": "not-tested",
+    "originalEnvironment": "staging",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-mock-and-isolated",
+      "deployment": "not-deployed",
+      "runtime": "mock provider and actual local persistence/ownership; no paid provider"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/full-suite-candidate.log",
+      "logs/R1-disposable-complete.log",
+      "logs/legacy-owned-integration-complete.log"
+    ],
+    "limitations": "Reliability and ownership tested with mocks/local persistence; answer quality, external citations and a paid provider are not evaluated."
+  },
+  {
+    "caseId": "UC-R03",
+    "owner": "D02",
+    "title": "部署版本與schema一致",
+    "originalAuditResult": "not-tested",
+    "originalEnvironment": "staging",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "blocked-production",
+      "deployment": "not-deployed",
+      "runtime": "both disposable targets verified; observed production still lacks schema"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "schema-diff.json",
+      "empty-replay.json",
+      "shaped-replay.json",
+      "pending-forward-replay.json",
+      "disposable-capabilities.json",
+      "logs/D02-capability-lifecycle-red.log",
+      "logs/release-check-complete.log"
+    ],
+    "limitations": "25 tables absent in production catalog. No production migration or deployment was authorized."
+  },
+  {
+    "caseId": "UC-R04",
+    "owner": "D02",
+    "title": "有資料時回退",
+    "originalAuditResult": "not-tested",
+    "originalEnvironment": "staging",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-isolated-preservation",
+      "deployment": "not-deployed",
+      "runtime": "shaped legacy row/history retained; transactional fault rollback verified"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "schema-diff.json",
+      "empty-replay.json",
+      "shaped-replay.json",
+      "pending-forward-replay.json",
+      "disposable-capabilities.json",
+      "logs/D02-capability-lifecycle-red.log",
+      "logs/release-check-complete.log"
+    ],
+    "limitations": "Production rollback is prepared, not executed; no down/reset operation."
+  },
+  {
+    "caseId": "UC-A25",
+    "owner": "D04",
+    "title": "review儲存錯誤可見",
+    "originalAuditResult": "fail",
+    "originalEnvironment": "local mocked component",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-local-contract",
+      "deployment": "not-deployed",
+      "runtime": "local/offline contracts; see linked runtime evidence for exact subset"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/audit-16-final.log",
+      "logs/full-suite-candidate.log",
+      "logs/D07-browser-full-ui-rerun.log"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-A26",
+    "owner": "D06",
+    "title": "Flag先收集具體理由",
+    "originalAuditResult": "fail",
+    "originalEnvironment": "local mocked component",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-isolated",
+      "deployment": "not-deployed",
+      "runtime": "real local Auth/RLS/RPC plus UI where browser-summary specifies"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/D06-targeted.log",
+      "logs/audit-16-final.log",
+      "logs/R1-disposable-complete.log",
+      "workflow-runtime.jsonl"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-A27",
+    "owner": "D03",
+    "title": "workspace讀取失敗",
+    "originalAuditResult": "fail",
+    "originalEnvironment": "local mocked component",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-local-contract",
+      "deployment": "not-deployed",
+      "runtime": "local/offline contracts; see linked runtime evidence for exact subset"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/D03-scope-red.log",
+      "logs/D03-scope-green.log",
+      "logs/D03-session-race-red.log",
+      "logs/D05-real-schema-green.log",
+      "logs/R1-disposable-complete.log",
+      "logs/legacy-owned-integration-complete.log"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-A28",
+    "owner": "D11",
+    "title": "香港同日跨UTC午夜",
+    "originalAuditResult": "fail",
+    "originalEnvironment": "local mocked component",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-local-contract",
+      "deployment": "not-deployed",
+      "runtime": "local/offline contracts; see linked runtime evidence for exact subset"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/D11-audit-green.log",
+      "logs/original-194-final.log",
+      "logs/audit-16-final.log"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-A29",
+    "owner": "D11",
+    "title": "香港明日但同UTC日",
+    "originalAuditResult": "fail",
+    "originalEnvironment": "local mocked component",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-local-contract",
+      "deployment": "not-deployed",
+      "runtime": "local/offline contracts; see linked runtime evidence for exact subset"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/D11-audit-green.log",
+      "logs/original-194-final.log",
+      "logs/audit-16-final.log"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-A30",
+    "owner": "D03",
+    "title": "503與未登入分開",
+    "originalAuditResult": "fail",
+    "originalEnvironment": "local mocked component",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-local-contract",
+      "deployment": "not-deployed",
+      "runtime": "local/offline contracts; see linked runtime evidence for exact subset"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/D03-scope-red.log",
+      "logs/D03-scope-green.log",
+      "logs/D03-session-race-red.log",
+      "logs/D05-real-schema-green.log",
+      "logs/R1-disposable-complete.log",
+      "logs/legacy-owned-integration-complete.log"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-A31",
+    "owner": "D06",
+    "title": "review及audit原子性",
+    "originalAuditResult": "fail",
+    "originalEnvironment": "local fault model",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-isolated",
+      "deployment": "not-deployed",
+      "runtime": "real local Auth/RLS/RPC plus UI where browser-summary specifies"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/D06-targeted.log",
+      "logs/audit-16-final.log",
+      "logs/R1-disposable-complete.log",
+      "workflow-runtime.jsonl"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-A32",
+    "owner": "D06",
+    "title": "備註重試去重",
+    "originalAuditResult": "fail",
+    "originalEnvironment": "local fault model",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-isolated",
+      "deployment": "not-deployed",
+      "runtime": "real local Auth/RLS/RPC plus UI where browser-summary specifies"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/D06-targeted.log",
+      "logs/audit-16-final.log",
+      "logs/R1-disposable-complete.log",
+      "workflow-runtime.jsonl"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-A33",
+    "owner": "D10",
+    "title": "清單條件/位置保留",
+    "originalAuditResult": "not-tested",
+    "originalEnvironment": "staging browser",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-local-and-isolated",
+      "deployment": "not-deployed",
+      "runtime": "real 51-creator DB paging plus component URL/filter/focus contracts"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/audit-16-final.log",
+      "logs/R1-disposable-complete.log",
+      "workflow-runtime.jsonl"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-A34",
+    "owner": "D03",
+    "title": "staff資格及停用邊界",
+    "originalAuditResult": "pass",
+    "originalEnvironment": "local existing tests",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-local-contract",
+      "deployment": "not-deployed",
+      "runtime": "local/offline contracts; see linked runtime evidence for exact subset"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/D03-scope-red.log",
+      "logs/D03-scope-green.log",
+      "logs/D03-session-race-red.log",
+      "logs/D05-real-schema-green.log",
+      "logs/R1-disposable-complete.log",
+      "logs/legacy-owned-integration-complete.log"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-A35",
+    "owner": "D03",
+    "title": "workspace初始化及slug",
+    "originalAuditResult": "pass",
+    "originalEnvironment": "local existing tests",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-local-contract",
+      "deployment": "not-deployed",
+      "runtime": "local/offline contracts; see linked runtime evidence for exact subset"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/D03-scope-red.log",
+      "logs/D03-scope-green.log",
+      "logs/D03-session-race-red.log",
+      "logs/D05-real-schema-green.log",
+      "logs/R1-disposable-complete.log",
+      "logs/legacy-owned-integration-complete.log"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-A36",
+    "owner": "D07",
+    "title": "審稿及proof既有契約",
+    "originalAuditResult": "pass",
+    "originalEnvironment": "local existing tests",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-isolated",
+      "deployment": "not-deployed",
+      "runtime": "real local Auth/RLS/RPC plus UI where browser-summary specifies"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/R1-disposable-complete.log",
+      "logs/proof-review-real-final.log",
+      "logs/proof-assets-ownership-final.log",
+      "logs/legacy-owned-integration-complete.log",
+      "browser-summary.json",
+      "browser-roundtrip.json",
+      "browser-neutrality.json"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-A37",
+    "owner": "D07",
+    "title": "完成/交接/權限既有契約",
+    "originalAuditResult": "pass",
+    "originalEnvironment": "local existing tests",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-isolated",
+      "deployment": "not-deployed",
+      "runtime": "real local Auth/RLS/RPC plus UI where browser-summary specifies"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/R1-disposable-complete.log",
+      "logs/proof-review-real-final.log",
+      "logs/proof-assets-ownership-final.log",
+      "logs/legacy-owned-integration-complete.log",
+      "browser-summary.json",
+      "browser-roundtrip.json",
+      "browser-neutrality.json"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-A38",
+    "owner": "D03",
+    "title": "Workspace切換",
+    "originalAuditResult": "pass",
+    "originalEnvironment": "production browser",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-local-contract",
+      "deployment": "not-deployed",
+      "runtime": "local/offline contracts; see linked runtime evidence for exact subset"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/D03-scope-red.log",
+      "logs/D03-scope-green.log",
+      "logs/D03-session-race-red.log",
+      "logs/D05-real-schema-green.log",
+      "logs/R1-disposable-complete.log",
+      "logs/legacy-owned-integration-complete.log"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-A39",
+    "owner": "D10",
+    "title": "搜尋與Approved篩選",
+    "originalAuditResult": "pass",
+    "originalEnvironment": "production browser",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-local-and-isolated",
+      "deployment": "not-deployed",
+      "runtime": "real 51-creator DB paging plus component URL/filter/focus contracts"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/audit-16-final.log",
+      "logs/R1-disposable-complete.log",
+      "workflow-runtime.jsonl"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-A40",
+    "owner": "D10",
+    "title": "Creator個案可讀",
+    "originalAuditResult": "pass",
+    "originalEnvironment": "production browser",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-local-and-isolated",
+      "deployment": "not-deployed",
+      "runtime": "real 51-creator DB paging plus component URL/filter/focus contracts"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/audit-16-final.log",
+      "logs/R1-disposable-complete.log",
+      "workflow-runtime.jsonl"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-A41",
+    "owner": "D10",
+    "title": "返回保留篩選",
+    "originalAuditResult": "fail",
+    "originalEnvironment": "production browser",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-local-and-isolated",
+      "deployment": "not-deployed",
+      "runtime": "real 51-creator DB paging plus component URL/filter/focus contracts"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/audit-16-final.log",
+      "logs/R1-disposable-complete.log",
+      "workflow-runtime.jsonl"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-A42",
+    "owner": "D03",
+    "title": "主動任務佇列讀取",
+    "originalAuditResult": "fail",
+    "originalEnvironment": "production browser",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-local-contract",
+      "deployment": "not-deployed",
+      "runtime": "local/offline contracts; see linked runtime evidence for exact subset"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/D03-scope-red.log",
+      "logs/D03-scope-green.log",
+      "logs/D03-session-race-red.log",
+      "logs/D05-real-schema-green.log",
+      "logs/R1-disposable-complete.log",
+      "logs/legacy-owned-integration-complete.log"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-A43",
+    "owner": "D03",
+    "title": "獎勵交接讀取",
+    "originalAuditResult": "fail",
+    "originalEnvironment": "production browser",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-local-contract",
+      "deployment": "not-deployed",
+      "runtime": "local/offline contracts; see linked runtime evidence for exact subset"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/D03-scope-red.log",
+      "logs/D03-scope-green.log",
+      "logs/D03-session-race-red.log",
+      "logs/D05-real-schema-green.log",
+      "logs/R1-disposable-complete.log",
+      "logs/legacy-owned-integration-complete.log"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-A44",
+    "owner": "D05",
+    "title": "既有無效作品證據",
+    "originalAuditResult": "fail",
+    "originalEnvironment": "production browser",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-isolated",
+      "deployment": "not-deployed",
+      "runtime": "real local Auth/RLS/RPC plus UI where browser-summary specifies"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/D05-evidence-red.log",
+      "logs/D05-evidence-green.log",
+      "logs/D05-correction-red.log",
+      "logs/D05-real-schema-green.log",
+      "logs/R1-disposable-complete.log"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-A45",
+    "owner": "D19",
+    "title": "申請空白狀態",
+    "originalAuditResult": "pass",
+    "originalEnvironment": "production browser",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "partial-local-support",
+      "deployment": "not-deployed",
+      "runtime": "support API contracts in owned integration target; broader UI UAT not claimed"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/full-suite-node22-complete.log",
+      "logs/full-suite-candidate.log",
+      "logs/legacy-owned-integration-complete.log",
+      "logs/release-check-complete.log",
+      "browser-summary.json"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-A46",
+    "owner": "D19",
+    "title": "既有參與紀錄",
+    "originalAuditResult": "pass",
+    "originalEnvironment": "production browser",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-isolated-support",
+      "deployment": "not-deployed",
+      "runtime": "support API contracts in owned integration target; broader UI UAT not claimed"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/full-suite-node22-complete.log",
+      "logs/full-suite-candidate.log",
+      "logs/legacy-owned-integration-complete.log",
+      "logs/release-check-complete.log",
+      "browser-summary.json"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-A47",
+    "owner": "D04",
+    "title": "任務管理載入狀態",
+    "originalAuditResult": "fail",
+    "originalEnvironment": "production browser",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-local-contract",
+      "deployment": "not-deployed",
+      "runtime": "local/offline contracts; see linked runtime evidence for exact subset"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/audit-16-final.log",
+      "logs/full-suite-candidate.log",
+      "logs/D07-browser-full-ui-rerun.log"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-A48",
+    "owner": "D12",
+    "title": "條件式交付表單",
+    "originalAuditResult": "pass",
+    "originalEnvironment": "production browser",
+    "newResult": {
+      "code": "D12 authoring implemented; existing authority and rules retained",
+      "test": "106 targeted; final full suite; 6 real API + 3 browser",
+      "deployment": "not-deployed",
+      "runtime": "disposable Edge operator and Creator; preview/save/reload/workspace/publication guidance; retained unknown JSON; navigation guards"
+    },
+    "releaseScope": "R2 D12 verified local/disposable; not deployed",
+    "evidence": [
+      "D12-api-contract.json",
+      "D12-authoring-roundtrip.json",
+      "D12-browser-neutrality.json",
+      "D12-browser-summary.json",
+      "D12-changes.patch",
+      "D12-fixture-retention.json",
+      "D12-navigation.json",
+      "D12-schema-observation.json",
+      "D12-unknown-policy-roundtrip.json",
+      "logs/D12-authoring-final.log",
+      "logs/D12-browser-final.log",
+      "logs/D12-build-node22.log",
+      "logs/D12-diff-check.log",
+      "logs/D12-full-suite.log",
+      "logs/D12-lint.log",
+      "logs/D12-manage-consumer-green.log",
+      "logs/D12-manifest-check.log",
+      "logs/D12-native-esm-node22.log",
+      "logs/D12-typecheck.log"
+    ],
+    "limitations": "No original production outcome overwritten; D12 is mission authoring only. No deployment, physical-device, Safari/WebKit, paid-provider or concurrency/performance certification."
+  },
+  {
+    "caseId": "UC-A49",
+    "owner": "D19",
+    "title": "挑戰及內容空白狀態",
+    "originalAuditResult": "pass",
+    "originalEnvironment": "production browser",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "partial-local-support",
+      "deployment": "not-deployed",
+      "runtime": "support API contracts in owned integration target; broader UI UAT not claimed"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/full-suite-node22-complete.log",
+      "logs/full-suite-candidate.log",
+      "logs/legacy-owned-integration-complete.log",
+      "logs/release-check-complete.log",
+      "browser-summary.json"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-A50",
+    "owner": "D14",
+    "title": "學院列表及類型篩選",
+    "originalAuditResult": "pass",
+    "originalEnvironment": "production browser",
+    "newResult": {
+      "code": "D14 truthful preview implemented; original lesson expectations preserved",
+      "test": "66 targeted; 1756 full pass / 338 skip; 6 API + 4 Edge",
+      "deployment": "not-deployed",
+      "runtime": "6 real local API cases; 4 Edge journeys; explicit 503 error-path transport fake"
+    },
+    "releaseScope": "R2 D14 local/disposable; not deployed",
+    "evidence": [
+      "D14-api-contract.json",
+      "D14-author-ui.json",
+      "D14-browser-neutrality.json",
+      "D14-browser-summary.json",
+      "D14-changes.patch",
+      "D14-contact-ui.json",
+      "D14-creator-ui.json",
+      "D14-delivery.json",
+      "D14-fixture-retention.json",
+      "D14-public-ui.json",
+      "D14-schema-diff.json",
+      "D14-schema-observation.json",
+      "logs/D14-build-node22.log",
+      "logs/D14-diff-check.log",
+      "logs/D14-full-suite.log",
+      "logs/D14-lint.log",
+      "logs/D14-manifest-check.log",
+      "logs/D14-runtime-verified.log",
+      "logs/D14-targeted.log",
+      "logs/D14-typecheck.log"
+    ],
+    "limitations": "Not deployed. No commit, push, merge, CI, production access, real memberships, messages/invitations, paid AI/social providers, payments or financing.; D14 is the approved local truthful-preview scope. UC-C18 and UC-A51 still require four real lesson units and persisted learning progress in D15; their original expectations remain open, not PASS. The reduced public promise still needs release-owner confirmation before publication.; One transient error scenario uses explicit 503 transport mocks (actual count in D14-creator-ui.json). Successful browser/API reads and writes use real owned local Auth/RLS/database. The browser reuses real local fixture sessions; this is not a fresh external login or provider acceptance.; Earlier R0/R1/D08/D09/D12/D13 runtime stays historical at its preserved fingerprints. This task does not rerun the entire legacy/active proof/reward handoff. The original 16 audit tests and 194 contracts are freshly rerun.; Skipped full-suite integration is not PASS. The broad legacy integration seed/cleanup exceeds exact-owned fixture scope; this task uses the guarded six-case owned Academy integration instead.; No Safari/WebKit, physical-device, full accessibility, 200% zoom, load/performance or multi-author race certification. Existing app lint warnings and build route/bundle warnings remain.; The original audit ZIP was not reopened this turn; original report/case/regression evidence and its expected SHA are preserved. Supplied implementation-package CSV original fields are rechecked unchanged."
+  },
+  {
+    "caseId": "UC-A51",
+    "owner": "D14",
+    "title": "課程承諾與正文",
+    "originalAuditResult": "fail",
+    "originalEnvironment": "production browser",
+    "newResult": {
+      "code": "D15 versioned lessons and saved progress implemented; no approved curriculum fabricated",
+      "test": "140 targeted; 1762 full pass / 350 skip; 12 API + 4 Edge; original content blocked",
+      "deployment": "not-deployed",
+      "runtime": "12 real local API/RLS cases; 4 Edge journeys; raw financial neutrality; formal curriculum blocked"
+    },
+    "releaseScope": "D15 synthetic functional verification only; original four-lesson semantics retained; not deployed",
+    "evidence": [
+      "D14-api-contract.json",
+      "D14-author-ui.json",
+      "D14-browser-neutrality.json",
+      "D14-browser-summary.json",
+      "D14-changes.patch",
+      "D14-contact-ui.json",
+      "D14-creator-ui.json",
+      "D14-delivery.json",
+      "D14-fixture-retention.json",
+      "D14-public-ui.json",
+      "D14-schema-diff.json",
+      "D14-schema-observation.json",
+      "D15-api-contract.json",
+      "D15-author-ui.json",
+      "D15-browser-neutrality.json",
+      "D15-browser-summary.json",
+      "D15-changes.patch",
+      "D15-conflict-ui.json",
+      "D15-creator-ui.json",
+      "D15-db-lint.json",
+      "D15-delivery.json",
+      "D15-fixture-retention.json",
+      "D15-forward-correction.json",
+      "D15-forward-index.json",
+      "D15-forward-replay.json",
+      "D15-isolation-ui.json",
+      "D15-schema-after.json",
+      "D15-schema-before.json",
+      "D15-schema-diff.json",
+      "logs/D14-build-node22.log",
+      "logs/D14-diff-check.log",
+      "logs/D14-full-suite.log",
+      "logs/D14-lint.log",
+      "logs/D14-manifest-check.log",
+      "logs/D14-runtime-verified.log",
+      "logs/D14-targeted.log",
+      "logs/D14-typecheck.log",
+      "logs/D15-api-final.log",
+      "logs/D15-browser-final.log",
+      "logs/D15-build-node22.log",
+      "logs/D15-diff-check.log",
+      "logs/D15-full-suite.log",
+      "logs/D15-lint.log",
+      "logs/D15-manifest-check.log",
+      "logs/D15-targeted.log",
+      "logs/D15-typecheck.log"
+    ],
+    "limitations": "BLOCKED_CONTENT_NOT_PROVIDED: user confirmed no approved real curriculum. UC-C18/UC-A51 still require the original four real lesson units; neither is PASS. Two-unit synthetic N03 is functional evidence only.; Not deployed. No commit, push, merge, CI, hosted/production access, real membership changes, external messages/invites/publication, payments or paid AI/providers.; One completion 503 is an explicit browser transport mock. Successful reads/writes and the version-conflict 409 use real local Auth/RLS/API/database; sessions reused from the owned fixture. Manual approval references are recorded staff attestations, not independently verified content approvals.; Prior R0/R1 and D08/D09/D12/D13/D14 runtime remain historical at their preserved fingerprints. Full suite freshly protects 16 audit tests and 194 contracts; the entire legacy/active proof/reward handoff was not rerun for this D15 candidate.; Skipped broad integration is not PASS; legacy shared seeds and broad delete/reset remain excluded. Scoped owned Academy integration supplies the necessary D15 runtime evidence.; No Safari/WebKit, physical-device, full accessibility, load/performance, hosted advisors or production schema acceptance. Four prior app lint warnings and existing route/bundle build warnings remain. F27 remains partial: lesson fields use a labelled business form, while the existing parent track Metadata(JSON) editor is still exposed.; Original supplied CSV fields and originalAuditResult preserved. Original audit ZIP was not reopened this turn; expected audit SHA and prior evidence retained."
+  },
+  {
+    "caseId": "UC-A52",
+    "owner": "D11",
+    "title": "逾期待辦可直接處理",
+    "originalAuditResult": "fail",
+    "originalEnvironment": "production browser",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-local-contract",
+      "deployment": "not-deployed",
+      "runtime": "local/offline contracts; see linked runtime evidence for exact subset"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/D11-audit-green.log",
+      "logs/original-194-final.log",
+      "logs/audit-16-final.log"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-A53",
+    "owner": "D04",
+    "title": "錯誤不是無訊息空白",
+    "originalAuditResult": "fail",
+    "originalEnvironment": "local mocked component",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-local-contract",
+      "deployment": "not-deployed",
+      "runtime": "local/offline contracts; see linked runtime evidence for exact subset"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/audit-16-final.log",
+      "logs/full-suite-candidate.log",
+      "logs/D07-browser-full-ui-rerun.log"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-A54",
+    "owner": "D05",
+    "title": "無效證據不可普通批准",
+    "originalAuditResult": "fail",
+    "originalEnvironment": "local mocked component",
+    "newResult": {
+      "code": "implemented-or-existing",
+      "test": "pass-isolated",
+      "deployment": "not-deployed",
+      "runtime": "real local Auth/RLS/RPC plus UI where browser-summary specifies"
+    },
+    "releaseScope": "R1 single-workspace internal pilot",
+    "evidence": [
+      "logs/D05-evidence-red.log",
+      "logs/D05-evidence-green.log",
+      "logs/D05-correction-red.log",
+      "logs/D05-real-schema-green.log",
+      "logs/R1-disposable-complete.log"
+    ],
+    "limitations": "No claim that the production observation has changed."
+  },
+  {
+    "caseId": "UC-A55",
+    "owner": "D12",
+    "title": "營運規則可理解性",
+    "originalAuditResult": "fail",
+    "originalEnvironment": "production browser",
+    "newResult": {
+      "code": "D12 authoring implemented; existing authority and rules retained",
+      "test": "106 targeted; final full suite; 6 real API + 3 browser",
+      "deployment": "not-deployed",
+      "runtime": "disposable Edge operator and Creator; preview/save/reload/workspace/publication guidance; retained unknown JSON; navigation guards"
+    },
+    "releaseScope": "D12 mission authoring verified; D15 other operations forms open",
+    "evidence": [
+      "D12-api-contract.json",
+      "D12-authoring-roundtrip.json",
+      "D12-browser-neutrality.json",
+      "D12-browser-summary.json",
+      "D12-changes.patch",
+      "D12-fixture-retention.json",
+      "D12-navigation.json",
+      "D12-schema-observation.json",
+      "D12-unknown-policy-roundtrip.json",
+      "logs/D12-authoring-final.log",
+      "logs/D12-browser-final.log",
+      "logs/D12-build-node22.log",
+      "logs/D12-diff-check.log",
+      "logs/D12-full-suite.log",
+      "logs/D12-lint.log",
+      "logs/D12-manage-consumer-green.log",
+      "logs/D12-manifest-check.log",
+      "logs/D12-native-esm-node22.log",
+      "logs/D12-typecheck.log"
+    ],
+    "limitations": "No original production outcome overwritten; D12 is mission authoring only. No deployment, physical-device, Safari/WebKit, paid-provider or concurrency/performance certification."
+  }
+]

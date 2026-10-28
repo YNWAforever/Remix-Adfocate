@@ -19,22 +19,22 @@ function renderNav() {
 }
 
 describe("BottomNav", () => {
-  it("renders all member tabs", async () => {
+  it("renders exactly five primary mobile tabs", async () => {
     renderNav();
-    for (const label of ["主頁", "任務", "通知", "積分兌換", "錢包", "探索"]) {
+    for (const label of ["主頁", "找任務", "我的任務", "錢包", "更多"]) {
       await waitFor(() => expect(screen.getByText(label)).toBeInTheDocument());
     }
+    expect(screen.getAllByRole("link")).toHaveLength(5);
   });
 
   it("renders correct hrefs for each tab", async () => {
     renderNav();
     const expected = [
       { label: "主頁", href: "/home" },
-      { label: "任務", href: "/mission" },
-      { label: "通知", href: "/notifications" },
-      { label: "積分兌換", href: "/redemption" },
+      { label: "找任務", href: "/mission" },
+      { label: "我的任務", href: "/my" },
       { label: "錢包", href: "/wallet" },
-      { label: "探索", href: "/explore" },
+      { label: "更多", href: "/more" },
     ];
     for (const { label, href } of expected) {
       await waitFor(() => {

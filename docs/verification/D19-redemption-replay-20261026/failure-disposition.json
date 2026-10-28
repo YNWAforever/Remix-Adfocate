@@ -1,0 +1,150 @@
+{
+  "at": "2026-10-25T20:49:23.418086+00:00",
+  "retainedFailures": [
+    {
+      "label": "memory-red",
+      "receipt": {
+        "path": "docs/verification/D19-redemption-replay-20261026/memory-red-command.json",
+        "sha256": "7d165753a2207604c5a3142506cab83df9932f3780e00806c7ee64fb8d8077d4"
+      },
+      "log": {
+        "path": "docs/verification/D19-redemption-replay-20261026/memory-red.log",
+        "sha256": "48ec89f14db0f6de50aff346ffb8963dcd81a99ff30a82403727269af93c4aff"
+      },
+      "sourceFingerprint": "ead55a808470f90d72290905db90933cb4a6df48eaba519d4587339a4659b71d"
+    },
+    {
+      "label": "client-red",
+      "receipt": {
+        "path": "docs/verification/D19-redemption-replay-20261026/client-red-command.json",
+        "sha256": "eb52e6007190d826bdea3f3c74b62a6ae9c7a9433fb0a30ca5cc145f664c3567"
+      },
+      "log": {
+        "path": "docs/verification/D19-redemption-replay-20261026/client-red.log",
+        "sha256": "bea47c7eaeb87a6f6433ecaf828933d10e538182028146149d9d6636437efb01"
+      },
+      "sourceFingerprint": "ead55a808470f90d72290905db90933cb4a6df48eaba519d4587339a4659b71d"
+    },
+    {
+      "label": "client-red-valid-assertion",
+      "receipt": {
+        "path": "docs/verification/D19-redemption-replay-20261026/client-red-valid-assertion-command.json",
+        "sha256": "c244a5d3ccd795a94d7588b85cd21a86dd5c886f24fa5a78392ad41a399c1530"
+      },
+      "log": {
+        "path": "docs/verification/D19-redemption-replay-20261026/client-red-valid-assertion.log",
+        "sha256": "ab1e3477a0e2a6419bcecfcf6d79a201c8f08356f3d562800f14d72babfd76f0"
+      },
+      "sourceFingerprint": "ead55a808470f90d72290905db90933cb4a6df48eaba519d4587339a4659b71d"
+    },
+    {
+      "label": "client-scope-red",
+      "receipt": {
+        "path": "docs/verification/D19-redemption-replay-20261026/client-scope-red-command.json",
+        "sha256": "6c156c7aa56d5a56d54f504765a987519c7b837e5919325fb986892722d9ef44"
+      },
+      "log": {
+        "path": "docs/verification/D19-redemption-replay-20261026/client-scope-red.log",
+        "sha256": "71a0432f288dde3b11c2081acd52194e11c850009c0cffbd4ae729dff54f4a60"
+      },
+      "sourceFingerprint": "1d899b088a00e654e3967355a0fbf76f3a31735821fea45bf715c1698539f601"
+    },
+    {
+      "label": "memory-shape-red",
+      "receipt": {
+        "path": "docs/verification/D19-redemption-replay-20261026/memory-shape-red-command.json",
+        "sha256": "1a52673fad2d4db4b9a2df8b1e3b4ccc04e85862c46162bc8443eb05057ab574"
+      },
+      "log": {
+        "path": "docs/verification/D19-redemption-replay-20261026/memory-shape-red.log",
+        "sha256": "8fee44e361f7caeef223b58d83fb8518b9a0bf541be97bab6be3df72502f476b"
+      },
+      "sourceFingerprint": "1d899b088a00e654e3967355a0fbf76f3a31735821fea45bf715c1698539f601"
+    },
+    {
+      "label": "client-response-fence-red",
+      "receipt": {
+        "path": "docs/verification/D19-redemption-replay-20261026/client-response-fence-red-command.json",
+        "sha256": "5617bf193d725c6b8dbf78c2c8878282ee63b8121302ee5d5fa68745c888d318"
+      },
+      "log": {
+        "path": "docs/verification/D19-redemption-replay-20261026/client-response-fence-red.log",
+        "sha256": "41bc9896d80b6a0ab21ba17c8210bd797d69b878b8a6fb6625391c79739e685f"
+      },
+      "sourceFingerprint": "da2a8040a5745086b9b3193d5157d4b3d1666030437f3c4b5384c8274a943943"
+    },
+    {
+      "label": "release-red",
+      "receipt": {
+        "path": "docs/verification/D19-redemption-replay-20261026/release-red-command.json",
+        "sha256": "450b2efe7694472c8ec7d08a30592b78807d1ec21082ce9f1bac796989198784"
+      },
+      "log": {
+        "path": "docs/verification/D19-redemption-replay-20261026/release-red.log",
+        "sha256": "1cc9f4e6699ec8e4f5c8cda6db6b37c6f235a3fee1910534fabfee07b1fafe50"
+      },
+      "sourceFingerprint": "8add2ea01842c3dfdaa0dce1a0635ae397dcc189486c42fbd177e8a376aefb49"
+    },
+    {
+      "label": "full-native",
+      "receipt": {
+        "path": "docs/verification/D19-redemption-replay-20261026/full-native-command.json",
+        "sha256": "1d58dadd3808aeb18825fbb8a1e3d537930af593625f09ecf8cfc5db2fae57df"
+      },
+      "log": {
+        "path": "docs/verification/D19-redemption-replay-20261026/full-native.log",
+        "sha256": "19efe5506b1fda81a0f58b3a8de792f4cd391e27f4208b58f1026f568698d1eb"
+      },
+      "sourceFingerprint": "151b0b14fdb30e4b695b4e398dcc145e19a9cb345c469d72183840cd702b5d06"
+    },
+    {
+      "label": "full-native-final",
+      "receipt": {
+        "path": "docs/verification/D19-redemption-replay-20261026/full-native-final-command.json",
+        "sha256": "2ebcc8cdd0d9dfd01801bfd459a718a08f4412aa15677b6d690596ca7591ce76"
+      },
+      "log": {
+        "path": "docs/verification/D19-redemption-replay-20261026/full-native-final.log",
+        "sha256": "44f5f1911a7325ffbc3148ed879112ef2d0ab78a3357705ca01151951b19e0bf"
+      },
+      "sourceFingerprint": "98d01c1c2c40e900b540f4c474a9725d5b4c8114104ee2524f5afc93be8f06ba"
+    },
+    {
+      "label": "release-foundation-final",
+      "receipt": {
+        "path": "docs/verification/D19-redemption-replay-20261026/release-foundation-final-command.json",
+        "sha256": "01275d2e5adebc227439674967b5e3b8e0666ef94bc094fb59a7949f624d3c7a"
+      },
+      "log": {
+        "path": "docs/verification/D19-redemption-replay-20261026/release-foundation-final.log",
+        "sha256": "00151e3e192d2c314d733ad1eaa672a7e49892adde5dc6da7dbd7d6f10b93c41"
+      },
+      "sourceFingerprint": "319a5afd10db7ffc5a60711574a1fbe04894cdaab73eaf83a26df46ca599b37b"
+    }
+  ],
+  "productRepair": "Same intent replay uses the saved original redemption; stock/points/code mutation occurs once through the unchanged original RPC. UI retains intent on unknown response, cancellation or reload, and partitions/fences actor/workspace.",
+  "releaseRepair": "New74 classified in existing release engine; explicit redemption phase, seven capabilities and validators. Existing587 plus application4 remain; total598. Unknown migrations still rejected.",
+  "initialInvalidAssertion": "First client RED used a TypeError-prone matcher; preserved. Subsequent RED used a valid string matcher and reproduced missing UUID/recovery before repair.",
+  "fullDispositions": [
+    {
+      "label": "full-native",
+      "failure": "Unclassified74",
+      "resolvedBy": "release mapping and new specific contract regression"
+    },
+    {
+      "label": "full-native-final",
+      "failure": "Committed capability count591 vs598",
+      "resolvedBy": "Explicit seven new capabilities; preserves original587/application4"
+    },
+    {
+      "label": "release-foundation-final",
+      "failure": "Prior-only count587 included seven new capabilities",
+      "resolvedBy": "Explicitly account for both new groups; still587 prior capabilities"
+    }
+  ],
+  "finalFull": {
+    "path": "docs/verification/D19-redemption-replay-20261026/full-native-verified.json",
+    "sha256": "32d1b9d1674c05fe6b52f637193055647ffb9798bf2e560cf9428dbc87ae53db"
+  },
+  "assertionsOrExpiryWeakened": false
+}

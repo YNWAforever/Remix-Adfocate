@@ -1,0 +1,77 @@
+{
+  "kind": "LOCAL_REVIEW_INSTRUCTIONS_NOT_EXECUTED",
+  "sourceBefore": "1d3df1fe48e87d784b18ff5bfde3ebe438411187bac6a28d83a3ff6d21f02191",
+  "sourceAfter": "e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993",
+  "sourceAdds": [
+    {
+      "path": "scripts/audit/application-supplement.mjs",
+      "afterSha256": "68c2c187390a05d1513e600cbb9a1dd7a2add0ba97fd9abb39baeb466105cff4"
+    },
+    {
+      "path": "scripts/audit/execute-application-supplement.mjs",
+      "afterSha256": "0cc6c047a7935009b86badd0c680f6f38342d6c71e0b012090603a4ff5dad89b"
+    },
+    {
+      "path": "server/test/application-supplement.test.ts",
+      "afterSha256": "166b2b8772fb46273d5af7c9d174603d63cd1420d2a595a9c4411e0d8b11e667"
+    }
+  ],
+  "sourceModifications": [],
+  "instructions": [
+    "Before undoing, verify exact after hashes and preserve any later/user changes. Remove only these3 local added source files if owner chooses local rollback.",
+    "Restore only this turn metadata from checkpoint exact before copies after current hashes are checked; never git reset/clean or restore the entire dirty checkout.",
+    "Retain sealed evidence and all historic original audit/runtime/incident records. The old integrity checker remains source-bound; use this checkpoint resolver for altered metadata."
+  ],
+  "metadataBefore": [
+    {
+      "path": "docs/verification/adfocate-delivery.json",
+      "sha256": "cb982231c64042e851ffc8b1cb25b0e1422a575fc8c830c40a5001096f224fa9",
+      "before": "docs/verification/D19-application-runtime-preparation-20261025/before/docs/verification/adfocate-delivery.json"
+    },
+    {
+      "path": "docs/verification/code-fingerprint.json",
+      "sha256": "70878120339358fdd2e7403d4c34f99a50b13e24225e10af8a8b8d045d97faa8",
+      "before": "docs/verification/D19-application-runtime-preparation-20261025/before/docs/verification/code-fingerprint.json"
+    },
+    {
+      "path": "docs/verification/evidence-integrity.json",
+      "sha256": "e25a067078390371e8b04f9a0e37fa1b658292fd37e50dfcb52415e6d00f3a73",
+      "before": "docs/verification/D19-application-runtime-preparation-20261025/before/docs/verification/evidence-integrity.json"
+    },
+    {
+      "path": "docs/verification/D19-application-decisions-integrity.json",
+      "sha256": "1ba40b2c31d5ab12ecbbd1790c0169c6067e03d8abaa4ffa2cfd27a278f05062",
+      "before": "docs/verification/D19-application-runtime-preparation-20261025/before/docs/verification/D19-application-decisions-integrity.json"
+    },
+    {
+      "path": "docs/verification/audit_case_coverage.csv",
+      "sha256": "9f5b3c1e9a5b6adfbd2781670d24aad168dad1548486e7de0446b8c57609939d",
+      "before": "docs/verification/D19-application-runtime-preparation-20261025/before/docs/verification/audit_case_coverage.csv"
+    },
+    {
+      "path": "docs/verification/implementation_backlog.csv",
+      "sha256": "d72f4e9eae61278240b0dd11d4ea57cb545924d428e2aa4b67217bb09dbbf5d9",
+      "before": "docs/verification/D19-application-runtime-preparation-20261025/before/docs/verification/implementation_backlog.csv"
+    },
+    {
+      "path": "docs/verification/adfocate-task-ledger.md",
+      "sha256": "fa6642b8b4420a2087a61409aa4288c8d307c43545e2d6ba0451b75bec7df74f",
+      "before": "docs/verification/D19-application-runtime-preparation-20261025/before/docs/verification/adfocate-task-ledger.md"
+    },
+    {
+      "path": "docs/superpowers/plans/2026-10-23-adfocate-implementation-plan.md",
+      "sha256": "aa6856a72da46b2d73ab55a39cb001df44323560c7762906fb3ef0d63f49fece",
+      "before": "docs/verification/D19-application-runtime-preparation-20261025/before/docs/superpowers/plans/2026-10-23-adfocate-implementation-plan.md"
+    }
+  ],
+  "actualRuntime": "NONE; no data restoration/deletion or schema rollback is required for actions in this local preparation turn. Proposed runtime forward73 is not applied.",
+  "futureRuntimeFailurePolicy": {
+    "onFailure": "Stop dependent operations; retain exact IDs/claims/journals/receipts as UNKNOWN when response lost. No auto retry/reseed/data compensation or role repair.",
+    "schemaRollback": "No automatic down migration. Keep function/history and old code available; future owner-reviewed forward change only. No existing72 checksum changes.",
+    "cleanup": "No business/Auth data deletion; only explicitly reviewed exact two owned temporary fault triggers/functions removed after hash and full rollback assertion. Interrupted fault remains for review.",
+    "incident": "Original3 campaign incident remains OPEN/unrestored; shaped forensic-only, no target lifecycle or acceptance reuse; release HOLD."
+  },
+  "incidentOpen": true,
+  "releaseHold": true,
+  "providerEnabled": false
+}

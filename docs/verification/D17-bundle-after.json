@@ -1,0 +1,5686 @@
+{
+  "target": {
+    "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+    "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+    "disposable": true,
+    "projectId": "adfocate-r1-empty-20261023",
+    "proxy": "none",
+    "apiPort": 56421,
+    "apiContainerId": "1b9c41318298d79308db7782f51474541ad5abf0120fa93b96a2a9ea59d043ee",
+    "databaseContainerId": "e7c8efa295cd5544a8b2a100a73b6953cd6ddd486aaf394f231482067523e12d",
+    "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+    "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+    "networkId": "9e5d3069e8255d70b8eef56020c8ea2618fdb2626d92d9a04e51ea2de41a98e0"
+  },
+  "scope": "identity-bound asset build",
+  "productionAssets": true,
+  "chunks": [
+    {
+      "file": "assets/vendor-react-qcAInfL-.js",
+      "entry": false,
+      "bytes": 192938,
+      "gzipBytes": 60537,
+      "imports": [],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./node_modules/react-dom/cjs/react-dom-client.production.js",
+          "renderedBytes": 552879
+        },
+        {
+          "id": "./node_modules/react/cjs/react.production.js",
+          "renderedBytes": 18321
+        },
+        {
+          "id": "./node_modules/scheduler/cjs/scheduler.production.js",
+          "renderedBytes": 11134
+        },
+        {
+          "id": "./node_modules/react-dom/cjs/react-dom.production.js",
+          "renderedBytes": 7216
+        },
+        {
+          "id": "./node_modules/react/cjs/react-jsx-runtime.production.js",
+          "renderedBytes": 1294
+        },
+        {
+          "id": "./node_modules/react-dom/index.js",
+          "renderedBytes": 520
+        },
+        {
+          "id": "./node_modules/react-dom/client.js",
+          "renderedBytes": 512
+        },
+        {
+          "id": "./node_modules/react/jsx-runtime.js",
+          "renderedBytes": 239
+        },
+        {
+          "id": "./node_modules/scheduler/index.js",
+          "renderedBytes": 226
+        },
+        {
+          "id": "./node_modules/react/index.js",
+          "renderedBytes": 194
+        },
+        {
+          "id": "\u0000commonjsHelpers.js",
+          "renderedBytes": 140
+        },
+        {
+          "id": "\u0000./node_modules/react-dom/index.js?commonjs-es-import",
+          "renderedBytes": 112
+        },
+        {
+          "id": "\u0000./node_modules/react/index.js?commonjs-es-import",
+          "renderedBytes": 100
+        },
+        {
+          "id": "\u0000./node_modules/react/jsx-runtime.js?commonjs-es-import",
+          "renderedBytes": 44
+        },
+        {
+          "id": "\u0000./node_modules/react/cjs/react-jsx-runtime.production.js?commonjs-exports",
+          "renderedBytes": 36
+        },
+        {
+          "id": "\u0000./node_modules/react-dom/client.js?commonjs-es-import",
+          "renderedBytes": 36
+        },
+        {
+          "id": "\u0000./node_modules/react-dom/cjs/react-dom-client.production.js?commonjs-exports",
+          "renderedBytes": 35
+        },
+        {
+          "id": "\u0000./node_modules/react/jsx-runtime.js?commonjs-module",
+          "renderedBytes": 31
+        },
+        {
+          "id": "\u0000./node_modules/scheduler/index.js?commonjs-module",
+          "renderedBytes": 30
+        },
+        {
+          "id": "\u0000./node_modules/scheduler/cjs/scheduler.production.js?commonjs-exports",
+          "renderedBytes": 30
+        },
+        {
+          "id": "\u0000./node_modules/react-dom/index.js?commonjs-module",
+          "renderedBytes": 29
+        },
+        {
+          "id": "\u0000./node_modules/react-dom/cjs/react-dom.production.js?commonjs-exports",
+          "renderedBytes": 29
+        },
+        {
+          "id": "\u0000./node_modules/react-dom/client.js?commonjs-module",
+          "renderedBytes": 27
+        },
+        {
+          "id": "\u0000./node_modules/react/index.js?commonjs-module",
+          "renderedBytes": 26
+        },
+        {
+          "id": "\u0000./node_modules/react/cjs/react.production.js?commonjs-exports",
+          "renderedBytes": 26
+        }
+      ]
+    },
+    {
+      "file": "assets/vendor-router-BvkK89KP.js",
+      "entry": false,
+      "bytes": 124855,
+      "gzipBytes": 39254,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./node_modules/@tanstack/router-core/dist/esm/router.js",
+          "renderedBytes": 45851
+        },
+        {
+          "id": "./node_modules/@tanstack/router-core/dist/esm/load-matches.js",
+          "renderedBytes": 23698
+        },
+        {
+          "id": "./node_modules/@tanstack/router-core/dist/esm/new-process-route-tree.js",
+          "renderedBytes": 23430
+        },
+        {
+          "id": "./node_modules/@tanstack/query-core/build/modern/queryObserver.js",
+          "renderedBytes": 16088
+        },
+        {
+          "id": "./node_modules/@tanstack/query-core/build/modern/query.js",
+          "renderedBytes": 12283
+        },
+        {
+          "id": "./node_modules/@tanstack/history/dist/esm/index.js",
+          "renderedBytes": 10508
+        },
+        {
+          "id": "./node_modules/@tanstack/react-router/dist/esm/link.js",
+          "renderedBytes": 9575
+        },
+        {
+          "id": "./node_modules/@tanstack/router-core/dist/esm/utils.js",
+          "renderedBytes": 9228
+        },
+        {
+          "id": "./node_modules/@tanstack/query-core/build/modern/queryClient.js",
+          "renderedBytes": 8960
+        },
+        {
+          "id": "./node_modules/@tanstack/react-router/dist/esm/Match.js",
+          "renderedBytes": 8194
+        },
+        {
+          "id": "./node_modules/@tanstack/router-core/dist/esm/scroll-restoration.js",
+          "renderedBytes": 7118
+        },
+        {
+          "id": "./node_modules/@tanstack/query-core/build/modern/mutation.js",
+          "renderedBytes": 6907
+        },
+        {
+          "id": "./node_modules/@tanstack/query-core/build/modern/queriesObserver.js",
+          "renderedBytes": 6496
+        },
+        {
+          "id": "./node_modules/@tanstack/query-core/build/modern/utils.js",
+          "renderedBytes": 6388
+        },
+        {
+          "id": "./node_modules/@tanstack/router-core/dist/esm/path.js",
+          "renderedBytes": 5988
+        },
+        {
+          "id": "./node_modules/@tanstack/store/dist/esm/alien.js",
+          "renderedBytes": 5767
+        },
+        {
+          "id": "./node_modules/@tanstack/store/dist/esm/atom.js",
+          "renderedBytes": 5253
+        },
+        {
+          "id": "./node_modules/@tanstack/router-core/dist/esm/stores.js",
+          "renderedBytes": 4170
+        },
+        {
+          "id": "./node_modules/@tanstack/react-router/dist/esm/route.js",
+          "renderedBytes": 3982
+        },
+        {
+          "id": "./node_modules/@tanstack/query-core/build/modern/mutationObserver.js",
+          "renderedBytes": 3782
+        },
+        {
+          "id": "./node_modules/@tanstack/query-core/build/modern/infiniteQueryBehavior.js",
+          "renderedBytes": 3565
+        },
+        {
+          "id": "./node_modules/@tanstack/query-core/build/modern/mutationCache.js",
+          "renderedBytes": 3314
+        },
+        {
+          "id": "./node_modules/@tanstack/query-core/build/modern/retryer.js",
+          "renderedBytes": 3282
+        },
+        {
+          "id": "./node_modules/@tanstack/react-router/dist/esm/useBlocker.js",
+          "renderedBytes": 3023
+        },
+        {
+          "id": "./node_modules/use-sync-external-store/cjs/use-sync-external-store-shim/with-selector.production.js",
+          "renderedBytes": 2977
+        },
+        {
+          "id": "./node_modules/@tanstack/react-router/dist/esm/Transitioner.js",
+          "renderedBytes": 2708
+        },
+        {
+          "id": "./node_modules/@tanstack/react-query/build/modern/useQueries.js",
+          "renderedBytes": 2705
+        },
+        {
+          "id": "./node_modules/@tanstack/react-router/dist/esm/CatchBoundary.js",
+          "renderedBytes": 2693
+        },
+        {
+          "id": "./node_modules/@tanstack/react-query/build/modern/useBaseQuery.js",
+          "renderedBytes": 2667
+        },
+        {
+          "id": "./node_modules/@tanstack/react-router/dist/esm/utils.js",
+          "renderedBytes": 2408
+        },
+        {
+          "id": "./node_modules/use-sync-external-store/cjs/use-sync-external-store-shim.production.js",
+          "renderedBytes": 2342
+        },
+        {
+          "id": "./node_modules/@tanstack/router-core/dist/esm/route.js",
+          "renderedBytes": 2223
+        },
+        {
+          "id": "./node_modules/@tanstack/router-core/dist/esm/searchParams.js",
+          "renderedBytes": 2160
+        },
+        {
+          "id": "./node_modules/@tanstack/query-core/build/modern/queryCache.js",
+          "renderedBytes": 2150
+        },
+        {
+          "id": "./node_modules/@tanstack/router-core/dist/esm/qss.js",
+          "renderedBytes": 2118
+        },
+        {
+          "id": "./node_modules/@tanstack/query-core/build/modern/notifyManager.js",
+          "renderedBytes": 1858
+        },
+        {
+          "id": "./node_modules/@tanstack/query-core/build/modern/timeoutManager.js",
+          "renderedBytes": 1787
+        },
+        {
+          "id": "./node_modules/@tanstack/router-core/dist/esm/rewrite.js",
+          "renderedBytes": 1740
+        },
+        {
+          "id": "./node_modules/@tanstack/router-core/dist/esm/redirect.js",
+          "renderedBytes": 1640
+        },
+        {
+          "id": "./node_modules/@tanstack/react-router/dist/esm/ClientOnly.js",
+          "renderedBytes": 1480
+        },
+        {
+          "id": "./node_modules/@tanstack/react-router/dist/esm/lazyRouteComponent.js",
+          "renderedBytes": 1443
+        },
+        {
+          "id": "./node_modules/@tanstack/query-core/build/modern/focusManager.js",
+          "renderedBytes": 1443
+        },
+        {
+          "id": "./node_modules/@tanstack/react-router/dist/esm/Matches.js",
+          "renderedBytes": 1389
+        },
+        {
+          "id": "./node_modules/@tanstack/router-core/dist/esm/lru-cache.js",
+          "renderedBytes": 1334
+        },
+        {
+          "id": "./node_modules/@tanstack/query-core/build/modern/onlineManager.js",
+          "renderedBytes": 1327
+        },
+        {
+          "id": "./node_modules/@tanstack/react-router/dist/esm/RouterProvider.js",
+          "renderedBytes": 1184
+        },
+        {
+          "id": "./node_modules/@tanstack/react-router/dist/esm/useRouterState.js",
+          "renderedBytes": 1100
+        },
+        {
+          "id": "./node_modules/@tanstack/react-query/build/modern/suspense.js",
+          "renderedBytes": 1016
+        },
+        {
+          "id": "./node_modules/@tanstack/react-router/dist/esm/useMatch.js",
+          "renderedBytes": 939
+        },
+        {
+          "id": "./node_modules/@tanstack/react-router/dist/esm/useParams.js",
+          "renderedBytes": 912
+        },
+        {
+          "id": "./node_modules/@tanstack/react-query/build/modern/useMutation.js",
+          "renderedBytes": 908
+        },
+        {
+          "id": "./node_modules/@tanstack/react-router/dist/esm/useLocation.js",
+          "renderedBytes": 880
+        },
+        {
+          "id": "./node_modules/@tanstack/react-query/build/modern/errorBoundaryUtils.js",
+          "renderedBytes": 879
+        },
+        {
+          "id": "./node_modules/@tanstack/react-router/dist/esm/useSearch.js",
+          "renderedBytes": 859
+        },
+        {
+          "id": "./node_modules/@tanstack/react-router/dist/esm/useNavigate.js",
+          "renderedBytes": 798
+        },
+        {
+          "id": "./node_modules/@tanstack/react-router/dist/esm/not-found.js",
+          "renderedBytes": 727
+        },
+        {
+          "id": "./node_modules/@tanstack/react-router/dist/esm/useLoaderData.js",
+          "renderedBytes": 725
+        },
+        {
+          "id": "./node_modules/@tanstack/react-router/dist/esm/router.js",
+          "renderedBytes": 685
+        },
+        {
+          "id": "./node_modules/@tanstack/router-core/dist/esm/not-found.js",
+          "renderedBytes": 684
+        },
+        {
+          "id": "./node_modules/@tanstack/react-router/dist/esm/useLoaderDeps.js",
+          "renderedBytes": 648
+        },
+        {
+          "id": "./node_modules/@tanstack/react-store/dist/esm/useStore.js",
+          "renderedBytes": 643
+        },
+        {
+          "id": "./node_modules/@tanstack/query-core/build/modern/thenable.js",
+          "renderedBytes": 633
+        },
+        {
+          "id": "./node_modules/@tanstack/query-core/build/modern/removable.js",
+          "renderedBytes": 631
+        },
+        {
+          "id": "./node_modules/@tanstack/react-query/build/modern/QueryClientProvider.js",
+          "renderedBytes": 572
+        },
+        {
+          "id": "./node_modules/@tanstack/query-core/build/modern/subscribable.js",
+          "renderedBytes": 454
+        },
+        {
+          "id": "./node_modules/@tanstack/query-core/build/modern/environmentManager.js",
+          "renderedBytes": 421
+        },
+        {
+          "id": "./node_modules/@tanstack/react-router/dist/esm/renderRouteNotFound.js",
+          "renderedBytes": 419
+        },
+        {
+          "id": "./node_modules/@tanstack/react-query/build/modern/QueryErrorResetBoundary.js",
+          "renderedBytes": 392
+        },
+        {
+          "id": "./node_modules/@tanstack/react-router/dist/esm/fileRoute.js",
+          "renderedBytes": 344
+        },
+        {
+          "id": "./node_modules/use-sync-external-store/shim/with-selector.js",
+          "renderedBytes": 250
+        },
+        {
+          "id": "./node_modules/use-sync-external-store/shim/index.js",
+          "renderedBytes": 206
+        },
+        {
+          "id": "./node_modules/@tanstack/react-router/dist/esm/useRouteContext.js",
+          "renderedBytes": 180
+        },
+        {
+          "id": "./node_modules/@tanstack/react-router/dist/esm/SafeFragment.js",
+          "renderedBytes": 168
+        },
+        {
+          "id": "./node_modules/@tanstack/react-query/build/modern/IsRestoringProvider.js",
+          "renderedBytes": 160
+        },
+        {
+          "id": "./node_modules/@tanstack/react-router/dist/esm/routerStores.js",
+          "renderedBytes": 157
+        },
+        {
+          "id": "./node_modules/@tanstack/react-router/dist/esm/matchContext.js",
+          "renderedBytes": 145
+        },
+        {
+          "id": "./node_modules/@tanstack/react-router/dist/esm/scroll-restoration.js",
+          "renderedBytes": 134
+        },
+        {
+          "id": "./node_modules/@tanstack/router-core/dist/esm/scroll-restoration-script/client.js",
+          "renderedBytes": 121
+        },
+        {
+          "id": "./node_modules/@tanstack/router-core/dist/esm/root.js",
+          "renderedBytes": 119
+        },
+        {
+          "id": "./node_modules/@tanstack/react-router/dist/esm/useRouter.js",
+          "renderedBytes": 100
+        },
+        {
+          "id": "./node_modules/@tanstack/react-query/build/modern/useQuery.js",
+          "renderedBytes": 90
+        },
+        {
+          "id": "./node_modules/@tanstack/router-core/dist/esm/invariant.js",
+          "renderedBytes": 89
+        },
+        {
+          "id": "./node_modules/@tanstack/react-router/dist/esm/routerContext.js",
+          "renderedBytes": 85
+        },
+        {
+          "id": "./node_modules/@tanstack/router-core/dist/esm/link.js",
+          "renderedBytes": 74
+        },
+        {
+          "id": "./node_modules/@tanstack/router-core/dist/esm/isServer/client.js",
+          "renderedBytes": 58
+        },
+        {
+          "id": "\u0000./node_modules/use-sync-external-store/shim/with-selector.js?commonjs-es-import",
+          "renderedBytes": 48
+        },
+        {
+          "id": "\u0000./node_modules/use-sync-external-store/cjs/use-sync-external-store-shim.production.js?commonjs-exports",
+          "renderedBytes": 45
+        },
+        {
+          "id": "\u0000./node_modules/use-sync-external-store/shim/with-selector.js?commonjs-module",
+          "renderedBytes": 33
+        },
+        {
+          "id": "\u0000./node_modules/use-sync-external-store/cjs/use-sync-external-store-shim/with-selector.production.js?commonjs-exports",
+          "renderedBytes": 33
+        },
+        {
+          "id": "\u0000./node_modules/use-sync-external-store/shim/index.js?commonjs-module",
+          "renderedBytes": 25
+        },
+        {
+          "id": "./node_modules/@tanstack/router-core/dist/esm/defer.js",
+          "renderedBytes": 0
+        },
+        {
+          "id": "./node_modules/@tanstack/router-core/dist/esm/manifest.js",
+          "renderedBytes": 0
+        },
+        {
+          "id": "./node_modules/@tanstack/router-core/dist/esm/Matches.js",
+          "renderedBytes": 0
+        },
+        {
+          "id": "./node_modules/@tanstack/router-core/dist/esm/config.js",
+          "renderedBytes": 0
+        },
+        {
+          "id": "./node_modules/@tanstack/router-core/dist/esm/searchMiddleware.js",
+          "renderedBytes": 0
+        },
+        {
+          "id": "./node_modules/@tanstack/router-core/dist/esm/ssr/constants.js",
+          "renderedBytes": 0
+        },
+        {
+          "id": "./node_modules/seroval/dist/esm/production/index.mjs",
+          "renderedBytes": 0
+        },
+        {
+          "id": "./node_modules/@tanstack/router-core/dist/esm/ssr/serializer/transformer.js",
+          "renderedBytes": 0
+        },
+        {
+          "id": "./node_modules/@tanstack/router-core/dist/esm/ssr/serializer/RawStream.js",
+          "renderedBytes": 0
+        },
+        {
+          "id": "./node_modules/@tanstack/router-core/dist/esm/ssr/serializer/ShallowErrorPlugin.js",
+          "renderedBytes": 0
+        },
+        {
+          "id": "./node_modules/seroval-plugins/dist/esm/production/web.mjs",
+          "renderedBytes": 0
+        },
+        {
+          "id": "./node_modules/@tanstack/router-core/dist/esm/ssr/serializer/seroval-plugins.js",
+          "renderedBytes": 0
+        },
+        {
+          "id": "./node_modules/@tanstack/router-core/dist/esm/index.js",
+          "renderedBytes": 0
+        },
+        {
+          "id": "./node_modules/@tanstack/react-router/dist/esm/awaited.js",
+          "renderedBytes": 0
+        },
+        {
+          "id": "./node_modules/@tanstack/store/dist/esm/store.js",
+          "renderedBytes": 0
+        },
+        {
+          "id": "./node_modules/@tanstack/store/dist/esm/index.js",
+          "renderedBytes": 0
+        },
+        {
+          "id": "./node_modules/@tanstack/react-store/dist/esm/index.js",
+          "renderedBytes": 0
+        },
+        {
+          "id": "./node_modules/@tanstack/react-router/dist/esm/ScriptOnce.js",
+          "renderedBytes": 0
+        },
+        {
+          "id": "./node_modules/@tanstack/react-router/dist/esm/ScrollRestoration.js",
+          "renderedBytes": 0
+        },
+        {
+          "id": "./node_modules/@tanstack/react-router/dist/esm/useCanGoBack.js",
+          "renderedBytes": 0
+        },
+        {
+          "id": "./node_modules/@tanstack/react-router/dist/esm/Asset.js",
+          "renderedBytes": 0
+        },
+        {
+          "id": "./node_modules/@tanstack/react-router/dist/esm/headContentUtils.js",
+          "renderedBytes": 0
+        },
+        {
+          "id": "./node_modules/@tanstack/react-router/dist/esm/HeadContent.js",
+          "renderedBytes": 0
+        },
+        {
+          "id": "./node_modules/@tanstack/react-router/dist/esm/Scripts.js",
+          "renderedBytes": 0
+        },
+        {
+          "id": "./node_modules/@tanstack/react-router/dist/esm/index.js",
+          "renderedBytes": 0
+        },
+        {
+          "id": "./node_modules/@tanstack/query-core/build/modern/hydration.js",
+          "renderedBytes": 0
+        },
+        {
+          "id": "./node_modules/@tanstack/query-core/build/modern/infiniteQueryObserver.js",
+          "renderedBytes": 0
+        },
+        {
+          "id": "./node_modules/@tanstack/query-core/build/modern/streamedQuery.js",
+          "renderedBytes": 0
+        },
+        {
+          "id": "./node_modules/@tanstack/query-core/build/modern/types.js",
+          "renderedBytes": 0
+        },
+        {
+          "id": "./node_modules/@tanstack/query-core/build/modern/index.js",
+          "renderedBytes": 0
+        },
+        {
+          "id": "./node_modules/@tanstack/react-query/build/modern/types.js",
+          "renderedBytes": 0
+        },
+        {
+          "id": "./node_modules/@tanstack/react-query/build/modern/useSuspenseQuery.js",
+          "renderedBytes": 0
+        },
+        {
+          "id": "./node_modules/@tanstack/react-query/build/modern/useSuspenseInfiniteQuery.js",
+          "renderedBytes": 0
+        },
+        {
+          "id": "./node_modules/@tanstack/react-query/build/modern/useSuspenseQueries.js",
+          "renderedBytes": 0
+        },
+        {
+          "id": "./node_modules/@tanstack/react-query/build/modern/usePrefetchQuery.js",
+          "renderedBytes": 0
+        },
+        {
+          "id": "./node_modules/@tanstack/react-query/build/modern/usePrefetchInfiniteQuery.js",
+          "renderedBytes": 0
+        },
+        {
+          "id": "./node_modules/@tanstack/react-query/build/modern/queryOptions.js",
+          "renderedBytes": 0
+        },
+        {
+          "id": "./node_modules/@tanstack/react-query/build/modern/infiniteQueryOptions.js",
+          "renderedBytes": 0
+        },
+        {
+          "id": "./node_modules/@tanstack/react-query/build/modern/HydrationBoundary.js",
+          "renderedBytes": 0
+        },
+        {
+          "id": "./node_modules/@tanstack/react-query/build/modern/useIsFetching.js",
+          "renderedBytes": 0
+        },
+        {
+          "id": "./node_modules/@tanstack/react-query/build/modern/useMutationState.js",
+          "renderedBytes": 0
+        },
+        {
+          "id": "./node_modules/@tanstack/react-query/build/modern/mutationOptions.js",
+          "renderedBytes": 0
+        },
+        {
+          "id": "./node_modules/@tanstack/react-query/build/modern/useInfiniteQuery.js",
+          "renderedBytes": 0
+        },
+        {
+          "id": "./node_modules/@tanstack/react-query/build/modern/index.js",
+          "renderedBytes": 0
+        }
+      ]
+    },
+    {
+      "file": "assets/vendor-supabase-11GpYcmB.js",
+      "entry": false,
+      "bytes": 208398,
+      "gzipBytes": 54191,
+      "imports": [],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./node_modules/@supabase/auth-js/dist/module/GoTrueClient.js",
+          "renderedBytes": 247040
+        },
+        {
+          "id": "./node_modules/@supabase/postgrest-js/dist/index.mjs",
+          "renderedBytes": 134981
+        },
+        {
+          "id": "./node_modules/@supabase/storage-js/dist/index.mjs",
+          "renderedBytes": 101673
+        },
+        {
+          "id": "./node_modules/@supabase/phoenix/priv/static/phoenix.mjs",
+          "renderedBytes": 54182
+        },
+        {
+          "id": "./node_modules/@supabase/auth-js/dist/module/GoTrueAdminApi.js",
+          "renderedBytes": 36217
+        },
+        {
+          "id": "./node_modules/@supabase/supabase-js/dist/index.mjs",
+          "renderedBytes": 34626
+        },
+        {
+          "id": "./node_modules/@supabase/auth-js/dist/module/lib/webauthn.js",
+          "renderedBytes": 33385
+        },
+        {
+          "id": "./node_modules/@supabase/realtime-js/dist/module/RealtimeChannel.js",
+          "renderedBytes": 29897
+        },
+        {
+          "id": "./node_modules/@supabase/realtime-js/dist/module/RealtimeClient.js",
+          "renderedBytes": 25755
+        },
+        {
+          "id": "./node_modules/iceberg-js/dist/index.mjs",
+          "renderedBytes": 15836
+        },
+        {
+          "id": "./node_modules/@supabase/auth-js/dist/module/lib/helpers.js",
+          "renderedBytes": 14299
+        },
+        {
+          "id": "./node_modules/@supabase/functions-js/dist/module/FunctionsClient.js",
+          "renderedBytes": 12566
+        },
+        {
+          "id": "./node_modules/@supabase/auth-js/dist/module/lib/webauthn.errors.js",
+          "renderedBytes": 11221
+        },
+        {
+          "id": "./node_modules/@supabase/auth-js/dist/module/lib/errors.js",
+          "renderedBytes": 8566
+        },
+        {
+          "id": "./node_modules/@supabase/realtime-js/dist/module/lib/transformers.js",
+          "renderedBytes": 8171
+        },
+        {
+          "id": "./node_modules/@supabase/auth-js/dist/module/lib/base64url.js",
+          "renderedBytes": 7936
+        },
+        {
+          "id": "./node_modules/@supabase/auth-js/dist/module/lib/fetch.js",
+          "renderedBytes": 7723
+        },
+        {
+          "id": "./node_modules/@supabase/realtime-js/dist/module/lib/serializer.js",
+          "renderedBytes": 7145
+        },
+        {
+          "id": "./node_modules/@supabase/realtime-js/dist/module/lib/websocket-factory.js",
+          "renderedBytes": 5319
+        },
+        {
+          "id": "./node_modules/@supabase/realtime-js/dist/module/phoenix/presenceAdapter.js",
+          "renderedBytes": 3090
+        },
+        {
+          "id": "./node_modules/@supabase/auth-js/dist/module/lib/web3/ethereum.js",
+          "renderedBytes": 3043
+        },
+        {
+          "id": "./node_modules/@supabase/realtime-js/dist/module/phoenix/channelAdapter.js",
+          "renderedBytes": 2891
+        },
+        {
+          "id": "./node_modules/@supabase/realtime-js/dist/module/phoenix/socketAdapter.js",
+          "renderedBytes": 2697
+        },
+        {
+          "id": "./node_modules/@supabase/functions-js/dist/module/types.js",
+          "renderedBytes": 2694
+        },
+        {
+          "id": "./node_modules/tslib/tslib.es6.mjs",
+          "renderedBytes": 2162
+        },
+        {
+          "id": "./node_modules/@supabase/realtime-js/dist/module/RealtimePresence.js",
+          "renderedBytes": 1409
+        },
+        {
+          "id": "./node_modules/@supabase/auth-js/dist/module/lib/locks.js",
+          "renderedBytes": 1271
+        },
+        {
+          "id": "./node_modules/@supabase/realtime-js/dist/module/lib/normalizeChannelError.js",
+          "renderedBytes": 1111
+        },
+        {
+          "id": "./node_modules/@supabase/auth-js/dist/module/lib/constants.js",
+          "renderedBytes": 914
+        },
+        {
+          "id": "./node_modules/@supabase/auth-js/dist/module/lib/polyfills.js",
+          "renderedBytes": 698
+        },
+        {
+          "id": "./node_modules/@supabase/realtime-js/dist/module/lib/constants.js",
+          "renderedBytes": 615
+        },
+        {
+          "id": "./node_modules/@supabase/realtime-js/dist/module/lib/version.js",
+          "renderedBytes": 442
+        },
+        {
+          "id": "./node_modules/@supabase/auth-js/dist/module/lib/version.js",
+          "renderedBytes": 442
+        },
+        {
+          "id": "./node_modules/@supabase/auth-js/dist/module/lib/local-storage.js",
+          "renderedBytes": 391
+        },
+        {
+          "id": "./node_modules/@supabase/functions-js/dist/module/helper.js",
+          "renderedBytes": 163
+        },
+        {
+          "id": "./node_modules/@supabase/auth-js/dist/module/lib/types.js",
+          "renderedBytes": 54
+        },
+        {
+          "id": "./node_modules/@supabase/auth-js/dist/module/AuthClient.js",
+          "renderedBytes": 32
+        },
+        {
+          "id": "./node_modules/@supabase/functions-js/dist/module/index.js",
+          "renderedBytes": 0
+        },
+        {
+          "id": "./node_modules/@supabase/realtime-js/dist/module/index.js",
+          "renderedBytes": 0
+        },
+        {
+          "id": "./node_modules/@supabase/auth-js/dist/module/AuthAdminApi.js",
+          "renderedBytes": 0
+        },
+        {
+          "id": "./node_modules/@supabase/auth-js/dist/module/index.js",
+          "renderedBytes": 0
+        }
+      ]
+    },
+    {
+      "file": "assets/index-BrAeORCk.js",
+      "entry": true,
+      "bytes": 433831,
+      "gzipBytes": 111462,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/vendor-supabase-11GpYcmB.js"
+      ],
+      "dynamicImports": [
+        "assets/operator-D5mhT7Q9.js",
+        "assets/brand-ReBPMkMw.js",
+        "assets/admin-Droei4w1.js",
+        "assets/_site-Bt9jhSRM.js",
+        "assets/_site-tSE_wR4G.js",
+        "assets/_app-C6Gy7Gb9.js",
+        "assets/brand.index-D13Az_Bu.js",
+        "assets/_site.index-BhrKa4Mi.js",
+        "assets/passport._token-6xkT9ECL.js",
+        "assets/operator.creators-C0496bYu.js",
+        "assets/brand_.login-Bo0NW1ss.js",
+        "assets/admin.submissions-BaIvx24k.js",
+        "assets/admin.radar-BoLtD9Aq.js",
+        "assets/admin.insights-BTIdCN4s.js",
+        "assets/admin.engaged-DbiQdHuv.js",
+        "assets/admin.creators-DWjo-5Mb.js",
+        "assets/admin.applications-Dun7HPaE.js",
+        "assets/_site.stories-D_O_hdKd.js",
+        "assets/_site.playbooks-BBX7sWpd.js",
+        "assets/_site.packages-BhLbLsdP.js",
+        "assets/_site.earn-gxc1BIA0.js",
+        "assets/_site.creators-DSMmfsvC.js",
+        "assets/_site.contact-D4mKAIQK.js",
+        "assets/_site.brands-CAX_BIf2.js",
+        "assets/_app.wallet-i6GmpRCi.js",
+        "assets/_app.redemption-C0496bYu.js",
+        "assets/_app.profile-C3jC5JbN.js",
+        "assets/_app.passport-DgluGg-v.js",
+        "assets/_app.onboarding-BFar3v_5.js",
+        "assets/_app.notifications-BrozfSCn.js",
+        "assets/_app.my-BtDuzRub.js",
+        "assets/_app.more-DWOVq2Wj.js",
+        "assets/_app.mission-C0496bYu.js",
+        "assets/_app.match-CCLa3pzz.js",
+        "assets/_app.login-pzC-EB55.js",
+        "assets/_app.home-CyuAeijo.js",
+        "assets/_app.explore-BX3ZCBFG.js",
+        "assets/_app.campaigns-C0496bYu.js",
+        "assets/brand.resources.index-62eoF-c7.js",
+        "assets/brand.missions.index-DFZWZm6I.js",
+        "assets/admin.missions.index-Cu9Wt08o.js",
+        "assets/admin.content.index-B1BrtWg3.js",
+        "assets/admin.campaigns.index-C9rjMslz.js",
+        "assets/admin.academy.index-pXg_k__j.js",
+        "assets/_app.redemption.index-Dgm0aD7J.js",
+        "assets/_app.my.index-Cq2Q00lw.js",
+        "assets/_app.mission.index-DMH3CED2.js",
+        "assets/_app.guide.index-DYy-qFaw.js",
+        "assets/_app.campaigns.index-De3N6kHy.js",
+        "assets/operator.missions._missionId-CPKqjWb1.js",
+        "assets/operator.creators._creatorId-DsnQAEnn.js",
+        "assets/brand_.auth.callback-IMK7wGlB.js",
+        "assets/brand.resources._slug-CnNcrwoZ.js",
+        "assets/brand.missions.new-Czs8l4iV.js",
+        "assets/brand.missions._missionId-X5qtPak4.js",
+        "assets/admin.missions.new-BKgB0zTT.js",
+        "assets/admin.missions._missionId-CEEhu_b_.js",
+        "assets/admin.content._id-DtAEGuN9.js",
+        "assets/admin.campaigns.new-BV_m8Pkg.js",
+        "assets/admin.campaigns._id-CyObSc4T.js",
+        "assets/admin.academy._id-wbZUsgSp.js",
+        "assets/_site.legal.terms-CsneDuxt.js",
+        "assets/_site.legal.privacy-CHTd0qkA.js",
+        "assets/_app.redemption.history-BpA65Sbu.js",
+        "assets/_app.news._slug-Nv_CgQUK.js",
+        "assets/_app.mission._missionSlug-OSFYkMej.js",
+        "assets/_app.campaigns._slug-DPw2nQnL.js",
+        "assets/_app.auth.reset-password-Bba2yo6e.js",
+        "assets/_app.auth.callback-Cy5XQpY0.js",
+        "assets/_app.guide.track._trackId-DEOKn-ul.js",
+        "assets/_app.guide.doc._slug-B4QsPi_w.js"
+      ],
+      "modules": [
+        {
+          "id": "./src/lib/i18n.dict.ts",
+          "renderedBytes": 177559
+        },
+        {
+          "id": "./node_modules/sonner/dist/index.mjs",
+          "renderedBytes": 64245
+        },
+        {
+          "id": "./src/components/admin/PublicationProofReview.tsx",
+          "renderedBytes": 34326
+        },
+        {
+          "id": "./src/components/admin/MissionCompletionReview.tsx",
+          "renderedBytes": 31486
+        },
+        {
+          "id": "./src/lib/queries/activeMission.ts",
+          "renderedBytes": 24814
+        },
+        {
+          "id": "./src/components/active-mission/DraftEditor.tsx",
+          "renderedBytes": 22807
+        },
+        {
+          "id": "./src/routes/_app.my.$submissionId.tsx",
+          "renderedBytes": 22354
+        },
+        {
+          "id": "./src/components/admin/ActiveMissionReview.tsx",
+          "renderedBytes": 21227
+        },
+        {
+          "id": "./src/components/admin/RewardHandoffQueue.tsx",
+          "renderedBytes": 19949
+        },
+        {
+          "id": "./src/components/admin/ActiveMissionQueue.tsx",
+          "renderedBytes": 15955
+        },
+        {
+          "id": "./src/routes/admin.active-missions.$workflowId.tsx",
+          "renderedBytes": 15217
+        },
+        {
+          "id": "./src/lib/admin.ts",
+          "renderedBytes": 14530
+        },
+        {
+          "id": "./src/routeTree.gen.ts",
+          "renderedBytes": 14136
+        },
+        {
+          "id": "./src/components/active-mission/ProofSubmissionForm.tsx",
+          "renderedBytes": 12755
+        },
+        {
+          "id": "./src/lib/activationAnalytics.ts",
+          "renderedBytes": 11972
+        },
+        {
+          "id": "./src/components/active-mission/RewardPendingCard.tsx",
+          "renderedBytes": 10497
+        },
+        {
+          "id": "./src/components/active-mission/ProofAttemptHistory.tsx",
+          "renderedBytes": 8870
+        },
+        {
+          "id": "./src/components/active-mission/WorkspaceHeader.tsx",
+          "renderedBytes": 8159
+        },
+        {
+          "id": "./src/routes/admin.reward-handoffs.tsx",
+          "renderedBytes": 7425
+        },
+        {
+          "id": "./src/lib/activeMission.ts",
+          "renderedBytes": 6156
+        },
+        {
+          "id": "./src/components/active-mission/PublicationInstructions.tsx",
+          "renderedBytes": 4902
+        },
+        {
+          "id": "./src/components/active-mission/VersionTimeline.tsx",
+          "renderedBytes": 4547
+        },
+        {
+          "id": "./src/lib/authFeedback.ts",
+          "renderedBytes": 4285
+        },
+        {
+          "id": "./src/lib/adminRewardHandoff.ts",
+          "renderedBytes": 4152
+        },
+        {
+          "id": "./src/components/active-mission/DeliverableNavigator.tsx",
+          "renderedBytes": 3386
+        },
+        {
+          "id": "./src/components/active-mission/FulfillmentCard.tsx",
+          "renderedBytes": 3341
+        },
+        {
+          "id": "./src/components/active-mission/ReviewFeedback.tsx",
+          "renderedBytes": 3095
+        },
+        {
+          "id": "./src/lib/levels.ts",
+          "renderedBytes": 2806
+        },
+        {
+          "id": "./src/lib/publicationProofAnalytics.ts",
+          "renderedBytes": 2507
+        },
+        {
+          "id": "./src/lib/missionMeta.ts",
+          "renderedBytes": 2183
+        },
+        {
+          "id": "./src/components/admin/AdminWorkspaceContext.tsx",
+          "renderedBytes": 1887
+        },
+        {
+          "id": "\u0000vite/preload-helper.js",
+          "renderedBytes": 1877
+        },
+        {
+          "id": "./src/lib/i18n.tsx",
+          "renderedBytes": 1770
+        },
+        {
+          "id": "./src/lib/auth-flow.ts",
+          "renderedBytes": 1641
+        },
+        {
+          "id": "./src/routes/_app.tsx",
+          "renderedBytes": 1635
+        },
+        {
+          "id": "./src/lib/creatorQueueSearch.ts",
+          "renderedBytes": 1450
+        },
+        {
+          "id": "./src/lib/content.ts",
+          "renderedBytes": 1413
+        },
+        {
+          "id": "./src/routes/admin.active-missions.index.tsx",
+          "renderedBytes": 1409
+        },
+        {
+          "id": "./src/routes/__root.tsx",
+          "renderedBytes": 1296
+        },
+        {
+          "id": "./src/components/news/NewsCard.tsx",
+          "renderedBytes": 1219
+        },
+        {
+          "id": "\u0000vite/modulepreload-polyfill.js",
+          "renderedBytes": 1168
+        },
+        {
+          "id": "./src/routes/_app.news.index.tsx",
+          "renderedBytes": 996
+        },
+        {
+          "id": "./src/lib/api.ts",
+          "renderedBytes": 921
+        },
+        {
+          "id": "./src/lib/workspaceCalendar.ts",
+          "renderedBytes": 910
+        },
+        {
+          "id": "./src/lib/supabase.ts",
+          "renderedBytes": 672
+        },
+        {
+          "id": "./src/components/ui/sonner.tsx",
+          "renderedBytes": 626
+        },
+        {
+          "id": "./src/lib/rewardHandoff.ts",
+          "renderedBytes": 537
+        },
+        {
+          "id": "./src/routes/_site.tsx",
+          "renderedBytes": 485
+        },
+        {
+          "id": "./src/routes/_app.login.tsx",
+          "renderedBytes": 433
+        },
+        {
+          "id": "./src/routes/_site.index.tsx",
+          "renderedBytes": 427
+        },
+        {
+          "id": "./src/routes/operator.creators.$creatorId.tsx",
+          "renderedBytes": 395
+        },
+        {
+          "id": "./src/routes/_app.onboarding.tsx",
+          "renderedBytes": 380
+        },
+        {
+          "id": "./src/main.tsx",
+          "renderedBytes": 342
+        },
+        {
+          "id": "./src/routes/admin.creators.tsx",
+          "renderedBytes": 318
+        },
+        {
+          "id": "./src/routes/operator.missions.$missionId.tsx",
+          "renderedBytes": 302
+        },
+        {
+          "id": "./src/routes/brand.missions.$missionId.tsx",
+          "renderedBytes": 296
+        },
+        {
+          "id": "./src/routes/admin.missions.$missionId.tsx",
+          "renderedBytes": 296
+        },
+        {
+          "id": "./src/routes/_app.mission.$missionSlug.tsx",
+          "renderedBytes": 296
+        },
+        {
+          "id": "./src/routes/_app.guide.track.$trackId.tsx",
+          "renderedBytes": 296
+        },
+        {
+          "id": "./src/routes/_app.auth.reset-password.tsx",
+          "renderedBytes": 294
+        },
+        {
+          "id": "./src/routes/_app.redemption.history.tsx",
+          "renderedBytes": 292
+        },
+        {
+          "id": "./src/routes/brand.resources.$slug.tsx",
+          "renderedBytes": 288
+        },
+        {
+          "id": "./src/routes/brand_.auth.callback.tsx",
+          "renderedBytes": 286
+        },
+        {
+          "id": "./src/routes/_app.campaigns.$slug.tsx",
+          "renderedBytes": 286
+        },
+        {
+          "id": "./src/routes/admin.campaigns.new.tsx",
+          "renderedBytes": 284
+        },
+        {
+          "id": "./src/routes/admin.campaigns.$id.tsx",
+          "renderedBytes": 284
+        },
+        {
+          "id": "./src/routes/_site.legal.privacy.tsx",
+          "renderedBytes": 284
+        },
+        {
+          "id": "./src/routes/brand.resources.index.tsx",
+          "renderedBytes": 283
+        },
+        {
+          "id": "./src/routes/admin.campaigns.index.tsx",
+          "renderedBytes": 283
+        },
+        {
+          "id": "./src/routes/_app.redemption.index.tsx",
+          "renderedBytes": 283
+        },
+        {
+          "id": "./src/routes/admin.applications.tsx",
+          "renderedBytes": 282
+        },
+        {
+          "id": "./src/routes/_app.notifications.tsx",
+          "renderedBytes": 282
+        },
+        {
+          "id": "./src/routes/brand.missions.new.tsx",
+          "renderedBytes": 282
+        },
+        {
+          "id": "./src/routes/admin.missions.new.tsx",
+          "renderedBytes": 282
+        },
+        {
+          "id": "./src/routes/_app.auth.callback.tsx",
+          "renderedBytes": 282
+        },
+        {
+          "id": "./src/routes/operator.creators.tsx",
+          "renderedBytes": 281
+        },
+        {
+          "id": "./src/routes/admin.submissions.tsx",
+          "renderedBytes": 281
+        },
+        {
+          "id": "./src/routes/brand.missions.index.tsx",
+          "renderedBytes": 281
+        },
+        {
+          "id": "./src/routes/admin.missions.index.tsx",
+          "renderedBytes": 281
+        },
+        {
+          "id": "./src/routes/_app.campaigns.index.tsx",
+          "renderedBytes": 281
+        },
+        {
+          "id": "./src/routes/admin.content.$id.tsx",
+          "renderedBytes": 280
+        },
+        {
+          "id": "./src/routes/admin.academy.$id.tsx",
+          "renderedBytes": 280
+        },
+        {
+          "id": "./src/routes/_site.legal.terms.tsx",
+          "renderedBytes": 280
+        },
+        {
+          "id": "./src/routes/_app.guide.doc.$slug.tsx",
+          "renderedBytes": 280
+        },
+        {
+          "id": "./src/routes/admin.content.index.tsx",
+          "renderedBytes": 279
+        },
+        {
+          "id": "./src/routes/admin.academy.index.tsx",
+          "renderedBytes": 279
+        },
+        {
+          "id": "./src/routes/passport.$token.tsx",
+          "renderedBytes": 277
+        },
+        {
+          "id": "./src/routes/_app.mission.index.tsx",
+          "renderedBytes": 277
+        },
+        {
+          "id": "./src/routes/_site.playbooks.tsx",
+          "renderedBytes": 276
+        },
+        {
+          "id": "./src/routes/_app.redemption.tsx",
+          "renderedBytes": 276
+        },
+        {
+          "id": "./src/routes/_app.news.$slug.tsx",
+          "renderedBytes": 276
+        },
+        {
+          "id": "./src/routes/admin.insights.tsx",
+          "renderedBytes": 275
+        },
+        {
+          "id": "./src/routes/_site.packages.tsx",
+          "renderedBytes": 274
+        },
+        {
+          "id": "./src/routes/_site.creators.tsx",
+          "renderedBytes": 274
+        },
+        {
+          "id": "./src/routes/_app.campaigns.tsx",
+          "renderedBytes": 274
+        },
+        {
+          "id": "./src/routes/admin.engaged.tsx",
+          "renderedBytes": 273
+        },
+        {
+          "id": "./src/routes/_app.guide.index.tsx",
+          "renderedBytes": 273
+        },
+        {
+          "id": "./src/routes/_site.stories.tsx",
+          "renderedBytes": 272
+        },
+        {
+          "id": "./src/routes/_site.contact.tsx",
+          "renderedBytes": 272
+        },
+        {
+          "id": "./src/routes/_app.passport.tsx",
+          "renderedBytes": 272
+        },
+        {
+          "id": "./src/routes/brand_.login.tsx",
+          "renderedBytes": 271
+        },
+        {
+          "id": "./src/routes/_site.brands.tsx",
+          "renderedBytes": 270
+        },
+        {
+          "id": "./src/routes/_app.profile.tsx",
+          "renderedBytes": 270
+        },
+        {
+          "id": "./src/routes/_app.mission.tsx",
+          "renderedBytes": 270
+        },
+        {
+          "id": "./src/routes/_app.explore.tsx",
+          "renderedBytes": 270
+        },
+        {
+          "id": "./src/routes/admin.radar.tsx",
+          "renderedBytes": 269
+        },
+        {
+          "id": "./src/routes/_app.wallet.tsx",
+          "renderedBytes": 268
+        },
+        {
+          "id": "./src/routes/_app.my.index.tsx",
+          "renderedBytes": 267
+        },
+        {
+          "id": "./src/routes/brand.index.tsx",
+          "renderedBytes": 266
+        },
+        {
+          "id": "./src/routes/_site.earn.tsx",
+          "renderedBytes": 266
+        },
+        {
+          "id": "./src/routes/_app.match.tsx",
+          "renderedBytes": 266
+        },
+        {
+          "id": "./src/routes/operator.tsx",
+          "renderedBytes": 265
+        },
+        {
+          "id": "./src/routes/_app.more.tsx",
+          "renderedBytes": 264
+        },
+        {
+          "id": "./src/routes/_app.home.tsx",
+          "renderedBytes": 264
+        },
+        {
+          "id": "./src/routes/_app.my.tsx",
+          "renderedBytes": 260
+        },
+        {
+          "id": "./src/routes/brand.tsx",
+          "renderedBytes": 259
+        },
+        {
+          "id": "./src/routes/admin.tsx",
+          "renderedBytes": 259
+        },
+        {
+          "id": "./src/router.tsx",
+          "renderedBytes": 206
+        },
+        {
+          "id": "./src/routes/admin.active-missions.tsx",
+          "renderedBytes": 201
+        },
+        {
+          "id": "./src/components/admin/AdminAuthContext.tsx",
+          "renderedBytes": 200
+        },
+        {
+          "id": "./src/routes/operator.creators.index.tsx",
+          "renderedBytes": 157
+        },
+        {
+          "id": "./src/lib/workspace.ts",
+          "renderedBytes": 131
+        },
+        {
+          "id": "./src/routes/operator.index.tsx",
+          "renderedBytes": 129
+        },
+        {
+          "id": "./src/routes/_app.wallet.earnings.tsx",
+          "renderedBytes": 127
+        },
+        {
+          "id": "./src/routes/_app.privacy.tsx",
+          "renderedBytes": 126
+        },
+        {
+          "id": "./src/routes/admin.index.tsx",
+          "renderedBytes": 122
+        },
+        {
+          "id": "./src/routes/_app.tnc.tsx",
+          "renderedBytes": 120
+        },
+        {
+          "id": "./src/styles.css",
+          "renderedBytes": 0
+        },
+        {
+          "id": "./index.html",
+          "renderedBytes": 0
+        }
+      ]
+    },
+    {
+      "file": "assets/operator-D5mhT7Q9.js",
+      "entry": false,
+      "bytes": 895,
+      "gzipBytes": 526,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/index-BrAeORCk.js",
+        "assets/StaffAuthGate-CqS99VEW.js",
+        "assets/vendor-supabase-11GpYcmB.js",
+        "assets/chart-column-4KwTHvHy.js",
+        "assets/createLucideIcon-CBho2xym.js",
+        "assets/users-BZDofVX3.js",
+        "assets/user-check-Cws2rzoa.js",
+        "assets/target-H9J6chXf.js",
+        "assets/trophy-GhQJTel8.js",
+        "assets/file-text-gwZ72UKa.js",
+        "assets/graduation-cap-CpaZjUgb.js",
+        "assets/menu-z7murLlz.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/operator.tsx?tsr-split=component",
+          "renderedBytes": 883
+        }
+      ]
+    },
+    {
+      "file": "assets/brand-ReBPMkMw.js",
+      "entry": false,
+      "bytes": 3739,
+      "gzipBytes": 1343,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/index-BrAeORCk.js",
+        "assets/brand-CJ8qnXfa.js",
+        "assets/BrandAuthContext-CC7i0XLz.js",
+        "assets/createLucideIcon-CBho2xym.js",
+        "assets/target-H9J6chXf.js",
+        "assets/book-open-BtMap0Gv.js",
+        "assets/vendor-supabase-11GpYcmB.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/components/brand/BrandNav.tsx",
+          "renderedBytes": 2802
+        },
+        {
+          "id": "./src/components/brand/BrandAuthGate.tsx",
+          "renderedBytes": 1359
+        },
+        {
+          "id": "./src/routes/brand.tsx?tsr-split=component",
+          "renderedBytes": 669
+        },
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/layout-dashboard.mjs",
+          "renderedBytes": 598
+        }
+      ]
+    },
+    {
+      "file": "assets/admin-Droei4w1.js",
+      "entry": false,
+      "bytes": 895,
+      "gzipBytes": 526,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/index-BrAeORCk.js",
+        "assets/StaffAuthGate-CqS99VEW.js",
+        "assets/vendor-supabase-11GpYcmB.js",
+        "assets/chart-column-4KwTHvHy.js",
+        "assets/createLucideIcon-CBho2xym.js",
+        "assets/users-BZDofVX3.js",
+        "assets/user-check-Cws2rzoa.js",
+        "assets/target-H9J6chXf.js",
+        "assets/trophy-GhQJTel8.js",
+        "assets/file-text-gwZ72UKa.js",
+        "assets/graduation-cap-CpaZjUgb.js",
+        "assets/menu-z7murLlz.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/admin.tsx?tsr-split=component",
+          "renderedBytes": 880
+        }
+      ]
+    },
+    {
+      "file": "assets/StaffAuthGate-CqS99VEW.js",
+      "entry": false,
+      "bytes": 11981,
+      "gzipBytes": 4313,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/index-BrAeORCk.js",
+        "assets/chart-column-4KwTHvHy.js",
+        "assets/createLucideIcon-CBho2xym.js",
+        "assets/users-BZDofVX3.js",
+        "assets/user-check-Cws2rzoa.js",
+        "assets/target-H9J6chXf.js",
+        "assets/trophy-GhQJTel8.js",
+        "assets/file-text-gwZ72UKa.js",
+        "assets/graduation-cap-CpaZjUgb.js",
+        "assets/menu-z7murLlz.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/components/admin/StaffAuthGate.tsx",
+          "renderedBytes": 4335
+        },
+        {
+          "id": "./src/components/admin/AdminSideNav.tsx",
+          "renderedBytes": 3188
+        },
+        {
+          "id": "./src/components/admin/WorkspaceSwitcher.tsx",
+          "renderedBytes": 2525
+        },
+        {
+          "id": "./src/components/admin/adminNavItems.ts",
+          "renderedBytes": 2020
+        },
+        {
+          "id": "./src/components/admin/AdminTopBar.tsx",
+          "renderedBytes": 1915
+        },
+        {
+          "id": "./src/components/admin/AdminShell.tsx",
+          "renderedBytes": 832
+        },
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/radar.mjs",
+          "renderedBytes": 747
+        },
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/layers.mjs",
+          "renderedBytes": 706
+        },
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/badge-dollar-sign.mjs",
+          "renderedBytes": 624
+        },
+        {
+          "id": "./src/components/admin/useAdminQueueCounts.ts",
+          "renderedBytes": 579
+        },
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/clipboard-check.mjs",
+          "renderedBytes": 551
+        },
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/file-check.mjs",
+          "renderedBytes": 550
+        },
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/inbox.mjs",
+          "renderedBytes": 505
+        }
+      ]
+    },
+    {
+      "file": "assets/_site-Bt9jhSRM.js",
+      "entry": false,
+      "bytes": 617,
+      "gzipBytes": 381,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/index-BrAeORCk.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/vendor-supabase-11GpYcmB.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/_site.tsx?tsr-split=errorComponent",
+          "renderedBytes": 631
+        }
+      ]
+    },
+    {
+      "file": "assets/_site-tSE_wR4G.js",
+      "entry": false,
+      "bytes": 10313,
+      "gzipBytes": 3429,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/index-BrAeORCk.js",
+        "assets/LangToggle-WVFv9O0O.js",
+        "assets/sparkles-SJbGwv_6.js",
+        "assets/x-BLMitoeA.js",
+        "assets/menu-z7murLlz.js",
+        "assets/legacyAdfocateContent-B4YouzF_.js",
+        "assets/arrow-up-right-siNLNQ8f.js",
+        "assets/mail-C-BFs2Uy.js",
+        "assets/vendor-supabase-11GpYcmB.js",
+        "assets/utils-DaT-yT0k.js",
+        "assets/createLucideIcon-CBho2xym.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/components/marketing/Footer.tsx",
+          "renderedBytes": 9555
+        },
+        {
+          "id": "./src/components/marketing/MarketingHeader.tsx",
+          "renderedBytes": 4175
+        },
+        {
+          "id": "./src/routes/_site.tsx?tsr-split=component",
+          "renderedBytes": 1026
+        }
+      ]
+    },
+    {
+      "file": "assets/_app-C6Gy7Gb9.js",
+      "entry": false,
+      "bytes": 11281,
+      "gzipBytes": 4197,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/kocmax-BjDVPQyj.js",
+        "assets/index-BrAeORCk.js",
+        "assets/NotificationBadge-BmrewCQ_.js",
+        "assets/LangToggle-WVFv9O0O.js",
+        "assets/RequestFeedback-CkKpk4Ck.js",
+        "assets/x-BLMitoeA.js",
+        "assets/message-circle-BYYDaGJ2.js",
+        "assets/vendor-supabase-11GpYcmB.js",
+        "assets/createLucideIcon-CBho2xym.js",
+        "assets/target-H9J6chXf.js",
+        "assets/trophy-GhQJTel8.js",
+        "assets/bell-CI6Pbuj2.js",
+        "assets/gift-CJEX1Usu.js",
+        "assets/wallet-ChR7oefq.js",
+        "assets/compass-ySOvfhlB.js",
+        "assets/book-open-BtMap0Gv.js",
+        "assets/menu-z7murLlz.js",
+        "assets/user-round-Cxtj5bFU.js",
+        "assets/sparkles-SJbGwv_6.js",
+        "assets/utils-DaT-yT0k.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/components/assistant/AssistantPanel.tsx",
+          "renderedBytes": 7842
+        },
+        {
+          "id": "./src/components/LevelUpModal.tsx",
+          "renderedBytes": 1776
+        },
+        {
+          "id": "./src/routes/_app.tsx?tsr-split=component",
+          "renderedBytes": 1755
+        },
+        {
+          "id": "./src/components/SideNav.tsx",
+          "renderedBytes": 1720
+        },
+        {
+          "id": "./src/components/BottomNav.tsx",
+          "renderedBytes": 1415
+        },
+        {
+          "id": "./src/components/assistant/AssistantLauncher.tsx",
+          "renderedBytes": 1037
+        },
+        {
+          "id": "./src/components/assistant/AssistantMessage.tsx",
+          "renderedBytes": 948
+        },
+        {
+          "id": "./src/components/NotificationToaster.tsx",
+          "renderedBytes": 373
+        },
+        {
+          "id": "./src/lib/theme.ts",
+          "renderedBytes": 305
+        }
+      ]
+    },
+    {
+      "file": "assets/brand.index-D13Az_Bu.js",
+      "entry": false,
+      "bytes": 1217,
+      "gzipBytes": 553,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/BrandAuthContext-CC7i0XLz.js",
+        "assets/brand-CJ8qnXfa.js",
+        "assets/index-BrAeORCk.js",
+        "assets/vendor-supabase-11GpYcmB.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/brand.index.tsx?tsr-split=component",
+          "renderedBytes": 1436
+        }
+      ]
+    },
+    {
+      "file": "assets/_site.index-BhrKa4Mi.js",
+      "entry": false,
+      "bytes": 26652,
+      "gzipBytes": 7624,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/mockData-DLRWP8zS.js",
+        "assets/index-BrAeORCk.js",
+        "assets/legacyAdfocateContent-B4YouzF_.js",
+        "assets/utils-DaT-yT0k.js",
+        "assets/sparkles-SJbGwv_6.js",
+        "assets/rocket--y1WdJbJ.js",
+        "assets/message-circle-BYYDaGJ2.js",
+        "assets/target-H9J6chXf.js",
+        "assets/trending-up-CuvQS0yq.js",
+        "assets/createLucideIcon-CBho2xym.js",
+        "assets/compass-ySOvfhlB.js",
+        "assets/arrow-right-DkUE0wGt.js",
+        "assets/shield-BuwcP1rC.js",
+        "assets/gift-CJEX1Usu.js",
+        "assets/wallet-ChR7oefq.js",
+        "assets/megaphone-Ozxw9T4O.js",
+        "assets/check-BR5yPA8h.js",
+        "assets/vendor-supabase-11GpYcmB.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/_site.index.tsx?tsr-split=component",
+          "renderedBytes": 37459
+        },
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/gem.mjs",
+          "renderedBytes": 560
+        },
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/zap.mjs",
+          "renderedBytes": 466
+        }
+      ]
+    },
+    {
+      "file": "assets/passport._token-6xkT9ECL.js",
+      "entry": false,
+      "bytes": 3756,
+      "gzipBytes": 1253,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/index-BrAeORCk.js",
+        "assets/ScoreRing-DMDTfAdN.js",
+        "assets/kocmax-BjDVPQyj.js",
+        "assets/vendor-supabase-11GpYcmB.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/components/PublicPassportView.tsx",
+          "renderedBytes": 4860
+        },
+        {
+          "id": "./src/routes/passport.$token.tsx?tsr-split=component",
+          "renderedBytes": 845
+        }
+      ]
+    },
+    {
+      "file": "assets/operator.creators-C0496bYu.js",
+      "entry": false,
+      "bytes": 143,
+      "gzipBytes": 135,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/operator.creators.tsx?tsr-split=component",
+          "renderedBytes": 79
+        }
+      ]
+    },
+    {
+      "file": "assets/brand_.login-Bo0NW1ss.js",
+      "entry": false,
+      "bytes": 2367,
+      "gzipBytes": 1126,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/index-BrAeORCk.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/vendor-supabase-11GpYcmB.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/brand_.login.tsx?tsr-split=component",
+          "renderedBytes": 3453
+        }
+      ]
+    },
+    {
+      "file": "assets/admin.submissions-BaIvx24k.js",
+      "entry": false,
+      "bytes": 4075,
+      "gzipBytes": 1608,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/index-BrAeORCk.js",
+        "assets/RequestFeedback-CkKpk4Ck.js",
+        "assets/submissionEvidence-DXfCOMks.js",
+        "assets/vendor-supabase-11GpYcmB.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/admin.submissions.tsx?tsr-split=component",
+          "renderedBytes": 6374
+        }
+      ]
+    },
+    {
+      "file": "assets/admin.radar-BoLtD9Aq.js",
+      "entry": false,
+      "bytes": 4718,
+      "gzipBytes": 1406,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/index-BrAeORCk.js",
+        "assets/vendor-supabase-11GpYcmB.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/admin.radar.tsx?tsr-split=component",
+          "renderedBytes": 7518
+        }
+      ]
+    },
+    {
+      "file": "assets/admin.insights-BTIdCN4s.js",
+      "entry": false,
+      "bytes": 9429,
+      "gzipBytes": 3258,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/index-BrAeORCk.js",
+        "assets/RequestFeedback-CkKpk4Ck.js",
+        "assets/vendor-supabase-11GpYcmB.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/admin.insights.tsx?tsr-split=component",
+          "renderedBytes": 13199
+        },
+        {
+          "id": "./src/components/admin/TrendChart.tsx",
+          "renderedBytes": 1798
+        }
+      ]
+    },
+    {
+      "file": "assets/admin.engaged-DbiQdHuv.js",
+      "entry": false,
+      "bytes": 2331,
+      "gzipBytes": 929,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/index-BrAeORCk.js",
+        "assets/vendor-supabase-11GpYcmB.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/admin.engaged.tsx?tsr-split=component",
+          "renderedBytes": 3429
+        }
+      ]
+    },
+    {
+      "file": "assets/admin.creators-DWjo-5Mb.js",
+      "entry": false,
+      "bytes": 6436,
+      "gzipBytes": 2291,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/index-BrAeORCk.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/CreatorReviewRow-B7L-Y3xy.js",
+        "assets/RequestFeedback-CkKpk4Ck.js",
+        "assets/createLucideIcon-CBho2xym.js",
+        "assets/vendor-supabase-11GpYcmB.js",
+        "assets/ReviewActionPanel-D7eTm6uG.js",
+        "assets/check-BR5yPA8h.js",
+        "assets/OperatorBadges-dbQDHp0S.js",
+        "assets/user-round-Cxtj5bFU.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/admin.creators.tsx?tsr-split=component",
+          "renderedBytes": 10055
+        },
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/search.mjs",
+          "renderedBytes": 366
+        }
+      ]
+    },
+    {
+      "file": "assets/admin.applications-Dun7HPaE.js",
+      "entry": false,
+      "bytes": 2678,
+      "gzipBytes": 1079,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/index-BrAeORCk.js",
+        "assets/OperatorBadges-dbQDHp0S.js",
+        "assets/RequestFeedback-CkKpk4Ck.js",
+        "assets/vendor-supabase-11GpYcmB.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/admin.applications.tsx?tsr-split=component",
+          "renderedBytes": 3828
+        }
+      ]
+    },
+    {
+      "file": "assets/_site.stories-D_O_hdKd.js",
+      "entry": false,
+      "bytes": 7715,
+      "gzipBytes": 2711,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/legacyAdfocateContent-B4YouzF_.js",
+        "assets/index-BrAeORCk.js",
+        "assets/utils-DaT-yT0k.js",
+        "assets/trending-up-CuvQS0yq.js",
+        "assets/createLucideIcon-CBho2xym.js",
+        "assets/award-DMTOx4Fv.js",
+        "assets/arrow-up-right-siNLNQ8f.js",
+        "assets/sparkles-SJbGwv_6.js",
+        "assets/arrow-right-DkUE0wGt.js",
+        "assets/vendor-supabase-11GpYcmB.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/_site.stories.tsx?tsr-split=component",
+          "renderedBytes": 10028
+        },
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/globe.mjs",
+          "renderedBytes": 442
+        }
+      ]
+    },
+    {
+      "file": "assets/_site.playbooks-BBX7sWpd.js",
+      "entry": false,
+      "bytes": 11986,
+      "gzipBytes": 3671,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/legacyAdfocateContent-B4YouzF_.js",
+        "assets/mockData-DLRWP8zS.js",
+        "assets/index-BrAeORCk.js",
+        "assets/utils-DaT-yT0k.js",
+        "assets/file-text-gwZ72UKa.js",
+        "assets/marketingShowcase-CG5pZiSj.js",
+        "assets/arrow-right-DkUE0wGt.js",
+        "assets/target-H9J6chXf.js",
+        "assets/chart-column-4KwTHvHy.js",
+        "assets/lightbulb-BF3M6YNx.js",
+        "assets/arrow-up-right-siNLNQ8f.js",
+        "assets/book-open-BtMap0Gv.js",
+        "assets/vendor-supabase-11GpYcmB.js",
+        "assets/createLucideIcon-CBho2xym.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/_site.playbooks.tsx?tsr-split=component",
+          "renderedBytes": 16702
+        }
+      ]
+    },
+    {
+      "file": "assets/_site.packages-BhLbLsdP.js",
+      "entry": false,
+      "bytes": 8706,
+      "gzipBytes": 3138,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/legacyAdfocateContent-B4YouzF_.js",
+        "assets/mockData-DLRWP8zS.js",
+        "assets/index-BrAeORCk.js",
+        "assets/utils-DaT-yT0k.js",
+        "assets/arrow-right-DkUE0wGt.js",
+        "assets/arrow-up-right-siNLNQ8f.js",
+        "assets/check-BR5yPA8h.js",
+        "assets/vendor-supabase-11GpYcmB.js",
+        "assets/createLucideIcon-CBho2xym.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/_site.packages.tsx?tsr-split=component",
+          "renderedBytes": 11532
+        }
+      ]
+    },
+    {
+      "file": "assets/arrow-up-right-siNLNQ8f.js",
+      "entry": false,
+      "bytes": 179,
+      "gzipBytes": 167,
+      "imports": [
+        "assets/createLucideIcon-CBho2xym.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/arrow-up-right.mjs",
+          "renderedBytes": 361
+        }
+      ]
+    },
+    {
+      "file": "assets/_site.earn-gxc1BIA0.js",
+      "entry": false,
+      "bytes": 15314,
+      "gzipBytes": 4694,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/legacyAdfocateContent-B4YouzF_.js",
+        "assets/index-BrAeORCk.js",
+        "assets/arrow-right-DkUE0wGt.js",
+        "assets/trending-up-CuvQS0yq.js",
+        "assets/createLucideIcon-CBho2xym.js",
+        "assets/sparkles-SJbGwv_6.js",
+        "assets/rocket--y1WdJbJ.js",
+        "assets/wallet-ChR7oefq.js",
+        "assets/gift-CJEX1Usu.js",
+        "assets/megaphone-Ozxw9T4O.js",
+        "assets/vendor-supabase-11GpYcmB.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/_site.earn.tsx?tsr-split=component",
+          "renderedBytes": 20384
+        },
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/package.mjs",
+          "renderedBytes": 611
+        },
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/shopping-bag.mjs",
+          "renderedBytes": 570
+        },
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/arrow-down.mjs",
+          "renderedBytes": 360
+        }
+      ]
+    },
+    {
+      "file": "assets/rocket--y1WdJbJ.js",
+      "entry": false,
+      "bytes": 1389,
+      "gzipBytes": 713,
+      "imports": [
+        "assets/createLucideIcon-CBho2xym.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/rocket.mjs",
+          "renderedBytes": 714
+        },
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/camera.mjs",
+          "renderedBytes": 560
+        },
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/coins.mjs",
+          "renderedBytes": 498
+        },
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/monitor.mjs",
+          "renderedBytes": 481
+        },
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/percent.mjs",
+          "renderedBytes": 458
+        }
+      ]
+    },
+    {
+      "file": "assets/_site.creators-DSMmfsvC.js",
+      "entry": false,
+      "bytes": 42860,
+      "gzipBytes": 13789,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/mockData-DLRWP8zS.js",
+        "assets/index-BrAeORCk.js",
+        "assets/legacyAdfocateContent-B4YouzF_.js",
+        "assets/utils-DaT-yT0k.js",
+        "assets/chevron-down-BYceO-Q3.js",
+        "assets/arrow-right-DkUE0wGt.js",
+        "assets/user-BeBG2xJt.js",
+        "assets/target-H9J6chXf.js",
+        "assets/check-BR5yPA8h.js",
+        "assets/sparkles-SJbGwv_6.js",
+        "assets/trending-up-CuvQS0yq.js",
+        "assets/createLucideIcon-CBho2xym.js",
+        "assets/star-oOX7kJdx.js",
+        "assets/shield-BuwcP1rC.js",
+        "assets/message-circle-BYYDaGJ2.js",
+        "assets/trophy-GhQJTel8.js",
+        "assets/graduation-cap-CpaZjUgb.js",
+        "assets/book-open-BtMap0Gv.js",
+        "assets/marketingShowcase-CG5pZiSj.js",
+        "assets/vendor-supabase-11GpYcmB.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/_site.creators.tsx?tsr-split=component",
+          "renderedBytes": 39203
+        },
+        {
+          "id": "./node_modules/@radix-ui/react-accordion/dist/index.mjs",
+          "renderedBytes": 10775
+        },
+        {
+          "id": "./node_modules/@radix-ui/react-presence/dist/index.mjs",
+          "renderedBytes": 5567
+        },
+        {
+          "id": "./node_modules/@radix-ui/react-slot/dist/index.mjs",
+          "renderedBytes": 5093
+        },
+        {
+          "id": "./node_modules/@radix-ui/react-collapsible/dist/index.mjs",
+          "renderedBytes": 4977
+        },
+        {
+          "id": "./node_modules/@radix-ui/react-collection/dist/index.mjs",
+          "renderedBytes": 2960
+        },
+        {
+          "id": "./node_modules/@radix-ui/react-context/dist/index.mjs",
+          "renderedBytes": 2565
+        },
+        {
+          "id": "./node_modules/@radix-ui/react-use-controllable-state/dist/index.mjs",
+          "renderedBytes": 2146
+        },
+        {
+          "id": "./src/components/ui/accordion.tsx",
+          "renderedBytes": 1428
+        },
+        {
+          "id": "./node_modules/@radix-ui/react-compose-refs/dist/index.mjs",
+          "renderedBytes": 882
+        },
+        {
+          "id": "./node_modules/@radix-ui/react-primitive/dist/index.mjs",
+          "renderedBytes": 735
+        },
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/banknote.mjs",
+          "renderedBytes": 456
+        },
+        {
+          "id": "./node_modules/@radix-ui/react-id/dist/index.mjs",
+          "renderedBytes": 334
+        },
+        {
+          "id": "./node_modules/@radix-ui/primitive/dist/index.mjs",
+          "renderedBytes": 332
+        },
+        {
+          "id": "./node_modules/@radix-ui/react-direction/dist/index.mjs",
+          "renderedBytes": 198
+        },
+        {
+          "id": "./node_modules/@radix-ui/react-use-layout-effect/dist/index.mjs",
+          "renderedBytes": 116
+        }
+      ]
+    },
+    {
+      "file": "assets/graduation-cap-CpaZjUgb.js",
+      "entry": false,
+      "bytes": 344,
+      "gzipBytes": 256,
+      "imports": [
+        "assets/createLucideIcon-CBho2xym.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/graduation-cap.mjs",
+          "renderedBytes": 564
+        }
+      ]
+    },
+    {
+      "file": "assets/shield-BuwcP1rC.js",
+      "entry": false,
+      "bytes": 279,
+      "gzipBytes": 232,
+      "imports": [
+        "assets/createLucideIcon-CBho2xym.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/shield.mjs",
+          "renderedBytes": 479
+        }
+      ]
+    },
+    {
+      "file": "assets/message-circle-BYYDaGJ2.js",
+      "entry": false,
+      "bytes": 253,
+      "gzipBytes": 220,
+      "imports": [
+        "assets/createLucideIcon-CBho2xym.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/message-circle.mjs",
+          "renderedBytes": 455
+        }
+      ]
+    },
+    {
+      "file": "assets/marketingShowcase-CG5pZiSj.js",
+      "entry": false,
+      "bytes": 7957,
+      "gzipBytes": 3523,
+      "imports": [],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/data/marketingShowcase.ts",
+          "renderedBytes": 7605
+        }
+      ]
+    },
+    {
+      "file": "assets/_site.contact-D4mKAIQK.js",
+      "entry": false,
+      "bytes": 20434,
+      "gzipBytes": 6242,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/index-BrAeORCk.js",
+        "assets/utils-DaT-yT0k.js",
+        "assets/createLucideIcon-CBho2xym.js",
+        "assets/user-BeBG2xJt.js",
+        "assets/wallet-ChR7oefq.js",
+        "assets/users-BZDofVX3.js",
+        "assets/sparkles-SJbGwv_6.js",
+        "assets/send-C6CChZAv.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/vendor-supabase-11GpYcmB.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/_site.contact.tsx?tsr-split=component",
+          "renderedBytes": 29041
+        },
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/store.mjs",
+          "renderedBytes": 722
+        },
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/building-2.mjs",
+          "renderedBytes": 633
+        }
+      ]
+    },
+    {
+      "file": "assets/user-BeBG2xJt.js",
+      "entry": false,
+      "bytes": 203,
+      "gzipBytes": 187,
+      "imports": [
+        "assets/createLucideIcon-CBho2xym.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/user.mjs",
+          "renderedBytes": 386
+        }
+      ]
+    },
+    {
+      "file": "assets/_site.brands-CAX_BIf2.js",
+      "entry": false,
+      "bytes": 20059,
+      "gzipBytes": 5635,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/mockData-DLRWP8zS.js",
+        "assets/legacyAdfocateContent-B4YouzF_.js",
+        "assets/index-BrAeORCk.js",
+        "assets/sparkles-SJbGwv_6.js",
+        "assets/check-BR5yPA8h.js",
+        "assets/arrow-right-DkUE0wGt.js",
+        "assets/users-BZDofVX3.js",
+        "assets/chart-column-4KwTHvHy.js",
+        "assets/target-H9J6chXf.js",
+        "assets/vendor-supabase-11GpYcmB.js",
+        "assets/createLucideIcon-CBho2xym.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/_site.brands.tsx?tsr-split=component",
+          "renderedBytes": 29557
+        }
+      ]
+    },
+    {
+      "file": "assets/chart-column-4KwTHvHy.js",
+      "entry": false,
+      "bytes": 263,
+      "gzipBytes": 202,
+      "imports": [
+        "assets/createLucideIcon-CBho2xym.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/chart-column.mjs",
+          "renderedBytes": 462
+        }
+      ]
+    },
+    {
+      "file": "assets/mockData-DLRWP8zS.js",
+      "entry": false,
+      "bytes": 12795,
+      "gzipBytes": 5209,
+      "imports": [
+        "assets/index-BrAeORCk.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/data/mockData.ts",
+          "renderedBytes": 14295
+        }
+      ]
+    },
+    {
+      "file": "assets/legacyAdfocateContent-B4YouzF_.js",
+      "entry": false,
+      "bytes": 15721,
+      "gzipBytes": 6064,
+      "imports": [],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/data/legacyAdfocateContent.ts",
+          "renderedBytes": 16103
+        }
+      ]
+    },
+    {
+      "file": "assets/_app.wallet-i6GmpRCi.js",
+      "entry": false,
+      "bytes": 3509,
+      "gzipBytes": 1047,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/kocmax-BjDVPQyj.js",
+        "assets/useRealtimeBalance-BKqWhMQz.js",
+        "assets/PointsBalanceCard-B7YAeH_A.js",
+        "assets/SkeletonCard-BSX-vjlV.js",
+        "assets/index-BrAeORCk.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/clock-Bc0_sPHp.js",
+        "assets/createLucideIcon-CBho2xym.js",
+        "assets/vendor-supabase-11GpYcmB.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/_app.wallet.tsx?tsr-split=component",
+          "renderedBytes": 5209
+        }
+      ]
+    },
+    {
+      "file": "assets/_app.redemption-C0496bYu.js",
+      "entry": false,
+      "bytes": 143,
+      "gzipBytes": 135,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/_app.redemption.tsx?tsr-split=component",
+          "renderedBytes": 79
+        }
+      ]
+    },
+    {
+      "file": "assets/_app.profile-C3jC5JbN.js",
+      "entry": false,
+      "bytes": 23083,
+      "gzipBytes": 5970,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/index-BrAeORCk.js",
+        "assets/kocmax-BjDVPQyj.js",
+        "assets/createLucideIcon-CBho2xym.js",
+        "assets/star-oOX7kJdx.js",
+        "assets/x-BLMitoeA.js",
+        "assets/FilterPills-Cq5XQm-3.js",
+        "assets/SocialAccountSummary-cxoRVfuY.js",
+        "assets/LangToggle-WVFv9O0O.js",
+        "assets/labels-BcklBINW.js",
+        "assets/vendor-supabase-11GpYcmB.js",
+        "assets/utils-DaT-yT0k.js",
+        "assets/missionCategories-MHK3H4Ea.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/components/CreatorProfileMediaPanel.tsx",
+          "renderedBytes": 17703
+        },
+        {
+          "id": "./src/routes/_app.profile.tsx?tsr-split=component",
+          "renderedBytes": 11109
+        },
+        {
+          "id": "./src/components/SocialTrustPanel.tsx",
+          "renderedBytes": 9087
+        },
+        {
+          "id": "./src/components/LevelChip.tsx",
+          "renderedBytes": 944
+        },
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/trash-2.mjs",
+          "renderedBytes": 547
+        },
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/pencil.mjs",
+          "renderedBytes": 496
+        },
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/external-link.mjs",
+          "renderedBytes": 458
+        },
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/upload.mjs",
+          "renderedBytes": 427
+        }
+      ]
+    },
+    {
+      "file": "assets/_app.passport-DgluGg-v.js",
+      "entry": false,
+      "bytes": 8047,
+      "gzipBytes": 2270,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/SocialAccountSummary-cxoRVfuY.js",
+        "assets/index-BrAeORCk.js",
+        "assets/ScoreRing-DMDTfAdN.js",
+        "assets/kocmax-BjDVPQyj.js",
+        "assets/labels-BcklBINW.js",
+        "assets/missionCategories-MHK3H4Ea.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/vendor-supabase-11GpYcmB.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/_app.passport.tsx?tsr-split=component",
+          "renderedBytes": 6962
+        },
+        {
+          "id": "./src/components/PassportTrustSummary.tsx",
+          "renderedBytes": 4657
+        },
+        {
+          "id": "./src/components/LevelProgress.tsx",
+          "renderedBytes": 2153
+        }
+      ]
+    },
+    {
+      "file": "assets/ScoreRing-DMDTfAdN.js",
+      "entry": false,
+      "bytes": 2061,
+      "gzipBytes": 848,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/index-BrAeORCk.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/lib/passport.ts",
+          "renderedBytes": 1388
+        },
+        {
+          "id": "./src/components/ScoreRing.tsx",
+          "renderedBytes": 1284
+        }
+      ]
+    },
+    {
+      "file": "assets/SocialAccountSummary-cxoRVfuY.js",
+      "entry": false,
+      "bytes": 3013,
+      "gzipBytes": 1283,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/index-BrAeORCk.js",
+        "assets/labels-BcklBINW.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/components/SocialAccountSummary.tsx",
+          "renderedBytes": 1893
+        },
+        {
+          "id": "./src/lib/socialAccountPresentation.ts",
+          "renderedBytes": 1765
+        },
+        {
+          "id": "./src/components/IdentityHeader.tsx",
+          "renderedBytes": 1040
+        }
+      ]
+    },
+    {
+      "file": "assets/menu-z7murLlz.js",
+      "entry": false,
+      "bytes": 201,
+      "gzipBytes": 164,
+      "imports": [
+        "assets/createLucideIcon-CBho2xym.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/menu.mjs",
+          "renderedBytes": 384
+        }
+      ]
+    },
+    {
+      "file": "assets/users-BZDofVX3.js",
+      "entry": false,
+      "bytes": 318,
+      "gzipBytes": 233,
+      "imports": [
+        "assets/createLucideIcon-CBho2xym.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/users.mjs",
+          "renderedBytes": 515
+        }
+      ]
+    },
+    {
+      "file": "assets/user-check-Cws2rzoa.js",
+      "entry": false,
+      "bytes": 250,
+      "gzipBytes": 214,
+      "imports": [
+        "assets/createLucideIcon-CBho2xym.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/user-check.mjs",
+          "renderedBytes": 447
+        }
+      ]
+    },
+    {
+      "file": "assets/target-H9J6chXf.js",
+      "entry": false,
+      "bytes": 233,
+      "gzipBytes": 169,
+      "imports": [
+        "assets/createLucideIcon-CBho2xym.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/target.mjs",
+          "renderedBytes": 435
+        }
+      ]
+    },
+    {
+      "file": "assets/trophy-GhQJTel8.js",
+      "entry": false,
+      "bytes": 488,
+      "gzipBytes": 284,
+      "imports": [
+        "assets/createLucideIcon-CBho2xym.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/trophy.mjs",
+          "renderedBytes": 700
+        }
+      ]
+    },
+    {
+      "file": "assets/file-text-gwZ72UKa.js",
+      "entry": false,
+      "bytes": 397,
+      "gzipBytes": 260,
+      "imports": [
+        "assets/createLucideIcon-CBho2xym.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/file-text.mjs",
+          "renderedBytes": 630
+        }
+      ]
+    },
+    {
+      "file": "assets/createLucideIcon-CBho2xym.js",
+      "entry": false,
+      "bytes": 1386,
+      "gzipBytes": 782,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./node_modules/lucide-react/dist/esm/Icon.mjs",
+          "renderedBytes": 1259
+        },
+        {
+          "id": "./node_modules/lucide-react/dist/esm/createLucideIcon.mjs",
+          "renderedBytes": 614
+        },
+        {
+          "id": "./node_modules/lucide-react/dist/esm/defaultAttributes.mjs",
+          "renderedBytes": 403
+        },
+        {
+          "id": "./node_modules/lucide-react/dist/esm/shared/src/utils/mergeClasses.mjs",
+          "renderedBytes": 370
+        },
+        {
+          "id": "./node_modules/lucide-react/dist/esm/shared/src/utils/hasA11yProp.mjs",
+          "renderedBytes": 358
+        },
+        {
+          "id": "./node_modules/lucide-react/dist/esm/shared/src/utils/toPascalCase.mjs",
+          "renderedBytes": 317
+        },
+        {
+          "id": "./node_modules/lucide-react/dist/esm/shared/src/utils/toCamelCase.mjs",
+          "renderedBytes": 312
+        },
+        {
+          "id": "./node_modules/lucide-react/dist/esm/shared/src/utils/toKebabCase.mjs",
+          "renderedBytes": 265
+        },
+        {
+          "id": "./node_modules/lucide-react/dist/esm/context.mjs",
+          "renderedBytes": 124
+        }
+      ]
+    },
+    {
+      "file": "assets/BrandAuthContext-CC7i0XLz.js",
+      "entry": false,
+      "bytes": 208,
+      "gzipBytes": 177,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/components/brand/BrandAuthContext.tsx",
+          "renderedBytes": 236
+        }
+      ]
+    },
+    {
+      "file": "assets/brand-CJ8qnXfa.js",
+      "entry": false,
+      "bytes": 1190,
+      "gzipBytes": 612,
+      "imports": [
+        "assets/index-BrAeORCk.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/lib/brand.ts",
+          "renderedBytes": 1859
+        }
+      ]
+    },
+    {
+      "file": "assets/book-open-BtMap0Gv.js",
+      "entry": false,
+      "bytes": 291,
+      "gzipBytes": 216,
+      "imports": [
+        "assets/createLucideIcon-CBho2xym.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/book-open.mjs",
+          "renderedBytes": 497
+        }
+      ]
+    },
+    {
+      "file": "assets/LangToggle-WVFv9O0O.js",
+      "entry": false,
+      "bytes": 578,
+      "gzipBytes": 399,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/index-BrAeORCk.js",
+        "assets/utils-DaT-yT0k.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/components/LangToggle.tsx",
+          "renderedBytes": 628
+        }
+      ]
+    },
+    {
+      "file": "assets/sparkles-SJbGwv_6.js",
+      "entry": false,
+      "bytes": 506,
+      "gzipBytes": 290,
+      "imports": [
+        "assets/createLucideIcon-CBho2xym.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/sparkles.mjs",
+          "renderedBytes": 734
+        }
+      ]
+    },
+    {
+      "file": "assets/x-BLMitoeA.js",
+      "entry": false,
+      "bytes": 166,
+      "gzipBytes": 159,
+      "imports": [
+        "assets/createLucideIcon-CBho2xym.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/x.mjs",
+          "renderedBytes": 337
+        }
+      ]
+    },
+    {
+      "file": "assets/mail-C-BFs2Uy.js",
+      "entry": false,
+      "bytes": 225,
+      "gzipBytes": 209,
+      "imports": [
+        "assets/createLucideIcon-CBho2xym.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/mail.mjs",
+          "renderedBytes": 407
+        }
+      ]
+    },
+    {
+      "file": "assets/utils-DaT-yT0k.js",
+      "entry": false,
+      "bytes": 27539,
+      "gzipBytes": 8690,
+      "imports": [],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./node_modules/tailwind-merge/dist/bundle-mjs.mjs",
+          "renderedBytes": 102185
+        },
+        {
+          "id": "./node_modules/clsx/dist/clsx.mjs",
+          "renderedBytes": 362
+        },
+        {
+          "id": "./src/lib/utils.ts",
+          "renderedBytes": 58
+        }
+      ]
+    },
+    {
+      "file": "assets/kocmax-BjDVPQyj.js",
+      "entry": false,
+      "bytes": 7871,
+      "gzipBytes": 1587,
+      "imports": [
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/index-BrAeORCk.js",
+        "assets/vendor-react-qcAInfL-.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/lib/queries/kocmax.ts",
+          "renderedBytes": 11425
+        }
+      ]
+    },
+    {
+      "file": "assets/NotificationBadge-BmrewCQ_.js",
+      "entry": false,
+      "bytes": 2599,
+      "gzipBytes": 1171,
+      "imports": [
+        "assets/createLucideIcon-CBho2xym.js",
+        "assets/target-H9J6chXf.js",
+        "assets/trophy-GhQJTel8.js",
+        "assets/bell-CI6Pbuj2.js",
+        "assets/gift-CJEX1Usu.js",
+        "assets/wallet-ChR7oefq.js",
+        "assets/compass-ySOvfhlB.js",
+        "assets/book-open-BtMap0Gv.js",
+        "assets/menu-z7murLlz.js",
+        "assets/user-round-Cxtj5bFU.js",
+        "assets/sparkles-SJbGwv_6.js",
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/kocmax-BjDVPQyj.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/components/navItems.ts",
+          "renderedBytes": 1388
+        },
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/id-card.mjs",
+          "renderedBytes": 554
+        },
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/house.mjs",
+          "renderedBytes": 500
+        },
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/list-checks.mjs",
+          "renderedBytes": 498
+        },
+        {
+          "id": "./src/components/NotificationBadge.tsx",
+          "renderedBytes": 474
+        }
+      ]
+    },
+    {
+      "file": "assets/bell-CI6Pbuj2.js",
+      "entry": false,
+      "bytes": 302,
+      "gzipBytes": 245,
+      "imports": [
+        "assets/createLucideIcon-CBho2xym.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/bell.mjs",
+          "renderedBytes": 504
+        }
+      ]
+    },
+    {
+      "file": "assets/gift-CJEX1Usu.js",
+      "entry": false,
+      "bytes": 361,
+      "gzipBytes": 256,
+      "imports": [
+        "assets/createLucideIcon-CBho2xym.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/gift.mjs",
+          "renderedBytes": 573
+        }
+      ]
+    },
+    {
+      "file": "assets/wallet-ChR7oefq.js",
+      "entry": false,
+      "bytes": 298,
+      "gzipBytes": 218,
+      "imports": [
+        "assets/createLucideIcon-CBho2xym.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/wallet.mjs",
+          "renderedBytes": 502
+        }
+      ]
+    },
+    {
+      "file": "assets/compass-ySOvfhlB.js",
+      "entry": false,
+      "bytes": 258,
+      "gzipBytes": 214,
+      "imports": [
+        "assets/createLucideIcon-CBho2xym.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/compass.mjs",
+          "renderedBytes": 472
+        }
+      ]
+    },
+    {
+      "file": "assets/user-round-Cxtj5bFU.js",
+      "entry": false,
+      "bytes": 189,
+      "gzipBytes": 180,
+      "imports": [
+        "assets/createLucideIcon-CBho2xym.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/user-round.mjs",
+          "renderedBytes": 377
+        }
+      ]
+    },
+    {
+      "file": "assets/RequestFeedback-CkKpk4Ck.js",
+      "entry": false,
+      "bytes": 1190,
+      "gzipBytes": 789,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/components/RequestFeedback.tsx",
+          "renderedBytes": 1415
+        }
+      ]
+    },
+    {
+      "file": "assets/trending-up-CuvQS0yq.js",
+      "entry": false,
+      "bytes": 187,
+      "gzipBytes": 178,
+      "imports": [
+        "assets/createLucideIcon-CBho2xym.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/trending-up.mjs",
+          "renderedBytes": 367
+        }
+      ]
+    },
+    {
+      "file": "assets/arrow-right-DkUE0wGt.js",
+      "entry": false,
+      "bytes": 177,
+      "gzipBytes": 166,
+      "imports": [
+        "assets/createLucideIcon-CBho2xym.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/arrow-right.mjs",
+          "renderedBytes": 357
+        }
+      ]
+    },
+    {
+      "file": "assets/megaphone-Ozxw9T4O.js",
+      "entry": false,
+      "bytes": 358,
+      "gzipBytes": 250,
+      "imports": [
+        "assets/createLucideIcon-CBho2xym.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/megaphone.mjs",
+          "renderedBytes": 574
+        }
+      ]
+    },
+    {
+      "file": "assets/check-BR5yPA8h.js",
+      "entry": false,
+      "bytes": 131,
+      "gzipBytes": 146,
+      "imports": [
+        "assets/createLucideIcon-CBho2xym.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/check.mjs",
+          "renderedBytes": 298
+        }
+      ]
+    },
+    {
+      "file": "assets/submissionEvidence-DXfCOMks.js",
+      "entry": false,
+      "bytes": 664,
+      "gzipBytes": 380,
+      "imports": [],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/lib/submissionEvidence.ts",
+          "renderedBytes": 1055
+        }
+      ]
+    },
+    {
+      "file": "assets/CreatorReviewRow-B7L-Y3xy.js",
+      "entry": false,
+      "bytes": 5389,
+      "gzipBytes": 1867,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/ReviewActionPanel-D7eTm6uG.js",
+        "assets/OperatorBadges-dbQDHp0S.js",
+        "assets/index-BrAeORCk.js",
+        "assets/user-round-Cxtj5bFU.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/components/operator/CreatorReviewRow.tsx",
+          "renderedBytes": 9207
+        }
+      ]
+    },
+    {
+      "file": "assets/ReviewActionPanel-D7eTm6uG.js",
+      "entry": false,
+      "bytes": 5567,
+      "gzipBytes": 1966,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/RequestFeedback-CkKpk4Ck.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/index-BrAeORCk.js",
+        "assets/check-BR5yPA8h.js",
+        "assets/createLucideIcon-CBho2xym.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/components/operator/ReviewActionPanel.tsx",
+          "renderedBytes": 9346
+        },
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/flag.mjs",
+          "renderedBytes": 459
+        }
+      ]
+    },
+    {
+      "file": "assets/OperatorBadges-dbQDHp0S.js",
+      "entry": false,
+      "bytes": 970,
+      "gzipBytes": 362,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/components/operator/OperatorBadges.tsx",
+          "renderedBytes": 1222
+        }
+      ]
+    },
+    {
+      "file": "assets/award-DMTOx4Fv.js",
+      "entry": false,
+      "bytes": 281,
+      "gzipBytes": 232,
+      "imports": [
+        "assets/createLucideIcon-CBho2xym.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/award.mjs",
+          "renderedBytes": 493
+        }
+      ]
+    },
+    {
+      "file": "assets/lightbulb-BF3M6YNx.js",
+      "entry": false,
+      "bytes": 293,
+      "gzipBytes": 231,
+      "imports": [
+        "assets/createLucideIcon-CBho2xym.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/lightbulb.mjs",
+          "renderedBytes": 514
+        }
+      ]
+    },
+    {
+      "file": "assets/star-oOX7kJdx.js",
+      "entry": false,
+      "bytes": 484,
+      "gzipBytes": 297,
+      "imports": [
+        "assets/createLucideIcon-CBho2xym.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/star.mjs",
+          "renderedBytes": 677
+        }
+      ]
+    },
+    {
+      "file": "assets/chevron-down-BYceO-Q3.js",
+      "entry": false,
+      "bytes": 140,
+      "gzipBytes": 148,
+      "imports": [
+        "assets/createLucideIcon-CBho2xym.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/chevron-down.mjs",
+          "renderedBytes": 308
+        }
+      ]
+    },
+    {
+      "file": "assets/send-C6CChZAv.js",
+      "entry": false,
+      "bytes": 302,
+      "gzipBytes": 239,
+      "imports": [
+        "assets/createLucideIcon-CBho2xym.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/send.mjs",
+          "renderedBytes": 504
+        }
+      ]
+    },
+    {
+      "file": "assets/useRealtimeBalance-BKqWhMQz.js",
+      "entry": false,
+      "bytes": 512,
+      "gzipBytes": 345,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/index-BrAeORCk.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/lib/useRealtimeBalance.ts",
+          "renderedBytes": 636
+        }
+      ]
+    },
+    {
+      "file": "assets/PointsBalanceCard-B7YAeH_A.js",
+      "entry": false,
+      "bytes": 863,
+      "gzipBytes": 501,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/index-BrAeORCk.js",
+        "assets/clock-Bc0_sPHp.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/components/PointsBalanceCard.tsx",
+          "renderedBytes": 1076
+        }
+      ]
+    },
+    {
+      "file": "assets/SkeletonCard-BSX-vjlV.js",
+      "entry": false,
+      "bytes": 176,
+      "gzipBytes": 163,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/components/SkeletonCard.tsx",
+          "renderedBytes": 180
+        }
+      ]
+    },
+    {
+      "file": "assets/clock-Bc0_sPHp.js",
+      "entry": false,
+      "bytes": 176,
+      "gzipBytes": 171,
+      "imports": [
+        "assets/createLucideIcon-CBho2xym.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/clock.mjs",
+          "renderedBytes": 360
+        }
+      ]
+    },
+    {
+      "file": "assets/FilterPills-Cq5XQm-3.js",
+      "entry": false,
+      "bytes": 767,
+      "gzipBytes": 386,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/components/FilterPills.tsx",
+          "renderedBytes": 1295
+        }
+      ]
+    },
+    {
+      "file": "assets/labels-BcklBINW.js",
+      "entry": false,
+      "bytes": 574,
+      "gzipBytes": 365,
+      "imports": [
+        "assets/missionCategories-MHK3H4Ea.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/lib/labels.ts",
+          "renderedBytes": 710
+        }
+      ]
+    },
+    {
+      "file": "assets/missionCategories-MHK3H4Ea.js",
+      "entry": false,
+      "bytes": 441,
+      "gzipBytes": 352,
+      "imports": [],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/lib/missionCategories.ts",
+          "renderedBytes": 735
+        }
+      ]
+    },
+    {
+      "file": "assets/_app.onboarding-BFar3v_5.js",
+      "entry": false,
+      "bytes": 16272,
+      "gzipBytes": 4934,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/index-BrAeORCk.js",
+        "assets/FilterPills-Cq5XQm-3.js",
+        "assets/MissionCard-DMV0fSVP.js",
+        "assets/SkeletonCard-BSX-vjlV.js",
+        "assets/labels-BcklBINW.js",
+        "assets/kocmax-BjDVPQyj.js",
+        "assets/creatorActivation-7zOCQ-tB.js",
+        "assets/vendor-supabase-11GpYcmB.js",
+        "assets/BadgePill-q8bMT7Ny.js",
+        "assets/creatorFormatting-Dc2jDNrC.js",
+        "assets/star-oOX7kJdx.js",
+        "assets/createLucideIcon-CBho2xym.js",
+        "assets/clock-Bc0_sPHp.js",
+        "assets/missionCategories-MHK3H4Ea.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/_app.onboarding.tsx?tsr-split=component",
+          "renderedBytes": 12129
+        },
+        {
+          "id": "./src/components/onboarding/OnboardingSteps.tsx",
+          "renderedBytes": 10658
+        },
+        {
+          "id": "./src/components/onboarding/OnboardingShell.tsx",
+          "renderedBytes": 4400
+        },
+        {
+          "id": "./src/components/ProgressBar.tsx",
+          "renderedBytes": 567
+        }
+      ]
+    },
+    {
+      "file": "assets/creatorActivation-7zOCQ-tB.js",
+      "entry": false,
+      "bytes": 5776,
+      "gzipBytes": 1741,
+      "imports": [
+        "assets/index-BrAeORCk.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/lib/creatorActivation.ts",
+          "renderedBytes": 8644
+        }
+      ]
+    },
+    {
+      "file": "assets/MissionCard-DMV0fSVP.js",
+      "entry": false,
+      "bytes": 3666,
+      "gzipBytes": 1482,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/BadgePill-q8bMT7Ny.js",
+        "assets/creatorFormatting-Dc2jDNrC.js",
+        "assets/index-BrAeORCk.js",
+        "assets/labels-BcklBINW.js",
+        "assets/star-oOX7kJdx.js",
+        "assets/clock-Bc0_sPHp.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/components/MissionCard.tsx",
+          "renderedBytes": 5818
+        }
+      ]
+    },
+    {
+      "file": "assets/BadgePill-q8bMT7Ny.js",
+      "entry": false,
+      "bytes": 328,
+      "gzipBytes": 250,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/components/BadgePill.tsx",
+          "renderedBytes": 323
+        }
+      ]
+    },
+    {
+      "file": "assets/creatorFormatting-Dc2jDNrC.js",
+      "entry": false,
+      "bytes": 692,
+      "gzipBytes": 435,
+      "imports": [
+        "assets/index-BrAeORCk.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/lib/creatorFormatting.ts",
+          "renderedBytes": 1194
+        }
+      ]
+    },
+    {
+      "file": "assets/_app.notifications-BrozfSCn.js",
+      "entry": false,
+      "bytes": 5274,
+      "gzipBytes": 2073,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/index-BrAeORCk.js",
+        "assets/kocmax-BjDVPQyj.js",
+        "assets/createLucideIcon-CBho2xym.js",
+        "assets/bell-CI6Pbuj2.js",
+        "assets/trending-up-CuvQS0yq.js",
+        "assets/trophy-GhQJTel8.js",
+        "assets/gift-CJEX1Usu.js",
+        "assets/megaphone-Ozxw9T4O.js",
+        "assets/award-DMTOx4Fv.js",
+        "assets/user-check-Cws2rzoa.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/vendor-supabase-11GpYcmB.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/lib/notifications.ts",
+          "renderedBytes": 3251
+        },
+        {
+          "id": "./src/routes/_app.notifications.tsx?tsr-split=component",
+          "renderedBytes": 2009
+        },
+        {
+          "id": "./src/components/notifications/NotificationCard.tsx",
+          "renderedBytes": 1112
+        },
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/user-x.mjs",
+          "renderedBytes": 527
+        },
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/circle-x.mjs",
+          "renderedBytes": 413
+        },
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/circle-check.mjs",
+          "renderedBytes": 379
+        }
+      ]
+    },
+    {
+      "file": "assets/_app.my-BtDuzRub.js",
+      "entry": false,
+      "bytes": 151,
+      "gzipBytes": 138,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/_app.my.tsx?tsr-split=component",
+          "renderedBytes": 91
+        }
+      ]
+    },
+    {
+      "file": "assets/_app.more-DWOVq2Wj.js",
+      "entry": false,
+      "bytes": 1282,
+      "gzipBytes": 707,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/NotificationBadge-BmrewCQ_.js",
+        "assets/index-BrAeORCk.js",
+        "assets/createLucideIcon-CBho2xym.js",
+        "assets/target-H9J6chXf.js",
+        "assets/trophy-GhQJTel8.js",
+        "assets/bell-CI6Pbuj2.js",
+        "assets/gift-CJEX1Usu.js",
+        "assets/wallet-ChR7oefq.js",
+        "assets/compass-ySOvfhlB.js",
+        "assets/book-open-BtMap0Gv.js",
+        "assets/menu-z7murLlz.js",
+        "assets/user-round-Cxtj5bFU.js",
+        "assets/sparkles-SJbGwv_6.js",
+        "assets/kocmax-BjDVPQyj.js",
+        "assets/vendor-supabase-11GpYcmB.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/_app.more.tsx?tsr-split=component",
+          "renderedBytes": 1085
+        }
+      ]
+    },
+    {
+      "file": "assets/_app.mission-C0496bYu.js",
+      "entry": false,
+      "bytes": 143,
+      "gzipBytes": 135,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/_app.mission.tsx?tsr-split=component",
+          "renderedBytes": 79
+        }
+      ]
+    },
+    {
+      "file": "assets/_app.match-CCLa3pzz.js",
+      "entry": false,
+      "bytes": 2424,
+      "gzipBytes": 1105,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/index-BrAeORCk.js",
+        "assets/kocmax-BjDVPQyj.js",
+        "assets/MissionCard-DMV0fSVP.js",
+        "assets/SkeletonCard-BSX-vjlV.js",
+        "assets/sparkles-SJbGwv_6.js",
+        "assets/vendor-supabase-11GpYcmB.js",
+        "assets/BadgePill-q8bMT7Ny.js",
+        "assets/creatorFormatting-Dc2jDNrC.js",
+        "assets/labels-BcklBINW.js",
+        "assets/missionCategories-MHK3H4Ea.js",
+        "assets/star-oOX7kJdx.js",
+        "assets/createLucideIcon-CBho2xym.js",
+        "assets/clock-Bc0_sPHp.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/_app.match.tsx?tsr-split=component",
+          "renderedBytes": 2898
+        }
+      ]
+    },
+    {
+      "file": "assets/_app.login-pzC-EB55.js",
+      "entry": false,
+      "bytes": 8525,
+      "gzipBytes": 2532,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/index-BrAeORCk.js",
+        "assets/AuthFeedback-DlNasHEz.js",
+        "assets/vendor-supabase-11GpYcmB.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/_app.login.tsx?tsr-split=component",
+          "renderedBytes": 13318
+        },
+        {
+          "id": "./src/components/RichText.tsx",
+          "renderedBytes": 364
+        }
+      ]
+    },
+    {
+      "file": "assets/AuthFeedback-DlNasHEz.js",
+      "entry": false,
+      "bytes": 1541,
+      "gzipBytes": 749,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/index-BrAeORCk.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/components/AuthFeedback.tsx",
+          "renderedBytes": 2381
+        }
+      ]
+    },
+    {
+      "file": "assets/_app.home-CyuAeijo.js",
+      "entry": false,
+      "bytes": 20431,
+      "gzipBytes": 5615,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/index-BrAeORCk.js",
+        "assets/creatorActivation-7zOCQ-tB.js",
+        "assets/creatorFormatting-Dc2jDNrC.js",
+        "assets/sparkles-SJbGwv_6.js",
+        "assets/createLucideIcon-CBho2xym.js",
+        "assets/arrow-right-DkUE0wGt.js",
+        "assets/LangToggle-WVFv9O0O.js",
+        "assets/MissionCard-DMV0fSVP.js",
+        "assets/PointsBalanceCard-B7YAeH_A.js",
+        "assets/kocmax-BjDVPQyj.js",
+        "assets/useRealtimeBalance-BKqWhMQz.js",
+        "assets/target-H9J6chXf.js",
+        "assets/gift-CJEX1Usu.js",
+        "assets/vendor-supabase-11GpYcmB.js",
+        "assets/utils-DaT-yT0k.js",
+        "assets/BadgePill-q8bMT7Ny.js",
+        "assets/labels-BcklBINW.js",
+        "assets/missionCategories-MHK3H4Ea.js",
+        "assets/star-oOX7kJdx.js",
+        "assets/clock-Bc0_sPHp.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/_app.home.tsx?tsr-split=component",
+          "renderedBytes": 10512
+        },
+        {
+          "id": "./src/components/CreatorWorkHome.tsx",
+          "renderedBytes": 5059
+        },
+        {
+          "id": "./src/components/ActivationProgressCard.tsx",
+          "renderedBytes": 4163
+        },
+        {
+          "id": "./src/components/EarningsSummaryCard.tsx",
+          "renderedBytes": 3982
+        },
+        {
+          "id": "./src/components/NextBestActionCard.tsx",
+          "renderedBytes": 3206
+        },
+        {
+          "id": "./src/components/ActiveMissionSummary.tsx",
+          "renderedBytes": 3053
+        },
+        {
+          "id": "./src/lib/useCreatorActivation.ts",
+          "renderedBytes": 1463
+        },
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/receipt.mjs",
+          "renderedBytes": 884
+        },
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/wallet-cards.mjs",
+          "renderedBytes": 566
+        },
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/calendar-check.mjs",
+          "renderedBytes": 539
+        },
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/clock-3.mjs",
+          "renderedBytes": 365
+        }
+      ]
+    },
+    {
+      "file": "assets/_app.explore-BX3ZCBFG.js",
+      "entry": false,
+      "bytes": 3269,
+      "gzipBytes": 968,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/index-BrAeORCk.js",
+        "assets/chevron-down-BYceO-Q3.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/vendor-supabase-11GpYcmB.js",
+        "assets/createLucideIcon-CBho2xym.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/_app.explore.tsx?tsr-split=component",
+          "renderedBytes": 4739
+        }
+      ]
+    },
+    {
+      "file": "assets/_app.campaigns-C0496bYu.js",
+      "entry": false,
+      "bytes": 143,
+      "gzipBytes": 135,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/_app.campaigns.tsx?tsr-split=component",
+          "renderedBytes": 79
+        }
+      ]
+    },
+    {
+      "file": "assets/brand.resources.index-62eoF-c7.js",
+      "entry": false,
+      "bytes": 1455,
+      "gzipBytes": 731,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/brand-CJ8qnXfa.js",
+        "assets/BrandAuthContext-CC7i0XLz.js",
+        "assets/index-BrAeORCk.js",
+        "assets/vendor-supabase-11GpYcmB.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/brand.resources.index.tsx?tsr-split=component",
+          "renderedBytes": 1839
+        }
+      ]
+    },
+    {
+      "file": "assets/brand.missions.index-DFZWZm6I.js",
+      "entry": false,
+      "bytes": 3678,
+      "gzipBytes": 1442,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/index-BrAeORCk.js",
+        "assets/brand-CJ8qnXfa.js",
+        "assets/BrandAuthContext-CC7i0XLz.js",
+        "assets/vendor-supabase-11GpYcmB.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/brand.missions.index.tsx?tsr-split=component",
+          "renderedBytes": 5308
+        }
+      ]
+    },
+    {
+      "file": "assets/admin.missions.index-Cu9Wt08o.js",
+      "entry": false,
+      "bytes": 4291,
+      "gzipBytes": 1600,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/index-BrAeORCk.js",
+        "assets/RequestFeedback-CkKpk4Ck.js",
+        "assets/vendor-supabase-11GpYcmB.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/admin.missions.index.tsx?tsr-split=component",
+          "renderedBytes": 6459
+        }
+      ]
+    },
+    {
+      "file": "assets/admin.content.index-B1BrtWg3.js",
+      "entry": false,
+      "bytes": 2498,
+      "gzipBytes": 942,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/index-BrAeORCk.js",
+        "assets/vendor-supabase-11GpYcmB.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/admin.content.index.tsx?tsr-split=component",
+          "renderedBytes": 3931
+        }
+      ]
+    },
+    {
+      "file": "assets/admin.campaigns.index-C9rjMslz.js",
+      "entry": false,
+      "bytes": 3669,
+      "gzipBytes": 1524,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/index-BrAeORCk.js",
+        "assets/vendor-supabase-11GpYcmB.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/admin.campaigns.index.tsx?tsr-split=component",
+          "renderedBytes": 5257
+        }
+      ]
+    },
+    {
+      "file": "assets/admin.academy.index-pXg_k__j.js",
+      "entry": false,
+      "bytes": 2217,
+      "gzipBytes": 851,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/academy-CQgzGtz3.js",
+        "assets/index-BrAeORCk.js",
+        "assets/vendor-supabase-11GpYcmB.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/admin.academy.index.tsx?tsr-split=component",
+          "renderedBytes": 3407
+        }
+      ]
+    },
+    {
+      "file": "assets/academy-CQgzGtz3.js",
+      "entry": false,
+      "bytes": 701,
+      "gzipBytes": 339,
+      "imports": [
+        "assets/index-BrAeORCk.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/lib/academy.ts",
+          "renderedBytes": 1045
+        }
+      ]
+    },
+    {
+      "file": "assets/_app.redemption.index-Dgm0aD7J.js",
+      "entry": false,
+      "bytes": 6406,
+      "gzipBytes": 2056,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/kocmax-BjDVPQyj.js",
+        "assets/PointsBalanceCard-B7YAeH_A.js",
+        "assets/FilterPills-Cq5XQm-3.js",
+        "assets/index-BrAeORCk.js",
+        "assets/star-oOX7kJdx.js",
+        "assets/SkeletonCard-BSX-vjlV.js",
+        "assets/labels-BcklBINW.js",
+        "assets/clock-Bc0_sPHp.js",
+        "assets/createLucideIcon-CBho2xym.js",
+        "assets/vendor-supabase-11GpYcmB.js",
+        "assets/missionCategories-MHK3H4Ea.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/components/RedeemGiftCard.tsx",
+          "renderedBytes": 6034
+        },
+        {
+          "id": "./src/routes/_app.redemption.index.tsx?tsr-split=component",
+          "renderedBytes": 2366
+        },
+        {
+          "id": "./src/components/RewardCard.tsx",
+          "renderedBytes": 1476
+        }
+      ]
+    },
+    {
+      "file": "assets/_app.my.index-Cq2Q00lw.js",
+      "entry": false,
+      "bytes": 2719,
+      "gzipBytes": 1232,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/kocmax-BjDVPQyj.js",
+        "assets/SkeletonCard-BSX-vjlV.js",
+        "assets/index-BrAeORCk.js",
+        "assets/RequestFeedback-CkKpk4Ck.js",
+        "assets/vendor-supabase-11GpYcmB.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/_app.my.index.tsx?tsr-split=component",
+          "renderedBytes": 3951
+        }
+      ]
+    },
+    {
+      "file": "assets/_app.mission.index-DMH3CED2.js",
+      "entry": false,
+      "bytes": 2465,
+      "gzipBytes": 1175,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/kocmax-BjDVPQyj.js",
+        "assets/FilterPills-Cq5XQm-3.js",
+        "assets/MissionCard-DMV0fSVP.js",
+        "assets/SkeletonCard-BSX-vjlV.js",
+        "assets/RequestFeedback-CkKpk4Ck.js",
+        "assets/index-BrAeORCk.js",
+        "assets/labels-BcklBINW.js",
+        "assets/missionCategories-MHK3H4Ea.js",
+        "assets/BadgePill-q8bMT7Ny.js",
+        "assets/creatorFormatting-Dc2jDNrC.js",
+        "assets/star-oOX7kJdx.js",
+        "assets/createLucideIcon-CBho2xym.js",
+        "assets/clock-Bc0_sPHp.js",
+        "assets/vendor-supabase-11GpYcmB.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/_app.mission.index.tsx?tsr-split=component",
+          "renderedBytes": 3111
+        }
+      ]
+    },
+    {
+      "file": "assets/_app.guide.index-DYy-qFaw.js",
+      "entry": false,
+      "bytes": 5885,
+      "gzipBytes": 1771,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/kocmax-BjDVPQyj.js",
+        "assets/index-BrAeORCk.js",
+        "assets/academy-CQgzGtz3.js",
+        "assets/guideProgress-IEKoFpFD.js",
+        "assets/vendor-supabase-11GpYcmB.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/_app.guide.index.tsx?tsr-split=component",
+          "renderedBytes": 2833
+        },
+        {
+          "id": "./src/components/AcademyTrackCard.tsx",
+          "renderedBytes": 2667
+        },
+        {
+          "id": "./src/components/PlaybookCard.tsx",
+          "renderedBytes": 1903
+        },
+        {
+          "id": "./src/components/GuideDocList.tsx",
+          "renderedBytes": 1800
+        }
+      ]
+    },
+    {
+      "file": "assets/guideProgress-IEKoFpFD.js",
+      "entry": false,
+      "bytes": 305,
+      "gzipBytes": 212,
+      "imports": [],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/lib/guideProgress.ts",
+          "renderedBytes": 520
+        }
+      ]
+    },
+    {
+      "file": "assets/_app.campaigns.index-De3N6kHy.js",
+      "entry": false,
+      "bytes": 1450,
+      "gzipBytes": 687,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/kocmax-BjDVPQyj.js",
+        "assets/index-BrAeORCk.js",
+        "assets/vendor-supabase-11GpYcmB.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/_app.campaigns.index.tsx?tsr-split=component",
+          "renderedBytes": 2120
+        }
+      ]
+    },
+    {
+      "file": "assets/operator.missions._missionId-CPKqjWb1.js",
+      "entry": false,
+      "bytes": 6282,
+      "gzipBytes": 1921,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/index-BrAeORCk.js",
+        "assets/OperatorBadges-dbQDHp0S.js",
+        "assets/CreatorReviewRow-B7L-Y3xy.js",
+        "assets/send-C6CChZAv.js",
+        "assets/x-BLMitoeA.js",
+        "assets/arrow-left-trMRWUti.js",
+        "assets/vendor-supabase-11GpYcmB.js",
+        "assets/ReviewActionPanel-D7eTm6uG.js",
+        "assets/RequestFeedback-CkKpk4Ck.js",
+        "assets/check-BR5yPA8h.js",
+        "assets/createLucideIcon-CBho2xym.js",
+        "assets/user-round-Cxtj5bFU.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/operator.missions.$missionId.tsx?tsr-split=component",
+          "renderedBytes": 5493
+        },
+        {
+          "id": "./src/components/operator/MissionShortlistPanel.tsx",
+          "renderedBytes": 4175
+        }
+      ]
+    },
+    {
+      "file": "assets/arrow-left-trMRWUti.js",
+      "entry": false,
+      "bytes": 177,
+      "gzipBytes": 170,
+      "imports": [
+        "assets/createLucideIcon-CBho2xym.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/arrow-left.mjs",
+          "renderedBytes": 356
+        }
+      ]
+    },
+    {
+      "file": "assets/operator.creators._creatorId-DsnQAEnn.js",
+      "entry": false,
+      "bytes": 15325,
+      "gzipBytes": 3694,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/RequestFeedback-CkKpk4Ck.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/index-BrAeORCk.js",
+        "assets/OperatorBadges-dbQDHp0S.js",
+        "assets/ReviewActionPanel-D7eTm6uG.js",
+        "assets/arrow-left-trMRWUti.js",
+        "assets/user-round-Cxtj5bFU.js",
+        "assets/shield-check-CHGW7O3o.js",
+        "assets/calendar-clock-BGKffnOt.js",
+        "assets/createLucideIcon-CBho2xym.js",
+        "assets/vendor-supabase-11GpYcmB.js",
+        "assets/check-BR5yPA8h.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/operator.creators.$creatorId.tsx?tsr-split=component",
+          "renderedBytes": 24623
+        },
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/notebook-pen.mjs",
+          "renderedBytes": 733
+        }
+      ]
+    },
+    {
+      "file": "assets/shield-check-CHGW7O3o.js",
+      "entry": false,
+      "bytes": 327,
+      "gzipBytes": 255,
+      "imports": [
+        "assets/createLucideIcon-CBho2xym.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/shield-check.mjs",
+          "renderedBytes": 541
+        }
+      ]
+    },
+    {
+      "file": "assets/calendar-clock-BGKffnOt.js",
+      "entry": false,
+      "bytes": 385,
+      "gzipBytes": 257,
+      "imports": [
+        "assets/createLucideIcon-CBho2xym.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/calendar-clock.mjs",
+          "renderedBytes": 613
+        }
+      ]
+    },
+    {
+      "file": "assets/brand_.auth.callback-IMK7wGlB.js",
+      "entry": false,
+      "bytes": 1770,
+      "gzipBytes": 748,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/index-BrAeORCk.js",
+        "assets/brand-CJ8qnXfa.js",
+        "assets/vendor-supabase-11GpYcmB.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/brand_.auth.callback.tsx?tsr-split=component",
+          "renderedBytes": 2462
+        }
+      ]
+    },
+    {
+      "file": "assets/brand.resources._slug-CnNcrwoZ.js",
+      "entry": false,
+      "bytes": 1117,
+      "gzipBytes": 611,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/brand-CJ8qnXfa.js",
+        "assets/BrandAuthContext-CC7i0XLz.js",
+        "assets/Markdown-BXqv8Sn6.js",
+        "assets/index-BrAeORCk.js",
+        "assets/vendor-supabase-11GpYcmB.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/brand.resources.$slug.tsx?tsr-split=component",
+          "renderedBytes": 1335
+        }
+      ]
+    },
+    {
+      "file": "assets/Markdown-BXqv8Sn6.js",
+      "entry": false,
+      "bytes": 162491,
+      "gzipBytes": 49475,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./node_modules/mdast-util-from-markdown/lib/index.js",
+          "renderedBytes": 28483
+        },
+        {
+          "id": "./node_modules/unified/lib/index.js",
+          "renderedBytes": 28478
+        },
+        {
+          "id": "./node_modules/micromark-extension-gfm-table/lib/syntax.js",
+          "renderedBytes": 20254
+        },
+        {
+          "id": "./node_modules/micromark-extension-gfm-autolink-literal/lib/syntax.js",
+          "renderedBytes": 20077
+        },
+        {
+          "id": "./node_modules/hast-util-to-jsx-runtime/lib/index.js",
+          "renderedBytes": 19383
+        },
+        {
+          "id": "./node_modules/micromark-core-commonmark/lib/html-flow.js",
+          "renderedBytes": 18358
+        },
+        {
+          "id": "./node_modules/vfile/lib/index.js",
+          "renderedBytes": 16722
+        },
+        {
+          "id": "./node_modules/micromark/lib/create-tokenizer.js",
+          "renderedBytes": 14257
+        },
+        {
+          "id": "./node_modules/property-information/lib/svg.js",
+          "renderedBytes": 14162
+        },
+        {
+          "id": "./node_modules/micromark-core-commonmark/lib/html-text.js",
+          "renderedBytes": 13153
+        },
+        {
+          "id": "./node_modules/hast-util-sanitize/lib/index.js",
+          "renderedBytes": 12729
+        },
+        {
+          "id": "./node_modules/micromark-extension-gfm-footnote/lib/syntax.js",
+          "renderedBytes": 12142
+        },
+        {
+          "id": "./node_modules/micromark-core-commonmark/lib/label-end.js",
+          "renderedBytes": 12126
+        },
+        {
+          "id": "./node_modules/vfile/lib/minpath.browser.js",
+          "renderedBytes": 11469
+        },
+        {
+          "id": "./node_modules/micromark/lib/initialize/document.js",
+          "renderedBytes": 10554
+        },
+        {
+          "id": "./node_modules/markdown-table/index.js",
+          "renderedBytes": 10238
+        },
+        {
+          "id": "./node_modules/micromark-core-commonmark/lib/code-fenced.js",
+          "renderedBytes": 9140
+        },
+        {
+          "id": "./node_modules/property-information/lib/html.js",
+          "renderedBytes": 8676
+        },
+        {
+          "id": "./node_modules/mdast-util-to-hast/lib/state.js",
+          "renderedBytes": 8255
+        },
+        {
+          "id": "./node_modules/micromark-util-subtokenize/lib/splice-buffer.js",
+          "renderedBytes": 7610
+        },
+        {
+          "id": "./node_modules/vfile-message/lib/index.js",
+          "renderedBytes": 7482
+        },
+        {
+          "id": "./node_modules/mdast-util-gfm-table/lib/index.js",
+          "renderedBytes": 7475
+        },
+        {
+          "id": "./node_modules/react-markdown/lib/index.js",
+          "renderedBytes": 7218
+        },
+        {
+          "id": "./node_modules/micromark-util-character/index.js",
+          "renderedBytes": 6984
+        },
+        {
+          "id": "./node_modules/micromark-core-commonmark/lib/attention.js",
+          "renderedBytes": 6976
+        },
+        {
+          "id": "./node_modules/micromark-util-subtokenize/index.js",
+          "renderedBytes": 6607
+        },
+        {
+          "id": "./node_modules/mdast-util-gfm-autolink-literal/lib/index.js",
+          "renderedBytes": 6516
+        },
+        {
+          "id": "./node_modules/micromark-core-commonmark/lib/list.js",
+          "renderedBytes": 6024
+        },
+        {
+          "id": "./node_modules/micromark/lib/initialize/text.js",
+          "renderedBytes": 5516
+        },
+        {
+          "id": "./node_modules/inline-style-parser/cjs/index.js",
+          "renderedBytes": 5403
+        },
+        {
+          "id": "./node_modules/micromark-extension-gfm-table/lib/edit-map.js",
+          "renderedBytes": 5273
+        },
+        {
+          "id": "./node_modules/mdast-util-to-hast/lib/footer.js",
+          "renderedBytes": 5245
+        },
+        {
+          "id": "./node_modules/micromark-core-commonmark/lib/definition.js",
+          "renderedBytes": 5154
+        },
+        {
+          "id": "./node_modules/mdast-util-gfm-footnote/lib/index.js",
+          "renderedBytes": 5022
+        },
+        {
+          "id": "./node_modules/trough/lib/index.js",
+          "renderedBytes": 5005
+        },
+        {
+          "id": "./node_modules/mdast-util-find-and-replace/lib/index.js",
+          "renderedBytes": 4815
+        },
+        {
+          "id": "./node_modules/remark-rehype/lib/index.js",
+          "renderedBytes": 4786
+        },
+        {
+          "id": "./node_modules/micromark-core-commonmark/lib/code-text.js",
+          "renderedBytes": 4755
+        },
+        {
+          "id": "./node_modules/hast-util-sanitize/lib/schema.js",
+          "renderedBytes": 4741
+        },
+        {
+          "id": "./node_modules/unist-util-visit-parents/lib/index.js",
+          "renderedBytes": 4727
+        },
+        {
+          "id": "./node_modules/micromark-core-commonmark/lib/autolink.js",
+          "renderedBytes": 4710
+        },
+        {
+          "id": "./node_modules/micromark-extension-gfm-strikethrough/lib/syntax.js",
+          "renderedBytes": 4579
+        },
+        {
+          "id": "./node_modules/unist-util-is/lib/index.js",
+          "renderedBytes": 4524
+        },
+        {
+          "id": "./node_modules/@ungap/structured-clone/esm/serialize.js",
+          "renderedBytes": 4299
+        },
+        {
+          "id": "./node_modules/micromark-factory-destination/index.js",
+          "renderedBytes": 4285
+        },
+        {
+          "id": "./node_modules/micromark-core-commonmark/lib/heading-atx.js",
+          "renderedBytes": 4165
+        },
+        {
+          "id": "./node_modules/micromark-core-commonmark/lib/setext-underline.js",
+          "renderedBytes": 4131
+        },
+        {
+          "id": "./node_modules/micromark-core-commonmark/lib/code-indented.js",
+          "renderedBytes": 3893
+        },
+        {
+          "id": "./node_modules/mdast-util-gfm-task-list-item/lib/index.js",
+          "renderedBytes": 3645
+        },
+        {
+          "id": "./node_modules/extend/index.js",
+          "renderedBytes": 3550
+        },
+        {
+          "id": "./node_modules/micromark-extension-gfm-task-list-item/lib/syntax.js",
+          "renderedBytes": 3391
+        },
+        {
+          "id": "./node_modules/mdast-util-to-hast/lib/index.js",
+          "renderedBytes": 3344
+        },
+        {
+          "id": "./node_modules/mdast-util-to-markdown/lib/util/encode-info.js",
+          "renderedBytes": 3142
+        },
+        {
+          "id": "./node_modules/micromark-core-commonmark/lib/character-reference.js",
+          "renderedBytes": 3122
+        },
+        {
+          "id": "./node_modules/micromark-factory-label/index.js",
+          "renderedBytes": 3119
+        },
+        {
+          "id": "./node_modules/micromark-core-commonmark/lib/content.js",
+          "renderedBytes": 3104
+        },
+        {
+          "id": "./node_modules/micromark/lib/preprocess.js",
+          "renderedBytes": 3056
+        },
+        {
+          "id": "./node_modules/micromark-factory-title/index.js",
+          "renderedBytes": 2935
+        },
+        {
+          "id": "./node_modules/mdast-util-to-hast/lib/handlers/list-item.js",
+          "renderedBytes": 2908
+        },
+        {
+          "id": "./node_modules/mdast-util-to-markdown/lib/handle/list.js",
+          "renderedBytes": 2731
+        },
+        {
+          "id": "./node_modules/unist-util-visit/lib/index.js",
+          "renderedBytes": 2699
+        },
+        {
+          "id": "./node_modules/mdast-util-gfm-strikethrough/lib/index.js",
+          "renderedBytes": 2656
+        },
+        {
+          "id": "./node_modules/micromark-core-commonmark/lib/block-quote.js",
+          "renderedBytes": 2620
+        },
+        {
+          "id": "./node_modules/mdast-util-to-string/lib/index.js",
+          "renderedBytes": 2618
+        },
+        {
+          "id": "./node_modules/mdast-util-to-markdown/lib/handle/link.js",
+          "renderedBytes": 2559
+        },
+        {
+          "id": "./node_modules/@ungap/structured-clone/esm/deserialize.js",
+          "renderedBytes": 2325
+        },
+        {
+          "id": "./node_modules/micromark-util-chunked/index.js",
+          "renderedBytes": 2314
+        },
+        {
+          "id": "./node_modules/property-information/lib/find.js",
+          "renderedBytes": 2227
+        },
+        {
+          "id": "./node_modules/mdast-util-to-markdown/lib/handle/inline-code.js",
+          "renderedBytes": 2146
+        },
+        {
+          "id": "./node_modules/unist-util-stringify-position/lib/index.js",
+          "renderedBytes": 2123
+        },
+        {
+          "id": "./node_modules/micromark-util-combine-extensions/index.js",
+          "renderedBytes": 2070
+        },
+        {
+          "id": "./node_modules/unist-util-position/lib/index.js",
+          "renderedBytes": 1915
+        },
+        {
+          "id": "./node_modules/micromark-core-commonmark/lib/label-start-image.js",
+          "renderedBytes": 1893
+        },
+        {
+          "id": "./node_modules/mdast-util-to-markdown/lib/handle/heading.js",
+          "renderedBytes": 1881
+        },
+        {
+          "id": "./node_modules/mdast-util-to-markdown/lib/handle/image.js",
+          "renderedBytes": 1815
+        },
+        {
+          "id": "./node_modules/vfile/lib/minurl.browser.js",
+          "renderedBytes": 1783
+        },
+        {
+          "id": "./node_modules/micromark-core-commonmark/lib/thematic-break.js",
+          "renderedBytes": 1734
+        },
+        {
+          "id": "./node_modules/mdast-util-to-markdown/lib/handle/definition.js",
+          "renderedBytes": 1721
+        },
+        {
+          "id": "./node_modules/mdast-util-to-hast/lib/handlers/table-row.js",
+          "renderedBytes": 1690
+        },
+        {
+          "id": "./node_modules/style-to-js/cjs/utilities.js",
+          "renderedBytes": 1663
+        },
+        {
+          "id": "./node_modules/mdast-util-to-markdown/lib/handle/link-reference.js",
+          "renderedBytes": 1655
+        },
+        {
+          "id": "./node_modules/micromark-util-html-tag-name/index.js",
+          "renderedBytes": 1653
+        },
+        {
+          "id": "./node_modules/mdast-util-to-markdown/lib/handle/image-reference.js",
+          "renderedBytes": 1650
+        },
+        {
+          "id": "./node_modules/mdast-util-to-hast/lib/handlers/footnote-reference.js",
+          "renderedBytes": 1624
+        },
+        {
+          "id": "./node_modules/mdast-util-to-markdown/lib/handle/code.js",
+          "renderedBytes": 1605
+        },
+        {
+          "id": "./node_modules/micromark/lib/initialize/content.js",
+          "renderedBytes": 1597
+        },
+        {
+          "id": "./node_modules/micromark/lib/constructs.js",
+          "renderedBytes": 1568
+        },
+        {
+          "id": "./node_modules/trim-lines/index.js",
+          "renderedBytes": 1541
+        },
+        {
+          "id": "./node_modules/property-information/lib/aria.js",
+          "renderedBytes": 1531
+        },
+        {
+          "id": "./node_modules/micromark-util-sanitize-uri/index.js",
+          "renderedBytes": 1528
+        },
+        {
+          "id": "./node_modules/micromark-extension-gfm-table/lib/infer.js",
+          "renderedBytes": 1504
+        },
+        {
+          "id": "./node_modules/mdast-util-to-markdown/lib/handle/list-item.js",
+          "renderedBytes": 1495
+        },
+        {
+          "id": "./node_modules/mdast-util-to-markdown/lib/handle/emphasis.js",
+          "renderedBytes": 1493
+        },
+        {
+          "id": "./node_modules/mdast-util-to-markdown/lib/handle/strong.js",
+          "renderedBytes": 1491
+        },
+        {
+          "id": "./node_modules/style-to-object/cjs/index.js",
+          "renderedBytes": 1468
+        },
+        {
+          "id": "./node_modules/micromark-factory-space/index.js",
+          "renderedBytes": 1431
+        },
+        {
+          "id": "./node_modules/unified/lib/callable-instance.js",
+          "renderedBytes": 1400
+        },
+        {
+          "id": "./node_modules/mdast-util-gfm/lib/index.js",
+          "renderedBytes": 1387
+        },
+        {
+          "id": "./node_modules/mdast-util-to-hast/lib/handlers/table.js",
+          "renderedBytes": 1321
+        },
+        {
+          "id": "./node_modules/micromark/lib/initialize/flow.js",
+          "renderedBytes": 1319
+        },
+        {
+          "id": "./node_modules/micromark-util-normalize-identifier/index.js",
+          "renderedBytes": 1230
+        },
+        {
+          "id": "./node_modules/mdast-util-to-hast/lib/handlers/list.js",
+          "renderedBytes": 1192
+        },
+        {
+          "id": "./node_modules/remark-gfm/lib/index.js",
+          "renderedBytes": 1165
+        },
+        {
+          "id": "./node_modules/mdast-util-to-hast/lib/revert.js",
+          "renderedBytes": 1141
+        },
+        {
+          "id": "./node_modules/mdast-util-to-hast/lib/handlers/code.js",
+          "renderedBytes": 1133
+        },
+        {
+          "id": "./node_modules/property-information/lib/util/defined-info.js",
+          "renderedBytes": 1131
+        },
+        {
+          "id": "./node_modules/micromark-core-commonmark/lib/character-escape.js",
+          "renderedBytes": 1105
+        },
+        {
+          "id": "./node_modules/vfile/lib/minurl.shared.js",
+          "renderedBytes": 1077
+        },
+        {
+          "id": "./node_modules/micromark-core-commonmark/lib/label-start-link.js",
+          "renderedBytes": 1064
+        },
+        {
+          "id": "./node_modules/micromark-factory-whitespace/index.js",
+          "renderedBytes": 1062
+        },
+        {
+          "id": "./node_modules/micromark-util-decode-string/index.js",
+          "renderedBytes": 1056
+        },
+        {
+          "id": "./node_modules/micromark-util-decode-numeric-character-reference/index.js",
+          "renderedBytes": 1054
+        },
+        {
+          "id": "./node_modules/micromark/lib/parse.js",
+          "renderedBytes": 1054
+        },
+        {
+          "id": "./node_modules/remark-parse/lib/index.js",
+          "renderedBytes": 1041
+        },
+        {
+          "id": "./node_modules/decode-named-character-reference/index.dom.js",
+          "renderedBytes": 1038
+        },
+        {
+          "id": "./node_modules/mdast-util-phrasing/lib/index.js",
+          "renderedBytes": 1025
+        },
+        {
+          "id": "./node_modules/micromark-core-commonmark/lib/blank-line.js",
+          "renderedBytes": 1000
+        },
+        {
+          "id": "./node_modules/mdast-util-to-hast/lib/handlers/link-reference.js",
+          "renderedBytes": 988
+        },
+        {
+          "id": "./node_modules/mdast-util-to-hast/lib/handlers/image-reference.js",
+          "renderedBytes": 975
+        },
+        {
+          "id": "./node_modules/mdast-util-to-markdown/lib/util/format-link-as-autolink.js",
+          "renderedBytes": 931
+        },
+        {
+          "id": "./node_modules/micromark-core-commonmark/lib/hard-break-escape.js",
+          "renderedBytes": 914
+        },
+        {
+          "id": "./node_modules/property-information/lib/util/create.js",
+          "renderedBytes": 894
+        },
+        {
+          "id": "./node_modules/hast-util-whitespace/lib/index.js",
+          "renderedBytes": 884
+        },
+        {
+          "id": "./node_modules/mdast-util-to-hast/lib/handlers/index.js",
+          "renderedBytes": 883
+        },
+        {
+          "id": "./node_modules/style-to-js/cjs/index.js",
+          "renderedBytes": 878
+        },
+        {
+          "id": "./node_modules/property-information/lib/hast-to-react.js",
+          "renderedBytes": 852
+        },
+        {
+          "id": "./node_modules/comma-separated-tokens/index.js",
+          "renderedBytes": 831
+        },
+        {
+          "id": "./node_modules/longest-streak/index.js",
+          "renderedBytes": 824
+        },
+        {
+          "id": "./node_modules/micromark-extension-gfm/index.js",
+          "renderedBytes": 805
+        },
+        {
+          "id": "./node_modules/mdast-util-to-markdown/lib/util/check-bullet-other.js",
+          "renderedBytes": 801
+        },
+        {
+          "id": "./node_modules/micromark-util-resolve-all/index.js",
+          "renderedBytes": 781
+        },
+        {
+          "id": "./node_modules/property-information/lib/util/info.js",
+          "renderedBytes": 775
+        },
+        {
+          "id": "./node_modules/mdast-util-to-hast/lib/handlers/image.js",
+          "renderedBytes": 775
+        },
+        {
+          "id": "./node_modules/mdast-util-to-markdown/lib/util/pattern-in-scope.js",
+          "renderedBytes": 765
+        },
+        {
+          "id": "./node_modules/estree-util-is-identifier-name/lib/index.js",
+          "renderedBytes": 756
+        },
+        {
+          "id": "./node_modules/mdast-util-to-hast/lib/handlers/link.js",
+          "renderedBytes": 714
+        },
+        {
+          "id": "./node_modules/@ungap/structured-clone/esm/index.js",
+          "renderedBytes": 697
+        },
+        {
+          "id": "./node_modules/micromark-util-classify-character/index.js",
+          "renderedBytes": 685
+        },
+        {
+          "id": "./node_modules/mdast-util-to-hast/lib/handlers/table-cell.js",
+          "renderedBytes": 679
+        },
+        {
+          "id": "./node_modules/mdast-util-to-hast/lib/handlers/inline-code.js",
+          "renderedBytes": 676
+        },
+        {
+          "id": "./node_modules/mdast-util-to-markdown/lib/util/format-heading-as-setext.js",
+          "renderedBytes": 652
+        },
+        {
+          "id": "./node_modules/mdast-util-to-markdown/lib/handle/blockquote.js",
+          "renderedBytes": 647
+        },
+        {
+          "id": "./node_modules/mdast-util-to-hast/lib/handlers/html.js",
+          "renderedBytes": 644
+        },
+        {
+          "id": "./node_modules/mdast-util-to-markdown/lib/handle/break.js",
+          "renderedBytes": 637
+        },
+        {
+          "id": "./node_modules/html-url-attributes/lib/index.js",
+          "renderedBytes": 630
+        },
+        {
+          "id": "./node_modules/ccount/index.js",
+          "renderedBytes": 616
+        },
+        {
+          "id": "./node_modules/property-information/lib/util/schema.js",
+          "renderedBytes": 585
+        },
+        {
+          "id": "./node_modules/mdast-util-to-hast/lib/handlers/blockquote.js",
+          "renderedBytes": 577
+        },
+        {
+          "id": "./node_modules/property-information/lib/util/merge.js",
+          "renderedBytes": 568
+        },
+        {
+          "id": "./node_modules/mdast-util-to-hast/lib/handlers/break.js",
+          "renderedBytes": 564
+        },
+        {
+          "id": "./node_modules/mdast-util-to-hast/lib/handlers/text.js",
+          "renderedBytes": 552
+        },
+        {
+          "id": "./node_modules/mdast-util-to-hast/lib/handlers/heading.js",
+          "renderedBytes": 551
+        },
+        {
+          "id": "./node_modules/micromark-core-commonmark/lib/line-ending.js",
+          "renderedBytes": 550
+        },
+        {
+          "id": "./node_modules/mdast-util-to-hast/lib/handlers/thematic-break.js",
+          "renderedBytes": 550
+        },
+        {
+          "id": "./node_modules/mdast-util-to-markdown/lib/util/format-code-as-indented.js",
+          "renderedBytes": 548
+        },
+        {
+          "id": "./node_modules/mdast-util-to-hast/lib/handlers/paragraph.js",
+          "renderedBytes": 546
+        },
+        {
+          "id": "./node_modules/mdast-util-to-hast/lib/handlers/emphasis.js",
+          "renderedBytes": 543
+        },
+        {
+          "id": "./node_modules/mdast-util-to-hast/lib/handlers/delete.js",
+          "renderedBytes": 541
+        },
+        {
+          "id": "./node_modules/mdast-util-to-hast/lib/handlers/root.js",
+          "renderedBytes": 541
+        },
+        {
+          "id": "./node_modules/mdast-util-to-hast/lib/handlers/strong.js",
+          "renderedBytes": 539
+        },
+        {
+          "id": "./node_modules/mdast-util-to-markdown/lib/handle/root.js",
+          "renderedBytes": 524
+        },
+        {
+          "id": "./node_modules/rehype-sanitize/lib/index.js",
+          "renderedBytes": 515
+        },
+        {
+          "id": "./node_modules/mdast-util-to-markdown/lib/util/check-list-item-indent.js",
+          "renderedBytes": 505
+        },
+        {
+          "id": "./node_modules/mdast-util-to-markdown/lib/util/check-rule-repetition.js",
+          "renderedBytes": 473
+        },
+        {
+          "id": "./node_modules/mdast-util-to-markdown/lib/util/check-bullet-ordered.js",
+          "renderedBytes": 465
+        },
+        {
+          "id": "./node_modules/mdast-util-to-markdown/lib/handle/paragraph.js",
+          "renderedBytes": 464
+        },
+        {
+          "id": "./node_modules/mdast-util-to-markdown/lib/util/check-bullet.js",
+          "renderedBytes": 461
+        },
+        {
+          "id": "./node_modules/mdast-util-to-markdown/lib/util/check-rule.js",
+          "renderedBytes": 453
+        },
+        {
+          "id": "./src/components/Markdown.tsx",
+          "renderedBytes": 450
+        },
+        {
+          "id": "./node_modules/mdast-util-find-and-replace/node_modules/escape-string-regexp/index.js",
+          "renderedBytes": 449
+        },
+        {
+          "id": "./node_modules/mdast-util-to-markdown/lib/util/check-emphasis.js",
+          "renderedBytes": 449
+        },
+        {
+          "id": "./node_modules/mdast-util-to-markdown/lib/handle/thematic-break.js",
+          "renderedBytes": 447
+        },
+        {
+          "id": "./node_modules/mdast-util-to-markdown/lib/util/check-strong.js",
+          "renderedBytes": 439
+        },
+        {
+          "id": "./node_modules/mdast-util-to-markdown/lib/util/check-fence.js",
+          "renderedBytes": 436
+        },
+        {
+          "id": "./node_modules/mdast-util-to-markdown/lib/util/check-quote.js",
+          "renderedBytes": 435
+        },
+        {
+          "id": "./node_modules/space-separated-tokens/index.js",
+          "renderedBytes": 416
+        },
+        {
+          "id": "./node_modules/is-plain-obj/index.js",
+          "renderedBytes": 328
+        },
+        {
+          "id": "./node_modules/property-information/lib/normalize.js",
+          "renderedBytes": 320
+        },
+        {
+          "id": "./node_modules/mdast-util-to-markdown/lib/handle/index.js",
+          "renderedBytes": 318
+        },
+        {
+          "id": "./node_modules/mdast-util-to-markdown/lib/handle/text.js",
+          "renderedBytes": 314
+        },
+        {
+          "id": "./node_modules/property-information/lib/util/types.js",
+          "renderedBytes": 308
+        },
+        {
+          "id": "./node_modules/property-information/lib/xlink.js",
+          "renderedBytes": 303
+        },
+        {
+          "id": "./node_modules/property-information/lib/util/case-sensitive-transform.js",
+          "renderedBytes": 292
+        },
+        {
+          "id": "./node_modules/property-information/lib/util/case-insensitive-transform.js",
+          "renderedBytes": 289
+        },
+        {
+          "id": "./node_modules/mdast-util-to-markdown/lib/util/encode-character-reference.js",
+          "renderedBytes": 264
+        },
+        {
+          "id": "./node_modules/micromark/lib/postprocess.js",
+          "renderedBytes": 249
+        },
+        {
+          "id": "./node_modules/@ungap/structured-clone/esm/types.js",
+          "renderedBytes": 248
+        },
+        {
+          "id": "./node_modules/mdast-util-to-markdown/lib/handle/html.js",
+          "renderedBytes": 230
+        },
+        {
+          "id": "./node_modules/vfile/lib/minproc.browser.js",
+          "renderedBytes": 218
+        },
+        {
+          "id": "./node_modules/bail/index.js",
+          "renderedBytes": 199
+        },
+        {
+          "id": "./node_modules/property-information/lib/xml.js",
+          "renderedBytes": 185
+        },
+        {
+          "id": "./node_modules/property-information/lib/xmlns.js",
+          "renderedBytes": 172
+        },
+        {
+          "id": "./node_modules/property-information/index.js",
+          "renderedBytes": 172
+        },
+        {
+          "id": "\u0000./node_modules/extend/index.js?commonjs-es-import",
+          "renderedBytes": 104
+        },
+        {
+          "id": "\u0000./node_modules/style-to-js/cjs/index.js?commonjs-es-import",
+          "renderedBytes": 98
+        },
+        {
+          "id": "./node_modules/unist-util-visit-parents/lib/color.js",
+          "renderedBytes": 82
+        },
+        {
+          "id": "./node_modules/devlop/lib/default.js",
+          "renderedBytes": 45
+        },
+        {
+          "id": "\u0000./node_modules/style-to-js/cjs/utilities.js?commonjs-exports",
+          "renderedBytes": 19
+        },
+        {
+          "id": "\u0000./node_modules/style-to-object/cjs/index.js?commonjs-exports",
+          "renderedBytes": 15
+        }
+      ]
+    },
+    {
+      "file": "assets/brand.missions.new-Czs8l4iV.js",
+      "entry": false,
+      "bytes": 792,
+      "gzipBytes": 469,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/MissionEditor-CNVzkP8X.js",
+        "assets/BrandAuthContext-CC7i0XLz.js",
+        "assets/brand-CJ8qnXfa.js",
+        "assets/missionCategories-MHK3H4Ea.js",
+        "assets/index-BrAeORCk.js",
+        "assets/vendor-supabase-11GpYcmB.js",
+        "assets/MissionFacts-06RGfGV2.js",
+        "assets/creatorFormatting-Dc2jDNrC.js",
+        "assets/star-oOX7kJdx.js",
+        "assets/createLucideIcon-CBho2xym.js",
+        "assets/users-BZDofVX3.js",
+        "assets/clock-Bc0_sPHp.js",
+        "assets/shield-check-CHGW7O3o.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/brand.missions.new.tsx?tsr-split=component",
+          "renderedBytes": 413
+        }
+      ]
+    },
+    {
+      "file": "assets/MissionEditor-CNVzkP8X.js",
+      "entry": false,
+      "bytes": 33389,
+      "gzipBytes": 7741,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/missionCategories-MHK3H4Ea.js",
+        "assets/index-BrAeORCk.js",
+        "assets/MissionFacts-06RGfGV2.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/components/admin/MissionEditor.tsx",
+          "renderedBytes": 45261
+        },
+        {
+          "id": "./src/lib/missionWorkflowAuthoring.ts",
+          "renderedBytes": 7043
+        },
+        {
+          "id": "./src/components/admin/ProofPolicyFields.tsx",
+          "renderedBytes": 2709
+        },
+        {
+          "id": "./src/components/admin/ArrayInput.tsx",
+          "renderedBytes": 1516
+        },
+        {
+          "id": "./src/components/admin/PlatformPicker.tsx",
+          "renderedBytes": 1093
+        }
+      ]
+    },
+    {
+      "file": "assets/MissionFacts-06RGfGV2.js",
+      "entry": false,
+      "bytes": 4225,
+      "gzipBytes": 1380,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/index-BrAeORCk.js",
+        "assets/creatorFormatting-Dc2jDNrC.js",
+        "assets/star-oOX7kJdx.js",
+        "assets/users-BZDofVX3.js",
+        "assets/clock-Bc0_sPHp.js",
+        "assets/shield-check-CHGW7O3o.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/components/MissionBrief.tsx",
+          "renderedBytes": 4703
+        },
+        {
+          "id": "./src/components/MissionFacts.tsx",
+          "renderedBytes": 2196
+        }
+      ]
+    },
+    {
+      "file": "assets/brand.missions._missionId-X5qtPak4.js",
+      "entry": false,
+      "bytes": 1162,
+      "gzipBytes": 706,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/MissionEditor-CNVzkP8X.js",
+        "assets/BrandAuthContext-CC7i0XLz.js",
+        "assets/brand-CJ8qnXfa.js",
+        "assets/index-BrAeORCk.js",
+        "assets/missionCategories-MHK3H4Ea.js",
+        "assets/MissionFacts-06RGfGV2.js",
+        "assets/creatorFormatting-Dc2jDNrC.js",
+        "assets/star-oOX7kJdx.js",
+        "assets/createLucideIcon-CBho2xym.js",
+        "assets/users-BZDofVX3.js",
+        "assets/clock-Bc0_sPHp.js",
+        "assets/shield-check-CHGW7O3o.js",
+        "assets/vendor-supabase-11GpYcmB.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/brand.missions.$missionId.tsx?tsr-split=component",
+          "renderedBytes": 969
+        }
+      ]
+    },
+    {
+      "file": "assets/admin.missions.new-BKgB0zTT.js",
+      "entry": false,
+      "bytes": 1259,
+      "gzipBytes": 787,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/index-BrAeORCk.js",
+        "assets/MissionEditor-CNVzkP8X.js",
+        "assets/useMissionEditorNavigation-Rgbmc2v_.js",
+        "assets/vendor-supabase-11GpYcmB.js",
+        "assets/missionCategories-MHK3H4Ea.js",
+        "assets/MissionFacts-06RGfGV2.js",
+        "assets/creatorFormatting-Dc2jDNrC.js",
+        "assets/star-oOX7kJdx.js",
+        "assets/createLucideIcon-CBho2xym.js",
+        "assets/users-BZDofVX3.js",
+        "assets/clock-Bc0_sPHp.js",
+        "assets/shield-check-CHGW7O3o.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/admin.missions.new.tsx?tsr-split=component",
+          "renderedBytes": 1243
+        }
+      ]
+    },
+    {
+      "file": "assets/useMissionEditorNavigation-Rgbmc2v_.js",
+      "entry": false,
+      "bytes": 498,
+      "gzipBytes": 331,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/index-BrAeORCk.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/components/admin/useMissionEditorNavigation.ts",
+          "renderedBytes": 667
+        }
+      ]
+    },
+    {
+      "file": "assets/admin.missions._missionId-CEEhu_b_.js",
+      "entry": false,
+      "bytes": 5282,
+      "gzipBytes": 1834,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/index-BrAeORCk.js",
+        "assets/MissionEditor-CNVzkP8X.js",
+        "assets/useMissionEditorNavigation-Rgbmc2v_.js",
+        "assets/vendor-supabase-11GpYcmB.js",
+        "assets/missionCategories-MHK3H4Ea.js",
+        "assets/MissionFacts-06RGfGV2.js",
+        "assets/creatorFormatting-Dc2jDNrC.js",
+        "assets/star-oOX7kJdx.js",
+        "assets/createLucideIcon-CBho2xym.js",
+        "assets/users-BZDofVX3.js",
+        "assets/clock-Bc0_sPHp.js",
+        "assets/shield-check-CHGW7O3o.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/components/admin/MissionManage.tsx",
+          "renderedBytes": 5009
+        },
+        {
+          "id": "./src/routes/admin.missions.$missionId.tsx?tsr-split=component",
+          "renderedBytes": 2789
+        }
+      ]
+    },
+    {
+      "file": "assets/admin.content._id-DtAEGuN9.js",
+      "entry": false,
+      "bytes": 5035,
+      "gzipBytes": 1648,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/Markdown-BXqv8Sn6.js",
+        "assets/index-BrAeORCk.js",
+        "assets/vendor-supabase-11GpYcmB.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/components/admin/ContentEditor.tsx",
+          "renderedBytes": 7745
+        },
+        {
+          "id": "./src/routes/admin.content.$id.tsx?tsr-split=component",
+          "renderedBytes": 168
+        }
+      ]
+    },
+    {
+      "file": "assets/admin.campaigns.new-BV_m8Pkg.js",
+      "entry": false,
+      "bytes": 5459,
+      "gzipBytes": 1790,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/index-BrAeORCk.js",
+        "assets/CampaignPrizeTiers-DTmjJe1p.js",
+        "assets/vendor-supabase-11GpYcmB.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/admin.campaigns.new.tsx?tsr-split=component",
+          "renderedBytes": 9719
+        }
+      ]
+    },
+    {
+      "file": "assets/CampaignPrizeTiers-DTmjJe1p.js",
+      "entry": false,
+      "bytes": 3553,
+      "gzipBytes": 1159,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/components/admin/CampaignPrizeTiers.tsx",
+          "renderedBytes": 5200
+        }
+      ]
+    },
+    {
+      "file": "assets/admin.campaigns._id-CyObSc4T.js",
+      "entry": false,
+      "bytes": 9266,
+      "gzipBytes": 2797,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/index-BrAeORCk.js",
+        "assets/CampaignPrizeTiers-DTmjJe1p.js",
+        "assets/vendor-supabase-11GpYcmB.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/admin.campaigns.$id.tsx?tsr-split=component",
+          "renderedBytes": 15606
+        }
+      ]
+    },
+    {
+      "file": "assets/admin.academy._id-wbZUsgSp.js",
+      "entry": false,
+      "bytes": 13876,
+      "gzipBytes": 4255,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/Markdown-BXqv8Sn6.js",
+        "assets/academyProgress-BrEE8CMM.js",
+        "assets/index-BrAeORCk.js",
+        "assets/academy-CQgzGtz3.js",
+        "assets/vendor-supabase-11GpYcmB.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/components/admin/AcademyEditor.tsx",
+          "renderedBytes": 14444
+        },
+        {
+          "id": "./src/components/admin/AcademyLessonsEditor.tsx",
+          "renderedBytes": 8262
+        },
+        {
+          "id": "./src/routes/admin.academy.$id.tsx?tsr-split=component",
+          "renderedBytes": 172
+        }
+      ]
+    },
+    {
+      "file": "assets/academyProgress-BrEE8CMM.js",
+      "entry": false,
+      "bytes": 814,
+      "gzipBytes": 397,
+      "imports": [
+        "assets/index-BrAeORCk.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/lib/academyProgress.ts",
+          "renderedBytes": 1175
+        }
+      ]
+    },
+    {
+      "file": "assets/_site.legal.terms-CsneDuxt.js",
+      "entry": false,
+      "bytes": 426,
+      "gzipBytes": 283,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/legalContent-CKR3Ka2J.js",
+        "assets/index-BrAeORCk.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/vendor-supabase-11GpYcmB.js",
+        "assets/calendar-clock-BGKffnOt.js",
+        "assets/createLucideIcon-CBho2xym.js",
+        "assets/shield-check-CHGW7O3o.js",
+        "assets/mail-C-BFs2Uy.js",
+        "assets/file-text-gwZ72UKa.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/_site.legal.terms.tsx?tsr-split=component",
+          "renderedBytes": 93
+        }
+      ]
+    },
+    {
+      "file": "assets/legalContent-CKR3Ka2J.js",
+      "entry": false,
+      "bytes": 9260,
+      "gzipBytes": 3860,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/index-BrAeORCk.js",
+        "assets/calendar-clock-BGKffnOt.js",
+        "assets/shield-check-CHGW7O3o.js",
+        "assets/mail-C-BFs2Uy.js",
+        "assets/file-text-gwZ72UKa.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/components/legal/LegalDoc.tsx",
+          "renderedBytes": 8456
+        },
+        {
+          "id": "./src/components/legal/legalContent.ts",
+          "renderedBytes": 3192
+        }
+      ]
+    },
+    {
+      "file": "assets/_site.legal.privacy-CHTd0qkA.js",
+      "entry": false,
+      "bytes": 426,
+      "gzipBytes": 284,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/legalContent-CKR3Ka2J.js",
+        "assets/index-BrAeORCk.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/vendor-supabase-11GpYcmB.js",
+        "assets/calendar-clock-BGKffnOt.js",
+        "assets/createLucideIcon-CBho2xym.js",
+        "assets/shield-check-CHGW7O3o.js",
+        "assets/mail-C-BFs2Uy.js",
+        "assets/file-text-gwZ72UKa.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/_site.legal.privacy.tsx?tsr-split=component",
+          "renderedBytes": 95
+        }
+      ]
+    },
+    {
+      "file": "assets/_app.redemption.history-BpA65Sbu.js",
+      "entry": false,
+      "bytes": 1723,
+      "gzipBytes": 729,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/kocmax-BjDVPQyj.js",
+        "assets/SkeletonCard-BSX-vjlV.js",
+        "assets/index-BrAeORCk.js",
+        "assets/vendor-supabase-11GpYcmB.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/_app.redemption.history.tsx?tsr-split=component",
+          "renderedBytes": 2253
+        }
+      ]
+    },
+    {
+      "file": "assets/_app.news._slug-Nv_CgQUK.js",
+      "entry": false,
+      "bytes": 1179,
+      "gzipBytes": 639,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/index-BrAeORCk.js",
+        "assets/Markdown-BXqv8Sn6.js",
+        "assets/vendor-supabase-11GpYcmB.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/_app.news.$slug.tsx?tsr-split=component",
+          "renderedBytes": 1568
+        }
+      ]
+    },
+    {
+      "file": "assets/_app.mission._missionSlug-OSFYkMej.js",
+      "entry": false,
+      "bytes": 11644,
+      "gzipBytes": 3722,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/RequestFeedback-CkKpk4Ck.js",
+        "assets/submissionEvidence-DXfCOMks.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/kocmax-BjDVPQyj.js",
+        "assets/BadgePill-q8bMT7Ny.js",
+        "assets/SkeletonCard-BSX-vjlV.js",
+        "assets/index-BrAeORCk.js",
+        "assets/MissionFacts-06RGfGV2.js",
+        "assets/creatorFormatting-Dc2jDNrC.js",
+        "assets/arrow-left-trMRWUti.js",
+        "assets/lightbulb-BF3M6YNx.js",
+        "assets/vendor-supabase-11GpYcmB.js",
+        "assets/star-oOX7kJdx.js",
+        "assets/createLucideIcon-CBho2xym.js",
+        "assets/users-BZDofVX3.js",
+        "assets/clock-Bc0_sPHp.js",
+        "assets/shield-check-CHGW7O3o.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/_app.mission.$missionSlug.tsx?tsr-split=component",
+          "renderedBytes": 11700
+        },
+        {
+          "id": "./src/components/HookPanel.tsx",
+          "renderedBytes": 3472
+        },
+        {
+          "id": "./src/components/MissionCommitmentSummary.tsx",
+          "renderedBytes": 2504
+        }
+      ]
+    },
+    {
+      "file": "assets/_app.campaigns._slug-DPw2nQnL.js",
+      "entry": false,
+      "bytes": 3383,
+      "gzipBytes": 1170,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/kocmax-BjDVPQyj.js",
+        "assets/index-BrAeORCk.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/vendor-supabase-11GpYcmB.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/_app.campaigns.$slug.tsx?tsr-split=component",
+          "renderedBytes": 5345
+        }
+      ]
+    },
+    {
+      "file": "assets/_app.auth.reset-password-Bba2yo6e.js",
+      "entry": false,
+      "bytes": 5033,
+      "gzipBytes": 1776,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/AuthFeedback-DlNasHEz.js",
+        "assets/index-BrAeORCk.js",
+        "assets/vendor-supabase-11GpYcmB.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/_app.auth.reset-password.tsx?tsr-split=component",
+          "renderedBytes": 8135
+        }
+      ]
+    },
+    {
+      "file": "assets/_app.auth.callback-Cy5XQpY0.js",
+      "entry": false,
+      "bytes": 3043,
+      "gzipBytes": 1373,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/AuthFeedback-DlNasHEz.js",
+        "assets/index-BrAeORCk.js",
+        "assets/vendor-supabase-11GpYcmB.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/_app.auth.callback.tsx?tsr-split=component",
+          "renderedBytes": 5012
+        }
+      ]
+    },
+    {
+      "file": "assets/_app.guide.track._trackId-DEOKn-ul.js",
+      "entry": false,
+      "bytes": 6508,
+      "gzipBytes": 2555,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/kocmax-BjDVPQyj.js",
+        "assets/academy-CQgzGtz3.js",
+        "assets/index-BrAeORCk.js",
+        "assets/Markdown-BXqv8Sn6.js",
+        "assets/academyProgress-BrEE8CMM.js",
+        "assets/arrow-left-trMRWUti.js",
+        "assets/createLucideIcon-CBho2xym.js",
+        "assets/vendor-supabase-11GpYcmB.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/_app.guide.track.$trackId.tsx?tsr-split=component",
+          "renderedBytes": 5300
+        },
+        {
+          "id": "./src/components/AcademyLearning.tsx",
+          "renderedBytes": 4193
+        },
+        {
+          "id": "./node_modules/lucide-react/dist/esm/icons/lock.mjs",
+          "renderedBytes": 402
+        }
+      ]
+    },
+    {
+      "file": "assets/_app.guide.doc._slug-B4QsPi_w.js",
+      "entry": false,
+      "bytes": 1660,
+      "gzipBytes": 841,
+      "imports": [
+        "assets/vendor-react-qcAInfL-.js",
+        "assets/vendor-router-BvkK89KP.js",
+        "assets/kocmax-BjDVPQyj.js",
+        "assets/Markdown-BXqv8Sn6.js",
+        "assets/academy-CQgzGtz3.js",
+        "assets/guideProgress-IEKoFpFD.js",
+        "assets/index-BrAeORCk.js",
+        "assets/arrow-left-trMRWUti.js",
+        "assets/vendor-supabase-11GpYcmB.js",
+        "assets/createLucideIcon-CBho2xym.js"
+      ],
+      "dynamicImports": [],
+      "modules": [
+        {
+          "id": "./src/routes/_app.guide.doc.$slug.tsx?tsr-split=component",
+          "renderedBytes": 2031
+        }
+      ]
+    }
+  ]
+}

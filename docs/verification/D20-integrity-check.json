@@ -1,0 +1,30 @@
+{
+  "beforeImageFiles": 1557,
+  "priorEvidenceFiles": 703,
+  "priorEvidenceUnchanged": 695,
+  "authorizedSharedDocChanges": [
+    "docs/verification/adfocate-delivery.json",
+    "docs/verification/adfocate-task-ledger.md",
+    "docs/verification/code-fingerprint.json",
+    "docs/verification/implementation-path-mapping.md",
+    "docs/verification/implementation_backlog.csv",
+    "docs/verification/new_product_acceptance_cases.csv",
+    "docs/verification/release-review-request.json",
+    "docs/verification/self-review.md"
+  ],
+  "unexpectedPriorEdits": [],
+  "sourceFiles": 330,
+  "sourceFingerprint": "544f5a717aa6550e1dad0acdb3c69041c8530f25f6dd1ed05ca43a847779aa7b",
+  "changedSourceFiles": 23,
+  "originalCsvFieldsChecked": 1645,
+  "originalAudit16AndProtected194Untouched": true,
+  "D15AndAll107CaseResultsDeepEqual": true,
+  "D19EvidenceUnchanged": true,
+  "allOldSqlAndManifestUnchanged": true,
+  "releaseExpiryAndApprovalPolicyUnchanged": true,
+  "taskOnlyPatchReverseCheck": true,
+  "gitDiffCheck": true,
+  "gitIndexUnchanged": true,
+  "codeAfterFinalSuiteChanged": false,
+  "deployment": "not-deployed"
+}

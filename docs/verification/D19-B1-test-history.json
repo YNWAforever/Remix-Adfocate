@@ -1,0 +1,211 @@
+{
+  "sourceFingerprint": "d7cc43ad92ad96b0b7d424a1ce903a42a7e83edc0c57319e8d33ad2d4ed82ac5",
+  "history": [
+    {
+      "phase": "IMPORT_MOCK_ERROR_CORRECTED",
+      "passed": 0,
+      "failed": 0,
+      "fileErrors": [
+        {
+          "path": "server/test/acceptance-target-retirement.test.ts",
+          "message": "[vitest] No \"default\" export is defined on the \"node:child_process\" mock. Did you forget to return it from \"vi.mock\"?\nIf you need to partially mock a module, you can use \"importOriginal\" helper inside:\n"
+        }
+      ],
+      "failedAssertions": []
+    },
+    {
+      "phase": "INCOMPLETE_PRISTINE_DOUBLE_CORRECTED",
+      "passed": 1,
+      "failed": 10,
+      "fileErrors": [],
+      "failedAssertions": [
+        {
+          "name": "rejects the retired project even when the other claimed identifiers change",
+          "message": "AssertionError: expected [Function] to throw an error"
+        },
+        {
+          "name": "rejects the retired API container even when the other claimed identifiers change",
+          "message": "AssertionError: expected [Function] to throw an error"
+        },
+        {
+          "name": "rejects the retired database container even when the other claimed identifiers change",
+          "message": "AssertionError: expected [Function] to throw an error"
+        },
+        {
+          "name": "rejects the retired network even when the other claimed identifiers change",
+          "message": "AssertionError: expected [Function] to throw an error"
+        },
+        {
+          "name": "rejects a replacement container mounting the old data volume despite a new project name",
+          "message": "AssertionError: expected [Function] to throw an error"
+        },
+        {
+          "name": "rejects observed attachment to the retired network alongside a new matching network",
+          "message": "AssertionError: expected [Function] to throw an error"
+        },
+        {
+          "name": "does not treat a caller's forensic-purpose flag as permission to run acceptance",
+          "message": "AssertionError: expected [Function] to throw an error"
+        },
+        {
+          "name": "does not let a pristine receipt override the excluded target identity",
+          "message": "AssertionError: expected [Function] to throw error matching /B1.*retired.*forensics-only/i but got 'pristine target requires a new author…'"
+        },
+        {
+          "name": "refuses the generic launcher before a secondary verifier, preflight or test child",
+          "message": "AssertionError: expected [Function] to throw an error"
+        },
+        {
+          "name": "refuses the shared shaped helper before Docker metadata, private key read or SQL setup",
+          "message": "AssertionError: expected [Function] to throw an error"
+        }
+      ]
+    },
+    {
+      "phase": "VALID_RED_MISSING_EXCLUSION",
+      "passed": 1,
+      "failed": 10,
+      "fileErrors": [],
+      "failedAssertions": [
+        {
+          "name": "rejects the retired project even when the other claimed identifiers change",
+          "message": "AssertionError: expected [Function] to throw an error"
+        },
+        {
+          "name": "rejects the retired API container even when the other claimed identifiers change",
+          "message": "AssertionError: expected [Function] to throw an error"
+        },
+        {
+          "name": "rejects the retired database container even when the other claimed identifiers change",
+          "message": "AssertionError: expected [Function] to throw an error"
+        },
+        {
+          "name": "rejects the retired network even when the other claimed identifiers change",
+          "message": "AssertionError: expected [Function] to throw an error"
+        },
+        {
+          "name": "rejects a replacement container mounting the old data volume despite a new project name",
+          "message": "AssertionError: expected [Function] to throw an error"
+        },
+        {
+          "name": "rejects observed attachment to the retired network alongside a new matching network",
+          "message": "AssertionError: expected [Function] to throw an error"
+        },
+        {
+          "name": "does not treat a caller's forensic-purpose flag as permission to run acceptance",
+          "message": "AssertionError: expected [Function] to throw an error"
+        },
+        {
+          "name": "does not let a pristine receipt override the excluded target identity",
+          "message": "AssertionError: expected [Function] to throw an error"
+        },
+        {
+          "name": "refuses the generic launcher before a secondary verifier, preflight or test child",
+          "message": "AssertionError: expected [Function] to throw an error"
+        },
+        {
+          "name": "refuses the shared shaped helper before Docker metadata, private key read or SQL setup",
+          "message": "AssertionError: expected [Function] to throw an error"
+        }
+      ]
+    },
+    {
+      "phase": "GREEN_NEW_AND_EXISTING_IDENTITY_TESTS",
+      "passed": 29,
+      "failed": 0,
+      "fileErrors": [],
+      "failedAssertions": []
+    }
+  ],
+  "fullRunnerAttempts": [
+    {
+      "classification": "RUNNER_WATCHDOG_TIMEOUT_NOT_A_COMPLETE_FULL_SUITE_RESULT",
+      "receipt": {
+        "gate": "full",
+        "command": "npm test -- --no-file-parallelism --reporter=json --outputFile=.codex-tmp/D19-B1-full.json",
+        "sourceFingerprint": "d7cc43ad92ad96b0b7d424a1ce903a42a7e83edc0c57319e8d33ad2d4ed82ac5",
+        "sourceRecords": 354,
+        "sourceUnchangedAfter": true,
+        "startedAt": "2026-10-24T15:47:35.744Z",
+        "finishedAt": "2026-10-24T15:57:36.103Z",
+        "exit": null,
+        "error": "ETIMEDOUT",
+        "logSha256": "b9eb55e3d9de506af218f9abe3cf0a34818161cc89ba2bf7fda5fc5004595760",
+        "freeGiBAfter": 1.1491928100585938,
+        "offline": true,
+        "integrationEnabled": false,
+        "providerKeysSupplied": false
+      }
+    },
+    {
+      "classification": "COMPLETE_SANDBOX_FULL_11_FAILURES",
+      "receipt": {
+        "gate": "full",
+        "command": "npm test -- --no-file-parallelism --reporter=json --outputFile=.codex-tmp/D19-B1-full-retry.json",
+        "sourceFingerprint": "d7cc43ad92ad96b0b7d424a1ce903a42a7e83edc0c57319e8d33ad2d4ed82ac5",
+        "sourceRecords": 354,
+        "sourceUnchangedAfter": true,
+        "startedAt": "2026-10-24T16:04:00.406Z",
+        "finishedAt": "2026-10-24T16:13:21.869Z",
+        "exit": 1,
+        "error": null,
+        "logSha256": "e5c7cd2b2d773cebb04d07b1227a55e182301cd3077ee22eccd7940dfb5c7b66",
+        "freeGiBBefore": 4.462890625,
+        "freeGiBAfter": 4.0516510009765625,
+        "offline": true,
+        "integrationEnabled": false,
+        "providerKeysSupplied": false
+      },
+      "details": "D19-B1-sandbox-failures.json"
+    },
+    {
+      "classification": "SAME_SOURCE_FAILED_FILES25_PASS_APPROVED_LOCAL_ENVIRONMENT",
+      "receipt": {
+        "gate": "environment",
+        "command": "npm test -- --no-file-parallelism server/devApi.test.ts server/devApi.transport.test.ts scripts/release/manifest.test.ts --reporter=json --outputFile=.codex-tmp/D19-B1-environment.json",
+        "sourceFingerprint": "d7cc43ad92ad96b0b7d424a1ce903a42a7e83edc0c57319e8d33ad2d4ed82ac5",
+        "sourceRecords": 354,
+        "sourceUnchangedAfter": true,
+        "startedAt": "2026-10-24T16:15:37.300Z",
+        "finishedAt": "2026-10-24T16:15:45.238Z",
+        "exit": 0,
+        "error": null,
+        "logSha256": "f1e4b46d4cc382850762d996bdeaa625d901bbb6edb36a244d71bec784ab480f",
+        "freeGiBBefore": 3.1658401489257812,
+        "freeGiBAfter": 3.5557212829589844,
+        "offline": true,
+        "integrationEnabled": false,
+        "providerKeysSupplied": false
+      }
+    },
+    {
+      "classification": "COMPLETE_FULL_APPROVED_LOCAL_ENVIRONMENT",
+      "receipt": {
+        "gate": "full",
+        "command": "npm test -- --no-file-parallelism --reporter=json --outputFile=.codex-tmp/D19-B1-full-verified.json",
+        "sourceFingerprint": "d7cc43ad92ad96b0b7d424a1ce903a42a7e83edc0c57319e8d33ad2d4ed82ac5",
+        "sourceRecords": 354,
+        "sourceUnchangedAfter": true,
+        "startedAt": "2026-10-24T16:17:39.438Z",
+        "finishedAt": "2026-10-24T16:23:21.474Z",
+        "exit": 0,
+        "error": null,
+        "logSha256": "cffba766ee5b2a12b8cc2857dc42bff7f347e5b5658d0b642a905aa33b40ab90",
+        "freeGiBBefore": 3.4547195434570312,
+        "freeGiBAfter": 8.35927963256836,
+        "offline": true,
+        "integrationEnabled": false,
+        "providerKeysSupplied": false
+      }
+    }
+  ],
+  "redProductionFilesStillEqualBefore": true,
+  "redBinding": {
+    "productionFilesStillEqualBefore": true,
+    "testSha256": "89bb7fbbb11d1ca6ab96856118a3d10a9b4df716c56344065970ce425e320d7f",
+    "redResultSha256": "61f1ebb592aaa49498d476c050ff483bd37f388434a53d349433d7df1d51ee07",
+    "passed": 1,
+    "failedMissingExclusion": 10
+  },
+  "noOriginalAssertionsChanged": true
+}

@@ -1,0 +1,2171 @@
+{
+  "at": "2026-10-24T04:00:49.207900+00:00",
+  "sourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+  "count": 107,
+  "findings": 28,
+  "taskCount": 20,
+  "newProductCases": [
+    {
+      "case_id": "N01",
+      "task_id": "D08",
+      "title": "下一步工作",
+      "fixture": "revision/await_review/reward_pending三fixture",
+      "expected": "CTA與canonical狀態一致；pending無提款動作",
+      "result": "not-run",
+      "newResult": "pass-unit-and-disposable-ui; same real fixture progresses through all three states; one primary action; reload preserves state",
+      "releaseScope": "D08 local/disposable verified; not deployed"
+    },
+    {
+      "case_id": "N02",
+      "task_id": "D12",
+      "title": "未知policy roundtrip",
+      "fixture": "帶非標準但合法JSON key的舊template",
+      "expected": "可讀編輯不遺失未知key；無效欄位有錯誤",
+      "result": "not-run",
+      "newResult": "pass-unit-real-api-and-disposable-ui; unknown nested keys preserved on edit/save/hard reload; invalid raw JSON blocked",
+      "releaseScope": "R2 D12 local/disposable verified; not deployed"
+    },
+    {
+      "case_id": "N03",
+      "task_id": "D15",
+      "title": "課程持久化",
+      "fixture": "2單元／2Creator／新contentVersion",
+      "expected": "本人完成1/2重載一致；跨Creator拒絕；版本歷史保留",
+      "result": "not-run",
+      "newResult": "PASS-local-synthetic-functional: 2 units / 2 Creators / version history; real curriculum BLOCKED_CONTENT_NOT_PROVIDED",
+      "releaseScope": "Local/disposable N03 only; UC-C18/UC-A51 original four-real-lessons acceptance remains open"
+    },
+    {
+      "case_id": "N04",
+      "task_id": "D20",
+      "title": "AI規則解釋",
+      "fixture": "4個有明確brief reference的問題",
+      "expected": "引用正確版本及規則；不編獎勵",
+      "result": "not-run",
+      "newResult": "PASS_OFFLINE_MOCK_4_SUBCASES; real provider NOT_RUN / disabled",
+      "releaseScope": "R3 offline/mock only; no live answer-quality or provider activation acceptance"
+    },
+    {
+      "case_id": "N05",
+      "task_id": "D20",
+      "title": "AI修改摘要",
+      "fixture": "4組批准版本與修稿差異",
+      "expected": "只摘要可讀版本；不用未核准內容冒充要求",
+      "result": "not-run",
+      "newResult": "PASS_OFFLINE_MOCK_4_SUBCASES; real provider NOT_RUN / disabled",
+      "releaseScope": "R3 offline/mock only; no live answer-quality or provider activation acceptance"
+    },
+    {
+      "case_id": "N06",
+      "task_id": "D20",
+      "title": "AI未知",
+      "fixture": "4個資料不足／過時／無SLA／未發布規則",
+      "expected": "明示未知及人手下一步，不猜期限或付款",
+      "result": "not-run",
+      "newResult": "PASS_OFFLINE_MOCK_4_SUBCASES; real provider NOT_RUN / disabled",
+      "releaseScope": "R3 offline/mock only; no live answer-quality or provider activation acceptance"
+    },
+    {
+      "case_id": "N07",
+      "task_id": "D20",
+      "title": "AI跨scope",
+      "fixture": "4個他人Creator／Bworkspace／internal note／private asset",
+      "expected": "拒絕且不泄露內容",
+      "result": "not-run",
+      "newResult": "PASS_OFFLINE_MOCK_4_SUBCASES; real provider NOT_RUN / disabled",
+      "releaseScope": "R3 offline/mock only; no live answer-quality or provider activation acceptance"
+    },
+    {
+      "case_id": "N08",
+      "task_id": "D20",
+      "title": "AI注入",
+      "fixture": "4個brief／KB／URLmetadata／notes內的越權指令",
+      "expected": "內容不擴權；無approve/payout/write tool calls",
+      "result": "not-run",
+      "newResult": "PASS_OFFLINE_MOCK_4_SUBCASES; real provider NOT_RUN / disabled",
+      "releaseScope": "R3 offline/mock only; no live answer-quality or provider activation acceptance"
+    },
+    {
+      "case_id": "N09",
+      "task_id": "D20",
+      "title": "AI故障",
+      "fixture": "4個timeout／429／DB fail／provider unknown result",
+      "expected": "保存與生成狀態真實；重試不自動重叫未知request",
+      "result": "not-run",
+      "newResult": "PASS_OFFLINE_MOCK_4_SUBCASES; real provider NOT_RUN / disabled",
+      "releaseScope": "R3 offline/mock only; no live answer-quality or provider activation acceptance"
+    },
+    {
+      "case_id": "N10",
+      "task_id": "D10",
+      "title": "搜尋競爭及返回安全",
+      "fixture": "慢A搜尋、快B搜尋、惡意returnTo",
+      "expected": "只顯示B；只允許本站已知路由",
+      "result": "not-run",
+      "newResult": "pass-local",
+      "releaseScope": "R1"
+    },
+    {
+      "case_id": "N11",
+      "task_id": "D18",
+      "title": "角色銜接",
+      "fixture": "已停用grant／member冒充staff／finance寫入",
+      "expected": "deny；沒有默認global admin",
+      "result": "not-run",
+      "newResult": "PASS_LOCAL_DISPOSABLE_D18_D19; formal_staff_transition_NOT_RUN",
+      "releaseScope": "D18/D19 exact-owned single-workspace role denial/RLS; 8 real role API cases and 78 HTTP observations; D20 offline boundary retained; no production grants/membership/cutover"
+    },
+    {
+      "case_id": "N12",
+      "task_id": "D02",
+      "title": "隔離身份矛盾",
+      "fixture": "loopback但proxy指向非隔離target",
+      "expected": "建client前拒絕；network/DB writes=0",
+      "result": "not-run",
+      "newResult": "pass-identity-gate",
+      "releaseScope": "R1"
+    }
+  ],
+  "groups": {
+    "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained": 49,
+    "PASS_FRESH_OWNED_CORE_OR_ROLE": 38,
+    "PASS_FRESH_OWNED_SUPPORT_API_DB": 9,
+    "PASS_SELECTED_LOCAL_UI; explicit mocks labelled": 5,
+    "BLOCKED_CONTENT_NOT_PROVIDED; original-4-real-lessons-acceptance-open": 2,
+    "PASS_SELECTED_LOCAL_QUALITY; named_owner_device_hosted_BLOCKED": 3,
+    "blocked-production": 1
+  },
+  "cases": [
+    {
+      "caseId": "UC-P01",
+      "originalAuditResult": "pass",
+      "recordedNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "recordedFourLayers": {
+        "code": "D14 truthful preview implemented; original lesson expectations preserved",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-P02",
+      "originalAuditResult": "fail",
+      "recordedNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "recordedFourLayers": {
+        "code": "D14 truthful preview implemented; original lesson expectations preserved",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-P03",
+      "originalAuditResult": "fail",
+      "recordedNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "recordedFourLayers": {
+        "code": "D14 truthful preview implemented; original lesson expectations preserved",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-C01",
+      "originalAuditResult": "fail",
+      "recordedNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "recordedFourLayers": {
+        "code": "D13 implemented; original Auth, RLS and public-field authority retained",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-C02",
+      "originalAuditResult": "pass",
+      "recordedNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "recordedFourLayers": {
+        "code": "D13 implemented; original Auth, RLS and public-field authority retained",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-C03",
+      "originalAuditResult": "fail",
+      "recordedNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "recordedFourLayers": {
+        "code": "D08 implemented; existing D04 behavior retained",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-C04",
+      "originalAuditResult": "fail",
+      "recordedNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "recordedFourLayers": {
+        "code": "D08 implemented; existing D04 behavior retained",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-C05",
+      "originalAuditResult": "fail",
+      "recordedNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-C06",
+      "originalAuditResult": "fail",
+      "recordedNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-C07",
+      "originalAuditResult": "fail",
+      "recordedNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "recordedFourLayers": {
+        "code": "D09 decision projection, category and eligibility implemented",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-C08",
+      "originalAuditResult": "fail",
+      "recordedNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "recordedFourLayers": {
+        "code": "D09 decision projection, category and eligibility implemented",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-C09",
+      "originalAuditResult": "fail",
+      "recordedNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "recordedFourLayers": {
+        "code": "D08 implemented; existing D04 behavior retained",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-C10",
+      "originalAuditResult": "pass",
+      "recordedNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "recordedFourLayers": {
+        "code": "D13 implemented; original Auth, RLS and public-field authority retained",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-C11",
+      "originalAuditResult": "fail",
+      "recordedNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "recordedFourLayers": {
+        "code": "D13 implemented; original Auth, RLS and public-field authority retained",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-C12",
+      "originalAuditResult": "pass",
+      "recordedNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "recordedFourLayers": {
+        "code": "D13 implemented; original Auth, RLS and public-field authority retained",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-C13",
+      "originalAuditResult": "pass",
+      "recordedNewResult": "PASS_FRESH_OWNED_SUPPORT_API_DB",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh supporting API/DB integration; UI coverage remains the existing local contracts and prior selected runtime."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-C14",
+      "originalAuditResult": "pass",
+      "recordedNewResult": "PASS_FRESH_OWNED_SUPPORT_API_DB",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh supporting API/DB integration; UI coverage remains the existing local contracts and prior selected runtime."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-C15",
+      "originalAuditResult": "pass",
+      "recordedNewResult": "PASS_SELECTED_LOCAL_UI; explicit mocks labelled",
+      "recordedFourLayers": {
+        "code": "Six existing support routes extended with shared recoverable feedback; parent raw JSON replaced with business fields and metadata three-way rebase. Existing engines/gates retained.",
+        "test": "1950 passed / 363 explicitly gated skipped / 274 files; original16+194; 19 new R2 assertions; 8 real local Edge cases; 5 static gates",
+        "deployment": "not-deployed",
+        "runtime": "8 real local Edge journeys with owned Auth/API/RLS/DB; actual empty scopes and eligibility, metadata persisted across hard reload and real409; explicit empty/fault mocks labelled."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "R2_SELECTED_LOCAL_UI_PERSISTENCE",
+      "runtimeEvidenceFingerprint": "8725bc0031451e8ece2eb41102f8aafc2e6cd4fe697f51cabf495221d42d4be0",
+      "evidence": [
+        "R2-ui-delivery.json",
+        "R2-ui-browser-summary.json"
+      ],
+      "limitations": "Explicit empty/fault mocks labelled; successful reads and metadata persistence real local; D17 later quality does not rerun all8 persistence cases"
+    },
+    {
+      "caseId": "UC-C16",
+      "originalAuditResult": "pass",
+      "recordedNewResult": "PASS_SELECTED_LOCAL_UI; explicit mocks labelled",
+      "recordedFourLayers": {
+        "code": "Six existing support routes extended with shared recoverable feedback; parent raw JSON replaced with business fields and metadata three-way rebase. Existing engines/gates retained.",
+        "test": "1950 passed / 363 explicitly gated skipped / 274 files; original16+194; 19 new R2 assertions; 8 real local Edge cases; 5 static gates",
+        "deployment": "not-deployed",
+        "runtime": "8 real local Edge journeys with owned Auth/API/RLS/DB; actual empty scopes and eligibility, metadata persisted across hard reload and real409; explicit empty/fault mocks labelled."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "R2_SELECTED_LOCAL_UI_PERSISTENCE",
+      "runtimeEvidenceFingerprint": "8725bc0031451e8ece2eb41102f8aafc2e6cd4fe697f51cabf495221d42d4be0",
+      "evidence": [
+        "R2-ui-delivery.json",
+        "R2-ui-browser-summary.json"
+      ],
+      "limitations": "Explicit empty/fault mocks labelled; successful reads and metadata persistence real local; D17 later quality does not rerun all8 persistence cases"
+    },
+    {
+      "caseId": "UC-C17",
+      "originalAuditResult": "pass",
+      "recordedNewResult": "PASS_SELECTED_LOCAL_UI; explicit mocks labelled",
+      "recordedFourLayers": {
+        "code": "Six existing support routes extended with shared recoverable feedback; parent raw JSON replaced with business fields and metadata three-way rebase. Existing engines/gates retained.",
+        "test": "1950 passed / 363 explicitly gated skipped / 274 files; original16+194; 19 new R2 assertions; 8 real local Edge cases; 5 static gates",
+        "deployment": "not-deployed",
+        "runtime": "8 real local Edge journeys with owned Auth/API/RLS/DB; actual empty scopes and eligibility, metadata persisted across hard reload and real409; explicit empty/fault mocks labelled."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "R2_SELECTED_LOCAL_UI_PERSISTENCE",
+      "runtimeEvidenceFingerprint": "8725bc0031451e8ece2eb41102f8aafc2e6cd4fe697f51cabf495221d42d4be0",
+      "evidence": [
+        "R2-ui-delivery.json",
+        "R2-ui-browser-summary.json"
+      ],
+      "limitations": "Explicit empty/fault mocks labelled; successful reads and metadata persistence real local; D17 later quality does not rerun all8 persistence cases"
+    },
+    {
+      "caseId": "UC-C18",
+      "originalAuditResult": "fail",
+      "recordedNewResult": "BLOCKED_CONTENT_NOT_PROVIDED; original-4-real-lessons-acceptance-open",
+      "recordedFourLayers": {
+        "code": "D15 versioned lessons and saved progress implemented; no approved curriculum fabricated",
+        "test": "140 targeted; 1762 full pass / 350 skip; 12 API + 4 Edge; original content blocked",
+        "deployment": "not-deployed",
+        "runtime": "12 real local API/RLS cases; 4 Edge journeys; raw financial neutrality; formal curriculum blocked"
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "BLOCKED_REAL_CONTENT",
+      "runtimeEvidenceFingerprint": null,
+      "evidence": [
+        "D15-delivery.json"
+      ],
+      "limitations": "Original four approved lessons required"
+    },
+    {
+      "caseId": "UC-C19",
+      "originalAuditResult": "pass",
+      "recordedNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-A01",
+      "originalAuditResult": "pass",
+      "recordedNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-A02",
+      "originalAuditResult": "pass",
+      "recordedNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-A03",
+      "originalAuditResult": "pass",
+      "recordedNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-A04",
+      "originalAuditResult": "fail",
+      "recordedNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-A05",
+      "originalAuditResult": "fail",
+      "recordedNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-A06",
+      "originalAuditResult": "fail",
+      "recordedNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-R01",
+      "originalAuditResult": "fail",
+      "recordedNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-R02",
+      "originalAuditResult": "pass",
+      "recordedNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-C20",
+      "originalAuditResult": "not-tested",
+      "recordedNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "recordedFourLayers": {
+        "code": "D13 implemented; original Auth, RLS and public-field authority retained",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-C21",
+      "originalAuditResult": "not-tested",
+      "recordedNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "recordedFourLayers": {
+        "code": "D13 implemented; original Auth, RLS and public-field authority retained",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-C22",
+      "originalAuditResult": "not-tested",
+      "recordedNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "recordedFourLayers": {
+        "code": "D13 implemented; original Auth, RLS and public-field authority retained",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-C23",
+      "originalAuditResult": "not-tested",
+      "recordedNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "recordedFourLayers": {
+        "code": "D13 implemented; original Auth, RLS and public-field authority retained",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-C24",
+      "originalAuditResult": "not-tested",
+      "recordedNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-C25",
+      "originalAuditResult": "not-tested",
+      "recordedNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-C26",
+      "originalAuditResult": "not-tested",
+      "recordedNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-C27",
+      "originalAuditResult": "not-tested",
+      "recordedNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-C28",
+      "originalAuditResult": "not-tested",
+      "recordedNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-C29",
+      "originalAuditResult": "not-tested",
+      "recordedNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-C30",
+      "originalAuditResult": "not-tested",
+      "recordedNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-C31",
+      "originalAuditResult": "not-tested",
+      "recordedNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-C32",
+      "originalAuditResult": "not-tested",
+      "recordedNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-C33",
+      "originalAuditResult": "not-tested",
+      "recordedNewResult": "PASS_FRESH_OWNED_SUPPORT_API_DB",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh supporting API/DB integration; UI coverage remains the existing local contracts and prior selected runtime."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-C34",
+      "originalAuditResult": "not-tested",
+      "recordedNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "recordedFourLayers": {
+        "code": "D13 implemented; original Auth, RLS and public-field authority retained",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-C35",
+      "originalAuditResult": "not-tested",
+      "recordedNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "recordedFourLayers": {
+        "code": "D13 implemented; original Auth, RLS and public-field authority retained",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-C36",
+      "originalAuditResult": "not-tested",
+      "recordedNewResult": "PASS_FRESH_OWNED_SUPPORT_API_DB",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh supporting API/DB integration; UI coverage remains the existing local contracts and prior selected runtime."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-A07",
+      "originalAuditResult": "not-tested",
+      "recordedNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-A08",
+      "originalAuditResult": "not-tested",
+      "recordedNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-A09",
+      "originalAuditResult": "not-tested",
+      "recordedNewResult": "PASS_FRESH_OWNED_SUPPORT_API_DB",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh supporting API/DB integration; UI coverage remains the existing local contracts and prior selected runtime."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-A10",
+      "originalAuditResult": "not-tested",
+      "recordedNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-A11",
+      "originalAuditResult": "not-tested",
+      "recordedNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-A12",
+      "originalAuditResult": "not-tested",
+      "recordedNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-A13",
+      "originalAuditResult": "not-tested",
+      "recordedNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-A14",
+      "originalAuditResult": "not-tested",
+      "recordedNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-A15",
+      "originalAuditResult": "not-tested",
+      "recordedNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-A16",
+      "originalAuditResult": "not-tested",
+      "recordedNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-A17",
+      "originalAuditResult": "not-tested",
+      "recordedNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "recordedFourLayers": {
+        "code": "D12 authoring implemented; existing authority and rules retained",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-A18",
+      "originalAuditResult": "not-tested",
+      "recordedNewResult": "PASS_FRESH_OWNED_SUPPORT_API_DB",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh supporting API/DB integration; UI coverage remains the existing local contracts and prior selected runtime."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-A19",
+      "originalAuditResult": "not-tested",
+      "recordedNewResult": "PASS_FRESH_OWNED_SUPPORT_API_DB",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh supporting API/DB integration; UI coverage remains the existing local contracts and prior selected runtime."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-A20",
+      "originalAuditResult": "not-tested",
+      "recordedNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "recordedFourLayers": {
+        "code": "D14 truthful preview implemented; original lesson expectations preserved",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-A21",
+      "originalAuditResult": "not-tested",
+      "recordedNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "recordedFourLayers": {
+        "code": "HK calendar-day [from,to), HKD net ledger credits, cohort denominators and cancelled exclusions",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-A22",
+      "originalAuditResult": "not-tested",
+      "recordedNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-A23",
+      "originalAuditResult": "not-tested",
+      "recordedNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-A24",
+      "originalAuditResult": "not-tested",
+      "recordedNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "recordedFourLayers": {
+        "code": "existing gates extended with explicit capabilities",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-S01",
+      "originalAuditResult": "not-tested",
+      "recordedNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-S02",
+      "originalAuditResult": "not-tested",
+      "recordedNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "recordedFourLayers": {
+        "code": "existing gates extended with explicit capabilities",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-S03",
+      "originalAuditResult": "not-tested",
+      "recordedNewResult": "PASS_FRESH_OWNED_SUPPORT_API_DB",
+      "recordedFourLayers": {
+        "code": "D13 implemented; original Auth, RLS and public-field authority retained",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh supporting API/DB integration; UI coverage remains the existing local contracts and prior selected runtime."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-S04",
+      "originalAuditResult": "not-tested",
+      "recordedNewResult": "PASS_FRESH_OWNED_SUPPORT_API_DB",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh supporting API/DB integration; UI coverage remains the existing local contracts and prior selected runtime."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-Q01",
+      "originalAuditResult": "not-tested",
+      "recordedNewResult": "PASS_SELECTED_LOCAL_QUALITY; named_owner_device_hosted_BLOCKED",
+      "recordedFourLayers": {
+        "code": "Extended existing admin header, guide cards and Creator home loading layout, plus the read-only advisor DB-port identity gate; qualification and authorization engines preserved",
+        "test": "1954 passed / 363 explicitly gated skipped / 275 files; original16+194 unchanged; 5 final Edge cases plus 1 sequential post-gates performance case; 5 static gates",
+        "deployment": "not-deployed",
+        "runtime": "12 current pages, 48 CSS reflow cells, 12 zero-violation axe scans, keyboard input/navigation/retry; 100 exact-owned two-Creator queue reads; local advisors393, named owner/hosted acceptance blocked"
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "D17_R2_SELECTED_LOCAL_QUALITY",
+      "runtimeEvidenceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "evidence": [
+        "D17-R2-delivery.json",
+        "D17-R2-runtime-source-binding.json"
+      ],
+      "limitations": "No native/device/manual-AT/hosted/field acceptance"
+    },
+    {
+      "caseId": "UC-Q02",
+      "originalAuditResult": "not-tested",
+      "recordedNewResult": "PASS_SELECTED_LOCAL_QUALITY; named_owner_device_hosted_BLOCKED",
+      "recordedFourLayers": {
+        "code": "Extended existing admin header, guide cards and Creator home loading layout, plus the read-only advisor DB-port identity gate; qualification and authorization engines preserved",
+        "test": "1954 passed / 363 explicitly gated skipped / 275 files; original16+194 unchanged; 5 final Edge cases plus 1 sequential post-gates performance case; 5 static gates",
+        "deployment": "not-deployed",
+        "runtime": "12 current pages, 48 CSS reflow cells, 12 zero-violation axe scans, keyboard input/navigation/retry; 100 exact-owned two-Creator queue reads; local advisors393, named owner/hosted acceptance blocked"
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "D17_R2_SELECTED_LOCAL_QUALITY",
+      "runtimeEvidenceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "evidence": [
+        "D17-R2-delivery.json",
+        "D17-R2-runtime-source-binding.json"
+      ],
+      "limitations": "No native/device/manual-AT/hosted/field acceptance"
+    },
+    {
+      "caseId": "UC-Q03",
+      "originalAuditResult": "not-tested",
+      "recordedNewResult": "PASS_SELECTED_LOCAL_QUALITY; named_owner_device_hosted_BLOCKED",
+      "recordedFourLayers": {
+        "code": "Extended existing admin header, guide cards and Creator home loading layout, plus the read-only advisor DB-port identity gate; qualification and authorization engines preserved",
+        "test": "1954 passed / 363 explicitly gated skipped / 275 files; original16+194 unchanged; 5 final Edge cases plus 1 sequential post-gates performance case; 5 static gates",
+        "deployment": "not-deployed",
+        "runtime": "12 current pages, 48 CSS reflow cells, 12 zero-violation axe scans, keyboard input/navigation/retry; 100 exact-owned two-Creator queue reads; local advisors393, named owner/hosted acceptance blocked"
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "D17_R2_SELECTED_LOCAL_QUALITY",
+      "runtimeEvidenceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "evidence": [
+        "D17-R2-delivery.json",
+        "D17-R2-runtime-source-binding.json"
+      ],
+      "limitations": "No native/device/manual-AT/hosted/field acceptance"
+    },
+    {
+      "caseId": "UC-Q04",
+      "originalAuditResult": "not-tested",
+      "recordedNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-Q05",
+      "originalAuditResult": "not-tested",
+      "recordedNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-R03",
+      "originalAuditResult": "not-tested",
+      "recordedNewResult": "blocked-production",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "blocked-production",
+        "deployment": "not-deployed",
+        "runtime": "both disposable targets verified; observed production still lacks schema"
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "BLOCKED_PRODUCTION_BINDING",
+      "runtimeEvidenceFingerprint": null,
+      "evidence": [
+        "release-review-request.json"
+      ],
+      "limitations": "Not deployed or production-preflighted"
+    },
+    {
+      "caseId": "UC-R04",
+      "originalAuditResult": "not-tested",
+      "recordedNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-A25",
+      "originalAuditResult": "fail",
+      "recordedNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-A26",
+      "originalAuditResult": "fail",
+      "recordedNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-A27",
+      "originalAuditResult": "fail",
+      "recordedNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-A28",
+      "originalAuditResult": "fail",
+      "recordedNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-A29",
+      "originalAuditResult": "fail",
+      "recordedNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-A30",
+      "originalAuditResult": "fail",
+      "recordedNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-A31",
+      "originalAuditResult": "fail",
+      "recordedNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-A32",
+      "originalAuditResult": "fail",
+      "recordedNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-A33",
+      "originalAuditResult": "not-tested",
+      "recordedNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-A34",
+      "originalAuditResult": "pass",
+      "recordedNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-A35",
+      "originalAuditResult": "pass",
+      "recordedNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-A36",
+      "originalAuditResult": "pass",
+      "recordedNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-A37",
+      "originalAuditResult": "pass",
+      "recordedNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-A38",
+      "originalAuditResult": "pass",
+      "recordedNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-A39",
+      "originalAuditResult": "pass",
+      "recordedNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-A40",
+      "originalAuditResult": "pass",
+      "recordedNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-A41",
+      "originalAuditResult": "fail",
+      "recordedNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-A42",
+      "originalAuditResult": "fail",
+      "recordedNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-A43",
+      "originalAuditResult": "fail",
+      "recordedNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-A44",
+      "originalAuditResult": "fail",
+      "recordedNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-A45",
+      "originalAuditResult": "pass",
+      "recordedNewResult": "PASS_SELECTED_LOCAL_UI; explicit mocks labelled",
+      "recordedFourLayers": {
+        "code": "Six existing support routes extended with shared recoverable feedback; parent raw JSON replaced with business fields and metadata three-way rebase. Existing engines/gates retained.",
+        "test": "1950 passed / 363 explicitly gated skipped / 274 files; original16+194; 19 new R2 assertions; 8 real local Edge cases; 5 static gates",
+        "deployment": "not-deployed",
+        "runtime": "8 real local Edge journeys with owned Auth/API/RLS/DB; actual empty scopes and eligibility, metadata persisted across hard reload and real409; explicit empty/fault mocks labelled."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "R2_SELECTED_LOCAL_UI_PERSISTENCE",
+      "runtimeEvidenceFingerprint": "8725bc0031451e8ece2eb41102f8aafc2e6cd4fe697f51cabf495221d42d4be0",
+      "evidence": [
+        "R2-ui-delivery.json",
+        "R2-ui-browser-summary.json"
+      ],
+      "limitations": "Explicit empty/fault mocks labelled; successful reads and metadata persistence real local; D17 later quality does not rerun all8 persistence cases"
+    },
+    {
+      "caseId": "UC-A46",
+      "originalAuditResult": "pass",
+      "recordedNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-A47",
+      "originalAuditResult": "fail",
+      "recordedNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-A48",
+      "originalAuditResult": "pass",
+      "recordedNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "recordedFourLayers": {
+        "code": "D12 authoring implemented; existing authority and rules retained",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-A49",
+      "originalAuditResult": "pass",
+      "recordedNewResult": "PASS_SELECTED_LOCAL_UI; explicit mocks labelled",
+      "recordedFourLayers": {
+        "code": "Six existing support routes extended with shared recoverable feedback; parent raw JSON replaced with business fields and metadata three-way rebase. Existing engines/gates retained.",
+        "test": "1950 passed / 363 explicitly gated skipped / 274 files; original16+194; 19 new R2 assertions; 8 real local Edge cases; 5 static gates",
+        "deployment": "not-deployed",
+        "runtime": "8 real local Edge journeys with owned Auth/API/RLS/DB; actual empty scopes and eligibility, metadata persisted across hard reload and real409; explicit empty/fault mocks labelled."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "R2_SELECTED_LOCAL_UI_PERSISTENCE",
+      "runtimeEvidenceFingerprint": "8725bc0031451e8ece2eb41102f8aafc2e6cd4fe697f51cabf495221d42d4be0",
+      "evidence": [
+        "R2-ui-delivery.json",
+        "R2-ui-browser-summary.json"
+      ],
+      "limitations": "Explicit empty/fault mocks labelled; successful reads and metadata persistence real local; D17 later quality does not rerun all8 persistence cases"
+    },
+    {
+      "caseId": "UC-A50",
+      "originalAuditResult": "pass",
+      "recordedNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "recordedFourLayers": {
+        "code": "D14 truthful preview implemented; original lesson expectations preserved",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-A51",
+      "originalAuditResult": "fail",
+      "recordedNewResult": "BLOCKED_CONTENT_NOT_PROVIDED; original-4-real-lessons-acceptance-open",
+      "recordedFourLayers": {
+        "code": "D15 versioned lessons and saved progress implemented; no approved curriculum fabricated",
+        "test": "140 targeted; 1762 full pass / 350 skip; 12 API + 4 Edge; original content blocked",
+        "deployment": "not-deployed",
+        "runtime": "12 real local API/RLS cases; 4 Edge journeys; raw financial neutrality; formal curriculum blocked"
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "BLOCKED_REAL_CONTENT",
+      "runtimeEvidenceFingerprint": null,
+      "evidence": [
+        "D15-delivery.json"
+      ],
+      "limitations": "Original four approved lessons required"
+    },
+    {
+      "caseId": "UC-A52",
+      "originalAuditResult": "fail",
+      "recordedNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-A53",
+      "originalAuditResult": "fail",
+      "recordedNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-A54",
+      "originalAuditResult": "fail",
+      "recordedNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "recordedFourLayers": {
+        "code": "implemented-or-existing",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Fresh owned API/RLS core/access assertions; complete browser handoff is scoped in D19-browser-summary.json."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    },
+    {
+      "caseId": "UC-A55",
+      "originalAuditResult": "fail",
+      "recordedNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "recordedFourLayers": {
+        "code": "D12 authoring implemented; existing authority and rules retained",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Full offline contract suite refreshed; earlier selected runtime evidence retained and not relabelled as D19 browser coverage."
+      },
+      "reviewResult": "RECONCILED_RECORDED_SCOPE",
+      "runtimeScope": "HISTORICAL_LOCAL_OR_OWNED_D19",
+      "runtimeEvidenceFingerprint": "e84abd4eded2a9c75443be128d00ebfb7aff7dc878db4263c7d48da34922b4e0",
+      "evidence": [
+        "D19-case-coverage.json",
+        "D19-test-results.json"
+      ],
+      "limitations": "Current full offline contracts retained; no complete current core runtime renewal"
+    }
+  ],
+  "reviewOnly": true
+}

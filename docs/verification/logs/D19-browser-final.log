@@ -1,0 +1,223 @@
+Warning: Route file "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/_site.smoke.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\src\routes\-_site.smoke.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+D19 browser fixture ready after target verification; private sessions retained locally.
+Warning: Route file "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/_site.smoke.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\src\routes\-_site.smoke.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+vite v7.3.5 building client environment for production...
+transforming...
+✓ 2499 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                         1.70 kB │ gzip:   0.76 kB
+dist/.vite/manifest.json                               59.42 kB │ gzip:   5.83 kB
+dist/assets/index-bNWunjWi.css                         98.33 kB │ gzip:  16.78 kB
+dist/assets/check-BR5yPA8h.js                           0.13 kB │ gzip:   0.15 kB
+dist/assets/chevron-down-BYceO-Q3.js                    0.14 kB │ gzip:   0.15 kB
+dist/assets/operator.creators-C0496bYu.js               0.14 kB │ gzip:   0.14 kB
+dist/assets/_app.redemption-C0496bYu.js                 0.14 kB │ gzip:   0.14 kB
+dist/assets/_app.mission-C0496bYu.js                    0.14 kB │ gzip:   0.14 kB
+dist/assets/_app.campaigns-C0496bYu.js                  0.14 kB │ gzip:   0.14 kB
+dist/assets/_app.my-BtDuzRub.js                         0.15 kB │ gzip:   0.14 kB
+dist/assets/x-BLMitoeA.js                               0.17 kB │ gzip:   0.16 kB
+dist/assets/SkeletonCard-BSX-vjlV.js                    0.18 kB │ gzip:   0.16 kB
+dist/assets/clock-Bc0_sPHp.js                           0.18 kB │ gzip:   0.17 kB
+dist/assets/arrow-right-DkUE0wGt.js                     0.18 kB │ gzip:   0.17 kB
+dist/assets/arrow-left-trMRWUti.js                      0.18 kB │ gzip:   0.17 kB
+dist/assets/arrow-up-right-siNLNQ8f.js                  0.18 kB │ gzip:   0.17 kB
+dist/assets/trending-up-CuvQS0yq.js                     0.19 kB │ gzip:   0.18 kB
+dist/assets/user-round-Cxtj5bFU.js                      0.19 kB │ gzip:   0.18 kB
+dist/assets/menu-z7murLlz.js                            0.20 kB │ gzip:   0.16 kB
+dist/assets/user-BeBG2xJt.js                            0.20 kB │ gzip:   0.19 kB
+dist/assets/BrandAuthContext-CC7i0XLz.js                0.21 kB │ gzip:   0.18 kB
+dist/assets/mail-C-BFs2Uy.js                            0.23 kB │ gzip:   0.21 kB
+dist/assets/target-H9J6chXf.js                          0.23 kB │ gzip:   0.17 kB
+dist/assets/user-check-Cws2rzoa.js                      0.25 kB │ gzip:   0.21 kB
+dist/assets/message-circle-BYYDaGJ2.js                  0.25 kB │ gzip:   0.22 kB
+dist/assets/compass-ySOvfhlB.js                         0.26 kB │ gzip:   0.21 kB
+dist/assets/chart-column-4KwTHvHy.js                    0.26 kB │ gzip:   0.20 kB
+dist/assets/shield-BuwcP1rC.js                          0.28 kB │ gzip:   0.23 kB
+dist/assets/award-DMTOx4Fv.js                           0.28 kB │ gzip:   0.23 kB
+dist/assets/book-open-BtMap0Gv.js                       0.29 kB │ gzip:   0.22 kB
+dist/assets/lightbulb-BF3M6YNx.js                       0.29 kB │ gzip:   0.23 kB
+dist/assets/wallet-ChR7oefq.js                          0.30 kB │ gzip:   0.22 kB
+dist/assets/bell-CI6Pbuj2.js                            0.30 kB │ gzip:   0.25 kB
+dist/assets/send-C6CChZAv.js                            0.30 kB │ gzip:   0.24 kB
+dist/assets/guideProgress-IEKoFpFD.js                   0.31 kB │ gzip:   0.21 kB
+dist/assets/users-BZDofVX3.js                           0.32 kB │ gzip:   0.23 kB
+dist/assets/shield-check-CHGW7O3o.js                    0.33 kB │ gzip:   0.26 kB
+dist/assets/BadgePill-q8bMT7Ny.js                       0.33 kB │ gzip:   0.25 kB
+dist/assets/graduation-cap-CpaZjUgb.js                  0.34 kB │ gzip:   0.26 kB
+dist/assets/megaphone-Ozxw9T4O.js                       0.36 kB │ gzip:   0.25 kB
+dist/assets/gift-CJEX1Usu.js                            0.36 kB │ gzip:   0.26 kB
+dist/assets/calendar-clock-BGKffnOt.js                  0.39 kB │ gzip:   0.26 kB
+dist/assets/file-text-gwZ72UKa.js                       0.40 kB │ gzip:   0.26 kB
+dist/assets/_site.legal.terms-CjFrErvX.js               0.43 kB │ gzip:   0.29 kB
+dist/assets/_site.legal.privacy-O4s2j8uA.js             0.43 kB │ gzip:   0.29 kB
+dist/assets/missionCategories-MHK3H4Ea.js               0.44 kB │ gzip:   0.35 kB
+dist/assets/star-oOX7kJdx.js                            0.48 kB │ gzip:   0.30 kB
+dist/assets/trophy-GhQJTel8.js                          0.49 kB │ gzip:   0.28 kB
+dist/assets/useMissionEditorNavigation-BqwAW3AW.js      0.50 kB │ gzip:   0.33 kB
+dist/assets/sparkles-SJbGwv_6.js                        0.51 kB │ gzip:   0.29 kB
+dist/assets/useRealtimeBalance-B_xZbw8C.js              0.51 kB │ gzip:   0.35 kB
+dist/assets/labels-BcklBINW.js                          0.57 kB │ gzip:   0.37 kB
+dist/assets/LangToggle-BTqP_cr-.js                      0.58 kB │ gzip:   0.40 kB
+dist/assets/_site-DIWPc6mA.js                           0.62 kB │ gzip:   0.38 kB
+dist/assets/submissionEvidence-DXfCOMks.js              0.66 kB │ gzip:   0.38 kB
+dist/assets/creatorFormatting-CF2LBY6J.js               0.69 kB │ gzip:   0.44 kB
+dist/assets/academy-2MpA0Scn.js                         0.70 kB │ gzip:   0.34 kB
+dist/assets/FilterPills-Cq5XQm-3.js                     0.77 kB │ gzip:   0.39 kB
+dist/assets/brand.missions.new-DX1SE23C.js              0.79 kB │ gzip:   0.47 kB
+dist/assets/academyProgress-D5GPN_HE.js                 0.81 kB │ gzip:   0.40 kB
+dist/assets/PointsBalanceCard-B2tvb-pt.js               0.86 kB │ gzip:   0.50 kB
+dist/assets/operator-7CYxzS2n.js                        0.90 kB │ gzip:   0.53 kB
+dist/assets/admin-BKKvgKYg.js                           0.90 kB │ gzip:   0.53 kB
+dist/assets/OperatorBadges-dbQDHp0S.js                  0.97 kB │ gzip:   0.36 kB
+dist/assets/brand.resources._slug-Cyoy3B_T.js           1.12 kB │ gzip:   0.61 kB
+dist/assets/brand.missions._missionId-Bx00kYYB.js       1.16 kB │ gzip:   0.71 kB
+dist/assets/_app.news._slug-uCLfGuNQ.js                 1.18 kB │ gzip:   0.64 kB
+dist/assets/brand-Czuvoehx.js                           1.19 kB │ gzip:   0.61 kB
+dist/assets/RequestFeedback-CkKpk4Ck.js                 1.19 kB │ gzip:   0.79 kB
+dist/assets/brand.index-DnC_9Mh_.js                     1.22 kB │ gzip:   0.55 kB
+dist/assets/admin.missions.new-Hp6vPn7U.js              1.26 kB │ gzip:   0.79 kB
+dist/assets/_app.more-DqII4I43.js                       1.28 kB │ gzip:   0.71 kB
+dist/assets/createLucideIcon-CBho2xym.js                1.39 kB │ gzip:   0.78 kB
+dist/assets/rocket--y1WdJbJ.js                          1.39 kB │ gzip:   0.71 kB
+dist/assets/_app.campaigns.index-BLEO4jPk.js            1.45 kB │ gzip:   0.69 kB
+dist/assets/brand.resources.index-wJc7gb_B.js           1.46 kB │ gzip:   0.73 kB
+dist/assets/AuthFeedback-Udo0zD12.js                    1.54 kB │ gzip:   0.75 kB
+dist/assets/_app.guide.doc._slug-lre1VE2P.js            1.66 kB │ gzip:   0.84 kB
+dist/assets/_app.redemption.history-DpqF04-7.js         1.72 kB │ gzip:   0.73 kB
+dist/assets/brand_.auth.callback-BcZFVMht.js            1.77 kB │ gzip:   0.75 kB
+dist/assets/ScoreRing-B52ekEDw.js                       2.06 kB │ gzip:   0.85 kB
+dist/assets/admin.academy.index-BUqksryt.js             2.22 kB │ gzip:   0.85 kB
+dist/assets/admin.engaged-BA_O9kSJ.js                   2.33 kB │ gzip:   0.93 kB
+dist/assets/brand_.login-B6VIAw64.js                    2.37 kB │ gzip:   1.13 kB
+dist/assets/_app.match-ChsTwOel.js                      2.42 kB │ gzip:   1.11 kB
+dist/assets/_app.mission.index-Ck7qs-mo.js              2.47 kB │ gzip:   1.18 kB
+dist/assets/admin.content.index-l9l58e0N.js             2.50 kB │ gzip:   0.94 kB
+dist/assets/NotificationBadge-CjDLh1k1.js               2.60 kB │ gzip:   1.17 kB
+dist/assets/admin.applications-C7h3_ECI.js              2.68 kB │ gzip:   1.08 kB
+dist/assets/_app.my.index-D9EPRPvY.js                   2.72 kB │ gzip:   1.24 kB
+dist/assets/SocialAccountSummary-DCBtu8Qh.js            3.01 kB │ gzip:   1.28 kB
+dist/assets/_app.auth.callback-B1m_oxqc.js              3.04 kB │ gzip:   1.38 kB
+dist/assets/_app.explore-D0C2OIHc.js                    3.27 kB │ gzip:   0.97 kB
+dist/assets/_app.campaigns._slug-CiH0FITP.js            3.38 kB │ gzip:   1.17 kB
+dist/assets/_app.wallet-DHIprxlx.js                     3.51 kB │ gzip:   1.04 kB
+dist/assets/CampaignPrizeTiers-DTmjJe1p.js              3.55 kB │ gzip:   1.16 kB
+dist/assets/MissionCard-CwmxT9ng.js                     3.67 kB │ gzip:   1.48 kB
+dist/assets/admin.campaigns.index-Bgm9r6kN.js           3.67 kB │ gzip:   1.52 kB
+dist/assets/brand.missions.index-BG5P0p92.js            3.68 kB │ gzip:   1.44 kB
+dist/assets/brand-BeZO1PIs.js                           3.74 kB │ gzip:   1.34 kB
+dist/assets/passport._token-DKsj8Gl4.js                 3.75 kB │ gzip:   1.25 kB
+dist/assets/admin.submissions-DTEcSPui.js               4.08 kB │ gzip:   1.61 kB
+dist/assets/MissionFacts-DRZEYQph.js                    4.23 kB │ gzip:   1.38 kB
+dist/assets/admin.missions.index-BzALC-Lt.js            4.29 kB │ gzip:   1.61 kB
+dist/assets/admin.radar-BuA0opal.js                     4.72 kB │ gzip:   1.41 kB
+dist/assets/admin.content._id-BHpPKF2w.js               5.04 kB │ gzip:   1.65 kB
+dist/assets/_app.auth.reset-password-DgvrfWiG.js        5.04 kB │ gzip:   1.78 kB
+dist/assets/_app.notifications-B8Us4Hep.js              5.27 kB │ gzip:   2.07 kB
+dist/assets/admin.missions._missionId-ez-vt4Do.js       5.28 kB │ gzip:   1.84 kB
+dist/assets/CreatorReviewRow-B15tO8ck.js                5.44 kB │ gzip:   1.90 kB
+dist/assets/admin.campaigns.new-CUvOdTWu.js             5.46 kB │ gzip:   1.79 kB
+dist/assets/ReviewActionPanel-BC8sWX5t.js               5.72 kB │ gzip:   2.07 kB
+dist/assets/creatorActivation-BUZ43D9m.js               5.78 kB │ gzip:   1.74 kB
+dist/assets/_app.guide.index-CjRUMgnt.js                5.89 kB │ gzip:   1.77 kB
+dist/assets/operator.missions._missionId-B_-MI6qq.js    6.28 kB │ gzip:   1.92 kB
+dist/assets/_app.redemption.index-DxQILXUN.js           6.41 kB │ gzip:   2.05 kB
+dist/assets/admin.creators-DpGeHzqc.js                  6.44 kB │ gzip:   2.29 kB
+dist/assets/_app.guide.track._trackId-BIIIC3Nj.js       6.51 kB │ gzip:   2.55 kB
+dist/assets/_site.stories-C3Fx8EvC.js                   7.72 kB │ gzip:   2.71 kB
+dist/assets/kocmax-DwVg5jPl.js                          7.87 kB │ gzip:   1.59 kB
+dist/assets/marketingShowcase-CG5pZiSj.js               7.96 kB │ gzip:   3.52 kB
+dist/assets/_app.passport-fyV3deAk.js                   8.05 kB │ gzip:   2.27 kB
+dist/assets/_app.login-BYdyjToa.js                      8.53 kB │ gzip:   2.54 kB
+dist/assets/_site.packages-CH5G5UOb.js                  8.71 kB │ gzip:   3.14 kB
+dist/assets/legalContent-Dj7FxzUg.js                    9.26 kB │ gzip:   3.86 kB
+dist/assets/admin.campaigns._id-3Nz9QVd8.js             9.27 kB │ gzip:   2.80 kB
+dist/assets/admin.insights-BnFxgXjx.js                  9.43 kB │ gzip:   3.27 kB
+dist/assets/_site-BThY1Cjz.js                          10.31 kB │ gzip:   3.43 kB
+dist/assets/_app-DtQum8qp.js                           11.28 kB │ gzip:   4.20 kB
+dist/assets/_app.mission._missionSlug-I8DYegWs.js      11.64 kB │ gzip:   3.73 kB
+dist/assets/_site.playbooks-C0EgsH6C.js                11.99 kB │ gzip:   3.67 kB
+dist/assets/mockData-Cf8i4qk6.js                       12.80 kB │ gzip:   5.21 kB
+dist/assets/StaffAuthGate-CY9h_PK7.js                  13.41 kB │ gzip:   4.83 kB
+dist/assets/admin.academy._id-CYIvGZkS.js              13.88 kB │ gzip:   4.25 kB
+dist/assets/_site.earn-DqHg0a7o.js                     15.31 kB │ gzip:   4.70 kB
+dist/assets/operator.creators._creatorId-DQ_BJb6P.js   15.33 kB │ gzip:   3.70 kB
+dist/assets/legacyAdfocateContent-B4YouzF_.js          15.72 kB │ gzip:   6.06 kB
+dist/assets/_app.onboarding-DXfY-D_R.js                16.27 kB │ gzip:   4.94 kB
+dist/assets/_site.brands-D76M5obd.js                   20.06 kB │ gzip:   5.64 kB
+dist/assets/_site.contact-CULoyAW1.js                  20.43 kB │ gzip:   6.24 kB
+dist/assets/_app.home-OB-bLrGu.js                      20.44 kB │ gzip:   5.61 kB
+dist/assets/_app.profile-Bp8vWmCL.js                   23.08 kB │ gzip:   5.97 kB
+dist/assets/_site.index-MbpwU5e1.js                    26.65 kB │ gzip:   7.62 kB
+dist/assets/utils-DaT-yT0k.js                          27.54 kB │ gzip:   8.69 kB
+dist/assets/MissionEditor-Clob_jnG.js                  33.49 kB │ gzip:   7.75 kB
+dist/assets/_site.creators-D_MBgB4C.js                 42.86 kB │ gzip:  13.79 kB
+dist/assets/vendor-router-BvkK89KP.js                 124.86 kB │ gzip:  39.25 kB
+dist/assets/Markdown-BXqv8Sn6.js                      162.49 kB │ gzip:  49.48 kB
+dist/assets/vendor-react-qcAInfL-.js                  192.94 kB │ gzip:  60.54 kB
+dist/assets/vendor-supabase-11GpYcmB.js               208.40 kB │ gzip:  54.19 kB
+dist/assets/index-TVWkViiM.js                         436.28 kB │ gzip: 112.27 kB
+✓ built in 13.69s
+[WebServer] (node:35060) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[WebServer] Warning: Route file "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/_site.smoke.test.tsx" does not export a Route. This file will not be included in the route tree.
+[WebServer] 
+[WebServer] If this file is not intended to be a route, you can exclude it using one of these options:
+[WebServer]   1. Rename the file to "C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\src\routes\-_site.smoke.test.tsx" (prefix with "-")
+[WebServer]   2. Use 'routeFileIgnorePattern' in your config to match this file
+
+[WebServer] 
+[WebServer] Current configuration:
+[WebServer]   routeFileIgnorePrefix: "-"
+[WebServer]   routeFileIgnorePattern: undefined
+
+Running 1 test using 1 worker
+
+(node:16444) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] e2e\creator-operator-mission.spec.ts:13:1 › real roles reload one durable pending reward and its revision/proof history
+  1 passed (27.4s)
+[WebServer] (node:41580) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[WebServer] Warning: Route file "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/_site.smoke.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+[WebServer] 
+[WebServer] If this file is not intended to be a route, you can exclude it using one of these options:
+[WebServer]   1. Rename the file to "C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\src\routes\-_site.smoke.test.tsx" (prefix with "-")
+[WebServer]   2. Use 'routeFileIgnorePattern' in your config to match this file
+[WebServer] 
+[WebServer] Current configuration:
+[WebServer]   routeFileIgnorePrefix: "-"
+[WebServer]   routeFileIgnorePattern: undefined
+
+Running 4 tests using 1 worker
+
+
+(node:45256) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1/4] e2e\staff-access.spec.ts:19:1 › D18 finance reloads the same saved handoff with read-only controls and scoped navigation
+[2/4] e2e\staff-access.spec.ts:29:1 › D18 reviewer retains authored input after a real forbidden mission save
+[3/4] e2e\staff-access.spec.ts:36:1 › D18 platform-only content editor recovers access discovery without a workspace or another login
+[4/4] e2e\staff-access.spec.ts:44:1 › D18 Creator and operator refresh agree with finance on one pending reward and history
+  4 passed (14.3s)

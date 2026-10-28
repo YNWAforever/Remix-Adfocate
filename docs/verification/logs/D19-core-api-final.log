@@ -1,0 +1,15 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ✓ server/test/audit-workflow-roundtrip.test.ts (9 tests) 16101ms
+   ✓ D07 exact-ID disposable workflow roundtrip > pages 51 real database creators once with stable ties and a scoped total 564ms
+   ✓ D07 exact-ID disposable workflow roundtrip > persists race/join, receipt, revision, proof correction, one pending reward and cancellation without financial effects 3156ms
+   ✓ D07 exact-ID disposable workflow roundtrip > rolls back a real audit fault and serializes concurrent CRM retries 1855ms
+   ✓ D07 exact-ID disposable workflow roundtrip > retains the legacy join/submit/review journey with evidence validation 302ms
+   ✓ D07 exact-ID disposable workflow roundtrip > D19 reapproval preserves an issued legacy anchor and reloads one neutral pending reward through finance 1212ms
+
+ Test Files  1 passed (1)
+      Tests  9 passed (9)
+   Start at  02:44:52
+   Duration  16.82s (transform 649ms, setup 347ms, collect 78ms, tests 16.10s, environment 0ms, prepare 103ms)
+

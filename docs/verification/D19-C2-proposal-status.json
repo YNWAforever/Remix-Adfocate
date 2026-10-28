@@ -1,0 +1,18 @@
+{
+  "at": "2026-10-25T19:40:58.960502+00:00",
+  "manifest": "docs/verification/D19-C2-transport-continuation-runtime-manifest.json",
+  "sha256": "f5caccfdc354e7209b320064f08c9a59ce73cc0ae4bdfca4bcde6e255b424ba0",
+  "status": "SUPERSEDED_FOR_RUNTIME_BY_REQUIRED_LOCAL_C33_REPAIR",
+  "runtimeApproved": false,
+  "executed": false,
+  "reason": "Actual SQL/route acceptance reproduces3 replay failures; client7 also RED. Complete authorized local repair before freezing final runtime source. Old original e8 actual approval stays true; no runtime action or new resource authorized here.",
+  "evidence": "docs/verification/D19-redemption-replay-20261026/",
+  "currentManifest": {
+    "path": "docs/verification/D19-C2-current-source-runtime-manifest.json",
+    "sha256": "cb93361481d8d6a42785077809c4e5338745ffcb2c3e41ffc62ed72631f59a65"
+  },
+  "currentSource": "4f2c3faa22bf835911a55dc7bb099910e4308fc1b7a5570d58f32386708934b9",
+  "currentApproved": false,
+  "currentExecuted": false,
+  "provisional98Superseded": true
+}

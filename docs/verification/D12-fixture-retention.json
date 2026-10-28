@@ -1,0 +1,115 @@
+{
+  "target": {
+    "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+    "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+    "disposable": true,
+    "projectId": "adfocate-r1-empty-20261023",
+    "proxy": "none",
+    "apiPort": 56421,
+    "apiContainerId": "1b9c41318298d79308db7782f51474541ad5abf0120fa93b96a2a9ea59d043ee",
+    "databaseContainerId": "e7c8efa295cd5544a8b2a100a73b6953cd6ddd486aaf394f231482067523e12d",
+    "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+    "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+    "networkId": "9e5d3069e8255d70b8eef56020c8ea2618fdb2626d92d9a04e51ea2de41a98e0"
+  },
+  "runs": [
+    {
+      "runId": "2a55aa1c-7237-48a7-84c4-a52a6675c2b3",
+      "workspaceId": "856ac6bb-5a79-40cf-b9af-ca0066a3eced",
+      "apiMissionIds": [
+        "71587e33-4d9c-48df-9407-4c69ef3b21c4",
+        "820cccea-9748-46f5-a1d2-d53491d5ed55",
+        "d1242ac3-a475-42e6-8160-e422cc81f687"
+      ],
+      "uiMissions": []
+    },
+    {
+      "runId": "3ae481c5-3404-40f7-980a-ace44d5eec9e",
+      "workspaceId": "405bcdda-3eb1-4672-a621-b119fd611dcc",
+      "apiMissionIds": [
+        "11cf9e76-35da-4bc7-a80a-a7800c3f65d9",
+        "98775387-d85c-4289-b15c-8adff6dbdbb0",
+        "e589c646-771a-4159-b0df-62a8d8bf06e0"
+      ],
+      "uiMissions": []
+    },
+    {
+      "runId": "fd5495d5-53ac-4ef9-8554-5d2bf26fffe2",
+      "workspaceId": "681ddc88-286c-4ea6-81b0-d4da1c9611fa",
+      "apiMissionIds": [
+        "ceabd742-3b2c-48c3-9eb2-1a7553bed04c",
+        "859bac96-2061-406f-a449-0bed12b51f32",
+        "790eb705-9e36-45f7-ae69-79d143b3afef"
+      ],
+      "uiMissions": []
+    },
+    {
+      "runId": "99e5dd1c-bb9e-4490-8f0e-85f3cecc72b4",
+      "workspaceId": "3eb6e65f-ff09-42a6-ae51-090e15e31429",
+      "apiMissionIds": [
+        "ec6089d7-083f-4db4-887c-5e3da6a368ce",
+        "fcbf69ca-8f7e-4739-a6fa-707ce685b887",
+        "e86d3111-6085-4787-b7bd-c073f11d0c4b"
+      ],
+      "uiMissions": [
+        {
+          "id": "0fa5d363-c8dc-4e0e-9c90-98194485d2a6",
+          "slug": "d12-ui-99e5dd1c-bb9e-4490-8f0e-85f3cecc72b4",
+          "workspaceId": "3eb6e65f-ff09-42a6-ae51-090e15e31429"
+        }
+      ]
+    },
+    {
+      "runId": "fe973659-6224-4d91-aa77-e593a2fd44c9",
+      "workspaceId": "42196062-a252-4011-b276-85c69db55cdf",
+      "apiMissionIds": [
+        "473b4735-f7ea-4c0e-a23f-c78fb2624a30",
+        "fa1a3f43-69a7-48a0-866b-fa005a9a2b1a",
+        "888055bc-80e1-41e2-a9b7-e5cdabeafe44"
+      ],
+      "uiMissions": [
+        {
+          "id": "7c4bf5a2-0bba-48fb-9c12-da88669ffb54",
+          "slug": "d12-ui-fe973659-6224-4d91-aa77-e593a2fd44c9",
+          "workspaceId": "42196062-a252-4011-b276-85c69db55cdf"
+        }
+      ]
+    },
+    {
+      "runId": "5f2a8469-49c9-4003-8989-01fe62889974",
+      "workspaceId": "8c062953-c11b-4524-9ef7-c3ae43e26206",
+      "apiMissionIds": [
+        "4095290e-66d8-4859-bba8-c520dd2bd625",
+        "7812cefa-9877-45a2-9fc3-57ce976a17a2",
+        "6b8633ad-3be4-45e7-aa49-e28786c68c58",
+        "654429f8-cc1c-4984-b7ca-3032fa0dd1df"
+      ],
+      "uiMissions": [
+        {
+          "id": "c8e96447-d378-42a0-ad43-b33b78a284f1",
+          "slug": "d12-ui-5f2a8469-49c9-4003-8989-01fe62889974",
+          "workspaceId": "8c062953-c11b-4524-9ef7-c3ae43e26206"
+        }
+      ]
+    },
+    {
+      "runId": "5ba41678-aa1a-42c8-8fa1-beee1b972542",
+      "workspaceId": "6bc49b7e-996b-460e-8572-ecb6d5885201",
+      "apiMissionIds": [
+        "b10cdfe0-6712-4637-b5d6-237d9b26fd83",
+        "8e1ba7f5-2a00-4aa9-8906-aec3f30cfb84",
+        "d6f6a4fd-a826-445b-ae82-09b42335af15",
+        "d06f4518-6339-4c9b-9e4f-130e8f54ce88"
+      ],
+      "uiMissions": [
+        {
+          "id": "c079f289-4519-4631-bb75-fd13dd44f451",
+          "slug": "d12-ui-5ba41678-aa1a-42c8-8fa1-beee1b972542",
+          "workspaceId": "6bc49b7e-996b-460e-8572-ecb6d5885201"
+        }
+      ]
+    }
+  ],
+  "cleanup": "not-run; all exact D12 fixture IDs retained; no reset or broad delete",
+  "note": "Each query was read-only and bound to a recorded workspace and exact run-specific slug."
+}

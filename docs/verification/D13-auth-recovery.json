@@ -1,0 +1,8 @@
+{
+  "runId": "dc8e3b52-ee86-4f22-aa0a-87a2cbf8d8d1",
+  "singleEmail": true,
+  "wrongCredentialsRetainInput": true,
+  "methodChangeSendsNothing": true,
+  "expiredFragmentRecovered": true,
+  "safeReturnPreserved": true
+}

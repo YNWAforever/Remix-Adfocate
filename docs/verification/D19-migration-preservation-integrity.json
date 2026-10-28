@@ -1,0 +1,147 @@
+{
+  "at": "2026-10-25T16:47:49.091377+00:00",
+  "codeFingerprint": "e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993",
+  "method": "Exact raw hashes of this file-only migration review and changed metadata; exclude this subset/root seal. Previous2171 records preserved via exact before images.",
+  "files": [
+    {
+      "path": "docs/verification/adfocate-delivery.json",
+      "sha256": "75f568eed1c4547ded09fd675025c3862bcb4c197a99632a442f5d11f0660ad8",
+      "bytes": 683410
+    },
+    {
+      "path": "docs/verification/adfocate-task-ledger.md",
+      "sha256": "6b442ff742071acf9388716180a08e76583009e05be5c589da4f05862cdefc4a",
+      "bytes": 35542
+    },
+    {
+      "path": "docs/verification/audit_case_coverage.csv",
+      "sha256": "bb73a1e0a525ecf9be65c272ab98c31a6badc193dcc7d5cabc3973c8c3ced0eb",
+      "bytes": 180453
+    },
+    {
+      "path": "docs/verification/D19-migration-preservation-20261026/before/docs/verification/adfocate-delivery.json",
+      "sha256": "a4d40eba7bd6146b5b21f4dc022dbae03d93cd8289c46902867bdecdf01204a3",
+      "bytes": 675980
+    },
+    {
+      "path": "docs/verification/D19-migration-preservation-20261026/before/docs/verification/adfocate-task-ledger.md",
+      "sha256": "9d0c414b313512f1c85396a2cbcfa4a1c5e6d96887ca522beac2b278e2ed620b",
+      "bytes": 34820
+    },
+    {
+      "path": "docs/verification/D19-migration-preservation-20261026/before/docs/verification/audit_case_coverage.csv",
+      "sha256": "c185eaa7f12c904cd43d5e9805365c7903e6ab9e7ef086e22fe90b44def87953",
+      "bytes": 179555
+    },
+    {
+      "path": "docs/verification/D19-migration-preservation-20261026/before/docs/verification/code-fingerprint.json",
+      "sha256": "0a9accc29ddb559a26fbcbcee2d9d4828fa8bdf63374b0a8d781d3f86885399d",
+      "bytes": 123041
+    },
+    {
+      "path": "docs/verification/D19-migration-preservation-20261026/before/docs/verification/D19-application-runtime-preparation-20261025/runtime-authorization.json",
+      "sha256": "d5ca3dcd9ad8c4e14f0707e2b29c3bb25a1f6dd955e908fb591620281c76d019",
+      "bytes": 386
+    },
+    {
+      "path": "docs/verification/D19-migration-preservation-20261026/before/docs/verification/D19-C2-application-runtime-manifest.json",
+      "sha256": "eb5ca8f03a85c5589cc6cbf27ec0ca5524e8600fd2914ad1d4d73f17eec5009a",
+      "bytes": 34646
+    },
+    {
+      "path": "docs/verification/D19-migration-preservation-20261026/before/docs/verification/evidence-integrity.json",
+      "sha256": "a8ebc96f2b725655795cad599bfb24c1b3a43b793c8e9f0009f3a5c35499128e",
+      "bytes": 432685
+    },
+    {
+      "path": "docs/verification/D19-migration-preservation-20261026/before/docs/verification/implementation_backlog.csv",
+      "sha256": "1d508ca9e1b5ecbc2cc8a0343a59b2186bce89dc59e5d58a298db60d97fb1487",
+      "bytes": 19400
+    },
+    {
+      "path": "docs/verification/D19-migration-preservation-20261026/case-coverage.json",
+      "sha256": "fb07a09669c8c0a3164771d494431765b861820e35aed419b4fd5a969e3510fe",
+      "bytes": 240943
+    },
+    {
+      "path": "docs/verification/D19-migration-preservation-20261026/checkpoint.json",
+      "sha256": "4d36d82a598b69b2ca3e41abbb662f5e2feb234644663a4ceed20a6da5328499",
+      "bytes": 2671
+    },
+    {
+      "path": "docs/verification/D19-migration-preservation-20261026/delivery.json",
+      "sha256": "82c74151dec3b604f7b33672d8b1714fe89f6c079f73f7f62778e8b7478c5180",
+      "bytes": 3984
+    },
+    {
+      "path": "docs/verification/D19-migration-preservation-20261026/delivery.md",
+      "sha256": "e176684cb438815480efb7fdff2f39652dd57d3d32d320fd626160410a3e9b26",
+      "bytes": 3033
+    },
+    {
+      "path": "docs/verification/D19-migration-preservation-20261026/diff-check.log",
+      "sha256": "b2b9a2329fcfac6c7823fc943c0bafbb7f378002d4ae960db766754f957376b9",
+      "bytes": 7875
+    },
+    {
+      "path": "docs/verification/D19-migration-preservation-20261026/finalize-verification.py",
+      "sha256": "ac0edcb4bea079bff13fc5dcf6a617d3882d747781522d4dfa04df82dffb51ff",
+      "bytes": 1625
+    },
+    {
+      "path": "docs/verification/D19-migration-preservation-20261026/git-final.json",
+      "sha256": "8ded4eea8749a5d32a652ea4aa0b52d50058815c1f02afc6b8dd20943ef54917",
+      "bytes": 63509
+    },
+    {
+      "path": "docs/verification/D19-migration-preservation-20261026/migration-provenance.json",
+      "sha256": "74e7b20f576ad4632497ba469a5037fc1eb1ccaf98ff2b50c5fc74d0ab0cd5fc",
+      "bytes": 44012
+    },
+    {
+      "path": "docs/verification/D19-migration-preservation-20261026/prepare-delivery.py",
+      "sha256": "cc3521f9c170c59547f9d00d057c082dc5431e2b04ad5a27beb701e4fe8d473c",
+      "bytes": 22206
+    },
+    {
+      "path": "docs/verification/D19-migration-preservation-20261026/remaining-acceptance.json",
+      "sha256": "a2270f2c64fecfc4cbef6350728179396421e91df5c4361bd6fa17653a26d6ba",
+      "bytes": 16415
+    },
+    {
+      "path": "docs/verification/D19-migration-preservation-20261026/review.json",
+      "sha256": "aa3b980e3d7b94449a9d99b9073894dc565e856ab8adb57ac9bd2ea1147f89bb",
+      "bytes": 7831
+    },
+    {
+      "path": "docs/verification/D19-migration-preservation-20261026/rollback.json",
+      "sha256": "ed4ee7fc95b86a8b2e65308f024bf688b340272c7a15b0ea51317dc36c7d0312",
+      "bytes": 3293
+    },
+    {
+      "path": "docs/verification/D19-migration-preservation-20261026/scope-green.json",
+      "sha256": "a75f47fbcc9d6f8422364153ea98ed9ac7c6b30fb9a4bcce2efebf21f5489a03",
+      "bytes": 450
+    },
+    {
+      "path": "docs/verification/D19-migration-preservation-20261026/scope-red.json",
+      "sha256": "66c06d4b6555caeeb07d7d06eb10d433387a9f0abe6beee403b74458a7fae677",
+      "bytes": 676
+    },
+    {
+      "path": "docs/verification/D19-migration-preservation-20261026/verification-summary.json",
+      "sha256": "48f09fe9ec0bf1f48fd9ce42976381b595508e25e63414a6de55de795962af5c",
+      "bytes": 5468
+    },
+    {
+      "path": "docs/verification/D19-migration-preservation-20261026/verify-preservation.py",
+      "sha256": "0006dad864d68efbc18a779cd76dab6fde95be97ec16dafeddec42ac60dd178a",
+      "bytes": 16882
+    },
+    {
+      "path": "docs/verification/implementation_backlog.csv",
+      "sha256": "a7ed9d3d711ee93826eb6f631989aab8212b05e782448a0a8ac404c7ee845413",
+      "bytes": 20358
+    }
+  ]
+}

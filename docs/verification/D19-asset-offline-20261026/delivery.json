@@ -1,0 +1,88 @@
+{
+  "at": "2026-10-25T21:16:31.619709+00:00",
+  "status": "PASS_STANDALONE_ASSET_BOUNDARY11_NOT_FULL_R1",
+  "tasks": [
+    "D19"
+  ],
+  "sourceFingerprint": "4f2c3faa22bf835911a55dc7bb099910e4308fc1b7a5570d58f32386708934b9",
+  "sourceRecordsUnchanged": 793,
+  "code": "Product/SQL/C2 unchanged. New standalone test driver/valid PNG only; existing engines used.",
+  "test": {
+    "standalonePassed": 11,
+    "failed": 0,
+    "skipped": 0,
+    "lintExit": 0,
+    "strictTypeExit": 0,
+    "retainedNative2155NotRerun": true
+  },
+  "deployment": "NOT_DEPLOYED",
+  "runtime": "Actual Creator UI/query/apiFetch/Hono/upload helpers in process; Auth/repository reads/RPC/Storage explicitly scripted. No actual browser or Supabase integration.",
+  "gates": {
+    "path": "docs/verification/D19-asset-offline-20261026/gates.json",
+    "sha256": "129c2e1639bec28538a15b9299c56aa2bf4a7f5683c295273fa763839ef0942c"
+  },
+  "readbacks": {
+    "path": "docs/verification/D19-asset-offline-20261026/readback-summary.json",
+    "sha256": "2c402146d1ead77234f9e3e366d74dee9c3d7e1fbe85d39221a3be209ab023e9"
+  },
+  "caseCoverage": {
+    "path": "docs/verification/D19-asset-offline-20261026/case-coverage.json",
+    "sha256": "ed5d1f65e0e09f3f8f1aaa5b62e599d57adbfc7b6e4076f6f7e122c35e9aef17"
+  },
+  "schemaDiff": {
+    "path": "docs/verification/D19-asset-offline-20261026/schema-diff.json",
+    "sha256": "3c4334ad90b7e7c2ba2d866343f3a3eb27ac3a5db58d00c42cede471a315cc8e"
+  },
+  "failures": {
+    "path": "docs/verification/D19-asset-offline-20261026/failure-disposition.json",
+    "sha256": "4e5503d51ef8b58d8f99695a0f1b4fdf0fae06163979207921a81933207b294c"
+  },
+  "remaining": {
+    "path": "docs/verification/D19-asset-offline-20261026/remaining-acceptance.json",
+    "sha256": "4353dcf3c44de8bfbf04630d875f6094374ac65a15fa2504615a0e84b5a1130f"
+  },
+  "rollback": {
+    "path": "docs/verification/D19-asset-offline-20261026/rollback.json",
+    "sha256": "80055695fc82b795e4ca6eb4e0f4bde435b41ff2fdf66fcbc326f1c3ba438f7d"
+  },
+  "c2Manifest": {
+    "path": "docs/verification/D19-C2-current-source-runtime-manifest.json",
+    "sha256": "cb93361481d8d6a42785077809c4e5338745ffcb2c3e41ffc62ed72631f59a65"
+  },
+  "c2ProposalUnchangedAndPending": true,
+  "oldE8ApprovalStillTrue": true,
+  "actualTargetCalls": 0,
+  "realSdkClients": 0,
+  "physicalSqlCalls": 0,
+  "authSubjectsCreated": 0,
+  "productionOrFormalStaffWrites": 0,
+  "actualProviderCalls": 0,
+  "pendingRewardNeutralityMeasured": false,
+  "wholeR1Verified": false,
+  "incidentOpen": true,
+  "restored": false,
+  "releaseHold": true,
+  "providerEnabled": false,
+  "commit": null,
+  "push": false,
+  "merge": false,
+  "deploy": false,
+  "blockers": [
+    "D15 approved lesson content UC-C18/UC-A51",
+    "Named advisor owners, physical devices/manual AT and hosted candidate evidence",
+    "Formal staff membership/role owner handoff; active membership0 is a scope issue",
+    "Original3-campaign incident OPEN/unrestored; shaped target forensic-only",
+    "Original audit ZIP absent at the exact provided Downloads path; sealed original107 fields retained, no fresh archive hash verification",
+    "Release HOLD; not deployed; real provider disabled"
+  ],
+  "nextTask": "D19: existing cb933614 current-source C2 applications-only approval is pending and unchanged; do not request replacement approval because of this offline packet. After an explicit decision, identity/provenance gates precede any authorized client/setup. Real asset/Creator-isolation/legacy/C33 financial scopes remain separate; no696e/pristine replay.",
+  "changedThisTask": [
+    "docs/verification/D19-asset-offline-20261026/",
+    "docs/verification/D19-asset-offline-integrity.json",
+    "docs/verification/adfocate-delivery.json",
+    "docs/verification/audit_case_coverage.csv",
+    "docs/verification/implementation_backlog.csv",
+    "docs/verification/adfocate-task-ledger.md",
+    "docs/verification/evidence-integrity.json"
+  ]
+}

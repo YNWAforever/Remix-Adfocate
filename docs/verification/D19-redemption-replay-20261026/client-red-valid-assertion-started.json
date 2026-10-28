@@ -1,0 +1,30 @@
+{
+  "startedAt": "2026-10-25T19:43:29.578336+00:00",
+  "command": [
+    "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "--config",
+    "docs/verification/D19-redemption-replay-20261026/vitest.client.mjs",
+    "--reporter=default",
+    "--reporter=json",
+    "--outputFile.json=docs/verification/D19-redemption-replay-20261026/client-red-valid-assertion-native.json"
+  ],
+  "node": "v22.23.4",
+  "resource": {
+    "at": "2026-10-25T19:43:29.458003+00:00",
+    "freePhysicalGiB": 5.642116546630859,
+    "freeCommitGiB": 4.642055511474609,
+    "minimumGiB": 3,
+    "freeDiskGiB": 21.909217834472656
+  },
+  "credentialsProxiesPreloadsStripped": true,
+  "integrationDisabled": true,
+  "label": "client-red-valid-assertion",
+  "log": "docs/verification/D19-redemption-replay-20261026/client-red-valid-assertion.log",
+  "runtimeTargetCallsRequested": false,
+  "sourceFingerprint": "ead55a808470f90d72290905db90933cb4a6df48eaba519d4587339a4659b71d",
+  "sourceRecords": 789,
+  "npmExecpathProvided": "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+  "pid": 29216
+}

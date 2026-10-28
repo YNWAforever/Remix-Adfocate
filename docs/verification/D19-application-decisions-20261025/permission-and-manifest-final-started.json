@@ -1,0 +1,30 @@
+{
+  "startedAt": "2026-10-25T12:44:55.827541+00:00",
+  "command": [
+    "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "server/devApi.test.ts",
+    "server/devApi.transport.test.ts",
+    "scripts/release/manifest.test.ts",
+    "scripts/release/staff-access.test.ts",
+    "--maxWorkers=1",
+    "--minWorkers=1",
+    "--reporter=json",
+    "--outputFile=C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023\\docs\\verification\\D19-application-decisions-20261025\\permission-and-manifest-final.json"
+  ],
+  "nodeVersion": "v22.23.4",
+  "npmExecpathProvided": true,
+  "childPathPrefersSameNode22": true,
+  "offlineOnly": true,
+  "actualTargetUsed": false,
+  "packageDownloadOrInstall": false,
+  "resource": {
+    "freePhysicalGiB": 8.031867980957031,
+    "freeCommitGiB": 11.33721923828125,
+    "minimumGiB": 3
+  },
+  "sourceFingerprint": "f3152ad56e24efa39763d75730d6035be25f09a9fb1d41327d37a2119d4fd34c",
+  "sourceRecords": 785,
+  "pid": 41036
+}

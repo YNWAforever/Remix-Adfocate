@@ -1,0 +1,194 @@
+{
+  "roleBaseCases": 8,
+  "coreBaseCases": 9,
+  "browserBaseCases": 5,
+  "extraBrowserCoverageObligations": 2,
+  "matrix": [
+    {
+      "id": "B2-ROLE-01",
+      "source": "server/test/audit-staff-capabilities.test.ts",
+      "requirement": "D19 exact-owned staff roles/API/RLS requires a separate staff grant despite brand owner membership and preserves no-membership scope errors",
+      "executionStatus": "NOT_RUN_B2",
+      "historicalOnly": true
+    },
+    {
+      "id": "B2-ROLE-02",
+      "source": "server/test/audit-staff-capabilities.test.ts",
+      "requirement": "D19 exact-owned staff roles/API/RLS keeps finance handoff-only, reviewer review-only and operator unable to manage grants/settings",
+      "executionStatus": "NOT_RUN_B2",
+      "historicalOnly": true
+    },
+    {
+      "id": "B2-ROLE-03",
+      "source": "server/test/audit-staff-capabilities.test.ts",
+      "requirement": "D19 exact-owned staff roles/API/RLS denies direct browser role writes/RPC/self-elevation even with forged user metadata",
+      "executionStatus": "NOT_RUN_B2",
+      "historicalOnly": true
+    },
+    {
+      "id": "B2-ROLE-04",
+      "source": "server/test/audit-staff-capabilities.test.ts",
+      "requirement": "D19 exact-owned staff roles/API/RLS persists a normal grant once with exact replay, audit attribution, stale/conflict denial and no self/cross-workspace grant",
+      "executionStatus": "NOT_RUN_B2",
+      "historicalOnly": true
+    },
+    {
+      "id": "B2-ROLE-05",
+      "source": "server/test/audit-staff-capabilities.test.ts",
+      "requirement": "D19 exact-owned staff roles/API/RLS revokes active staff, membership or role immediately using the same signed-in session",
+      "executionStatus": "NOT_RUN_B2",
+      "historicalOnly": true
+    },
+    {
+      "id": "B2-ROLE-06",
+      "source": "server/test/audit-staff-capabilities.test.ts",
+      "requirement": "D19 exact-owned staff roles/API/RLS requires platform content editor for global drafts without inventing course content",
+      "executionStatus": "NOT_RUN_B2",
+      "historicalOnly": true
+    },
+    {
+      "id": "B2-ROLE-07",
+      "source": "server/test/audit-staff-capabilities.test.ts",
+      "requirement": "D19 exact-owned staff roles/API/RLS preserves brand_users user_id primary key and owner-only bootstrap ACL",
+      "executionStatus": "NOT_RUN_B2",
+      "historicalOnly": true
+    },
+    {
+      "id": "B2-ROLE-08",
+      "source": "server/test/audit-staff-capabilities.test.ts",
+      "requirement": "D19 exact-owned staff roles/API/RLS hands work through Creator, reviewer, operator and finance with one durable pending reward and neutral balances",
+      "executionStatus": "NOT_RUN_B2",
+      "historicalOnly": true
+    },
+    {
+      "id": "B2-CORE-01",
+      "source": "server/test/audit-workflow-roundtrip.test.ts",
+      "requirement": "D07 exact-ID disposable workflow roundtrip loads the real creator mission collection before and after joining",
+      "executionStatus": "NOT_RUN_B2",
+      "historicalOnly": true
+    },
+    {
+      "id": "B2-CORE-02",
+      "source": "server/test/audit-workflow-roundtrip.test.ts",
+      "requirement": "D07 exact-ID disposable workflow roundtrip pages 51 real database creators once with stable ties and a scoped total",
+      "executionStatus": "NOT_RUN_B2",
+      "historicalOnly": true
+    },
+    {
+      "id": "B2-CORE-03",
+      "source": "server/test/audit-workflow-roundtrip.test.ts",
+      "requirement": "D07 exact-ID disposable workflow roundtrip persists race/join, receipt, revision, proof correction, one pending reward and cancellation without financial effects",
+      "executionStatus": "NOT_RUN_B2",
+      "historicalOnly": true
+    },
+    {
+      "id": "B2-CORE-04",
+      "source": "server/test/audit-workflow-roundtrip.test.ts",
+      "requirement": "D07 exact-ID disposable workflow roundtrip rejects real signed-in staff without membership and cross-workspace requests",
+      "executionStatus": "NOT_RUN_B2",
+      "historicalOnly": true
+    },
+    {
+      "id": "B2-CORE-05",
+      "source": "server/test/audit-workflow-roundtrip.test.ts",
+      "requirement": "D07 exact-ID disposable workflow roundtrip rolls back a real audit fault and serializes concurrent CRM retries",
+      "executionStatus": "NOT_RUN_B2",
+      "historicalOnly": true
+    },
+    {
+      "id": "B2-CORE-06",
+      "source": "server/test/audit-workflow-roundtrip.test.ts",
+      "requirement": "D07 exact-ID disposable workflow roundtrip blocks an unknown historical reward contract and preserves the single-workspace membership key",
+      "executionStatus": "NOT_RUN_B2",
+      "historicalOnly": true
+    },
+    {
+      "id": "B2-CORE-07",
+      "source": "server/test/audit-workflow-roundtrip.test.ts",
+      "requirement": "D07 exact-ID disposable workflow roundtrip persists one assistant turn with real service grants and rejects Creator provider claims",
+      "executionStatus": "NOT_RUN_B2",
+      "historicalOnly": true
+    },
+    {
+      "id": "B2-CORE-08",
+      "source": "server/test/audit-workflow-roundtrip.test.ts",
+      "requirement": "D07 exact-ID disposable workflow roundtrip retains the legacy join/submit/review journey with evidence validation",
+      "executionStatus": "NOT_RUN_B2",
+      "historicalOnly": true
+    },
+    {
+      "id": "B2-CORE-09",
+      "source": "server/test/audit-workflow-roundtrip.test.ts",
+      "requirement": "D07 exact-ID disposable workflow roundtrip D19 reapproval preserves an issued legacy anchor and reloads one neutral pending reward through finance",
+      "executionStatus": "NOT_RUN_B2",
+      "historicalOnly": true
+    },
+    {
+      "id": "B2-B01",
+      "source": "e2e/creator-operator-mission.spec.ts",
+      "requirement": "Creator legacy join/invalid input retention/valid submit/reviewer approval/reload; active delivery/revision/proof correction/operator completion/one pending history",
+      "executionStatus": "NOT_RUN_B2",
+      "localPreparationRequired": false,
+      "counting": "five existing browser tests plus two required coverage obligations; do not invent seven passed tests"
+    },
+    {
+      "id": "B2-B02",
+      "source": "e2e/staff-access.spec.ts",
+      "requirement": "Finance read-only controls and reload of same underlying handoff",
+      "executionStatus": "NOT_RUN_B2",
+      "localPreparationRequired": false,
+      "counting": "five existing browser tests plus two required coverage obligations; do not invent seven passed tests"
+    },
+    {
+      "id": "B2-B03",
+      "source": "e2e/staff-access.spec.ts",
+      "requirement": "Reviewer real403 save preserves authored input",
+      "executionStatus": "NOT_RUN_B2",
+      "localPreparationRequired": false,
+      "counting": "five existing browser tests plus two required coverage obligations; do not invent seven passed tests"
+    },
+    {
+      "id": "B2-B04",
+      "source": "e2e/staff-access.spec.ts",
+      "requirement": "Platform-only editor recovers access discovery without workspace/relogin;503 is an explicit mock",
+      "executionStatus": "NOT_RUN_B2",
+      "localPreparationRequired": false,
+      "counting": "five existing browser tests plus two required coverage obligations; do not invent seven passed tests"
+    },
+    {
+      "id": "B2-B05",
+      "source": "e2e/staff-access.spec.ts",
+      "requirement": "Creator redacted ID, operator/finance saved ID, same canonical public fields/history and DB one-row binding",
+      "executionStatus": "NOT_RUN_B2",
+      "localPreparationRequired": false,
+      "counting": "five existing browser tests plus two required coverage obligations; do not invent seven passed tests"
+    },
+    {
+      "id": "B2-B06",
+      "source": "e2e/creator-operator-mission.spec.ts",
+      "requirement": "Add real stale409 and input recovery BEFORE completion using same owned draft/actors; not merely fake409",
+      "executionStatus": "NOT_RUN_B2",
+      "localPreparationRequired": true,
+      "counting": "five existing browser tests plus two required coverage obligations; do not invent seven passed tests"
+    },
+    {
+      "id": "B2-B07",
+      "source": "e2e/creator-operator-mission.spec.ts",
+      "requirement": "Add owned denial-workspace empty state and scoped network abort/retry/input retention; explicit transport fault mock",
+      "executionStatus": "NOT_RUN_B2",
+      "localPreparationRequired": true,
+      "counting": "five existing browser tests plus two required coverage obligations; do not invent seven passed tests"
+    }
+  ],
+  "additionalCoreRequirement": "Persisted historical-invalid legacy URL ordinary approval must fail with unchanged persisted row/finance; add at most one negative submission, no extra mission/Auth/workspace/workflow. Exact schema-valid historical construction must be proven in P0 without disabling constraints.",
+  "neutrality": "Raw funded snapshots per pending window; existing join/legacy deltas separately evidenced. Current pending count1 per completed workflow; cancelled anchor retained; contract never backfilled from current settings.",
+  "pristineGlobalRpcCases": "Two original global cases retained; no rerun, no close_due_campaigns/snapshot_campaign_leaderboards/settle",
+  "excludedAcceptance": [
+    "D15 approved curriculum",
+    "Named advisor owner decisions",
+    "Physical devices/Safari/manual AT/hosted",
+    "Formal staff cutover",
+    "Production/pilot/deploy/7-day observation",
+    "Live proof metadata/social publication/paid AI/real notifications/payment"
+  ]
+}

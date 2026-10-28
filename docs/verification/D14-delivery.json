@@ -1,0 +1,356 @@
+{
+  "task": "D14",
+  "updatedAt": "2026-10-23T07:05:40.896417+00:00",
+  "executionModel": {
+    "model": "gpt-6.1-sol",
+    "source": "current execution turn_context",
+    "selectedBy": "existing execution interface; unchanged",
+    "verifiedAt": "2026-10-23T06:24:59.365639+00:00"
+  },
+  "headSha": "7cfa3dc84c821719a4dff754229a591c81786c53",
+  "branch": "codex/adfocate-r1-pilot-20261023",
+  "commit": null,
+  "push": false,
+  "merge": false,
+  "deploy": false,
+  "newResult": {
+    "code": "implemented with existing LEVELS, Academy API/editor and eligibility engine",
+    "test": "verified local full suite and guarded owned integration/UI",
+    "deployment": "not-deployed",
+    "runtime": "6 real local API cases; 4 Edge journeys; explicit 503 error-path transport fake"
+  },
+  "priorCodeFingerprint": "f3850e65a73f5de44781022f1d81c574f80207987e964a9ac99f84a8a84f81fd",
+  "codeFingerprint": "27e174353ec8455d0fdfcb795c03724e7f1e85c8598fcdf1097957ef76989c85",
+  "changedFiles": [
+    "e2e/public-claims.spec.ts",
+    "scripts/audit/run-integration.mjs",
+    "scripts/audit/run-public-claims.mjs",
+    "server/routes/academy.ts",
+    "server/test/academy-availability.test.ts",
+    "server/test/audit-public-claims-contract.test.ts",
+    "src/components/AcademyTrackCard.tsx",
+    "src/components/admin/AcademyEditor.test.tsx",
+    "src/components/admin/AcademyEditor.tsx",
+    "src/data/mockData.ts",
+    "src/lib/academy.ts",
+    "src/lib/i18n.dict.ts",
+    "src/routes/-_app.guide.track.$trackId.test.tsx",
+    "src/routes/-public-claims.test.tsx",
+    "src/routes/_app.guide.track.$trackId.tsx",
+    "src/routes/_site.contact.tsx",
+    "src/routes/_site.creators.tsx",
+    "src/routes/_site.index.tsx",
+    "src/routes/_site.tsx",
+    "src/routes/admin.academy.$id.tsx",
+    "src/routes/admin.academy.index.tsx"
+  ],
+  "taskOnlyPatch": "D14-changes.patch",
+  "gates": [
+    {
+      "gate": "D14-targeted",
+      "command": "npm exec --offline --yes --package=node@22 -- node node_modules/vitest/vitest.mjs run src/routes/-public-claims.test.tsx src/components/admin/AcademyEditor.test.tsx src/lib/levels.test.ts server/test/academy-availability.test.ts src/routes/_site.smoke.test.tsx 'src/routes/-_app.guide.track.$trackId.test.tsx' src/components/AcademyTrackCard.test.tsx server/lib/academyAuthoring.test.ts src/routes/-_app.guide.index.test.tsx --maxWorkers=1 --minWorkers=1",
+      "passed": 66,
+      "files": 9,
+      "log": "logs/D14-targeted.log"
+    },
+    {
+      "gate": "D14-real-api-and-browser",
+      "command": "npm exec --offline --yes --package=node@22 -- node scripts/audit/run-public-claims.mjs",
+      "apiPassed": 6,
+      "browserPassed": 4,
+      "log": "logs/D14-runtime-verified.log"
+    },
+    {
+      "gate": "D14-full-suite",
+      "command": "npm exec --offline --yes --package=node@22 -- node node_modules/vitest/vitest.mjs run --maxWorkers=1 --minWorkers=1 --reporter=default --reporter=json --outputFile=.codex-tmp/D14-full-suite.json",
+      "node": "22.23.4",
+      "passed": 1756,
+      "skipped": 338,
+      "failed": 0,
+      "testFiles": 252,
+      "audit16Passed": 16,
+      "original194Passed": 194,
+      "log": "logs/D14-full-suite.log"
+    },
+    {
+      "gate": "D14-typecheck",
+      "command": "npm run type-check",
+      "exit": 0,
+      "log": "logs/D14-typecheck.log"
+    },
+    {
+      "gate": "D14-lint",
+      "command": "npm run lint",
+      "exit": 0,
+      "log": "logs/D14-lint.log"
+    },
+    {
+      "gate": "D14-build",
+      "command": "npm exec --offline --yes --package=node@22 -- npm run build",
+      "exit": 0,
+      "log": "logs/D14-build-node22.log"
+    },
+    {
+      "gate": "D14-manifest",
+      "command": "npm run release:manifest:check",
+      "exit": 0,
+      "log": "logs/D14-manifest-check.log"
+    },
+    {
+      "gate": "D14-diff",
+      "command": "git diff --check",
+      "exit": 0,
+      "log": "logs/D14-diff-check.log"
+    }
+  ],
+  "api": {
+    "runId": "560c5421-28dc-45f0-bdd5-56f32cffdb02",
+    "target": {
+      "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+      "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+      "disposable": true,
+      "projectId": "adfocate-r1-empty-20261023",
+      "proxy": "none",
+      "apiPort": 56421,
+      "apiContainerId": "1b9c41318298d79308db7782f51474541ad5abf0120fa93b96a2a9ea59d043ee",
+      "databaseContainerId": "e7c8efa295cd5544a8b2a100a73b6953cd6ddd486aaf394f231482067523e12d",
+      "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+      "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+      "networkId": "9e5d3069e8255d70b8eef56020c8ea2618fdb2626d92d9a04e51ea2de41a98e0"
+    },
+    "ownedContent": {
+      "resource": {
+        "id": "601fedce-4981-4e0b-aee6-4f219d82f7eb",
+        "slug": "d14-resource-560c5421-28dc-45f0-bdd5-56f32cffdb02"
+      },
+      "ready": {
+        "id": "b50b6f0a-0887-42ab-9a99-1df2d5d067ab",
+        "slug": "d14-ready-560c5421-28dc-45f0-bdd5-56f32cffdb02"
+      },
+      "empty": {
+        "id": "37090ff2-e695-469f-8ea0-88afaf1cf2af",
+        "slug": "d14-empty-560c5421-28dc-45f0-bdd5-56f32cffdb02"
+      },
+      "gated": {
+        "id": "c2a72cbf-ea74-41d8-9a25-5f730368c4e2",
+        "slug": "d14-gated-560c5421-28dc-45f0-bdd5-56f32cffdb02"
+      }
+    },
+    "neutrality": {
+      "before": {
+        "xp": 0,
+        "points": 50,
+        "withdrawable": 0,
+        "budget": null,
+        "pointLedger": 0,
+        "cashLedger": 0,
+        "redemptions": 0,
+        "budgetLedger": 0,
+        "rewardInventory": []
+      },
+      "after": {
+        "xp": 0,
+        "points": 50,
+        "withdrawable": 0,
+        "budget": null,
+        "pointLedger": 0,
+        "cashLedger": 0,
+        "redemptions": 0,
+        "budgetLedger": 0,
+        "rewardInventory": []
+      },
+      "allEqual": true
+    },
+    "cleanup": "retained exact owned IDs; no delete, reset, seed or production access",
+    "providers": "external HTTP blocked"
+  },
+  "browser": {
+    "runId": "560c5421-28dc-45f0-bdd5-56f32cffdb02",
+    "target": {
+      "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+      "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+      "disposable": true,
+      "projectId": "adfocate-r1-empty-20261023",
+      "proxy": "none",
+      "apiPort": 56421,
+      "apiContainerId": "1b9c41318298d79308db7782f51474541ad5abf0120fa93b96a2a9ea59d043ee",
+      "databaseContainerId": "e7c8efa295cd5544a8b2a100a73b6953cd6ddd486aaf394f231482067523e12d",
+      "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+      "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+      "networkId": "9e5d3069e8255d70b8eef56020c8ea2618fdb2626d92d9a04e51ea2de41a98e0"
+    },
+    "tests": [
+      {
+        "title": "D14 public pages identify illustrative claims and use canonical XP in both languages and viewports",
+        "ok": true,
+        "results": [
+          {
+            "status": "passed",
+            "duration": 11244
+          }
+        ]
+      },
+      {
+        "title": "D14 five contact previews retain drafts, send no data and show no receipt after refresh",
+        "ok": true,
+        "results": [
+          {
+            "status": "passed",
+            "duration": 11267
+          }
+        ]
+      },
+      {
+        "title": "D14 operator creates a resource body, reloads it, publishes and filters tracks separately",
+        "ok": true,
+        "results": [
+          {
+            "status": "passed",
+            "duration": 2773
+          }
+        ]
+      },
+      {
+        "title": "D14 Creator reads persisted content, sees preparing and retains the trust gate and read retry",
+        "ok": true,
+        "results": [
+          {
+            "status": "passed",
+            "duration": 4037
+          }
+        ]
+      }
+    ],
+    "stats": {
+      "startTime": "2026-10-23T06:52:04.369Z",
+      "duration": 37816.914,
+      "expected": 4,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "browser": "installed Edge; 390x844 emulated and 1280x900 desktop; English and Traditional Chinese public pages",
+    "auth": "real local Auth sessions created by owned fixture and reused in browser; real Auth/RLS/API/storage database; no external login or real notifications",
+    "mocks": "explicit transient 503 transport responses only; all successful data reads/writes use the owned local database",
+    "providers": "external HTTP blocked; no paid AI, social provider, payment, publication or messaging",
+    "deployment": "not-deployed"
+  },
+  "financialNeutrality": {
+    "runId": "560c5421-28dc-45f0-bdd5-56f32cffdb02",
+    "before": {
+      "creator": {
+        "xp": 0,
+        "budget": null,
+        "points": 50,
+        "cashLedger": 0,
+        "pointLedger": 0,
+        "redemptions": 0,
+        "budgetLedger": 0,
+        "withdrawable": 0,
+        "rewardInventory": []
+      },
+      "untrusted": {
+        "xp": 6000,
+        "budget": null,
+        "points": 50,
+        "cashLedger": 0,
+        "pointLedger": 0,
+        "redemptions": 0,
+        "budgetLedger": 0,
+        "withdrawable": 0,
+        "rewardInventory": []
+      }
+    },
+    "after": {
+      "creator": {
+        "xp": 0,
+        "budget": null,
+        "points": 50,
+        "cashLedger": 0,
+        "pointLedger": 0,
+        "redemptions": 0,
+        "budgetLedger": 0,
+        "withdrawable": 0,
+        "rewardInventory": []
+      },
+      "untrusted": {
+        "xp": 6000,
+        "budget": null,
+        "points": 50,
+        "cashLedger": 0,
+        "pointLedger": 0,
+        "redemptions": 0,
+        "budgetLedger": 0,
+        "withdrawable": 0,
+        "rewardInventory": []
+      }
+    },
+    "allEqual": true,
+    "note": "All raw XP, points, ledgers, withdrawable, budgets, redemptions and gift inventory remain unchanged."
+  },
+  "schema": {
+    "changed": false,
+    "newMigrations": 0,
+    "manifestDigest": "a1cfcb804a2d369df16a2e7542cde4346429bcfb652a7707efdf929c0e62ff86",
+    "observation": "D14-schema-observation.json",
+    "diff": "D14-schema-diff.json",
+    "historyRows": 67,
+    "membershipPrimaryKey": "user_id",
+    "productionQueried": false
+  },
+  "postRuntimeSourceChanges": false,
+  "limitations": [
+    "Not deployed. No commit, push, merge, CI, production access, real memberships, messages/invitations, paid AI/social providers, payments or financing.",
+    "D14 is the approved local truthful-preview scope. UC-C18 and UC-A51 still require four real lesson units and persisted learning progress in D15; their original expectations remain open, not PASS. The reduced public promise still needs release-owner confirmation before publication.",
+    "One transient error scenario uses explicit 503 transport mocks (actual count in D14-creator-ui.json). Successful browser/API reads and writes use real owned local Auth/RLS/database. The browser reuses real local fixture sessions; this is not a fresh external login or provider acceptance.",
+    "Earlier R0/R1/D08/D09/D12/D13 runtime stays historical at its preserved fingerprints. This task does not rerun the entire legacy/active proof/reward handoff. The original 16 audit tests and 194 contracts are freshly rerun.",
+    "Skipped full-suite integration is not PASS. The broad legacy integration seed/cleanup exceeds exact-owned fixture scope; this task uses the guarded six-case owned Academy integration instead.",
+    "No Safari/WebKit, physical-device, full accessibility, 200% zoom, load/performance or multi-author race certification. Existing app lint warnings and build route/bundle warnings remain.",
+    "The original audit ZIP was not reopened this turn; original report/case/regression evidence and its expected SHA are preserved. Supplied implementation-package CSV original fields are rechecked unchanged."
+  ],
+  "openAcceptance": [
+    "UC-C18",
+    "UC-A51"
+  ],
+  "nextTask": "D15",
+  "evidence": [
+    "D14-delivery.json",
+    "D14-api-contract.json",
+    "D14-browser-summary.json",
+    "D14-public-ui.json",
+    "D14-contact-ui.json",
+    "D14-author-ui.json",
+    "D14-creator-ui.json",
+    "D14-browser-neutrality.json",
+    "D14-schema-observation.json",
+    "D14-schema-diff.json",
+    "D14-fixture-retention.json",
+    "D14-changes.patch",
+    "logs/D14-targeted.log",
+    "logs/D14-runtime-verified.log",
+    "logs/D14-full-suite.log",
+    "logs/D14-typecheck.log",
+    "logs/D14-lint.log",
+    "logs/D14-build-node22.log",
+    "logs/D14-manifest-check.log",
+    "logs/D14-diff-check.log"
+  ],
+  "attempts": {
+    "productRed": [
+      "D14-red-summary.json",
+      "D14-api-red-summary.json",
+      "D14-editor-red-summary.json",
+      "D14-recovery-red-summary.json",
+      "D14-copy-red-summary.json",
+      "D14-copy-zh-red-summary.json"
+    ],
+    "corrections": [
+      "Interim HeroSection translation variable omitted; fixed before final gates.",
+      "Recovery unit fixture initially switched locale, causing a second query to bypass the intended error; pinned the existing Chinese locale, assertions preserved.",
+      "Runtime attempt1: fixture incorrectly wrote derived is_trusted; removed only that fixture field, no schema or trust-engine change. Six tests did not execute on this setup failure.",
+      "Runtime attempt2: 6 API passed, 2/4 browser; wrong tab role and existing level-up dialog blocked clicks.",
+      "Runtime attempt3: 6 API passed, 3/4 browser; repeated preview toasts required selecting the latest toast.",
+      "Final cached Node22: 6 API and 4/4 Edge passed, no retries/flaky passes."
+    ]
+  }
+}

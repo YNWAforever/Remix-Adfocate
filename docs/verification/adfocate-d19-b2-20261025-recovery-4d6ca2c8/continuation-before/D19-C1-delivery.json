@@ -1,0 +1,135 @@
+{
+  "at": "2026-10-25T09:17:34.589342+00:00",
+  "task": "D19 C1 approved runtime and local autosave repair",
+  "newResult": "ORIGIN_ROLE8_CORE9_PASS_BROWSER2_PASS_1_FAIL_2_NOT_RUN_LOCAL_REPAIR_VERIFIED_NEW_SOURCE_CONTINUATION_REVIEW_REQUIRED",
+  "headSha": "7cfa3dc84c821719a4dff754229a591c81786c53",
+  "branch": "codex/adfocate-r1-pilot-20261023",
+  "sourceFingerprint": "e83998d178061043688016056a5a78fc61df58bac28f3d0d0b66d639306037bd",
+  "sourceRecords": 782,
+  "sourceChangedPaths": [
+    "e2e/creator-operator-mission.spec.ts",
+    "scripts/audit/adopt-browser-fixture.mjs",
+    "scripts/audit/browser-recovery.mjs",
+    "scripts/audit/local-targets.mjs",
+    "server/test/b2-browser-recovery.test.ts",
+    "server/test/b2-runtime-manifest.test.ts",
+    "server/test/b2-target-context.test.ts",
+    "src/components/active-mission/DraftEditor.recovery.test.tsx",
+    "src/components/active-mission/DraftEditor.tsx"
+  ],
+  "originRuntimeSource": "6285bca02a74bedf3eda7259238366e9023fcc0cae24fe5e7c874ae9dd118d7b",
+  "originRuntimeManifestSha256": "a0f09af0a7bce75e6842a1d42042ac4471e757c184574d7e5dcf9a23fdc57989",
+  "originRuntimeApproved": true,
+  "sourceRevisionRuntimeApproved": false,
+  "sourceRevisionManifest": "D19-C1-browser-continuation-runtime-manifest.json",
+  "sourceRevisionManifestSha256": "696e94c29e62a27e820d7d12f5aa74c0d1e7b62f97f3b57db787074512a2626d",
+  "sourceRevisionAdditionalResources": 0,
+  "projectId": "adfocate-d19-b2-20261025-recovery-4d6ca2c8",
+  "actualC1Resources": {
+    "projects": 1,
+    "persistentDataVolumes": 1,
+    "networks": 1,
+    "containers": 5
+  },
+  "applicationBootstrapVerified": true,
+  "applicationMigrationsApplied": 72,
+  "compatibilityStatementsApplied": 9,
+  "protectedCapabilities": 584,
+  "fixtureShapeFamilies": 70,
+  "originalFixturesCreated": {
+    "authSubjects": 84,
+    "workspaces": 6
+  },
+  "originalRuntime": {
+    "sourceFingerprint": "6285bca02a74bedf3eda7259238366e9023fcc0cae24fe5e7c874ae9dd118d7b",
+    "role": {
+      "passed": 8,
+      "failed": 0
+    },
+    "core": {
+      "passed": 9,
+      "failed": 0
+    },
+    "browser": {
+      "passed": 2,
+      "failed": 1,
+      "notRun": 2,
+      "phaseExit": 1
+    },
+    "newSourceRuntime": "NOT_RUN_NOT_APPROVED"
+  },
+  "legacyActiveProofPendingRewardPersistence": "API role/core proven at origin source; browser incomplete, failed before active submission/revision/proof/completion. Local repair is not runtime verified.",
+  "financialNeutrality": {
+    "core": "PASS completion/cancel/reapproval windows;9 financial families/all workspace XP/inventory, legacy anchor retained",
+    "browser": "NOT_MEASURED",
+    "aggregate": {
+      "xp": 300,
+      "points": 1300,
+      "budgets": 26750,
+      "workflows": [
+        {
+          "id": "2a142015-5fc0-4712-93b3-cea4eb615637",
+          "state": "reward_pending",
+          "workspaceId": "2bb528a0-bf68-4a3c-a7b1-708aeb517e81",
+          "submissionId": "114082af-c5d5-4603-83d9-af62ff786335"
+        },
+        {
+          "id": "412aec48-c3eb-44da-bb9f-3addde82c541",
+          "state": "drafting",
+          "workspaceId": "2bb528a0-bf68-4a3c-a7b1-708aeb517e81",
+          "submissionId": "2293cfaa-ab9b-42cd-9303-4b24c5127a03"
+        },
+        {
+          "id": "67e4aee7-a26c-442a-955a-3aa9fedb005c",
+          "state": "reward_pending",
+          "workspaceId": "2177f882-9f30-4ad6-b5e2-c546b6709d61",
+          "submissionId": "415ac2d6-03a4-4ed6-adaf-702020760841"
+        },
+        {
+          "id": "acc556fa-af8e-45fc-b324-13b111dc2125",
+          "state": "drafting",
+          "workspaceId": "44e4cc71-1bc1-4686-9144-89e78396e426",
+          "submissionId": "36ab9494-b1ce-4d49-925b-3f51368e913c"
+        }
+      ],
+      "cashLedger": 2,
+      "pointLedger": 2,
+      "redemptions": 0,
+      "budgetLedger": 2,
+      "historyCount": 72,
+      "withdrawable": 250,
+      "faultTriggers": 0,
+      "faultFunctions": 0,
+      "inventoryRemaining": 9
+    },
+    "aggregateMeaning": "Exactly two authorized existing legacy issuances; distinct from neutral pending windows. No real payment.",
+    "wholeCandidatePassed": false
+  },
+  "gates": "D19-C1-gates.json",
+  "schemaDiff": "D19-C1-schema-diff.json",
+  "caseCoverage": "D19-C1-case-coverage.json",
+  "remainingAcceptance": "D19-C1-remaining-acceptance.json",
+  "rollback": "D19-C1-rollback.json",
+  "integrity": "D19-C1-integrity.json",
+  "incidentOpen": true,
+  "restored": false,
+  "originalThreeCampaignsTouched": false,
+  "releaseHold": true,
+  "providerEnabled": false,
+  "wholeR1Verified": false,
+  "D15ContentBlocked": true,
+  "advisorOwnerDeviceHostedFormalStaffBlocked": true,
+  "originalB2AndIncidentTargetsRetained": true,
+  "pristineRpcRerun": false,
+  "productionDataOrMembershipWrites": false,
+  "commit": null,
+  "push": false,
+  "merge": false,
+  "deploy": false,
+  "nextTask": "Review exact same-existing-fixture/new-source continuation manifest; after explicit approval, live identity and read-only source/schema/70-family inventory/provenance revalidation,6 existing actor session renewals, composite original5 UI cases+2 obligations and final neutrality. No bootstrap/setup/reseed/legacy replay.",
+  "changedFiles": "D19-C1-changed-files.json",
+  "report": "D19-C1-delivery.md",
+  "applicabilityReview": "D19-C1-R1-applicability-reconciliation.json",
+  "node22CurrentCandidate": "NOT_RUN_RESOURCE_GATE",
+  "requestedModelInterface": "UNKNOWN_NODE_REPL_INITIALIZATION_FAILED"
+}

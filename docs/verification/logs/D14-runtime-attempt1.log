@@ -1,0 +1,66 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability
+GoTrueClient@sb-127-auth-token:1 (2.108.1) 2026-10-23T06:44:53.543Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability
+GoTrueClient@sb-127-auth-token:2 (2.108.1) 2026-10-23T06:44:53.781Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability
+GoTrueClient@sb-127-auth-token:3 (2.108.1) 2026-10-23T06:44:54.000Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability
+GoTrueClient@sb-127-auth-token:4 (2.108.1) 2026-10-23T06:44:54.217Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+ ❯ server/test/audit-public-claims-contract.test.ts (6 tests | 6 skipped) 2792ms
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability
+Error: Could not find the 'is_trusted' column of 'creators' in the schema cache
+ ❯ Object.must server/test/auditWorkflowFixture.ts:19:29
+     17|   const missionIds: string[] = [];
+     18|   const must = <T extends { data: unknown; error: { message: string } …
+     19|     if (result.error) throw new Error(result.error.message);
+       |                             ^
+     20|     return result.data;
+     21|   };
+ ❯ server/test/audit-public-claims-contract.test.ts:21:8
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability
+AssertionError: expected { xp: +0, points: 50, …(7) } to deeply equal undefined
+
+- Expected: 
+undefined
+
++ Received: 
+Object {
+  "budget": null,
+  "budgetLedger": 0,
+  "cashLedger": 0,
+  "pointLedger": 0,
+  "points": 50,
+  "redemptions": 0,
+  "rewardInventory": Array [],
+  "withdrawable": 0,
+  "xp": 0,
+}
+
+ ❯ server/test/audit-public-claims-contract.test.ts:37:19
+ Test Files  1 failed (1)
+     35|     if (!fx) return;
+     36|     const after = await fx.neutrality(fx.creators[0].id);
+     37|     expect(after).toEqual(before);
+       |                   ^
+     38|     writeFileSync(".codex-tmp/D14-fixture.private.json", JSON.stringif…
+     39|       workspaceId: fx.workspaceId, slug: fx.slug, creator: fx.creators…
+      Tests  6 skipped (6)
+   Start at  14:44:51
+   Duration  3.69s (transform 572ms, setup 142ms, collect 19ms, tests 2.79s, environment 468ms, prepare 84ms)
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+

@@ -1,0 +1,16 @@
+
+> type-check
+> tsr generate && tsc --noEmit
+
+Warning: Route file "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/_site.smoke.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\src\routes\-_site.smoke.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+server/routes/missions.ts(186,40): error TS2345: Argument of type 'PostgrestError | (Error & { code: string; details: string; hint: string; })' is not assignable to parameter of type 'PostgrestError'.
+  Property 'toJSON' is missing in type 'Error & { code: string; details: string; hint: string; }' but required in type 'PostgrestError'.
+src/routes/operator.creators.$creatorId.tsx(127,12): error TS2741: Property 'search' is missing in type '{ children: (string | Element)[]; to: "/admin/creators"; className: string; }' but required in type 'MakeRequiredSearchParams<RouterCore<Route<Register, any, "/", "/", string, "__root__", undefined, {}, { queryClient: QueryClient; }, AnyContext, AnyContext, ... 6 more ..., undefined>, "never", false, RouterHistory, Record<...>>, string, "/admin/creators">'.

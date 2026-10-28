@@ -6,6 +6,7 @@ import {
   AdminAuthError, AdminRequestError, adminKeys, closeCampaign, fetchCampaigns,
   publishCampaign, settleCampaign, type AdminCampaign,
 } from "@/lib/admin";
+import { RequestFeedback, useCanShowPreviousData } from "@/components/RequestFeedback";
 import { useAdminAuth } from "@/components/admin/AdminAuthContext";
 import { useAdminWorkspace } from "@/components/admin/AdminWorkspaceContext";
 
@@ -29,6 +30,7 @@ function CampaignsList() {
     enabled: authed,
     retry: false,
   });
+  const visible = useCanShowPreviousData(list, adminKeys.campaigns(workspace, status)) ? list.data : undefined;
   useEffect(() => {
     if (list.error instanceof AdminAuthError) reportAuthError(list.error);
   }, [list.error, reportAuthError]);
@@ -55,11 +57,12 @@ function CampaignsList() {
         <Link to="/admin/campaigns/new" className="ml-auto rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 font-heading font-bold">+ 新挑戰</Link>
       </div>
 
+      <RequestFeedback error={list.error} stale={Boolean(visible)} retry={() => void list.refetch()} />
       {list.isLoading ? <p className="text-sm">載入中…</p> : null}
-      {list.data?.campaigns.length === 0 ? <p className="text-sm text-[var(--color-soft-ink)]">此品牌尚未有挑戰。</p> : null}
+      {!list.isError && visible?.campaigns.length === 0 ? <p className="text-sm text-[var(--color-soft-ink)]">此品牌尚未有挑戰。</p> : null}
 
       <div className="space-y-3">
-        {list.data?.campaigns.map((c: AdminCampaign) => (
+        {visible?.campaigns.map((c: AdminCampaign) => (
           <div key={c.id} className="flex flex-wrap items-center justify-between gap-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3">
             <div className="min-w-0 space-y-1">
               <div className="flex flex-wrap items-center gap-2">
@@ -70,9 +73,9 @@ function CampaignsList() {
             </div>
             <div className="flex shrink-0 flex-wrap gap-2">
               <button onClick={() => navigate({ to: "/admin/campaigns/$id", params: { id: c.id } })} className="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 font-heading font-bold">編輯</button>
-              {c.status === "draft" ? <button disabled={publish.isPending} onClick={() => publish.mutate(c.id)} className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 font-heading font-bold">發佈</button> : null}
-              {c.status === "active" ? <button disabled={close.isPending} onClick={() => { if (window.confirm("關閉此挑戰？將停止新參與。")) close.mutate(c.id); }} className="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 font-heading font-bold">關閉</button> : null}
-              {c.status === "closed" ? <button disabled={settle.isPending} onClick={() => { if (window.confirm("結算此挑戰？將派發獎勵與獎品。")) settle.mutate(c.id); }} className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 font-heading font-bold">結算</button> : null}
+              {c.status === "draft" ? <button disabled={publish.isPending || list.isError || list.isFetching} onClick={() => publish.mutate(c.id)} className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 font-heading font-bold">發佈</button> : null}
+              {c.status === "active" ? <button disabled={close.isPending || list.isError || list.isFetching} onClick={() => { if (window.confirm("關閉此挑戰？將停止新參與。")) close.mutate(c.id); }} className="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 font-heading font-bold">關閉</button> : null}
+              {c.status === "closed" ? <button disabled={settle.isPending || list.isError || list.isFetching} onClick={() => { if (window.confirm("結算此挑戰？將派發獎勵與獎品。")) settle.mutate(c.id); }} className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 font-heading font-bold">結算</button> : null}
             </div>
           </div>
         ))}

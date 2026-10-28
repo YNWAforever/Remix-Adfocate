@@ -1,0 +1,16 @@
+{
+  "checkedAt": "2026-10-23T12:02:40.139Z",
+  "os": "win32",
+  "release": "10.0.26200",
+  "architecture": "x64",
+  "cpu": "12th Gen Intel(R) Core(TM) i5-12500",
+  "logicalCpus": 12,
+  "totalRamBytes": 34033348608,
+  "availableRamBytes": 10904117248,
+  "nodeDefault": "v24.18.0",
+  "validationNode": "22.23.4",
+  "diskFreeBytes": 41109102592,
+  "device": "installed Edge, desktop viewport and simulated CSS viewport only",
+  "cache": "Browser HTTP cache disabled by loopback-only request routing; DB/server warm, not reset",
+  "network": "loopback; no CPU/network throttling, fonts external fetch aborted"
+}

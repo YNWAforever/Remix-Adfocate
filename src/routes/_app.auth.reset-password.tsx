@@ -45,11 +45,12 @@ function ResetPassword() {
   const verifyLink = useCallback(async () => {
     setFeedback(null);
     const params = new URLSearchParams(window.location.search);
+    const fragment = new URLSearchParams(window.location.hash.slice(1));
     const code = params.get("code");
     if (!code) {
       setFeedback(classifyAuthError({
-        code: params.get("error_code") ?? params.get("error") ?? "malformed_callback",
-        message: params.get("error_description"),
+        code: params.get("error_code") ?? fragment.get("error_code") ?? params.get("error") ?? fragment.get("error") ?? "malformed_callback",
+        message: params.get("error_description") ?? fragment.get("error_description"),
       }));
       return;
     }

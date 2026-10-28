@@ -35,7 +35,13 @@ function operatorContext(c: Context<AdminEnv>) {
       actorLabel: c.req.header("x-operator-label")?.trim() || "Admin operator",
     };
   }
-  return { operatorId: staff.userId!, actorLabel: staff.email };
+  return { operatorId: staff.userId!, actorLabel: staff.email, workspaceId: c.get("authorizedWorkspace").workspaceId };
+}
+
+function commandIdentity(body: { request_id?: unknown; expected_revision?: unknown }) {
+  if (typeof body.request_id !== "string" || !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(body.request_id)
+    || !Number.isSafeInteger(body.expected_revision) || Number(body.expected_revision) < 0) throw new OperatorCrmError("invalid_command");
+  return { requestId: body.request_id, expectedRevision: Number(body.expected_revision) };
 }
 
 function crmError(c: { json: (body: unknown, status?: number) => Response }, error: unknown) {
@@ -46,18 +52,23 @@ function crmError(c: { json: (body: unknown, status?: number) => Response }, err
   const status =
     error.code === "creator_not_found" || error.code === "mission_not_found" || error.code === "shortlist_not_found"
       ? 404
-      : error.code === "flagged_invite_blocked"
+      : error.code === "FORBIDDEN" ? 403
+      : ["flagged_invite_blocked", "CRM_STALE", "IDEMPOTENCY_CONFLICT"].includes(error.code)
         ? 409
         : error.code === "db_error"
           ? 500
           : 400;
 
-  return c.json({ error: error.message, code: error.code }, status);
+  return c.json({ error: error.code === "db_error" ? "Database command unavailable; retry the same request" : error.message, code: error.code }, status);
 }
 
 adminOperatorCrmRoutes.get("/creators/review", async (c) => {
   const page = Math.max(Number(c.req.query("page") ?? 1), 1);
   const pageSize = Math.min(Math.max(Number(c.req.query("page_size") ?? 25), 1), 100);
+  const sort = c.req.query("sort") || "last_activity";
+  if (!Number.isSafeInteger(page) || page > 1000000 || pageSize !== 25
+    || !["last_activity", "trust_score", "level", "social_freshness"].includes(sort)
+    || [...(c.req.query("q") ?? "")].length > 200) return c.json({ error: "Invalid queue filters", code: "bad_request" }, 400);
   const statusQuery = c.req.query("status");
   const riskQuery = c.req.query("risk_level");
   const status = statusQuery ? (parseReviewStatus(statusQuery) ?? undefined) : undefined;
@@ -69,6 +80,7 @@ adminOperatorCrmRoutes.get("/creators/review", async (c) => {
   try {
     return c.json(
       await listCreatorReviewQueue(serviceClient(), {
+        operatorId: c.get("staff").userId!,
         status,
         riskLevel,
         missionId: nonEmptyText(c.req.query("mission_id")) ?? undefined,
@@ -104,8 +116,8 @@ adminOperatorCrmRoutes.get("/creators/:id/publication-proofs", async (c) => {
 
 adminOperatorCrmRoutes.post("/creators/:id/review", async (c) => {
   const body = await c.req
-    .json<{ status?: unknown; risk_level?: unknown; summary?: unknown; note?: unknown }>()
-    .catch(() => ({}) as { status?: unknown; risk_level?: unknown; summary?: unknown; note?: unknown });
+    .json<{ status?: unknown; risk_level?: unknown; summary?: unknown; note?: unknown; request_id?: unknown; expected_revision?: unknown }>()
+    .catch(() => ({} as { status?: unknown; risk_level?: unknown; summary?: unknown; note?: unknown; request_id?: unknown; expected_revision?: unknown }));
   const status = parseReviewStatus(body.status);
   const riskLevel = parseRiskLevel(body.risk_level);
   const note = nonEmptyText(body.note);
@@ -118,6 +130,7 @@ adminOperatorCrmRoutes.post("/creators/:id/review", async (c) => {
 
   try {
     const review = await updateCreatorReview(serviceClient(), {
+      ...commandIdentity(body),
       creatorId: c.req.param("id"),
       status,
       riskLevel,
@@ -133,8 +146,8 @@ adminOperatorCrmRoutes.post("/creators/:id/review", async (c) => {
 
 adminOperatorCrmRoutes.post("/creators/:id/notes", async (c) => {
   const body = await c.req
-    .json<{ category?: unknown; body?: unknown }>()
-    .catch(() => ({}) as { category?: unknown; body?: unknown });
+    .json<{ category?: unknown; body?: unknown; request_id?: unknown; expected_revision?: unknown }>()
+    .catch(() => ({} as { category?: unknown; body?: unknown; request_id?: unknown; expected_revision?: unknown }));
   const category = parseNoteCategory(body.category);
   const noteBody = nonEmptyText(body.body);
 
@@ -144,6 +157,7 @@ adminOperatorCrmRoutes.post("/creators/:id/notes", async (c) => {
   try {
     return c.json({
       note: await addCreatorReviewNote(serviceClient(), {
+        ...commandIdentity(body),
         creatorId: c.req.param("id"),
         category,
         body: noteBody,

@@ -1,0 +1,8 @@
+{
+  "at": "2026-10-25T17:37:25.489595+00:00",
+  "freePhysicalGiB": 5.348476409912109,
+  "freeCommitGiB": 10.352481842041016,
+  "minimumGiB": 3,
+  "workspaceFreeDiskGiB": 22.37679672241211,
+  "beforeDockerSqlAuthClientOrFixture": true
+}

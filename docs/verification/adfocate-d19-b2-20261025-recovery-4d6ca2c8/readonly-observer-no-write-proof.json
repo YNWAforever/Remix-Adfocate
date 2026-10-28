@@ -1,0 +1,25 @@
+{
+  "at": "2026-10-25T08:06:31.890Z",
+  "lineage": {
+    "projectId": "adfocate-d19-b2-20261025-recovery-4d6ca2c8",
+    "ownerRunId": "4d6ca2c8-b9c2-4457-bda8-7c03ac533f61",
+    "sourceFingerprint": "6285bca02a74bedf3eda7259238366e9023fcc0cae24fe5e7c874ae9dd118d7b",
+    "manifestSha256": "a0f09af0a7bce75e6842a1d42042ac4471e757c184574d7e5dcf9a23fdc57989",
+    "phase": "browser",
+    "namespace": "ebf1f615-be72-4072-ad97-ee98b150a796"
+  },
+  "originalToken": "80a770d8-cbb5-4ea6-80d4-baa6b701df83",
+  "querySha256": "c6ec76663222cab3c30d16bdfacb0f9528adca9ee0b699fa4e3ab90745dd4c99",
+  "originalError": "column d.caption does not exist; read-only SELECT rejected during column resolution",
+  "correctColumnFromSealedCatalog": "caption_text",
+  "currentReadOnlyCatalogProof": {
+    "history": 72,
+    "readOnly": "on",
+    "captionExists": false,
+    "captionTextExists": true
+  },
+  "noDbWritePossible": true,
+  "noOwnershipGranted": true,
+  "reservationRetained": true,
+  "oldUnknownEventPreserved": true
+}

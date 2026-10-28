@@ -1,0 +1,33 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ❯ server/test/audit-admin-scope.test.ts (8 tests | 1 failed) 22ms
+   × staff workspace API boundary > does not turn an Auth service outage into a new login requirement 12ms
+     → expected 401 to be 503 // Object.is equality
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  server/test/audit-admin-scope.test.ts > staff workspace API boundary > does not turn an Auth service outage into a new login requirement
+AssertionError: expected 401 to be 503 // Object.is equality
+
+- Expected
++ Received
+
+- 503
++ 401
+
+ ❯ server/test/audit-admin-scope.test.ts:44:82
+     42|   beforeEach(() => { h.member = false; h.active = true; h.memberError …
+     43|   it("does not turn an Auth service outage into a new login requiremen…
+     44|     h.authError = { status: 503 }; expect((await request("/workspaces"…
+       |                                                                                  ^
+     45|   });
+     46|   it("injects the verified workspace into an unfiltered legacy queue r…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 7 passed (8)
+   Start at  01:47:29
+   Duration  2.12s (transform 304ms, setup 235ms, collect 455ms, tests 22ms, environment 1.00s, prepare 117ms)
+

@@ -209,7 +209,7 @@ describe("EarningsSummaryCard", () => {
     expect(screen.getByText("HK$250.00")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "View wallet details" })).toHaveAttribute(
       "href",
-      "/wallet/earnings",
+      "/wallet",
     );
     expect(screen.queryByText(/projected/i)).not.toBeInTheDocument();
   });

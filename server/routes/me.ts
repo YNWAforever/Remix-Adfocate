@@ -8,6 +8,7 @@ import { selectSocialAvatar } from "../lib/social/service.js";
 import { effectiveSocialHandles, privateSocialTrustSummary } from "../lib/social/passportSocial.js";
 import { createPublicToken, hashPublicToken } from "../lib/tokens.js";
 import { isTrusted, effectiveLevel } from "../lib/trust.js";
+import { projectSocialAccounts } from "../../src/lib/socialAccountPresentation.js";
 
 /** Supabase stores phone digits without a leading '+'. Re-add it for E.164 display. */
 function toE164(phone: string | null | undefined): string | null {
@@ -120,8 +121,12 @@ meRoutes.get("/", async (c) => {
   if (error) return c.json({ error: error.message, code: "db_error" }, 500);
 
   const trusted = await isTrusted(supabase, c.get("userId"), (data as { xp?: number }).xp);
+  let socialAccounts;
+  try { socialAccounts = await listSocialAccounts(supabase, c.get("userId")); }
+  catch { return c.json({ error: "Failed to load social accounts", code: "db_error" }, 500); }
   return c.json({
     ...data,
+    social_accounts: projectSocialAccounts(socialAccounts, data.social_handles ?? []),
     is_trusted: trusted,
     effective_level: effectiveLevel((data as { level?: string }).level, trusted),
   });
@@ -252,7 +257,7 @@ meRoutes.get("/passport", async (c) => {
       .map((s) => (s as { quality_rating: number }).quality_rating),
     referredCount: referredCount ?? 0,
   });
-  return c.json({ ...passport, socialTrust: privateSocialTrustSummary(syncedAccounts) });
+  return c.json({ ...passport, socialTrust: privateSocialTrustSummary(syncedAccounts, (creator.social_handles ?? []) as SocialHandle[]) });
 });
 
 meRoutes.post("/passport/share", async (c) => {

@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ApiError } from "@/lib/api";
 
 const { mockNavigate } = vi.hoisted(() => ({ mockNavigate: vi.fn() }));
 vi.mock("@tanstack/react-router", async (importOriginal) => {
@@ -18,6 +19,7 @@ vi.mock("@tanstack/react-router", async (importOriginal) => {
 
 const hoisted = vi.hoisted(() => ({
   update: vi.fn(),
+  pending: false,
   signOut: vi.fn(),
   me: {
     data: {
@@ -34,11 +36,12 @@ const hoisted = vi.hoisted(() => ({
     },
     isLoading: false,
     isError: false,
+    error: null as Error | null,
   },
 }));
 vi.mock("@/lib/queries/kocmax", () => ({
   useMe: () => hoisted.me,
-  useUpdateProfile: () => ({ mutateAsync: hoisted.update, isPending: false }),
+  useUpdateProfile: () => ({ mutateAsync: hoisted.update, isPending: hoisted.pending }),
   useSocialAccounts: () => ({ data: [], isLoading: false, isError: false }),
   useAddSocialAccount: () => ({ mutateAsync: vi.fn(), isPending: false }),
   useScanSocialAccount: () => ({ mutateAsync: vi.fn(), isPending: false }),
@@ -79,6 +82,9 @@ function renderProfile() {
 describe("Profile page", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    hoisted.me.isError = false;
+    hoisted.me.error = null;
+    hoisted.pending = false;
     hoisted.update.mockResolvedValue({});
     hoisted.signOut.mockResolvedValue({ error: null });
   });
@@ -89,9 +95,32 @@ describe("Profile page", () => {
     expect(screen.getByText("KOC 新手")).toBeInTheDocument();
     expect(screen.getByText(/看護照/).closest("a")).toHaveAttribute("href", "/passport");
     expect(screen.getByText("美容")).toBeInTheDocument();
-    expect(screen.getByText("Social trust")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "社交帳號" })).toBeInTheDocument();
     expect(screen.getByText("ABCD1234")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "創作者媒體" })).toBeInTheDocument();
+  });
+  it("keeps denied profile cache hidden through later outages until an authorized read succeeds", () => {
+    const view = renderProfile();
+    expect(screen.getByText("ABCD1234")).toBeInTheDocument();
+    const C = Route.options.component as React.ComponentType;
+    const client = new QueryClient();
+    for (const error of [new ApiError(403, "forbidden", "Denied"), new ApiError(503, "unavailable", "Unavailable"), new TypeError("Network unavailable")]) {
+      hoisted.me.isError = true; hoisted.me.error = error;
+      view.rerender(<QueryClientProvider client={client}><C /></QueryClientProvider>);
+      expect(screen.queryByText("ABCD1234")).not.toBeInTheDocument();
+      expect(screen.getByRole("alert")).toBeInTheDocument();
+    }
+    hoisted.me.isError = false; hoisted.me.error = null;
+    view.rerender(<QueryClientProvider client={client}><C /></QueryClientProvider>);
+    expect(screen.getByText("ABCD1234")).toBeInTheDocument();
+  });
+  it.each([401, 403, 404, 503])("handles cached private profile data after a %s response", status => {
+    hoisted.me.isError = true;
+    hoisted.me.error = new ApiError(status, "read_failed", "Read failed");
+    renderProfile();
+    expect(screen.getByRole("alert")).toBeInTheDocument();
+    if (status === 503) expect(screen.getByText("ABCD1234")).toBeInTheDocument();
+    else expect(screen.queryByText("ABCD1234")).not.toBeInTheDocument();
   });
 
   it("reveals edit inputs when 編輯 is tapped", () => {
@@ -99,6 +128,12 @@ describe("Profile page", () => {
     fireEvent.click(screen.getByText("編輯"));
     expect(screen.getByLabelText("顯示名稱")).toBeInTheDocument();
     expect(screen.getByLabelText("Instagram 帳號")).toBeInTheDocument();
+  });
+
+  it("locks edited input while the profile write is pending", () => {
+    hoisted.pending = true; renderProfile(); fireEvent.click(screen.getByText("編輯"));
+    expect(screen.getByLabelText("顯示名稱")).toBeDisabled();
+    expect(screen.getByRole("button", { name: "取消" })).toBeDisabled();
   });
 
   it("saves edited values via useUpdateProfile (handles preserved on edit)", async () => {
@@ -135,5 +170,35 @@ describe("Profile page", () => {
     expect(await screen.findByText("儲存失敗，請重試")).toBeInTheDocument();
     // still in edit mode → the display-name input is still present
     expect(screen.getByLabelText("顯示名稱")).toBeInTheDocument();
+  });
+
+  it("preserves legacy platforms outside the editor defaults on an unrelated edit", async () => {
+    const prior = [...hoisted.me.data.social_handles];
+    hoisted.me.data.social_handles.push({ platform: "threads", handle: "@oldthreads", followers: 27, verified: false });
+    try {
+      renderProfile(); fireEvent.click(screen.getByText("編輯"));
+      fireEvent.change(screen.getByLabelText("顯示名稱"), { target: { value: "只改名字" } });
+      fireEvent.click(screen.getByText("儲存"));
+      await waitFor(() => expect(hoisted.update).toHaveBeenCalledWith(expect.objectContaining({ social_handles: [...prior, { platform: "threads", handle: "@oldthreads", followers: 27, verified: false }] })));
+    } finally { hoisted.me.data.social_handles = prior; }
+  });
+
+  it("does not copy old follower or verification claims to a changed legacy handle", async () => {
+    renderProfile(); fireEvent.click(screen.getByText("編輯"));
+    fireEvent.change(screen.getByLabelText("Instagram 帳號"), { target: { value: "@newlegacy" } });
+    fireEvent.click(screen.getByText("儲存"));
+    await waitFor(() => expect(hoisted.update).toHaveBeenCalledWith(expect.objectContaining({ social_handles: [{ platform: "Instagram", handle: "@newlegacy", followers: null, verified: false }] })));
+  });
+
+  it("keeps absent optional fields and the order of old handle rows on unrelated edits", async () => {
+    const prior = hoisted.me.data.social_handles;
+    const raw = [prior[0], { platform: "YouTube", handle: "@video" }, { ...prior[0], handle: "@second" }];
+    hoisted.me.data.social_handles = raw as typeof prior;
+    try {
+      renderProfile(); fireEvent.click(screen.getByText("編輯"));
+      fireEvent.change(screen.getByLabelText("顯示名稱"), { target: { value: "保留舊資料" } });
+      fireEvent.click(screen.getByText("儲存"));
+      await waitFor(() => expect(hoisted.update).toHaveBeenCalledWith(expect.objectContaining({ social_handles: raw })));
+    } finally { hoisted.me.data.social_handles = prior; }
   });
 });

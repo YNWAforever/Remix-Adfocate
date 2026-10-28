@@ -1,22 +1,27 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCampaigns, type Campaign } from "@/lib/queries/kocmax";
 import { useI18n } from "@/lib/i18n";
+import { RequestFeedback, useCanShowPreviousData } from "@/components/RequestFeedback";
 
 export const Route = createFileRoute("/_app/campaigns/")({ component: CampaignsList });
 
 function CampaignsList() {
   const { t } = useI18n();
-  const { data: campaigns = [], isLoading } = useCampaigns();
+  const q = useCampaigns();
+  const showSavedCampaigns = useCanShowPreviousData(q, ["campaigns"]);
+  const campaigns = (showSavedCampaigns ? q.data : undefined) ?? [];
+  const { isLoading } = q;
   const now = new Date().toISOString();
   const active = campaigns.filter((c) => c.status === "active" && c.starts_at <= now);
   const upcoming = campaigns.filter((c) => c.status === "active" && c.starts_at > now);
-  const empty = !isLoading && active.length === 0 && upcoming.length === 0;
+  const empty = !isLoading && !q.isError && active.length === 0 && upcoming.length === 0;
 
   if (isLoading) return <div className="p-4 text-muted-foreground">…</div>;
 
   return (
     <div className="mx-auto max-w-3xl p-4 space-y-6">
       <h1 className="text-2xl font-bold">{t("app.campaigns.title")}</h1>
+      <RequestFeedback error={q.error} stale={Boolean(q.data && showSavedCampaigns)} retry={() => void q.refetch()} />
       {empty ? (
         <p className="rounded-xl border border-dashed p-6 text-center text-sm text-muted-foreground">
           {t("app.campaigns.empty")}

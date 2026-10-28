@@ -1,9 +1,9 @@
 import { FilterPillsMulti } from "@/components/FilterPills";
-import { MissionCard } from "@/components/MissionCard";
+import { MissionCard, missionCardDecisionProps } from "@/components/MissionCard";
 import { SkeletonCard } from "@/components/SkeletonCard";
 import { useI18n } from "@/lib/i18n";
 import { categoryLabelKey, platformDisplayLabelKey } from "@/lib/labels";
-import type { RecommendedMission } from "@/lib/queries/kocmax";
+import type { Me, RecommendedMission } from "@/lib/queries/kocmax";
 
 const CATEGORIES = ["美容", "餐飲", "生活", "科技", "旅遊", "媽媽", "寵物"] as const;
 const PLATFORMS = ["Instagram", "小紅書", "TikTok", "YouTube"] as const;
@@ -113,6 +113,7 @@ export function OnboardingSocialStep({
 }
 
 export function OnboardingRecommendationsStep({
+  creator,
   missions,
   loading,
   error,
@@ -121,6 +122,7 @@ export function OnboardingRecommendationsStep({
   saving,
   readinessTo,
 }: {
+  creator?: Pick<Me, "level" | "is_trusted">;
   missions: RecommendedMission[];
   loading: boolean;
   error: Error | null;
@@ -153,7 +155,7 @@ export function OnboardingRecommendationsStep({
       {missions.length ? (
         <div className="space-y-3">
           {missions.map((mission) => (
-            <MissionCard key={mission.id} title={mission.title} category={mission.category} points={mission.points_reward} deadline={mission.deadline} />
+            <MissionCard {...missionCardDecisionProps(mission, creator)} key={mission.id} title={mission.title} category={mission.category} points={mission.points_reward} cashReward={mission.cash_reward} deadline={mission.deadline} />
           ))}
         </div>
       ) : (

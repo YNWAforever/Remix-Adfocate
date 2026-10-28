@@ -1,0 +1,35 @@
+{
+  "at": "2026-10-25T18:03:50.063064+00:00",
+  "kind": "AUDITED_PERMISSION_BOUNDARY_CONTINUATION",
+  "ownerAuthorizationUnchanged": {
+    "path": "docs/verification/D19-application-runtime-preparation-20261025/runtime-authorization.json",
+    "sha256": "a909d1c60409db853da5949ee0b6ae29d6f69694fbd2c0bae313c3661557e894",
+    "ownerReference": "2026-10-26 direct human reply call_f61485a0a76947afa36bfffd9b99fab0 item0: approved exact applications-only C2 runtime"
+  },
+  "manifestSha256": "eb5ca8f03a85c5589cc6cbf27ec0ca5524e8600fd2914ad1d4d73f17eec5009a",
+  "sourceFingerprint": "e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993",
+  "cliAttempt": 2,
+  "firstTargetDataExecution": true,
+  "firstAttempt": {
+    "receipt": "docs/verification/D19-C2-runtime-20261026/runtime-command.json",
+    "exit": 1,
+    "stage": "identity",
+    "reason": "Default sandbox denied Docker named pipe before SQL/claim/SDK"
+  },
+  "freshReadonlyProof": {
+    "path": "docs/verification/D19-C2-runtime-20261026/read-only-provenance-checked.json",
+    "sha256": "334c8a887be2e61ef6febd001bc8587c4ec26cbe30842b76cac88fd5abcb048a"
+  },
+  "localMetadataOnly": {
+    "originalPath": ".codex-tmp/adfocate-d19-b2-20261025-recovery-4d6ca2c8/90ffc505-7abe-4b4c-8041-a6c954509278/role/supplement-target-receipt.private.json",
+    "preservedPath": ".codex-tmp/adfocate-d19-b2-20261025-recovery-4d6ca2c8/90ffc505-7abe-4b4c-8041-a6c954509278/role/identity-permission-failure-preserved/supplement-target-receipt.private.json",
+    "sha256": "bb05ae09f455158c61058fdfd92d7a0524ab00484c8708576e5e320e91634a79",
+    "oldPublicResultPreserved": "docs/verification/D19-C2-runtime-20261026/runtime-first-attempt-result.json"
+  },
+  "decisionActor": "Codex under existing exact C2 human authorization; no new owner permission or scope claimed",
+  "scopeChanges": 0,
+  "sourceEdits": 0,
+  "targetDataOrMigrationReplay": false,
+  "automaticRetryLoop": false,
+  "nextFailure": "Stop and retain exact state. No third executor invocation, reset, reseed, compensation, role repair or resource lifecycle."
+}

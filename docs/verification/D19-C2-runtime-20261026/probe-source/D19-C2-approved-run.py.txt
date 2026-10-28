@@ -1,0 +1,53 @@
+from pathlib import Path
+import ctypes, datetime, hashlib, json, os, shutil, subprocess, sys
+R = Path.cwd(); P = R / 'docs/verification/D19-C2-runtime-20261026'
+mode = sys.argv[1]; assert mode in ['offline', 'runtime']
+def sha(p): return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def put(p, value): Path(p).write_text(json.dumps(value,ensure_ascii=True,indent=2)+'\n',encoding='utf-8',newline='\n')
+assert not (P / f'{mode}-command.json').exists() and not (P / f'{mode}-started.json').exists(), 'No automatic restart or terminal receipt overwrite'
+manifest_path = 'docs/verification/D19-C2-application-runtime-manifest.json'
+auth_path = 'docs/verification/D19-application-runtime-preparation-20261025/runtime-authorization.json'
+manifest = json.loads((R / manifest_path).read_text(encoding='utf-8'))
+auth = json.loads((R / auth_path).read_text(encoding='utf-8'))
+source = json.loads((R / 'docs/verification/code-fingerprint.json').read_text(encoding='utf-8'))
+def check_source():
+    assert sha(R / manifest_path) == 'eb5ca8f03a85c5589cc6cbf27ec0ca5524e8600fd2914ad1d4d73f17eec5009a'
+    assert source['fingerprint'] == manifest['candidate']['fingerprint'] == auth['sourceFingerprint'] == 'e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993'
+    assert auth['approved'] is True and auth['ownerReference']
+    assert len(source['files']) == 788
+    for item in source['files']: assert hashlib.sha256((R / item['path']).read_text(encoding='utf-8').replace('\r\n','\n').encode()).hexdigest() == item['sha256'], item['path']
+check_source()
+if mode == 'runtime':
+    private_phase = R / '.codex-tmp' / manifest['target']['projectId'] / manifest['execution']['artifactNamespace'] / 'role'
+    for name in ['supplement-target-receipt.private.json','supplement-claim.json','owned-journal.jsonl']:
+        assert not (private_phase / name).exists(), 'Existing C2 lineage needs reconciliation, never blind restart'
+class Memory(ctypes.Structure):
+    _fields_ = [('length',ctypes.c_ulong),('load',ctypes.c_ulong)] + [(n,ctypes.c_ulonglong)for n in ['totalPhys','availPhys','totalCommit','availCommit','totalVirtual','availVirtual','extended']]
+m=Memory();m.length=ctypes.sizeof(m);assert ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(m))
+resource={'at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'freePhysicalGiB':m.availPhys/2**30,'freeCommitGiB':m.availCommit/2**30,'minimumGiB':3,'freeDiskGiB':shutil.disk_usage(R).free/2**30}
+put(P / f'{mode}-resource.json',resource)
+assert min(resource['freePhysicalGiB'],resource['freeCommitGiB'])>=3,'RESOURCE_GATE_BLOCKED_BEFORE_CHILD_OR_TARGET'
+node=Path('C:/Users/laich/AppData/Local/npm-cache/_npx/52027bd8fc0022aa/node_modules/node/bin/node.exe')
+command=[str(node),'node_modules/vite-node/vite-node.mjs','--script','scripts/audit/execute-application-supplement.mjs',manifest_path,'--execute'if mode=='runtime'else'--offline-check']
+env={k:v for k,v in os.environ.items()if not k.upper().startswith('PG')and not any(s in k.upper()for s in ['SUPABASE','DATABASE','INTEGRATION','ADFOCATE_B2','OPENAI','OPENROUTER','ANTHROPIC','GATEWAY','PROVIDER','API_KEY','TOKEN','SECRET',('PASS'+'WORD')])}
+for name in ['NODE_OPTIONS','HTTP_PROXY','HTTPS_PROXY','ALL_PROXY','GLOBAL_AGENT_HTTP_PROXY','NODE_USE_ENV_PROXY','DOCKER_HOST']:env.pop(name,None)
+env['NO_PROXY']='127.0.0.1,localhost';env['TZ']='Asia/Hong_Kong';env['PATH']=str(node.parent)+os.pathsep+env.get('PATH','')
+env.update(manifest['execution']['environment'])
+env['RUN_INTEGRATION']='0';env['RUN_AUDIT_INTEGRATION']='0'
+private_log=R/'.codex-tmp/D19-C2-runtime-20261026/runtime-output.private.log'
+logpath=private_log if mode=='runtime'else P/'offline.log'
+logpath.parent.mkdir(parents=True,exist_ok=True)
+receipt={'startedAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),'command':command,'sourceFingerprint':source['fingerprint'],'sourceRecordsUnchanged':788,'manifestSha256':sha(R/manifest_path),'authorization':{'path':auth_path,'sha256':sha(R/auth_path),'approved':True,'ownerReference':auth['ownerReference']},'resource':resource,'node':subprocess.check_output([str(node),'--version'],text=True).strip(),'envCredentialsProxiesPreloadsStripped':True,'mode':mode,'log':logpath.relative_to(R).as_posix(),'expectedProject':manifest['target']['projectId'],'executionNamespace':manifest['execution']['artifactNamespace'],'automaticRestart':False}
+with logpath.open('w',encoding='utf-8')as log:
+    child=subprocess.Popen(command,cwd=R,env=env,stdout=log,stderr=subprocess.STDOUT)
+    receipt['pid']=child.pid;put(P/f'{mode}-started.json',receipt)
+    print(json.dumps({'mode':mode,'pid':child.pid,'status':'RUNNING_C2_AUTHORIZED','sourceFingerprint':source['fingerprint'],'actualRuntime':mode=='runtime'}),flush=True)
+    code=child.wait()
+try:
+    check_source();receipt['sourceUnchangedAfter']=True
+except Exception:
+    receipt['sourceUnchangedAfter']=False
+receipt.update(endedAt=datetime.datetime.now(datetime.timezone.utc).isoformat(),exit=code)
+put(P/f'{mode}-command.json',receipt)
+print(json.dumps({'mode':mode,'exit':code,'sourceUnchangedAfter':receipt['sourceUnchangedAfter'],'restartAllowed':False}),flush=True)
+sys.exit(code if receipt['sourceUnchangedAfter']else 1)

@@ -1,0 +1,36 @@
+{
+  "startedAt": "2026-10-25T20:08:48.590905+00:00",
+  "command": [
+    "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+    "node_modules/eslint/bin/eslint.js",
+    "server/routes/redemption.ts",
+    "src/lib/queries/kocmax.ts",
+    "src/lib/redemptionIntent.ts",
+    "src/components/RedeemGiftCard.tsx",
+    "src/components/RedeemGiftCard.intent.test.tsx",
+    "src/lib/i18n.dict.ts",
+    "server/test/redemption-intent-memory.test.ts",
+    "docs/verification/D19-redemption-replay-20261026/vitest.memory.mjs",
+    "docs/verification/D19-redemption-replay-20261026/vitest.client.mjs"
+  ],
+  "node": "v22.23.4",
+  "resource": {
+    "at": "2026-10-25T20:08:48.450307+00:00",
+    "freePhysicalGiB": 5.992900848388672,
+    "freeCommitGiB": 5.44512939453125,
+    "minimumGiB": 3,
+    "freeDiskGiB": 21.91303253173828
+  },
+  "credentialsProxiesPreloadsStripped": true,
+  "integrationDisabled": true,
+  "label": "lint-target",
+  "log": "docs/verification/D19-redemption-replay-20261026/lint-target.log",
+  "runtimeTargetCallsRequested": false,
+  "sourceFingerprint": "b8ff561bfff9f917e67ac475d59b95f85e6f990b4f2d45e459f6efb285e495da",
+  "sourceRecords": 793,
+  "npmExecpathProvided": "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+  "pid": 9772,
+  "sourceUnchangedAfter": true,
+  "endedAt": "2026-10-25T20:09:00.277991+00:00",
+  "exit": 0
+}

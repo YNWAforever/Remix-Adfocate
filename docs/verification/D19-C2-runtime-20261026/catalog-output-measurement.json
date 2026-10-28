@@ -1,0 +1,9 @@
+{
+  "at": "2026-10-25T18:17:10.802Z",
+  "catalogJsonTextBytes": 1106880,
+  "knownNodeDefaultCaptureBytes": 1048576,
+  "plannedBoundedCaptureBytes": 8388608,
+  "query": "READ ONLY octet_length of the exact unchanged C2 catalogSql SELECT",
+  "sourceFingerprint": "e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993",
+  "actualSchemaOrFixtureWrites": 0
+}

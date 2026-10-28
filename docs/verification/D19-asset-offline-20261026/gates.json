@@ -1,0 +1,70 @@
+{
+  "at": "2026-10-25T21:16:31.619709+00:00",
+  "sourceFingerprint": "4f2c3faa22bf835911a55dc7bb099910e4308fc1b7a5570d58f32386708934b9",
+  "sourceRecordsUnchanged": 793,
+  "standalone": {
+    "passed": 11,
+    "failed": 0,
+    "skipped": 0,
+    "files": 1
+  },
+  "checks": {
+    "boundary-valid-fixture": {
+      "receipt": {
+        "path": "docs/verification/D19-asset-offline-20261026/boundary-valid-fixture-command.json",
+        "sha256": "162ef321507e2241fe073e3af3cd61545466a64779739264516383e09e4fdceb"
+      },
+      "log": {
+        "path": "docs/verification/D19-asset-offline-20261026/boundary-valid-fixture.log",
+        "sha256": "3939393a7e6f5aadbee84e473c8aceb06db2407b242485ac6eff61de7eb82b89"
+      },
+      "resource": {
+        "path": "docs/verification/D19-asset-offline-20261026/boundary-valid-fixture-resource.json",
+        "sha256": "bf693102575b972924f3d548895839e97b45fd5b3597b6587e3624adbb6167e7"
+      },
+      "exit": 0
+    },
+    "lint-final": {
+      "receipt": {
+        "path": "docs/verification/D19-asset-offline-20261026/lint-final-command.json",
+        "sha256": "58e0b387803c6653dafca6c0a2ab9aa7c68606de489eb951d7cab44d17a7f3b3"
+      },
+      "log": {
+        "path": "docs/verification/D19-asset-offline-20261026/lint-final.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "resource": {
+        "path": "docs/verification/D19-asset-offline-20261026/lint-final-resource.json",
+        "sha256": "f989cf4f2f54fecafb905017235c1c4c11f28013d993a1878b290b30f367168f"
+      },
+      "exit": 0
+    },
+    "type-after-resource": {
+      "receipt": {
+        "path": "docs/verification/D19-asset-offline-20261026/type-after-resource-command.json",
+        "sha256": "f6f60da53a238f3cdd5dfe8a5c4af20368a8b67ac616d6fad4a7a84ad52a8454"
+      },
+      "log": {
+        "path": "docs/verification/D19-asset-offline-20261026/type-after-resource.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "resource": {
+        "path": "docs/verification/D19-asset-offline-20261026/type-after-resource-resource.json",
+        "sha256": "e7f3ad9ac10a3e5fde9aa6a12d6a794f06f00046a805571e43d9c95eabed1d12"
+      },
+      "exit": 0
+    }
+  },
+  "retainedNativeFull": {
+    "passed": 2155,
+    "failed": 0,
+    "skipped": 363,
+    "files": 295,
+    "rerun": false,
+    "reason": "All793 source records unchanged; new standalone docs tests are excluded by explicit native include paths."
+  },
+  "originalAudit16Retained": 16,
+  "protected194Retained": 194,
+  "buildAndSchemaRetainedNotRerun": true,
+  "wholeR1Verified": false
+}

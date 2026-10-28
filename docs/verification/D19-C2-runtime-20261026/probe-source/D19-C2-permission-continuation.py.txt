@@ -1,0 +1,68 @@
+"""One audited permission-boundary continuation of the already approved C2.
+The first executor stopped before SQL/claim. Preserve its local metadata;
+never reuse this script after any target mutation/claim or ambiguous outcome.
+"""
+from pathlib import Path
+import ctypes,datetime,hashlib,json,os,shutil,subprocess,sys
+R=Path.cwd();P=R/'docs/verification/D19-C2-runtime-20261026'
+def read(p):return json.loads(Path(p).read_text(encoding='utf-8'))
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def put(p,o):Path(p).write_text(json.dumps(o,ensure_ascii=True,indent=2)+'\n',encoding='utf-8',newline='\n')
+assert not(P/'permission-continuation-started.json').exists()and not(P/'permission-continuation-command.json').exists(),'No automatic retry after this continuation'
+manifest_path='docs/verification/D19-C2-application-runtime-manifest.json';auth_path='docs/verification/D19-application-runtime-preparation-20261025/runtime-authorization.json'
+manifest=read(R/manifest_path);auth=read(R/auth_path);source=read(R/'docs/verification/code-fingerprint.json')
+def check_source():
+ assert sha(R/manifest_path)=='eb5ca8f03a85c5589cc6cbf27ec0ca5524e8600fd2914ad1d4d73f17eec5009a'
+ assert source['fingerprint']==manifest['candidate']['fingerprint']==auth['sourceFingerprint']=='e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993'
+ assert auth['approved']is True and auth['ownerReference']
+ assert len(source['files'])==788
+ for x in source['files']:assert hashlib.sha256((R/x['path']).read_text(encoding='utf-8').replace('\r\n','\n').encode()).hexdigest()==x['sha256'],x['path']
+check_source()
+phase=Path(manifest['target']['projectId'])/manifest['execution']['artifactNamespace']/'role'
+private=R/'.codex-tmp'/phase;public=R/'docs/verification'/phase
+first=read(P/'runtime-command.json');stopped=read(public/'result.json');proof=read(P/'read-only-provenance-checked.json')
+assert first['exit']==1 and first['sourceUnchangedAfter']is True
+assert stopped['status']=='STOPPED_RETAIN_EXACT_RECORDS'and stopped['failedStage']=='identity'
+assert proof['status']=='PASS_READONLY_C2_IDENTITY_AND_PROVENANCE_NOT_RUNTIME_ACCEPTANCE'
+assert proof['fullFiveServiceIdentityPassed']is proof['catalogEightSectionsEqual']is proof['immutableSeedsUnchanged']is proof['serviceHistoryUnchanged']is proof['original70FamilyRowsMatch']is True
+assert proof['state']=={'history':72,'missions':6,'newHistory':0,'workspaces':6,'newFunction':0,'authSubjects':84,'newWorkspace':0}
+assert proof['claimExists']is proof['ownedJournalExists']is False and proof['migrationOrFixtureWrites']==0
+assert stopped['lineage']==proof['lineage']
+assert not(private/'supplement-claim.json').exists()and not(private/'owned-journal.jsonl').exists()
+assert set(x.name for x in public.iterdir()if x.is_file())=={'result.json'},'No completed C2 identity/data phase may be replayed'
+receipt_path=private/'supplement-target-receipt.private.json';receipt=read(receipt_path)
+assert receipt['manifestSha256']==sha(R/manifest_path)and receipt['sourceFingerprint']==source['fingerprint']
+assert receipt['identity']['ownerAuthorization']==auth['ownerReference']
+class Memory(ctypes.Structure):
+ _fields_=[('length',ctypes.c_ulong),('load',ctypes.c_ulong)]+[(n,ctypes.c_ulonglong)for n in ['totalPhys','availPhys','totalCommit','availCommit','totalVirtual','availVirtual','extended']]
+m=Memory();m.length=ctypes.sizeof(m);assert ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(m))
+resource={'at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'freePhysicalGiB':m.availPhys/2**30,'freeCommitGiB':m.availCommit/2**30,'minimumGiB':3,'freeDiskGiB':shutil.disk_usage(R).free/2**30}
+put(P/'permission-continuation-resource.json',resource)
+assert min(resource['freePhysicalGiB'],resource['freeCommitGiB'])>=3,'RESOURCE_GATE_BLOCKED_NO_METADATA_MOVE_OR_CHILD'
+# Only a newly derived LOCAL receipt from the pre-identity failure is archived.
+# Keep original resource allocation/bootstrap receipts, claims and all targets intact.
+archive=private/'identity-permission-failure-preserved'/receipt_path.name
+assert receipt_path.resolve().is_relative_to((R/'.codex-tmp').resolve())
+assert archive.resolve().is_relative_to((R/'.codex-tmp').resolve())and not archive.exists()
+archive.parent.mkdir(exist_ok=False)
+shutil.copyfile(public/'result.json',P/'runtime-first-attempt-result.json')
+decision={'at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'kind':'AUDITED_PERMISSION_BOUNDARY_CONTINUATION','ownerAuthorizationUnchanged':{'path':auth_path,'sha256':sha(R/auth_path),'ownerReference':auth['ownerReference']},'manifestSha256':sha(R/manifest_path),'sourceFingerprint':source['fingerprint'],'cliAttempt':2,'firstTargetDataExecution':True,'firstAttempt':{'receipt':'docs/verification/D19-C2-runtime-20261026/runtime-command.json','exit':1,'stage':'identity','reason':'Default sandbox denied Docker named pipe before SQL/claim/SDK'},'freshReadonlyProof':{'path':'docs/verification/D19-C2-runtime-20261026/read-only-provenance-checked.json','sha256':sha(P/'read-only-provenance-checked.json')},'localMetadataOnly':{'originalPath':receipt_path.relative_to(R).as_posix(),'preservedPath':archive.relative_to(R).as_posix(),'sha256':sha(receipt_path),'oldPublicResultPreserved':'docs/verification/D19-C2-runtime-20261026/runtime-first-attempt-result.json'},'decisionActor':'Codex under existing exact C2 human authorization; no new owner permission or scope claimed','scopeChanges':0,'sourceEdits':0,'targetDataOrMigrationReplay':False,'automaticRetryLoop':False,'nextFailure':'Stop and retain exact state. No third executor invocation, reset, reseed, compensation, role repair or resource lifecycle.'}
+put(P/'permission-continuation-decision.json',decision)
+receipt_path.rename(archive)
+assert sha(archive)==decision['localMetadataOnly']['sha256']and not receipt_path.exists()
+node=Path('C:/Users/laich/AppData/Local/npm-cache/_npx/52027bd8fc0022aa/node_modules/node/bin/node.exe')
+command=[str(node),'node_modules/vite-node/vite-node.mjs','--script','scripts/audit/execute-application-supplement.mjs',manifest_path,'--execute']
+env={k:v for k,v in os.environ.items()if not k.upper().startswith('PG')and not any(x in k.upper()for x in ['SUPABASE','DATABASE','INTEGRATION','ADFOCATE_B2','OPENAI','OPENROUTER','ANTHROPIC','GATEWAY','PROVIDER','API_KEY','TOKEN','SECRET',('PASS'+'WORD')])}
+for name in ['NODE_OPTIONS','HTTP_PROXY','HTTPS_PROXY','ALL_PROXY','GLOBAL_AGENT_HTTP_PROXY','NODE_USE_ENV_PROXY','DOCKER_HOST']:env.pop(name,None)
+env.update(manifest['execution']['environment']);env['RUN_INTEGRATION']='0';env['RUN_AUDIT_INTEGRATION']='0';env['NO_PROXY']='127.0.0.1,localhost';env['TZ']='Asia/Hong_Kong';env['PATH']=str(node.parent)+os.pathsep+env.get('PATH','')
+logpath=R/'.codex-tmp/D19-C2-runtime-20261026/runtime-permission-continuation.private.log'
+record={'startedAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),'command':command,'manifestSha256':sha(R/manifest_path),'sourceFingerprint':source['fingerprint'],'sourceRecords':788,'resource':resource,'decision':'docs/verification/D19-C2-runtime-20261026/permission-continuation-decision.json','privateLog':logpath.relative_to(R).as_posix(),'automaticRetry':False,'sameApprovedScope':True,'permissions':'Host Docker pipe access; same exact guarded C1 resources'}
+with logpath.open('w',encoding='utf-8')as log:
+ child=subprocess.Popen(command,cwd=R,env=env,stdout=log,stderr=subprocess.STDOUT);record['pid']=child.pid;put(P/'permission-continuation-started.json',record)
+ print(json.dumps({'pid':child.pid,'status':'C2_PERMISSION_BOUNDARY_CONTINUATION_RUNNING','firstTargetDataExecution':True,'sourceFingerprint':source['fingerprint']}),flush=True);code=child.wait()
+try:check_source();record['sourceUnchangedAfter']=True
+except Exception:record['sourceUnchangedAfter']=False
+record.update(endedAt=datetime.datetime.now(datetime.timezone.utc).isoformat(),exit=code)
+put(P/'permission-continuation-command.json',record)
+print(json.dumps({'exit':code,'sourceUnchangedAfter':record['sourceUnchangedAfter'],'automaticRetry':False}),flush=True)
+sys.exit(code if record['sourceUnchangedAfter']else 1)

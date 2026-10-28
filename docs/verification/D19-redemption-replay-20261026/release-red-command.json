@@ -1,0 +1,34 @@
+{
+  "startedAt": "2026-10-25T20:32:11.381105+00:00",
+  "command": [
+    "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "scripts/release/manifest.test.ts",
+    "-t",
+    "classifies the redemption receipt",
+    "--reporter=default",
+    "--reporter=json",
+    "--outputFile.json=docs/verification/D19-redemption-replay-20261026/release-red.json"
+  ],
+  "node": "v22.23.4",
+  "resource": {
+    "at": "2026-10-25T20:32:11.292369+00:00",
+    "freePhysicalGiB": 6.04168701171875,
+    "freeCommitGiB": 5.200328826904297,
+    "minimumGiB": 3,
+    "freeDiskGiB": 21.959514617919922
+  },
+  "credentialsProxiesPreloadsStripped": true,
+  "integrationDisabled": true,
+  "label": "release-red",
+  "log": "docs/verification/D19-redemption-replay-20261026/release-red.log",
+  "runtimeTargetCallsRequested": false,
+  "sourceFingerprint": "8add2ea01842c3dfdaa0dce1a0635ae397dcc189486c42fbd177e8a376aefb49",
+  "sourceRecords": 793,
+  "npmExecpathProvided": "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+  "pid": 19980,
+  "sourceUnchangedAfter": true,
+  "endedAt": "2026-10-25T20:32:13.577173+00:00",
+  "exit": 1
+}

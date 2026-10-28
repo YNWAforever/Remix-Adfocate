@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Markdown } from "@/components/Markdown";
+import { AcademyLessonsEditor } from "./AcademyLessonsEditor";
+import { AcademyMetadataFields, rebaseAcademyMetadata, AcademyIdeaRebaseError } from "./AcademyMetadataFields";
 import {
   getAdminAcademy, createAcademy, updateAcademy, academyAction, academyKeys,
   type AdminAcademyRow, type AcademyKind,
@@ -12,6 +14,14 @@ const EMPTY: Partial<AdminAcademyRow> = {
   excerpt_zh: "", excerpt_en: "", category: null, required_level: null, emoji: "", color: "", sort: 0, metadata: {},
 };
 const KINDS: AcademyKind[] = ["guide_doc", "track", "playbook", "resource"];
+const EDIT_FIELDS: (keyof AdminAcademyRow)[] = ["kind", "slug", "title_zh", "title_en", "excerpt_zh", "excerpt_en", "body_zh", "body_en", "category", "required_level", "emoji", "color", "sort", "metadata"];
+function editedFields(form: Partial<AdminAcademyRow>, baseline: Partial<AdminAcademyRow>) {
+  const patch: Partial<AdminAcademyRow> = {};
+  for (const key of EDIT_FIELDS) {
+    if (JSON.stringify(form[key]) !== JSON.stringify(baseline[key])) Object.assign(patch, { [key]: form[key] });
+  }
+  return patch;
+}
 
 export function AcademyEditor({ id }: { id: string }) {
   const isNew = id === "new";
@@ -19,8 +29,8 @@ export function AcademyEditor({ id }: { id: string }) {
   const qc = useQueryClient();
   const [lang, setLang] = useState<"zh" | "en">("zh");
   const [form, setForm] = useState<Partial<AdminAcademyRow>>(EMPTY);
-  const [metaText, setMetaText] = useState("{}");
-  const [metaErr, setMetaErr] = useState<string | null>(null);
+  const baseline = useRef<Partial<AdminAcademyRow>>(EMPTY);
+  const [rebaseError, setRebaseError] = useState<string | null>(null);
 
   const existing = useQuery({
     queryKey: academyKeys.adminItem(id), enabled: !isNew,
@@ -34,65 +44,119 @@ export function AcademyEditor({ id }: { id: string }) {
     const row = existing.data;
     if (!row || seeded.current === row.id) return;
     seeded.current = row.id;
+    baseline.current = row;
     setForm(row);
-    setMetaText(JSON.stringify(row.metadata ?? {}, null, 2));
   }, [existing.data]);
 
   const set = (patch: Partial<AdminAcademyRow>) => setForm((f) => ({ ...f, ...patch }));
   const titleField = lang === "zh" ? "title_zh" : "title_en";
   const bodyField = lang === "zh" ? "body_zh" : "body_en";
-  const showBody = form.kind === "guide_doc" || form.kind === "track";
-
-  function parsedMeta(): Record<string, unknown> | null {
-    try { const v = JSON.parse(metaText || "{}"); setMetaErr(null); return v; } catch { setMetaErr("Invalid JSON"); return null; }
-  }
+  const showBody = KINDS.includes(form.kind as AcademyKind);
 
   const save = useMutation({
     mutationFn: async () => {
-      const metadata = parsedMeta();
-      if (metadata === null) throw new Error("metadata");
-      const payload = { ...form, metadata };
+      const payload = { ...form, metadata: form.metadata ?? {} };
       if (isNew) return (await createAcademy(payload)).item;
-      return (await updateAcademy(id, { ...payload, updated_at: form.updated_at })).item;
+      return (await updateAcademy(id, { ...editedFields(payload, baseline.current), updated_at: baseline.current.updated_at })).item;
     },
     onSuccess: (item) => {
+      baseline.current = item;
       qc.invalidateQueries({ queryKey: ["admin", "academy"] });
       if (isNew) navigate({ to: "/admin/academy/$id", params: { id: item.id } });
-      else { setForm(item); setMetaText(JSON.stringify(item.metadata ?? {}, null, 2)); }
+      else setForm(item);
     },
   });
   const act = useMutation({
     mutationFn: (a: "publish" | "unpublish" | "archive") => academyAction(id, a),
-    onSuccess: ({ item }) => { setForm(item); qc.invalidateQueries({ queryKey: ["admin", "academy"] }); },
+    onSuccess: ({ item }) => { baseline.current = item; setForm(item); qc.invalidateQueries({ queryKey: ["admin", "academy"] }); },
   });
+  const comparison = useMutation({ mutationFn: () => getAdminAcademy(id) });
+  const busy = save.isPending || act.isPending || comparison.isPending;
+  const mutationError = save.error ?? act.error;
+  const conflict = save.error && "status" in save.error && save.error.status === 409;
+  const unsaved = JSON.stringify(form) !== JSON.stringify(baseline.current);
+
+  function keepDraftOnLatest() {
+    const latest = comparison.data?.item;
+    if (!latest) return;
+    try {
+      const rebased = { ...latest, ...editedFields(form, baseline.current),
+        metadata: rebaseAcademyMetadata(form.metadata ?? {}, baseline.current.metadata ?? {}, latest.metadata ?? {}) };
+      baseline.current = latest;
+      setForm(rebased);
+      setRebaseError(null); save.reset(); comparison.reset();
+    } catch (error) {
+      if (!(error instanceof AcademyIdeaRebaseError)) throw error;
+      setRebaseError(error.message);
+    }
+  }
+
+  if (!isNew && !existing.data) return (
+    <div role={existing.isError ? "alert" : "status"}>
+      {existing.isError ? <><p>內容載入失敗，請重試。 Failed to load content.</p><button onClick={() => existing.refetch()}>Retry</button></> : "載入中… Loading…"}
+    </div>
+  );
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[1fr_240px]">
+    <fieldset disabled={busy} className="grid gap-4 lg:grid-cols-[1fr_240px]">
       <div className="space-y-3">
+        {mutationError && <p role="alert" className="text-sm text-[var(--color-magenta)]">儲存或發布失敗，輸入仍保留，可重試。 Save or publish failed; your draft is preserved. {mutationError.message}</p>}
+        {conflict && <div className="space-y-2 border-2 border-[var(--color-ink)] p-3">
+          <p>版本有更新。請比較最新內容，確認後再儲存你的改動。 Another version exists; compare it before retrying.</p>
+          <button type="button" onClick={() => comparison.mutate()}>Compare latest</button>
+          {comparison.error && <p role="alert">載入失敗，可重試。 {comparison.error.message}</p>}
+          {rebaseError && <>
+            <p role="alert">{rebaseError}</p>
+            {comparison.data && <button type="button" onClick={() => {
+              const latest = comparison.data?.item;
+              if (!latest) return;
+              const ideas = latest.metadata.ideas;
+              setForm(current => ({ ...current, metadata: { ...current.metadata, ideas } }));
+              setRebaseError(null);
+            }}>Use latest ideas and discard local idea edits</button>}
+          </>}
+          {comparison.data && <>
+            <dl className="space-y-2 break-words text-sm">
+              <dt>Latest title / 最新標題</dt><dd>{comparison.data.item[lang === "zh" ? "title_zh" : "title_en"]}</dd>
+              <dt>Latest body / 最新正文</dt><dd className="whitespace-pre-wrap">{comparison.data.item[lang === "zh" ? "body_zh" : "body_en"]}</dd>
+              {Array.isArray(comparison.data.item.metadata.ideas) && <>
+                <dt>Latest content ideas / 最新內容點子</dt><dd><ul>{comparison.data.item.metadata.ideas.map((idea, index) => <li key={index} className="whitespace-pre-wrap">
+                  {typeof idea === "string" ? idea : <>{typeof idea?.zh === "string" ? idea.zh : ""}<br />{typeof idea?.en === "string" ? idea.en : ""}</>}
+                </li>)}</ul></dd>
+              </>}
+              <dt>Latest learning time / 最新學習時間</dt><dd>{typeof comparison.data.item.metadata.duration === "string" ? comparison.data.item.metadata.duration : String((comparison.data.item.metadata.duration as Record<string, unknown> | undefined)?.[lang] ?? "")}</dd>
+            </dl>
+            <p>確認後會保留你修改的欄位；未修改欄位沿用最新版本。 Only your edited fields will be carried forward.</p>
+            <button type="button" onClick={keepDraftOnLatest}>Keep my edits on this revision</button>
+          </>}
+        </div>}
         <div className="flex items-center gap-2">
           <button onClick={() => setLang("zh")} className={`rounded-full border-2 border-[var(--color-ink)] px-3 text-sm ${lang === "zh" ? "bg-[var(--color-ink)] text-white" : ""}`}>中文</button>
           <button onClick={() => setLang("en")} className={`rounded-full border-2 border-[var(--color-ink)] px-3 text-sm ${lang === "en" ? "bg-[var(--color-ink)] text-white" : ""}`}>EN</button>
           {!isNew && <span className="ml-auto text-xs">{form.status}</span>}
         </div>
-        <input value={(form[titleField] as string) ?? ""} onChange={(e) => set({ [titleField]: e.target.value })}
-          placeholder="Title" className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-lg font-bold" />
-        <input value={(form[lang === "zh" ? "excerpt_zh" : "excerpt_en"] as string) ?? ""} onChange={(e) => set({ [lang === "zh" ? "excerpt_zh" : "excerpt_en"]: e.target.value })}
-          placeholder="Excerpt / short description" className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm" />
+        <label className="block text-sm">Title ({lang === "zh" ? "中文" : "EN"})
+          <input value={(form[titleField] as string) ?? ""} onChange={(e) => set({ [titleField]: e.target.value })} disabled={busy}
+            placeholder="Title" className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-lg font-bold" />
+        </label>
+        <label className="block text-sm">Excerpt ({lang === "zh" ? "中文" : "EN"})
+          <input value={(form[lang === "zh" ? "excerpt_zh" : "excerpt_en"] as string) ?? ""} onChange={(e) => set({ [lang === "zh" ? "excerpt_zh" : "excerpt_en"]: e.target.value })} disabled={busy}
+            placeholder="Excerpt / short description" className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm" />
+        </label>
         {showBody && (
           <>
-            <textarea value={(form[bodyField] as string) ?? ""} onChange={(e) => set({ [bodyField]: e.target.value })}
-              placeholder="Markdown…" rows={12} className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 font-mono text-sm" />
+            <label className="block text-sm">Body ({lang === "zh" ? "中文" : "EN"})
+              <textarea value={(form[bodyField] as string) ?? ""} onChange={(e) => set({ [bodyField]: e.target.value })} disabled={busy}
+                placeholder="Markdown…" rows={12} className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 font-mono text-sm" />
+            </label>
             <div className="rounded-[var(--radius)] border-2 border-dashed border-[var(--color-ink)] p-3">
               <p className="mb-1 text-xs uppercase">Preview</p>
               <Markdown source={(form[bodyField] as string) ?? ""} />
             </div>
           </>
         )}
-        <label className="block text-xs uppercase">Metadata (JSON)
-          <textarea value={metaText} onChange={(e) => setMetaText(e.target.value)} rows={8}
-            className="mt-1 w-full rounded border-2 border-[var(--color-ink)] p-2 font-mono text-xs" />
-          {metaErr && <span className="text-xs text-[var(--color-magenta)]">{metaErr}</span>}
-        </label>
+        <AcademyMetadataFields kind={form.kind ?? "guide_doc"} lang={lang} metadata={form.metadata ?? {}} onChange={metadata => set({ metadata })} />
+        {!isNew && form.kind === "track" && <AcademyLessonsEditor key={id} trackId={id} lang={lang} />}
       </div>
       <aside className="space-y-3">
         <label className="block text-xs uppercase">Kind
@@ -121,10 +185,11 @@ export function AcademyEditor({ id }: { id: string }) {
         <label className="block text-xs uppercase">Emoji<input value={form.emoji ?? ""} onChange={(e) => set({ emoji: e.target.value })} className="mt-1 w-full rounded border-2 border-[var(--color-ink)] p-1 text-sm" /></label>
         <label className="block text-xs uppercase">Color<input value={form.color ?? ""} onChange={(e) => set({ color: e.target.value })} className="mt-1 w-full rounded border-2 border-[var(--color-ink)] p-1 text-sm" /></label>
         <label className="block text-xs uppercase">Sort<input type="number" value={form.sort ?? 0} onChange={(e) => set({ sort: Number(e.target.value) })} className="mt-1 w-full rounded border-2 border-[var(--color-ink)] p-1 text-sm" /></label>
-        <button onClick={() => save.mutate()} className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-acid)] p-2 font-bold">Save</button>
-        {!isNew && form.status !== "published" && <button onClick={() => act.mutate("publish")} className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 font-bold">Publish</button>}
-        {!isNew && form.status === "published" && <button onClick={() => act.mutate("archive")} className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm">Archive</button>}
+        <button disabled={busy} onClick={() => save.mutate()} className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-acid)] p-2 font-bold">Save</button>
+        {!isNew && unsaved && <p className="text-sm">請先儲存改動。 Save changes before publishing or archiving.</p>}
+        {!isNew && form.status !== "published" && <button disabled={busy || unsaved} onClick={() => act.mutate("publish")} className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 font-bold">Publish</button>}
+        {!isNew && form.status === "published" && <button disabled={busy || unsaved} onClick={() => act.mutate("archive")} className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm">Archive</button>}
       </aside>
-    </div>
+    </fieldset>
   );
 }

@@ -1,0 +1,23 @@
+{
+  "at": "2026-10-25T06:57:40.635Z",
+  "sourceFingerprint": "6285bca02a74bedf3eda7259238366e9023fcc0cae24fe5e7c874ae9dd118d7b",
+  "layer": "OFFLINE_REAL_CONTEXT_VALIDATION_NO_DOCKER_OR_CLIENT",
+  "passed": 2,
+  "failed": 0,
+  "results": [
+    {
+      "name": "original approved C1 receipt cannot authorize revised source bytes",
+      "rejected": true,
+      "error": "B2 candidate source fingerprint drift"
+    },
+    {
+      "name": "new source manifest with approved:false template cannot authorize runtime",
+      "rejected": true,
+      "error": "B2 runtime authorization must bind the reviewed manifest and source"
+    }
+  ],
+  "applicationKeysRead": false,
+  "applicationClientCreated": false,
+  "sqlOrFixtureWrite": false,
+  "originalApprovalRewritten": false
+}

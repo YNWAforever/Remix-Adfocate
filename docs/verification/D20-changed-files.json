@@ -1,0 +1,464 @@
+{
+  "scope": "Task-only changes relative to the 1557-file D20 before-image; ignored scratch/build/cache outputs excluded. Final hashes are bound by evidence-integrity.json and code-fingerprint.json.",
+  "sourceTestHarness": 23,
+  "documentEvidence": 53,
+  "total": 76,
+  "files": [
+    {
+      "path": "docs/superpowers/plans/2026-10-23-adfocate-implementation-plan.md",
+      "status": "modified",
+      "scope": "document/evidence",
+      "beforeSha256": "cb40b7d40038b0c8eb0bcd8ffdeaabdbd4cf3589942b0b52e82742c9215813ed"
+    },
+    {
+      "path": "docs/verification/D20-case-coverage.json",
+      "status": "added",
+      "scope": "document/evidence",
+      "beforeSha256": null
+    },
+    {
+      "path": "docs/verification/D20-changed-files.json",
+      "status": "added",
+      "scope": "document/evidence",
+      "beforeSha256": null
+    },
+    {
+      "path": "docs/verification/D20-changes.patch",
+      "status": "added",
+      "scope": "document/evidence",
+      "beforeSha256": null
+    },
+    {
+      "path": "docs/verification/D20-delivery.json",
+      "status": "added",
+      "scope": "document/evidence",
+      "beforeSha256": null
+    },
+    {
+      "path": "docs/verification/D20-delivery.md",
+      "status": "added",
+      "scope": "document/evidence",
+      "beforeSha256": null
+    },
+    {
+      "path": "docs/verification/D20-gate-exits.json",
+      "status": "added",
+      "scope": "document/evidence",
+      "beforeSha256": null
+    },
+    {
+      "path": "docs/verification/D20-integrity-check.json",
+      "status": "added",
+      "scope": "document/evidence",
+      "beforeSha256": null
+    },
+    {
+      "path": "docs/verification/D20-mock-browser-summary.json",
+      "status": "added",
+      "scope": "document/evidence",
+      "beforeSha256": null
+    },
+    {
+      "path": "docs/verification/D20-mock-panel-en.png",
+      "status": "added",
+      "scope": "document/evidence",
+      "beforeSha256": null
+    },
+    {
+      "path": "docs/verification/D20-mock-panel-zh.png",
+      "status": "added",
+      "scope": "document/evidence",
+      "beforeSha256": null
+    },
+    {
+      "path": "docs/verification/D20-model-verification.json",
+      "status": "added",
+      "scope": "document/evidence",
+      "beforeSha256": null
+    },
+    {
+      "path": "docs/verification/D20-prior-adfocate-delivery.json",
+      "status": "added",
+      "scope": "document/evidence",
+      "beforeSha256": null
+    },
+    {
+      "path": "docs/verification/D20-prior-code-fingerprint.json",
+      "status": "added",
+      "scope": "document/evidence",
+      "beforeSha256": null
+    },
+    {
+      "path": "docs/verification/D20-prior-evidence-integrity.json",
+      "status": "added",
+      "scope": "document/evidence",
+      "beforeSha256": null
+    },
+    {
+      "path": "docs/verification/D20-red-green.json",
+      "status": "added",
+      "scope": "document/evidence",
+      "beforeSha256": null
+    },
+    {
+      "path": "docs/verification/D20-redaction-review.json",
+      "status": "added",
+      "scope": "document/evidence",
+      "beforeSha256": null
+    },
+    {
+      "path": "docs/verification/D20-resource-before.json",
+      "status": "added",
+      "scope": "document/evidence",
+      "beforeSha256": null
+    },
+    {
+      "path": "docs/verification/D20-schema-diff.json",
+      "status": "added",
+      "scope": "document/evidence",
+      "beforeSha256": null
+    },
+    {
+      "path": "docs/verification/D20-source-preservation.json",
+      "status": "added",
+      "scope": "document/evidence",
+      "beforeSha256": null
+    },
+    {
+      "path": "docs/verification/D20-test-results.json",
+      "status": "added",
+      "scope": "document/evidence",
+      "beforeSha256": null
+    },
+    {
+      "path": "docs/verification/adfocate-assistant-evaluation.md",
+      "status": "added",
+      "scope": "document/evidence",
+      "beforeSha256": null
+    },
+    {
+      "path": "docs/verification/adfocate-delivery.json",
+      "status": "modified",
+      "scope": "document/evidence",
+      "beforeSha256": "714d13441cdc945466aa4a882791398a3963cb103f53b70340837339875d9897"
+    },
+    {
+      "path": "docs/verification/adfocate-task-ledger.md",
+      "status": "modified",
+      "scope": "document/evidence",
+      "beforeSha256": "67a871f05103f54e597769d1b90f44738058fde2ded35f54faee2c0074c91e10"
+    },
+    {
+      "path": "docs/verification/code-fingerprint.json",
+      "status": "modified",
+      "scope": "document/evidence",
+      "beforeSha256": "27ca78ddb8d656c6b15ee99c90bc67f4e824295d904ae381023fd7830b723449"
+    },
+    {
+      "path": "docs/verification/evidence-integrity.json",
+      "status": "modified",
+      "scope": "document/evidence",
+      "beforeSha256": "65b83a9f75c864339babd0d89f7d49c5a2697e8f177a50a7a644350f1965ce10"
+    },
+    {
+      "path": "docs/verification/implementation-path-mapping.md",
+      "status": "modified",
+      "scope": "document/evidence",
+      "beforeSha256": "912e35457e351dfffce280dc2de8b3d7799073b7b704301d930dac558929261b"
+    },
+    {
+      "path": "docs/verification/implementation_backlog.csv",
+      "status": "modified",
+      "scope": "document/evidence",
+      "beforeSha256": "5b51a13555c1e68a67001d5033e9d28571746f1525bd271b180444ecbc1c83c3"
+    },
+    {
+      "path": "docs/verification/logs/D20-approved-anchor-red.log",
+      "status": "added",
+      "scope": "document/evidence",
+      "beforeSha256": null
+    },
+    {
+      "path": "docs/verification/logs/D20-approved-ui-red.log",
+      "status": "added",
+      "scope": "document/evidence",
+      "beforeSha256": null
+    },
+    {
+      "path": "docs/verification/logs/D20-browser-harness-attempt.log",
+      "status": "added",
+      "scope": "document/evidence",
+      "beforeSha256": null
+    },
+    {
+      "path": "docs/verification/logs/D20-browser-runner-initial.log",
+      "status": "added",
+      "scope": "document/evidence",
+      "beforeSha256": null
+    },
+    {
+      "path": "docs/verification/logs/D20-browser.log",
+      "status": "added",
+      "scope": "document/evidence",
+      "beforeSha256": null
+    },
+    {
+      "path": "docs/verification/logs/D20-build.log",
+      "status": "added",
+      "scope": "document/evidence",
+      "beforeSha256": null
+    },
+    {
+      "path": "docs/verification/logs/D20-diff-check.log",
+      "status": "added",
+      "scope": "document/evidence",
+      "beforeSha256": null
+    },
+    {
+      "path": "docs/verification/logs/D20-envelope-red.log",
+      "status": "added",
+      "scope": "document/evidence",
+      "beforeSha256": null
+    },
+    {
+      "path": "docs/verification/logs/D20-full-suite-before-approval-anchor.log",
+      "status": "added",
+      "scope": "document/evidence",
+      "beforeSha256": null
+    },
+    {
+      "path": "docs/verification/logs/D20-full-suite.log",
+      "status": "added",
+      "scope": "document/evidence",
+      "beforeSha256": null
+    },
+    {
+      "path": "docs/verification/logs/D20-harness-typecheck.log",
+      "status": "added",
+      "scope": "document/evidence",
+      "beforeSha256": null
+    },
+    {
+      "path": "docs/verification/logs/D20-input-red.log",
+      "status": "added",
+      "scope": "document/evidence",
+      "beforeSha256": null
+    },
+    {
+      "path": "docs/verification/logs/D20-lint.log",
+      "status": "added",
+      "scope": "document/evidence",
+      "beforeSha256": null
+    },
+    {
+      "path": "docs/verification/logs/D20-live-guard-red.log",
+      "status": "added",
+      "scope": "document/evidence",
+      "beforeSha256": null
+    },
+    {
+      "path": "docs/verification/logs/D20-manifest.log",
+      "status": "added",
+      "scope": "document/evidence",
+      "beforeSha256": null
+    },
+    {
+      "path": "docs/verification/logs/D20-patch-reverse-check.log",
+      "status": "added",
+      "scope": "document/evidence",
+      "beforeSha256": null
+    },
+    {
+      "path": "docs/verification/logs/D20-recovery-red.log",
+      "status": "added",
+      "scope": "document/evidence",
+      "beforeSha256": null
+    },
+    {
+      "path": "docs/verification/logs/D20-red.log",
+      "status": "added",
+      "scope": "document/evidence",
+      "beforeSha256": null
+    },
+    {
+      "path": "docs/verification/logs/D20-route-red.log",
+      "status": "added",
+      "scope": "document/evidence",
+      "beforeSha256": null
+    },
+    {
+      "path": "docs/verification/logs/D20-targeted.log",
+      "status": "added",
+      "scope": "document/evidence",
+      "beforeSha256": null
+    },
+    {
+      "path": "docs/verification/logs/D20-typecheck-test-annotation.log",
+      "status": "added",
+      "scope": "document/evidence",
+      "beforeSha256": null
+    },
+    {
+      "path": "docs/verification/logs/D20-typecheck.log",
+      "status": "added",
+      "scope": "document/evidence",
+      "beforeSha256": null
+    },
+    {
+      "path": "docs/verification/new_product_acceptance_cases.csv",
+      "status": "modified",
+      "scope": "document/evidence",
+      "beforeSha256": "c7ef5fb1c6ea93f9929fe47dfd297037b8a3b4167604d7b4568c3a58c808a05c"
+    },
+    {
+      "path": "docs/verification/release-review-request.json",
+      "status": "modified",
+      "scope": "document/evidence",
+      "beforeSha256": "bf9b9aec02a09181a64670f63c7b9cc8cda36c74d070fb47b687de678ae3ef9b"
+    },
+    {
+      "path": "docs/verification/self-review.md",
+      "status": "modified",
+      "scope": "document/evidence",
+      "beforeSha256": "5d1b51ecb4a6a70c9efa14a83a4444e35a895e594c9b915ca50bdeafcab06ac0"
+    },
+    {
+      "path": "e2e/fixtures/mission-assist.html",
+      "status": "added",
+      "scope": "source/test/harness",
+      "beforeSha256": null
+    },
+    {
+      "path": "e2e/fixtures/mission-assist.tsx",
+      "status": "added",
+      "scope": "source/test/harness",
+      "beforeSha256": null
+    },
+    {
+      "path": "e2e/mission-assist.spec.ts",
+      "status": "added",
+      "scope": "source/test/harness",
+      "beforeSha256": null
+    },
+    {
+      "path": "playwright.assistant.config.ts",
+      "status": "added",
+      "scope": "source/test/harness",
+      "beforeSha256": null
+    },
+    {
+      "path": "scripts/audit/serve-assistant.ts",
+      "status": "added",
+      "scope": "source/test/harness",
+      "beforeSha256": null
+    },
+    {
+      "path": "server/lib/assistant/chat.ts",
+      "status": "modified",
+      "scope": "source/test/harness",
+      "beforeSha256": "bbddd7b5ab961a015d2763b91d3704325a3ef57c1775963a9ef329e8faeae85e"
+    },
+    {
+      "path": "server/lib/assistant/contextPolicy.test.ts",
+      "status": "added",
+      "scope": "source/test/harness",
+      "beforeSha256": null
+    },
+    {
+      "path": "server/lib/assistant/contextPolicy.ts",
+      "status": "added",
+      "scope": "source/test/harness",
+      "beforeSha256": null
+    },
+    {
+      "path": "server/lib/assistant/prompt.ts",
+      "status": "modified",
+      "scope": "source/test/harness",
+      "beforeSha256": "a6532da70ac33ac5413034ab33d1065f7b767e747a55b79a724d1c7b6227d818"
+    },
+    {
+      "path": "server/lib/assistant/retrieve.ts",
+      "status": "modified",
+      "scope": "source/test/harness",
+      "beforeSha256": "b20801f25265a8ea4bdbb78e02b59d73e79165f602201053d6d642501fcd53b8"
+    },
+    {
+      "path": "server/lib/staffCapabilities.ts",
+      "status": "modified",
+      "scope": "source/test/harness",
+      "beforeSha256": "a73c9023cfc7962df618ba680453912c3c5ba65e5fc4dcb53e60ceaa283c5534"
+    },
+    {
+      "path": "server/routes/admin.ts",
+      "status": "modified",
+      "scope": "source/test/harness",
+      "beforeSha256": "1c358e2f7df5f2ab6a4ecc038f918003f5286adbc34d71c1b64902ed416b5d79"
+    },
+    {
+      "path": "server/routes/assistant.ts",
+      "status": "modified",
+      "scope": "source/test/harness",
+      "beforeSha256": "2c58070627ba32d94fa78e630b71c2f4bab5b79510b0d038cb76acd4211b0e1a"
+    },
+    {
+      "path": "server/test/mission-assist.test.ts",
+      "status": "added",
+      "scope": "source/test/harness",
+      "beforeSha256": null
+    },
+    {
+      "path": "src/components/active-mission/DraftEditor.tsx",
+      "status": "modified",
+      "scope": "source/test/harness",
+      "beforeSha256": "1f64e6066a489f23bc75d8f30d4c26477815961a750cd19485a74f216a82feef"
+    },
+    {
+      "path": "src/components/admin/ActiveMissionReview.tsx",
+      "status": "modified",
+      "scope": "source/test/harness",
+      "beforeSha256": "686984c68606958533a4fd148c8fd7a5c6c25d748146d8b31402ae4368ba9f94"
+    },
+    {
+      "path": "src/components/assistant/MissionAssistLauncher.tsx",
+      "status": "added",
+      "scope": "source/test/harness",
+      "beforeSha256": null
+    },
+    {
+      "path": "src/components/assistant/MissionAssistPanel.test.tsx",
+      "status": "added",
+      "scope": "source/test/harness",
+      "beforeSha256": null
+    },
+    {
+      "path": "src/components/assistant/MissionAssistPanel.tsx",
+      "status": "added",
+      "scope": "source/test/harness",
+      "beforeSha256": null
+    },
+    {
+      "path": "src/lib/missionAssist.ts",
+      "status": "added",
+      "scope": "source/test/harness",
+      "beforeSha256": null
+    },
+    {
+      "path": "src/routes/_app.my.$submissionId.tsx",
+      "status": "modified",
+      "scope": "source/test/harness",
+      "beforeSha256": "444118718a2bf1d4387e8ebbe093848de10c26f88e0e6e2b26e81624b126b0ce"
+    },
+    {
+      "path": "src/routes/admin.active-missions.$workflowId.tsx",
+      "status": "modified",
+      "scope": "source/test/harness",
+      "beforeSha256": "ae84cf20d6b8a11b2dc7bd6a9c6f6b347db6d3f0bd122ff1197bd75c4f459865"
+    },
+    {
+      "path": "tests/fixtures/assistant-workflow-eval.json",
+      "status": "added",
+      "scope": "source/test/harness",
+      "beforeSha256": null
+    }
+  ]
+}

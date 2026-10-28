@@ -1,0 +1,9 @@
+{
+  "at": "2026-10-24T14:13:42.174641+00:00",
+  "scope": "q2-audit query construction only",
+  "status": "GUARD_REFUSED_BEFORE_SQL",
+  "cause": "Missing whitespace before WHERE made table name look like an application function call; safety guard refused it",
+  "repair": "SQL whitespace only; no guard relaxed. Successful existing read receipts explicitly reused, no completed query repeated.",
+  "newSqlExecutedByRefusedAttempt": false,
+  "businessWrites": false
+}

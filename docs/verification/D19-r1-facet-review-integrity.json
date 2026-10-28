@@ -1,0 +1,172 @@
+{
+  "at": "2026-10-25T15:50:09.842155+00:00",
+  "codeFingerprint": "e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993",
+  "method": "Exact raw-byte hashes of this local facet review and changed verification metadata; excludes this seal and root seal. Source/manifest unchanged; earlier evidence resolved by exact before images.",
+  "files": [
+    {
+      "path": "docs/verification/adfocate-delivery.json",
+      "sha256": "7c3927c0d375630ceb1d54b6236cb0c8bd47e85cf2a7e940f9eaa53fcf351c1c",
+      "bytes": 666824
+    },
+    {
+      "path": "docs/verification/adfocate-task-ledger.md",
+      "sha256": "f5e55c5fdedab0df49249a9d1cc5e3d2db28a4544a414596e22b20fd20242fd9",
+      "bytes": 34214
+    },
+    {
+      "path": "docs/verification/audit_case_coverage.csv",
+      "sha256": "070cd21967fd698f1a7297255e72f446262edaea5404c92a458550e3836da201",
+      "bytes": 178621
+    },
+    {
+      "path": "docs/verification/D19-R1-facet-review-20261025/before/docs/verification/adfocate-delivery.json",
+      "sha256": "416ce0c3931bb10132ef96d604c7aa5625ae2c5fd6e7770b6da37c1518031aff",
+      "bytes": 657237
+    },
+    {
+      "path": "docs/verification/D19-R1-facet-review-20261025/before/docs/verification/adfocate-task-ledger.md",
+      "sha256": "76386221a79859207a43483308a8f0bfb5b1fceb5c73c27fe43417d044a6674b",
+      "bytes": 33420
+    },
+    {
+      "path": "docs/verification/D19-R1-facet-review-20261025/before/docs/verification/audit_case_coverage.csv",
+      "sha256": "e7e1917eaa3df3be77d9eab118bb3d2c9b676c35a031fdd10afcc502a831259a",
+      "bytes": 172643
+    },
+    {
+      "path": "docs/verification/D19-R1-facet-review-20261025/before/docs/verification/code-fingerprint.json",
+      "sha256": "0a9accc29ddb559a26fbcbcee2d9d4828fa8bdf63374b0a8d781d3f86885399d",
+      "bytes": 123041
+    },
+    {
+      "path": "docs/verification/D19-R1-facet-review-20261025/before/docs/verification/D19-application-runtime-preparation-20261025/runtime-authorization.json",
+      "sha256": "d5ca3dcd9ad8c4e14f0707e2b29c3bb25a1f6dd955e908fb591620281c76d019",
+      "bytes": 386
+    },
+    {
+      "path": "docs/verification/D19-R1-facet-review-20261025/before/docs/verification/D19-C2-application-runtime-manifest.json",
+      "sha256": "eb5ca8f03a85c5589cc6cbf27ec0ca5524e8600fd2914ad1d4d73f17eec5009a",
+      "bytes": 34646
+    },
+    {
+      "path": "docs/verification/D19-R1-facet-review-20261025/before/docs/verification/evidence-integrity.json",
+      "sha256": "9a71fb2037a7d77192f9cc4c614c1b0e8983f912b6037e1f5cc3f4367acf4681",
+      "bytes": 413746
+    },
+    {
+      "path": "docs/verification/D19-R1-facet-review-20261025/before/docs/verification/implementation_backlog.csv",
+      "sha256": "6653b3890f665129e1ba307a68ed5e1a28a44df496e0d5b48d4dd7f49b5f695a",
+      "bytes": 18694
+    },
+    {
+      "path": "docs/verification/D19-R1-facet-review-20261025/case-coverage.json",
+      "sha256": "41be41860c0c8ea408f1665a3cb53aa83931379d4c702ab3925f4459c234e051",
+      "bytes": 238893
+    },
+    {
+      "path": "docs/verification/D19-R1-facet-review-20261025/checkpoint.json",
+      "sha256": "f7fe75803c3f65ec2911571d5168b9bddff8c0f8593deee4469698a45cc80e2c",
+      "bytes": 2878
+    },
+    {
+      "path": "docs/verification/D19-R1-facet-review-20261025/claims-red.json",
+      "sha256": "6d27514ba5a86d3edb96b438b610d92ab3703dd535df835c6f49a00cd02c9187",
+      "bytes": 566
+    },
+    {
+      "path": "docs/verification/D19-R1-facet-review-20261025/current-native-witnesses.json",
+      "sha256": "99f13693d9a3b0974d1cd7f522c9a8c17d2c54d353c87fce208fed2a2d4648be",
+      "bytes": 16653
+    },
+    {
+      "path": "docs/verification/D19-R1-facet-review-20261025/delivery.json",
+      "sha256": "ec36480cc7cf8e35cfe827eef5ec1255843ba7549dab9bbfbfc926e9255c5765",
+      "bytes": 2944
+    },
+    {
+      "path": "docs/verification/D19-R1-facet-review-20261025/delivery.md",
+      "sha256": "7f50213f9937b96e753f785465fc4083e889e63742b4fd26d3fe098de419af79",
+      "bytes": 6990
+    },
+    {
+      "path": "docs/verification/D19-R1-facet-review-20261025/gate14-applicability.json",
+      "sha256": "f083172dd086a738f42356de8060d3b4f5d8966305fa734b6822b0375b1addc2",
+      "bytes": 16397
+    },
+    {
+      "path": "docs/verification/D19-R1-facet-review-20261025/git-final.json",
+      "sha256": "1cbda066ba18c393caac1f6879e88d22434a41417cfff9dccab507fe19b7b730",
+      "bytes": 274
+    },
+    {
+      "path": "docs/verification/D19-R1-facet-review-20261025/historical-log-witnesses.json",
+      "sha256": "a41864cf65edf1c023cc29edcf3b3769958e134d8d02078e2efabadd77868c12",
+      "bytes": 8275
+    },
+    {
+      "path": "docs/verification/D19-R1-facet-review-20261025/historical-source-binding-limit.json",
+      "sha256": "e76f8cfe27d50915c83bca5fe9bded3a841ee08313f95fc8f38488a59d9d50d6",
+      "bytes": 526
+    },
+    {
+      "path": "docs/verification/D19-R1-facet-review-20261025/model-ui-observation.json",
+      "sha256": "1be4f89e70855e1b63d9c0d9a27788e497be70b3ff25f50bc55710849acce29f",
+      "bytes": 2337
+    },
+    {
+      "path": "docs/verification/D19-R1-facet-review-20261025/orchestration-review/D19-r1-facet-review.py",
+      "sha256": "089b7c0076a6e14b927fe421c73ad64e10771023e206818b79ababb036a4d0d1",
+      "bytes": 29149
+    },
+    {
+      "path": "docs/verification/D19-R1-facet-review-20261025/orchestration-review/D19-r1-facet-seal.py",
+      "sha256": "945bc247c18a228c9432e1a0fd3bd884b409b85ea1b4fc6f798cf41570537608",
+      "bytes": 3787
+    },
+    {
+      "path": "docs/verification/D19-R1-facet-review-20261025/orchestration-review/manifest.json",
+      "sha256": "699221b940af9e77985760513c93964bc671b1ce00804d81aabd42d94554ca8b",
+      "bytes": 555
+    },
+    {
+      "path": "docs/verification/D19-R1-facet-review-20261025/reference-red.json",
+      "sha256": "576bbdaf7a8c42593a4976a7f74a6230aea48c44fa0e533eb21be11925721ed2",
+      "bytes": 463
+    },
+    {
+      "path": "docs/verification/D19-R1-facet-review-20261025/remaining-acceptance.json",
+      "sha256": "49688986034e4fffafa93c36397aa3fe638bd575bdb55b1beeaa148de9dab263",
+      "bytes": 14332
+    },
+    {
+      "path": "docs/verification/D19-R1-facet-review-20261025/retained-c1-scope.json",
+      "sha256": "d350e0a0188e031c29bb5f78c9990be45457e425fecfeb647afea27636fc895b",
+      "bytes": 1416
+    },
+    {
+      "path": "docs/verification/D19-R1-facet-review-20261025/review.json",
+      "sha256": "df24f7b29e5e667434e1b67a9cf0aff3a570d36dc38134a2fffb4451420a4514",
+      "bytes": 15055
+    },
+    {
+      "path": "docs/verification/D19-R1-facet-review-20261025/rollback.json",
+      "sha256": "c3c09e6fe61dfe6717c61cae05140cfa2d2f87ff8491492d4321d9c9fe7b5910",
+      "bytes": 3334
+    },
+    {
+      "path": "docs/verification/D19-R1-facet-review-20261025/verification-summary.json",
+      "sha256": "28eb14cc5f4a7b3fc443e44bfe6ad686cff22eed92fe02dcd27671942881e2d1",
+      "bytes": 2812
+    },
+    {
+      "path": "docs/verification/D19-R1-facet-review-20261025/verify-facets.py",
+      "sha256": "b89f33b395f595e64e42cda146c90570040d3ea4510e3476b2dc4674f46bc92d",
+      "bytes": 7476
+    },
+    {
+      "path": "docs/verification/implementation_backlog.csv",
+      "sha256": "1b5c4381b24963fe10c5e23f769cfb390d02b96997221e741cb0e980360cda4d",
+      "bytes": 18990
+    }
+  ]
+}

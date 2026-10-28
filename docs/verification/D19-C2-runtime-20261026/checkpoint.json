@@ -1,0 +1,50 @@
+{
+  "at": "2026-10-25T17:37:25.489595+00:00",
+  "sourceFingerprint": "e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993",
+  "sourceFiles": 788,
+  "manifestSha256": "eb5ca8f03a85c5589cc6cbf27ec0ca5524e8600fd2914ad1d4d73f17eec5009a",
+  "ownerApprovalQuestionId": "call_f61485a0a76947afa36bfffd9b99fab0",
+  "files": [
+    {
+      "path": "docs/verification/adfocate-delivery.json",
+      "sha256": "29ebfb4fe5222742da4aa5a48ff332ac47a478783094caeffe806116bdee295f",
+      "before": "docs/verification/D19-C2-runtime-20261026/before/docs/verification/adfocate-delivery.json"
+    },
+    {
+      "path": "docs/verification/audit_case_coverage.csv",
+      "sha256": "42e5fef332c30e39d03e3f7652d1c9d7d31e405ec4907c6cb86044cb0aee2f55",
+      "before": "docs/verification/D19-C2-runtime-20261026/before/docs/verification/audit_case_coverage.csv"
+    },
+    {
+      "path": "docs/verification/implementation_backlog.csv",
+      "sha256": "de3c8ec476ba7e7df2dfbcf1b1029c2f8504d5f03843260fab7f195ecbeefdb6",
+      "before": "docs/verification/D19-C2-runtime-20261026/before/docs/verification/implementation_backlog.csv"
+    },
+    {
+      "path": "docs/verification/adfocate-task-ledger.md",
+      "sha256": "2136775a741b7ed150f4c5f8388b237353271578dbf6b22fb1360dcfccc11a93",
+      "before": "docs/verification/D19-C2-runtime-20261026/before/docs/verification/adfocate-task-ledger.md"
+    },
+    {
+      "path": "docs/verification/evidence-integrity.json",
+      "sha256": "15728c939ba1f015db8a496af99206ff65d7c2cdf5a1eafe5ed831ff95ec8884",
+      "before": "docs/verification/D19-C2-runtime-20261026/before/docs/verification/evidence-integrity.json"
+    },
+    {
+      "path": "docs/verification/code-fingerprint.json",
+      "sha256": "0a9accc29ddb559a26fbcbcee2d9d4828fa8bdf63374b0a8d781d3f86885399d",
+      "before": "docs/verification/D19-C2-runtime-20261026/before/docs/verification/code-fingerprint.json"
+    },
+    {
+      "path": "docs/verification/D19-C2-application-runtime-manifest.json",
+      "sha256": "eb5ca8f03a85c5589cc6cbf27ec0ca5524e8600fd2914ad1d4d73f17eec5009a",
+      "before": "docs/verification/D19-C2-runtime-20261026/before/docs/verification/D19-C2-application-runtime-manifest.json"
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/runtime-authorization.json",
+      "sha256": "d5ca3dcd9ad8c4e14f0707e2b29c3bb25a1f6dd955e908fb591620281c76d019",
+      "before": "docs/verification/D19-C2-runtime-20261026/before/docs/verification/D19-application-runtime-preparation-20261025/runtime-authorization.json"
+    }
+  ],
+  "scope": "Approved exact applications-only C2. Original incident OPEN,release HOLD,provider disabled; no new Docker resources or lifecycle, no production/formal membership/old fixture writes, no original role/core/browser/pristine reruns, no commit/push/merge/deploy."
+}

@@ -1,0 +1,20 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ✓ src/routes/-_app.login.test.tsx (21 tests) 491ms
+ ✓ src/routes/-_app.onboarding.test.tsx (17 tests) 479ms
+ ✓ src/routes/-_app.auth.reset-password.test.tsx (11 tests) 485ms
+ ✓ src/routes/-_app.auth.callback.test.tsx (12 tests) 430ms
+ ✓ src/routes/-_app.profile.test.tsx (8 tests) 220ms
+ ✓ src/components/SocialTrustPanel.test.tsx (9 tests) 254ms
+ ✓ src/lib/auth-flow.test.ts (18 tests) 19ms
+ ✓ server/lib/social/passportSocial.test.ts (9 tests) 13ms
+ ✓ src/routes/-app.auth.callback.test.tsx (4 tests) 319ms
+ ✓ src/components/PassportTrustSummary.test.tsx (2 tests) 48ms
+ ✓ src/lib/socialAccountPresentation.test.ts (1 test) 2ms
+
+ Test Files  11 passed (11)
+      Tests  112 passed (112)
+   Start at  13:06:04
+   Duration  21.40s (transform 483ms, setup 2.73s, collect 2.54s, tests 2.76s, environment 9.82s, prepare 1.42s)
+

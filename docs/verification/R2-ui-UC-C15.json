@@ -1,0 +1,9 @@
+{
+  "runId": "08530ddb-c357-4638-8ab8-af5854f42fa3",
+  "value": {
+    "actualEmptyRows": 0,
+    "returnPath": "/redemption",
+    "fault": "explicit 503 transport mock",
+    "recovery": "real Auth/API/DB read"
+  }
+}

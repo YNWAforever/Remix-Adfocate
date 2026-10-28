@@ -1,0 +1,177 @@
+{
+  "sourceFingerprint": "d13fe2b7e8b9838972b8d93881dc17e8ccfc2795bc133b01cdc4f1a35426f893",
+  "schemaSourceChange": "NONE",
+  "fullApplicationMigrationFiles": 72,
+  "protectedManifestEntries": 42,
+  "protectedManifestDigest": "3e6809f9a51b1ac7ebb9f770160aab27f02523ebf69fc47f8fe38f44d05f6363",
+  "sourceChecksumsUnchanged": true,
+  "applicationMigrationsApplied": 0,
+  "conditionalCompatibilityApplied": 0,
+  "historicalCheckpointCreated": false,
+  "runtimePublicCatalog": {
+    "authUsers": 0,
+    "publicRpcs": 0,
+    "authHistory": [
+      "20171026211738",
+      "20171026211808",
+      "20171026211834",
+      "20180103212743",
+      "20180108183307",
+      "20180119214651",
+      "20180125194653"
+    ],
+    "publicViews": 0,
+    "publicTables": 0,
+    "publicPolicies": 0,
+    "foundationRelations": [
+      {
+        "acl": [
+          "supabase_auth_admin=arwdDxtm/supabase_auth_admin",
+          "dashboard_user=arwdDxtm/supabase_auth_admin",
+          "postgres=arwdDxtm/supabase_auth_admin"
+        ],
+        "rls": false,
+        "name": "audit_log_entries",
+        "owner": "supabase_auth_admin",
+        "schema": "auth",
+        "forceRls": false
+      },
+      {
+        "acl": [
+          "supabase_auth_admin=arwdDxtm/supabase_auth_admin",
+          "dashboard_user=arwdDxtm/supabase_auth_admin",
+          "postgres=arwdDxtm/supabase_auth_admin"
+        ],
+        "rls": false,
+        "name": "instances",
+        "owner": "supabase_auth_admin",
+        "schema": "auth",
+        "forceRls": false
+      },
+      {
+        "acl": [
+          "supabase_auth_admin=arwdDxtm/supabase_auth_admin",
+          "dashboard_user=arwdDxtm/supabase_auth_admin",
+          "postgres=arwdDxtm/supabase_auth_admin"
+        ],
+        "rls": false,
+        "name": "refresh_tokens",
+        "owner": "supabase_auth_admin",
+        "schema": "auth",
+        "forceRls": false
+      },
+      {
+        "acl": [
+          "supabase_auth_admin=arwdDxtm/supabase_auth_admin",
+          "dashboard_user=arwdDxtm/supabase_auth_admin",
+          "postgres=arwdDxtm/supabase_auth_admin"
+        ],
+        "rls": false,
+        "name": "schema_migrations",
+        "owner": "supabase_auth_admin",
+        "schema": "auth",
+        "forceRls": false
+      },
+      {
+        "acl": [
+          "supabase_auth_admin=arwdDxtm/supabase_auth_admin",
+          "dashboard_user=arwdDxtm/supabase_auth_admin",
+          "postgres=arwdDxtm/supabase_auth_admin"
+        ],
+        "rls": false,
+        "name": "users",
+        "owner": "supabase_auth_admin",
+        "schema": "auth",
+        "forceRls": false
+      }
+    ],
+    "applicationMigrationHistory": null
+  },
+  "roleBaselineDiff": {
+    "authUsers": 0,
+    "publicTables": 0,
+    "bootstrapRole": {
+      "oid": "10",
+      "name": "postgres",
+      "login": true,
+      "superuser": true
+    },
+    "storageTables": 0,
+    "roleMemberships": [
+      {
+        "role": "supabase_admin",
+        "member": "authenticator",
+        "grantor": "postgres"
+      },
+      {
+        "role": "anon",
+        "member": "authenticator",
+        "grantor": "postgres"
+      },
+      {
+        "role": "authenticated",
+        "member": "authenticator",
+        "grantor": "postgres"
+      },
+      {
+        "role": "service_role",
+        "member": "authenticator",
+        "grantor": "postgres"
+      }
+    ],
+    "regularNamedRoles": [
+      {
+        "oid": "16446",
+        "name": "authenticator",
+        "login": true,
+        "superuser": false
+      },
+      {
+        "oid": "10",
+        "name": "postgres",
+        "login": true,
+        "superuser": true
+      },
+      {
+        "oid": "16384",
+        "name": "supabase_admin",
+        "login": true,
+        "superuser": true
+      },
+      {
+        "oid": "16504",
+        "name": "supabase_auth_admin",
+        "login": true,
+        "superuser": false
+      },
+      {
+        "oid": "16506",
+        "name": "supabase_storage_admin",
+        "login": true,
+        "superuser": false
+      }
+    ],
+    "applicationHistory": null,
+    "authSchemaMigrations": 7
+  },
+  "expectedBootstrapRole": {
+    "oid": 10,
+    "name": "supabase_admin",
+    "superuser": true
+  },
+  "imageInfrastructureFiles": 59,
+  "imageInfrastructureProgress": {
+    "initializationSqlFilesCompleted": 5,
+    "imageMigrationFilesCompleted": 1,
+    "imageMigrationFilePartialFailed": 1,
+    "imageMigrationFilesNotRun": 51
+  },
+  "scope": "Owned new infrastructure only. App objects/RPC/grants/RLS/history compliance NOT_VERIFIED; schema absent, separate from formal staff membership issue.",
+  "unsupportedRecoveryNotExecuted": [
+    "skip required image demotion",
+    "bootstrap OID/catalog rewrite",
+    "role-name/default-ACL/extension-owner reconciliation",
+    "reset/reinitialize/delete volume"
+  ],
+  "postgresReference": "https://www.postgresql.org/docs/17/glossary.html#GLOSSARY-BOOTSTRAP-SUPERUSER"
+}

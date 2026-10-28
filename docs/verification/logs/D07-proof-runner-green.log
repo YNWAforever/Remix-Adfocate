@@ -1,0 +1,11 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ✓ server/test/fixture-ownership.test.ts (1 test) 3ms
+ ✓ server/test/run-integration-tests.test.ts (6 tests) 7ms
+
+ Test Files  2 passed (2)
+      Tests  7 passed (7)
+   Start at  03:29:26
+   Duration  1.69s (transform 122ms, setup 531ms, collect 147ms, tests 10ms, environment 1.77s, prepare 341ms)
+

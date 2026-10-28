@@ -1,3 +1,5 @@
+import { FIXTURE_WORKSPACE_SLUG } from "./helpers";
+import { fixtureName } from "./helpers";
 import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from "vitest";
 import { createApp } from "../app";
 import { cleanup, hasSupabaseEnv, makeCreator } from "./helpers";
@@ -57,7 +59,7 @@ function req(path: string, jwt: string, init: RequestInit = {}) {
     ...init,
     headers: {
       Authorization: `Bearer ${jwt}`,
-      "X-Workspace-Slug": "demo",
+      "X-Workspace-Slug": FIXTURE_WORKSPACE_SLUG,
       "Content-Type": "application/json",
       ...(init.headers ?? {}),
     },
@@ -69,7 +71,7 @@ suite("social account endpoints", () => {
 
   beforeAll(async () => {
     await cleanup();
-    c = await makeCreator("social-api@test.local");
+    c = await makeCreator(fixtureName("social-api@test.local"));
   });
 
   afterAll(cleanup);

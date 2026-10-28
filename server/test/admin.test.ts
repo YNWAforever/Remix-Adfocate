@@ -1,7 +1,9 @@
+import { FIXTURE_WORKSPACE_SLUG, DEMO_WS } from "./helpers";
+import { fixtureName } from "./helpers";
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { describe, it, expect, beforeAll, afterAll, vi } from "vitest";
-import { createApp } from "../app";
+import { createFixtureStaffApp as createApp } from "./fixtureStaffTransport";
 import { makeCreator, makeMission, getCreatorScores, cleanup, hasSupabaseEnv } from "./helpers";
 
 // Make the in-process admin middleware and the test agree on the secret.
@@ -309,7 +311,7 @@ function koreq(path: string, jwt: string, init: RequestInit = {}) {
     ...init,
     headers: {
       Authorization: `Bearer ${jwt}`,
-      "X-Workspace-Slug": "demo",
+      "X-Workspace-Slug": FIXTURE_WORKSPACE_SLUG,
       "Content-Type": "application/json",
       ...(init.headers ?? {}),
     },
@@ -327,10 +329,10 @@ suite("admin submission review", () => {
   let submissionId: string;
   beforeAll(async () => {
     await cleanup();
-    koc = await makeCreator("admin@test.local", 0);
-    await makeMission({ slug: "test-admin-mission", points_reward: 250, quota: 5 });
-    await koreq("/missions/test-admin-mission/join", koc.jwt, { method: "POST" });
-    const sub = await koreq("/missions/test-admin-mission/submit", koc.jwt, {
+    koc = await makeCreator(fixtureName("admin@test.local"), 0);
+    await makeMission({ slug: fixtureName("test-admin-mission"), points_reward: 250, quota: 5 });
+    await koreq(fixtureName("/missions/test-admin-mission/join"), koc.jwt, { method: "POST" });
+    const sub = await koreq(fixtureName("/missions/test-admin-mission/submit"), koc.jwt, {
       method: "PUT",
       body: JSON.stringify({ content_urls: ["https://ig.com/p/admin"] }),
     });
@@ -363,9 +365,9 @@ suite("admin submission review", () => {
   });
 
   it("lists pending applications with creator review and shortlist metadata", async () => {
-    const applicant = await makeCreator("admin-app-meta@test.local", 0);
-    await makeMission({ slug: "test-admin-app-meta", access_type: "application", points_reward: 100, quota: 5 });
-    await koreq("/missions/test-admin-app-meta/apply", applicant.jwt, { method: "POST" });
+    const applicant = await makeCreator(fixtureName("admin-app-meta@test.local"), 0);
+    await makeMission({ slug: fixtureName("test-admin-app-meta"), access_type: "application", points_reward: 100, quota: 5 });
+    await koreq(fixtureName("/missions/test-admin-app-meta/apply"), applicant.jwt, { method: "POST" });
 
     const res = await adminreq("/admin/applications");
     expect(res.status).toBe(200);
@@ -398,10 +400,10 @@ suite("admin submission review", () => {
   });
 
   it("rejects a submitted submission (no award)", async () => {
-    const koc2 = await makeCreator("admin2@test.local", 0);
-    await makeMission({ slug: "test-admin-reject", points_reward: 100, quota: 5 });
-    await koreq("/missions/test-admin-reject/join", koc2.jwt, { method: "POST" });
-    const sub = await koreq("/missions/test-admin-reject/submit", koc2.jwt, {
+    const koc2 = await makeCreator(fixtureName("admin2@test.local"), 0);
+    await makeMission({ slug: fixtureName("test-admin-reject"), points_reward: 100, quota: 5 });
+    await koreq(fixtureName("/missions/test-admin-reject/join"), koc2.jwt, { method: "POST" });
+    const sub = await koreq(fixtureName("/missions/test-admin-reject/submit"), koc2.jwt, {
       method: "PUT",
       body: JSON.stringify({ content_urls: ["https://ig.com/p/x"] }),
     });
@@ -417,10 +419,10 @@ suite("admin submission review", () => {
   });
 
   it("approves with a 5★ rating: stores the rating, awards +50 bonus XP, snapshots scores", async () => {
-    const koc3 = await makeCreator("admin-rate@test.local", 0);
-    await makeMission({ slug: "test-admin-rate", points_reward: 100, quota: 5 });
-    await koreq("/missions/test-admin-rate/join", koc3.jwt, { method: "POST" });
-    const sub = await koreq("/missions/test-admin-rate/submit", koc3.jwt, {
+    const koc3 = await makeCreator(fixtureName("admin-rate@test.local"), 0);
+    await makeMission({ slug: fixtureName("test-admin-rate"), points_reward: 100, quota: 5 });
+    await koreq(fixtureName("/missions/test-admin-rate/join"), koc3.jwt, { method: "POST" });
+    const sub = await koreq(fixtureName("/missions/test-admin-rate/submit"), koc3.jwt, {
       method: "PUT",
       body: JSON.stringify({ content_urls: ["https://ig.com/p/rate"] }),
     });
@@ -446,10 +448,10 @@ suite("admin submission review", () => {
   });
 
   it("rejects an out-of-range rating with 400 bad_rating", async () => {
-    const koc4 = await makeCreator("admin-badrate@test.local", 0);
-    await makeMission({ slug: "test-admin-badrate", points_reward: 100, quota: 5 });
-    await koreq("/missions/test-admin-badrate/join", koc4.jwt, { method: "POST" });
-    const sub = await koreq("/missions/test-admin-badrate/submit", koc4.jwt, {
+    const koc4 = await makeCreator(fixtureName("admin-badrate@test.local"), 0);
+    await makeMission({ slug: fixtureName("test-admin-badrate"), points_reward: 100, quota: 5 });
+    await koreq(fixtureName("/missions/test-admin-badrate/join"), koc4.jwt, { method: "POST" });
+    const sub = await koreq(fixtureName("/missions/test-admin-badrate/submit"), koc4.jwt, {
       method: "PUT",
       body: JSON.stringify({ content_urls: ["https://ig.com/p/bad"] }),
     });
@@ -469,10 +471,10 @@ suite("admin submission review", () => {
   });
 
   it("rejection snapshots scores (brand safety reflects the rejection)", async () => {
-    const koc5 = await makeCreator("admin-rej-snap@test.local", 0);
-    await makeMission({ slug: "test-admin-rej-snap", points_reward: 100, quota: 5 });
-    await koreq("/missions/test-admin-rej-snap/join", koc5.jwt, { method: "POST" });
-    const sub = await koreq("/missions/test-admin-rej-snap/submit", koc5.jwt, {
+    const koc5 = await makeCreator(fixtureName("admin-rej-snap@test.local"), 0);
+    await makeMission({ slug: fixtureName("test-admin-rej-snap"), points_reward: 100, quota: 5 });
+    await koreq(fixtureName("/missions/test-admin-rej-snap/join"), koc5.jwt, { method: "POST" });
+    const sub = await koreq(fixtureName("/missions/test-admin-rej-snap/submit"), koc5.jwt, {
       method: "PUT",
       body: JSON.stringify({ content_urls: ["https://ig.com/p/rej"] }),
     });
@@ -501,14 +503,14 @@ suite("admin engaged roster", () => {
 
   it("lists creators with active participations and excludes fully-completed ones", async () => {
     await cleanup();
-    const active = await makeCreator("engaged-active@test.local", 0);
-    await makeMission({ slug: "test-engaged-active-mission", points_reward: 100, quota: 5 });
-    await koreq("/missions/test-engaged-active-mission/join", active.jwt, { method: "POST" });
+    const active = await makeCreator(fixtureName("engaged-active@test.local"), 0);
+    await makeMission({ slug: fixtureName("test-engaged-active-mission"), points_reward: 100, quota: 5 });
+    await koreq(fixtureName("/missions/test-engaged-active-mission/join"), active.jwt, { method: "POST" });
 
-    const done = await makeCreator("engaged-done@test.local", 0);
-    await makeMission({ slug: "test-engaged-done-mission", points_reward: 100, quota: 5 });
-    await koreq("/missions/test-engaged-done-mission/join", done.jwt, { method: "POST" });
-    const sub = await koreq("/missions/test-engaged-done-mission/submit", done.jwt, {
+    const done = await makeCreator(fixtureName("engaged-done@test.local"), 0);
+    await makeMission({ slug: fixtureName("test-engaged-done-mission"), points_reward: 100, quota: 5 });
+    await koreq(fixtureName("/missions/test-engaged-done-mission/join"), done.jwt, { method: "POST" });
+    const sub = await koreq(fixtureName("/missions/test-engaged-done-mission/submit"), done.jwt, {
       method: "PUT",
       body: JSON.stringify({ content_urls: ["https://ig.com/p/done"] }),
     });
@@ -522,7 +524,7 @@ suite("admin engaged roster", () => {
     expect(activeRow).toBeTruthy();
     expect(activeRow.activeCount).toBe(1);
     expect(activeRow.completedCount).toBe(0);
-    expect(activeRow.activeMissions[0].missionSlug).toBe("test-engaged-active-mission");
+    expect(activeRow.activeMissions[0].missionSlug).toBe(fixtureName("test-engaged-active-mission"));
     expect(activeRow.activeMissions[0].status).toBe("joined");
 
     expect(creators.find((c: { id: string }) => c.id === done.userId)).toBeUndefined();
@@ -530,34 +532,37 @@ suite("admin engaged roster", () => {
 });
 
 suite("B2: workspace-scoped review", () => {
-  const DEMO = "00000000-0000-0000-0000-0000000000aa";
+  const DEMO = DEMO_WS;
   const OTHER = "00000000-0000-0000-0000-0000000000bb";
   afterAll(cleanup);
 
-  it("filters applications by ?workspace= (demo returns the row, bogus returns none)", async () => {
-    const koc = await makeCreator("ws-scope@test.local", 0);
-    await makeMission({ slug: "test-ws-scope", points_reward: 100, quota: 5, access_type: "application" });
-    await koreq("/missions/test-ws-scope/apply", koc.jwt, { method: "POST" });
+  it("filters applications by ?workspace= (demo returns the row, inaccessible returns 404)", async () => {
+    const koc = await makeCreator(fixtureName("ws-scope@test.local"), 0);
+    await makeMission({ slug: fixtureName("test-ws-scope"), points_reward: 100, quota: 5, access_type: "application" });
+    await koreq(fixtureName("/missions/test-ws-scope/apply"), koc.jwt, { method: "POST" });
 
     const scoped = await adminreq(`/admin/applications?workspace=${DEMO}`);
     expect(scoped.status).toBe(200);
     const rows = (await scoped.json()).applications as Array<{ missions: { slug: string } }>;
-    expect(rows.some((r) => r.missions.slug === "test-ws-scope")).toBe(true);
+    expect(rows.some((r) => r.missions.slug === fixtureName("test-ws-scope"))).toBe(true);
 
     const none = await adminreq(`/admin/applications?workspace=${OTHER}`);
-    expect(((await none.json()).applications as unknown[]).length).toBe(0);
+    expect(none.status).toBe(404);
+    expect((await none.json()).applications).toBeUndefined();
   });
 
   it("filters submissions by ?workspace=", async () => {
     const none = await adminreq(`/admin/submissions?status=submitted&workspace=${OTHER}`);
-    expect(((await none.json()).submissions as unknown[]).length).toBe(0);
+    expect(none.status).toBe(404);
+    expect((await none.json()).submissions).toBeUndefined();
     const ok = await adminreq(`/admin/submissions?status=submitted&workspace=${DEMO}`);
     expect(ok.status).toBe(200);
   });
 
   it("filters engaged by ?workspace=", async () => {
     const none = await adminreq(`/admin/engaged?workspace=${OTHER}`);
-    expect(((await none.json()).creators as unknown[]).length).toBe(0);
+    expect(none.status).toBe(404);
+    expect((await none.json()).creators).toBeUndefined();
     const ok = await adminreq(`/admin/engaged?workspace=${DEMO}`);
     expect(ok.status).toBe(200);
   });
@@ -567,20 +572,20 @@ suite("B2: mission activity drill-in", () => {
   afterAll(cleanup);
 
   it("returns the mission + bucketed activity", async () => {
-    const koc = await makeCreator("activity@test.local", 0);
-    await makeMission({ slug: "test-activity", points_reward: 200, quota: 5 });
-    const list = await (await adminreq(`/admin/missions?workspace=00000000-0000-0000-0000-0000000000aa`)).json();
-    const m = (list.missions as Array<{ id: string; slug: string }>).find((x) => x.slug === "test-activity")!;
+    const koc = await makeCreator(fixtureName("activity@test.local"), 0);
+    await makeMission({ slug: fixtureName("test-activity"), points_reward: 200, quota: 5 });
+    const list = await (await adminreq(`/admin/missions?workspace=${DEMO_WS}`)).json();
+    const m = (list.missions as Array<{ id: string; slug: string }>).find((x) => x.slug === fixtureName("test-activity"))!;
 
-    await koreq("/missions/test-activity/join", koc.jwt, { method: "POST" });
-    await koreq("/missions/test-activity/submit", koc.jwt, {
+    await koreq(fixtureName("/missions/test-activity/join"), koc.jwt, { method: "POST" });
+    await koreq(fixtureName("/missions/test-activity/submit"), koc.jwt, {
       method: "PUT", body: JSON.stringify({ content_urls: ["https://ig.com/p/x"] }),
     });
 
     const res = await adminreq(`/admin/missions/${m.id}/activity`);
     expect(res.status).toBe(200);
     const body = await res.json();
-    expect(body.mission.slug).toBe("test-activity");
+    expect(body.mission.slug).toBe(fixtureName("test-activity"));
     expect(body.submissions.length).toBe(1);
     expect(body.fill.quota).toBe(5);
   });

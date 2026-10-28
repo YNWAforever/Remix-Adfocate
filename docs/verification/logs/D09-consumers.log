@@ -1,0 +1,19 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ✓ src/routes/-_app.onboarding.test.tsx (16 tests) 906ms
+ ✓ src/routes/-_app.home.test.tsx (15 tests) 1127ms
+ ✓ src/lib/i18n.test.tsx (12 tests) 136ms
+ ✓ src/routes/-_app.mission.$missionSlug.test.tsx (19 tests) 761ms
+ ✓ server/lib/missionAuthoring.test.ts (32 tests) 16ms
+ ✓ src/components/CreatorWorkHome.test.tsx (14 tests) 984ms
+ ✓ src/routes/-_app.mission.index.test.tsx (8 tests) 339ms
+ ✓ src/lib/useCreatorActivation.test.tsx (4 tests) 38ms
+ ✓ src/routes/-_app.match.test.tsx (6 tests) 254ms
+ ✓ src/components/onboarding/OnboardingShell.test.tsx (5 tests) 268ms
+
+ Test Files  10 passed (10)
+      Tests  131 passed (131)
+   Start at  05:15:35
+   Duration  22.52s (transform 1.18s, setup 5.08s, collect 6.11s, tests 4.83s, environment 19.09s, prepare 2.26s)
+

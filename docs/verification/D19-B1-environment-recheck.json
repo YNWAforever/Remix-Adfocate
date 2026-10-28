@@ -1,0 +1,9 @@
+{
+  "sourceFingerprint": "d7cc43ad92ad96b0b7d424a1ce903a42a7e83edc0c57319e8d33ad2d4ed82ac5",
+  "passed": 25,
+  "failed": 0,
+  "testFiles": 3,
+  "sourceChanged": false,
+  "execution": "Formal require_escalated tool request approved/executed for self-hosted loopback test server and atomic temp-file rename; no service target/fixture/role authorization",
+  "receipt": "D19-B1-environment-receipt.json"
+}

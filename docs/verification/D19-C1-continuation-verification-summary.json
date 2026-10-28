@@ -1,0 +1,37 @@
+{
+  "checkedAtUTC": "2026-10-25T11:36:47.955068+00:00",
+  "checkedAtHongKong": "2026-10-25T19:36:47.955068+08:00",
+  "command": [
+    "python",
+    "docs/verification/D19-C1-continuation-check-records.py"
+  ],
+  "exitCode": 0,
+  "checkerSha256": "32dd95fd724ce409be9a07b4cdf4f8bc1c45d607fdc902e3c9400061302031ec",
+  "result": {
+    "status": "PASS_APPROVED696E_SCOPE_AND_CURRENT_DELIVERY_NOT_WHOLE_R1",
+    "sourceFingerprint": "e83998d178061043688016056a5a78fc61df58bac28f3d0d0b66d639306037bd",
+    "browserPassed": 5,
+    "apiCasesCarried": 17,
+    "apiReruns": 0,
+    "Node22Passed": 2082,
+    "Node24Passed": 2082,
+    "gatedSkipEach": 363,
+    "original16": 16,
+    "protected194": 194,
+    "wholeContinuationFinancialNeutrality": true,
+    "onePendingBinding": true,
+    "authSubjects": 84,
+    "newRootsOrResources": 0,
+    "incidentOpen": true,
+    "releaseHold": true,
+    "providerEnabled": false,
+    "wholeR1Verified": false
+  },
+  "scope": "Pure local file/source/authority/provenance and evidence integrity validation; no new runtime test/Auth/DB calls. Summary is added to the seal and the same checker is run again afterward.",
+  "metadataCorrection": "17 API-facet case labels now distinguish carried/revalidated evidence from open whole-case acceptance;2 resolved gap labels and current input checksums reconciled. Prior labels and failure receipts preserved.",
+  "wholeR1Verified": false,
+  "releaseHold": true,
+  "incidentOpen": true,
+  "providerEnabled": false,
+  "notDeployed": true
+}

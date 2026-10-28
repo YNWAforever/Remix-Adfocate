@@ -1,0 +1,8 @@
+{
+  "kind": "B2_RUNTIME_AUTHORIZATION",
+  "approved": false,
+  "manifestSha256": "71421cbe72f671a242a8bdc6031654c61b634d7d2aabf7ebd4b85325f95691f1",
+  "sourceFingerprint": "7943636116d39d489e0f0d1623784627ab0388650fb2e680c12c90eb1a2d1ac6",
+  "ownerReference": null,
+  "warning": "Template only; P0 is not runtime authority. Do not change approved until direct owner approval for this exact source and manifest."
+}

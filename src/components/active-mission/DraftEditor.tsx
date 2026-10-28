@@ -2,6 +2,8 @@ import { useCallback, useEffect, useId, useRef, useState } from "react";
 import type { MissionDraft, MissionWorkItemView } from "@/lib/activeMission";
 import { ApiError } from "@/lib/api";
 import { useI18n } from "@/lib/i18n";
+import type { AssistContext } from "@/lib/missionAssist";
+import { MissionAssistLauncher } from "../assistant/MissionAssistLauncher";
 import type {
   MissionDraftConflict,
   SaveMissionDraftInput,
@@ -27,6 +29,7 @@ type DraftEditorProps = {
   acceptedMimeTypes?: readonly string[];
   maxFileSizeBytes?: number;
   existingAssetCount?: number;
+  assistContext?: AssistContext;
 };
 
 type SaveStatus = "idle" | "saving" | "saved" | "error" | "conflict";
@@ -96,6 +99,7 @@ export function DraftEditor({
   acceptedMimeTypes = DEFAULT_MIME_TYPES,
   maxFileSizeBytes = DEFAULT_MAX_FILE_SIZE_BYTES,
   existingAssetCount = 0,
+  assistContext,
 }: DraftEditorProps) {
   const captionId = useId();
   const { lang, t } = useI18n();
@@ -108,12 +112,16 @@ export function DraftEditor({
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
   const [editSequence, setEditSequence] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isRecovering, setIsRecovering] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const submitErrorRef = useRef<HTMLParagraphElement>(null);
   const [fileError, setFileError] = useState<string | null>(null);
   const [uploads, setUploads] = useState<UploadEntry[]>([]);
   const revisionRef = useRef(item.draft?.revision ?? 0);
+  const saveHandlerRef = useRef(onSave);
+  saveHandlerRef.current = onSave;
   const autosaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const attemptedEditRef = useRef({ generation: 0, sequence: 0 });
   const scopeRef = useRef({ itemId: item.id, generation: 0 });
   const saveQueueRef = useRef<{ generation: number; promise: Promise<unknown> }>({ generation: 0, promise: Promise.resolve() });
   const activeSaveRef = useRef<{ generation: number; promise: Promise<DraftSaveResult> } | null>(null);
@@ -151,6 +159,7 @@ export function DraftEditor({
     setFileError(null);
     setSubmitError(null);
     setIsSubmitting(false);
+    setIsRecovering(false);
     submitAttemptRef.current = null;
   }, [item.draft, item.id, stateItemId]);
 
@@ -159,12 +168,15 @@ export function DraftEditor({
   }, []);
 
   const queueSave = useCallback((input: SaveMissionDraftInput, generation: number): Promise<DraftSaveResult> => {
+    // Owner mutation renders can replace onSave without creating another authored edit.
+    // Bind the handler now so already queued work retains its original scope.
+    const save = saveHandlerRef.current;
     const previous = saveQueueRef.current.generation === generation ? saveQueueRef.current.promise : Promise.resolve();
     const promise = previous.catch(() => undefined).then(async () => {
       const executionInput = isCurrentScope(generation, input.workItemId)
         ? { ...input, revision: revisionRef.current }
         : input;
-      const result = await onSave(executionInput);
+      const result = await save(executionInput);
       if (isCurrentScope(generation, input.workItemId)) {
         const nextRevision = revisionFrom(result, revisionRef.current);
         revisionRef.current = nextRevision;
@@ -178,10 +190,11 @@ export function DraftEditor({
     saveQueueRef.current = { generation, promise };
     activeSaveRef.current = { generation, promise };
     return promise;
-  }, [isCurrentScope, onSave]);
+  }, [isCurrentScope]);
 
   useEffect(() => {
-    if (editSequence === 0 || !canEdit || stateItemId !== item.id) return;
+    if (editSequence === 0 || !canEdit || stateItemId !== item.id || conflict) return;
+    if (attemptedEditRef.current.generation === renderGeneration && attemptedEditRef.current.sequence === editSequence) return;
     setSaveStatus("saving");
     if (autosaveTimerRef.current) clearTimeout(autosaveTimerRef.current);
     autosaveTimerRef.current = setTimeout(() => {
@@ -194,6 +207,7 @@ export function DraftEditor({
       };
       autosaveTimerRef.current = null;
       const generation = renderGeneration;
+      attemptedEditRef.current = { generation, sequence: editSequence };
       void queueSave(input, generation)
         .then(() => {
           if (isCurrentScope(generation, input.workItemId)) setSaveStatus("saved");
@@ -205,11 +219,30 @@ export function DraftEditor({
     return () => {
       if (autosaveTimerRef.current) clearTimeout(autosaveTimerRef.current);
     };
-  }, [canEdit, caption, checklist, editSequence, externalUrl, isCurrentScope, item.id, queueSave, renderGeneration, stateItemId]);
+  }, [canEdit, caption, checklist, conflict, editSequence, externalUrl, isCurrentScope, item.id, queueSave, renderGeneration, stateItemId]);
 
   function markEdited() {
     setSaveStatus("saving");
     setEditSequence((current) => current + 1);
+  }
+
+  async function retryRetainedDraft() {
+    if (!canEdit || isRecovering || isSubmitting) return;
+    if (effectiveSaveStatus === "conflict" && !conflict?.currentDraft) return;
+    if (autosaveTimerRef.current) clearTimeout(autosaveTimerRef.current);
+    // The user has compared the server draft and explicitly chosen to save local input.
+    if (conflict?.currentDraft) revisionRef.current = conflict.currentDraft.revision;
+    const generation = renderGeneration, workItemId = item.id;
+    attemptedEditRef.current = { generation, sequence: editSequence };
+    setIsRecovering(true); setSaveStatus("saving");
+    try {
+      await queueSave({workItemId, revision:revisionRef.current, caption, externalUrl:externalUrl.trim() || null, checklist}, generation);
+      if (isCurrentScope(generation, workItemId)) setSaveStatus("saved");
+    } catch (error) {
+      if (isCurrentScope(generation, workItemId)) setSaveStatus(isStaleError(error) ? "conflict" : "error");
+    } finally {
+      if (isCurrentScope(generation, workItemId)) setIsRecovering(false);
+    }
   }
 
   async function submitVersion() {
@@ -354,6 +387,17 @@ export function DraftEditor({
         <p role="status" aria-live="polite" aria-atomic="true" className="text-sm font-semibold text-[var(--color-soft-ink)]">{statusMessage}</p>
       </div>
 
+      {canEdit && (effectiveSaveStatus === "error" || conflict?.currentDraft) ? (
+        <div className="space-y-2 rounded-xl border-2 border-[var(--color-ink)] p-3">
+          {conflict?.currentDraft ? <><p className="font-bold">{t("app.activeMission.editor.currentServerDraft")}</p><p className="whitespace-pre-wrap break-words">{conflict.currentDraft.caption}</p></> : null}
+          <button type="button" disabled={isRecovering || isSubmitting} onClick={() => void retryRetainedDraft()} className="min-h-11 rounded-full border-2 border-[var(--color-ink)] px-4 py-2 font-bold disabled:opacity-50">
+            {t(conflict?.currentDraft ? "app.activeMission.editor.retryRetained" : "app.activeMission.editor.retrySave")}
+          </button>
+        </div>
+      ) : null}
+
+      {assistContext && <MissionAssistLauncher context={assistContext} checklist={requirements.map(r => ({ id: r.id, text: r.label, complete: checklist[r.id] === true }))} />}
+
       <div className="grid gap-2">
         <label htmlFor={captionId} className="font-heading text-sm font-bold">{t("app.activeMission.editor.caption")}</label>
         <textarea
@@ -479,7 +523,7 @@ export function DraftEditor({
         {!allRequiredChecked ? <p className="text-sm text-[var(--color-soft-ink)]">{t("app.activeMission.editor.completeChecklist")}</p> : null}
         <button
           type="button"
-          disabled={!canEdit || !allRequiredChecked || isSubmitting}
+          disabled={!canEdit || !allRequiredChecked || isSubmitting || isRecovering || effectiveSaveStatus === "conflict"}
           onClick={() => void submitVersion()}
           className="min-h-11 w-full touch-manipulation rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-ink)] px-5 py-3 font-heading font-bold text-white hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
         >

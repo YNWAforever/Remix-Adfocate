@@ -1,3 +1,5 @@
+import { FIXTURE_WORKSPACE_SLUG } from "./helpers";
+import { fixtureName } from "./helpers";
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { createApp } from "../app";
 import { makeCreator, cleanup, hasSupabaseEnv } from "./helpers";
@@ -10,7 +12,7 @@ function req(path: string, jwt: string, init: RequestInit = {}) {
     ...init,
     headers: {
       Authorization: `Bearer ${jwt}`,
-      "X-Workspace-Slug": "demo",
+      "X-Workspace-Slug": FIXTURE_WORKSPACE_SLUG,
       "Content-Type": "application/json",
       ...(init.headers ?? {}),
     },
@@ -21,7 +23,7 @@ suite("onboarding endpoints", () => {
   let creator: { userId: string; jwt: string };
   beforeAll(async () => {
     await cleanup();
-    creator = await makeCreator("onb@test.local", 0);
+    creator = await makeCreator(fixtureName("onb@test.local"), 0);
   });
   afterAll(cleanup);
 

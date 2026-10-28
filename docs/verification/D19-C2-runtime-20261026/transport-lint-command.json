@@ -1,0 +1,25 @@
+{
+  "startedAt": "2026-10-25T18:25:03.691620+00:00",
+  "command": [
+    "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+    "node_modules/eslint/bin/eslint.js",
+    "scripts/audit/local-targets.mjs",
+    "server/test/audit-docker-output-capture.test.ts"
+  ],
+  "node": "v22.23.4",
+  "resource": {
+    "at": "2026-10-25T18:25:03.690918+00:00",
+    "freePhysicalGiB": 6.241138458251953,
+    "freeCommitGiB": 7.419223785400391,
+    "minimumGiB": 3,
+    "freeDiskGiB": 22.03173065185547
+  },
+  "credentialsProxiesPreloadsStripped": true,
+  "integrationDisabled": true,
+  "label": "transport-lint",
+  "log": "docs/verification/D19-C2-runtime-20261026/transport-lint.log",
+  "runtimeTargetCallsRequested": false,
+  "pid": 6856,
+  "endedAt": "2026-10-25T18:25:33.491941+00:00",
+  "exit": 0
+}

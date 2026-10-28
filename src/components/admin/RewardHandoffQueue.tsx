@@ -5,6 +5,7 @@ import type {
   RewardHandoffQueueItem,
 } from "@/lib/adminRewardHandoff";
 import { useI18n } from "@/lib/i18n";
+import { useStaffAccess } from "./StaffAccessContext";
 
 export type RewardHandoffUiFilters = Pick<
   RewardHandoffListFilters,
@@ -92,6 +93,8 @@ function RewardHandoffQueueWorkspace({
   onLoadMore,
 }: Props) {
   const { lang, localeReady, t } = useI18n();
+  const access=useStaffAccess(),canEditSettings=!access||access.can("reward.settings");
+  const canOpenTimeline=!access||["submission.review","proof.review","completion.approve"].some(cap=>access.can(cap as "submission.review"|"proof.review"|"completion.approve"));
   const locale = lang === "zh" ? "zh-HK" : "en-US";
   const [draftFilters, setDraftFilters] = useState<RewardHandoffUiFilters>(
     normalizedFilters(filters),
@@ -219,7 +222,7 @@ function RewardHandoffQueueWorkspace({
         <p className="text-sm text-[var(--color-soft-ink)]">
           {t("app.admin.rewardHandoff.sla.help")}
         </p>
-        <div className="mt-3 flex min-w-0 flex-col gap-2 sm:flex-row sm:items-end">
+        {canEditSettings?<div className="mt-3 flex min-w-0 flex-col gap-2 sm:flex-row sm:items-end">
           <label className="grid min-w-0 flex-1 gap-1 text-sm font-bold">
             {t("app.admin.rewardHandoff.sla.label")}
             <input
@@ -247,8 +250,8 @@ function RewardHandoffQueueWorkspace({
               ? t("app.admin.rewardHandoff.sla.saving")
               : t("app.admin.rewardHandoff.sla.save")}
           </button>
-        </div>
-        {saveState.kind === "error" ? (
+        </div>:<p className="mt-3 text-sm">Read only / 只供檢視 · {processingWindowDays===null?"No assigned window / 未設定時限":`${processingWindowDays} days / 日`}</p>}
+        {canEditSettings && saveState.kind === "error" ? (
           <p role="alert" className="mt-2 text-sm font-bold text-red-700">
             {windowDraft.trim() !== ""
               && (!Number.isFinite(Number(windowDraft))
@@ -357,14 +360,14 @@ function RewardHandoffQueueWorkspace({
                       <div><dt className="font-bold">{t("app.admin.rewardHandoff.decision")}</dt><dd>{decision(item)}</dd></div>
                       <div><dt className="font-bold">{t("app.admin.rewardHandoff.evidence")}</dt><dd>{evidence(item)}</dd></div>
                     </dl>
-                    <Link
+                    {canOpenTimeline ? <Link
                       to="/admin/active-missions/$workflowId"
                       params={{ workflowId: item.workflowId }}
                       search={{ workItemId: undefined }}
                       className="mt-3 inline-flex rounded-full border-2 border-[var(--color-ink)] bg-white px-4 py-2 font-heading text-sm font-bold hover:bg-[var(--color-paper)]"
                     >
                       {t("app.admin.rewardHandoff.timeline")}
-                    </Link>
+                    </Link> : null}
                   </article>
                 ))}
               </div>
@@ -390,14 +393,14 @@ function RewardHandoffQueueWorkspace({
                         <td className="border-b p-2">{evidence(item)}</td>
                         <td className="border-b p-2">{status(item)}</td>
                         <td className="border-b p-2">
-                          <Link
+                          {canOpenTimeline ? <Link
                             to="/admin/active-missions/$workflowId"
                             params={{ workflowId: item.workflowId }}
                             search={{ workItemId: undefined }}
                             className="font-bold underline hover:text-[var(--color-soft-ink)]"
                           >
                             {t("app.admin.rewardHandoff.timeline")}
-                          </Link>
+                          </Link> : null}
                         </td>
                       </tr>
                     ))}

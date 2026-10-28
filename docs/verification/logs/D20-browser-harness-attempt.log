@@ -1,0 +1,387 @@
+
+[WebServer] (node:43740) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 6 tests using 1 worker
+
+
+(node:20192) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1/6] e2e\mission-assist.spec.ts:19:36 › D20 creator lazy checklist, disabled provider and keyboard close
+
+[WebServer] (!) Failed to run dependency scan. Skipping dependency pre-bundling. Error: The following dependencies are imported but could not be resolved:
+[WebServer] 
+[WebServer]   @/lib/i18n (imported by C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/e2e/fixtures/mission-assist.tsx)
+[WebServer]   @/components/active-mission/DraftEditor (imported by C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/e2e/fixtures/mission-assist.tsx)
+[WebServer]   @/components/admin/ActiveMissionReview (imported by C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/e2e/fixtures/mission-assist.tsx)
+[WebServer]   @/components/assistant/MissionAssistPanel (imported by C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/e2e/fixtures/mission-assist.tsx)
+[WebServer] 
+[WebServer] Are they installed?
+[WebServer]     at file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:31983:33
+[WebServer]     at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+[WebServer]     at async file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:34191:15
+
+[WebServer] 上午4:50:21 [vite] (client) Pre-transform error: Failed to resolve import "@/lib/i18n" from "e2e/fixtures/mission-assist.tsx". Does the file exist?
+[WebServer]   Plugin: vite:import-analysis
+[WebServer]   File: C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/e2e/fixtures/mission-assist.tsx:3:29
+[WebServer]   3  |  import { lazy, Suspense, useState } from "react";
+[WebServer]   4  |  import { createRoot } from "react-dom/client";
+[WebServer]   5  |  import { I18nProvider } from "@/lib/i18n";
+[WebServer]      |                                ^
+[WebServer]   6  |  import { DraftEditor } from "@/components/active-mission/DraftEditor";
+[WebServer]   7  |  import { ActiveMissionReview } from "@/components/admin/ActiveMissionReview";
+[WebServer] 上午4:50:21 [vite] Internal server error: Failed to resolve import "@/lib/i18n" from "e2e/fixtures/mission-assist.tsx". Does the file exist?
+
+[WebServer]   Plugin: vite:import-analysis
+[WebServer]   File: C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/e2e/fixtures/mission-assist.tsx:3:29
+[WebServer]   3  |  import { lazy, Suspense, useState } from "react";
+[WebServer]   4  |  import { createRoot } from "react-dom/client";
+[WebServer]   5  |  import { I18nProvider } from "@/lib/i18n";
+[WebServer]      |                                ^
+[WebServer]   6  |  import { DraftEditor } from "@/components/active-mission/DraftEditor";
+[WebServer]   7  |  import { ActiveMissionReview } from "@/components/admin/ActiveMissionReview";
+[WebServer]       at TransformPluginContext._formatLog (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:29079:43)
+[WebServer]       at TransformPluginContext.error (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:29076:14)
+[WebServer]       at normalizeUrl (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:27199:18)
+[WebServer]       at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+[WebServer]       at async file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:27257:32
+[WebServer]       at async Promise.all (index 3)
+[WebServer]       at async TransformPluginContext.transform (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:27225:4)
+[WebServer]       at async EnvironmentPluginContainer.transform (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:28877:14)
+[WebServer]       at async loadAndTransform (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:22746:26)
+
+[WebServer] 上午4:50:21 [vite] (client) Pre-transform error: Failed to resolve import "@/lib/i18n" from "e2e/fixtures/mission-assist.tsx". Does the file exist?
+[WebServer]   Plugin: vite:import-analysis
+[WebServer]   File: C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/e2e/fixtures/mission-assist.tsx:3:29
+[WebServer]   3  |  import { lazy, Suspense, useState } from "react";
+[WebServer]   4  |  import { createRoot } from "react-dom/client";
+[WebServer]   5  |  import { I18nProvider } from "@/lib/i18n";
+[WebServer]      |                                ^
+[WebServer]   6  |  import { DraftEditor } from "@/components/active-mission/DraftEditor";
+[WebServer]   7  |  import { ActiveMissionReview } from "@/components/admin/ActiveMissionReview";
+  1) e2e\mission-assist.spec.ts:19:36 › D20 creator lazy checklist, disabled provider and keyboard close 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('button', { name: 'Brief help', exact: true })
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('button', { name: 'Brief help', exact: true }) with timeout 15000ms
+      - waiting for getByRole('button', { name: 'Brief help', exact: true })
+
+
+      21 |   page.on("request", r => { if (r.url().includes("/MissionAssistPanel.tsx")) loaded.push(r.url()); });
+      22 |   await page.goto(`/e2e/fixtures/mission-assist.html${staff ? "?staff=1" : ""}`);
+    > 23 |   await expect(page.getByRole("button", { name: "Brief help", exact: true })).toBeVisible();
+         |                                                                               ^
+      24 |   expect(loaded).toHaveLength(0);
+      25 |   if (!staff) await page.locator('textarea[name="caption"]').fill("Preserve my draft caption");
+      26 |   await page.getByRole("button", { name: "Brief help", exact: true }).focus(); await page.keyboard.press("Enter");
+        at C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\e2e\mission-assist.spec.ts:23:79
+
+    Error Context: test-results\mission-assist-D20-creator-d82ec-provider-and-keyboard-close\error-context.md
+
+
+(node:44612) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[2/6] e2e\mission-assist.spec.ts:19:36 › D20 operator lazy checklist, disabled provider and keyboard close
+
+[WebServer] 上午4:50:38 [vite] Internal server error: Failed to resolve import "@/lib/i18n" from "e2e/fixtures/mission-assist.tsx". Does the file exist?
+[WebServer]   Plugin: vite:import-analysis
+[WebServer]   File: C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/e2e/fixtures/mission-assist.tsx:3:29
+[WebServer]   3  |  import { lazy, Suspense, useState } from "react";
+[WebServer]   4  |  import { createRoot } from "react-dom/client";
+[WebServer]   5  |  import { I18nProvider } from "@/lib/i18n";
+[WebServer]      |                                ^
+[WebServer]   6  |  import { DraftEditor } from "@/components/active-mission/DraftEditor";
+[WebServer]   7  |  import { ActiveMissionReview } from "@/components/admin/ActiveMissionReview";
+[WebServer]       at TransformPluginContext._formatLog (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:29079:43)
+[WebServer]       at TransformPluginContext.error (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:29076:14)
+[WebServer]       at normalizeUrl (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:27199:18)
+[WebServer]       at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+[WebServer]       at async file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:27257:32
+[WebServer]       at async Promise.all (index 3)
+[WebServer]       at async TransformPluginContext.transform (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:27225:4)
+[WebServer]       at async EnvironmentPluginContainer.transform (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:28877:14)
+[WebServer]       at async loadAndTransform (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:22746:26)
+[WebServer] 上午4:50:38 [vite] (client) Pre-transform error: Failed to resolve import "@/lib/i18n" from "e2e/fixtures/mission-assist.tsx". Does the file exist?
+[WebServer]   Plugin: vite:import-analysis
+[WebServer]   File: C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/e2e/fixtures/mission-assist.tsx:3:29
+[WebServer]   3  |  import { lazy, Suspense, useState } from "react";
+[WebServer]   4  |  import { createRoot } from "react-dom/client";
+[WebServer]   5  |  import { I18nProvider } from "@/lib/i18n";
+[WebServer]      |                                ^
+[WebServer]   6  |  import { DraftEditor } from "@/components/active-mission/DraftEditor";
+[WebServer]   7  |  import { ActiveMissionReview } from "@/components/admin/ActiveMissionReview";
+
+  2) e2e\mission-assist.spec.ts:19:36 › D20 operator lazy checklist, disabled provider and keyboard close 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('button', { name: 'Brief help', exact: true })
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('button', { name: 'Brief help', exact: true }) with timeout 15000ms
+      - waiting for getByRole('button', { name: 'Brief help', exact: true })
+
+
+      21 |   page.on("request", r => { if (r.url().includes("/MissionAssistPanel.tsx")) loaded.push(r.url()); });
+      22 |   await page.goto(`/e2e/fixtures/mission-assist.html${staff ? "?staff=1" : ""}`);
+    > 23 |   await expect(page.getByRole("button", { name: "Brief help", exact: true })).toBeVisible();
+         |                                                                               ^
+      24 |   expect(loaded).toHaveLength(0);
+      25 |   if (!staff) await page.locator('textarea[name="caption"]').fill("Preserve my draft caption");
+      26 |   await page.getByRole("button", { name: "Brief help", exact: true }).focus(); await page.keyboard.press("Enter");
+        at C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\e2e\mission-assist.spec.ts:23:79
+
+    Error Context: test-results\mission-assist-D20-operato-38dbf-provider-and-keyboard-close\error-context.md
+
+
+(node:44040) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[3/6] e2e\mission-assist.spec.ts:36:34 › D20 mock en sources and stale warning retain the question
+
+[WebServer] 上午4:50:54 [vite] Internal server error: Failed to resolve import "@/lib/i18n" from "e2e/fixtures/mission-assist.tsx". Does the file exist?
+[WebServer]   Plugin: vite:import-analysis
+[WebServer]   File: C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/e2e/fixtures/mission-assist.tsx:3:29
+[WebServer]   3  |  import { lazy, Suspense, useState } from "react";
+[WebServer]   4  |  import { createRoot } from "react-dom/client";
+[WebServer]   5  |  import { I18nProvider } from "@/lib/i18n";
+[WebServer]      |                                ^
+[WebServer]   6  |  import { DraftEditor } from "@/components/active-mission/DraftEditor";
+[WebServer]   7  |  import { ActiveMissionReview } from "@/components/admin/ActiveMissionReview";
+[WebServer]       at TransformPluginContext._formatLog (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:29079:43)
+[WebServer]       at TransformPluginContext.error (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:29076:14)
+[WebServer]       at normalizeUrl (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:27199:18)
+[WebServer]       at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+[WebServer]       at async file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:27257:32
+[WebServer]       at async Promise.all (index 3)
+[WebServer]       at async TransformPluginContext.transform (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:27225:4)
+[WebServer]       at async EnvironmentPluginContainer.transform (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:28877:14)
+[WebServer]       at async loadAndTransform (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:22746:26)
+
+[WebServer] 上午4:50:54 [vite] (client) Pre-transform error: Failed to resolve import "@/lib/i18n" from "e2e/fixtures/mission-assist.tsx". Does the file exist?
+[WebServer]   Plugin: vite:import-analysis
+[WebServer]   File: C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/e2e/fixtures/mission-assist.tsx:3:29
+[WebServer]   3  |  import { lazy, Suspense, useState } from "react";
+[WebServer]   4  |  import { createRoot } from "react-dom/client";
+[WebServer]   5  |  import { I18nProvider } from "@/lib/i18n";
+[WebServer]      |                                ^
+[WebServer]   6  |  import { DraftEditor } from "@/components/active-mission/DraftEditor";
+[WebServer]   7  |  import { ActiveMissionReview } from "@/components/admin/ActiveMissionReview";
+
+[WebServer] 上午4:51:02 [vite] (client) Pre-transform error: Failed to resolve import "@/lib/i18n" from "e2e/fixtures/mission-assist.tsx". Does the file exist?
+[WebServer]   Plugin: vite:import-analysis
+[WebServer]   File: C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/e2e/fixtures/mission-assist.tsx:3:29
+[WebServer]   3  |  import { lazy, Suspense, useState } from "react";
+[WebServer]   4  |  import { createRoot } from "react-dom/client";
+[WebServer]   5  |  import { I18nProvider } from "@/lib/i18n";
+[WebServer]      |                                ^
+[WebServer]   6  |  import { DraftEditor } from "@/components/active-mission/DraftEditor";
+[WebServer]   7  |  import { ActiveMissionReview } from "@/components/admin/ActiveMissionReview";
+
+[WebServer] 上午4:51:02 [vite] Internal server error: Failed to resolve import "@/lib/i18n" from "e2e/fixtures/mission-assist.tsx". Does the file exist?
+[WebServer]   Plugin: vite:import-analysis
+[WebServer]   File: C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/e2e/fixtures/mission-assist.tsx:3:29
+[WebServer]   3  |  import { lazy, Suspense, useState } from "react";
+[WebServer]   4  |  import { createRoot } from "react-dom/client";
+[WebServer]   5  |  import { I18nProvider } from "@/lib/i18n";
+[WebServer]      |                                ^
+[WebServer]   6  |  import { DraftEditor } from "@/components/active-mission/DraftEditor";
+[WebServer]   7  |  import { ActiveMissionReview } from "@/components/admin/ActiveMissionReview";
+[WebServer]       at TransformPluginContext._formatLog (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:29079:43)
+[WebServer]       at TransformPluginContext.error (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:29076:14)
+[WebServer]       at normalizeUrl (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:27199:18)
+[WebServer]       at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+[WebServer]       at async file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:27257:32
+[WebServer]       at async Promise.all (index 3)
+[WebServer]       at async TransformPluginContext.transform (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:27225:4)
+[WebServer]       at async EnvironmentPluginContainer.transform (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:28877:14)
+[WebServer]       at async loadAndTransform (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:22746:26)
+[WebServer]       at async viteTransformMiddleware (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:24622:20)
+
+[WebServer] 上午4:51:06 [vite] (client) Pre-transform error: Failed to resolve import "@/lib/i18n" from "e2e/fixtures/mission-assist.tsx". Does the file exist?
+[WebServer]   Plugin: vite:import-analysis
+[WebServer]   File: C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/e2e/fixtures/mission-assist.tsx:3:29
+[WebServer]   3  |  import { lazy, Suspense, useState } from "react";
+[WebServer]   4  |  import { createRoot } from "react-dom/client";
+[WebServer]   5  |  import { I18nProvider } from "@/lib/i18n";
+[WebServer]      |                                ^
+[WebServer]   6  |  import { DraftEditor } from "@/components/active-mission/DraftEditor";
+[WebServer]   7  |  import { ActiveMissionReview } from "@/components/admin/ActiveMissionReview";
+
+[WebServer] 上午4:51:06 [vite] Internal server error: Failed to resolve import "@/lib/i18n" from "e2e/fixtures/mission-assist.tsx". Does the file exist?
+[WebServer]   Plugin: vite:import-analysis
+[WebServer]   File: C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/e2e/fixtures/mission-assist.tsx:3:29
+[WebServer]   3  |  import { lazy, Suspense, useState } from "react";
+[WebServer]   4  |  import { createRoot } from "react-dom/client";
+[WebServer]   5  |  import { I18nProvider } from "@/lib/i18n";
+[WebServer]      |                                ^
+[WebServer]   6  |  import { DraftEditor } from "@/components/active-mission/DraftEditor";
+[WebServer]   7  |  import { ActiveMissionReview } from "@/components/admin/ActiveMissionReview";
+[WebServer]       at TransformPluginContext._formatLog (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:29079:43)
+[WebServer]       at TransformPluginContext.error (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:29076:14)
+[WebServer]       at normalizeUrl (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:27199:18)
+[WebServer]       at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+[WebServer]       at async file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:27257:32
+[WebServer]       at async Promise.all (index 3)
+[WebServer]       at async TransformPluginContext.transform (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:27225:4)
+[WebServer]       at async EnvironmentPluginContainer.transform (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:28877:14)
+[WebServer]       at async loadAndTransform (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:22746:26)
+[WebServer]       at async viteTransformMiddleware (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:24622:20)
+
+[WebServer] 上午4:51:08 [vite] (client) Pre-transform error: Failed to resolve import "@/lib/i18n" from "e2e/fixtures/mission-assist.tsx". Does the file exist?
+[WebServer]   Plugin: vite:import-analysis
+[WebServer]   File: C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/e2e/fixtures/mission-assist.tsx:3:29
+[WebServer]   3  |  import { lazy, Suspense, useState } from "react";
+[WebServer]   4  |  import { createRoot } from "react-dom/client";
+[WebServer]   5  |  import { I18nProvider } from "@/lib/i18n";
+[WebServer]      |                                ^
+[WebServer]   6  |  import { DraftEditor } from "@/components/active-mission/DraftEditor";
+[WebServer]   7  |  import { ActiveMissionReview } from "@/components/admin/ActiveMissionReview";
+[WebServer] 上午4:51:08 [vite] Internal server error: Failed to resolve import "@/lib/i18n" from "e2e/fixtures/mission-assist.tsx". Does the file exist?
+[WebServer]   Plugin: vite:import-analysis
+[WebServer]   File: C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/e2e/fixtures/mission-assist.tsx:3:29
+[WebServer]   3  |  import { lazy, Suspense, useState } from "react";
+[WebServer]   4  |  import { createRoot } from "react-dom/client";
+[WebServer]   5  |  import { I18nProvider } from "@/lib/i18n";
+[WebServer]      |                                ^
+[WebServer]   6  |  import { DraftEditor } from "@/components/active-mission/DraftEditor";
+
+[WebServer]   7  |  import { ActiveMissionReview } from "@/components/admin/ActiveMissionReview";
+[WebServer]       at TransformPluginContext._formatLog (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:29079:43)
+[WebServer]       at TransformPluginContext.error (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:29076:14)
+[WebServer]       at normalizeUrl (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:27199:18)
+[WebServer]       at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+[WebServer]       at async file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:27257:32
+[WebServer]       at async Promise.all (index 3)
+[WebServer]       at async TransformPluginContext.transform (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:27225:4)
+[WebServer]       at async EnvironmentPluginContainer.transform (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:28877:14)
+[WebServer]       at async loadAndTransform (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:22746:26)
+[WebServer]       at async viteTransformMiddleware (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:24622:20)
+[WebServer] 上午4:51:13 [vite] (client) Pre-transform error: Failed to resolve import "@/lib/i18n" from "e2e/fixtures/mission-assist.tsx". Does the file exist?
+[WebServer]   Plugin: vite:import-analysis
+[WebServer]   File: C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/e2e/fixtures/mission-assist.tsx:3:29
+[WebServer]   3  |  import { lazy, Suspense, useState } from "react";
+[WebServer]   4  |  import { createRoot } from "react-dom/client";
+[WebServer]   5  |  import { I18nProvider } from "@/lib/i18n";
+[WebServer]      |                                ^
+[WebServer]   6  |  import { DraftEditor } from "@/components/active-mission/DraftEditor";
+[WebServer]   7  |  import { ActiveMissionReview } from "@/components/admin/ActiveMissionReview";
+
+[WebServer] 上午4:51:13 [vite] Internal server error: Failed to resolve import "@/lib/i18n" from "e2e/fixtures/mission-assist.tsx". Does the file exist?
+
+[WebServer]   Plugin: vite:import-analysis
+[WebServer]   File: C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/e2e/fixtures/mission-assist.tsx:3:29
+[WebServer]   3  |  import { lazy, Suspense, useState } from "react";
+[WebServer]   4  |  import { createRoot } from "react-dom/client";
+[WebServer]   5  |  import { I18nProvider } from "@/lib/i18n";
+[WebServer]      |                                ^
+[WebServer]   6  |  import { DraftEditor } from "@/components/active-mission/DraftEditor";
+[WebServer]   7  |  import { ActiveMissionReview } from "@/components/admin/ActiveMissionReview";
+[WebServer]       at TransformPluginContext._formatLog (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:29079:43)
+[WebServer]       at TransformPluginContext.error (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:29076:14)
+[WebServer]       at normalizeUrl (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:27199:18)
+[WebServer]       at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+[WebServer]       at async file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:27257:32
+[WebServer]       at async Promise.all (index 3)
+[WebServer]       at async TransformPluginContext.transform (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:27225:4)
+[WebServer]       at async EnvironmentPluginContainer.transform (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:28877:14)
+[WebServer]       at async loadAndTransform (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:22746:26)
+[WebServer]       at async viteTransformMiddleware (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:24622:20)
+
+[WebServer] 上午4:51:35 [vite] Internal server error: Failed to resolve import "@/lib/i18n" from "e2e/fixtures/mission-assist.tsx". Does the file exist?
+[WebServer]   Plugin: vite:import-analysis
+[WebServer]   File: C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/e2e/fixtures/mission-assist.tsx:3:29
+[WebServer]   3  |  import { lazy, Suspense, useState } from "react";
+[WebServer]   4  |  import { createRoot } from "react-dom/client";
+[WebServer]   5  |  import { I18nProvider } from "@/lib/i18n";
+[WebServer]      |                                ^
+[WebServer]   6  |  import { DraftEditor } from "@/components/active-mission/DraftEditor";
+[WebServer]   7  |  import { ActiveMissionReview } from "@/components/admin/ActiveMissionReview";
+[WebServer]       at TransformPluginContext._formatLog (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:29079:43)
+[WebServer]       at TransformPluginContext.error (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:29076:14)
+[WebServer]       at normalizeUrl (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:27199:18)
+[WebServer]       at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+[WebServer]       at async file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:27257:32
+[WebServer]       at async Promise.all (index 3)
+[WebServer]       at async TransformPluginContext.transform (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:27225:4)
+[WebServer]       at async EnvironmentPluginContainer.transform (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:28877:14)
+[WebServer]       at async loadAndTransform (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:22746:26)
+[WebServer] 上午4:51:35 [vite] (client) Pre-transform error: Failed to resolve import "@/lib/i18n" from "e2e/fixtures/mission-assist.tsx". Does the file exist?
+[WebServer]   Plugin: vite:import-analysis
+[WebServer]   File: C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/e2e/fixtures/mission-assist.tsx:3:29
+[WebServer]   3  |  import { lazy, Suspense, useState } from "react";
+[WebServer]   4  |  import { createRoot } from "react-dom/client";
+[WebServer]   5  |  import { I18nProvider } from "@/lib/i18n";
+[WebServer]      |                                ^
+[WebServer]   6  |  import { DraftEditor } from "@/components/active-mission/DraftEditor";
+[WebServer]   7  |  import { ActiveMissionReview } from "@/components/admin/ActiveMissionReview";
+
+  3) e2e\mission-assist.spec.ts:36:34 › D20 mock en sources and stale warning retain the question ──
+
+    Test timeout of 45000ms exceeded.
+
+    Error: locator.fill: Test timeout of 45000ms exceeded.
+    Call log:
+      - waiting for getByLabel('Question about this brief or version')
+
+
+      38 |   await page.route("**/api/admin/assistant/mission-assist", route => { calls.push(route.request().postDataJSON()); return route.fulfill({ json: reply }); });
+      39 |   await page.goto("/e2e/fixtures/mission-assist.html?mock=1&staff=1");
+    > 40 |   await page.getByLabel(lang === "en" ? "Question about this brief or version" : "關於這個 brief 或版本的問題").fill("Preserve this question");
+         |                                                                                                       ^
+      41 |   await page.getByRole("button", { name: lang === "en" ? "Explain with AI" : "AI 解說", exact: true }).click();
+      42 |   await expect(page.getByRole("alert")).toContainText(lang === "en" ? "old version" : "舊版本");
+      43 |   await expect(page.getByLabel(lang === "en" ? "Sources" : "來源")).toContainText(`version:${id.v1}`);
+        at C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\e2e\mission-assist.spec.ts:40:103
+
+    Error Context: test-results\mission-assist-D20-mock-en-fc6fa-warning-retain-the-question\error-context.md
+
+
+(node:29228) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[4/6] e2e\mission-assist.spec.ts:36:34 › D20 mock zh sources and stale warning retain the question
+
+[WebServer] 上午4:51:40 [vite] (client) Pre-transform error: Failed to resolve import "@/lib/i18n" from "e2e/fixtures/mission-assist.tsx". Does the file exist?
+[WebServer]   Plugin: vite:import-analysis
+[WebServer]   File: C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/e2e/fixtures/mission-assist.tsx:3:29
+[WebServer]   3  |  import { lazy, Suspense, useState } from "react";
+[WebServer]   4  |  import { createRoot } from "react-dom/client";
+[WebServer]   5  |  import { I18nProvider } from "@/lib/i18n";
+[WebServer]      |                                ^
+[WebServer]   6  |  import { DraftEditor } from "@/components/active-mission/DraftEditor";
+[WebServer]   7  |  import { ActiveMissionReview } from "@/components/admin/ActiveMissionReview";
+
+[WebServer] 上午4:51:40 [vite] Internal server error: Failed to resolve import "@/lib/i18n" from "e2e/fixtures/mission-assist.tsx". Does the file exist?
+[WebServer]   Plugin: vite:import-analysis
+[WebServer]   File: C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/e2e/fixtures/mission-assist.tsx:3:29
+[WebServer]   3  |  import { lazy, Suspense, useState } from "react";
+[WebServer]   4  |  import { createRoot } from "react-dom/client";
+[WebServer]   5  |  import { I18nProvider } from "@/lib/i18n";
+[WebServer]      |                                ^
+[WebServer]   6  |  import { DraftEditor } from "@/components/active-mission/DraftEditor";
+[WebServer]   7  |  import { ActiveMissionReview } from "@/components/admin/ActiveMissionReview";
+[WebServer]       at TransformPluginContext._formatLog (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:29079:43)
+[WebServer]       at TransformPluginContext.error (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:29076:14)
+[WebServer]       at normalizeUrl (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:27199:18)
+[WebServer]       at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+[WebServer]       at async file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:27257:32
+[WebServer]       at async Promise.all (index 3)
+[WebServer]       at async TransformPluginContext.transform (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:27225:4)
+[WebServer]       at async EnvironmentPluginContainer.transform (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:28877:14)
+[WebServer]       at async loadAndTransform (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:22746:26)
+[WebServer]       at async viteTransformMiddleware (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/vite/dist/node/chunks/config.js:24622:20)

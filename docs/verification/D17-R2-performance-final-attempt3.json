@@ -1,0 +1,892 @@
+{
+  "runId": "08530ddb-c357-4638-8ab8-af5854f42fa3",
+  "data": {
+    "browser": "155.0.4283.62",
+    "pages": [
+      {
+        "path": "/home",
+        "toNetworkIdleMs": 949.4056999999993,
+        "lcpMs": 376,
+        "cls": 0.000006082322862413195,
+        "shifts": [
+          {
+            "at": 378.90000000596046,
+            "value": 0.000006082322862413195,
+            "sources": [
+              {
+                "tag": "A",
+                "className": "rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 font-mono text-xs font-bold",
+                "previous": {
+                  "x": 1107.515625,
+                  "y": 22,
+                  "width": 100.484375,
+                  "height": 28,
+                  "top": 22,
+                  "right": 1208,
+                  "bottom": 50,
+                  "left": 1107.515625
+                },
+                "current": {
+                  "x": 1110.71875,
+                  "y": 22,
+                  "width": 97.28125,
+                  "height": 28,
+                  "top": 22,
+                  "right": 1208,
+                  "bottom": 50,
+                  "left": 1110.71875
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "path": "/my",
+        "toNetworkIdleMs": 798.1543999999994,
+        "lcpMs": 308,
+        "cls": 0,
+        "shifts": []
+      },
+      {
+        "path": "/wallet",
+        "toNetworkIdleMs": 819.0936000000002,
+        "lcpMs": 244,
+        "cls": 0.0012165050400627982,
+        "shifts": [
+          {
+            "at": 310.90000000596046,
+            "value": 0.0012165050400627982,
+            "sources": [
+              {
+                "tag": "H2",
+                "className": "font-heading font-bold",
+                "previous": {
+                  "x": 264,
+                  "y": 164.796875,
+                  "width": 403.328125,
+                  "height": 74,
+                  "top": 164.796875,
+                  "right": 667.328125,
+                  "bottom": 238.796875,
+                  "left": 264
+                },
+                "current": {
+                  "x": 264,
+                  "y": 204.1875,
+                  "width": 403.328125,
+                  "height": 74,
+                  "top": 204.1875,
+                  "right": 667.328125,
+                  "bottom": 278.1875,
+                  "left": 264
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "path": "/redemption/history",
+        "toNetworkIdleMs": 803.0250999999989,
+        "lcpMs": 260,
+        "cls": 0,
+        "shifts": []
+      },
+      {
+        "path": "/campaigns",
+        "toNetworkIdleMs": 794.9821000000011,
+        "lcpMs": 308,
+        "cls": 0.012834114583333334,
+        "shifts": [
+          {
+            "at": 290.20000000298023,
+            "value": 0.012834114583333334,
+            "sources": [
+              {
+                "tag": "DIV",
+                "className": "mx-auto max-w-3xl p-4 space-y-6",
+                "previous": {
+                  "x": 240,
+                  "y": 0,
+                  "width": 1040,
+                  "height": 56.796875,
+                  "top": 0,
+                  "right": 1280,
+                  "bottom": 56.796875,
+                  "left": 240
+                },
+                "current": {
+                  "x": 376,
+                  "y": 0,
+                  "width": 768,
+                  "height": 161.09375,
+                  "top": 0,
+                  "right": 1144,
+                  "bottom": 161.09375,
+                  "left": 376
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "path": "/guide",
+        "toNetworkIdleMs": 868.9887000000017,
+        "lcpMs": 392,
+        "cls": 0,
+        "shifts": []
+      },
+      {
+        "path": "/admin/creators",
+        "toNetworkIdleMs": 1448.232299999996,
+        "lcpMs": 524,
+        "cls": 0.006654336547851562,
+        "shifts": [
+          {
+            "at": 572.0999999940395,
+            "value": 0.0022181121826171874,
+            "sources": [
+              {
+                "tag": "NAV",
+                "className": "flex items-center gap-3",
+                "previous": {
+                  "x": 256,
+                  "y": 337.09375,
+                  "width": 1008,
+                  "height": 44,
+                  "top": 337.09375,
+                  "right": 1264,
+                  "bottom": 381.09375,
+                  "left": 256
+                },
+                "current": {
+                  "x": 256,
+                  "y": 298,
+                  "width": 1008,
+                  "height": 44,
+                  "top": 298,
+                  "right": 1264,
+                  "bottom": 342,
+                  "left": 256
+                }
+              }
+            ]
+          },
+          {
+            "at": 693.0999999940395,
+            "value": 0.0022181121826171874,
+            "sources": [
+              {
+                "tag": "NAV",
+                "className": "flex items-center gap-3",
+                "previous": {
+                  "x": 256,
+                  "y": 298,
+                  "width": 1008,
+                  "height": 44,
+                  "top": 298,
+                  "right": 1264,
+                  "bottom": 342,
+                  "left": 256
+                },
+                "current": {
+                  "x": 256,
+                  "y": 337.09375,
+                  "width": 1008,
+                  "height": 44,
+                  "top": 337.09375,
+                  "right": 1264,
+                  "bottom": 381.09375,
+                  "left": 256
+                }
+              }
+            ]
+          },
+          {
+            "at": 857.0999999940395,
+            "value": 0.0022181121826171874,
+            "sources": [
+              {
+                "tag": "NAV",
+                "className": "flex items-center gap-3",
+                "previous": {
+                  "x": 256,
+                  "y": 337.09375,
+                  "width": 1008,
+                  "height": 44,
+                  "top": 337.09375,
+                  "right": 1264,
+                  "bottom": 381.09375,
+                  "left": 256
+                },
+                "current": {
+                  "x": 256,
+                  "y": 298,
+                  "width": 1008,
+                  "height": 44,
+                  "top": 298,
+                  "right": 1264,
+                  "bottom": 342,
+                  "left": 256
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "path": "/admin/insights",
+        "toNetworkIdleMs": 865.3096000000005,
+        "lcpMs": 324,
+        "cls": 0,
+        "shifts": []
+      },
+      {
+        "path": "/admin/applications",
+        "toNetworkIdleMs": 917.6440999999977,
+        "lcpMs": 328,
+        "cls": 0,
+        "shifts": []
+      },
+      {
+        "path": "/admin/campaigns",
+        "toNetworkIdleMs": 882.6972000000023,
+        "lcpMs": 292,
+        "cls": 0,
+        "shifts": []
+      },
+      {
+        "path": "/admin/content",
+        "toNetworkIdleMs": 900.9472000000023,
+        "lcpMs": 328,
+        "cls": 0,
+        "shifts": []
+      },
+      {
+        "path": "/admin/academy/3edb4527-3c0a-4999-a130-1a4f5aeefbf3",
+        "toNetworkIdleMs": 865.3991000000024,
+        "lcpMs": 292,
+        "cls": 0,
+        "shifts": []
+      }
+    ],
+    "requests": [
+      {
+        "ms": 70.11759999999776,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 62.31659999999829,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 58.99910000000091,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 59.84850000000006,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 60.051100000004226,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 62.321600000002945,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 60.637500000004366,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 58.02870000000257,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 59.311399999998685,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 58.530900000005204,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 63.08140000000276,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 57.8804999999993,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 57.357499999998254,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 62.318200000001525,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 63.404099999999744,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 59.48440000000119,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 61.12020000000484,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 61.1620999999941,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 60.863600000004226,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 60.77749999999651,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 55.05840000000171,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 59.22419999999693,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 53.586300000002666,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 54.98100000000704,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 56.875,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 55.59300000000076,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 56.40030000000115,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 65.82100000000355,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 61.845900000000256,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 58.46229999999923,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 58.9545999999973,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 58.849899999993795,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 59.04009999999835,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 54.912399999993795,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 53.97960000000603,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 51.673299999994924,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 50.81229999999778,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 51.72479999999632,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 54.95919999999751,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 52.328400000005786,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 56.19940000000497,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 59.86499999999796,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 57.50630000000092,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 55.63730000000214,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 49.36389999999665,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 48.703300000001036,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 50.84459999999672,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 54.30780000000232,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 49.489699999998265,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 50.65699999999924,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 49.25200000000041,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 49.51780000000144,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 47.73909999999887,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 54.18800000000192,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 50.25669999999809,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 52.20809999999619,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 49.68079999999463,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 49.70799999999872,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 49.40219999999681,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 49.40540000000328,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 49.361900000003516,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 56.72570000000269,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 71.2551999999996,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 72.25770000000193,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 68.85430000000633,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 72.15080000000307,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 72.33630000000267,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 71.64370000000054,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 75.50400000000081,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 111.88640000000305,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 65.62249999999767,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 58.574500000002445,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 72.16570000000502,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 79.8099000000002,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 78.68860000000132,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 80.83969999999681,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 79.52700000000186,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 78.15189999999711,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 81.08889999999519,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 108.65709999999672,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 123.12840000000142,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 108.0573000000004,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 54.20760000000155,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 53.70889999999781,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 54.09289999999601,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 55.626600000003236,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 53.15200000000186,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 62.44499999999971,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 56.812400000002526,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 53.101199999997334,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 53.599999999998545,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 54.04490000000078,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 51.92640000000392,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 54.410900000002584,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 51.645500000005995,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 53.86740000000282,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 51.396499999995285,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 54.088599999995495,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 56.41060000000289,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      },
+      {
+        "ms": 84.36149999999907,
+        "status": 200,
+        "total": 2,
+        "rows": 2
+      }
+    ],
+    "api": {
+      "samples": 100,
+      "p50": 57.357499999998254,
+      "p95": 81.08889999999519,
+      "max": 123.12840000000142
+    },
+    "environment": "1280x900 desktop Edge, loopback, no CPU/network throttling; external requests aborted, fallback fonts; HTTP cache disabled by routing, warm DB/server; sequential navigation.",
+    "scope": "Current 12 pages and a real two-Creator owned queue. Earlier 1k/10k, 24 interaction and INP samples remain historical; no new scale, native-device, field p75 or hosted claim. toNetworkIdle includes the idle wait and is distinct from LCP/INP.",
+    "thresholds": {
+      "lcpMs": 2500,
+      "cls": 0.1,
+      "apiP95Ms": 800
+    },
+    "inp": "NOT_MEASURED_THIS_RUN"
+  }
+}

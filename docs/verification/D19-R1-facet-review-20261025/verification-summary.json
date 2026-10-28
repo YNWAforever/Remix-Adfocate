@@ -1,0 +1,65 @@
+{
+  "at": "2026-10-25T15:47:54.293420+00:00",
+  "command": [
+    "python",
+    "docs/verification/D19-R1-facet-review-20261025/verify-facets.py"
+  ],
+  "exit": 0,
+  "checkerSha256": "b89f33b395f595e64e42cda146c90570040d3ea4510e3476b2dc4674f46bc92d",
+  "result": {
+    "status": "PASS_LOCAL_R1_FACET_REVIEW_NOT_RUNTIME_OR_R1_VERIFIED",
+    "sourceFingerprint": "e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993",
+    "sourceFilesUnchanged": 788,
+    "casesWithCorrectedNewResult": [
+      "UC-A09",
+      "UC-A11",
+      "UC-A14",
+      "UC-A18",
+      "UC-A19",
+      "UC-A45",
+      "UC-A46",
+      "UC-A49",
+      "UC-C13",
+      "UC-C14",
+      "UC-C15",
+      "UC-C16",
+      "UC-C17",
+      "UC-C29",
+      "UC-C33",
+      "UC-C36",
+      "UC-S01",
+      "UC-S04"
+    ],
+    "originalCasesPreserved": 107,
+    "gate14ExpectationsRetained": 14,
+    "priorEvidenceRecordsPreserved": 2084,
+    "currentEvidenceRecords": 2114,
+    "c2ManifestUnchanged": true,
+    "c2ApprovalPending": true,
+    "currentModelUiSelection": "GPT-6.1 Sol / Max",
+    "modelOptionChanges": 0,
+    "newApplicationTestRuns": 0,
+    "actualTargetCalls": 0,
+    "incidentOpen": true,
+    "releaseHold": true,
+    "providerEnabled": false
+  },
+  "c2OfflineReview": {
+    "command": [
+      "C:/Users/laich/AppData/Local/npm-cache/_npx/52027bd8fc0022aa/node_modules/node/bin/node.exe",
+      "node_modules/vite-node/vite-node.mjs",
+      "--script",
+      "scripts/audit/execute-application-supplement.mjs",
+      "docs/verification/D19-C2-application-runtime-manifest.json",
+      "--offline-check"
+    ],
+    "exit": 0,
+    "stdout": "{\"status\":\"PASS_LOCAL_MANIFEST_REVIEW_NOT_RUNTIME\",\"source\":\"e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993\",\"sourceRecords\":788,\"runtimeAuthorized\":false,\"actualTargetCalls\":0}\n",
+    "stderr": "Warning: Route file \"C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/_site.smoke.test.tsx\" does not export a Route. This file will not be included in the route tree.\n\nIf this file is not intended to be a route, you can exclude it using one of these options:\n  1. Rename the file to \"C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023\\src\\routes\\-_site.smoke.test.tsx\" (prefix with \"-\")\n  2. Use 'routeFileIgnorePattern' in your config to match this file\n\nCurrent configuration:\n  routeFileIgnorePrefix: \"-\"\n  routeFileIgnorePattern: undefined\n",
+    "environmentCredentialsStripped": true,
+    "actualTargetCalls": 0,
+    "runtimeApproved": false
+  },
+  "newApplicationSuiteRuns": 0,
+  "scope": "File-only evidence checker and exact declared C2 offline startup; native2129/0/363 retained at unchanged source, not rerun."
+}

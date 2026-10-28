@@ -1,0 +1,23 @@
+{
+  "sourceFingerprint": "4f2c3faa22bf835911a55dc7bb099910e4308fc1b7a5570d58f32386708934b9",
+  "references": [
+    {
+      "path": "server/lib/activeMission/publicationProof.ts",
+      "rawSha256": "b43c50af9e91f08f5d442cc782da155d761a1c508ea59de8a776da6c7bdf0ab5"
+    },
+    {
+      "path": "supabase/migrations/20260725150000_publication_proof_public_rpc_final.sql",
+      "rawSha256": "93f996508c82da6df1200347050cd9dbe8e7024d6aa5e33f0ed63aba800a3f5f"
+    }
+  ],
+  "proofStale": "workflow_stale -> WORKFLOW_STALE ->409; the initial test wrongly supplied stale_revision, preserved and corrected in mock only.",
+  "proofExpiry": "upload_grant_expired -> WRONG_STATE ->409. Formal SQL compares upload_grant_expires_at to now(), seconds max600; unchanged and not physically executed.",
+  "proofFinalizedState": "finalized, distinct from draft ready; mock corrected to final public SQL contract.",
+  "binaryFixture": {
+    "path": "docs/verification/D19-asset-offline-20261026/one-pixel.png",
+    "sha256": "abc58d5127d7cdf313beb9ec8ee839860a9c6bfbc48c8b8eb6a3f7d8bb63de6f",
+    "bytes": 70,
+    "generated": "New1x1 RGBA PNG using stdlib zlib/CRC; no incident before image or original fixture value."
+  },
+  "actualTargetCalls": 0
+}

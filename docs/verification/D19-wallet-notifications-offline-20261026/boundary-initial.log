@@ -1,0 +1,89 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+stderr | docs/verification/D19-wallet-notifications-offline-20261026/wallet-notifications.test.tsx > GATE14 independent offline wallet and notification acceptance facets > UC-C13 shows owned points/history and available cash separately from pending estimates
+Error: Not implemented: window.scrollTo
+    at module.exports (C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\node_modules\jsdom\lib\jsdom\browser\not-implemented.js:9:17)
+    at C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\node_modules\jsdom\lib\jsdom\browser\Window.js:960:7
+    at Object.fn (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@tanstack/router-core/src/scroll-restoration.ts:366:11)
+    at file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@tanstack/router-core/src/router.ts:1285:18
+    at Set.forEach (<anonymous>)
+    at RouterCore.emit (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@tanstack/router-core/src/router.ts:1283:22)
+    at file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@tanstack/react-router/src/Match.tsx:243:14
+    at Object.react_stack_bottom_frame (C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\node_modules\react-dom\cjs\react-dom-client.development.js:25989:20)
+    at runWithFiberInDEV (C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\node_modules\react-dom\cjs\react-dom-client.development.js:874:13)
+    at commitHookEffectListMount (C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\node_modules\react-dom\cjs\react-dom-client.development.js:13249:29) undefined
+
+stderr | docs/verification/D19-wallet-notifications-offline-20261026/wallet-notifications.test.tsx > GATE14 independent offline wallet and notification acceptance facets > UC-C13 exposes a failed points read and recovers on an explicit query refresh
+Error: Not implemented: window.scrollTo
+    at module.exports (C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\node_modules\jsdom\lib\jsdom\browser\not-implemented.js:9:17)
+    at C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\node_modules\jsdom\lib\jsdom\browser\Window.js:960:7
+    at Object.fn (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@tanstack/router-core/src/scroll-restoration.ts:366:11)
+    at file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@tanstack/router-core/src/router.ts:1285:18
+    at Set.forEach (<anonymous>)
+    at RouterCore.emit (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@tanstack/router-core/src/router.ts:1283:22)
+    at file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@tanstack/react-router/src/Match.tsx:243:14
+    at Object.react_stack_bottom_frame (C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\node_modules\react-dom\cjs\react-dom-client.development.js:25989:20)
+    at runWithFiberInDEV (C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\node_modules\react-dom\cjs\react-dom-client.development.js:874:13)
+    at commitHookEffectListMount (C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\node_modules\react-dom\cjs\react-dom-client.development.js:13249:29) undefined
+
+stderr | docs/verification/D19-wallet-notifications-offline-20261026/wallet-notifications.test.tsx > GATE14 independent offline wallet and notification acceptance facets > UC-C14 disables a one-point shortfall with an associated exact shortfall explanation
+Error: Not implemented: window.scrollTo
+    at module.exports (C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\node_modules\jsdom\lib\jsdom\browser\not-implemented.js:9:17)
+    at C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\node_modules\jsdom\lib\jsdom\browser\Window.js:960:7
+    at Object.fn (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@tanstack/router-core/src/scroll-restoration.ts:366:11)
+    at file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@tanstack/router-core/src/router.ts:1285:18
+    at Set.forEach (<anonymous>)
+    at RouterCore.emit (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@tanstack/router-core/src/router.ts:1283:22)
+    at file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@tanstack/react-router/src/Match.tsx:243:14
+    at Object.react_stack_bottom_frame (C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\node_modules\react-dom\cjs\react-dom-client.development.js:25989:20)
+    at runWithFiberInDEV (C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\node_modules\react-dom\cjs\react-dom-client.development.js:874:13)
+    at commitHookEffectListMount (C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\node_modules\react-dom\cjs\react-dom-client.development.js:13249:29) undefined
+
+stderr | docs/verification/D19-wallet-notifications-offline-20261026/wallet-notifications.test.tsx > GATE14 independent offline wallet and notification acceptance facets > UC-C14 disables out-of-stock stock even with enough points and cannot open a redemption
+Error: Not implemented: window.scrollTo
+    at module.exports (C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\node_modules\jsdom\lib\jsdom\browser\not-implemented.js:9:17)
+    at C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\node_modules\jsdom\lib\jsdom\browser\Window.js:960:7
+    at Object.fn (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@tanstack/router-core/src/scroll-restoration.ts:366:11)
+    at file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@tanstack/router-core/src/router.ts:1285:18
+    at Set.forEach (<anonymous>)
+    at RouterCore.emit (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@tanstack/router-core/src/router.ts:1283:22)
+    at file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@tanstack/react-router/src/Match.tsx:243:14
+    at Object.react_stack_bottom_frame (C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\node_modules\react-dom\cjs\react-dom-client.development.js:25989:20)
+    at runWithFiberInDEV (C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\node_modules\react-dom\cjs\react-dom-client.development.js:874:13)
+    at commitHookEffectListMount (C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\node_modules\react-dom\cjs\react-dom-client.development.js:13249:29) undefined
+
+stderr | docs/verification/D19-wallet-notifications-offline-20261026/wallet-notifications.test.tsx > GATE14 independent offline wallet and notification acceptance facets > UC-C14 re-evaluates availability from fresh balance/stock queries without redeeming
+Error: Not implemented: window.scrollTo
+    at module.exports (C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\node_modules\jsdom\lib\jsdom\browser\not-implemented.js:9:17)
+    at C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\node_modules\jsdom\lib\jsdom\browser\Window.js:960:7
+    at Object.fn (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@tanstack/router-core/src/scroll-restoration.ts:366:11)
+    at file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@tanstack/router-core/src/router.ts:1285:18
+    at Set.forEach (<anonymous>)
+    at RouterCore.emit (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@tanstack/router-core/src/router.ts:1283:22)
+    at file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@tanstack/react-router/src/Match.tsx:243:14
+    at Object.react_stack_bottom_frame (C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\node_modules\react-dom\cjs\react-dom-client.development.js:25989:20)
+    at runWithFiberInDEV (C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\node_modules\react-dom\cjs\react-dom-client.development.js:874:13)
+    at commitHookEffectListMount (C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\node_modules\react-dom\cjs\react-dom-client.development.js:13249:29) undefined
+
+stderr | docs/verification/D19-wallet-notifications-offline-20261026/wallet-notifications.test.tsx > GATE14 independent offline wallet and notification acceptance facets > UC-C36 renders exact saved-submission links and reconciles the badge to the actual owned read update
+Error: Not implemented: window.scrollTo
+    at module.exports (C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\node_modules\jsdom\lib\jsdom\browser\not-implemented.js:9:17)
+    at C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\node_modules\jsdom\lib\jsdom\browser\Window.js:960:7
+    at Object.fn (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@tanstack/router-core/src/scroll-restoration.ts:366:11)
+    at file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@tanstack/router-core/src/router.ts:1285:18
+    at Set.forEach (<anonymous>)
+    at RouterCore.emit (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@tanstack/router-core/src/router.ts:1283:22)
+    at file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@tanstack/react-router/src/Match.tsx:243:14
+    at Object.react_stack_bottom_frame (C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\node_modules\react-dom\cjs\react-dom-client.development.js:25989:20)
+    at runWithFiberInDEV (C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\node_modules\react-dom\cjs\react-dom-client.development.js:874:13)
+    at commitHookEffectListMount (C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\node_modules\react-dom\cjs\react-dom-client.development.js:13249:29) undefined
+
+ ✓ docs/verification/D19-wallet-notifications-offline-20261026/wallet-notifications.test.tsx (8 tests) 668ms
+
+ Test Files  1 passed (1)
+      Tests  8 passed (8)
+   Start at  03:09:54
+   Duration  4.66s (transform 419ms, setup 465ms, collect 1.31s, tests 668ms, environment 1.75s, prepare 176ms)
+
+JSON report written to C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/docs/verification/D19-wallet-notifications-offline-20261026/boundary-initial-native.json

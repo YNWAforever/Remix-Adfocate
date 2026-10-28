@@ -1,0 +1,14 @@
+{
+  "patch": "D19-B1-changes.patch",
+  "reverseCheckOnly": true,
+  "mechanicallyPass": true,
+  "applied": false,
+  "businessDataRollback": false,
+  "scope": [
+    "scripts/run-integration-tests.mjs",
+    "scripts/audit/local-targets.mjs",
+    "server/test/acceptance-target-retirement.test.ts"
+  ],
+  "beforeImages": "D19-B1-prior-*; exact source bytes and shared records retained",
+  "constraint": "Removing B1 would reopen an explicitly retired acceptance path. Any future rollback must preserve acceptance exclusion/HOLD or be separately reviewed and authorized. No rollback is executed; it cannot restore the three campaign rows or close the incident."
+}

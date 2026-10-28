@@ -1,0 +1,14 @@
+OFFLINE ONLY: unit mocks/memory contracts/loopback transport unit servers; no service-target acceptance.
+
+> type-check
+> tsr generate && tsc --noEmit
+
+Warning: Route file "<worktree>/src/routes/_site.smoke.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "<worktree>\src\routes\-_site.smoke.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined

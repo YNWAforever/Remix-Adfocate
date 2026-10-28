@@ -1,0 +1,57 @@
+{
+  "sourceFingerprint": "e83998d178061043688016056a5a78fc61df58bac28f3d0d0b66d639306037bd",
+  "changedPaths": [
+    "e2e/creator-operator-mission.spec.ts",
+    "scripts/audit/adopt-browser-fixture.mjs",
+    "scripts/audit/browser-recovery.mjs",
+    "scripts/audit/local-targets.mjs",
+    "server/test/b2-browser-recovery.test.ts",
+    "server/test/b2-runtime-manifest.test.ts",
+    "server/test/b2-target-context.test.ts",
+    "src/components/active-mission/DraftEditor.recovery.test.tsx",
+    "src/components/active-mission/DraftEditor.tsx"
+  ],
+  "redGreen": {
+    "autosaveInitial": {
+      "redFail": 2,
+      "greenPass": 5
+    },
+    "explicitConflictRetry": {
+      "redFail": 1,
+      "greenPass": 6
+    },
+    "namespace": {
+      "redFail": 6,
+      "greenPass": 28
+    },
+    "provenance": {
+      "redFail": 13,
+      "greenPass": 14
+    }
+  },
+  "finalFull": {
+    "command": [
+      "node",
+      "node_modules/vitest/vitest.mjs",
+      "run",
+      "--no-file-parallelism",
+      "--reporter=json",
+      "--outputFile=docs\\verification\\adfocate-d19-b2-20261025-recovery-4d6ca2c8\\continuation-final-full.json"
+    ],
+    "exit": 0,
+    "passed": 2082,
+    "failed": 0,
+    "gatedSkip": 363,
+    "files": 289,
+    "report": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-final-full.json",
+    "commandReceipt": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-final-full-command.json"
+  },
+  "runtimeNotRunAtNewSource": true,
+  "proposalManifest": {
+    "path": "docs/verification/D19-C1-browser-continuation-runtime-manifest.json",
+    "sha256": "696e94c29e62a27e820d7d12f5aa74c0d1e7b62f97f3b57db787074512a2626d"
+  },
+  "approval": false,
+  "additionalPhysicalResources": 0,
+  "noNewAuthSubjectsOrDomainFixtures": true
+}

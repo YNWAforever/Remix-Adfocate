@@ -1,0 +1,71 @@
+{
+  "runId": "560c5421-28dc-45f0-bdd5-56f32cffdb02",
+  "target": {
+    "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+    "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+    "disposable": true,
+    "projectId": "adfocate-r1-empty-20261023",
+    "proxy": "none",
+    "apiPort": 56421,
+    "apiContainerId": "1b9c41318298d79308db7782f51474541ad5abf0120fa93b96a2a9ea59d043ee",
+    "databaseContainerId": "e7c8efa295cd5544a8b2a100a73b6953cd6ddd486aaf394f231482067523e12d",
+    "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+    "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+    "networkId": "9e5d3069e8255d70b8eef56020c8ea2618fdb2626d92d9a04e51ea2de41a98e0"
+  },
+  "tests": [
+    {
+      "title": "D14 public pages identify illustrative claims and use canonical XP in both languages and viewports",
+      "ok": true,
+      "results": [
+        {
+          "status": "passed",
+          "duration": 11244
+        }
+      ]
+    },
+    {
+      "title": "D14 five contact previews retain drafts, send no data and show no receipt after refresh",
+      "ok": true,
+      "results": [
+        {
+          "status": "passed",
+          "duration": 11267
+        }
+      ]
+    },
+    {
+      "title": "D14 operator creates a resource body, reloads it, publishes and filters tracks separately",
+      "ok": true,
+      "results": [
+        {
+          "status": "passed",
+          "duration": 2773
+        }
+      ]
+    },
+    {
+      "title": "D14 Creator reads persisted content, sees preparing and retains the trust gate and read retry",
+      "ok": true,
+      "results": [
+        {
+          "status": "passed",
+          "duration": 4037
+        }
+      ]
+    }
+  ],
+  "stats": {
+    "startTime": "2026-10-23T06:52:04.369Z",
+    "duration": 37816.914,
+    "expected": 4,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "browser": "installed Edge; 390x844 emulated and 1280x900 desktop; English and Traditional Chinese public pages",
+  "auth": "real local Auth sessions created by owned fixture and reused in browser; real Auth/RLS/API/storage database; no external login or real notifications",
+  "mocks": "explicit transient 503 transport responses only; all successful data reads/writes use the owned local database",
+  "providers": "external HTTP blocked; no paid AI, social provider, payment, publication or messaging",
+  "deployment": "not-deployed"
+}

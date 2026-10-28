@@ -1,0 +1,30 @@
+{
+  "namespace": "90ffc505-7abe-4b4c-8041-a6c954509278",
+  "workspace": "db200130-3b5f-407c-8c6a-5122c7e1f372",
+  "missions": [
+    {
+      "kind": "race",
+      "id": "9a9c3d14-8959-4b80-a0e1-1bfd1b7bc1cf",
+      "templateId": "17bc1b44-4308-4b99-bdf7-85799b87b142",
+      "requirementId": "10861832-bd71-471f-8a9f-a8a8daade311"
+    },
+    {
+      "kind": "fault",
+      "id": "39e417f9-ca7f-44a3-bbfc-ba635c11d089",
+      "templateId": "1a350f65-ade2-4002-88d5-13cfebcf6936",
+      "requirementId": "7da7276c-b986-4c92-90db-603f621dac39"
+    },
+    {
+      "kind": "decline",
+      "id": "2d38b491-9755-4f83-97ab-7ecc64de5164",
+      "templateId": "0a724d2c-ef8d-45e1-acf7-4fc7eb1b06c4",
+      "requirementId": "fbefee1e-48ae-459b-9b83-425c3733677b"
+    },
+    {
+      "kind": "stale",
+      "id": "16601b1f-1525-4503-952d-b50ee4c48128",
+      "templateId": "06682c10-f02d-4358-adad-45f86184f921",
+      "requirementId": "afe4d602-2580-4e21-858b-b59784b4b6c9"
+    }
+  ]
+}

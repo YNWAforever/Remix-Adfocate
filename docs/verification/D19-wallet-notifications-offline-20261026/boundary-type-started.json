@@ -1,0 +1,27 @@
+{
+  "startedAt": "2026-10-25T19:10:56.492270+00:00",
+  "command": [
+    "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+    "node_modules/typescript/bin/tsc",
+    "--noEmit",
+    "-p",
+    "docs/verification/D19-wallet-notifications-offline-20261026/tsconfig.offline.json"
+  ],
+  "node": "v22.23.4",
+  "resource": {
+    "at": "2026-10-25T19:10:56.355753+00:00",
+    "freePhysicalGiB": 4.3582305908203125,
+    "freeCommitGiB": 4.4612274169921875,
+    "minimumGiB": 3,
+    "freeDiskGiB": 21.949996948242188
+  },
+  "credentialsProxiesPreloadsStripped": true,
+  "integrationDisabled": true,
+  "label": "boundary-type",
+  "log": "docs/verification/D19-wallet-notifications-offline-20261026/boundary-type.log",
+  "runtimeTargetCallsRequested": false,
+  "sourceFingerprint": "ead55a808470f90d72290905db90933cb4a6df48eaba519d4587339a4659b71d",
+  "sourceRecords": 789,
+  "npmExecpathProvided": "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+  "pid": 1776
+}

@@ -1,0 +1,2707 @@
+{
+  "at": "2026-10-25T10:22:56.693Z",
+  "identity": {
+    "runId": "4d6ca2c8-b9c2-4457-bda8-7c03ac533f61",
+    "ownerAuthorization": "2026-10-25 direct human reply call_4715f74b8ded413ea520b4491078088f: approved same existing C1 fixture continuation; manifest 696e94c29e62a27e820d7d12f5aa74c0d1e7b62f97f3b57db787074512a2626d; zero additional physical resources/subjects/domain setup fixtures; no legacy replay; bounded six existing actor sessions plus one Creator UI login; retain incidentOPEN/releaseHOLD/providerdisabled.",
+    "disposable": true,
+    "projectId": "adfocate-d19-b2-20261025-recovery-4d6ca2c8",
+    "proxy": "none",
+    "apiPort": 56921,
+    "apiContainerId": "c68a68b5ea60116a998cf3b61f4cdfbf737101361ae0866a8d8f83d0313ba253",
+    "databaseContainerId": "a4e387ca84bfd11e815f697e0c407b12b8a610d29691517d8d8ecaef91957956",
+    "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+    "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+    "networkId": "bcc7bcc4cd4a519135d4e54d904024cbebb77786707dcecb6c994694b322e65c"
+  },
+  "lineage": {
+    "projectId": "adfocate-d19-b2-20261025-recovery-4d6ca2c8",
+    "ownerRunId": "4d6ca2c8-b9c2-4457-bda8-7c03ac533f61",
+    "sourceFingerprint": "e83998d178061043688016056a5a78fc61df58bac28f3d0d0b66d639306037bd",
+    "manifestSha256": "696e94c29e62a27e820d7d12f5aa74c0d1e7b62f97f3b57db787074512a2626d",
+    "phase": "role",
+    "namespace": "2ccc8831-7368-47d2-b0fd-f1c71b637bd6",
+    "executionNamespace": "68d510a8-82a8-42bd-b3e8-4561580a7a19"
+  },
+  "manifestSha256": "696e94c29e62a27e820d7d12f5aa74c0d1e7b62f97f3b57db787074512a2626d",
+  "allFiveServiceIdentityGuardsPassed": true,
+  "phaseInventories": [
+    {
+      "phase": "role",
+      "families": 70,
+      "allIdsHashesEqual": true,
+      "allCapsPass": true,
+      "authSubjects": 11,
+      "inventory": {
+        "creators": {
+          "ids": [
+            "339d23a0-af76-4494-a24a-6004f0318fdf",
+            "90d20259-a4f0-4347-951d-bd2ebb263b07"
+          ],
+          "count": 2,
+          "rowHashes": {
+            "339d23a0-af76-4494-a24a-6004f0318fdf": "792bc94d27b5f5b1bce5aad72b6c0293",
+            "90d20259-a4f0-4347-951d-bd2ebb263b07": "3385f1d7bc91cb30a25770407a44c390"
+          }
+        },
+        "missions": {
+          "ids": [
+            "1493fb84-50be-4b41-ad2c-d5452b7a2883"
+          ],
+          "count": 1,
+          "rowHashes": {
+            "1493fb84-50be-4b41-ad2c-d5452b7a2883": "58a9b3b98b214fd6214e5c9f24208b10"
+          }
+        },
+        "campaigns": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "auth_users": {
+          "ids": [
+            "081d1a3a-3ef7-49fe-953c-d748e54456c4",
+            "2712cc1f-2d48-429a-be55-6e240c37248a",
+            "31ecc20a-df20-4fc1-b848-0d1331ad2e65",
+            "339d23a0-af76-4494-a24a-6004f0318fdf",
+            "372179a3-c567-4720-9704-325a962923a4",
+            "4ad22f41-3de2-4364-8514-3ba59ea19e79",
+            "8a4ca6cb-26d6-4b0b-b136-e9054502174b",
+            "908693a8-7414-42e0-96ea-f437de6f4812",
+            "90d20259-a4f0-4347-951d-bd2ebb263b07",
+            "e9564343-1408-4a35-a8ee-e79744e1385b",
+            "f37ce91c-0c07-4329-b612-1f544ed7cce1"
+          ],
+          "count": 11,
+          "rowHashes": {
+            "081d1a3a-3ef7-49fe-953c-d748e54456c4": "2b934590b62f0896958ecef83affb973",
+            "2712cc1f-2d48-429a-be55-6e240c37248a": "ef2b6634e8f822d15dce94cc1a020909",
+            "31ecc20a-df20-4fc1-b848-0d1331ad2e65": "0573ad83d37a81f1fe43a57b6dbed5f4",
+            "339d23a0-af76-4494-a24a-6004f0318fdf": "bfd4add333974617029613be5149b4a0",
+            "372179a3-c567-4720-9704-325a962923a4": "efb64a117fbbb6b183a56b8e8cc09bd7",
+            "4ad22f41-3de2-4364-8514-3ba59ea19e79": "ac096ae61bcad7c0ea3536a1cccd8847",
+            "8a4ca6cb-26d6-4b0b-b136-e9054502174b": "ce8341df6f9db9b9b0a9b15af5696b91",
+            "908693a8-7414-42e0-96ea-f437de6f4812": "6cdfa0947f53c1d9eb38adc2da382180",
+            "90d20259-a4f0-4347-951d-bd2ebb263b07": "d646b2fadd7d4565b79ec6cf0c335341",
+            "e9564343-1408-4a35-a8ee-e79744e1385b": "9d8a11ac58030d934b2ad7e94ea747b0",
+            "f37ce91c-0c07-4329-b612-1f544ed7cce1": "fe09966601e80c59bc815e22ab4141f1"
+          }
+        },
+        "workspaces": {
+          "ids": [
+            "18a5ddd0-2064-496c-a269-74f67f728267",
+            "2177f882-9f30-4ad6-b5e2-c546b6709d61"
+          ],
+          "count": 2,
+          "rowHashes": {
+            "18a5ddd0-2064-496c-a269-74f67f728267": "9d0e585ccc169bc42d9d1e3544191304",
+            "2177f882-9f30-4ad6-b5e2-c546b6709d61": "33b191e702cdd17e1321aca33d1fb87e"
+          }
+        },
+        "brand_users": {
+          "ids": [
+            "081d1a3a-3ef7-49fe-953c-d748e54456c4",
+            "2712cc1f-2d48-429a-be55-6e240c37248a",
+            "31ecc20a-df20-4fc1-b848-0d1331ad2e65",
+            "4ad22f41-3de2-4364-8514-3ba59ea19e79",
+            "8a4ca6cb-26d6-4b0b-b136-e9054502174b",
+            "e9564343-1408-4a35-a8ee-e79744e1385b",
+            "f37ce91c-0c07-4329-b612-1f544ed7cce1"
+          ],
+          "count": 7,
+          "rowHashes": {
+            "081d1a3a-3ef7-49fe-953c-d748e54456c4": "023a0d778a4cc3866b16ef5b2899c878",
+            "2712cc1f-2d48-429a-be55-6e240c37248a": "efad547618e2fc5da84cad793f1552eb",
+            "31ecc20a-df20-4fc1-b848-0d1331ad2e65": "51736722705135b8a5f23abb04e0a0a3",
+            "4ad22f41-3de2-4364-8514-3ba59ea19e79": "c734db8f74b95cc9c9d14dae2a47e826",
+            "8a4ca6cb-26d6-4b0b-b136-e9054502174b": "bc882965c57aed04e9f820a3ceaceaf8",
+            "e9564343-1408-4a35-a8ee-e79744e1385b": "3531cf9f71ef57cf6632748a5a07e338",
+            "f37ce91c-0c07-4329-b612-1f544ed7cce1": "dd51f7d003d17ad5ab8dcaa481f9f6ee"
+          }
+        },
+        "redemptions": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "staff_users": {
+          "ids": [
+            "081d1a3a-3ef7-49fe-953c-d748e54456c4",
+            "2712cc1f-2d48-429a-be55-6e240c37248a",
+            "31ecc20a-df20-4fc1-b848-0d1331ad2e65",
+            "372179a3-c567-4720-9704-325a962923a4",
+            "4ad22f41-3de2-4364-8514-3ba59ea19e79",
+            "8a4ca6cb-26d6-4b0b-b136-e9054502174b",
+            "908693a8-7414-42e0-96ea-f437de6f4812",
+            "e9564343-1408-4a35-a8ee-e79744e1385b",
+            "f37ce91c-0c07-4329-b612-1f544ed7cce1"
+          ],
+          "count": 9,
+          "rowHashes": {
+            "081d1a3a-3ef7-49fe-953c-d748e54456c4": "3a6e195663e6c12ec3628be48c000ff3",
+            "2712cc1f-2d48-429a-be55-6e240c37248a": "b1c97c5d2993a91953d1dff15414e721",
+            "31ecc20a-df20-4fc1-b848-0d1331ad2e65": "15a7bf29127694289ced722e4f6dc9bd",
+            "372179a3-c567-4720-9704-325a962923a4": "cd077ab6835c8fb637528a5423c2e751",
+            "4ad22f41-3de2-4364-8514-3ba59ea19e79": "7caf66b2a31c178013ac7c1da7b28772",
+            "8a4ca6cb-26d6-4b0b-b136-e9054502174b": "22d2fd0dc7db068c56ba71cbaac903f7",
+            "908693a8-7414-42e0-96ea-f437de6f4812": "4df3a8a98b6126d2074a5b129fac49cf",
+            "e9564343-1408-4a35-a8ee-e79744e1385b": "ade047e94c4ab71ec262b1a9197a691e",
+            "f37ce91c-0c07-4329-b612-1f544ed7cce1": "b97d3764f939fbfb156e4442eed52b29"
+          }
+        },
+        "auth_sessions": {
+          "ids": [
+            "497eed0c-9b66-4ae6-9acc-ae84736a3837",
+            "51f757cf-48a0-4be1-b8de-b95e1b809d3b",
+            "5f8782c2-9f93-4ff5-8f13-f4afea2b2036",
+            "671b6fe7-28e1-4f06-a983-3226b73196e0",
+            "6966c0a3-0b30-416c-b414-c44d18a8c82d",
+            "769c7c5e-5d30-48d9-895e-5bad678cdb2a",
+            "8b3ecc8b-3551-4cc7-9f86-4f3075206fdb",
+            "8b841901-691e-4f2f-b114-ad07273bb1a8",
+            "8c27ca27-d3a2-430b-ab7e-aac2b5f9fb60",
+            "aabca151-81b9-45fb-815f-adbac4110a85",
+            "e4958393-f31d-41af-8ce9-66c715066d51"
+          ],
+          "count": 11,
+          "rowHashes": {
+            "497eed0c-9b66-4ae6-9acc-ae84736a3837": "23cf55596622fb2a072b35ee2a06b6eb",
+            "51f757cf-48a0-4be1-b8de-b95e1b809d3b": "5fef1e8f5a2f7eed8b0995a63935c64c",
+            "5f8782c2-9f93-4ff5-8f13-f4afea2b2036": "603e862a7875a9db76ffeec96d7e645d",
+            "671b6fe7-28e1-4f06-a983-3226b73196e0": "df9ebe69876057dc63e30230968ef5e5",
+            "6966c0a3-0b30-416c-b414-c44d18a8c82d": "98c49ae54637d9f448c36f58a04c0395",
+            "769c7c5e-5d30-48d9-895e-5bad678cdb2a": "cbfd63ed93ce030a7e08a6d67cc1aa5e",
+            "8b3ecc8b-3551-4cc7-9f86-4f3075206fdb": "239c8cfc69082af359e29942ba92ad44",
+            "8b841901-691e-4f2f-b114-ad07273bb1a8": "13930f90dad76d1714e30e5a822ebfd3",
+            "8c27ca27-d3a2-430b-ab7e-aac2b5f9fb60": "b2cb8352721c75a57a5f527f58f54184",
+            "aabca151-81b9-45fb-815f-adbac4110a85": "de56d578e76b15cb44298bbf69da527f",
+            "e4958393-f31d-41af-8ce9-66c715066d51": "1b8f233f0849e48749ed668cfe42cff0"
+          }
+        },
+        "brand_invites": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "notifications": {
+          "ids": [
+            "014581df-85d8-42f1-a400-27910dfba5fd",
+            "614a57c9-3e7d-4f01-9e83-a5e2fe993021",
+            "92ecfeab-702f-415a-b102-f402f9cf3cb3",
+            "a53a8ada-dc5c-45ae-8dec-4f5134e9c98c",
+            "c5b8a84e-7cd8-492b-a601-b2eafc758f2e",
+            "d88d23a4-f881-4c56-8920-c82b50451c89",
+            "eb8c3620-77d7-464a-8197-a224a964ac56",
+            "ff41c446-d83b-4315-bbba-2c71344efb55"
+          ],
+          "count": 8,
+          "rowHashes": {
+            "014581df-85d8-42f1-a400-27910dfba5fd": "b2f8ad8a819f19d67d9af36affa94f60",
+            "614a57c9-3e7d-4f01-9e83-a5e2fe993021": "d2a1b1d814234e3df4e1cf4576ca4599",
+            "92ecfeab-702f-415a-b102-f402f9cf3cb3": "3ce3a269839045cdd161380b3c69e108",
+            "a53a8ada-dc5c-45ae-8dec-4f5134e9c98c": "c7052c66168414bb18f857c93415e60e",
+            "c5b8a84e-7cd8-492b-a601-b2eafc758f2e": "03aa85c648f8eb2f2cce8cd40bef0607",
+            "d88d23a4-f881-4c56-8920-c82b50451c89": "529b1dee63afffd4ae74ac1531bb5e02",
+            "eb8c3620-77d7-464a-8197-a224a964ac56": "a4257d119fa5c3badce58f5864d3c88a",
+            "ff41c446-d83b-4315-bbba-2c71344efb55": "ed978c4b194affa14b1f260fd54427e7"
+          }
+        },
+        "point_balances": {
+          "ids": [
+            "0bc7038e-1f8d-4201-aa0e-bf5cdedd6544",
+            "7d57a237-b707-480e-a8f3-8609f7c9f634"
+          ],
+          "count": 2,
+          "rowHashes": {
+            "0bc7038e-1f8d-4201-aa0e-bf5cdedd6544": "2056aa0c27122b76cccca745eef6ac83",
+            "7d57a237-b707-480e-a8f3-8609f7c9f634": "155e6787cc501990221290808dd20990"
+          }
+        },
+        "academy_content": {
+          "ids": [
+            "41294985-bb5d-478e-b511-8228e7249b62"
+          ],
+          "count": 1,
+          "rowHashes": {
+            "41294985-bb5d-478e-b511-8228e7249b62": "85d9e129a6e77b3f320ef6490d088c6e"
+          }
+        },
+        "academy_lessons": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "auth_flow_state": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "auth_identities": {
+          "ids": [
+            "2679865b-6dc4-447c-9892-bc740b29dfe1",
+            "2c14b269-97df-4e89-b093-22a8a218875b",
+            "46f7afe6-b81d-47f5-b0db-48148a2c048c",
+            "4f473b01-6642-4e6d-b458-8c976962c1b0",
+            "7f8885a1-cce2-4260-b08d-f40f48edb8f2",
+            "88400712-2e38-4915-8e87-c521863f7858",
+            "9a84461c-f6c3-4ea8-bdf2-89d1e5b87eaf",
+            "d93cfc2b-3d8a-4042-80bf-d543b2d452a1",
+            "e0c05f71-01f5-4f72-bc40-6e10f3241b0b",
+            "e17fd75d-7671-4ee6-b40d-0cc805377fee",
+            "f44097ba-5660-40e6-9756-95ca8349c18e"
+          ],
+          "count": 11,
+          "rowHashes": {
+            "2679865b-6dc4-447c-9892-bc740b29dfe1": "03d135685f20d5053b48d38e629a64a3",
+            "2c14b269-97df-4e89-b093-22a8a218875b": "1f733f596cad76e7345bdfc1d5c0f89e",
+            "46f7afe6-b81d-47f5-b0db-48148a2c048c": "dc5c929729aa97944caa7c34a1e1302f",
+            "4f473b01-6642-4e6d-b458-8c976962c1b0": "095a1a75d2c9dcac7686f305de73c252",
+            "7f8885a1-cce2-4260-b08d-f40f48edb8f2": "48a39436dcbdd1cbf91363823ff0a037",
+            "88400712-2e38-4915-8e87-c521863f7858": "e8f22725e185627ba473ecaa94b45a7b",
+            "9a84461c-f6c3-4ea8-bdf2-89d1e5b87eaf": "cf2ea2a708874673579872657dd63f9c",
+            "d93cfc2b-3d8a-4042-80bf-d543b2d452a1": "b91944a013ab53d1db9266b0ef7cac4e",
+            "e0c05f71-01f5-4f72-bc40-6e10f3241b0b": "280a7cf86ca25858222e66f102b245a4",
+            "e17fd75d-7671-4ee6-b40d-0cc805377fee": "3c958f66bd53f457fe1b5054b2319386",
+            "f44097ba-5660-40e6-9756-95ca8349c18e": "65e5c766f2901aae429d27f33bccce80"
+          }
+        },
+        "storage_objects": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "auth_mfa_factors": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "redemption_codes": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "redemption_gifts": {
+          "ids": [
+            "59bb5d24-6e19-46a7-bcb2-24a1a538084e"
+          ],
+          "count": 1,
+          "rowHashes": {
+            "59bb5d24-6e19-46a7-bcb2-24a1a538084e": "2c47126f93450d503e5a4d05430d73e0"
+          }
+        },
+        "earnings_balances": {
+          "ids": [
+            "6a0b47af-0664-4ef3-92be-947a7c015341",
+            "7fb1e8e6-a473-426b-8096-7211b5b76823"
+          ],
+          "count": 2,
+          "rowHashes": {
+            "6a0b47af-0664-4ef3-92be-947a7c015341": "bbd0bcf6a10303b1dc6c8e5767a1f2aa",
+            "7fb1e8e6-a473-426b-8096-7211b5b76823": "ecf618e0b1830b0d2161b9cda6953f56"
+          }
+        },
+        "mission_workflows": {
+          "ids": [
+            "67e4aee7-a26c-442a-955a-3aa9fedb005c"
+          ],
+          "count": 1,
+          "rowHashes": {
+            "67e4aee7-a26c-442a-955a-3aa9fedb005c": "83d1fc25ff478cc280ed978d5255bbdd"
+          }
+        },
+        "workspace_budgets": {
+          "ids": [
+            "f358485a-5966-45cd-888b-4523b2b068bc"
+          ],
+          "count": 1,
+          "rowHashes": {
+            "f358485a-5966-45cd-888b-4523b2b068bc": "7b6ace8045424b2fd8a1139b327647ba"
+          }
+        },
+        "assistant_messages": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "assistant_requests": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "mission_work_items": {
+          "ids": [
+            "31b57653-8492-4d86-9681-4c6b2607cf9f",
+            "3facaf19-1ac6-4b36-8815-8baf0d5b53d4"
+          ],
+          "count": 2,
+          "rowHashes": {
+            "31b57653-8492-4d86-9681-4c6b2607cf9f": "851e6a8d5d0f72e997a3dcbea1de2dee",
+            "3facaf19-1ac6-4b36-8815-8baf0d5b53d4": "d1ff6c080546952a0f231bdeeff65930"
+          }
+        },
+        "point_transactions": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "staff_access_audit": {
+          "ids": [
+            "2291b3e5-5049-4428-86a1-ebbf0677b2e5",
+            "28a9bfe7-eaaa-4a3a-bf0f-ab034cada130",
+            "432f5cde-19be-4ee0-9b72-0db9322578ac",
+            "5c3180e2-69c5-4538-91c2-ce3f04fb7d2e",
+            "62062a29-4332-4834-aa67-277b4186bc92",
+            "922882b8-24c7-4849-bfab-2967dd2b42e6",
+            "a059ca14-b5ac-481d-9e69-dcd9a9b3d494",
+            "a80649f8-87e3-44aa-b085-145b144d078e",
+            "ce92c283-2f0c-4e5e-91f3-8c3165406cc8",
+            "dfa80986-9507-4e67-9f9c-393d6b3b8fbc"
+          ],
+          "count": 10,
+          "rowHashes": {
+            "2291b3e5-5049-4428-86a1-ebbf0677b2e5": "c153f3da0b63b1306602a0f0d856c109",
+            "28a9bfe7-eaaa-4a3a-bf0f-ab034cada130": "941690961250cf7ef6524f72ef88bc1a",
+            "432f5cde-19be-4ee0-9b72-0db9322578ac": "89ac7f79eb74c2a2d835cd6c0b642b94",
+            "5c3180e2-69c5-4538-91c2-ce3f04fb7d2e": "d4c2a82395766db2ae43fa31f23434d4",
+            "62062a29-4332-4834-aa67-277b4186bc92": "8abcd654b07d28851ff6972bc9858fe2",
+            "922882b8-24c7-4849-bfab-2967dd2b42e6": "a5e6518a1695f369d9bd8795cd6db90a",
+            "a059ca14-b5ac-481d-9e69-dcd9a9b3d494": "ee6fa261df47c8b3a683e3b4d76d6a14",
+            "a80649f8-87e3-44aa-b085-145b144d078e": "d76f7d20533bba26dfb7c7d6b58546ef",
+            "ce92c283-2f0c-4e5e-91f3-8c3165406cc8": "dd0535c2b447bb83d3603a18351f3a83",
+            "dfa80986-9507-4e67-9f9c-393d6b3b8fbc": "051d0bd5733eda5831d8f4d8748d34ba"
+          }
+        },
+        "auth_mfa_amr_claims": {
+          "ids": [
+            "0a569398-03cc-4ad0-b0e9-9ec37afcb203",
+            "110b134b-41c7-4b20-8525-bc55ede94cbb",
+            "1ed9bdc4-b075-41ae-ac56-61663fcb4fab",
+            "27aecad4-4549-41a1-93d6-6c88c4f1e0c3",
+            "3cbbac26-ce8c-4404-8500-abce3401d069",
+            "5b83429b-12d4-4aa9-9f31-9d28a4c5cb47",
+            "5f1b893c-97c3-4feb-b77f-475989468718",
+            "60b5674d-031a-49df-a3fe-c195d3d8d713",
+            "68720954-d735-4169-9966-02ce83ccb005",
+            "86fa4968-5c6c-42cc-8e18-cabaef3bc5d2",
+            "9bfe949e-2a23-4c86-8a81-58ae26baa0a9"
+          ],
+          "count": 11,
+          "rowHashes": {
+            "0a569398-03cc-4ad0-b0e9-9ec37afcb203": "cc7627c878f88359ff5b6c3a8769d3e3",
+            "110b134b-41c7-4b20-8525-bc55ede94cbb": "7c18866178654c170bd3aa4c350bae64",
+            "1ed9bdc4-b075-41ae-ac56-61663fcb4fab": "0e3763feee0e87e47aa12dd2cdb32702",
+            "27aecad4-4549-41a1-93d6-6c88c4f1e0c3": "0024a3994120e658d6bfb63b0df7b0a5",
+            "3cbbac26-ce8c-4404-8500-abce3401d069": "cdc09db02dde6b17b903982cab02c669",
+            "5b83429b-12d4-4aa9-9f31-9d28a4c5cb47": "41b29d1d6c92ac1084d031e907e6935d",
+            "5f1b893c-97c3-4feb-b77f-475989468718": "fe6c6aed23a19c9a54da228fd84c18fa",
+            "60b5674d-031a-49df-a3fe-c195d3d8d713": "febc9dec8404d3b0d914b705d5ff6c57",
+            "68720954-d735-4169-9966-02ce83ccb005": "6cbae1ec6ce3e60c52d05ee55f78e524",
+            "86fa4968-5c6c-42cc-8e18-cabaef3bc5d2": "b8a4d588198d27a24d916a6af3f0fc4c",
+            "9bfe949e-2a23-4c86-8a81-58ae26baa0a9": "511e68cbfb9d5d2171ec1ab031208ec3"
+          }
+        },
+        "auth_mfa_challenges": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "auth_refresh_tokens": {
+          "ids": [
+            "1",
+            "10",
+            "11",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9"
+          ],
+          "count": 11,
+          "rowHashes": {
+            "1": "766aa4402e7d0e6bcfd8d048dadeca94",
+            "2": "3560a14108eb7bf24d5698c3120113e3",
+            "3": "9a281874d3e6db933c27ebfa15e1301b",
+            "4": "b53b02bc5f1f6852bbde093023c01dd7",
+            "5": "5c2187f672831a2c3bf19c06196a9f1b",
+            "6": "57d8b90b300a1c09e5f645d1e0ea0cff",
+            "7": "86538b5f21f9f113a15b5b437790eb6b",
+            "8": "6f75b0691c7d36830e37931496608189",
+            "9": "4bd7064563c05fce4007917eaeb95100",
+            "10": "f287de3cc9248abec3de45373d82c105",
+            "11": "1c8ab7cd0a1293f9ba46f636b4bc47dc"
+          }
+        },
+        "mission_submissions": {
+          "ids": [
+            "415ac2d6-03a4-4ed6-adaf-702020760841"
+          ],
+          "count": 1,
+          "rowHashes": {
+            "415ac2d6-03a4-4ed6-adaf-702020760841": "c8ae658f8aec98a73de1b421c19587b4"
+          }
+        },
+        "auth_one_time_tokens": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "creator_review_notes": {
+          "ids": [
+            "1bad6312-2e0d-470d-920b-1a3d80464ac4"
+          ],
+          "count": 1,
+          "rowHashes": {
+            "1bad6312-2e0d-470d-920b-1a3d80464ac4": "77002bc9eceacd76ada890b4510a47b6"
+          }
+        },
+        "mission_draft_assets": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "mission_fulfillments": {
+          "ids": [
+            "16ca6f51-0ec5-4c69-8140-97eeb9200cb0"
+          ],
+          "count": 1,
+          "rowHashes": {
+            "16ca6f51-0ec5-4c69-8140-97eeb9200cb0": "65a3db87af1d85a471440e5587ab478f"
+          }
+        },
+        "mission_review_items": {
+          "ids": [
+            "03f04745-0154-43ae-a782-290cbfa769da"
+          ],
+          "count": 1,
+          "rowHashes": {
+            "03f04745-0154-43ae-a782-290cbfa769da": "4d074785ffc37255a53e032a9abb3496"
+          }
+        },
+        "staff_platform_roles": {
+          "ids": [
+            "908693a8-7414-42e0-96ea-f437de6f4812:content_editor"
+          ],
+          "count": 1,
+          "rowHashes": {
+            "908693a8-7414-42e0-96ea-f437de6f4812:content_editor": "fe65e2d21fe80a9caf8cbd940c945fb8"
+          }
+        },
+        "campaign_participants": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "earnings_transactions": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "mission_review_rounds": {
+          "ids": [
+            "348675f1-a576-4731-94c9-c6de937ac63b",
+            "4519fc33-3a04-4262-8a0a-67720e9a4d7d"
+          ],
+          "count": 2,
+          "rowHashes": {
+            "348675f1-a576-4731-94c9-c6de937ac63b": "c6f7a7a32d51502acaf23b11ab7d6acd",
+            "4519fc33-3a04-4262-8a0a-67720e9a4d7d": "6c723d4af102ef63d7522023a9a93399"
+          }
+        },
+        "operator_audit_events": {
+          "ids": [
+            "6bc36955-ddbc-4c3a-93cf-2c02cf993f5a",
+            "d42b8edd-6489-4b09-a430-d0cf3b6c90e6"
+          ],
+          "count": 2,
+          "rowHashes": {
+            "6bc36955-ddbc-4c3a-93cf-2c02cf993f5a": "895056d79441f3d25f349e339e61e209",
+            "d42b8edd-6489-4b09-a430-d0cf3b6c90e6": "02ebded71223ffe4c25250efa4efa51f"
+          }
+        },
+        "staff_access_commands": {
+          "ids": [
+            "03100601-0176-43ee-af0a-aaa2fc170990",
+            "1e3d10ba-a4b4-4154-946f-09b037fdcbb2",
+            "41d3fc2a-5000-434d-ae23-7cae99060cb1",
+            "77b6a073-0b0a-43aa-9582-f9f9178bca40",
+            "7d469bbe-ff20-480b-a1ec-b8e0ded9181e",
+            "9d25acb6-4662-4b4b-bfa0-aaeb6df2bb5c",
+            "b710f688-62f3-465b-bc94-0a534ab033be",
+            "bde476c5-1b18-47f8-9e9e-a3c7ac6ed4cb",
+            "d3787079-29f5-4d17-991e-5a6aeacf2419",
+            "fcc9f277-945d-46b6-b177-d0e5fb03f44d"
+          ],
+          "count": 10,
+          "rowHashes": {
+            "03100601-0176-43ee-af0a-aaa2fc170990": "eb324e8a8f9f3b3d49bbfe8334c68c29",
+            "1e3d10ba-a4b4-4154-946f-09b037fdcbb2": "4d6e4e9c96e5e29af94b5c152421cad5",
+            "41d3fc2a-5000-434d-ae23-7cae99060cb1": "c9a9f284b76bb4a04d4af09652021245",
+            "77b6a073-0b0a-43aa-9582-f9f9178bca40": "84e36d6cc1b9471216c7e0d6db4fb243",
+            "7d469bbe-ff20-480b-a1ec-b8e0ded9181e": "625e35dccdc71262df148d535a2782c9",
+            "9d25acb6-4662-4b4b-bfa0-aaeb6df2bb5c": "7af49dc2c6859bda3d0d4c8bd3e09eb4",
+            "b710f688-62f3-465b-bc94-0a534ab033be": "e7de7e1956186cf56bc74f0acc9e0238",
+            "bde476c5-1b18-47f8-9e9e-a3c7ac6ed4cb": "6b66358df36714bf8e64cb0bca603cd5",
+            "d3787079-29f5-4d17-991e-5a6aeacf2419": "aaaa5e2b446f7db118e972e4881f535c",
+            "fcc9f277-945d-46b6-b177-d0e5fb03f44d": "ba719c2721bedd32ca5a208906df2afa"
+          }
+        },
+        "staff_workspace_roles": {
+          "ids": [
+            "081d1a3a-3ef7-49fe-953c-d748e54456c4:18a5ddd0-2064-496c-a269-74f67f728267",
+            "2712cc1f-2d48-429a-be55-6e240c37248a:2177f882-9f30-4ad6-b5e2-c546b6709d61",
+            "31ecc20a-df20-4fc1-b848-0d1331ad2e65:2177f882-9f30-4ad6-b5e2-c546b6709d61",
+            "4ad22f41-3de2-4364-8514-3ba59ea19e79:2177f882-9f30-4ad6-b5e2-c546b6709d61",
+            "8a4ca6cb-26d6-4b0b-b136-e9054502174b:2177f882-9f30-4ad6-b5e2-c546b6709d61",
+            "e9564343-1408-4a35-a8ee-e79744e1385b:2177f882-9f30-4ad6-b5e2-c546b6709d61",
+            "f37ce91c-0c07-4329-b612-1f544ed7cce1:2177f882-9f30-4ad6-b5e2-c546b6709d61"
+          ],
+          "count": 7,
+          "rowHashes": {
+            "081d1a3a-3ef7-49fe-953c-d748e54456c4:18a5ddd0-2064-496c-a269-74f67f728267": "98e248f6c425ae9e65ae3f91a27d6e5f",
+            "2712cc1f-2d48-429a-be55-6e240c37248a:2177f882-9f30-4ad6-b5e2-c546b6709d61": "43459b93aefa1c1a425b8466b10dbd0b",
+            "31ecc20a-df20-4fc1-b848-0d1331ad2e65:2177f882-9f30-4ad6-b5e2-c546b6709d61": "9de9f2cf61e43679b5d457b458001dfa",
+            "4ad22f41-3de2-4364-8514-3ba59ea19e79:2177f882-9f30-4ad6-b5e2-c546b6709d61": "da77bc0cbe26c2eaa93d8727bd5017c6",
+            "8a4ca6cb-26d6-4b0b-b136-e9054502174b:2177f882-9f30-4ad6-b5e2-c546b6709d61": "26bff0095de1c8a3c9fee287780aca28",
+            "e9564343-1408-4a35-a8ee-e79744e1385b:2177f882-9f30-4ad6-b5e2-c546b6709d61": "cc71b13da8cf0a354868d94e2d295367",
+            "f37ce91c-0c07-4329-b612-1f544ed7cce1:2177f882-9f30-4ad6-b5e2-c546b6709d61": "9844f318cdaf044b58a2d4faf506424c"
+          }
+        },
+        "auth_audit_log_entries": {
+          "ids": [
+            "1a8ceee4-98e0-4b1a-bad7-8494a2aa0505",
+            "358426c8-10de-424b-8cce-2ccc080f9dc6",
+            "3e3eac9f-0591-417f-8d00-a686464f7d13",
+            "443c5090-a677-48be-a933-a83bf911c196",
+            "4bafa8f4-6fc9-43b8-bab5-e5c3a5241311",
+            "5ef54d2a-a1f4-4438-b902-30c8cd655f2e",
+            "698fb67e-b281-41bf-8f4a-dd7f4a0acc38",
+            "6e41eec1-be42-4fb4-aef9-5c062dd39f63",
+            "903661ea-01b4-455d-9fc2-08a54315b7a8",
+            "938888f7-9c78-4190-be7a-e9efd859f265",
+            "ae689522-a005-449d-bc7f-3e77fb79a434",
+            "f4c67fe5-5ca6-43c4-9403-a231c5052233"
+          ],
+          "count": 12,
+          "rowHashes": {
+            "1a8ceee4-98e0-4b1a-bad7-8494a2aa0505": "c51c64a31f756b780e9728be1bbc93f7",
+            "358426c8-10de-424b-8cce-2ccc080f9dc6": "a7c9cf49afea2505a5a20a44776c4a84",
+            "3e3eac9f-0591-417f-8d00-a686464f7d13": "c74a9a6acfa1ec67cb2c1a94eaf140ed",
+            "443c5090-a677-48be-a933-a83bf911c196": "9f9136d68c76baa7b1a0f180cf3d54ec",
+            "4bafa8f4-6fc9-43b8-bab5-e5c3a5241311": "3d80b9b1bc05a0a3530e3d11e6f0da9c",
+            "5ef54d2a-a1f4-4438-b902-30c8cd655f2e": "6671385f3696c39b30c3373e5be1ce2a",
+            "698fb67e-b281-41bf-8f4a-dd7f4a0acc38": "5a7681049dedc92dc3c49d36319c95ef",
+            "6e41eec1-be42-4fb4-aef9-5c062dd39f63": "b69cbdfa81f302fbfb452b80b055355b",
+            "903661ea-01b4-455d-9fc2-08a54315b7a8": "cb20d39810c2ea34016bcf18c0b4ebb1",
+            "938888f7-9c78-4190-be7a-e9efd859f265": "40c18c17af11e5b54387532faa84b557",
+            "ae689522-a005-449d-bc7f-3e77fb79a434": "dab4ba6f926f113602d4eba290f827fd",
+            "f4c67fe5-5ca6-43c4-9403-a231c5052233": "85b64b7b86674bf9e342a12141d8d5d8"
+          }
+        },
+        "mission_draft_versions": {
+          "ids": [
+            "47a81d42-81d5-4ce6-a180-ec3147a6a5b5",
+            "97e6a459-4e2f-4fd8-97bc-b3eb7f3361f7"
+          ],
+          "count": 2,
+          "rowHashes": {
+            "47a81d42-81d5-4ce6-a180-ec3147a6a5b5": "61d9c05af39c7e1c1057810626a1a20b",
+            "97e6a459-4e2f-4fd8-97bc-b3eb7f3361f7": "7f068023047c4827b7b5ad7e28f292e5"
+          }
+        },
+        "mission_working_drafts": {
+          "ids": [
+            "49c1f963-2c66-404f-b3f1-98df5acb6e83",
+            "d2b2d92d-2712-4e39-b9dc-e17b23675bc2"
+          ],
+          "count": 2,
+          "rowHashes": {
+            "49c1f963-2c66-404f-b3f1-98df5acb6e83": "e6b8ab430ff3960157669aedd35cec43",
+            "d2b2d92d-2712-4e39-b9dc-e17b23675bc2": "792ff36f9cae03b2c9a2cb393e31cd4d"
+          }
+        },
+        "assistant_conversations": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "campaign_rank_snapshots": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "creator_lesson_progress": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "creator_portfolio_links": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "creator_review_statuses": {
+          "ids": [
+            "ac98d98b-9b76-45f9-bcc5-d2c2897d1fcf"
+          ],
+          "count": 1,
+          "rowHashes": {
+            "ac98d98b-9b76-45f9-bcc5-d2c2897d1fcf": "47cbc425676bbe24f1ab8cb2fbcf5663"
+          }
+        },
+        "creator_social_accounts": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "mission_pending_rewards": {
+          "ids": [
+            "89c1b37a-f284-45a2-935a-f65774b6fb62"
+          ],
+          "count": 1,
+          "rowHashes": {
+            "89c1b37a-f284-45a2-935a-f65774b6fb62": "0489f325a22d9a6ae6b24672c53b96d7"
+          }
+        },
+        "mission_revision_grants": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "mission_workflow_events": {
+          "ids": [
+            "01fb5256-43f1-43b8-9f92-51de714a6c18",
+            "10325533-e0d0-4312-b16a-4585e5161651",
+            "14c65a26-4fd2-431d-a39f-f953339200d4",
+            "4004019a-529c-4a68-95e0-8e3dc0a68c40",
+            "43149042-3090-4dbf-b1a2-7ad0f2eb677d",
+            "4b3e9335-16e8-407b-a900-3c3b7162a6a8",
+            "55c4dd24-e594-4ae8-96e6-2a03608bc89c",
+            "57f341c6-9393-4252-94b6-c6c096adaf5c",
+            "59385a2f-62bb-4b8e-ae98-5da3d83fb905",
+            "6093d0c5-455d-4b8a-b8aa-85118f912717",
+            "69362978-a570-4b64-9d28-3cbad43c43d0",
+            "6e6e1906-48b2-419f-8909-ed9022dab3de",
+            "7036fba3-dc23-428c-9c0e-508fa0e68345",
+            "a5c73376-aaa8-48ed-acfe-35c50d60d907",
+            "b84274b1-feee-4c1b-ace3-45fc46a5e502",
+            "c44b6ea7-ae41-49ec-95ba-5ffc289bdb0d",
+            "d4ef12a0-ff1b-4f08-a0fc-b7df4403bffc"
+          ],
+          "count": 17,
+          "rowHashes": {
+            "01fb5256-43f1-43b8-9f92-51de714a6c18": "81d820a792ae3c2e662beb37deb8ab4b",
+            "10325533-e0d0-4312-b16a-4585e5161651": "3b0e243294d18cd90b456340afa19f2b",
+            "14c65a26-4fd2-431d-a39f-f953339200d4": "80db66747408fa3f1daabf4262d40819",
+            "4004019a-529c-4a68-95e0-8e3dc0a68c40": "fedfc013a19cdb361cb1ba13d854db20",
+            "43149042-3090-4dbf-b1a2-7ad0f2eb677d": "921b5a71363f78b59e46f794cc1bbc06",
+            "4b3e9335-16e8-407b-a900-3c3b7162a6a8": "f68b48c97ed333577a4bd8d730338c5d",
+            "55c4dd24-e594-4ae8-96e6-2a03608bc89c": "0d5ca0ed9289e03761169647e3382e2a",
+            "57f341c6-9393-4252-94b6-c6c096adaf5c": "9677b754eb1f85dd19b3cc4aedf29959",
+            "59385a2f-62bb-4b8e-ae98-5da3d83fb905": "a35495a005eb785e31318c4b8a4268d1",
+            "6093d0c5-455d-4b8a-b8aa-85118f912717": "97b5719cd4fd8441588760300d2ce800",
+            "69362978-a570-4b64-9d28-3cbad43c43d0": "33da45f4d2e60010a885854963cc7ebc",
+            "6e6e1906-48b2-419f-8909-ed9022dab3de": "5cb0758f8b10aae5f29fd5c273838fd9",
+            "7036fba3-dc23-428c-9c0e-508fa0e68345": "f4e3476493a9d94df00c98fe87be9aee",
+            "a5c73376-aaa8-48ed-acfe-35c50d60d907": "423ea030a28af98b350e0054f2c36c96",
+            "b84274b1-feee-4c1b-ace3-45fc46a5e502": "9059f771bee890da38e287e1addcef15",
+            "c44b6ea7-ae41-49ec-95ba-5ffc289bdb0d": "8f52a4381475bcfa52b5911c930f7f98",
+            "d4ef12a0-ff1b-4f08-a0fc-b7df4403bffc": "d2d000be36b0321751060f67f9dbcde0"
+          }
+        },
+        "mission_reward_contracts": {
+          "ids": [
+            "efd9c29b-de33-46d4-b2a1-33e829138000"
+          ],
+          "count": 1,
+          "rowHashes": {
+            "efd9c29b-de33-46d4-b2a1-33e829138000": "a1752a8bc95fcdd02602d01afc650b6d"
+          }
+        },
+        "legacy_evidence_corrections": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "draft_submission_idempotency": {
+          "ids": [
+            "31b57653-8492-4d86-9681-4c6b2607cf9f:1ae04c60-697b-480f-a264-1b5dc53febaf",
+            "31b57653-8492-4d86-9681-4c6b2607cf9f:994654fc-4f2c-41b4-a319-f2e01c03e0ed"
+          ],
+          "count": 2,
+          "rowHashes": {
+            "31b57653-8492-4d86-9681-4c6b2607cf9f:1ae04c60-697b-480f-a264-1b5dc53febaf": "3e78dee3fd98ff08291233e1e04d8a86",
+            "31b57653-8492-4d86-9681-4c6b2607cf9f:994654fc-4f2c-41b4-a319-f2e01c03e0ed": "49b0314490f76097f7ddfd85ce9413dd"
+          }
+        },
+        "mission_completion_decisions": {
+          "ids": [
+            "2b0b3262-3be8-48a1-a331-6c89e4e6b7e3"
+          ],
+          "count": 1,
+          "rowHashes": {
+            "2b0b3262-3be8-48a1-a331-6c89e4e6b7e3": "2b9601c7c5e7513d8c532c98bb465fbc"
+          }
+        },
+        "workflow_notification_dedupe": {
+          "ids": [
+            "90d20259-a4f0-4347-951d-bd2ebb263b07:mission_approved_to_publish:mission_workflow:67e4aee7-a26c-442a-955a-3aa9fedb005c:||",
+            "90d20259-a4f0-4347-951d-bd2ebb263b07:mission_draft_approved:mission_work_item:31b57653-8492-4d86-9681-4c6b2607cf9f:|2|",
+            "90d20259-a4f0-4347-951d-bd2ebb263b07:mission_product_shipped:mission_workflow:67e4aee7-a26c-442a-955a-3aa9fedb005c:||",
+            "90d20259-a4f0-4347-951d-bd2ebb263b07:mission_publication_correction_requested:mission_work_item:31b57653-8492-4d86-9681-4c6b2607cf9f:attempt:1|reasons:content",
+            "90d20259-a4f0-4347-951d-bd2ebb263b07:mission_publication_verified:mission_work_item:31b57653-8492-4d86-9681-4c6b2607cf9f:attempt:2",
+            "90d20259-a4f0-4347-951d-bd2ebb263b07:mission_receipt_required:mission_workflow:67e4aee7-a26c-442a-955a-3aa9fedb005c:||",
+            "90d20259-a4f0-4347-951d-bd2ebb263b07:mission_revision_requested:mission_work_item:31b57653-8492-4d86-9681-4c6b2607cf9f:2026-10-26 07:24:42.379+00|1|quality",
+            "90d20259-a4f0-4347-951d-bd2ebb263b07:mission_reward_pending:mission_pending_reward:89c1b37a-f284-45a2-935a-f65774b6fb62:decision:2b0b3262-3be8-48a1-a331-6c89e4e6b7e3"
+          ],
+          "count": 8,
+          "rowHashes": {
+            "90d20259-a4f0-4347-951d-bd2ebb263b07:mission_product_shipped:mission_workflow:67e4aee7-a26c-442a-955a-3aa9fedb005c:||": "03e859baec2097395f86a11fb4d2929d",
+            "90d20259-a4f0-4347-951d-bd2ebb263b07:mission_draft_approved:mission_work_item:31b57653-8492-4d86-9681-4c6b2607cf9f:|2|": "94c606dd92356f518ffd8f8811dbc20c",
+            "90d20259-a4f0-4347-951d-bd2ebb263b07:mission_receipt_required:mission_workflow:67e4aee7-a26c-442a-955a-3aa9fedb005c:||": "d87f0b4cb38ce21babbba89d533824c9",
+            "90d20259-a4f0-4347-951d-bd2ebb263b07:mission_approved_to_publish:mission_workflow:67e4aee7-a26c-442a-955a-3aa9fedb005c:||": "aff1a5945dbc23de8c30c2ce585a9d72",
+            "90d20259-a4f0-4347-951d-bd2ebb263b07:mission_publication_verified:mission_work_item:31b57653-8492-4d86-9681-4c6b2607cf9f:attempt:2": "03398dba3fd9fb00a699a27188a51be8",
+            "90d20259-a4f0-4347-951d-bd2ebb263b07:mission_revision_requested:mission_work_item:31b57653-8492-4d86-9681-4c6b2607cf9f:2026-10-26 07:24:42.379+00|1|quality": "6393802ee95d9a78a7a2ed8ad4259d0d",
+            "90d20259-a4f0-4347-951d-bd2ebb263b07:mission_publication_correction_requested:mission_work_item:31b57653-8492-4d86-9681-4c6b2607cf9f:attempt:1|reasons:content": "97c088cb15f46c8c3806cabc693d243b",
+            "90d20259-a4f0-4347-951d-bd2ebb263b07:mission_reward_pending:mission_pending_reward:89c1b37a-f284-45a2-935a-f65774b6fb62:decision:2b0b3262-3be8-48a1-a331-6c89e4e6b7e3": "50c3e1eac88327b95c11cf6f63858713"
+          }
+        },
+        "mission_deliverable_templates": {
+          "ids": [
+            "0406840e-4ab7-4a82-9a30-c8a3ec9e9dd2",
+            "87b65373-f724-467e-9111-323e245fcb31"
+          ],
+          "count": 2,
+          "rowHashes": {
+            "0406840e-4ab7-4a82-9a30-c8a3ec9e9dd2": "e4bddb69ebd3e9b4702a94c7842b33cd",
+            "87b65373-f724-467e-9111-323e245fcb31": "339608c1a5f29170fc70f02fc8632feb"
+          }
+        },
+        "operator_crm_command_receipts": {
+          "ids": [
+            "fd79e73b-ddb7-4353-ab49-3d97c8ab96d0"
+          ],
+          "count": 1,
+          "rowHashes": {
+            "fd79e73b-ddb7-4353-ab49-3d97c8ab96d0": "4dbf98fa7ccd706fbec1ecad5fdef711"
+          }
+        },
+        "workspace_budget_transactions": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "mission_deliverable_requirements": {
+          "ids": [
+            "a5147966-bbd1-45b1-848c-dfd0f2dca16a",
+            "e535a128-d430-497b-88a4-ebadf755af7a"
+          ],
+          "count": 2,
+          "rowHashes": {
+            "a5147966-bbd1-45b1-848c-dfd0f2dca16a": "950315e68852f87264c0700286636f10",
+            "e535a128-d430-497b-88a4-ebadf755af7a": "d15dcc95d08802ef9c8727b91fcb600f"
+          }
+        },
+        "mission_publication_instructions": {
+          "ids": [
+            "10888e90-aa00-4639-95ea-06e83e8673ba",
+            "3e27557e-b8e1-4f85-b999-6b455414f8d3"
+          ],
+          "count": 2,
+          "rowHashes": {
+            "10888e90-aa00-4639-95ea-06e83e8673ba": "db8a10e4be333869cfc0d5d3484abf11",
+            "3e27557e-b8e1-4f85-b999-6b455414f8d3": "eedbe1485ce75ede3aea46dbb08f7671"
+          }
+        },
+        "mission_publication_proof_assets": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "mission_publication_proof_reviews": {
+          "ids": [
+            "2ccfd722-30cb-4546-8096-044faccfce51",
+            "55f0262a-33c4-4186-85c5-a4047505002f"
+          ],
+          "count": 2,
+          "rowHashes": {
+            "2ccfd722-30cb-4546-8096-044faccfce51": "ffd432d3efce83f933fd833f340a77fc",
+            "55f0262a-33c4-4186-85c5-a4047505002f": "5a7a6ca9045861e6dfa3a4cbc9e7c924"
+          }
+        },
+        "mission_publication_proof_attempts": {
+          "ids": [
+            "127c0ff2-5231-4a78-9024-24dd5b7ad9aa",
+            "6bf284a4-c640-4b91-94f2-fe1091c9274e"
+          ],
+          "count": 2,
+          "rowHashes": {
+            "127c0ff2-5231-4a78-9024-24dd5b7ad9aa": "aa9aed8728f7f27d6624d16df6aeb873",
+            "6bf284a4-c640-4b91-94f2-fe1091c9274e": "9e06b1944d485afb21eb03f0f4e985b1"
+          }
+        },
+        "mission_publication_proof_review_items": {
+          "ids": [
+            "ef0c0cb0-1592-4c7f-b4bf-444e8d85d376"
+          ],
+          "count": 1,
+          "rowHashes": {
+            "ef0c0cb0-1592-4c7f-b4bf-444e8d85d376": "6ebd7b2cdbccb782bebcb0bdf1192f3e"
+          }
+        }
+      }
+    },
+    {
+      "phase": "core",
+      "families": 70,
+      "allIdsHashesEqual": true,
+      "allCapsPass": true,
+      "authSubjects": 62,
+      "inventory": {
+        "creators": {
+          "ids": [
+            "02d2d080-bc2e-4dd5-b8ee-0006e91c7436",
+            "036da1ad-2acc-4ce3-90f0-9cd97cc1a700",
+            "0442cff2-9cfb-40ea-b836-a65db4f88b20",
+            "065d6b5a-74cf-4353-a962-0561574d680b",
+            "09b5fd3d-7b28-49d8-8220-5f9c66af9b96",
+            "0d83f11f-2be1-47e8-b31a-5c1d11db99b2",
+            "12241822-b124-4144-a875-20f9d617ff22",
+            "1228052d-4974-4f47-85e0-f43a7045e81b",
+            "128eb91b-f38c-4754-9681-6e1d579cecc5",
+            "18ef4cd2-4090-455f-8ce9-b305e99ce7de",
+            "19bb38c2-c85e-432a-b997-65c0e3205ad5",
+            "1bf8d6e3-71f6-4243-b596-ac692cdb063d",
+            "29451578-c870-4e9c-a26e-f8206ae9e6ec",
+            "2d752204-65fd-41c1-9a12-e21280d66dbd",
+            "34916457-25c1-4918-bf05-3156fbaccbdd",
+            "39c10b39-7c0d-4441-a0c1-3f5295552bf1",
+            "3b1e58bc-f739-4fef-b64b-719dc9c1f8af",
+            "3fab2ef7-d9ee-4d54-a483-5e26d712b0de",
+            "414c12e2-32bd-4625-807d-2785a041fa1b",
+            "42546559-fb8c-4e6f-8aa6-78b637d1a3d7",
+            "50987c84-e24d-44be-afee-3001e44a4854",
+            "55103922-e187-4fe9-a05b-970029818093",
+            "598604d6-bce2-4b9e-b742-4809218b9ab4",
+            "5d85ab89-b834-4bae-892a-a7f13df7631b",
+            "60de545e-3d6a-45e2-85bc-b2f0c196275d",
+            "699c86dd-5921-4e48-b4f7-9ad89d4cb5b8",
+            "7074b339-1b44-4907-837d-1dcd94490aec",
+            "72aed531-b30f-454e-b419-ed963b2ff91d",
+            "832326e0-8120-4a43-b80b-1828cc367af3",
+            "8ca6bf74-7d61-4010-8cdb-f355310d211c",
+            "92e5bc03-e77c-4797-ab96-52af17120530",
+            "9af7ee64-5c90-4620-8cc8-981c5dc9ded9",
+            "9b509fed-989e-4fd6-b881-03bc21f6d157",
+            "a1f3b9eb-5c34-4ac1-94d9-09cf6b9544de",
+            "a3485ea2-65dd-470a-a5c3-1f82cfbc3ab8",
+            "a57db74a-3649-4065-8a10-f075f9a73685",
+            "a72d5f50-c2ec-453f-89d7-cba75a0c8295",
+            "a9cfbae8-58c9-42b2-ad10-02ed83885cce",
+            "aaceb17f-90f8-42c1-9d44-cc6b9868cfd7",
+            "ab0be367-5bfe-475f-9159-37c47f11deff",
+            "aea9c8aa-501f-4273-a3b4-aa8849f301d8",
+            "af936d39-40fd-487a-a403-6e7120d80f2a",
+            "b3894076-1095-48d7-bfee-88451faa9227",
+            "c43e7653-b035-4dc7-9142-f98f33668aa3",
+            "ca9a11df-d50f-4230-9524-4b13c5c11f85",
+            "cf28f570-d68c-464d-8945-e87323f3be21",
+            "d0098a8a-b844-4c33-8407-e8d7140c2830",
+            "d5cb1155-1f66-46e4-b3bf-58625c1531c5",
+            "def63b40-c038-40e2-bed9-466d483701be",
+            "e8d8e64f-9d63-430b-ae44-ecd96067a2c0",
+            "ea6d95c3-2430-4016-a636-acf64503b7fe",
+            "f100f3e2-3433-43bf-9a99-985faba61023",
+            "f1dbbd09-9f35-4c1f-80e8-263981b2ae77"
+          ],
+          "count": 53,
+          "rowHashes": {
+            "02d2d080-bc2e-4dd5-b8ee-0006e91c7436": "2ebbd7fe13273415f3da1707db881ee5",
+            "036da1ad-2acc-4ce3-90f0-9cd97cc1a700": "f7c4ae8a74e7cdf5a91924b371faf5e7",
+            "0442cff2-9cfb-40ea-b836-a65db4f88b20": "7d25ad6782568fa97c5eceaa58da9dc7",
+            "065d6b5a-74cf-4353-a962-0561574d680b": "5d935f3494cee78b479edc9f319a48db",
+            "09b5fd3d-7b28-49d8-8220-5f9c66af9b96": "078977d4cdd07d05087336d0517599a5",
+            "0d83f11f-2be1-47e8-b31a-5c1d11db99b2": "f174a4944ab20d73fc7d84999d196cb5",
+            "12241822-b124-4144-a875-20f9d617ff22": "343349814306aca15218387ba8d3a062",
+            "1228052d-4974-4f47-85e0-f43a7045e81b": "90901ff6f4a6aaae7fc940be51ee6abe",
+            "128eb91b-f38c-4754-9681-6e1d579cecc5": "82a2a8b02ba35a6e7075c9ac5842b039",
+            "18ef4cd2-4090-455f-8ce9-b305e99ce7de": "a233c25951824d909b92adb3bb87061e",
+            "19bb38c2-c85e-432a-b997-65c0e3205ad5": "a538f8366f2f63aff0d8eece5dbbdc06",
+            "1bf8d6e3-71f6-4243-b596-ac692cdb063d": "6521fbc1d66fc135f6accb2428a7ea31",
+            "29451578-c870-4e9c-a26e-f8206ae9e6ec": "ca97211db56b8aea1eb2c7aac94a4d0d",
+            "2d752204-65fd-41c1-9a12-e21280d66dbd": "17ceb7982bb15f2d19c232d5a0e78f5c",
+            "34916457-25c1-4918-bf05-3156fbaccbdd": "2d688232ad6c5e2ca8c4a39aa8976d30",
+            "39c10b39-7c0d-4441-a0c1-3f5295552bf1": "d3867a425f3ebefaa64e48f1380955b2",
+            "3b1e58bc-f739-4fef-b64b-719dc9c1f8af": "7461319d9c402e563fbcfcfa267cca05",
+            "3fab2ef7-d9ee-4d54-a483-5e26d712b0de": "02372dd13cfb554d4d92a660d25bd7a7",
+            "414c12e2-32bd-4625-807d-2785a041fa1b": "675c8636c8d31a54b72781c8c0c2b978",
+            "42546559-fb8c-4e6f-8aa6-78b637d1a3d7": "bb0c89ae91f84ec63a2afc30842a2bc0",
+            "50987c84-e24d-44be-afee-3001e44a4854": "ed297bba3cdf18fb699f12546c0a6ac0",
+            "55103922-e187-4fe9-a05b-970029818093": "8dd282c60cb07fc1ecba35b731ac3135",
+            "598604d6-bce2-4b9e-b742-4809218b9ab4": "e2f2273a140ed7673526f867e12fe3fe",
+            "5d85ab89-b834-4bae-892a-a7f13df7631b": "3cf44544511ae5fded046ba0d9673818",
+            "60de545e-3d6a-45e2-85bc-b2f0c196275d": "d181481519ef7e6e6f8c0f4b451c2f7d",
+            "699c86dd-5921-4e48-b4f7-9ad89d4cb5b8": "70e72afc7cc11f1a90ee1784124415c4",
+            "7074b339-1b44-4907-837d-1dcd94490aec": "90ccf01ca292182b4ae8cb886d11edb7",
+            "72aed531-b30f-454e-b419-ed963b2ff91d": "a6676761c03e170ed2eea168f93b39ad",
+            "832326e0-8120-4a43-b80b-1828cc367af3": "0f51abca7050cdeef27bf4a97b07889b",
+            "8ca6bf74-7d61-4010-8cdb-f355310d211c": "184f4f3c1640e4eefb2576472dd17f73",
+            "92e5bc03-e77c-4797-ab96-52af17120530": "235793e1f050e13442d36ac2481236fc",
+            "9af7ee64-5c90-4620-8cc8-981c5dc9ded9": "94bf6c0ee9d89a2ceb9041edc84a7d0f",
+            "9b509fed-989e-4fd6-b881-03bc21f6d157": "c7f04e4078e58232e0f54f32e0b0117a",
+            "a1f3b9eb-5c34-4ac1-94d9-09cf6b9544de": "86ea3544637d1051740263ba4649d310",
+            "a3485ea2-65dd-470a-a5c3-1f82cfbc3ab8": "039959f888c7a3429daf58076630db8e",
+            "a57db74a-3649-4065-8a10-f075f9a73685": "48a148f8cd1e218d3ed0b168775c6ebe",
+            "a72d5f50-c2ec-453f-89d7-cba75a0c8295": "4451062468ed79c35b383ab852cb6d25",
+            "a9cfbae8-58c9-42b2-ad10-02ed83885cce": "b7480fa33a5889a3cf1c056870c9f601",
+            "aaceb17f-90f8-42c1-9d44-cc6b9868cfd7": "b6f7ec81d9cf907f152f3b655569b4a1",
+            "ab0be367-5bfe-475f-9159-37c47f11deff": "8438700d2bb592b58cf85b3c5c8e0fd1",
+            "aea9c8aa-501f-4273-a3b4-aa8849f301d8": "52db767625a28383ea6a4699cf194b14",
+            "af936d39-40fd-487a-a403-6e7120d80f2a": "e21b4822e0b0a9ad2b03d8e380a63b09",
+            "b3894076-1095-48d7-bfee-88451faa9227": "8044df404ce5c54e5bd8c6c3d246cd02",
+            "c43e7653-b035-4dc7-9142-f98f33668aa3": "20b99d1fc339421afb66a4d09ca2da3a",
+            "ca9a11df-d50f-4230-9524-4b13c5c11f85": "1c843c83ddcc774caa6c11e4ae570a9d",
+            "cf28f570-d68c-464d-8945-e87323f3be21": "143495ee1a24e10b3127b80c41a51829",
+            "d0098a8a-b844-4c33-8407-e8d7140c2830": "ba37613288f5ef508285a5b29b8d73d4",
+            "d5cb1155-1f66-46e4-b3bf-58625c1531c5": "7f6c982440e31471cf435c4796663388",
+            "def63b40-c038-40e2-bed9-466d483701be": "e3ad618cc4ee471ba3a469526f8cbb27",
+            "e8d8e64f-9d63-430b-ae44-ecd96067a2c0": "70330f2569e3213c1e2bbceabe88b051",
+            "ea6d95c3-2430-4016-a636-acf64503b7fe": "6c0c3c57d6301bb2c901cfd9ec7a27fd",
+            "f100f3e2-3433-43bf-9a99-985faba61023": "96ea93b4d24bd1bec76dccc18a07bd28",
+            "f1dbbd09-9f35-4c1f-80e8-263981b2ae77": "cccd49c479102292b4c853bcaaf107c2"
+          }
+        },
+        "missions": {
+          "ids": [
+            "d5d6b042-2e78-4860-8874-e4f8e1f81db3",
+            "ef41ebf6-533d-425e-a61c-30f6b96f4d2f",
+            "f40f4b8d-4cba-4fb9-b7f9-833218395753"
+          ],
+          "count": 3,
+          "rowHashes": {
+            "d5d6b042-2e78-4860-8874-e4f8e1f81db3": "7a7d3ef220444cc84e73b18de3843011",
+            "ef41ebf6-533d-425e-a61c-30f6b96f4d2f": "d9f399313ca5d391368765045cce5d8a",
+            "f40f4b8d-4cba-4fb9-b7f9-833218395753": "2708a3bee10f193f6ccb942440b99565"
+          }
+        },
+        "campaigns": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "auth_users": {
+          "ids": [
+            "02d2d080-bc2e-4dd5-b8ee-0006e91c7436",
+            "036da1ad-2acc-4ce3-90f0-9cd97cc1a700",
+            "0442cff2-9cfb-40ea-b836-a65db4f88b20",
+            "065d6b5a-74cf-4353-a962-0561574d680b",
+            "09b5fd3d-7b28-49d8-8220-5f9c66af9b96",
+            "0d83f11f-2be1-47e8-b31a-5c1d11db99b2",
+            "0e28bfd5-6c38-43bb-af54-c73d7b748553",
+            "12241822-b124-4144-a875-20f9d617ff22",
+            "1228052d-4974-4f47-85e0-f43a7045e81b",
+            "128eb91b-f38c-4754-9681-6e1d579cecc5",
+            "18ef4cd2-4090-455f-8ce9-b305e99ce7de",
+            "19bb38c2-c85e-432a-b997-65c0e3205ad5",
+            "1bf8d6e3-71f6-4243-b596-ac692cdb063d",
+            "21992aae-31f5-4ff5-bf51-8cbbbe4c2b59",
+            "29451578-c870-4e9c-a26e-f8206ae9e6ec",
+            "2d752204-65fd-41c1-9a12-e21280d66dbd",
+            "30067f7c-3035-4379-809d-986b720b73ef",
+            "34916457-25c1-4918-bf05-3156fbaccbdd",
+            "39c10b39-7c0d-4441-a0c1-3f5295552bf1",
+            "3b1e58bc-f739-4fef-b64b-719dc9c1f8af",
+            "3fab2ef7-d9ee-4d54-a483-5e26d712b0de",
+            "414c12e2-32bd-4625-807d-2785a041fa1b",
+            "42546559-fb8c-4e6f-8aa6-78b637d1a3d7",
+            "50987c84-e24d-44be-afee-3001e44a4854",
+            "55103922-e187-4fe9-a05b-970029818093",
+            "598604d6-bce2-4b9e-b742-4809218b9ab4",
+            "5d85ab89-b834-4bae-892a-a7f13df7631b",
+            "60de545e-3d6a-45e2-85bc-b2f0c196275d",
+            "699c86dd-5921-4e48-b4f7-9ad89d4cb5b8",
+            "7074b339-1b44-4907-837d-1dcd94490aec",
+            "72aed531-b30f-454e-b419-ed963b2ff91d",
+            "832326e0-8120-4a43-b80b-1828cc367af3",
+            "8ca6bf74-7d61-4010-8cdb-f355310d211c",
+            "918fbcfc-1493-464e-a5b5-50b61b6a2354",
+            "92e5bc03-e77c-4797-ab96-52af17120530",
+            "9af0a081-de2d-4a93-87e7-9a5da0dec9b0",
+            "9af7ee64-5c90-4620-8cc8-981c5dc9ded9",
+            "9b509fed-989e-4fd6-b881-03bc21f6d157",
+            "9fb2b35a-b17c-4bce-9a84-07e88679e87e",
+            "a1f3b9eb-5c34-4ac1-94d9-09cf6b9544de",
+            "a3485ea2-65dd-470a-a5c3-1f82cfbc3ab8",
+            "a57db74a-3649-4065-8a10-f075f9a73685",
+            "a72d5f50-c2ec-453f-89d7-cba75a0c8295",
+            "a9cfbae8-58c9-42b2-ad10-02ed83885cce",
+            "aaceb17f-90f8-42c1-9d44-cc6b9868cfd7",
+            "ab0be367-5bfe-475f-9159-37c47f11deff",
+            "aea9c8aa-501f-4273-a3b4-aa8849f301d8",
+            "af936d39-40fd-487a-a403-6e7120d80f2a",
+            "b3894076-1095-48d7-bfee-88451faa9227",
+            "c43e7653-b035-4dc7-9142-f98f33668aa3",
+            "ca9a11df-d50f-4230-9524-4b13c5c11f85",
+            "cf28f570-d68c-464d-8945-e87323f3be21",
+            "d0098a8a-b844-4c33-8407-e8d7140c2830",
+            "d4222824-7dd9-4f31-8ee4-e00397282468",
+            "d5cb1155-1f66-46e4-b3bf-58625c1531c5",
+            "d5e6b21b-b4cc-48d3-981c-5012a8fc8bda",
+            "def63b40-c038-40e2-bed9-466d483701be",
+            "e8d8e64f-9d63-430b-ae44-ecd96067a2c0",
+            "ea6d95c3-2430-4016-a636-acf64503b7fe",
+            "f100f3e2-3433-43bf-9a99-985faba61023",
+            "f1dbbd09-9f35-4c1f-80e8-263981b2ae77",
+            "f7d1801c-92ac-49d6-a1cd-e331c11a436c"
+          ],
+          "count": 62,
+          "rowHashes": {
+            "02d2d080-bc2e-4dd5-b8ee-0006e91c7436": "22bb1f678d71e476d667d8a031cc407e",
+            "036da1ad-2acc-4ce3-90f0-9cd97cc1a700": "6b780936d8a9b17cc16e85d787b602b9",
+            "0442cff2-9cfb-40ea-b836-a65db4f88b20": "e7545ad9254598b9f0bdf60ce4ff7b1c",
+            "065d6b5a-74cf-4353-a962-0561574d680b": "788bfb187dc478a4a0fcbdf9568caab7",
+            "09b5fd3d-7b28-49d8-8220-5f9c66af9b96": "757675ff5fddc5dc6f2ca3a00834eb33",
+            "0d83f11f-2be1-47e8-b31a-5c1d11db99b2": "318eaf6d93a7898b15226deefd59dca8",
+            "0e28bfd5-6c38-43bb-af54-c73d7b748553": "05ecd541dd7c1de7bf65314bb99450ac",
+            "12241822-b124-4144-a875-20f9d617ff22": "0c569bd9c3297221369b962ed06e000a",
+            "1228052d-4974-4f47-85e0-f43a7045e81b": "c18c4cd6b5046f0c3f63aa9232319f00",
+            "128eb91b-f38c-4754-9681-6e1d579cecc5": "107f43dd7148da19051200f46ac240c1",
+            "18ef4cd2-4090-455f-8ce9-b305e99ce7de": "584a9b8b76d0af0bfbebb253a435422e",
+            "19bb38c2-c85e-432a-b997-65c0e3205ad5": "369e01eb5f7d939ca460e04f66034ebb",
+            "1bf8d6e3-71f6-4243-b596-ac692cdb063d": "3d0a4274f0618ee05ee7f93559cb4524",
+            "21992aae-31f5-4ff5-bf51-8cbbbe4c2b59": "8cc6ceb4beedb317a05512a56e539d78",
+            "29451578-c870-4e9c-a26e-f8206ae9e6ec": "cd332684712196ffc15b6aa8145cdb6d",
+            "2d752204-65fd-41c1-9a12-e21280d66dbd": "894ebaafd183e65116abb6562f847c15",
+            "30067f7c-3035-4379-809d-986b720b73ef": "8b1fb5212060492c9e88b73c822e9138",
+            "34916457-25c1-4918-bf05-3156fbaccbdd": "d5c28d73870645a1fdc836d5dc3a8090",
+            "39c10b39-7c0d-4441-a0c1-3f5295552bf1": "22a8ebb45740cc2e3211d65deec8a0b0",
+            "3b1e58bc-f739-4fef-b64b-719dc9c1f8af": "efcde27e2762de5a4ef6c8ae16176a40",
+            "3fab2ef7-d9ee-4d54-a483-5e26d712b0de": "5cc30138ba1021f920195500a9cf34e0",
+            "414c12e2-32bd-4625-807d-2785a041fa1b": "56467772941630c58f738f69d9d8b707",
+            "42546559-fb8c-4e6f-8aa6-78b637d1a3d7": "cf154eff03d892cd83decb71114a06b9",
+            "50987c84-e24d-44be-afee-3001e44a4854": "d58e5d14d90f64a3c420a4ab9f02c342",
+            "55103922-e187-4fe9-a05b-970029818093": "86e0f409cb11b59772b98ffb743057ed",
+            "598604d6-bce2-4b9e-b742-4809218b9ab4": "bd7ff83a141d0eb3f5cc6deeb83dfafc",
+            "5d85ab89-b834-4bae-892a-a7f13df7631b": "0beddfa6019f3722c2949b11cddf4e66",
+            "60de545e-3d6a-45e2-85bc-b2f0c196275d": "493d97c25175c2583cb792a12819e8c3",
+            "699c86dd-5921-4e48-b4f7-9ad89d4cb5b8": "e7abcd7915e8b94f64b8492c191137e4",
+            "7074b339-1b44-4907-837d-1dcd94490aec": "d6f8da1f0ac1d357145ab2fee5aa6977",
+            "72aed531-b30f-454e-b419-ed963b2ff91d": "95631bc4eb5ac3f4bd757f8c7604a60d",
+            "832326e0-8120-4a43-b80b-1828cc367af3": "5af25ef96515973ff633bf52806ffe50",
+            "8ca6bf74-7d61-4010-8cdb-f355310d211c": "faeb5b779afcf2a047f9ebd97a7d6f64",
+            "918fbcfc-1493-464e-a5b5-50b61b6a2354": "249f9599185029fbf2432fd795ff8f23",
+            "92e5bc03-e77c-4797-ab96-52af17120530": "9a584679820219524fe8e06457508dde",
+            "9af0a081-de2d-4a93-87e7-9a5da0dec9b0": "5881009884e9e51d04db89e034b0d68a",
+            "9af7ee64-5c90-4620-8cc8-981c5dc9ded9": "7f5f7041aa7a8e77f3baa1ceda900976",
+            "9b509fed-989e-4fd6-b881-03bc21f6d157": "0c7ccdfa2fdd471694b926836938d6b4",
+            "9fb2b35a-b17c-4bce-9a84-07e88679e87e": "3917201078acba6c3580dafec5f78caa",
+            "a1f3b9eb-5c34-4ac1-94d9-09cf6b9544de": "c706de748cf85e8f3f8dc54e20efe2fc",
+            "a3485ea2-65dd-470a-a5c3-1f82cfbc3ab8": "808f48dd5a1cb912771efbfd36b8fde3",
+            "a57db74a-3649-4065-8a10-f075f9a73685": "3a2e1da28d46b33724539e9f9821a79b",
+            "a72d5f50-c2ec-453f-89d7-cba75a0c8295": "31411e195fc8e40705e9655b992479dc",
+            "a9cfbae8-58c9-42b2-ad10-02ed83885cce": "822ed280ad958d11c75f47f455916160",
+            "aaceb17f-90f8-42c1-9d44-cc6b9868cfd7": "d88d3ea00feab1460cc791f21ccae6d7",
+            "ab0be367-5bfe-475f-9159-37c47f11deff": "13e010f120cda222e96e8e56570ad3c4",
+            "aea9c8aa-501f-4273-a3b4-aa8849f301d8": "cd871377541aa64d3ec41824fbd1a4f7",
+            "af936d39-40fd-487a-a403-6e7120d80f2a": "038434efcf42edc9a000c97ec7f6b7d6",
+            "b3894076-1095-48d7-bfee-88451faa9227": "c1250fcbceed33284ed4e57a92c8eea1",
+            "c43e7653-b035-4dc7-9142-f98f33668aa3": "5c157cacd23d846a5e53c5f46e059aa7",
+            "ca9a11df-d50f-4230-9524-4b13c5c11f85": "5b65fcf62163c649f041c67e6d6f744a",
+            "cf28f570-d68c-464d-8945-e87323f3be21": "3914de43276b975274608dfef755be96",
+            "d0098a8a-b844-4c33-8407-e8d7140c2830": "3b410a48227ecd90d358f9121b4ac80c",
+            "d4222824-7dd9-4f31-8ee4-e00397282468": "0d04bc6355d0342abd83b1c71d32c1d5",
+            "d5cb1155-1f66-46e4-b3bf-58625c1531c5": "741a7efece49fae94043eec9e4f4e89c",
+            "d5e6b21b-b4cc-48d3-981c-5012a8fc8bda": "4910136f71f4c91dc646d02521cc50c1",
+            "def63b40-c038-40e2-bed9-466d483701be": "6dabc325a3c6a057b6eb6004c6659fbd",
+            "e8d8e64f-9d63-430b-ae44-ecd96067a2c0": "0fe86147d15be2b8ad35600dc2a818d0",
+            "ea6d95c3-2430-4016-a636-acf64503b7fe": "9da9e1eaafa621d8c1161ad338830402",
+            "f100f3e2-3433-43bf-9a99-985faba61023": "d5bb4299d659d8b596be4fcce4da4333",
+            "f1dbbd09-9f35-4c1f-80e8-263981b2ae77": "5e85352093ef514e505da5fa75af212d",
+            "f7d1801c-92ac-49d6-a1cd-e331c11a436c": "2541a5b6e92aaa7cd9ba1e90582880ae"
+          }
+        },
+        "workspaces": {
+          "ids": [
+            "2bb528a0-bf68-4a3c-a7b1-708aeb517e81",
+            "4675efe9-71e9-47a7-afc7-aacf6e63910f"
+          ],
+          "count": 2,
+          "rowHashes": {
+            "2bb528a0-bf68-4a3c-a7b1-708aeb517e81": "cfd14f0648c7f389be6196779950dd51",
+            "4675efe9-71e9-47a7-afc7-aacf6e63910f": "802b7ce3b51af92cb3154aa3066e3e1d"
+          }
+        },
+        "brand_users": {
+          "ids": [
+            "0e28bfd5-6c38-43bb-af54-c73d7b748553",
+            "21992aae-31f5-4ff5-bf51-8cbbbe4c2b59",
+            "30067f7c-3035-4379-809d-986b720b73ef",
+            "918fbcfc-1493-464e-a5b5-50b61b6a2354",
+            "9af0a081-de2d-4a93-87e7-9a5da0dec9b0",
+            "9fb2b35a-b17c-4bce-9a84-07e88679e87e",
+            "d5e6b21b-b4cc-48d3-981c-5012a8fc8bda"
+          ],
+          "count": 7,
+          "rowHashes": {
+            "0e28bfd5-6c38-43bb-af54-c73d7b748553": "83d6e3995334749bf80b7624f6a1f334",
+            "21992aae-31f5-4ff5-bf51-8cbbbe4c2b59": "459dcf6d8ac5f6818355d91dc84043f7",
+            "30067f7c-3035-4379-809d-986b720b73ef": "92adfb20029761b9cfac40c63c5cdf6c",
+            "918fbcfc-1493-464e-a5b5-50b61b6a2354": "d1b97beab3397431b5116dd8c3541739",
+            "9af0a081-de2d-4a93-87e7-9a5da0dec9b0": "c66c8a48fa6365bc22c17c2e5659edf6",
+            "9fb2b35a-b17c-4bce-9a84-07e88679e87e": "0bff3c3b1424d85f49fe59ba5d4143b3",
+            "d5e6b21b-b4cc-48d3-981c-5012a8fc8bda": "2e92dc391caf6c34335076b3635aeaaa"
+          }
+        },
+        "redemptions": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "staff_users": {
+          "ids": [
+            "0e28bfd5-6c38-43bb-af54-c73d7b748553",
+            "21992aae-31f5-4ff5-bf51-8cbbbe4c2b59",
+            "30067f7c-3035-4379-809d-986b720b73ef",
+            "918fbcfc-1493-464e-a5b5-50b61b6a2354",
+            "9af0a081-de2d-4a93-87e7-9a5da0dec9b0",
+            "9fb2b35a-b17c-4bce-9a84-07e88679e87e",
+            "d4222824-7dd9-4f31-8ee4-e00397282468",
+            "d5e6b21b-b4cc-48d3-981c-5012a8fc8bda",
+            "f7d1801c-92ac-49d6-a1cd-e331c11a436c"
+          ],
+          "count": 9,
+          "rowHashes": {
+            "0e28bfd5-6c38-43bb-af54-c73d7b748553": "15fd5859e476f251c28d8e00a3c8b73f",
+            "21992aae-31f5-4ff5-bf51-8cbbbe4c2b59": "6197244067c1ff209ddf4be48daffe3a",
+            "30067f7c-3035-4379-809d-986b720b73ef": "72fceb5482d9bdee6e52ace8e6fabb48",
+            "918fbcfc-1493-464e-a5b5-50b61b6a2354": "65fbddf2b96355d722159cb727eb28e4",
+            "9af0a081-de2d-4a93-87e7-9a5da0dec9b0": "514456b69e340e66b76fc80a257b23ad",
+            "9fb2b35a-b17c-4bce-9a84-07e88679e87e": "deed0ddd04731eb994ed9e90ead2cb38",
+            "d4222824-7dd9-4f31-8ee4-e00397282468": "8e3148ceba73cd6d280b4222833ddac6",
+            "d5e6b21b-b4cc-48d3-981c-5012a8fc8bda": "27dc693e7a72e220fecf233e959e7e1f",
+            "f7d1801c-92ac-49d6-a1cd-e331c11a436c": "d7a63a9a28303022adc005c44433729d"
+          }
+        },
+        "auth_sessions": {
+          "ids": [
+            "3f449cfd-e766-4cf1-95d0-2d4fb7e0e776",
+            "52713d67-d525-4b73-9a28-902f79ff22a4",
+            "5ee5c6ce-9864-446a-bf50-184d4209f37b",
+            "692f22c0-6121-4b7a-82b9-726669a4af13",
+            "714df376-396f-4143-9154-973c9c47dc4e",
+            "81ad0cda-b155-4306-908f-bc10eeb6449d",
+            "a42faf17-62cd-40c5-a192-ed7945d940e4",
+            "a9212ee0-4eba-44c7-841e-11377c06e74f",
+            "c7a632b8-0212-4d11-8830-dfbb2f8a5c48",
+            "df9152f4-ce67-4490-bf85-09770422638c",
+            "f18603d0-cfee-4c21-95b5-1cd9e180cb9d"
+          ],
+          "count": 11,
+          "rowHashes": {
+            "3f449cfd-e766-4cf1-95d0-2d4fb7e0e776": "a08ea7c5d1ab4875391487f603b37c3f",
+            "52713d67-d525-4b73-9a28-902f79ff22a4": "3e9d221d79aa4de85ac667f549466a01",
+            "5ee5c6ce-9864-446a-bf50-184d4209f37b": "bbdefeb62d690b273e905d19e21da645",
+            "692f22c0-6121-4b7a-82b9-726669a4af13": "20ba3afc929b9de5a7181abdbdd71546",
+            "714df376-396f-4143-9154-973c9c47dc4e": "bf4440d1cd1da2fb90f2dbcebe6932c7",
+            "81ad0cda-b155-4306-908f-bc10eeb6449d": "6aaf1a1936dae5fcd4c9c668aa7610df",
+            "a42faf17-62cd-40c5-a192-ed7945d940e4": "8c22201572604776bab4a921015fa2dd",
+            "a9212ee0-4eba-44c7-841e-11377c06e74f": "a7331d330998c88cb7023cb87f631866",
+            "c7a632b8-0212-4d11-8830-dfbb2f8a5c48": "a482e8a90af43b94882ff470c34248ee",
+            "df9152f4-ce67-4490-bf85-09770422638c": "8ab8307039e623cb2513e2223cb5978e",
+            "f18603d0-cfee-4c21-95b5-1cd9e180cb9d": "5eea92432e9d3865941b27ea6fea31b7"
+          }
+        },
+        "brand_invites": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "notifications": {
+          "ids": [
+            "037c5a1a-36fb-42e6-a66f-3c77a45344b3",
+            "338eb7e5-4d81-4e1c-8816-0c9d2ca530d1",
+            "79f7414c-0122-45e1-be08-aba65731e294",
+            "9003ffea-4999-4ac4-a77d-3662b21f11a7",
+            "93e21554-c945-4918-a137-396caf230558",
+            "98881ab4-1c7b-416c-b1d2-5a41ce94b0ed",
+            "ab74b573-1ad5-4d7e-b91d-bb065de7b802",
+            "b22af4a3-fd9c-49b1-8dd6-43eb77f5a9fb",
+            "bd6bf397-87ba-48eb-b867-1fa42249e502",
+            "ea0e7b68-f0f6-4532-948e-cccf66c85c71",
+            "fecdf8bb-9e61-49c8-8895-9fbe503a25a7"
+          ],
+          "count": 11,
+          "rowHashes": {
+            "037c5a1a-36fb-42e6-a66f-3c77a45344b3": "a9a38a55717e2cc06f893414c04e7921",
+            "338eb7e5-4d81-4e1c-8816-0c9d2ca530d1": "86fd37c6feb34ca09ccfcc00898fd149",
+            "79f7414c-0122-45e1-be08-aba65731e294": "da1b84d1dc8ee31d7afdcf44b98d89c0",
+            "9003ffea-4999-4ac4-a77d-3662b21f11a7": "73a97cc3355cb5025c79d4a2b298d9a8",
+            "93e21554-c945-4918-a137-396caf230558": "3db1727817e910d2fbe6b77b51688306",
+            "98881ab4-1c7b-416c-b1d2-5a41ce94b0ed": "6134cbe232ba70824504ef923e006420",
+            "ab74b573-1ad5-4d7e-b91d-bb065de7b802": "ce0ea59f8507bdc62521c6b740f824f6",
+            "b22af4a3-fd9c-49b1-8dd6-43eb77f5a9fb": "d32f9e94aa5ff5ae8b9b892be2797a6a",
+            "bd6bf397-87ba-48eb-b867-1fa42249e502": "0cee954d069d6c7ba93c31bac65ece25",
+            "ea0e7b68-f0f6-4532-948e-cccf66c85c71": "604fc1ab8cf2ef6d8fd51bdfd740282a",
+            "fecdf8bb-9e61-49c8-8895-9fbe503a25a7": "a07f140db9ddf2f48abce3e3ff7f3a51"
+          }
+        },
+        "point_balances": {
+          "ids": [
+            "5f904d45-e1b3-4536-8749-f9f58461d2a0",
+            "f467b288-e0a9-4a3a-9594-71a32efd5dc4"
+          ],
+          "count": 2,
+          "rowHashes": {
+            "5f904d45-e1b3-4536-8749-f9f58461d2a0": "78d8e23b8dbf77ef772b0999ad78d904",
+            "f467b288-e0a9-4a3a-9594-71a32efd5dc4": "9a0eed2e7a5434afd372cd5874059fd4"
+          }
+        },
+        "academy_content": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "academy_lessons": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "auth_flow_state": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "auth_identities": {
+          "ids": [
+            "12a3960d-0ec2-4e8f-911c-2e5a52a19a41",
+            "300b5de5-1f8b-4dc6-b3c6-48096b9044f3",
+            "3ccd26bd-3dff-4016-a0b9-ba31d7ef8973",
+            "584db5dc-976f-4da9-b7cc-9e74b8dedaf9",
+            "5cfca8c4-7c46-4daf-8423-e469a2bd08b7",
+            "77657608-1b0f-42af-b918-802eb913c7fd",
+            "89217c33-6141-416a-8c93-78a06a174062",
+            "8928509d-c6c7-45bb-8200-4b709d828ac0",
+            "c014ac49-d533-43e4-8123-1adb1d4af928",
+            "d9f35da4-2a08-48c7-81d8-2efd23965f65",
+            "ffd2af64-e2c1-4abf-b415-14f8710bf6e8"
+          ],
+          "count": 11,
+          "rowHashes": {
+            "12a3960d-0ec2-4e8f-911c-2e5a52a19a41": "456198aa4f98d00c6dd2e60f289a1898",
+            "300b5de5-1f8b-4dc6-b3c6-48096b9044f3": "f4ccef874c62d5879b7da93ecc6c2924",
+            "3ccd26bd-3dff-4016-a0b9-ba31d7ef8973": "cdb4f836bcf0bb9c55e39f54b2e6b0a7",
+            "584db5dc-976f-4da9-b7cc-9e74b8dedaf9": "4f8c1af5203a6c41f3f32a7b1881a583",
+            "5cfca8c4-7c46-4daf-8423-e469a2bd08b7": "a1089caad3c4e362a195d54eb4cbc96c",
+            "77657608-1b0f-42af-b918-802eb913c7fd": "0638dc687154f6825b7f51bd706b5116",
+            "89217c33-6141-416a-8c93-78a06a174062": "18d3587f8472d71d5a676ac75ed65b0c",
+            "8928509d-c6c7-45bb-8200-4b709d828ac0": "5213af106c973cbd95a7e12bf930fddb",
+            "c014ac49-d533-43e4-8123-1adb1d4af928": "705d47246e3576c68f24260da931502b",
+            "d9f35da4-2a08-48c7-81d8-2efd23965f65": "625255e398a636f9a154803ea477babf",
+            "ffd2af64-e2c1-4abf-b415-14f8710bf6e8": "b5b1d1ca72ac93b9cd494c831d704e7a"
+          }
+        },
+        "storage_objects": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "auth_mfa_factors": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "redemption_codes": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "redemption_gifts": {
+          "ids": [
+            "e690bc97-4fab-4f36-ab6d-afa4199c02c9"
+          ],
+          "count": 1,
+          "rowHashes": {
+            "e690bc97-4fab-4f36-ab6d-afa4199c02c9": "55eeee796ef8da46e30521921b64b96a"
+          }
+        },
+        "earnings_balances": {
+          "ids": [
+            "31546a57-d113-4c09-96cd-da763a20029b",
+            "c06f2bda-090b-4c49-a1c9-af1f076b0ab4"
+          ],
+          "count": 2,
+          "rowHashes": {
+            "31546a57-d113-4c09-96cd-da763a20029b": "a99b7b3dbe97c4f03b7b3efdd3607a09",
+            "c06f2bda-090b-4c49-a1c9-af1f076b0ab4": "f44d3f7010078a70835417caf02786f1"
+          }
+        },
+        "mission_workflows": {
+          "ids": [
+            "2a142015-5fc0-4712-93b3-cea4eb615637",
+            "412aec48-c3eb-44da-bb9f-3addde82c541"
+          ],
+          "count": 2,
+          "rowHashes": {
+            "2a142015-5fc0-4712-93b3-cea4eb615637": "2cd9bd77183b07e7acfa39e6b29e9568",
+            "412aec48-c3eb-44da-bb9f-3addde82c541": "30b708669ba3ebfa991917b8e835b576"
+          }
+        },
+        "workspace_budgets": {
+          "ids": [
+            "66b83f57-1350-4c3a-b15c-8f767f9098c9"
+          ],
+          "count": 1,
+          "rowHashes": {
+            "66b83f57-1350-4c3a-b15c-8f767f9098c9": "18195cad83709493c2bce245e7470e97"
+          }
+        },
+        "assistant_messages": {
+          "ids": [
+            "5c00637e-5b24-4393-8b22-5ed9f1d71d8e",
+            "c6678c6a-6716-4f74-80f5-94c15e91245e"
+          ],
+          "count": 2,
+          "rowHashes": {
+            "5c00637e-5b24-4393-8b22-5ed9f1d71d8e": "fc1f56b39f4190aef1160cab67e041d0",
+            "c6678c6a-6716-4f74-80f5-94c15e91245e": "7bd4dc685374bbd1548eaac5749a673a"
+          }
+        },
+        "assistant_requests": {
+          "ids": [
+            "ac7a98ab-cbae-466e-b3cb-179d30568ac3"
+          ],
+          "count": 1,
+          "rowHashes": {
+            "ac7a98ab-cbae-466e-b3cb-179d30568ac3": "6bc91a2093238d474f1272cf7aabd0c5"
+          }
+        },
+        "mission_work_items": {
+          "ids": [
+            "282ba31d-5b58-416e-90a4-2c271e693657",
+            "560eb952-fcbc-49c6-a400-23c577b9e261",
+            "aeefaf58-5125-49d2-aa67-811ab9a1ef68",
+            "cb9daafa-6db4-43be-ad59-baba90f48bbd"
+          ],
+          "count": 4,
+          "rowHashes": {
+            "282ba31d-5b58-416e-90a4-2c271e693657": "72097c763c83b0d838298725d888e25b",
+            "560eb952-fcbc-49c6-a400-23c577b9e261": "097dda501151e9e625d3debfe9f944e1",
+            "aeefaf58-5125-49d2-aa67-811ab9a1ef68": "9c76f0834a8bf931c1b2e34c6dbc610b",
+            "cb9daafa-6db4-43be-ad59-baba90f48bbd": "3d230ce63513538f8f0938f31a81fc37"
+          }
+        },
+        "point_transactions": {
+          "ids": [
+            "b773d7ad-852f-47ac-81d3-a4e29f84d00d"
+          ],
+          "count": 1,
+          "rowHashes": {
+            "b773d7ad-852f-47ac-81d3-a4e29f84d00d": "92fc446bcc60d314e599c1cecf5db8d4"
+          }
+        },
+        "staff_access_audit": {
+          "ids": [
+            "0382f3d2-11e6-4bcd-928e-3bb0a9bfd61e",
+            "1a4dcc66-81f2-47e1-a302-5ce0f8cd8e77",
+            "547badd9-5b02-402e-ac9c-b0ebd553024a",
+            "5ba19245-6be5-4efb-ad89-7cd3cf0ee7de",
+            "63d6b4c4-d496-4686-9f80-5d36b74101b7",
+            "99f9346f-39af-4274-a639-816e9cff3a68",
+            "efd34262-6930-4767-b288-91d72d0a427b"
+          ],
+          "count": 7,
+          "rowHashes": {
+            "0382f3d2-11e6-4bcd-928e-3bb0a9bfd61e": "2a5b4e7744dd5dfcc46164e3372e2dfb",
+            "1a4dcc66-81f2-47e1-a302-5ce0f8cd8e77": "3f07d409611ec04a1601fe9941bcdc01",
+            "547badd9-5b02-402e-ac9c-b0ebd553024a": "4ceb5e9d862cd416dcbd088ac901b9f2",
+            "5ba19245-6be5-4efb-ad89-7cd3cf0ee7de": "b1733748db385b81534abbd1a1ddf03a",
+            "63d6b4c4-d496-4686-9f80-5d36b74101b7": "8b2ad1d36dba7b2e3cdde0a628f56c5a",
+            "99f9346f-39af-4274-a639-816e9cff3a68": "91fc6a15e3537a0a6888e61324805cc4",
+            "efd34262-6930-4767-b288-91d72d0a427b": "894b617675e0dc3197d6662e40f3624c"
+          }
+        },
+        "auth_mfa_amr_claims": {
+          "ids": [
+            "127b20df-77cf-443d-85ec-4ab98f16d592",
+            "25eeab52-2b99-471b-b3d5-619d7854cddc",
+            "267dc80c-8bdf-4bce-837a-01a3764064ac",
+            "42f6eacf-a85a-4d30-bc6b-38d4b76425b9",
+            "486b90ee-faf7-4925-b795-7bc3d32929fe",
+            "526eab9f-5caa-41c2-990f-48671222ac0c",
+            "5ef6b15c-8cd9-4884-8e02-310d73a84071",
+            "66bd4e74-9ed3-48f5-83d3-5af4bd6265d9",
+            "80ce0554-7430-4f67-88a4-d3a2303293b0",
+            "8fdfe50d-702a-4466-8812-3de78c345f2b",
+            "ea6665ec-cd3f-422d-a45d-180fa2253037"
+          ],
+          "count": 11,
+          "rowHashes": {
+            "127b20df-77cf-443d-85ec-4ab98f16d592": "f300c196c5efc486bb0816c194e2b2fd",
+            "25eeab52-2b99-471b-b3d5-619d7854cddc": "3983cff6087e31c78107157b5919357f",
+            "267dc80c-8bdf-4bce-837a-01a3764064ac": "ae806ed798067c1d9ffc206a2a3ab833",
+            "42f6eacf-a85a-4d30-bc6b-38d4b76425b9": "d8981c1fe440c0d5c21ae3469914cdd2",
+            "486b90ee-faf7-4925-b795-7bc3d32929fe": "f42d8bde47aa6e58c7f4d3018959d8da",
+            "526eab9f-5caa-41c2-990f-48671222ac0c": "b42368b23e75515f7059c9eb94d599fc",
+            "5ef6b15c-8cd9-4884-8e02-310d73a84071": "0201f6173bfb6fed84a73c797166d32b",
+            "66bd4e74-9ed3-48f5-83d3-5af4bd6265d9": "5b35f1960b63da00c4fbfb29c120cf2d",
+            "80ce0554-7430-4f67-88a4-d3a2303293b0": "e1270c0d9f4ffce82da79c0a217c31c8",
+            "8fdfe50d-702a-4466-8812-3de78c345f2b": "50aec039a863ca9d08c841fb0eb8595d",
+            "ea6665ec-cd3f-422d-a45d-180fa2253037": "e56068c5fd7fb6de939ccea1aecc01c4"
+          }
+        },
+        "auth_mfa_challenges": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "auth_refresh_tokens": {
+          "ids": [
+            "12",
+            "13",
+            "14",
+            "15",
+            "16",
+            "17",
+            "18",
+            "19",
+            "20",
+            "21",
+            "22"
+          ],
+          "count": 11,
+          "rowHashes": {
+            "12": "42741b18ec6d206c8c07cfc3dcf5c81b",
+            "13": "c9f59ebdd6b05e458830e6378dd99e2d",
+            "14": "8c9396e9c1c1e7b2a5be794d31a68810",
+            "15": "3fa811bfad73620c3a683ac68d7f6709",
+            "16": "b2c5126e08ee1be33f10eeca169cc00c",
+            "17": "8278aac6a45e2efa4cdcbeb6b66ee255",
+            "18": "4466bd13e57c7699ca648544c9dfa916",
+            "19": "7fe3c97ff639e3af48a15af95356c9c0",
+            "20": "d425f0b13beaeb72a5441b780ede8f27",
+            "21": "f530d2a65371c49ebbe71073e10ee4f6",
+            "22": "147ed14dc6c12f86ef6eba7788e84455"
+          }
+        },
+        "mission_submissions": {
+          "ids": [
+            "114082af-c5d5-4603-83d9-af62ff786335",
+            "1bb5331f-8f98-44d6-86fb-e741b3ac727c",
+            "2293cfaa-ab9b-42cd-9303-4b24c5127a03",
+            "2a8c005e-12ec-4da7-8e7a-6d20915c8410"
+          ],
+          "count": 4,
+          "rowHashes": {
+            "114082af-c5d5-4603-83d9-af62ff786335": "3a564d816170f425ffddacc92ca217d7",
+            "1bb5331f-8f98-44d6-86fb-e741b3ac727c": "db1bec3348b41c3392c6cec38ab13f45",
+            "2293cfaa-ab9b-42cd-9303-4b24c5127a03": "e72ba9e8d5038070b39db2dec8f8d7cf",
+            "2a8c005e-12ec-4da7-8e7a-6d20915c8410": "7b1773e26a50410ba57fd1b174ef9a83"
+          }
+        },
+        "auth_one_time_tokens": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "creator_review_notes": {
+          "ids": [
+            "ccdc962c-a230-4fd7-b607-b1e3a419877b"
+          ],
+          "count": 1,
+          "rowHashes": {
+            "ccdc962c-a230-4fd7-b607-b1e3a419877b": "a678fbce2523650540aac70877a7273e"
+          }
+        },
+        "mission_draft_assets": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "mission_fulfillments": {
+          "ids": [
+            "db2e7442-173a-4fb8-b7fe-e287dd3456d0"
+          ],
+          "count": 1,
+          "rowHashes": {
+            "db2e7442-173a-4fb8-b7fe-e287dd3456d0": "0566e95d1f12d345b35cefcc97366190"
+          }
+        },
+        "mission_review_items": {
+          "ids": [
+            "6c17e6bb-3d45-441b-9ba8-b3cd75b06523"
+          ],
+          "count": 1,
+          "rowHashes": {
+            "6c17e6bb-3d45-441b-9ba8-b3cd75b06523": "68704f1b8182d2310879c820b02775e6"
+          }
+        },
+        "staff_platform_roles": {
+          "ids": [
+            "d4222824-7dd9-4f31-8ee4-e00397282468:content_editor"
+          ],
+          "count": 1,
+          "rowHashes": {
+            "d4222824-7dd9-4f31-8ee4-e00397282468:content_editor": "75e3cd77628a475b3aad6c6dedb7269c"
+          }
+        },
+        "campaign_participants": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "earnings_transactions": {
+          "ids": [
+            "0b04ee38-9535-49f1-852a-d1f7f8e497fd"
+          ],
+          "count": 1,
+          "rowHashes": {
+            "0b04ee38-9535-49f1-852a-d1f7f8e497fd": "66ab9edb6a3257cb9610e93df823c340"
+          }
+        },
+        "mission_review_rounds": {
+          "ids": [
+            "85509828-0517-44f3-a8cc-426cb0fb0af5",
+            "d3300513-ac70-4fd5-878f-2e0bebcc32b6"
+          ],
+          "count": 2,
+          "rowHashes": {
+            "85509828-0517-44f3-a8cc-426cb0fb0af5": "498f9b77a3a72efdd16e37c965d51fed",
+            "d3300513-ac70-4fd5-878f-2e0bebcc32b6": "48c25518cab05dd8afcb3544aae68b2c"
+          }
+        },
+        "operator_audit_events": {
+          "ids": [
+            "ed4487d0-77c0-46e6-b627-fc8d7fd2fa84",
+            "f3b3a248-3125-4cc1-b811-cf2221c50c87"
+          ],
+          "count": 2,
+          "rowHashes": {
+            "ed4487d0-77c0-46e6-b627-fc8d7fd2fa84": "bf7536cd6c0ce387e2279a15561b18c2",
+            "f3b3a248-3125-4cc1-b811-cf2221c50c87": "b4a61fb68c600a0358c791eff206411b"
+          }
+        },
+        "staff_access_commands": {
+          "ids": [
+            "2aee3774-62e0-424c-a3cf-6f93083e1f5d",
+            "4b1f7229-1662-4ded-8bf1-41f6f4aa9830",
+            "71dfb40f-0ca1-4913-a378-719dd371d409",
+            "98dea5fd-2576-40f0-9ed1-d6a1b60714ab",
+            "b0983f86-c6b2-4307-b645-f0f6e1153e9d",
+            "b8892aa4-efaf-448f-b53c-3371b84b61f9",
+            "c19c1797-59f0-4055-b722-389b9a277acc"
+          ],
+          "count": 7,
+          "rowHashes": {
+            "2aee3774-62e0-424c-a3cf-6f93083e1f5d": "32e401b01768aa78ad552ea36637b76b",
+            "4b1f7229-1662-4ded-8bf1-41f6f4aa9830": "ea19e0b4e0e01268cc021f5830538b0a",
+            "71dfb40f-0ca1-4913-a378-719dd371d409": "361155d1aeb2ced1a389ab72219abd96",
+            "98dea5fd-2576-40f0-9ed1-d6a1b60714ab": "d2602c7fd33d840eec2d2fdf8f960e1c",
+            "b0983f86-c6b2-4307-b645-f0f6e1153e9d": "5f773221aa48e1806675fb793d49908f",
+            "b8892aa4-efaf-448f-b53c-3371b84b61f9": "52f853f94af60541bf8bcb3f62a064ea",
+            "c19c1797-59f0-4055-b722-389b9a277acc": "d638cd16e8b66eed2f161fae346baf48"
+          }
+        },
+        "staff_workspace_roles": {
+          "ids": [
+            "0e28bfd5-6c38-43bb-af54-c73d7b748553:2bb528a0-bf68-4a3c-a7b1-708aeb517e81",
+            "21992aae-31f5-4ff5-bf51-8cbbbe4c2b59:4675efe9-71e9-47a7-afc7-aacf6e63910f",
+            "30067f7c-3035-4379-809d-986b720b73ef:2bb528a0-bf68-4a3c-a7b1-708aeb517e81",
+            "918fbcfc-1493-464e-a5b5-50b61b6a2354:2bb528a0-bf68-4a3c-a7b1-708aeb517e81",
+            "9af0a081-de2d-4a93-87e7-9a5da0dec9b0:2bb528a0-bf68-4a3c-a7b1-708aeb517e81",
+            "d5e6b21b-b4cc-48d3-981c-5012a8fc8bda:2bb528a0-bf68-4a3c-a7b1-708aeb517e81"
+          ],
+          "count": 6,
+          "rowHashes": {
+            "0e28bfd5-6c38-43bb-af54-c73d7b748553:2bb528a0-bf68-4a3c-a7b1-708aeb517e81": "8b046f175637cafe39f34cf04058f7a2",
+            "21992aae-31f5-4ff5-bf51-8cbbbe4c2b59:4675efe9-71e9-47a7-afc7-aacf6e63910f": "260c71a8a27bc7680fa8a6b76e75346b",
+            "30067f7c-3035-4379-809d-986b720b73ef:2bb528a0-bf68-4a3c-a7b1-708aeb517e81": "011093de4c776bdf716aed7e2d52b8d4",
+            "918fbcfc-1493-464e-a5b5-50b61b6a2354:2bb528a0-bf68-4a3c-a7b1-708aeb517e81": "0b3504cfe7774daa862e6d844b9a5b0b",
+            "9af0a081-de2d-4a93-87e7-9a5da0dec9b0:2bb528a0-bf68-4a3c-a7b1-708aeb517e81": "ce49adfa24f08026b2130ca8f0f4a6f8",
+            "d5e6b21b-b4cc-48d3-981c-5012a8fc8bda:2bb528a0-bf68-4a3c-a7b1-708aeb517e81": "e4b84ccb654921a8c4b1084262493984"
+          }
+        },
+        "auth_audit_log_entries": {
+          "ids": [
+            "1400e49b-a269-47e9-81d1-f304f8c36183",
+            "2f6b9256-6b8d-4cd1-a5a1-cb8550da7d4f",
+            "32388c62-386a-4a01-8e44-de1c9522bf8c",
+            "3d6534de-7f01-4c2c-b648-4818aa44a28d",
+            "46cab072-0110-47a4-9a1c-9eaefb41ccab",
+            "4a21e8dc-a711-42d8-9ba8-9df11eca9ef7",
+            "507369b9-9455-42b4-9181-4e1ad89e0641",
+            "545e73f5-ea8e-4f97-b4ba-fd94b69a476e",
+            "761c8f50-97b3-4fcd-9b2a-1082d6497d8f",
+            "76fe5110-8627-49b0-8f11-b0ec55711e07",
+            "f6dfb86c-0ea9-46d3-87e0-be613723630c"
+          ],
+          "count": 11,
+          "rowHashes": {
+            "1400e49b-a269-47e9-81d1-f304f8c36183": "00d45c6c0d3eecdd50b9304347778622",
+            "2f6b9256-6b8d-4cd1-a5a1-cb8550da7d4f": "1bdf47dc2c47576ad7735d87fc4c3327",
+            "32388c62-386a-4a01-8e44-de1c9522bf8c": "25a0fafa8e603bc2aa1b168deaa6f9c5",
+            "3d6534de-7f01-4c2c-b648-4818aa44a28d": "09a84d727f45f0ae0d12a596faaa67f1",
+            "46cab072-0110-47a4-9a1c-9eaefb41ccab": "7d1813eaf87e35134a2bc23bb4d5dfbb",
+            "4a21e8dc-a711-42d8-9ba8-9df11eca9ef7": "5591cac76108bbcf0801e9b30053939a",
+            "507369b9-9455-42b4-9181-4e1ad89e0641": "272e0727560941f4313f87abdd6d3357",
+            "545e73f5-ea8e-4f97-b4ba-fd94b69a476e": "1d2f96d4f9c1cafe32b0a703c06683a4",
+            "761c8f50-97b3-4fcd-9b2a-1082d6497d8f": "8d62f7af158a3a14a54ac5c85a83f8f4",
+            "76fe5110-8627-49b0-8f11-b0ec55711e07": "9f2857fc73c431da0ac87fe3774062bc",
+            "f6dfb86c-0ea9-46d3-87e0-be613723630c": "1b6550a877104f27eded157615056b47"
+          }
+        },
+        "mission_draft_versions": {
+          "ids": [
+            "3167078f-381c-4523-b316-2aab95da6763",
+            "387f0557-3733-4213-a9df-291de857a6b3"
+          ],
+          "count": 2,
+          "rowHashes": {
+            "3167078f-381c-4523-b316-2aab95da6763": "64e2d9ab792717ed8319fefb7e32e1a7",
+            "387f0557-3733-4213-a9df-291de857a6b3": "315eee23ad770765ae39b6adf59dd0e2"
+          }
+        },
+        "mission_working_drafts": {
+          "ids": [
+            "198aee27-1609-4282-b83c-e14110454bc2",
+            "1d8b7e45-9ab3-44db-9e35-cae2f8826e6d",
+            "1e124704-1163-446a-be25-d7686a11b8d2",
+            "bee1059e-0724-4c0e-9704-ec6a0cd5f311"
+          ],
+          "count": 4,
+          "rowHashes": {
+            "198aee27-1609-4282-b83c-e14110454bc2": "e35cc3cdd81c542c4b6b890a538e0b5d",
+            "1d8b7e45-9ab3-44db-9e35-cae2f8826e6d": "4308cc955fd8385dcb70076731ac688b",
+            "1e124704-1163-446a-be25-d7686a11b8d2": "37d583ad9d02c83b4dd5d6a28df32e9c",
+            "bee1059e-0724-4c0e-9704-ec6a0cd5f311": "df6c041814f3d04685ae5aaa1cf9c91c"
+          }
+        },
+        "assistant_conversations": {
+          "ids": [
+            "802970d3-cf6b-4b0e-8d84-e405d90dd45f"
+          ],
+          "count": 1,
+          "rowHashes": {
+            "802970d3-cf6b-4b0e-8d84-e405d90dd45f": "eaa0d82c4cec7d9295b8373797cc26b2"
+          }
+        },
+        "campaign_rank_snapshots": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "creator_lesson_progress": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "creator_portfolio_links": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "creator_review_statuses": {
+          "ids": [
+            "4b4ebcf3-06a8-4e09-b928-598640774aec"
+          ],
+          "count": 1,
+          "rowHashes": {
+            "4b4ebcf3-06a8-4e09-b928-598640774aec": "d0ca25ec91df8b45dfeb36e4fa2e8329"
+          }
+        },
+        "creator_social_accounts": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "mission_pending_rewards": {
+          "ids": [
+            "17d9d704-3673-4be5-8e02-fc4965aa6ab9",
+            "8c738721-8ade-4696-812c-e143ca4ea3c6"
+          ],
+          "count": 2,
+          "rowHashes": {
+            "17d9d704-3673-4be5-8e02-fc4965aa6ab9": "32b716b2015b61ace58eb20644086834",
+            "8c738721-8ade-4696-812c-e143ca4ea3c6": "677fdea02e871b43be1edf60dfecebfd"
+          }
+        },
+        "mission_revision_grants": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "mission_workflow_events": {
+          "ids": [
+            "03a80938-3e28-4ad2-845e-7f733fc20380",
+            "07415b6c-b429-4714-9a24-5ed9cab8b23b",
+            "092cd546-ec0a-45c8-bd9a-d82b02672749",
+            "14320553-4a1d-47c2-a0a2-228424fe18ca",
+            "1e618295-98d6-45c1-acd5-ce9c672e7076",
+            "22dfad6a-7d85-4d66-9b77-3ae9a37f66bc",
+            "4587571e-6606-4110-9ea4-500f6ab38888",
+            "4e72ac8d-66c2-4a0c-af5e-e79077672131",
+            "60622249-7c44-4f2d-b9cb-ac419d2cc62c",
+            "60897d10-4912-4efb-a8af-1d55af038b74",
+            "6ae36b66-5573-4c2c-b0e5-71de178bb870",
+            "7e83f9db-80e2-4018-aa4a-e92a6814c58e",
+            "9bbb5da8-ae2c-48c0-bcdf-4f1cb715f843",
+            "9d268eef-fbc9-4a03-bb37-1d7f57e88b59",
+            "aee6ad39-9c99-4a34-9c5d-18667add7bdb",
+            "ba83b071-eed5-49cf-b1fb-ca2eb789d11e",
+            "bf752f46-74f2-4a23-a1fc-110dba892155",
+            "eb8bed38-c368-4c58-aa81-cc856f766b63",
+            "ed883c89-e89d-4c9e-bd8d-889372e1d863",
+            "f8e9dfff-79d0-4477-bc60-4644e5712e3e"
+          ],
+          "count": 20,
+          "rowHashes": {
+            "03a80938-3e28-4ad2-845e-7f733fc20380": "170b608411e4eeecc769c476a3cf2a56",
+            "07415b6c-b429-4714-9a24-5ed9cab8b23b": "e8d334e1c85417c4cc377b47b0adf791",
+            "092cd546-ec0a-45c8-bd9a-d82b02672749": "4a18b05cdfa4afe5b13b4db9deb90aee",
+            "14320553-4a1d-47c2-a0a2-228424fe18ca": "095290fd609f95baca836f3b0075a0c4",
+            "1e618295-98d6-45c1-acd5-ce9c672e7076": "160ee94cd876fbeeb523fce31a9de07c",
+            "22dfad6a-7d85-4d66-9b77-3ae9a37f66bc": "434394fa83b4df02dfb2b226c057124d",
+            "4587571e-6606-4110-9ea4-500f6ab38888": "f58cd42969e918338879b7f9898ccf03",
+            "4e72ac8d-66c2-4a0c-af5e-e79077672131": "3c19737c0ece075337de526ab9951f34",
+            "60622249-7c44-4f2d-b9cb-ac419d2cc62c": "d8a3ab7744c6c9f6ab674d2c7290cdfa",
+            "60897d10-4912-4efb-a8af-1d55af038b74": "897aef0f3029235c64addc7a67d01149",
+            "6ae36b66-5573-4c2c-b0e5-71de178bb870": "214c9848a8fbd1907dce70555c6adc65",
+            "7e83f9db-80e2-4018-aa4a-e92a6814c58e": "1aa25f1d50c64a8125d6c5b12ec3d8ac",
+            "9bbb5da8-ae2c-48c0-bcdf-4f1cb715f843": "e952d2adeb2cb6bc84d850d284e1228a",
+            "9d268eef-fbc9-4a03-bb37-1d7f57e88b59": "cfa613371f78e06be93958162fc67e95",
+            "aee6ad39-9c99-4a34-9c5d-18667add7bdb": "b9f7e485f1cf4c2fc8ba42b67daa374a",
+            "ba83b071-eed5-49cf-b1fb-ca2eb789d11e": "d91f3793663cea5e44f0b94b4b67a9df",
+            "bf752f46-74f2-4a23-a1fc-110dba892155": "78fa4ae4e5a6668007080ae76bbbe35a",
+            "eb8bed38-c368-4c58-aa81-cc856f766b63": "ec9d8e2ed0616295723096e81e6d4e40",
+            "ed883c89-e89d-4c9e-bd8d-889372e1d863": "8e804d7cc2670730ab3896206d1acd89",
+            "f8e9dfff-79d0-4477-bc60-4644e5712e3e": "6c7f438478863a87e807bca25e1b35a9"
+          }
+        },
+        "mission_reward_contracts": {
+          "ids": [
+            "11d621a8-e09b-4832-9752-e7993a630034"
+          ],
+          "count": 1,
+          "rowHashes": {
+            "11d621a8-e09b-4832-9752-e7993a630034": "3799dfa9e4e886f6b0729724b5a9a6a9"
+          }
+        },
+        "legacy_evidence_corrections": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "draft_submission_idempotency": {
+          "ids": [
+            "560eb952-fcbc-49c6-a400-23c577b9e261:4428812f-ed78-4540-b413-9d13d185d121",
+            "560eb952-fcbc-49c6-a400-23c577b9e261:d27f5cf0-7af1-4420-8dab-e0fc1f818577"
+          ],
+          "count": 2,
+          "rowHashes": {
+            "560eb952-fcbc-49c6-a400-23c577b9e261:4428812f-ed78-4540-b413-9d13d185d121": "5b60137007f3f9885694c58acb0a579a",
+            "560eb952-fcbc-49c6-a400-23c577b9e261:d27f5cf0-7af1-4420-8dab-e0fc1f818577": "c8cc1a3f0ec626ed46351bd9651d7c57"
+          }
+        },
+        "mission_completion_decisions": {
+          "ids": [
+            "33797e01-64b1-492a-bdc0-b62e0c9349d2",
+            "a35617d1-7624-4a2e-85c2-9d7211c5b88d",
+            "edf744d7-a2dc-47bd-9cc2-372881d43e83"
+          ],
+          "count": 3,
+          "rowHashes": {
+            "33797e01-64b1-492a-bdc0-b62e0c9349d2": "87ebae681675e1a344fd51a0a088ced7",
+            "a35617d1-7624-4a2e-85c2-9d7211c5b88d": "73a4963ffc3d6bbf142722d6ed20e129",
+            "edf744d7-a2dc-47bd-9cc2-372881d43e83": "3fc4938a46757ba31b67b8781d02f40e"
+          }
+        },
+        "workflow_notification_dedupe": {
+          "ids": [
+            "50987c84-e24d-44be-afee-3001e44a4854:mission_approved_to_publish:mission_workflow:2a142015-5fc0-4712-93b3-cea4eb615637:||",
+            "50987c84-e24d-44be-afee-3001e44a4854:mission_draft_approved:mission_work_item:560eb952-fcbc-49c6-a400-23c577b9e261:|2|",
+            "50987c84-e24d-44be-afee-3001e44a4854:mission_product_shipped:mission_workflow:2a142015-5fc0-4712-93b3-cea4eb615637:||",
+            "50987c84-e24d-44be-afee-3001e44a4854:mission_publication_correction_requested:mission_work_item:560eb952-fcbc-49c6-a400-23c577b9e261:attempt:1|reasons:content",
+            "50987c84-e24d-44be-afee-3001e44a4854:mission_publication_verified:mission_work_item:560eb952-fcbc-49c6-a400-23c577b9e261:attempt:2",
+            "50987c84-e24d-44be-afee-3001e44a4854:mission_receipt_required:mission_workflow:2a142015-5fc0-4712-93b3-cea4eb615637:||",
+            "50987c84-e24d-44be-afee-3001e44a4854:mission_revision_requested:mission_work_item:560eb952-fcbc-49c6-a400-23c577b9e261:2026-10-26 07:29:00.722+00|1|quality",
+            "50987c84-e24d-44be-afee-3001e44a4854:mission_reward_pending_cancelled:mission_pending_reward:8c738721-8ade-4696-812c-e143ca4ea3c6:decision:edf744d7-a2dc-47bd-9cc2-372881d43e83",
+            "50987c84-e24d-44be-afee-3001e44a4854:mission_reward_pending:mission_pending_reward:17d9d704-3673-4be5-8e02-fc4965aa6ab9:decision:33797e01-64b1-492a-bdc0-b62e0c9349d2",
+            "50987c84-e24d-44be-afee-3001e44a4854:mission_reward_pending:mission_pending_reward:8c738721-8ade-4696-812c-e143ca4ea3c6:decision:a35617d1-7624-4a2e-85c2-9d7211c5b88d"
+          ],
+          "count": 10,
+          "rowHashes": {
+            "50987c84-e24d-44be-afee-3001e44a4854:mission_product_shipped:mission_workflow:2a142015-5fc0-4712-93b3-cea4eb615637:||": "9d0084e33e03d5cd1e892dab639448fe",
+            "50987c84-e24d-44be-afee-3001e44a4854:mission_draft_approved:mission_work_item:560eb952-fcbc-49c6-a400-23c577b9e261:|2|": "37d91acff0da5af198baac3817e63bd6",
+            "50987c84-e24d-44be-afee-3001e44a4854:mission_receipt_required:mission_workflow:2a142015-5fc0-4712-93b3-cea4eb615637:||": "26168ff4b3701abe0cd5182d5d18cc5c",
+            "50987c84-e24d-44be-afee-3001e44a4854:mission_approved_to_publish:mission_workflow:2a142015-5fc0-4712-93b3-cea4eb615637:||": "a3621fff6808bf110896dad51df68e84",
+            "50987c84-e24d-44be-afee-3001e44a4854:mission_publication_verified:mission_work_item:560eb952-fcbc-49c6-a400-23c577b9e261:attempt:2": "695c14c8c866e94017b9c455aec0aba8",
+            "50987c84-e24d-44be-afee-3001e44a4854:mission_revision_requested:mission_work_item:560eb952-fcbc-49c6-a400-23c577b9e261:2026-10-26 07:29:00.722+00|1|quality": "9d3e614b99d3ce3f4f10bbc9a934fbf4",
+            "50987c84-e24d-44be-afee-3001e44a4854:mission_publication_correction_requested:mission_work_item:560eb952-fcbc-49c6-a400-23c577b9e261:attempt:1|reasons:content": "c38d43840181c6528757fc9efeaac336",
+            "50987c84-e24d-44be-afee-3001e44a4854:mission_reward_pending:mission_pending_reward:17d9d704-3673-4be5-8e02-fc4965aa6ab9:decision:33797e01-64b1-492a-bdc0-b62e0c9349d2": "311ef9b8c32c2b28f2504d9f8a08763a",
+            "50987c84-e24d-44be-afee-3001e44a4854:mission_reward_pending:mission_pending_reward:8c738721-8ade-4696-812c-e143ca4ea3c6:decision:a35617d1-7624-4a2e-85c2-9d7211c5b88d": "31ffb294c95d7ab21be4c8be8be73912",
+            "50987c84-e24d-44be-afee-3001e44a4854:mission_reward_pending_cancelled:mission_pending_reward:8c738721-8ade-4696-812c-e143ca4ea3c6:decision:edf744d7-a2dc-47bd-9cc2-372881d43e83": "41686fe237fb4b692a7344b9949b647e"
+          }
+        },
+        "mission_deliverable_templates": {
+          "ids": [
+            "01b2ea37-ada4-45e8-a070-44ae4ff322d4",
+            "1acd78c5-73f8-4bc6-98cb-50a25c1d5a4c",
+            "a9115807-930c-4104-a76d-936ec9e950db",
+            "e81ebdcb-3e9c-4b56-9707-e50149a964d8"
+          ],
+          "count": 4,
+          "rowHashes": {
+            "01b2ea37-ada4-45e8-a070-44ae4ff322d4": "346e4beed0785092f74f3a1382a9ab87",
+            "1acd78c5-73f8-4bc6-98cb-50a25c1d5a4c": "9732999cb829789efda4e423b9ee9616",
+            "a9115807-930c-4104-a76d-936ec9e950db": "3b03498ace98a9531a9bdd545eb9ab88",
+            "e81ebdcb-3e9c-4b56-9707-e50149a964d8": "67c9108fc833ff64ee75ce38387b028c"
+          }
+        },
+        "operator_crm_command_receipts": {
+          "ids": [
+            "d7936c2f-c826-48e0-bc09-f5204f25638b"
+          ],
+          "count": 1,
+          "rowHashes": {
+            "d7936c2f-c826-48e0-bc09-f5204f25638b": "3c66d0df24e354b9844dec6971700736"
+          }
+        },
+        "workspace_budget_transactions": {
+          "ids": [
+            "fe2b5e23-1d92-480f-9b22-5406b66d805c"
+          ],
+          "count": 1,
+          "rowHashes": {
+            "fe2b5e23-1d92-480f-9b22-5406b66d805c": "803bc9eda07cd7f13007be351504f0a6"
+          }
+        },
+        "mission_deliverable_requirements": {
+          "ids": [
+            "48db1470-68bd-48a5-93ee-2a61f197b6d9",
+            "6285d256-2adc-4cd5-b05d-aa5ec69e271a",
+            "98575007-0041-4cbc-82e6-b39ba60c70d3",
+            "b679ed85-5740-45a1-ab64-eb46373f9cc9"
+          ],
+          "count": 4,
+          "rowHashes": {
+            "48db1470-68bd-48a5-93ee-2a61f197b6d9": "57dbd6b8b16827c16c00222372cb1028",
+            "6285d256-2adc-4cd5-b05d-aa5ec69e271a": "16939afd0d3396344883ad089f28a3c7",
+            "98575007-0041-4cbc-82e6-b39ba60c70d3": "0f0803365dbafdada786f707a97b89fe",
+            "b679ed85-5740-45a1-ab64-eb46373f9cc9": "bcbdcbfd963bb08296a489087b0e912b"
+          }
+        },
+        "mission_publication_instructions": {
+          "ids": [
+            "0090aa53-9bed-4d15-81f4-c9cf7d1bff64",
+            "2371998d-b911-444e-9adf-bc28bbfd373e",
+            "2d423b35-43a8-4356-9123-3d20bc50a737",
+            "84cc1c2d-2db4-4b94-abc5-d21eee30764f"
+          ],
+          "count": 4,
+          "rowHashes": {
+            "0090aa53-9bed-4d15-81f4-c9cf7d1bff64": "3ef677c6f3e157bd5d0d9d47e05587f7",
+            "2371998d-b911-444e-9adf-bc28bbfd373e": "73a5f3d9975f60826e6753f84362abe6",
+            "2d423b35-43a8-4356-9123-3d20bc50a737": "98aad4984e6c7392967fb3a2b4224150",
+            "84cc1c2d-2db4-4b94-abc5-d21eee30764f": "b6a154c1a8869b24bdab6a8af273f048"
+          }
+        },
+        "mission_publication_proof_assets": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "mission_publication_proof_reviews": {
+          "ids": [
+            "1cb504da-aff8-4f4b-986d-310346a283f1",
+            "9f8bc136-c55d-49ff-9524-0dd81fbaebba"
+          ],
+          "count": 2,
+          "rowHashes": {
+            "1cb504da-aff8-4f4b-986d-310346a283f1": "9f6e8430d4afb57338161469af43980a",
+            "9f8bc136-c55d-49ff-9524-0dd81fbaebba": "e16d3380be25498aec54c9973e576abe"
+          }
+        },
+        "mission_publication_proof_attempts": {
+          "ids": [
+            "1d8e2e9a-cfe7-49e6-a781-6382d49c968a",
+            "98322f3c-38fa-4fc2-9583-b4bbea91c4cd"
+          ],
+          "count": 2,
+          "rowHashes": {
+            "1d8e2e9a-cfe7-49e6-a781-6382d49c968a": "73dcc34e48c66046cb8cbc1115357f3f",
+            "98322f3c-38fa-4fc2-9583-b4bbea91c4cd": "6102b2543c4ae2970f34cbfb70036a12"
+          }
+        },
+        "mission_publication_proof_review_items": {
+          "ids": [
+            "296cc0c5-0cfc-4071-bd22-cd5a885beef5"
+          ],
+          "count": 1,
+          "rowHashes": {
+            "296cc0c5-0cfc-4071-bd22-cd5a885beef5": "fa72d059a9cbb2fe68e6a87b00c1378b"
+          }
+        }
+      }
+    },
+    {
+      "phase": "browser",
+      "families": 70,
+      "allIdsHashesEqual": true,
+      "allCapsPass": true,
+      "authSubjects": 11,
+      "inventory": {
+        "creators": {
+          "ids": [
+            "2f9769c9-49f7-4838-877d-26c7e421f15d",
+            "8de7a4c1-90e4-49da-a1f4-8a5737304390"
+          ],
+          "count": 2,
+          "rowHashes": {
+            "2f9769c9-49f7-4838-877d-26c7e421f15d": "ac00961088fb135fd768a1133b2edbbc",
+            "8de7a4c1-90e4-49da-a1f4-8a5737304390": "06aea48c09ffb399598d075602f6f1e2"
+          }
+        },
+        "missions": {
+          "ids": [
+            "59a54451-7a75-45cc-9439-dc12b67e2cfa",
+            "615d857a-78fc-4e32-8468-0288201e2ead"
+          ],
+          "count": 2,
+          "rowHashes": {
+            "59a54451-7a75-45cc-9439-dc12b67e2cfa": "d9cffff706f488037146f213b993402b",
+            "615d857a-78fc-4e32-8468-0288201e2ead": "2374ce8228397ca2dbd26ad4ed3ff172"
+          }
+        },
+        "campaigns": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "auth_users": {
+          "ids": [
+            "012afe91-4fdf-4f8a-a914-8ceff72799b1",
+            "1a9956bd-b33e-4c6d-9117-b416211bfb12",
+            "2f9769c9-49f7-4838-877d-26c7e421f15d",
+            "30034498-ebb8-472b-96ae-1af75e7d3f1d",
+            "35897723-efcc-42e3-92da-ff336344a48d",
+            "605f9eee-173d-4368-be17-216584546957",
+            "8de7a4c1-90e4-49da-a1f4-8a5737304390",
+            "8ffc0148-d33a-4346-8239-47ad960a7a57",
+            "a39a30b2-ef35-4423-a068-504247ed60d5",
+            "b5b3c2ec-34d2-4de6-9689-721ba2cac3de",
+            "f220de3a-8331-484f-ab2c-993afa01e943"
+          ],
+          "count": 11,
+          "rowHashes": {
+            "012afe91-4fdf-4f8a-a914-8ceff72799b1": "d8f9802b052eb55f01d18b28fc43e621",
+            "1a9956bd-b33e-4c6d-9117-b416211bfb12": "9ff4b16fddab497324760631adbabb7b",
+            "2f9769c9-49f7-4838-877d-26c7e421f15d": "056e86ad627038e90235f685830271cb",
+            "30034498-ebb8-472b-96ae-1af75e7d3f1d": "d60c7c6d47ce273807bf6699381cfcd1",
+            "35897723-efcc-42e3-92da-ff336344a48d": "167b9dc8dc518e50e00aeaaa11e38a3f",
+            "605f9eee-173d-4368-be17-216584546957": "f07af4897e1afe3ab8dbb004cedf324f",
+            "8de7a4c1-90e4-49da-a1f4-8a5737304390": "8275a0cc406bb68ed41b82e282d0f7e1",
+            "8ffc0148-d33a-4346-8239-47ad960a7a57": "7cf4836cdfb78200b5af236d0e58e923",
+            "a39a30b2-ef35-4423-a068-504247ed60d5": "eb62a995b6ba5b7ef4fbbd71ff5e65dd",
+            "b5b3c2ec-34d2-4de6-9689-721ba2cac3de": "1c1178739fbb1ca64b96be215954444f",
+            "f220de3a-8331-484f-ab2c-993afa01e943": "49e0ec1dc5dc8eedc775c0110a442e9d"
+          }
+        },
+        "workspaces": {
+          "ids": [
+            "0f8fa85a-df73-435c-8143-c7cba4489eb3",
+            "44e4cc71-1bc1-4686-9144-89e78396e426"
+          ],
+          "count": 2,
+          "rowHashes": {
+            "0f8fa85a-df73-435c-8143-c7cba4489eb3": "43534bb7eaacf1bdeded8eb884a88caa",
+            "44e4cc71-1bc1-4686-9144-89e78396e426": "30178ce4acaf96a960628ebcf0fdf145"
+          }
+        },
+        "brand_users": {
+          "ids": [
+            "012afe91-4fdf-4f8a-a914-8ceff72799b1",
+            "1a9956bd-b33e-4c6d-9117-b416211bfb12",
+            "30034498-ebb8-472b-96ae-1af75e7d3f1d",
+            "35897723-efcc-42e3-92da-ff336344a48d",
+            "605f9eee-173d-4368-be17-216584546957",
+            "b5b3c2ec-34d2-4de6-9689-721ba2cac3de",
+            "f220de3a-8331-484f-ab2c-993afa01e943"
+          ],
+          "count": 7,
+          "rowHashes": {
+            "012afe91-4fdf-4f8a-a914-8ceff72799b1": "2a2207252912109b45df7dc5e06ee285",
+            "1a9956bd-b33e-4c6d-9117-b416211bfb12": "9a147bada1e386e9e230a9b8c2ab3a90",
+            "30034498-ebb8-472b-96ae-1af75e7d3f1d": "cecf973b81cbf5fac126d67d53589703",
+            "35897723-efcc-42e3-92da-ff336344a48d": "0c5a663c72881af746c1d869a0114891",
+            "605f9eee-173d-4368-be17-216584546957": "5dfb3faf4443d98fdff1ea1e16c8f1e2",
+            "b5b3c2ec-34d2-4de6-9689-721ba2cac3de": "7779e9d8a898628508114ab7a216b60b",
+            "f220de3a-8331-484f-ab2c-993afa01e943": "81aeefb9a3f585484c09f57953cae376"
+          }
+        },
+        "redemptions": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "staff_users": {
+          "ids": [
+            "012afe91-4fdf-4f8a-a914-8ceff72799b1",
+            "1a9956bd-b33e-4c6d-9117-b416211bfb12",
+            "30034498-ebb8-472b-96ae-1af75e7d3f1d",
+            "35897723-efcc-42e3-92da-ff336344a48d",
+            "605f9eee-173d-4368-be17-216584546957",
+            "8ffc0148-d33a-4346-8239-47ad960a7a57",
+            "a39a30b2-ef35-4423-a068-504247ed60d5",
+            "b5b3c2ec-34d2-4de6-9689-721ba2cac3de",
+            "f220de3a-8331-484f-ab2c-993afa01e943"
+          ],
+          "count": 9,
+          "rowHashes": {
+            "012afe91-4fdf-4f8a-a914-8ceff72799b1": "440639c77b991764e7e5ddd56a81c196",
+            "1a9956bd-b33e-4c6d-9117-b416211bfb12": "c8f9e75780f9a222fcc9dcbcee918366",
+            "30034498-ebb8-472b-96ae-1af75e7d3f1d": "78d920cc0fcf08bc8a384971777094cd",
+            "35897723-efcc-42e3-92da-ff336344a48d": "84b91b4a2bf26caed819babe57009024",
+            "605f9eee-173d-4368-be17-216584546957": "80222974da72483b42a9aaae07cf1ae4",
+            "8ffc0148-d33a-4346-8239-47ad960a7a57": "03b9790eb9e9d49a9257a62c85eca894",
+            "a39a30b2-ef35-4423-a068-504247ed60d5": "4af86fbb76c721f83d789c1efb4b4a3b",
+            "b5b3c2ec-34d2-4de6-9689-721ba2cac3de": "1a5cb374843678418d622ab7e6374315",
+            "f220de3a-8331-484f-ab2c-993afa01e943": "de5a200547582202b94d7b1bdfadb330"
+          }
+        },
+        "auth_sessions": {
+          "ids": [
+            "072b5469-aecd-4ebf-94fb-371a353487b5",
+            "1bdc9f7f-9aea-462f-80c8-768c091e9956",
+            "22c882ed-5e71-4dd3-bfd9-448dc41bc61c",
+            "35f9e164-241e-415d-9876-35ae2d209668",
+            "55675219-5fe7-4dc9-8674-6a8b4a9e4aff",
+            "5d72c07d-3198-4895-af68-4b9c406262c5",
+            "6a96eae9-1948-4e4c-b4af-245137fa8164",
+            "8efdce2a-efe7-4596-b1de-07235afbac66",
+            "9c967b2e-d919-4187-9e5a-56bf4e7108cf",
+            "cc294508-7040-4e97-be6d-a7ae0cb7341a",
+            "d2cd6df3-f8ff-4925-9223-4d5edf5c4b4c",
+            "f4cc50fe-9238-4ba1-847c-f212109eebe0"
+          ],
+          "count": 12,
+          "rowHashes": {
+            "072b5469-aecd-4ebf-94fb-371a353487b5": "64ee4b58f465a22fd5b7fb55fa7c2a5c",
+            "1bdc9f7f-9aea-462f-80c8-768c091e9956": "c00490c2aa63e0f814b44efb0fb7f49c",
+            "22c882ed-5e71-4dd3-bfd9-448dc41bc61c": "27ce9e0590fbe84b37ab2e7f7d7d38fe",
+            "35f9e164-241e-415d-9876-35ae2d209668": "4e5f59df68370ecdf36aef4fee136d5d",
+            "55675219-5fe7-4dc9-8674-6a8b4a9e4aff": "daf2ed7b72237ad7f2eb4efeac2c76ce",
+            "5d72c07d-3198-4895-af68-4b9c406262c5": "d0a06217e7d73928e7fc1ceb2a68330d",
+            "6a96eae9-1948-4e4c-b4af-245137fa8164": "07c4370c40ea149cdad26d05d83a4d53",
+            "8efdce2a-efe7-4596-b1de-07235afbac66": "f8b00ba669e4572a0eb4094c7e9bd99c",
+            "9c967b2e-d919-4187-9e5a-56bf4e7108cf": "de67f045c1344c9ea91ff9148c304ee0",
+            "cc294508-7040-4e97-be6d-a7ae0cb7341a": "65ada9f2230b6f8ee58d03bcea03b541",
+            "d2cd6df3-f8ff-4925-9223-4d5edf5c4b4c": "1a43a2df89a9b9b7c04b84535fa7159d",
+            "f4cc50fe-9238-4ba1-847c-f212109eebe0": "442494bca3e6739f5b692e1e9fb238dd"
+          }
+        },
+        "brand_invites": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "notifications": {
+          "ids": [
+            "a91b9821-04a3-4285-85e2-22c683a2b9af"
+          ],
+          "count": 1,
+          "rowHashes": {
+            "a91b9821-04a3-4285-85e2-22c683a2b9af": "d1c7a47c706dc6a7a3add100449048bb"
+          }
+        },
+        "point_balances": {
+          "ids": [
+            "4d58ee25-f383-407b-81a2-f88330353e45",
+            "b4904d7e-2ff7-49bc-ab52-715cc94cfeac"
+          ],
+          "count": 2,
+          "rowHashes": {
+            "4d58ee25-f383-407b-81a2-f88330353e45": "147e8e9a5ed1d4aae551b990245864b1",
+            "b4904d7e-2ff7-49bc-ab52-715cc94cfeac": "71f22bf6d23928c10de09a6f06512a2c"
+          }
+        },
+        "academy_content": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "academy_lessons": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "auth_flow_state": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "auth_identities": {
+          "ids": [
+            "1edbd82a-0eaf-46e9-a608-1b5218c42ce8",
+            "26b5e70b-7fe0-4cda-aaed-de3a6de76a39",
+            "3392eddc-4202-420d-b45a-e6fc1dad5335",
+            "3d32f784-bb77-46dc-9661-555304ed5ef0",
+            "413b6710-45f8-40ac-8522-2f2d7d95b16a",
+            "4a70fa6b-5b65-4c04-95f5-e48286c3a03c",
+            "4c7ca7b9-1849-41b6-b6d7-21fb64ea5269",
+            "4f3c9066-2503-4857-ae2b-1fe02d1d0d71",
+            "856cd03b-44f6-4981-91ca-3b539b1dc037",
+            "e515757e-0f65-49aa-832b-4c338e75e060",
+            "ffe30407-9636-4ca0-ae1d-f08d781f34fd"
+          ],
+          "count": 11,
+          "rowHashes": {
+            "1edbd82a-0eaf-46e9-a608-1b5218c42ce8": "b48b4c2ffb7986001c65759cd1c313b6",
+            "26b5e70b-7fe0-4cda-aaed-de3a6de76a39": "e9677e61de4165f6032f043c1a7de6f4",
+            "3392eddc-4202-420d-b45a-e6fc1dad5335": "e365788eb09d1a78e39dbced8e58b3c8",
+            "3d32f784-bb77-46dc-9661-555304ed5ef0": "91f433e9cd4ccf63dee6e4612717e72e",
+            "413b6710-45f8-40ac-8522-2f2d7d95b16a": "de4e00f5dcf406fc6028119e9248edd2",
+            "4a70fa6b-5b65-4c04-95f5-e48286c3a03c": "7762a218d23d1b4adb346d9380922958",
+            "4c7ca7b9-1849-41b6-b6d7-21fb64ea5269": "06e9aab1a72f0fd35ee64ca9f56582c1",
+            "4f3c9066-2503-4857-ae2b-1fe02d1d0d71": "3b5e457c6c417baa9ae9bd33ef7f6dc3",
+            "856cd03b-44f6-4981-91ca-3b539b1dc037": "83d20ce86aa32221de907eecb60369bd",
+            "e515757e-0f65-49aa-832b-4c338e75e060": "c9cd25c69f5b53dca39ea8262ef907f4",
+            "ffe30407-9636-4ca0-ae1d-f08d781f34fd": "fd62b6042f27c1461f3e2b4ba62dcae0"
+          }
+        },
+        "storage_objects": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "auth_mfa_factors": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "redemption_codes": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "redemption_gifts": {
+          "ids": [
+            "e7aa3cae-2c78-470a-ba0e-3a8143ed2eeb"
+          ],
+          "count": 1,
+          "rowHashes": {
+            "e7aa3cae-2c78-470a-ba0e-3a8143ed2eeb": "6e21fa1f79863068f5f0fa0ad48e72b8"
+          }
+        },
+        "earnings_balances": {
+          "ids": [
+            "04e47339-c280-418f-8cca-4a78b1fa0c83",
+            "527f2517-d1aa-47e3-a1a3-8cf8f0eab7bd"
+          ],
+          "count": 2,
+          "rowHashes": {
+            "04e47339-c280-418f-8cca-4a78b1fa0c83": "179ca5fed8b85cea22165ee1bbb66941",
+            "527f2517-d1aa-47e3-a1a3-8cf8f0eab7bd": "093c284e0b3777a7f2830cf096f01220"
+          }
+        },
+        "mission_workflows": {
+          "ids": [
+            "acc556fa-af8e-45fc-b324-13b111dc2125"
+          ],
+          "count": 1,
+          "rowHashes": {
+            "acc556fa-af8e-45fc-b324-13b111dc2125": "3149b5df803a0151945b7918c72732cb"
+          }
+        },
+        "workspace_budgets": {
+          "ids": [
+            "81f29f21-eb9b-4eda-a81c-0237b712bc64"
+          ],
+          "count": 1,
+          "rowHashes": {
+            "81f29f21-eb9b-4eda-a81c-0237b712bc64": "144db36f35e3a7939b245e2e6d32e577"
+          }
+        },
+        "assistant_messages": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "assistant_requests": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "mission_work_items": {
+          "ids": [
+            "81401d4d-3889-487d-9127-070fb232a063",
+            "8e334965-1bac-4494-bd05-e856c56ddfef"
+          ],
+          "count": 2,
+          "rowHashes": {
+            "81401d4d-3889-487d-9127-070fb232a063": "737173c758af30141577cbb1734c49d7",
+            "8e334965-1bac-4494-bd05-e856c56ddfef": "373d17321ec10d3eba92a58f920c3c4f"
+          }
+        },
+        "point_transactions": {
+          "ids": [
+            "f1e0afa3-b9df-4116-9f9b-32ece0147bfb"
+          ],
+          "count": 1,
+          "rowHashes": {
+            "f1e0afa3-b9df-4116-9f9b-32ece0147bfb": "f2d94b90bd41b72329a8f075f7af16c2"
+          }
+        },
+        "staff_access_audit": {
+          "ids": [
+            "2755b8c6-1175-4037-9ea4-2178dc26205f",
+            "418a3331-579a-4b18-abb9-274cc3bed656",
+            "490d324c-6164-43b9-ad44-ac3de4b33a44",
+            "5d3620e9-cd9e-4184-beac-db944c8c0d54",
+            "6cb85dd7-279a-460f-a04e-a959574d6365",
+            "e116b303-f581-45c5-adcf-f70bda7e36dc",
+            "eee8734f-8e10-4406-94b3-4a48a0c9f92d"
+          ],
+          "count": 7,
+          "rowHashes": {
+            "2755b8c6-1175-4037-9ea4-2178dc26205f": "ed575eefafb35aa3671d73a595568b3d",
+            "418a3331-579a-4b18-abb9-274cc3bed656": "bbfd75f519ad2cb03f05ce09ac4e2a7e",
+            "490d324c-6164-43b9-ad44-ac3de4b33a44": "ccf6a5547b22e08c203a00083fd08bc4",
+            "5d3620e9-cd9e-4184-beac-db944c8c0d54": "ee5751e1a26d8bdf752f6afe3738c961",
+            "6cb85dd7-279a-460f-a04e-a959574d6365": "ae49472237307e91f2f8c7116c1523fe",
+            "e116b303-f581-45c5-adcf-f70bda7e36dc": "7d8b818aed22bd70b6ed40e5aa79b19d",
+            "eee8734f-8e10-4406-94b3-4a48a0c9f92d": "2411bc88e29e8d92ee94fab512c1763e"
+          }
+        },
+        "auth_mfa_amr_claims": {
+          "ids": [
+            "0f2a2c46-8793-458e-9ce9-b038e469b858",
+            "15e78e3b-ae43-4ef8-8d01-2fba0015c9c0",
+            "1b369550-7e10-474a-9ba9-916f6417ccd0",
+            "23ead9c6-e8fb-47b5-af47-aed1aad99cac",
+            "352217ab-ea20-4b33-bee8-ab6bc9c8edba",
+            "3deafcb5-9a86-4508-b1cd-d376291b7d83",
+            "515cc295-2902-4d6d-af1b-52cb292f58fe",
+            "69b959e9-9a18-4197-8269-a55d6c886852",
+            "7e5507d7-5d95-43b5-88c7-be0079a307ea",
+            "88027cdd-24d0-4583-ba07-7660235387e9",
+            "dd2354d1-7cd9-4eb6-8185-d38a38c134ca",
+            "ff2b8a3c-5573-4413-aec1-10bdfb6f3da2"
+          ],
+          "count": 12,
+          "rowHashes": {
+            "0f2a2c46-8793-458e-9ce9-b038e469b858": "a25e4189e78815abd65219f6b376a2a3",
+            "15e78e3b-ae43-4ef8-8d01-2fba0015c9c0": "363e870698dc3d1da49612daa8170a10",
+            "1b369550-7e10-474a-9ba9-916f6417ccd0": "28ecdfa7ede249dbabe3df0f4e089870",
+            "23ead9c6-e8fb-47b5-af47-aed1aad99cac": "781e2974c63da6a9a352d41ef1ee81bd",
+            "352217ab-ea20-4b33-bee8-ab6bc9c8edba": "a8a085d7c232c5cedc4a20a304a0375d",
+            "3deafcb5-9a86-4508-b1cd-d376291b7d83": "2117165bb02ee54a50b3ca4ae09329ef",
+            "515cc295-2902-4d6d-af1b-52cb292f58fe": "c0ea518e07c846aaaf1e8924b3de1939",
+            "69b959e9-9a18-4197-8269-a55d6c886852": "1be5ee40bbb8a1567f1c88a60c8eedac",
+            "7e5507d7-5d95-43b5-88c7-be0079a307ea": "9a431ccd440407985c38b86405f6baa7",
+            "88027cdd-24d0-4583-ba07-7660235387e9": "e49cdf4a8d7d7798f4d59d567e66ea20",
+            "dd2354d1-7cd9-4eb6-8185-d38a38c134ca": "df44b056d9831f8d01c831fcfa0c6fd4",
+            "ff2b8a3c-5573-4413-aec1-10bdfb6f3da2": "d4f8795c4d02d1e9895196f71834af5a"
+          }
+        },
+        "auth_mfa_challenges": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "auth_refresh_tokens": {
+          "ids": [
+            "23",
+            "24",
+            "25",
+            "26",
+            "27",
+            "28",
+            "29",
+            "30",
+            "31",
+            "32",
+            "33",
+            "34",
+            "35"
+          ],
+          "count": 13,
+          "rowHashes": {
+            "23": "0d8daa5fff1c7498a0eb5e5871ccd536",
+            "24": "b00523498795c41f92e487a8ea1008f8",
+            "25": "1684fef563a5523d32348d60b2904600",
+            "26": "407dc211cb33a609d1861a61676165e5",
+            "27": "9172320d4e32cb79f26653e48264040b",
+            "28": "b222341501b091bae8089fbbdf9a1b32",
+            "29": "61091fbf01c25207c97cc3f5083ea79d",
+            "30": "2190db01dd60a652234b586140e30969",
+            "31": "6ef4d8c5be6ca939eb360045e5de8353",
+            "32": "e1e830a16a403de89edacf9755dba931",
+            "33": "262996fc55ef339abfeade3163c475a5",
+            "34": "2d9a140c4ff79204ee575352d81276e6",
+            "35": "ddbc50e6b264d09b56a872c700494b1b"
+          }
+        },
+        "mission_submissions": {
+          "ids": [
+            "36ab9494-b1ce-4d49-925b-3f51368e913c",
+            "b4f961da-62e3-4d6e-b091-23a72d813535"
+          ],
+          "count": 2,
+          "rowHashes": {
+            "36ab9494-b1ce-4d49-925b-3f51368e913c": "5c48aaf8b8ad0b0731873b01faf444cc",
+            "b4f961da-62e3-4d6e-b091-23a72d813535": "aa96bc3540656513d8d29fe91e4317f7"
+          }
+        },
+        "auth_one_time_tokens": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "creator_review_notes": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "mission_draft_assets": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "mission_fulfillments": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "mission_review_items": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "staff_platform_roles": {
+          "ids": [
+            "8ffc0148-d33a-4346-8239-47ad960a7a57:content_editor"
+          ],
+          "count": 1,
+          "rowHashes": {
+            "8ffc0148-d33a-4346-8239-47ad960a7a57:content_editor": "051e5ce7ea62b01516a5fec130cf5ecd"
+          }
+        },
+        "campaign_participants": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "earnings_transactions": {
+          "ids": [
+            "69ca7cbe-e085-4385-b3f7-998f81803f2b"
+          ],
+          "count": 1,
+          "rowHashes": {
+            "69ca7cbe-e085-4385-b3f7-998f81803f2b": "574613bd1deca575807361b18bfbdeb6"
+          }
+        },
+        "mission_review_rounds": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "operator_audit_events": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "staff_access_commands": {
+          "ids": [
+            "16dfb5bb-6063-43b1-8c11-3da229a33b60",
+            "2a5efc57-d969-4ef8-845e-bbea23fa2ecd",
+            "2f74560d-7017-44a7-8715-23a09d124fe0",
+            "52ac7e1b-83c6-4405-8aed-38e0df78a1d5",
+            "788d9a48-6ea3-4610-9ec1-47e7ea487b15",
+            "999816b6-30f0-4cb0-ad22-1e85d5511fb8",
+            "a2f62c9d-5803-49ab-933f-530fd65a4b92"
+          ],
+          "count": 7,
+          "rowHashes": {
+            "16dfb5bb-6063-43b1-8c11-3da229a33b60": "a07dceff0fecf1987d6771316efcbc65",
+            "2a5efc57-d969-4ef8-845e-bbea23fa2ecd": "2aeadb473e6ae4b66d858aec810708c7",
+            "2f74560d-7017-44a7-8715-23a09d124fe0": "6818ead1158982b5c510a6f86ffe94d9",
+            "52ac7e1b-83c6-4405-8aed-38e0df78a1d5": "052eee81f72d002bc267c6b707443ac6",
+            "788d9a48-6ea3-4610-9ec1-47e7ea487b15": "1befe6f78973e963cca6c7fe70312b91",
+            "999816b6-30f0-4cb0-ad22-1e85d5511fb8": "321631ff76f2105001f9b162b86b20d3",
+            "a2f62c9d-5803-49ab-933f-530fd65a4b92": "8bf5a567a8bea08bf6a824c75babad02"
+          }
+        },
+        "staff_workspace_roles": {
+          "ids": [
+            "012afe91-4fdf-4f8a-a914-8ceff72799b1:44e4cc71-1bc1-4686-9144-89e78396e426",
+            "1a9956bd-b33e-4c6d-9117-b416211bfb12:44e4cc71-1bc1-4686-9144-89e78396e426",
+            "35897723-efcc-42e3-92da-ff336344a48d:44e4cc71-1bc1-4686-9144-89e78396e426",
+            "605f9eee-173d-4368-be17-216584546957:44e4cc71-1bc1-4686-9144-89e78396e426",
+            "b5b3c2ec-34d2-4de6-9689-721ba2cac3de:44e4cc71-1bc1-4686-9144-89e78396e426",
+            "f220de3a-8331-484f-ab2c-993afa01e943:0f8fa85a-df73-435c-8143-c7cba4489eb3"
+          ],
+          "count": 6,
+          "rowHashes": {
+            "012afe91-4fdf-4f8a-a914-8ceff72799b1:44e4cc71-1bc1-4686-9144-89e78396e426": "24b005be59040fb5cc8a29b691bbcba8",
+            "1a9956bd-b33e-4c6d-9117-b416211bfb12:44e4cc71-1bc1-4686-9144-89e78396e426": "f13c951a17327a2aa35e8fde13889fe9",
+            "35897723-efcc-42e3-92da-ff336344a48d:44e4cc71-1bc1-4686-9144-89e78396e426": "8129243b9679258bfbb65b65736b3322",
+            "605f9eee-173d-4368-be17-216584546957:44e4cc71-1bc1-4686-9144-89e78396e426": "38ebef753ed6be810dcd7871b84a8573",
+            "b5b3c2ec-34d2-4de6-9689-721ba2cac3de:44e4cc71-1bc1-4686-9144-89e78396e426": "f852519f2962a16ea810a15667a7d8c4",
+            "f220de3a-8331-484f-ab2c-993afa01e943:0f8fa85a-df73-435c-8143-c7cba4489eb3": "bda932805071b2ef96a8da020a92439f"
+          }
+        },
+        "auth_audit_log_entries": {
+          "ids": [
+            "2ed523d9-4b32-4330-8717-e8d80fa48573",
+            "5e8cf96b-1397-43f5-84ae-b24399f09667",
+            "69f625b3-603c-440d-a3ac-db1869267138",
+            "8c6092a4-0336-4871-9efa-b6190c475c1d",
+            "8e9d2e98-581b-483d-ae21-97f4577e53d4",
+            "91b75894-0425-464d-a358-41c4f026b682",
+            "9a2b4d74-b0e7-4e61-872f-a373433f9f02",
+            "9db50825-fc97-4474-b534-29b614e0a175",
+            "a6ee6b73-ae09-4136-9844-e5861ab15265",
+            "ae517c60-efbd-4df0-aaf8-f984c30fc241",
+            "b6642b41-a7a6-4061-9b5a-15a8ff3cdd20",
+            "c02d81f9-39e4-48c5-95e0-b7e07c2b2e3c",
+            "ccb76c02-8867-4e7f-a146-9d08fde4450d",
+            "df182dfc-8b22-45a6-a697-035cb2908372"
+          ],
+          "count": 14,
+          "rowHashes": {
+            "2ed523d9-4b32-4330-8717-e8d80fa48573": "3f21a2fa191c6edffebb2a4747c554d2",
+            "5e8cf96b-1397-43f5-84ae-b24399f09667": "6587e3b3744b8ecaf700f56a2a55380f",
+            "69f625b3-603c-440d-a3ac-db1869267138": "aaafcbdcbfd1faa3c189bb48ec2f4c48",
+            "8c6092a4-0336-4871-9efa-b6190c475c1d": "5473c98f8e9382dec3742f769409793f",
+            "8e9d2e98-581b-483d-ae21-97f4577e53d4": "da38e19d2e84fbc037036d396fb6c16d",
+            "91b75894-0425-464d-a358-41c4f026b682": "459fd5addd28de702fc28ef1da81a1e1",
+            "9a2b4d74-b0e7-4e61-872f-a373433f9f02": "5c3097be1d96f7af672f8dde26eeb16e",
+            "9db50825-fc97-4474-b534-29b614e0a175": "7e158932d45aece0a24df91f7cc6f051",
+            "a6ee6b73-ae09-4136-9844-e5861ab15265": "8509447cd01351ecda3d804461982bfc",
+            "ae517c60-efbd-4df0-aaf8-f984c30fc241": "d46c0ed9b688e398c74da082a1de999f",
+            "b6642b41-a7a6-4061-9b5a-15a8ff3cdd20": "a5f84007ea2cfec09e0803696fcf046c",
+            "c02d81f9-39e4-48c5-95e0-b7e07c2b2e3c": "ba3dd862f82affa9b6fb0bccc5f9783b",
+            "ccb76c02-8867-4e7f-a146-9d08fde4450d": "2bbfd9287d932d6e26c8ee8b03862ef0",
+            "df182dfc-8b22-45a6-a697-035cb2908372": "56a2d4c52b31733ccb6c44de50e5de3a"
+          }
+        },
+        "mission_draft_versions": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "mission_working_drafts": {
+          "ids": [
+            "a974192c-66cd-4dfe-a5a3-afaf75db61cc",
+            "b4d0fee5-8864-4ad8-81b9-f8412d4c2266"
+          ],
+          "count": 2,
+          "rowHashes": {
+            "a974192c-66cd-4dfe-a5a3-afaf75db61cc": "82cd817d8a435d4ad7f55ea63567f4be",
+            "b4d0fee5-8864-4ad8-81b9-f8412d4c2266": "a4309b6da9a3efa78494b2b9e8e412a0"
+          }
+        },
+        "assistant_conversations": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "campaign_rank_snapshots": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "creator_lesson_progress": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "creator_portfolio_links": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "creator_review_statuses": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "creator_social_accounts": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "mission_pending_rewards": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "mission_revision_grants": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "mission_workflow_events": {
+          "ids": [
+            "77609b2e-95ea-4e9c-958f-88448074163c"
+          ],
+          "count": 1,
+          "rowHashes": {
+            "77609b2e-95ea-4e9c-958f-88448074163c": "5067cbb885aa353244f9ec3d826c48b4"
+          }
+        },
+        "mission_reward_contracts": {
+          "ids": [
+            "83800144-8737-4d9c-94bb-adfe2a799472"
+          ],
+          "count": 1,
+          "rowHashes": {
+            "83800144-8737-4d9c-94bb-adfe2a799472": "1b43a92d496da37466eda030d8943a11"
+          }
+        },
+        "legacy_evidence_corrections": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "draft_submission_idempotency": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "mission_completion_decisions": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "workflow_notification_dedupe": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "mission_deliverable_templates": {
+          "ids": [
+            "552fb516-3276-4a13-b107-f14b2d7297ce",
+            "d9556c84-c59d-4e9b-93ab-49218033bb1a"
+          ],
+          "count": 2,
+          "rowHashes": {
+            "552fb516-3276-4a13-b107-f14b2d7297ce": "9b8152846e0d107704971603de35dd70",
+            "d9556c84-c59d-4e9b-93ab-49218033bb1a": "f028f11050c3b6d76b488324b9a94cea"
+          }
+        },
+        "operator_crm_command_receipts": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "workspace_budget_transactions": {
+          "ids": [
+            "8ba521dd-0a11-4f36-82df-2ebde72d0de6"
+          ],
+          "count": 1,
+          "rowHashes": {
+            "8ba521dd-0a11-4f36-82df-2ebde72d0de6": "6802bf33ca55eb68e60b815268615926"
+          }
+        },
+        "mission_deliverable_requirements": {
+          "ids": [
+            "03b25415-b395-4c5b-a82d-16d8ba4365d4",
+            "cbd39f9a-e2cd-4ed7-aaf8-18bf1430dfe6"
+          ],
+          "count": 2,
+          "rowHashes": {
+            "03b25415-b395-4c5b-a82d-16d8ba4365d4": "a135921016d6ea2143032abf0dc97a94",
+            "cbd39f9a-e2cd-4ed7-aaf8-18bf1430dfe6": "5d1708869ca0596fbb4f560f396e8181"
+          }
+        },
+        "mission_publication_instructions": {
+          "ids": [
+            "926d16f5-5e91-4265-9906-07b738dc8d4f",
+            "c6a3563d-d14e-4d59-9a80-6c8fe1207959"
+          ],
+          "count": 2,
+          "rowHashes": {
+            "926d16f5-5e91-4265-9906-07b738dc8d4f": "642083519ff68e9e06aceaecac469da0",
+            "c6a3563d-d14e-4d59-9a80-6c8fe1207959": "775705b3592a73ce16cead1e334a7355"
+          }
+        },
+        "mission_publication_proof_assets": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "mission_publication_proof_reviews": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "mission_publication_proof_attempts": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        },
+        "mission_publication_proof_review_items": {
+          "ids": [],
+          "count": 0,
+          "rowHashes": {}
+        }
+      }
+    }
+  ],
+  "catalogSections": 8,
+  "catalogUnchanged": true,
+  "seedRowHashesUnchanged": true,
+  "serviceHistoryUnchanged": true,
+  "financialTotals": {
+    "xp": 300,
+    "points": 1300,
+    "budgets": 26750,
+    "workflows": [
+      {
+        "id": "2a142015-5fc0-4712-93b3-cea4eb615637",
+        "state": "reward_pending",
+        "workspaceId": "2bb528a0-bf68-4a3c-a7b1-708aeb517e81",
+        "submissionId": "114082af-c5d5-4603-83d9-af62ff786335"
+      },
+      {
+        "id": "412aec48-c3eb-44da-bb9f-3addde82c541",
+        "state": "drafting",
+        "workspaceId": "2bb528a0-bf68-4a3c-a7b1-708aeb517e81",
+        "submissionId": "2293cfaa-ab9b-42cd-9303-4b24c5127a03"
+      },
+      {
+        "id": "67e4aee7-a26c-442a-955a-3aa9fedb005c",
+        "state": "reward_pending",
+        "workspaceId": "2177f882-9f30-4ad6-b5e2-c546b6709d61",
+        "submissionId": "415ac2d6-03a4-4ed6-adaf-702020760841"
+      },
+      {
+        "id": "acc556fa-af8e-45fc-b324-13b111dc2125",
+        "state": "drafting",
+        "workspaceId": "44e4cc71-1bc1-4686-9144-89e78396e426",
+        "submissionId": "36ab9494-b1ce-4d49-925b-3f51368e913c"
+      }
+    ],
+    "cashLedger": 2,
+    "pointLedger": 2,
+    "redemptions": 0,
+    "budgetLedger": 2,
+    "historyCount": 72,
+    "withdrawable": 250,
+    "faultTriggers": 0,
+    "faultFunctions": 0,
+    "inventoryRemaining": 9
+  },
+  "financialTotalsUnchanged": true,
+  "checkpointUnchanged": true,
+  "authSubjects": 84,
+  "sqlLayer": "Owner READ ONLY transactions; separate observation journal outside adoption namespace",
+  "authCalls": 0,
+  "sdkClientCreated": false,
+  "newResources": 0,
+  "namespaceCreated": false,
+  "roleCoreTestsRerun": 0,
+  "browserCasesRun": 0,
+  "providerEnabled": false
+}

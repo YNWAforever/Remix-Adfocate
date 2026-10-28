@@ -1,0 +1,24 @@
+{
+  "command": [
+    "python",
+    "docs/verification/D19-asset-offline-20261026/verify-delivery.py",
+    "--preseal"
+  ],
+  "exit": 0,
+  "fileOnly": true,
+  "actualTargetCalls": 0,
+  "result": {
+    "status": "PASS_ASSET_OFFLINE_DELIVERY_NOT_R1",
+    "sourceUnchanged": 793,
+    "standalonePassed": 11,
+    "retainedFullNativeNotRerun": 2155,
+    "originalCases": 107,
+    "priorEvidenceRecordsPreserved": 2724,
+    "c2ManifestUnchangedAndPending": true,
+    "actualTargetCalls": 0,
+    "incidentOpen": true,
+    "releaseHold": true,
+    "providerEnabled": false,
+    "preseal": true
+  }
+}

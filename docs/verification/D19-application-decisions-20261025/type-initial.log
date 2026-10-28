@@ -1,0 +1,1 @@
+server/routes/admin.ts(308,8): error TS2551: Property 'catch' does not exist on type 'PostgrestFilterBuilder<any, any, any, any, "decide_mission_application", null, "RPC", false>'. Did you mean 'match'?

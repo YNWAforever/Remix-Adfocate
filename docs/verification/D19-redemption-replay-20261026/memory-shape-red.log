@@ -1,0 +1,56 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+stderr | server/test/redemption-intent-memory.test.ts > UC-C33 current actual redemption SQL/route intent replay > malformed or null request bodies fail before the SQL command
+TypeError: Cannot destructure property 'gift_id' of '(intermediate value)' as it is null.
+    at C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\server\routes\redemption.ts:36:11
+    at dispatch (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/hono/dist/compose.js:22:17)
+    at C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\server\test\redemption-intent-memory.test.ts:69:232
+    at dispatch (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/hono/dist/compose.js:22:17)
+    at file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/hono/dist/hono-base.js:306:25
+    at C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\server\test\redemption-intent-memory.test.ts:119:15
+    at file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@vitest/runner/dist/index.js:533:5
+    at runTest (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@vitest/runner/dist/index.js:1056:11)
+    at runSuite (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@vitest/runner/dist/index.js:1205:15)
+
+ ❯ server/test/redemption-intent-memory.test.ts (10 tests | 1 failed) 11231ms
+   ✓ UC-C33 current actual redemption SQL/route intent replay > same intent after a lost response returns the same saved code and debits only once 1275ms
+   ✓ UC-C33 current actual redemption SQL/route intent replay > a deliberate second new intent still receives a DISTINCT code and its own debit 1001ms
+   ✓ UC-C33 current actual redemption SQL/route intent replay > retry recovers the original saved result even when that first action exhausted stock 1013ms
+   ✓ UC-C33 current actual redemption SQL/route intent replay > the same intent cannot be changed to another gift and debit a second time 1287ms
+   ✓ UC-C33 current actual redemption SQL/route intent replay > a failed debit rolls back stock/code and the same intent can succeed after the balance fixture changes 1097ms
+   ✓ UC-C33 current actual redemption SQL/route intent replay > another recipient using the same client UUID never receives the first person's code 1035ms
+   ✓ UC-C33 current actual redemption SQL/route intent replay > a late receipt-update failure rolls back the original financial operation before an exact retry 988ms
+   ✓ UC-C33 current actual redemption SQL/route intent replay > legacy callers without a client ID retain two deliberately distinct redemption results 1195ms
+   ✓ UC-C33 current actual redemption SQL/route intent replay > the wrapper denies anon, the pool stays private and SQL history RLS hides the other recipient 1253ms
+   × UC-C33 current actual redemption SQL/route intent replay > malformed or null request bodies fail before the SQL command 1084ms
+     → expected 500 to be 400 // Object.is equality
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  server/test/redemption-intent-memory.test.ts > UC-C33 current actual redemption SQL/route intent replay > malformed or null request bodies fail before the SQL command
+AssertionError: expected 500 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 500
+
+ ❯ server/test/redemption-intent-memory.test.ts:119:169
+    117|   it("malformed or null request bodies fail before the SQL command",as…
+    118|     for(const body of ["null",'{"gift_id":"'+G+'","client_request_id":…
+    119|       const r=await app.request("/api/redemption/redeem",{method:"POST…
+       |                                                                                                                                                                         ^
+    120|     }
+    121|     expect(calls).toHaveLength(0);expect((await snapshot()).ledger).to…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 9 passed (10)
+   Start at  03:56:20
+   Duration  11.71s (transform 75ms, setup 0ms, collect 160ms, tests 11.23s, environment 0ms, prepare 119ms)
+
+JSON report written to C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/docs/verification/D19-redemption-replay-20261026/memory-shape-red-native.json

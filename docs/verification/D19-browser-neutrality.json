@@ -1,0 +1,118 @@
+{
+  "runId": "853739e4-93e4-4559-b3ef-fb7836b1de7c",
+  "target": {
+    "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+    "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+    "disposable": true,
+    "projectId": "adfocate-r1-empty-20261023",
+    "proxy": "none",
+    "apiPort": 56421,
+    "apiContainerId": "1b9c41318298d79308db7782f51474541ad5abf0120fa93b96a2a9ea59d043ee",
+    "databaseContainerId": "e7c8efa295cd5544a8b2a100a73b6953cd6ddd486aaf394f231482067523e12d",
+    "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+    "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+    "networkId": "9e5d3069e8255d70b8eef56020c8ea2618fdb2626d92d9a04e51ea2de41a98e0"
+  },
+  "before": {
+    "xp": 145,
+    "budget": 8875,
+    "points": 550,
+    "cashLedger": 1,
+    "pointLedger": 1,
+    "redemptions": 0,
+    "budgetLedger": 1,
+    "withdrawable": 125,
+    "rewardInventory": [
+      {
+        "id": "5121281f-72f5-44fb-a0e7-5b051bfbabe0",
+        "stock_qty": 3,
+        "stock_remaining": 3
+      }
+    ]
+  },
+  "after": {
+    "xp": 145,
+    "budget": 8875,
+    "points": 550,
+    "cashLedger": 1,
+    "pointLedger": 1,
+    "redemptions": 0,
+    "budgetLedger": 1,
+    "withdrawable": 125,
+    "rewardInventory": [
+      {
+        "id": "5121281f-72f5-44fb-a0e7-5b051bfbabe0",
+        "stock_qty": 3,
+        "stock_remaining": 3
+      }
+    ]
+  },
+  "legacyBefore": [
+    {
+      "id": "c75fec80-2199-44ef-87bb-5052dfc99b68",
+      "status": "approved",
+      "xpAwarded": 135,
+      "pointsAwarded": 500
+    }
+  ],
+  "legacyAfter": [
+    {
+      "id": "c75fec80-2199-44ef-87bb-5052dfc99b68",
+      "status": "approved",
+      "xpAwarded": 135,
+      "pointsAwarded": 500
+    }
+  ],
+  "checks": {
+    "financialSnapshotEqual": true,
+    "legacyIssuedAnchorsEqual": true,
+    "onePendingReward": true,
+    "fundedBudget": true,
+    "inventoryNonEmpty": true,
+    "persistedAfterReload": true
+  },
+  "allEqual": true,
+  "initialSnapshots": [
+    {
+      "xp": 0,
+      "points": 50,
+      "withdrawable": 0,
+      "budget": 9000,
+      "pointLedger": 0,
+      "cashLedger": 0,
+      "redemptions": 0,
+      "budgetLedger": 0,
+      "rewardInventory": [
+        {
+          "id": "5121281f-72f5-44fb-a0e7-5b051bfbabe0",
+          "stock_qty": 3,
+          "stock_remaining": 3
+        }
+      ]
+    },
+    {
+      "xp": 0,
+      "points": 50,
+      "withdrawable": 0,
+      "budget": 9000,
+      "pointLedger": 0,
+      "cashLedger": 0,
+      "redemptions": 0,
+      "budgetLedger": 0,
+      "rewardInventory": [
+        {
+          "id": "5121281f-72f5-44fb-a0e7-5b051bfbabe0",
+          "stock_qty": 3,
+          "stock_remaining": 3
+        }
+      ]
+    }
+  ],
+  "legacyAccounting": "Existing legacy approval issues its pre-existing rewards and can debit the enforced budget. Those raw persisted anchors precede the measured pending handoff and are not reset or called neutral. Pending completion creates no payment/ledger/withdrawable/budget/inventory mutation.",
+  "fundedFixture": {
+    "initialBudget": 9000,
+    "enforced": true,
+    "initialStock": 3
+  },
+  "provider": "No payment/SMS/publication/paid AI provider called."
+}

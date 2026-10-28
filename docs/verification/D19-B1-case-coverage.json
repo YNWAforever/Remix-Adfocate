@@ -1,0 +1,652 @@
+{
+  "originalAuditCases": 107,
+  "newProductAcceptanceExecuted": false,
+  "originalAndCurrentCaseRowsUnchanged": true,
+  "originalCsvBytesUnchanged": true,
+  "cases": [
+    {
+      "caseId": "UC-P01",
+      "originalAuditResult": "pass",
+      "savedCaseRowSha256": "8f94aa1d6d80a7c3e313a72c600a6c3feac58b52fe4a35821f991e9d8c2a9cb1",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-P02",
+      "originalAuditResult": "fail",
+      "savedCaseRowSha256": "34874fc2f4f0ae3333055bafe3ddd2db6575994adadf8f4712d82cdacb1e3262",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-P03",
+      "originalAuditResult": "fail",
+      "savedCaseRowSha256": "5ac3bc8c247943e9f44926deb224fcff8baa47f74c58be927a0a8cad8ec1bc66",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-C01",
+      "originalAuditResult": "fail",
+      "savedCaseRowSha256": "1697d5e36c63905716e6210ee2ee1f7323a125e363d5bc4b79b1f8fbe1245b34",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-C02",
+      "originalAuditResult": "pass",
+      "savedCaseRowSha256": "af8f8606b7fb26888aed403c05e62b3b292e31a0325a6db4eccce566e9fe90f4",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-C03",
+      "originalAuditResult": "fail",
+      "savedCaseRowSha256": "25a2abba3686252ed1962fb1ba64ab8eb183fdc898e96c32abb15ddfe05aea1a",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-C04",
+      "originalAuditResult": "fail",
+      "savedCaseRowSha256": "3599d710fc8181fbb8b071d600bcc0f10d1015299d61d362c404b3840928c50b",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-C05",
+      "originalAuditResult": "fail",
+      "savedCaseRowSha256": "067bcba233c104394a7f0ba2e3cd1bfa8617cf5ebce6c532e88b7f535c5dedfe",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-C06",
+      "originalAuditResult": "fail",
+      "savedCaseRowSha256": "d7a58b0377ab0e8b06bca0e2b8a540ad0212ab58f397b0c014c208f8510b0c6a",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-C07",
+      "originalAuditResult": "fail",
+      "savedCaseRowSha256": "2669b8959e8cf60c7d28a5ec97b682cd4d715087b9a32a3450a8e86155c42f4d",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-C08",
+      "originalAuditResult": "fail",
+      "savedCaseRowSha256": "d20fa932feb4a213387884333262bd2943934ae5f8b7ba5fcac9f2f90f66cdb6",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-C09",
+      "originalAuditResult": "fail",
+      "savedCaseRowSha256": "835714140e6760e9c38a5249bccd2dc526372791b4748af4c5e568c980a74055",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-C10",
+      "originalAuditResult": "pass",
+      "savedCaseRowSha256": "5653f96d25776a3e6c12127649f023b8cb8fdaf75a2c9e57be8f5e65916e7848",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-C11",
+      "originalAuditResult": "fail",
+      "savedCaseRowSha256": "c56bf1aef51848b71e16f883b25e5423660bb41773e11697eb4e0863b56f5701",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-C12",
+      "originalAuditResult": "pass",
+      "savedCaseRowSha256": "fa29c6426af50bd40c21bdca86e36511e1f109af341449aef6d57a90a8426cd9",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-C13",
+      "originalAuditResult": "pass",
+      "savedCaseRowSha256": "a35fc04045ccde6940da787f3584a6358f23b01c4ab7884589e27664a6467888",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-C14",
+      "originalAuditResult": "pass",
+      "savedCaseRowSha256": "6819f9e65844b06062e3dedab975bfd53678d57ad1917459cc480e123a5f5b24",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-C15",
+      "originalAuditResult": "pass",
+      "savedCaseRowSha256": "616950af9c010a41f54ad770d9cf50068b21343629689272fe5b5b981959bf6d",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-C16",
+      "originalAuditResult": "pass",
+      "savedCaseRowSha256": "63c55ae89769e93c145a9fc8f7d7ede2b49aab5760cb16f6360f3767c8943984",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-C17",
+      "originalAuditResult": "pass",
+      "savedCaseRowSha256": "d35ce3cb8c03f0b58bae470ba94059d39849f56bc6caf9604e4f70ed606ab4b8",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-C18",
+      "originalAuditResult": "fail",
+      "savedCaseRowSha256": "9c52c6cdfef2fb2a6fa80259b3b5120443c2ce6be01e587f1b9c85e40bd75a75",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-C19",
+      "originalAuditResult": "pass",
+      "savedCaseRowSha256": "8b6bb4acaa014ff87bc49c50f591b19bbd3920378d0a8f97c4f1e759392d4224",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-A01",
+      "originalAuditResult": "pass",
+      "savedCaseRowSha256": "3a3c8f771c9cc28abe85e018cdeb678c890354a8965e3a0744648fcdd48a36b3",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-A02",
+      "originalAuditResult": "pass",
+      "savedCaseRowSha256": "11bec9640198bdf3115cb1a2ed99132992ec47f8cfb1653f38cfc5d5366dd0bf",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-A03",
+      "originalAuditResult": "pass",
+      "savedCaseRowSha256": "ca06a1d6a9e936b42244beca610a52283bea08e380b3e1f5aa1a65398d61de26",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-A04",
+      "originalAuditResult": "fail",
+      "savedCaseRowSha256": "bcdae7d6235ec60bc0b716667bf190ec12799f3967607831e26a24ec5a233d73",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-A05",
+      "originalAuditResult": "fail",
+      "savedCaseRowSha256": "959b2ae7cef254d04c5a449f949732d07d17060f9bac7daa2dd570196fc889e9",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-A06",
+      "originalAuditResult": "fail",
+      "savedCaseRowSha256": "95e25e058e00297a58d8896bf7b18a78e0913c37ee97b3a2aab5dbd86cff5c16",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-R01",
+      "originalAuditResult": "fail",
+      "savedCaseRowSha256": "de878e970911cfd168926916c9a47a87cae86cce450ed5eea55ec3bc409c7b74",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-R02",
+      "originalAuditResult": "pass",
+      "savedCaseRowSha256": "32276622faf3369a322b1d31ba44cb941879ff4add1df5ca0887a8e1c0db9705",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-C20",
+      "originalAuditResult": "not-tested",
+      "savedCaseRowSha256": "73477321887af790a151aee1d854039399c4570546da78a897b6e859cefcb782",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-C21",
+      "originalAuditResult": "not-tested",
+      "savedCaseRowSha256": "d63cc7211d43a7f0f13a7bc620a1768dfd72abbd46c74e7e3868f0861f632a36",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-C22",
+      "originalAuditResult": "not-tested",
+      "savedCaseRowSha256": "605b00c0d35ec311cbff0dfb2071694505a0b6d24acf325ad4372b00310d9638",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-C23",
+      "originalAuditResult": "not-tested",
+      "savedCaseRowSha256": "8f32218e01dea7fbe3c26c0249f9232edabc292532729dc2e9386884552afa7f",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-C24",
+      "originalAuditResult": "not-tested",
+      "savedCaseRowSha256": "6200dacec17b796180f1331501336e8ebb6d542c80b6c0e9871b689674d95959",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-C25",
+      "originalAuditResult": "not-tested",
+      "savedCaseRowSha256": "f93634436b716c427aaec2deadffd06dd812b1ab3bc02043c0f621915f8ba4de",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-C26",
+      "originalAuditResult": "not-tested",
+      "savedCaseRowSha256": "5cca52e131ed420f1bfb9e6a78fb3a18386da95e5dbce6a4e1ca8b483504aa66",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-C27",
+      "originalAuditResult": "not-tested",
+      "savedCaseRowSha256": "b3964570292f363cf58814bd8cb84b00ed69aace36068fd64a13286169a6954d",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-C28",
+      "originalAuditResult": "not-tested",
+      "savedCaseRowSha256": "f14b54c40aacc91caad99db779f1a048dd904a4c861e9ced71398d8652fe22d6",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-C29",
+      "originalAuditResult": "not-tested",
+      "savedCaseRowSha256": "f2fec6f9a26376cc1f79d263e99a70b7d40ec0d17b178f3203a7a5fcdd430dcd",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-C30",
+      "originalAuditResult": "not-tested",
+      "savedCaseRowSha256": "92516620fdfb9cd597695691329eb2ef7754ec3b2216c33b8138576e4b5aacf6",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-C31",
+      "originalAuditResult": "not-tested",
+      "savedCaseRowSha256": "979ae2dedd5ce782a96b1ee03c5a248750d217549cd38b3360db6ee1a980ad2f",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-C32",
+      "originalAuditResult": "not-tested",
+      "savedCaseRowSha256": "2bdc5d1261582e9bfb6b33e690e022fccb54cc5923a2f68f7d1c97a4f7133467",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-C33",
+      "originalAuditResult": "not-tested",
+      "savedCaseRowSha256": "b07a39105ac8beb8b2d4c1d128a06d66044d19646d30d7681e2eda54aaf84b67",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-C34",
+      "originalAuditResult": "not-tested",
+      "savedCaseRowSha256": "0c5686abc6c1475b613fd3acb9dc845d04caac2312c110786539477c1f317b86",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-C35",
+      "originalAuditResult": "not-tested",
+      "savedCaseRowSha256": "a7a59e6636b10ea2c41dbff8a95da78fe0a50b6d4873f1fb303ef0780e558c69",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-C36",
+      "originalAuditResult": "not-tested",
+      "savedCaseRowSha256": "727a7146d5d84e541cb5e284cfcf2cd2475d3fc52bb397b1d89bdeebc52d6fe2",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-A07",
+      "originalAuditResult": "not-tested",
+      "savedCaseRowSha256": "61ad8c5699790f29ae487e91f8fff10eb82ae519842aee9009814e774aa1775b",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-A08",
+      "originalAuditResult": "not-tested",
+      "savedCaseRowSha256": "9cf004de297b0d6c442349d0a2bcc9707973dbbb0b02cd73d68a41308493db19",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-A09",
+      "originalAuditResult": "not-tested",
+      "savedCaseRowSha256": "73903de0c7bf2b5ab20c483b49c54e5cd71e4ffca29609dea5d0423f22126ea2",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-A10",
+      "originalAuditResult": "not-tested",
+      "savedCaseRowSha256": "59bb43ce90260d881c7a07874e500c766ff7a72ded80b0f9b189e7cd7bc670fc",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-A11",
+      "originalAuditResult": "not-tested",
+      "savedCaseRowSha256": "1506eb11bd91d802685992616bc02fa1e49937340d1946d648f3bc36f338af39",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-A12",
+      "originalAuditResult": "not-tested",
+      "savedCaseRowSha256": "cec66bba78b29471d58db42d42889e73cdc082e4e054c14afa427480ca956955",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-A13",
+      "originalAuditResult": "not-tested",
+      "savedCaseRowSha256": "d52c78a6117938f420e63ad4f778472ce687271971d82782dce6355a47915841",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-A14",
+      "originalAuditResult": "not-tested",
+      "savedCaseRowSha256": "832fa4490515791a2308284c77c1c339e1b1c31a807f0ab0eed04a3c610f6e4b",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-A15",
+      "originalAuditResult": "not-tested",
+      "savedCaseRowSha256": "20b42c44d9045fcaee17b3c464ca391c0c198de7855fab577c8639748397601d",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-A16",
+      "originalAuditResult": "not-tested",
+      "savedCaseRowSha256": "dd52c13bb9298a6bd9e32a63d582f972f792c618e600cb7242b2bde76a400914",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-A17",
+      "originalAuditResult": "not-tested",
+      "savedCaseRowSha256": "a92f16e6f455a806a0bf92bcae18350d6a77adf4c810141a7e41c52db22086bb",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-A18",
+      "originalAuditResult": "not-tested",
+      "savedCaseRowSha256": "7cf714f0009dc92b4562171dfb55470d32ab004db1dc8d218c3776180cc0935b",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-A19",
+      "originalAuditResult": "not-tested",
+      "savedCaseRowSha256": "c3d35b893ca12f730a737c176dea56dabaaca8c7fef94ccd9fb3d4eb6d1f3eb6",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-A20",
+      "originalAuditResult": "not-tested",
+      "savedCaseRowSha256": "bd8c8833c56a71a0d6b6974da499beaef2da6027cfec19fa9e1db4cbf8fc80a8",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-A21",
+      "originalAuditResult": "not-tested",
+      "savedCaseRowSha256": "9380dc34ea35e5affead3b75e371909bfdd9b414d30e67d93c0d024e6df95d51",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-A22",
+      "originalAuditResult": "not-tested",
+      "savedCaseRowSha256": "895a722c50f81a7f86c72b4efd7579420828f45aef0a30cc284bb9ca3c4f7e00",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-A23",
+      "originalAuditResult": "not-tested",
+      "savedCaseRowSha256": "52efb6a899881a61ee714e6316835248e84eaa51a698f3622cbc43db98d97280",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-A24",
+      "originalAuditResult": "not-tested",
+      "savedCaseRowSha256": "33c899016e15be4421ac5a5b94614926b2fe0200bb753310bed2788fa764586c",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-S01",
+      "originalAuditResult": "not-tested",
+      "savedCaseRowSha256": "4df4ffb500bf4e904bcbeedbffa22499395ddfe712d3160943f29032feb755c4",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-S02",
+      "originalAuditResult": "not-tested",
+      "savedCaseRowSha256": "014c73f69a6182202d0382585f2a6fe52960b935fe9f3538e4690a02d469887f",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-S03",
+      "originalAuditResult": "not-tested",
+      "savedCaseRowSha256": "6f891151873b905229d6dbf27de8510728edcef7f813b2ac878a6ff7366c5c14",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-S04",
+      "originalAuditResult": "not-tested",
+      "savedCaseRowSha256": "02e1befb8d3ceb14a1a0c25f3a566b5bcf3c8e4a728dbfbe5ad2ff5ca8619360",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-Q01",
+      "originalAuditResult": "not-tested",
+      "savedCaseRowSha256": "9bce1271df638b57792762743dfe12cb5a5bf040cf8d60a6a2c0f52383e46577",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-Q02",
+      "originalAuditResult": "not-tested",
+      "savedCaseRowSha256": "a29c9833f569d1f396a1005b02fef2fa61761dcafe9393007d56c637d8bacf22",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-Q03",
+      "originalAuditResult": "not-tested",
+      "savedCaseRowSha256": "cd84d945db1bfaf343f122c0a8a5d2999430139159c53d0ed1eb0c687be85333",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-Q04",
+      "originalAuditResult": "not-tested",
+      "savedCaseRowSha256": "1aa3e3411783e3eb04034451a5f32a8575fdb01c378fe767310769d5e6fe7885",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-Q05",
+      "originalAuditResult": "not-tested",
+      "savedCaseRowSha256": "f929e049c2cf4744f7566d3667bb92b592360665952dd7886d8d2a1799bfb3bc",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-R03",
+      "originalAuditResult": "not-tested",
+      "savedCaseRowSha256": "f64359c0d7b1dd6a1583ffb2f30c285a677be4ecd068017ac2951e853f792cba",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-R04",
+      "originalAuditResult": "not-tested",
+      "savedCaseRowSha256": "fd8f9be121dfa8ef2718e270726db8777cfb227b263a83d43ed7de9992687b08",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-A25",
+      "originalAuditResult": "fail",
+      "savedCaseRowSha256": "3deab2d1bb8f69ed10c13fe5e161fb030004aa2531c826fc3ae8e46925870282",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-A26",
+      "originalAuditResult": "fail",
+      "savedCaseRowSha256": "195ad0511f43c126280f95d1ecdba9707ef82c54277041ac938fc825776fc6ef",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-A27",
+      "originalAuditResult": "fail",
+      "savedCaseRowSha256": "f6ca557a5586f17e017c453ec3521fb979fd2f1ab7086bfe44307da7232cedc3",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-A28",
+      "originalAuditResult": "fail",
+      "savedCaseRowSha256": "0adcbca418e65c6e7cc5870aff73580e7d133f489b4317dd9d629205a7970063",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-A29",
+      "originalAuditResult": "fail",
+      "savedCaseRowSha256": "8640b82e67161d3bd7ac7fb067ae81d5724a44dbfa0a7d1e965e5902ec6f178e",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-A30",
+      "originalAuditResult": "fail",
+      "savedCaseRowSha256": "e8f99999ff7af9efe761e754c4fbffc0dca900c8af7e43cf5d8cd4dbe626417f",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-A31",
+      "originalAuditResult": "fail",
+      "savedCaseRowSha256": "c4a479afbd288cd525c1c942f8c5ac7f8b3fda326b2d7cc90bc671c94f7263ef",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-A32",
+      "originalAuditResult": "fail",
+      "savedCaseRowSha256": "e408d9c4f701a5efa7c710ef648cc27e1fab96036faf10d5a6a086ae5eda76af",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-A33",
+      "originalAuditResult": "not-tested",
+      "savedCaseRowSha256": "9297b20fa90b6b2ec9dacfe6514ccd6953f8f3bbeb53b9bce34dabe1ef050c91",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-A34",
+      "originalAuditResult": "pass",
+      "savedCaseRowSha256": "04398ddee76b5bd656b5e5e9a52ab652735667be4c4f1237f2575e406752b786",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-A35",
+      "originalAuditResult": "pass",
+      "savedCaseRowSha256": "07b95be62bb805accf48d9ca71e3b1f44f0cfd97de4dcdce6df56ec667ec33c9",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-A36",
+      "originalAuditResult": "pass",
+      "savedCaseRowSha256": "60031f1218643d6b17374439b338a1b4396340f37226687bb0e6fe840eec8b33",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-A37",
+      "originalAuditResult": "pass",
+      "savedCaseRowSha256": "4da2f3ea04c877539482d296afe9bc6f882b6f3a4f877571e77560cf99072a97",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-A38",
+      "originalAuditResult": "pass",
+      "savedCaseRowSha256": "2b2cfde760d765e1c492bd941cef7d6ebd502b51d2ed3a2e780f5e0a49611bbb",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-A39",
+      "originalAuditResult": "pass",
+      "savedCaseRowSha256": "fac3877bcd412987f9fdfe99e8fd11c544097dda974a25fa16b0e4858dcd4c79",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-A40",
+      "originalAuditResult": "pass",
+      "savedCaseRowSha256": "11367a5850751b639ad0a55007de210d3dc95d5a2f288772b8898a8cdb8afa9d",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-A41",
+      "originalAuditResult": "fail",
+      "savedCaseRowSha256": "89c0d8b24f9206ecdded00e98214f300aa7e7d127f9b891a605a1ca14bf42997",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-A42",
+      "originalAuditResult": "fail",
+      "savedCaseRowSha256": "f8b1fe37a28cf7ee70389c58b90266482111d6f2bc788596f9c36f99d2bcc3eb",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-A43",
+      "originalAuditResult": "fail",
+      "savedCaseRowSha256": "bf3606f9b04054b6dcbba11a05b79d34c54e0289e717691e090b77d876311796",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-A44",
+      "originalAuditResult": "fail",
+      "savedCaseRowSha256": "f61a03fef3026e27cc9d6ad56c92dcffcdb540755bad0709f027270863548cc7",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-A45",
+      "originalAuditResult": "pass",
+      "savedCaseRowSha256": "7e1df1f80d7b3f4af0ed928786dd16fded76c57aa1822a2ddc171e3e804e1a2f",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-A46",
+      "originalAuditResult": "pass",
+      "savedCaseRowSha256": "a867113b782ecb4144d40d9e4b1d1e48c14810b5265a1a37feedbcaa23182b9d",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-A47",
+      "originalAuditResult": "fail",
+      "savedCaseRowSha256": "1a60faae7e53b7cf0127f0de3c912c7b9d9b5d2384fcce88dbb95c20e80d7d13",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-A48",
+      "originalAuditResult": "pass",
+      "savedCaseRowSha256": "85e9b7780afc18a5e0d130f0c32d7206e79b14986b8ecfe458dfccc98115abc4",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-A49",
+      "originalAuditResult": "pass",
+      "savedCaseRowSha256": "1a8e572344ae16707f73c3e350520fbe369925a2a76cbb42d2057ef4fa1e0d87",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-A50",
+      "originalAuditResult": "pass",
+      "savedCaseRowSha256": "d1e232d6ec28b67d9dbcdee01db59839ff7f4a8e441da1e8dc17c80eb415816b",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-A51",
+      "originalAuditResult": "fail",
+      "savedCaseRowSha256": "c187bb2605b706679d022d1ebfc865285d51c596e2089ed206ce0f1a4094cd16",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-A52",
+      "originalAuditResult": "fail",
+      "savedCaseRowSha256": "060a8f9eef6e8dee16acdd03665495b1f34dc122d68f297e3c1250b0c3fc57b6",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-A53",
+      "originalAuditResult": "fail",
+      "savedCaseRowSha256": "561b4023edf6d35cfd4beac89bbbba2d1fa7306e2bdfa6cc7b4897698d81a2b5",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-A54",
+      "originalAuditResult": "fail",
+      "savedCaseRowSha256": "2eb6746f41c7f19906da34e8a9c58348da6bc544b10147139c36d59590d25d66",
+      "runtimeRenewedByB1": false
+    },
+    {
+      "caseId": "UC-A55",
+      "originalAuditResult": "fail",
+      "savedCaseRowSha256": "40a90aba3475b6fe7246f40a11a120029088f1149555ca058f2f33be88edd7b8",
+      "runtimeRenewedByB1": false
+    }
+  ],
+  "scope": "B1 has 11 offline guard assertions and five negative CLI entrypoints; these do not become product role/browser/financial acceptance. Full original16 and protected194 passed locally.",
+  "historicalPristineCases": "Original two real global cases retained at fingerprint 9812cc7755dd6443f8fa4b39bc92e6c26536b54e15ba1c0cbc494815375dd5e1; no rerun"
+}

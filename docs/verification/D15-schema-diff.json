@@ -1,0 +1,179 @@
+{
+  "readOnlyObservation": true,
+  "productionQueried": false,
+  "manifestDigest": "e9e801ff06c0c5382ec18e06ca0d9f05dc7a3d8a4ab1b68633e7f7bc5f14ca75",
+  "previousManifestDigest": "a1cfcb804a2d369df16a2e7542cde4346429bcfb652a7707efdf929c0e62ff86",
+  "oldManifestEntriesUnchanged": 37,
+  "capabilitiesBefore": 471,
+  "capabilitiesAfter": 501,
+  "addedCapabilities": [
+    "constraint:public.academy_lessons.academy_lesson_published_content",
+    "constraint:public.academy_lessons.academy_lessons_pkey",
+    "constraint:public.creator_lesson_progress.creator_lesson_progress_lesson_id_content_version_fkey",
+    "constraint:public.creator_lesson_progress.creator_lesson_progress_pkey",
+    "function:private.can_read_academy_track",
+    "function:private.guard_academy_lesson_history",
+    "function:public.author_academy_lesson",
+    "function:public.can_read_academy_track",
+    "function:public.complete_academy_lesson",
+    "function:public.get_academy_learning",
+    "grant:authenticated.public.academy_lessons(select)",
+    "grant:authenticated.public.can_read_academy_track(uuid)",
+    "grant:authenticated.public.complete_academy_lesson(uuid,uuid,integer)",
+    "grant:authenticated.public.creator_lesson_progress(select)",
+    "grant:authenticated.public.get_academy_learning(uuid,text)",
+    "grant:service_role.public.academy_lessons(select)",
+    "grant:service_role.public.author_academy_lesson(uuid,uuid,uuid,integer,integer,jsonb,text,text)",
+    "grant:service_role.public.creator_lesson_progress(select)",
+    "index:public.academy_lessons.academy_lesson_one_draft",
+    "index:public.academy_lessons.academy_lesson_one_published",
+    "index:public.academy_lessons.academy_lessons_approved_by",
+    "index:public.academy_lessons.academy_lessons_track_order",
+    "index:public.creator_lesson_progress.creator_lesson_progress_lesson",
+    "policy:public.academy_lessons.academy_lessons_published_eligible",
+    "policy:public.creator_lesson_progress.creator_lesson_progress_self",
+    "rls:public.academy_lessons",
+    "rls:public.creator_lesson_progress",
+    "table:public.academy_lessons",
+    "table:public.creator_lesson_progress",
+    "trigger:public.academy_lesson_history_guard"
+  ],
+  "newMigrations": [
+    {
+      "version": "20261023091050",
+      "name": "academy_learning",
+      "path": "supabase/migrations/20261023091050_academy_learning.sql",
+      "sha256": "b11ea20f0e6e483bb59f582a66f3086aa71c03990c2ceafdc9466c65917602af",
+      "phase": "academy_learning",
+      "dependsOn": [
+        "20261022182544"
+      ],
+      "capabilities": [
+        "table:public.academy_lessons",
+        "table:public.creator_lesson_progress",
+        "constraint:public.academy_lessons.academy_lessons_pkey",
+        "constraint:public.creator_lesson_progress.creator_lesson_progress_pkey",
+        "constraint:public.creator_lesson_progress.creator_lesson_progress_lesson_id_content_version_fkey",
+        "constraint:public.academy_lessons.academy_lesson_published_content",
+        "index:public.academy_lessons.academy_lessons_track_order",
+        "index:public.creator_lesson_progress.creator_lesson_progress_lesson",
+        "grant:authenticated.public.academy_lessons(select)",
+        "grant:authenticated.public.creator_lesson_progress(select)",
+        "grant:service_role.public.academy_lessons(select)",
+        "grant:service_role.public.creator_lesson_progress(select)",
+        "rls:public.academy_lessons",
+        "rls:public.creator_lesson_progress",
+        "policy:public.academy_lessons.academy_lessons_published_eligible",
+        "policy:public.creator_lesson_progress.creator_lesson_progress_self",
+        "index:public.academy_lessons.academy_lesson_one_published",
+        "index:public.academy_lessons.academy_lesson_one_draft",
+        "function:private.can_read_academy_track",
+        "function:public.can_read_academy_track",
+        "function:public.get_academy_learning",
+        "function:public.complete_academy_lesson",
+        "function:public.author_academy_lesson",
+        "function:private.guard_academy_lesson_history",
+        "trigger:public.academy_lesson_history_guard",
+        "grant:authenticated.public.get_academy_learning(uuid,text)",
+        "grant:authenticated.public.complete_academy_lesson(uuid,uuid,integer)",
+        "grant:authenticated.public.can_read_academy_track(uuid)",
+        "grant:service_role.public.author_academy_lesson(uuid,uuid,uuid,integer,integer,jsonb,text,text)"
+      ],
+      "transactionExpectation": "transactional",
+      "replayExpectation": "migration_history_noop"
+    },
+    {
+      "version": "20261023093445",
+      "name": "academy_learning_conflicts",
+      "path": "supabase/migrations/20261023093445_academy_learning_conflicts.sql",
+      "sha256": "e95fcaa93204e33223a6324f4af2475f548db6491ac1d1ea489573339a04984b",
+      "phase": "academy_learning",
+      "dependsOn": [
+        "20261023091050"
+      ],
+      "capabilities": [
+        "function:public.can_read_academy_track",
+        "function:public.complete_academy_lesson",
+        "function:public.author_academy_lesson",
+        "grant:authenticated.public.can_read_academy_track(uuid)",
+        "grant:authenticated.public.complete_academy_lesson(uuid,uuid,integer)",
+        "grant:service_role.public.author_academy_lesson(uuid,uuid,uuid,integer,integer,jsonb,text,text)"
+      ],
+      "transactionExpectation": "transactional",
+      "replayExpectation": "migration_history_noop"
+    },
+    {
+      "version": "20261023095521",
+      "name": "academy_approval_index",
+      "path": "supabase/migrations/20261023095521_academy_approval_index.sql",
+      "sha256": "771fc8faab73eabc7677a07f9881690ba115bbb1e5618045d90c89199d025e34",
+      "phase": "academy_learning",
+      "dependsOn": [
+        "20261023093445"
+      ],
+      "capabilities": [
+        "index:public.academy_lessons.academy_lessons_approved_by"
+      ],
+      "transactionExpectation": "transactional",
+      "replayExpectation": "migration_history_noop"
+    }
+  ],
+  "targets": {
+    "empty": {
+      "identity": {
+        "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+        "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+        "disposable": true,
+        "projectId": "adfocate-r1-empty-20261023",
+        "proxy": "none",
+        "apiPort": 56421,
+        "apiContainerId": "1b9c41318298d79308db7782f51474541ad5abf0120fa93b96a2a9ea59d043ee",
+        "databaseContainerId": "e7c8efa295cd5544a8b2a100a73b6953cd6ddd486aaf394f231482067523e12d",
+        "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+        "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+        "networkId": "9e5d3069e8255d70b8eef56020c8ea2618fdb2626d92d9a04e51ea2de41a98e0"
+      },
+      "historyBefore": 67,
+      "historyAfter": 70,
+      "addedVersions": [
+        "20261023091050",
+        "20261023093445",
+        "20261023095521"
+      ],
+      "oldHistoryUnchanged": true,
+      "existingGrantAndRlsUnchanged": true,
+      "membershipPrimaryKey": "user_id",
+      "unindexedD15ForeignKeys": []
+    },
+    "shaped": {
+      "identity": {
+        "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+        "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+        "disposable": true,
+        "projectId": "adfocate-r1-shaped-20261023",
+        "proxy": "none",
+        "apiPort": 56521,
+        "apiContainerId": "c96d960e276cb7c84ae5bf52fdf77e854865516d89d95ca2148a55b6137fa7e9",
+        "databaseContainerId": "34bd00cda4f4c91650795b83d4d48d5e46ecb90b310a3e409b31c02f99cec176",
+        "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+        "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+        "networkId": "fbf71b13e7f584b230b293383cccbd2157814168cbae1d9169b377d8f886f69d"
+      },
+      "historyBefore": 51,
+      "historyAfter": 54,
+      "addedVersions": [
+        "20261023091050",
+        "20261023093445",
+        "20261023095521"
+      ],
+      "oldHistoryUnchanged": true,
+      "existingGrantAndRlsUnchanged": true,
+      "membershipPrimaryKey": "user_id",
+      "unindexedD15ForeignKeys": []
+    }
+  },
+  "sourceOldSqlChecksumsPreserved": true,
+  "replay": "Three exact forward files only; no reset, db push or old history/checksum repair. Shaped target prior history gaps preserved.",
+  "catalog": "D15-schema-after.json",
+  "lint": "D15-db-lint.json"
+}

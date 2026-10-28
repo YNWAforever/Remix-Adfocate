@@ -23,7 +23,7 @@ function renderNav() {
 describe("SideNav", () => {
   it("renders all navigation destinations", async () => {
     renderNav();
-    for (const label of ["主頁", "任務", "通知", "積分兌換", "錢包", "探索"]) {
+    for (const label of ["主頁", "任務", "我的任務", "通知", "積分兌換", "錢包", "探索"]) {
       await waitFor(() => expect(screen.getByText(label)).toBeInTheDocument());
     }
   });
@@ -33,6 +33,7 @@ describe("SideNav", () => {
     const expected = [
       { label: "主頁", href: "/home" },
       { label: "任務", href: "/mission" },
+      { label: "我的任務", href: "/my" },
       { label: "通知", href: "/notifications" },
       { label: "積分兌換", href: "/redemption" },
       { label: "錢包", href: "/wallet" },

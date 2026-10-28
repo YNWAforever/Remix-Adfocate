@@ -1,0 +1,69 @@
+{
+  "sourceFingerprint": "7943636116d39d489e0f0d1623784627ab0388650fb2e680c12c90eb1a2d1ac6",
+  "wholeR1Verified": false,
+  "releaseHold": true,
+  "items": [
+    {
+      "id": "B2-IDENTITY-BOOTSTRAP",
+      "status": "NOT_APPROVED_NOT_RUN",
+      "dependsOn": "Direct approval of exact final manifest/source; cached pinned images and free loopback ports",
+      "doneWhen": "Observe new exact container/network/volume IDs and prestart config digest; verify live identity before owner SQL/keys/client;72 forward migrations/checkpoint/conditional9, objects/RPC/grants/RLS/history and immutable seed baseline pass."
+    },
+    {
+      "id": "B2-ROLE-CORE",
+      "status": "NOT_RUN",
+      "dependsOn": "Bootstrap receipt and role→core pass dependencies",
+      "doneWhen": "Original8 role and9 core cases pass with exact-ID journals/caps; historical bad legacy ordinary approval is rejected unchanged; transient fault DDL absent afterward."
+    },
+    {
+      "id": "B2-BROWSER",
+      "status": "NOT_RUN",
+      "dependsOn": "Core pass; same-lineage role editor/resource; existing Edge available",
+      "doneWhen": "Original5 browser cases with full legacy/active/revision/proof/operator completion/finance/refresh history pass, plus real409/retained input, network mock, scoped empty/reload and permission503 recovery obligations. No extra fixture scope."
+    },
+    {
+      "id": "B2-NEUTRALITY",
+      "status": "NOT_RUN",
+      "dependsOn": "Role/core/browser saved state",
+      "doneWhen": "Separate initial/join/legacy deltas from each pending completion/cancel/reapproval window; all financial tables/XP and inventory neutral in pending windows; one current saved row/workflow, cancelled history and legacy anchors unchanged. Final all-phase inventory/journals and immutable seeds match caps."
+    },
+    {
+      "id": "R1-APPLICABILITY-RECONCILIATION",
+      "status": "PENDING_RUNTIME",
+      "dependsOn": "Fresh B2 evidence and current diff",
+      "doneWhen": "Reconcile107 cases, preserve16/194, current applicable full suite and required integration; add a separate exact-ID approved manifest if additional write cases are necessary. Never expand B2 caps or substitute mock/READY/toasts for persistence."
+    },
+    {
+      "id": "ORIGINAL-INCIDENT",
+      "status": "OPEN_UNRESTORED",
+      "dependsOn": "Separate owner disposition; B1 forensic exclusion remains enforced",
+      "doneWhen": "Only a separately approved evidence-supported disposition may change incident state; no reliable before image inferred and no new fixture used as restoration. P0 does not close incident or release HOLD."
+    },
+    {
+      "id": "D15",
+      "status": "BLOCKED_CONTENT",
+      "dependsOn": "Four real approved lesson units and approval reference",
+      "doneWhen": "Preserve UC-C18/UC-A51 original completion/persisted progress acceptance; no invented lessons or content signoff."
+    },
+    {
+      "id": "D17-OWNER-DEVICE-HOSTED",
+      "status": "BLOCKED",
+      "dependsOn": "Named advisor owners, required physical devices/manual AT/hosted candidate evidence",
+      "doneWhen": "Owner-specific decisions and required device/browser/hosted quality evidence recorded; simulated viewport/local syntax is insufficient."
+    },
+    {
+      "id": "FORMAL-STAFF",
+      "status": "BLOCKED_SCOPE",
+      "dependsOn": "Separate formal membership/role owner authorization",
+      "doneWhen": "Approved real staff handoff/membership and Auth/RLS evidence. Existing active membership0 is a scope issue; do not remove checks or ask for another login as a substitute."
+    },
+    {
+      "id": "RELEASE",
+      "status": "HOLD_NOT_DEPLOYED",
+      "dependsOn": "Owner review of unresolved gates and exact candidate/deployment authority",
+      "doneWhen": "Separate applicable push/merge/migration/deploy/pilot/observation authorization and evidence. Provider disabled; no external messages/invites/payments/paid AI."
+    }
+  ],
+  "pristineGlobalRpcRerun": false,
+  "retainedPristineEvidence": "D19-pristine-rpc-delivery.json; historical source-bound, not rebound as B2 runtime"
+}

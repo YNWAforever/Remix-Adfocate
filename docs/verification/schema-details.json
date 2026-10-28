@@ -1,0 +1,4667 @@
+{
+  "projectId": "mhkoayftiuojxlrkollf",
+  "mode": "read-only-catalogs-and-bucket-metadata",
+  "query": "select jsonb_build_object(\n'columns',(select jsonb_agg(jsonb_build_object('table',table_name,'column',column_name,'type',udt_name,'nullable',is_nullable,'default',column_default) order by table_name,ordinal_position) from information_schema.columns where table_schema='public'),\n'constraints',(select jsonb_agg(jsonb_build_object('table',c.conrelid::regclass::text,'name',c.conname,'kind',c.contype,'definition',pg_get_constraintdef(c.oid)) order by c.conname) from pg_constraint c join pg_namespace n on n.oid=c.connamespace where n.nspname='public'),\n'indexes',(select jsonb_agg(jsonb_build_object('schema',schemaname,'table',tablename,'name',indexname,'definition',indexdef) order by indexname) from pg_indexes where schemaname in ('public','private')),\n'triggers',(select jsonb_agg(jsonb_build_object('schema',n.nspname,'table',c.relname,'name',t.tgname,'definition',pg_get_triggerdef(t.oid)) order by t.tgname) from pg_trigger t join pg_class c on c.oid=t.tgrelid join pg_namespace n on n.oid=c.relnamespace where not t.tgisinternal and n.nspname in ('public','private')),\n'storagePolicies',(select jsonb_agg(jsonb_build_object('table',tablename,'name',policyname,'roles',roles,'command',cmd) order by policyname) from pg_policies where schemaname='storage'),\n'storageBuckets',(select jsonb_agg(jsonb_build_object('id',id,'public',public)) from storage.buckets where id in ('mission-draft-assets','publication-proof-assets','creator-avatars'))\n) as schema_details;",
+  "details": {
+    "columns": [
+      {
+        "type": "uuid",
+        "table": "academy_content",
+        "column": "id",
+        "default": "gen_random_uuid()",
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "academy_content",
+        "column": "kind",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "academy_content",
+        "column": "slug",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "academy_content",
+        "column": "status",
+        "default": "'draft'::text",
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "academy_content",
+        "column": "title_zh",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "academy_content",
+        "column": "title_en",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "text",
+        "table": "academy_content",
+        "column": "excerpt_zh",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "text",
+        "table": "academy_content",
+        "column": "excerpt_en",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "text",
+        "table": "academy_content",
+        "column": "body_zh",
+        "default": "''::text",
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "academy_content",
+        "column": "body_en",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "text",
+        "table": "academy_content",
+        "column": "category",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "text",
+        "table": "academy_content",
+        "column": "required_level",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "text",
+        "table": "academy_content",
+        "column": "emoji",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "text",
+        "table": "academy_content",
+        "column": "color",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "int4",
+        "table": "academy_content",
+        "column": "sort",
+        "default": "0",
+        "nullable": "NO"
+      },
+      {
+        "type": "jsonb",
+        "table": "academy_content",
+        "column": "metadata",
+        "default": "'{}'::jsonb",
+        "nullable": "NO"
+      },
+      {
+        "type": "timestamptz",
+        "table": "academy_content",
+        "column": "published_at",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "timestamptz",
+        "table": "academy_content",
+        "column": "archived_at",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "timestamptz",
+        "table": "academy_content",
+        "column": "created_at",
+        "default": "now()",
+        "nullable": "NO"
+      },
+      {
+        "type": "timestamptz",
+        "table": "academy_content",
+        "column": "updated_at",
+        "default": "now()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "assistant_conversations",
+        "column": "id",
+        "default": "gen_random_uuid()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "assistant_conversations",
+        "column": "creator_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "assistant_conversations",
+        "column": "workspace",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "timestamptz",
+        "table": "assistant_conversations",
+        "column": "started_at",
+        "default": "now()",
+        "nullable": "NO"
+      },
+      {
+        "type": "timestamptz",
+        "table": "assistant_conversations",
+        "column": "last_message_at",
+        "default": "now()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "assistant_messages",
+        "column": "id",
+        "default": "gen_random_uuid()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "assistant_messages",
+        "column": "conversation_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "assistant_messages",
+        "column": "role",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "assistant_messages",
+        "column": "content",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "jsonb",
+        "table": "assistant_messages",
+        "column": "citations",
+        "default": "'[]'::jsonb",
+        "nullable": "NO"
+      },
+      {
+        "type": "jsonb",
+        "table": "assistant_messages",
+        "column": "tool_calls",
+        "default": "'[]'::jsonb",
+        "nullable": "NO"
+      },
+      {
+        "type": "timestamptz",
+        "table": "assistant_messages",
+        "column": "created_at",
+        "default": "now()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "brand_invites",
+        "column": "id",
+        "default": "gen_random_uuid()",
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "brand_invites",
+        "column": "email",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "brand_invites",
+        "column": "workspace_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "brand_invites",
+        "column": "role",
+        "default": "'member'::text",
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "brand_invites",
+        "column": "token",
+        "default": "encode(gen_random_bytes(16), 'hex'::text)",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "brand_invites",
+        "column": "invited_by_staff",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "timestamptz",
+        "table": "brand_invites",
+        "column": "expires_at",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "timestamptz",
+        "table": "brand_invites",
+        "column": "accepted_at",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "timestamptz",
+        "table": "brand_invites",
+        "column": "created_at",
+        "default": "now()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "brand_users",
+        "column": "user_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "brand_users",
+        "column": "workspace_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "brand_users",
+        "column": "email",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "brand_users",
+        "column": "role",
+        "default": "'member'::text",
+        "nullable": "NO"
+      },
+      {
+        "type": "bool",
+        "table": "brand_users",
+        "column": "active",
+        "default": "true",
+        "nullable": "NO"
+      },
+      {
+        "type": "timestamptz",
+        "table": "brand_users",
+        "column": "created_at",
+        "default": "now()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "campaign_missions",
+        "column": "campaign_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "campaign_missions",
+        "column": "mission_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "campaign_missions",
+        "column": "workspace_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "timestamptz",
+        "table": "campaign_missions",
+        "column": "added_at",
+        "default": "now()",
+        "nullable": "NO"
+      },
+      {
+        "type": "timestamptz",
+        "table": "campaign_missions",
+        "column": "removed_at",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "uuid",
+        "table": "campaign_participants",
+        "column": "id",
+        "default": "gen_random_uuid()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "campaign_participants",
+        "column": "campaign_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "campaign_participants",
+        "column": "creator_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "campaign_participants",
+        "column": "workspace_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "int4",
+        "table": "campaign_participants",
+        "column": "approved_count",
+        "default": "0",
+        "nullable": "NO"
+      },
+      {
+        "type": "timestamptz",
+        "table": "campaign_participants",
+        "column": "goal_reached_at",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "timestamptz",
+        "table": "campaign_participants",
+        "column": "bonus_granted_at",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "int4",
+        "table": "campaign_participants",
+        "column": "prize_rank",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "timestamptz",
+        "table": "campaign_participants",
+        "column": "prize_granted_at",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "timestamptz",
+        "table": "campaign_participants",
+        "column": "first_approved_at",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "timestamptz",
+        "table": "campaign_participants",
+        "column": "last_approved_at",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "uuid",
+        "table": "campaign_rank_snapshots",
+        "column": "id",
+        "default": "gen_random_uuid()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "campaign_rank_snapshots",
+        "column": "campaign_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "campaign_rank_snapshots",
+        "column": "workspace_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "campaign_rank_snapshots",
+        "column": "creator_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "int4",
+        "table": "campaign_rank_snapshots",
+        "column": "rank",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "int4",
+        "table": "campaign_rank_snapshots",
+        "column": "approved",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "timestamptz",
+        "table": "campaign_rank_snapshots",
+        "column": "captured_at",
+        "default": "now()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "campaigns",
+        "column": "id",
+        "default": "gen_random_uuid()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "campaigns",
+        "column": "workspace_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "campaigns",
+        "column": "slug",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "campaigns",
+        "column": "title",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "campaigns",
+        "column": "description",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "text",
+        "table": "campaigns",
+        "column": "status",
+        "default": "'draft'::text",
+        "nullable": "NO"
+      },
+      {
+        "type": "timestamptz",
+        "table": "campaigns",
+        "column": "starts_at",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "timestamptz",
+        "table": "campaigns",
+        "column": "ends_at",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "campaigns",
+        "column": "goal_metric",
+        "default": "'approved_submissions'::text",
+        "nullable": "NO"
+      },
+      {
+        "type": "int4",
+        "table": "campaigns",
+        "column": "goal_target",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "int4",
+        "table": "campaigns",
+        "column": "completion_bonus_points",
+        "default": "0",
+        "nullable": "NO"
+      },
+      {
+        "type": "int4",
+        "table": "campaigns",
+        "column": "completion_bonus_xp",
+        "default": "0",
+        "nullable": "NO"
+      },
+      {
+        "type": "jsonb",
+        "table": "campaigns",
+        "column": "prize_tiers",
+        "default": "'[]'::jsonb",
+        "nullable": "NO"
+      },
+      {
+        "type": "timestamptz",
+        "table": "campaigns",
+        "column": "published_at",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "timestamptz",
+        "table": "campaigns",
+        "column": "closed_at",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "timestamptz",
+        "table": "campaigns",
+        "column": "settled_at",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "uuid",
+        "table": "campaigns",
+        "column": "created_by",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "timestamptz",
+        "table": "campaigns",
+        "column": "created_at",
+        "default": "now()",
+        "nullable": "NO"
+      },
+      {
+        "type": "timestamptz",
+        "table": "campaigns",
+        "column": "updated_at",
+        "default": "now()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "content_categories",
+        "column": "id",
+        "default": "gen_random_uuid()",
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "content_categories",
+        "column": "slug",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "content_categories",
+        "column": "label_zh",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "content_categories",
+        "column": "label_en",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "int4",
+        "table": "content_categories",
+        "column": "sort",
+        "default": "0",
+        "nullable": "NO"
+      },
+      {
+        "type": "timestamptz",
+        "table": "content_categories",
+        "column": "created_at",
+        "default": "now()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "content_item_tags",
+        "column": "content_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "content_item_tags",
+        "column": "tag_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "content_items",
+        "column": "id",
+        "default": "gen_random_uuid()",
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "content_items",
+        "column": "kind",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "content_items",
+        "column": "slug",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "content_items",
+        "column": "status",
+        "default": "'draft'::text",
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "content_items",
+        "column": "title_zh",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "content_items",
+        "column": "title_en",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "text",
+        "table": "content_items",
+        "column": "excerpt_zh",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "text",
+        "table": "content_items",
+        "column": "excerpt_en",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "text",
+        "table": "content_items",
+        "column": "body_zh",
+        "default": "''::text",
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "content_items",
+        "column": "body_en",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "text",
+        "table": "content_items",
+        "column": "cover_image_url",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "uuid",
+        "table": "content_items",
+        "column": "category_id",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "uuid",
+        "table": "content_items",
+        "column": "author_id",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "uuid",
+        "table": "content_items",
+        "column": "workspace_id",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "bool",
+        "table": "content_items",
+        "column": "pinned",
+        "default": "false",
+        "nullable": "NO"
+      },
+      {
+        "type": "int4",
+        "table": "content_items",
+        "column": "pinned_rank",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "int4",
+        "table": "content_items",
+        "column": "views",
+        "default": "0",
+        "nullable": "NO"
+      },
+      {
+        "type": "timestamptz",
+        "table": "content_items",
+        "column": "scheduled_for",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "timestamptz",
+        "table": "content_items",
+        "column": "published_at",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "timestamptz",
+        "table": "content_items",
+        "column": "archived_at",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "timestamptz",
+        "table": "content_items",
+        "column": "created_at",
+        "default": "now()",
+        "nullable": "NO"
+      },
+      {
+        "type": "timestamptz",
+        "table": "content_items",
+        "column": "updated_at",
+        "default": "now()",
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "content_items",
+        "column": "audience",
+        "default": "'creator'::text",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "content_tags",
+        "column": "id",
+        "default": "gen_random_uuid()",
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "content_tags",
+        "column": "slug",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "content_tags",
+        "column": "label_zh",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "content_tags",
+        "column": "label_en",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "timestamptz",
+        "table": "content_tags",
+        "column": "created_at",
+        "default": "now()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "creator_portfolio_links",
+        "column": "id",
+        "default": "gen_random_uuid()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "creator_portfolio_links",
+        "column": "creator_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "creator_portfolio_links",
+        "column": "workspace_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "creator_portfolio_links",
+        "column": "url",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "creator_portfolio_links",
+        "column": "title",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "creator_portfolio_links",
+        "column": "platform_type",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "creator_portfolio_links",
+        "column": "caption",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "int4",
+        "table": "creator_portfolio_links",
+        "column": "sort_order",
+        "default": "0",
+        "nullable": "NO"
+      },
+      {
+        "type": "bool",
+        "table": "creator_portfolio_links",
+        "column": "public_highlight",
+        "default": "false",
+        "nullable": "NO"
+      },
+      {
+        "type": "timestamptz",
+        "table": "creator_portfolio_links",
+        "column": "created_at",
+        "default": "now()",
+        "nullable": "NO"
+      },
+      {
+        "type": "timestamptz",
+        "table": "creator_portfolio_links",
+        "column": "updated_at",
+        "default": "now()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "creator_public_passports",
+        "column": "id",
+        "default": "gen_random_uuid()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "creator_public_passports",
+        "column": "creator_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "creator_public_passports",
+        "column": "public_token_hash",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "bool",
+        "table": "creator_public_passports",
+        "column": "enabled",
+        "default": "true",
+        "nullable": "NO"
+      },
+      {
+        "type": "timestamptz",
+        "table": "creator_public_passports",
+        "column": "created_at",
+        "default": "now()",
+        "nullable": "NO"
+      },
+      {
+        "type": "timestamptz",
+        "table": "creator_public_passports",
+        "column": "revoked_at",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "timestamptz",
+        "table": "creator_public_passports",
+        "column": "last_viewed_at",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "uuid",
+        "table": "creator_public_profile_snapshots",
+        "column": "creator_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "creator_public_profile_snapshots",
+        "column": "workspace_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "creator_public_profile_snapshots",
+        "column": "avatar_url",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "jsonb",
+        "table": "creator_public_profile_snapshots",
+        "column": "highlights",
+        "default": "'[]'::jsonb",
+        "nullable": "NO"
+      },
+      {
+        "type": "timestamptz",
+        "table": "creator_public_profile_snapshots",
+        "column": "published_at",
+        "default": "now()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "creator_public_profile_snapshots",
+        "column": "published_by",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "timestamptz",
+        "table": "creator_public_profile_snapshots",
+        "column": "updated_at",
+        "default": "now()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "creator_review_notes",
+        "column": "id",
+        "default": "gen_random_uuid()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "creator_review_notes",
+        "column": "creator_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "creator_review_notes",
+        "column": "workspace_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "creator_review_notes",
+        "column": "operator_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "creator_review_notes",
+        "column": "category",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "creator_review_notes",
+        "column": "body",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "timestamptz",
+        "table": "creator_review_notes",
+        "column": "created_at",
+        "default": "now()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "creator_review_statuses",
+        "column": "id",
+        "default": "gen_random_uuid()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "creator_review_statuses",
+        "column": "creator_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "creator_review_statuses",
+        "column": "workspace_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "creator_review_statuses",
+        "column": "status",
+        "default": "'needs_review'::text",
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "creator_review_statuses",
+        "column": "risk_level",
+        "default": "'unknown'::text",
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "creator_review_statuses",
+        "column": "summary",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "text",
+        "table": "creator_review_statuses",
+        "column": "reviewed_by",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "timestamptz",
+        "table": "creator_review_statuses",
+        "column": "last_reviewed_at",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "timestamptz",
+        "table": "creator_review_statuses",
+        "column": "created_at",
+        "default": "now()",
+        "nullable": "NO"
+      },
+      {
+        "type": "timestamptz",
+        "table": "creator_review_statuses",
+        "column": "updated_at",
+        "default": "now()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "creator_social_accounts",
+        "column": "id",
+        "default": "gen_random_uuid()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "creator_social_accounts",
+        "column": "creator_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "creator_social_accounts",
+        "column": "workspace_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "creator_social_accounts",
+        "column": "platform",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "creator_social_accounts",
+        "column": "handle",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "creator_social_accounts",
+        "column": "handle_normalized",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "text",
+        "table": "creator_social_accounts",
+        "column": "profile_url",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "bool",
+        "table": "creator_social_accounts",
+        "column": "owner_verified",
+        "default": "false",
+        "nullable": "NO"
+      },
+      {
+        "type": "timestamptz",
+        "table": "creator_social_accounts",
+        "column": "api_synced_at",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "text",
+        "table": "creator_social_accounts",
+        "column": "sync_status",
+        "default": "'pending'::text",
+        "nullable": "NO"
+      },
+      {
+        "type": "int4",
+        "table": "creator_social_accounts",
+        "column": "follower_count",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "int4",
+        "table": "creator_social_accounts",
+        "column": "following_count",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "int4",
+        "table": "creator_social_accounts",
+        "column": "post_count",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "text",
+        "table": "creator_social_accounts",
+        "column": "bio",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "text",
+        "table": "creator_social_accounts",
+        "column": "external_avatar_url",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "numeric",
+        "table": "creator_social_accounts",
+        "column": "engagement_rate",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "numeric",
+        "table": "creator_social_accounts",
+        "column": "avg_likes",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "numeric",
+        "table": "creator_social_accounts",
+        "column": "avg_comments",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "numeric",
+        "table": "creator_social_accounts",
+        "column": "posting_frequency",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "int4",
+        "table": "creator_social_accounts",
+        "column": "freshness_score",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "jsonb",
+        "table": "creator_social_accounts",
+        "column": "content_themes",
+        "default": "'[]'::jsonb",
+        "nullable": "NO"
+      },
+      {
+        "type": "jsonb",
+        "table": "creator_social_accounts",
+        "column": "summary",
+        "default": "'{}'::jsonb",
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "creator_social_accounts",
+        "column": "last_error_code",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "text",
+        "table": "creator_social_accounts",
+        "column": "last_error_message",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "timestamptz",
+        "table": "creator_social_accounts",
+        "column": "created_at",
+        "default": "now()",
+        "nullable": "NO"
+      },
+      {
+        "type": "timestamptz",
+        "table": "creator_social_accounts",
+        "column": "updated_at",
+        "default": "now()",
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "creator_social_accounts",
+        "column": "verification_code",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "timestamptz",
+        "table": "creator_social_accounts",
+        "column": "verification_code_expires_at",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "timestamptz",
+        "table": "creator_social_accounts",
+        "column": "verified_at",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "uuid",
+        "table": "creator_social_scan_snapshots",
+        "column": "id",
+        "default": "gen_random_uuid()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "creator_social_scan_snapshots",
+        "column": "account_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "timestamptz",
+        "table": "creator_social_scan_snapshots",
+        "column": "scanned_at",
+        "default": "now()",
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "creator_social_scan_snapshots",
+        "column": "provider",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "creator_social_scan_snapshots",
+        "column": "status",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "jsonb",
+        "table": "creator_social_scan_snapshots",
+        "column": "metrics",
+        "default": "'{}'::jsonb",
+        "nullable": "NO"
+      },
+      {
+        "type": "jsonb",
+        "table": "creator_social_scan_snapshots",
+        "column": "recent_posts_summary",
+        "default": "'[]'::jsonb",
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "creator_social_scan_snapshots",
+        "column": "error_code",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "text",
+        "table": "creator_social_scan_snapshots",
+        "column": "error_message",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "uuid",
+        "table": "creators",
+        "column": "id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "creators",
+        "column": "workspace_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "creators",
+        "column": "display_name",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "text",
+        "table": "creators",
+        "column": "avatar_url",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "text",
+        "table": "creators",
+        "column": "level",
+        "default": "'L0'::text",
+        "nullable": "NO"
+      },
+      {
+        "type": "int4",
+        "table": "creators",
+        "column": "xp",
+        "default": "0",
+        "nullable": "NO"
+      },
+      {
+        "type": "_text",
+        "table": "creators",
+        "column": "categories",
+        "default": "'{}'::text[]",
+        "nullable": "NO"
+      },
+      {
+        "type": "jsonb",
+        "table": "creators",
+        "column": "social_handles",
+        "default": "'[]'::jsonb",
+        "nullable": "NO"
+      },
+      {
+        "type": "jsonb",
+        "table": "creators",
+        "column": "scores",
+        "default": "'{\"content\": 0, \"influence\": 0, \"brandSafety\": 0, \"reliability\": 0}'::jsonb",
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "creators",
+        "column": "status",
+        "default": "'active'::text",
+        "nullable": "NO"
+      },
+      {
+        "type": "timestamptz",
+        "table": "creators",
+        "column": "created_at",
+        "default": "now()",
+        "nullable": "NO"
+      },
+      {
+        "type": "int4",
+        "table": "creators",
+        "column": "onboarding_step",
+        "default": "1",
+        "nullable": "NO"
+      },
+      {
+        "type": "bool",
+        "table": "creators",
+        "column": "onboarding_completed",
+        "default": "false",
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "creators",
+        "column": "phone",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "uuid",
+        "table": "creators",
+        "column": "referred_by",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "text",
+        "table": "creators",
+        "column": "referral_code",
+        "default": "upper(substr(replace((gen_random_uuid())::text, '-'::text, ''::text), 1, 8))",
+        "nullable": "YES"
+      },
+      {
+        "type": "text",
+        "table": "creators",
+        "column": "level_seen",
+        "default": "'L0'::text",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "earnings_balances",
+        "column": "id",
+        "default": "gen_random_uuid()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "earnings_balances",
+        "column": "creator_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "earnings_balances",
+        "column": "workspace_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "numeric",
+        "table": "earnings_balances",
+        "column": "available",
+        "default": "0",
+        "nullable": "NO"
+      },
+      {
+        "type": "timestamptz",
+        "table": "earnings_balances",
+        "column": "updated_at",
+        "default": "now()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "earnings_transactions",
+        "column": "id",
+        "default": "gen_random_uuid()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "earnings_transactions",
+        "column": "creator_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "earnings_transactions",
+        "column": "workspace_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "earnings_transactions",
+        "column": "type",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "numeric",
+        "table": "earnings_transactions",
+        "column": "amount",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "numeric",
+        "table": "earnings_transactions",
+        "column": "balance_after",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "earnings_transactions",
+        "column": "source_ref",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "text",
+        "table": "earnings_transactions",
+        "column": "description",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "timestamptz",
+        "table": "earnings_transactions",
+        "column": "created_at",
+        "default": "now()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "kb_chunks",
+        "column": "id",
+        "default": "gen_random_uuid()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "kb_chunks",
+        "column": "document_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "int4",
+        "table": "kb_chunks",
+        "column": "chunk_index",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "kb_chunks",
+        "column": "content",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "int4",
+        "table": "kb_chunks",
+        "column": "token_count",
+        "default": "0",
+        "nullable": "NO"
+      },
+      {
+        "type": "vector",
+        "table": "kb_chunks",
+        "column": "embedding",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "kb_documents",
+        "column": "id",
+        "default": "gen_random_uuid()",
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "kb_documents",
+        "column": "source_type",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "kb_documents",
+        "column": "source_ref",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "kb_documents",
+        "column": "title",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "kb_documents",
+        "column": "locale",
+        "default": "'zh-HK'::text",
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "kb_documents",
+        "column": "workspace",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "text",
+        "table": "kb_documents",
+        "column": "content",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "kb_documents",
+        "column": "content_hash",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "timestamptz",
+        "table": "kb_documents",
+        "column": "updated_at",
+        "default": "now()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "mission_shortlists",
+        "column": "id",
+        "default": "gen_random_uuid()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "mission_shortlists",
+        "column": "mission_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "mission_shortlists",
+        "column": "creator_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "mission_shortlists",
+        "column": "workspace_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "mission_shortlists",
+        "column": "status",
+        "default": "'shortlisted'::text",
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "mission_shortlists",
+        "column": "source",
+        "default": "'manual'::text",
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "mission_shortlists",
+        "column": "notes",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "text",
+        "table": "mission_shortlists",
+        "column": "created_by",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "mission_shortlists",
+        "column": "updated_by",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "timestamptz",
+        "table": "mission_shortlists",
+        "column": "created_at",
+        "default": "now()",
+        "nullable": "NO"
+      },
+      {
+        "type": "timestamptz",
+        "table": "mission_shortlists",
+        "column": "updated_at",
+        "default": "now()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "mission_submissions",
+        "column": "id",
+        "default": "gen_random_uuid()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "mission_submissions",
+        "column": "mission_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "mission_submissions",
+        "column": "creator_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "mission_submissions",
+        "column": "workspace_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "mission_submissions",
+        "column": "status",
+        "default": "'joined'::text",
+        "nullable": "NO"
+      },
+      {
+        "type": "_text",
+        "table": "mission_submissions",
+        "column": "content_urls",
+        "default": "'{}'::text[]",
+        "nullable": "NO"
+      },
+      {
+        "type": "jsonb",
+        "table": "mission_submissions",
+        "column": "submission_data",
+        "default": "'{}'::jsonb",
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "mission_submissions",
+        "column": "reviewer_notes",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "int4",
+        "table": "mission_submissions",
+        "column": "xp_awarded",
+        "default": "0",
+        "nullable": "NO"
+      },
+      {
+        "type": "int4",
+        "table": "mission_submissions",
+        "column": "points_awarded",
+        "default": "0",
+        "nullable": "NO"
+      },
+      {
+        "type": "timestamptz",
+        "table": "mission_submissions",
+        "column": "submitted_at",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "timestamptz",
+        "table": "mission_submissions",
+        "column": "reviewed_at",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "timestamptz",
+        "table": "mission_submissions",
+        "column": "review_deadline",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "timestamptz",
+        "table": "mission_submissions",
+        "column": "created_at",
+        "default": "now()",
+        "nullable": "NO"
+      },
+      {
+        "type": "int2",
+        "table": "mission_submissions",
+        "column": "quality_rating",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "uuid",
+        "table": "missions",
+        "column": "id",
+        "default": "gen_random_uuid()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "missions",
+        "column": "workspace_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "missions",
+        "column": "slug",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "missions",
+        "column": "title",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "missions",
+        "column": "description",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "text",
+        "table": "missions",
+        "column": "category",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "text",
+        "table": "missions",
+        "column": "mission_type",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "missions",
+        "column": "access_type",
+        "default": "'open'::text",
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "missions",
+        "column": "required_level",
+        "default": "'L0'::text",
+        "nullable": "NO"
+      },
+      {
+        "type": "int4",
+        "table": "missions",
+        "column": "points_reward",
+        "default": "0",
+        "nullable": "NO"
+      },
+      {
+        "type": "numeric",
+        "table": "missions",
+        "column": "cash_reward",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "numeric",
+        "table": "missions",
+        "column": "cpm_rate",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "numeric",
+        "table": "missions",
+        "column": "cpm_budget_pool",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "date",
+        "table": "missions",
+        "column": "deadline",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "int4",
+        "table": "missions",
+        "column": "quota",
+        "default": "10",
+        "nullable": "NO"
+      },
+      {
+        "type": "int4",
+        "table": "missions",
+        "column": "filled",
+        "default": "0",
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "missions",
+        "column": "status",
+        "default": "'active'::text",
+        "nullable": "NO"
+      },
+      {
+        "type": "timestamptz",
+        "table": "missions",
+        "column": "created_at",
+        "default": "now()",
+        "nullable": "NO"
+      },
+      {
+        "type": "_text",
+        "table": "missions",
+        "column": "deliverables",
+        "default": "'{}'::text[]",
+        "nullable": "NO"
+      },
+      {
+        "type": "_text",
+        "table": "missions",
+        "column": "requirements",
+        "default": "'{}'::text[]",
+        "nullable": "NO"
+      },
+      {
+        "type": "_text",
+        "table": "missions",
+        "column": "platforms",
+        "default": "'{}'::text[]",
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "missions",
+        "column": "effort",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "timestamptz",
+        "table": "missions",
+        "column": "updated_at",
+        "default": "now()",
+        "nullable": "NO"
+      },
+      {
+        "type": "timestamptz",
+        "table": "missions",
+        "column": "published_at",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "timestamptz",
+        "table": "missions",
+        "column": "closed_at",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "uuid",
+        "table": "missions",
+        "column": "created_by",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "text",
+        "table": "missions",
+        "column": "target_audience",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "_text",
+        "table": "missions",
+        "column": "dos",
+        "default": "'{}'::text[]",
+        "nullable": "NO"
+      },
+      {
+        "type": "_text",
+        "table": "missions",
+        "column": "donts",
+        "default": "'{}'::text[]",
+        "nullable": "NO"
+      },
+      {
+        "type": "_text",
+        "table": "missions",
+        "column": "key_messages",
+        "default": "'{}'::text[]",
+        "nullable": "NO"
+      },
+      {
+        "type": "_text",
+        "table": "missions",
+        "column": "reference_links",
+        "default": "'{}'::text[]",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "notifications",
+        "column": "id",
+        "default": "gen_random_uuid()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "notifications",
+        "column": "user_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "notifications",
+        "column": "workspace_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "notifications",
+        "column": "type",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "notifications",
+        "column": "entity_type",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "uuid",
+        "table": "notifications",
+        "column": "entity_id",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "jsonb",
+        "table": "notifications",
+        "column": "data",
+        "default": "'{}'::jsonb",
+        "nullable": "NO"
+      },
+      {
+        "type": "timestamptz",
+        "table": "notifications",
+        "column": "read_at",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "timestamptz",
+        "table": "notifications",
+        "column": "created_at",
+        "default": "now()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "operator_audit_events",
+        "column": "id",
+        "default": "gen_random_uuid()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "operator_audit_events",
+        "column": "workspace_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "operator_audit_events",
+        "column": "operator_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "operator_audit_events",
+        "column": "actor_label",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "operator_audit_events",
+        "column": "event_type",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "operator_audit_events",
+        "column": "target_type",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "operator_audit_events",
+        "column": "target_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "operator_audit_events",
+        "column": "creator_id",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "uuid",
+        "table": "operator_audit_events",
+        "column": "mission_id",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "jsonb",
+        "table": "operator_audit_events",
+        "column": "metadata",
+        "default": "'{}'::jsonb",
+        "nullable": "NO"
+      },
+      {
+        "type": "timestamptz",
+        "table": "operator_audit_events",
+        "column": "created_at",
+        "default": "now()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "point_balances",
+        "column": "id",
+        "default": "gen_random_uuid()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "point_balances",
+        "column": "creator_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "point_balances",
+        "column": "workspace_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "int4",
+        "table": "point_balances",
+        "column": "balance",
+        "default": "0",
+        "nullable": "NO"
+      },
+      {
+        "type": "timestamptz",
+        "table": "point_balances",
+        "column": "available_from",
+        "default": "now()",
+        "nullable": "NO"
+      },
+      {
+        "type": "timestamptz",
+        "table": "point_balances",
+        "column": "available_to",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "timestamptz",
+        "table": "point_balances",
+        "column": "updated_at",
+        "default": "now()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "point_transactions",
+        "column": "id",
+        "default": "gen_random_uuid()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "point_transactions",
+        "column": "creator_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "point_transactions",
+        "column": "workspace_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "point_transactions",
+        "column": "type",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "int4",
+        "table": "point_transactions",
+        "column": "delta",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "int4",
+        "table": "point_transactions",
+        "column": "balance_after",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "point_transactions",
+        "column": "source_ref",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "text",
+        "table": "point_transactions",
+        "column": "description",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "timestamptz",
+        "table": "point_transactions",
+        "column": "created_at",
+        "default": "now()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "redemption_codes",
+        "column": "id",
+        "default": "gen_random_uuid()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "redemption_codes",
+        "column": "gift_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "redemption_codes",
+        "column": "workspace_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "redemption_codes",
+        "column": "code",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "redemption_codes",
+        "column": "status",
+        "default": "'available'::text",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "redemption_codes",
+        "column": "issued_to",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "timestamptz",
+        "table": "redemption_codes",
+        "column": "issued_at",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "timestamptz",
+        "table": "redemption_codes",
+        "column": "created_at",
+        "default": "now()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "redemption_gifts",
+        "column": "id",
+        "default": "gen_random_uuid()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "redemption_gifts",
+        "column": "workspace_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "redemption_gifts",
+        "column": "name",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "redemption_gifts",
+        "column": "description",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "text",
+        "table": "redemption_gifts",
+        "column": "category",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "int4",
+        "table": "redemption_gifts",
+        "column": "points_cost",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "int4",
+        "table": "redemption_gifts",
+        "column": "stock_qty",
+        "default": "0",
+        "nullable": "NO"
+      },
+      {
+        "type": "int4",
+        "table": "redemption_gifts",
+        "column": "stock_remaining",
+        "default": "0",
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "redemption_gifts",
+        "column": "gift_type",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "redemption_gifts",
+        "column": "image_url",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "text",
+        "table": "redemption_gifts",
+        "column": "status",
+        "default": "'available'::text",
+        "nullable": "NO"
+      },
+      {
+        "type": "date",
+        "table": "redemption_gifts",
+        "column": "valid_from",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "date",
+        "table": "redemption_gifts",
+        "column": "valid_to",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "timestamptz",
+        "table": "redemption_gifts",
+        "column": "created_at",
+        "default": "now()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "redemptions",
+        "column": "id",
+        "default": "gen_random_uuid()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "redemptions",
+        "column": "creator_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "redemptions",
+        "column": "workspace_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "redemptions",
+        "column": "gift_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "redemptions",
+        "column": "code_id",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "text",
+        "table": "redemptions",
+        "column": "code",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "int4",
+        "table": "redemptions",
+        "column": "points_spent",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "redemptions",
+        "column": "status",
+        "default": "'fulfilled'::text",
+        "nullable": "NO"
+      },
+      {
+        "type": "timestamptz",
+        "table": "redemptions",
+        "column": "created_at",
+        "default": "now()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "staff_users",
+        "column": "user_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "staff_users",
+        "column": "email",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "bool",
+        "table": "staff_users",
+        "column": "active",
+        "default": "true",
+        "nullable": "NO"
+      },
+      {
+        "type": "timestamptz",
+        "table": "staff_users",
+        "column": "created_at",
+        "default": "now()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "workspace_budget_transactions",
+        "column": "id",
+        "default": "gen_random_uuid()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "workspace_budget_transactions",
+        "column": "workspace_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "workspace_budget_transactions",
+        "column": "type",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "numeric",
+        "table": "workspace_budget_transactions",
+        "column": "delta",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "numeric",
+        "table": "workspace_budget_transactions",
+        "column": "balance_after",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "workspace_budget_transactions",
+        "column": "source_ref",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "text",
+        "table": "workspace_budget_transactions",
+        "column": "description",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "type": "timestamptz",
+        "table": "workspace_budget_transactions",
+        "column": "created_at",
+        "default": "now()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "workspace_budgets",
+        "column": "id",
+        "default": "gen_random_uuid()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "workspace_budgets",
+        "column": "workspace_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "numeric",
+        "table": "workspace_budgets",
+        "column": "balance",
+        "default": "0",
+        "nullable": "NO"
+      },
+      {
+        "type": "bool",
+        "table": "workspace_budgets",
+        "column": "enforced",
+        "default": "false",
+        "nullable": "NO"
+      },
+      {
+        "type": "timestamptz",
+        "table": "workspace_budgets",
+        "column": "created_at",
+        "default": "now()",
+        "nullable": "NO"
+      },
+      {
+        "type": "timestamptz",
+        "table": "workspace_budgets",
+        "column": "updated_at",
+        "default": "now()",
+        "nullable": "NO"
+      },
+      {
+        "type": "uuid",
+        "table": "workspaces",
+        "column": "id",
+        "default": "gen_random_uuid()",
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "workspaces",
+        "column": "slug",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "workspaces",
+        "column": "name",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "type": "text",
+        "table": "workspaces",
+        "column": "plan",
+        "default": "'starter'::text",
+        "nullable": "NO"
+      },
+      {
+        "type": "jsonb",
+        "table": "workspaces",
+        "column": "theme",
+        "default": "'{}'::jsonb",
+        "nullable": "NO"
+      },
+      {
+        "type": "jsonb",
+        "table": "workspaces",
+        "column": "settings",
+        "default": "'{}'::jsonb",
+        "nullable": "NO"
+      },
+      {
+        "type": "timestamptz",
+        "table": "workspaces",
+        "column": "created_at",
+        "default": "now()",
+        "nullable": "NO"
+      }
+    ],
+    "indexes": [
+      {
+        "name": "academy_content_kind_status_sort_idx",
+        "table": "academy_content",
+        "schema": "public",
+        "definition": "CREATE INDEX academy_content_kind_status_sort_idx ON public.academy_content USING btree (kind, status, sort)"
+      },
+      {
+        "name": "academy_content_pkey",
+        "table": "academy_content",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX academy_content_pkey ON public.academy_content USING btree (id)"
+      },
+      {
+        "name": "academy_content_slug_key",
+        "table": "academy_content",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX academy_content_slug_key ON public.academy_content USING btree (slug)"
+      },
+      {
+        "name": "assistant_conv_creator_idx",
+        "table": "assistant_conversations",
+        "schema": "public",
+        "definition": "CREATE INDEX assistant_conv_creator_idx ON public.assistant_conversations USING btree (creator_id)"
+      },
+      {
+        "name": "assistant_conversations_pkey",
+        "table": "assistant_conversations",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX assistant_conversations_pkey ON public.assistant_conversations USING btree (id)"
+      },
+      {
+        "name": "assistant_messages_pkey",
+        "table": "assistant_messages",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX assistant_messages_pkey ON public.assistant_messages USING btree (id)"
+      },
+      {
+        "name": "assistant_msg_conv_idx",
+        "table": "assistant_messages",
+        "schema": "public",
+        "definition": "CREATE INDEX assistant_msg_conv_idx ON public.assistant_messages USING btree (conversation_id)"
+      },
+      {
+        "name": "brand_invites_pending_email",
+        "table": "brand_invites",
+        "schema": "public",
+        "definition": "CREATE INDEX brand_invites_pending_email ON public.brand_invites USING btree (lower(email)) WHERE (accepted_at IS NULL)"
+      },
+      {
+        "name": "brand_invites_pkey",
+        "table": "brand_invites",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX brand_invites_pkey ON public.brand_invites USING btree (id)"
+      },
+      {
+        "name": "brand_invites_token_key",
+        "table": "brand_invites",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX brand_invites_token_key ON public.brand_invites USING btree (token)"
+      },
+      {
+        "name": "brand_users_pkey",
+        "table": "brand_users",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX brand_users_pkey ON public.brand_users USING btree (user_id)"
+      },
+      {
+        "name": "campaign_missions_campaign_idx",
+        "table": "campaign_missions",
+        "schema": "public",
+        "definition": "CREATE INDEX campaign_missions_campaign_idx ON public.campaign_missions USING btree (campaign_id) WHERE (removed_at IS NULL)"
+      },
+      {
+        "name": "campaign_missions_one_active_uniq",
+        "table": "campaign_missions",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX campaign_missions_one_active_uniq ON public.campaign_missions USING btree (mission_id) WHERE (removed_at IS NULL)"
+      },
+      {
+        "name": "campaign_missions_pkey",
+        "table": "campaign_missions",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX campaign_missions_pkey ON public.campaign_missions USING btree (campaign_id, mission_id)"
+      },
+      {
+        "name": "campaign_participants_campaign_id_creator_id_key",
+        "table": "campaign_participants",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX campaign_participants_campaign_id_creator_id_key ON public.campaign_participants USING btree (campaign_id, creator_id)"
+      },
+      {
+        "name": "campaign_participants_campaign_idx",
+        "table": "campaign_participants",
+        "schema": "public",
+        "definition": "CREATE INDEX campaign_participants_campaign_idx ON public.campaign_participants USING btree (campaign_id)"
+      },
+      {
+        "name": "campaign_participants_pkey",
+        "table": "campaign_participants",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX campaign_participants_pkey ON public.campaign_participants USING btree (id)"
+      },
+      {
+        "name": "campaign_rank_snapshots_campaign_captured_idx",
+        "table": "campaign_rank_snapshots",
+        "schema": "public",
+        "definition": "CREATE INDEX campaign_rank_snapshots_campaign_captured_idx ON public.campaign_rank_snapshots USING btree (campaign_id, captured_at DESC)"
+      },
+      {
+        "name": "campaign_rank_snapshots_pkey",
+        "table": "campaign_rank_snapshots",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX campaign_rank_snapshots_pkey ON public.campaign_rank_snapshots USING btree (id)"
+      },
+      {
+        "name": "campaigns_pkey",
+        "table": "campaigns",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX campaigns_pkey ON public.campaigns USING btree (id)"
+      },
+      {
+        "name": "campaigns_window_idx",
+        "table": "campaigns",
+        "schema": "public",
+        "definition": "CREATE INDEX campaigns_window_idx ON public.campaigns USING btree (status, starts_at, ends_at)"
+      },
+      {
+        "name": "campaigns_workspace_id_id_key",
+        "table": "campaigns",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX campaigns_workspace_id_id_key ON public.campaigns USING btree (workspace_id, id)"
+      },
+      {
+        "name": "campaigns_workspace_id_slug_key",
+        "table": "campaigns",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX campaigns_workspace_id_slug_key ON public.campaigns USING btree (workspace_id, slug)"
+      },
+      {
+        "name": "campaigns_ws_status_idx",
+        "table": "campaigns",
+        "schema": "public",
+        "definition": "CREATE INDEX campaigns_ws_status_idx ON public.campaigns USING btree (workspace_id, status)"
+      },
+      {
+        "name": "content_categories_pkey",
+        "table": "content_categories",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX content_categories_pkey ON public.content_categories USING btree (id)"
+      },
+      {
+        "name": "content_categories_slug_key",
+        "table": "content_categories",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX content_categories_slug_key ON public.content_categories USING btree (slug)"
+      },
+      {
+        "name": "content_item_tags_pkey",
+        "table": "content_item_tags",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX content_item_tags_pkey ON public.content_item_tags USING btree (content_id, tag_id)"
+      },
+      {
+        "name": "content_items_audience_status_pub_idx",
+        "table": "content_items",
+        "schema": "public",
+        "definition": "CREATE INDEX content_items_audience_status_pub_idx ON public.content_items USING btree (audience, status, published_at DESC)"
+      },
+      {
+        "name": "content_items_category_idx",
+        "table": "content_items",
+        "schema": "public",
+        "definition": "CREATE INDEX content_items_category_idx ON public.content_items USING btree (category_id)"
+      },
+      {
+        "name": "content_items_kind_status_pub_idx",
+        "table": "content_items",
+        "schema": "public",
+        "definition": "CREATE INDEX content_items_kind_status_pub_idx ON public.content_items USING btree (kind, status, published_at DESC)"
+      },
+      {
+        "name": "content_items_pinned_idx",
+        "table": "content_items",
+        "schema": "public",
+        "definition": "CREATE INDEX content_items_pinned_idx ON public.content_items USING btree (pinned_rank) WHERE pinned"
+      },
+      {
+        "name": "content_items_pkey",
+        "table": "content_items",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX content_items_pkey ON public.content_items USING btree (id)"
+      },
+      {
+        "name": "content_items_scheduled_idx",
+        "table": "content_items",
+        "schema": "public",
+        "definition": "CREATE INDEX content_items_scheduled_idx ON public.content_items USING btree (scheduled_for) WHERE (status = 'scheduled'::text)"
+      },
+      {
+        "name": "content_items_slug_key",
+        "table": "content_items",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX content_items_slug_key ON public.content_items USING btree (slug)"
+      },
+      {
+        "name": "content_tags_pkey",
+        "table": "content_tags",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX content_tags_pkey ON public.content_tags USING btree (id)"
+      },
+      {
+        "name": "content_tags_slug_key",
+        "table": "content_tags",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX content_tags_slug_key ON public.content_tags USING btree (slug)"
+      },
+      {
+        "name": "creator_portfolio_links_creator_idx",
+        "table": "creator_portfolio_links",
+        "schema": "public",
+        "definition": "CREATE INDEX creator_portfolio_links_creator_idx ON public.creator_portfolio_links USING btree (workspace_id, creator_id, sort_order, created_at)"
+      },
+      {
+        "name": "creator_portfolio_links_highlight_idx",
+        "table": "creator_portfolio_links",
+        "schema": "public",
+        "definition": "CREATE INDEX creator_portfolio_links_highlight_idx ON public.creator_portfolio_links USING btree (workspace_id, creator_id, public_highlight) WHERE (public_highlight = true)"
+      },
+      {
+        "name": "creator_portfolio_links_pkey",
+        "table": "creator_portfolio_links",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX creator_portfolio_links_pkey ON public.creator_portfolio_links USING btree (id)"
+      },
+      {
+        "name": "creator_public_passports_creator_id_key",
+        "table": "creator_public_passports",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX creator_public_passports_creator_id_key ON public.creator_public_passports USING btree (creator_id)"
+      },
+      {
+        "name": "creator_public_passports_pkey",
+        "table": "creator_public_passports",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX creator_public_passports_pkey ON public.creator_public_passports USING btree (id)"
+      },
+      {
+        "name": "creator_public_passports_public_token_hash_key",
+        "table": "creator_public_passports",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX creator_public_passports_public_token_hash_key ON public.creator_public_passports USING btree (public_token_hash)"
+      },
+      {
+        "name": "creator_public_profile_snapshots_pkey",
+        "table": "creator_public_profile_snapshots",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX creator_public_profile_snapshots_pkey ON public.creator_public_profile_snapshots USING btree (workspace_id, creator_id)"
+      },
+      {
+        "name": "creator_review_notes_creator_idx",
+        "table": "creator_review_notes",
+        "schema": "public",
+        "definition": "CREATE INDEX creator_review_notes_creator_idx ON public.creator_review_notes USING btree (workspace_id, creator_id, created_at DESC)"
+      },
+      {
+        "name": "creator_review_notes_pkey",
+        "table": "creator_review_notes",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX creator_review_notes_pkey ON public.creator_review_notes USING btree (id)"
+      },
+      {
+        "name": "creator_review_statuses_pkey",
+        "table": "creator_review_statuses",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX creator_review_statuses_pkey ON public.creator_review_statuses USING btree (id)"
+      },
+      {
+        "name": "creator_review_statuses_status_idx",
+        "table": "creator_review_statuses",
+        "schema": "public",
+        "definition": "CREATE INDEX creator_review_statuses_status_idx ON public.creator_review_statuses USING btree (workspace_id, status, risk_level)"
+      },
+      {
+        "name": "creator_review_statuses_workspace_id_creator_id_key",
+        "table": "creator_review_statuses",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX creator_review_statuses_workspace_id_creator_id_key ON public.creator_review_statuses USING btree (workspace_id, creator_id)"
+      },
+      {
+        "name": "creator_social_accounts_creator_id_platform_handle_normaliz_key",
+        "table": "creator_social_accounts",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX creator_social_accounts_creator_id_platform_handle_normaliz_key ON public.creator_social_accounts USING btree (creator_id, platform, handle_normalized)"
+      },
+      {
+        "name": "creator_social_accounts_creator_idx",
+        "table": "creator_social_accounts",
+        "schema": "public",
+        "definition": "CREATE INDEX creator_social_accounts_creator_idx ON public.creator_social_accounts USING btree (creator_id)"
+      },
+      {
+        "name": "creator_social_accounts_pkey",
+        "table": "creator_social_accounts",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX creator_social_accounts_pkey ON public.creator_social_accounts USING btree (id)"
+      },
+      {
+        "name": "creator_social_accounts_refresh_idx",
+        "table": "creator_social_accounts",
+        "schema": "public",
+        "definition": "CREATE INDEX creator_social_accounts_refresh_idx ON public.creator_social_accounts USING btree (sync_status, api_synced_at)"
+      },
+      {
+        "name": "creator_social_accounts_verified_handle_uniq",
+        "table": "creator_social_accounts",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX creator_social_accounts_verified_handle_uniq ON public.creator_social_accounts USING btree (platform, handle_normalized) WHERE owner_verified"
+      },
+      {
+        "name": "creator_social_scan_snapshots_account_idx",
+        "table": "creator_social_scan_snapshots",
+        "schema": "public",
+        "definition": "CREATE INDEX creator_social_scan_snapshots_account_idx ON public.creator_social_scan_snapshots USING btree (account_id, scanned_at DESC)"
+      },
+      {
+        "name": "creator_social_scan_snapshots_pkey",
+        "table": "creator_social_scan_snapshots",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX creator_social_scan_snapshots_pkey ON public.creator_social_scan_snapshots USING btree (id)"
+      },
+      {
+        "name": "creators_phone_idx",
+        "table": "creators",
+        "schema": "public",
+        "definition": "CREATE INDEX creators_phone_idx ON public.creators USING btree (phone)"
+      },
+      {
+        "name": "creators_pkey",
+        "table": "creators",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX creators_pkey ON public.creators USING btree (id)"
+      },
+      {
+        "name": "creators_referral_code_key",
+        "table": "creators",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX creators_referral_code_key ON public.creators USING btree (referral_code)"
+      },
+      {
+        "name": "earnings_balances_creator_id_workspace_id_key",
+        "table": "earnings_balances",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX earnings_balances_creator_id_workspace_id_key ON public.earnings_balances USING btree (creator_id, workspace_id)"
+      },
+      {
+        "name": "earnings_balances_pkey",
+        "table": "earnings_balances",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX earnings_balances_pkey ON public.earnings_balances USING btree (id)"
+      },
+      {
+        "name": "earnings_transactions_pkey",
+        "table": "earnings_transactions",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX earnings_transactions_pkey ON public.earnings_transactions USING btree (id)"
+      },
+      {
+        "name": "earnings_tx_creator_idx",
+        "table": "earnings_transactions",
+        "schema": "public",
+        "definition": "CREATE INDEX earnings_tx_creator_idx ON public.earnings_transactions USING btree (creator_id)"
+      },
+      {
+        "name": "et_campaign_prize_uniq",
+        "table": "earnings_transactions",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX et_campaign_prize_uniq ON public.earnings_transactions USING btree (source_ref) WHERE (\"left\"(source_ref, 15) = 'campaign_prize:'::text)"
+      },
+      {
+        "name": "kb_chunks_document_idx",
+        "table": "kb_chunks",
+        "schema": "public",
+        "definition": "CREATE INDEX kb_chunks_document_idx ON public.kb_chunks USING btree (document_id)"
+      },
+      {
+        "name": "kb_chunks_embedding_idx",
+        "table": "kb_chunks",
+        "schema": "public",
+        "definition": "CREATE INDEX kb_chunks_embedding_idx ON public.kb_chunks USING hnsw (embedding vector_cosine_ops)"
+      },
+      {
+        "name": "kb_chunks_pkey",
+        "table": "kb_chunks",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX kb_chunks_pkey ON public.kb_chunks USING btree (id)"
+      },
+      {
+        "name": "kb_documents_pkey",
+        "table": "kb_documents",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX kb_documents_pkey ON public.kb_documents USING btree (id)"
+      },
+      {
+        "name": "kb_documents_source_type_source_ref_locale_key",
+        "table": "kb_documents",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX kb_documents_source_type_source_ref_locale_key ON public.kb_documents USING btree (source_type, source_ref, locale)"
+      },
+      {
+        "name": "mission_shortlists_creator_idx",
+        "table": "mission_shortlists",
+        "schema": "public",
+        "definition": "CREATE INDEX mission_shortlists_creator_idx ON public.mission_shortlists USING btree (workspace_id, creator_id, updated_at DESC)"
+      },
+      {
+        "name": "mission_shortlists_mission_id_creator_id_key",
+        "table": "mission_shortlists",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX mission_shortlists_mission_id_creator_id_key ON public.mission_shortlists USING btree (mission_id, creator_id)"
+      },
+      {
+        "name": "mission_shortlists_mission_idx",
+        "table": "mission_shortlists",
+        "schema": "public",
+        "definition": "CREATE INDEX mission_shortlists_mission_idx ON public.mission_shortlists USING btree (workspace_id, mission_id, status)"
+      },
+      {
+        "name": "mission_shortlists_pkey",
+        "table": "mission_shortlists",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX mission_shortlists_pkey ON public.mission_shortlists USING btree (id)"
+      },
+      {
+        "name": "mission_submissions_creator_idx",
+        "table": "mission_submissions",
+        "schema": "public",
+        "definition": "CREATE INDEX mission_submissions_creator_idx ON public.mission_submissions USING btree (creator_id)"
+      },
+      {
+        "name": "mission_submissions_mission_id_creator_id_key",
+        "table": "mission_submissions",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX mission_submissions_mission_id_creator_id_key ON public.mission_submissions USING btree (mission_id, creator_id)"
+      },
+      {
+        "name": "mission_submissions_mission_idx",
+        "table": "mission_submissions",
+        "schema": "public",
+        "definition": "CREATE INDEX mission_submissions_mission_idx ON public.mission_submissions USING btree (mission_id)"
+      },
+      {
+        "name": "mission_submissions_pkey",
+        "table": "mission_submissions",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX mission_submissions_pkey ON public.mission_submissions USING btree (id)"
+      },
+      {
+        "name": "mission_submissions_status_idx",
+        "table": "mission_submissions",
+        "schema": "public",
+        "definition": "CREATE INDEX mission_submissions_status_idx ON public.mission_submissions USING btree (workspace_id, status)"
+      },
+      {
+        "name": "missions_pkey",
+        "table": "missions",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX missions_pkey ON public.missions USING btree (id)"
+      },
+      {
+        "name": "missions_workspace_id_slug_key",
+        "table": "missions",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX missions_workspace_id_slug_key ON public.missions USING btree (workspace_id, slug)"
+      },
+      {
+        "name": "missions_ws_id_uniq",
+        "table": "missions",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX missions_ws_id_uniq ON public.missions USING btree (workspace_id, id)"
+      },
+      {
+        "name": "notifications_pkey",
+        "table": "notifications",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX notifications_pkey ON public.notifications USING btree (id)"
+      },
+      {
+        "name": "notifications_user_created_idx",
+        "table": "notifications",
+        "schema": "public",
+        "definition": "CREATE INDEX notifications_user_created_idx ON public.notifications USING btree (user_id, created_at DESC)"
+      },
+      {
+        "name": "notifications_user_unread_idx",
+        "table": "notifications",
+        "schema": "public",
+        "definition": "CREATE INDEX notifications_user_unread_idx ON public.notifications USING btree (user_id) WHERE (read_at IS NULL)"
+      },
+      {
+        "name": "operator_audit_events_creator_idx",
+        "table": "operator_audit_events",
+        "schema": "public",
+        "definition": "CREATE INDEX operator_audit_events_creator_idx ON public.operator_audit_events USING btree (workspace_id, creator_id, created_at DESC)"
+      },
+      {
+        "name": "operator_audit_events_mission_idx",
+        "table": "operator_audit_events",
+        "schema": "public",
+        "definition": "CREATE INDEX operator_audit_events_mission_idx ON public.operator_audit_events USING btree (workspace_id, mission_id, created_at DESC)"
+      },
+      {
+        "name": "operator_audit_events_pkey",
+        "table": "operator_audit_events",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX operator_audit_events_pkey ON public.operator_audit_events USING btree (id)"
+      },
+      {
+        "name": "point_balances_creator_id_workspace_id_key",
+        "table": "point_balances",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX point_balances_creator_id_workspace_id_key ON public.point_balances USING btree (creator_id, workspace_id)"
+      },
+      {
+        "name": "point_balances_pkey",
+        "table": "point_balances",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX point_balances_pkey ON public.point_balances USING btree (id)"
+      },
+      {
+        "name": "point_transactions_pkey",
+        "table": "point_transactions",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX point_transactions_pkey ON public.point_transactions USING btree (id)"
+      },
+      {
+        "name": "pt_campaign_bonus_uniq",
+        "table": "point_transactions",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX pt_campaign_bonus_uniq ON public.point_transactions USING btree (source_ref) WHERE (\"left\"(source_ref, 15) = 'campaign_bonus:'::text)"
+      },
+      {
+        "name": "pt_campaign_prize_uniq",
+        "table": "point_transactions",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX pt_campaign_prize_uniq ON public.point_transactions USING btree (source_ref) WHERE (\"left\"(source_ref, 15) = 'campaign_prize:'::text)"
+      },
+      {
+        "name": "redemption_codes_code_uniq",
+        "table": "redemption_codes",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX redemption_codes_code_uniq ON public.redemption_codes USING btree (gift_id, code)"
+      },
+      {
+        "name": "redemption_codes_pkey",
+        "table": "redemption_codes",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX redemption_codes_pkey ON public.redemption_codes USING btree (id)"
+      },
+      {
+        "name": "redemption_codes_pool_idx",
+        "table": "redemption_codes",
+        "schema": "public",
+        "definition": "CREATE INDEX redemption_codes_pool_idx ON public.redemption_codes USING btree (gift_id, status)"
+      },
+      {
+        "name": "redemption_gifts_pkey",
+        "table": "redemption_gifts",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX redemption_gifts_pkey ON public.redemption_gifts USING btree (id)"
+      },
+      {
+        "name": "redemptions_creator_idx",
+        "table": "redemptions",
+        "schema": "public",
+        "definition": "CREATE INDEX redemptions_creator_idx ON public.redemptions USING btree (creator_id)"
+      },
+      {
+        "name": "redemptions_pkey",
+        "table": "redemptions",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX redemptions_pkey ON public.redemptions USING btree (id)"
+      },
+      {
+        "name": "staff_users_pkey",
+        "table": "staff_users",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX staff_users_pkey ON public.staff_users USING btree (user_id)"
+      },
+      {
+        "name": "wbt_campaign_prize_uniq",
+        "table": "workspace_budget_transactions",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX wbt_campaign_prize_uniq ON public.workspace_budget_transactions USING btree (source_ref) WHERE (\"left\"(source_ref, 15) = 'campaign_prize:'::text)"
+      },
+      {
+        "name": "wbt_workspace_created_idx",
+        "table": "workspace_budget_transactions",
+        "schema": "public",
+        "definition": "CREATE INDEX wbt_workspace_created_idx ON public.workspace_budget_transactions USING btree (workspace_id, created_at DESC)"
+      },
+      {
+        "name": "workspace_budget_transactions_pkey",
+        "table": "workspace_budget_transactions",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX workspace_budget_transactions_pkey ON public.workspace_budget_transactions USING btree (id)"
+      },
+      {
+        "name": "workspace_budgets_pkey",
+        "table": "workspace_budgets",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX workspace_budgets_pkey ON public.workspace_budgets USING btree (id)"
+      },
+      {
+        "name": "workspace_budgets_workspace_id_key",
+        "table": "workspace_budgets",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX workspace_budgets_workspace_id_key ON public.workspace_budgets USING btree (workspace_id)"
+      },
+      {
+        "name": "workspaces_pkey",
+        "table": "workspaces",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX workspaces_pkey ON public.workspaces USING btree (id)"
+      },
+      {
+        "name": "workspaces_slug_key",
+        "table": "workspaces",
+        "schema": "public",
+        "definition": "CREATE UNIQUE INDEX workspaces_slug_key ON public.workspaces USING btree (slug)"
+      }
+    ],
+    "triggers": [
+      {
+        "name": "academy_content_touch",
+        "table": "academy_content",
+        "schema": "public",
+        "definition": "CREATE TRIGGER academy_content_touch BEFORE UPDATE ON public.academy_content FOR EACH ROW EXECUTE FUNCTION content_touch_updated_at()"
+      },
+      {
+        "name": "campaign_progress_on_approval",
+        "table": "mission_submissions",
+        "schema": "public",
+        "definition": "CREATE TRIGGER campaign_progress_on_approval AFTER UPDATE OF status ON public.mission_submissions FOR EACH ROW EXECUTE FUNCTION campaign_progress_on_approval()"
+      },
+      {
+        "name": "content_items_touch",
+        "table": "content_items",
+        "schema": "public",
+        "definition": "CREATE TRIGGER content_items_touch BEFORE UPDATE ON public.content_items FOR EACH ROW EXECUTE FUNCTION content_touch_updated_at()"
+      },
+      {
+        "name": "creator_portfolio_links_highlight_limit",
+        "table": "creator_portfolio_links",
+        "schema": "public",
+        "definition": "CREATE TRIGGER creator_portfolio_links_highlight_limit BEFORE INSERT OR UPDATE ON public.creator_portfolio_links FOR EACH ROW EXECUTE FUNCTION private.enforce_creator_portfolio_highlight_limit()"
+      },
+      {
+        "name": "creator_portfolio_links_set_updated_at",
+        "table": "creator_portfolio_links",
+        "schema": "public",
+        "definition": "CREATE TRIGGER creator_portfolio_links_set_updated_at BEFORE UPDATE ON public.creator_portfolio_links FOR EACH ROW EXECUTE FUNCTION private.touch_creator_profile_media_updated_at()"
+      },
+      {
+        "name": "creator_public_profile_snapshots_set_updated_at",
+        "table": "creator_public_profile_snapshots",
+        "schema": "public",
+        "definition": "CREATE TRIGGER creator_public_profile_snapshots_set_updated_at BEFORE UPDATE ON public.creator_public_profile_snapshots FOR EACH ROW EXECUTE FUNCTION private.touch_creator_profile_media_updated_at()"
+      },
+      {
+        "name": "creator_review_statuses_set_updated_at",
+        "table": "creator_review_statuses",
+        "schema": "public",
+        "definition": "CREATE TRIGGER creator_review_statuses_set_updated_at BEFORE UPDATE ON public.creator_review_statuses FOR EACH ROW EXECUTE FUNCTION private.touch_operator_crm_updated_at()"
+      },
+      {
+        "name": "creator_social_accounts_set_updated_at",
+        "table": "creator_social_accounts",
+        "schema": "public",
+        "definition": "CREATE TRIGGER creator_social_accounts_set_updated_at BEFORE UPDATE ON public.creator_social_accounts FOR EACH ROW EXECUTE FUNCTION private.touch_creator_social_accounts_updated_at()"
+      },
+      {
+        "name": "creators_set_level",
+        "table": "creators",
+        "schema": "public",
+        "definition": "CREATE TRIGGER creators_set_level BEFORE INSERT OR UPDATE OF xp ON public.creators FOR EACH ROW EXECUTE FUNCTION set_level_from_xp()"
+      },
+      {
+        "name": "mission_shortlists_set_updated_at",
+        "table": "mission_shortlists",
+        "schema": "public",
+        "definition": "CREATE TRIGGER mission_shortlists_set_updated_at BEFORE UPDATE ON public.mission_shortlists FOR EACH ROW EXECUTE FUNCTION private.touch_operator_crm_updated_at()"
+      },
+      {
+        "name": "mission_shortlists_validate_workspace",
+        "table": "mission_shortlists",
+        "schema": "public",
+        "definition": "CREATE TRIGGER mission_shortlists_validate_workspace BEFORE INSERT OR UPDATE ON public.mission_shortlists FOR EACH ROW EXECUTE FUNCTION private.validate_mission_shortlist_workspace()"
+      },
+      {
+        "name": "notifications_on_level_up",
+        "table": "creators",
+        "schema": "public",
+        "definition": "CREATE TRIGGER notifications_on_level_up AFTER UPDATE OF xp ON public.creators FOR EACH ROW EXECUTE FUNCTION notify_on_level_up()"
+      },
+      {
+        "name": "notifications_on_redemption",
+        "table": "redemptions",
+        "schema": "public",
+        "definition": "CREATE TRIGGER notifications_on_redemption AFTER INSERT ON public.redemptions FOR EACH ROW EXECUTE FUNCTION notify_on_redemption()"
+      },
+      {
+        "name": "notifications_on_submission_change",
+        "table": "mission_submissions",
+        "schema": "public",
+        "definition": "CREATE TRIGGER notifications_on_submission_change AFTER UPDATE OF status ON public.mission_submissions FOR EACH ROW EXECUTE FUNCTION notify_on_submission_change()"
+      }
+    ],
+    "constraints": [
+      {
+        "kind": "c",
+        "name": "academy_content_kind_check",
+        "table": "academy_content",
+        "definition": "CHECK ((kind = ANY (ARRAY['guide_doc'::text, 'track'::text, 'playbook'::text, 'resource'::text])))"
+      },
+      {
+        "kind": "p",
+        "name": "academy_content_pkey",
+        "table": "academy_content",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "kind": "c",
+        "name": "academy_content_required_level_check",
+        "table": "academy_content",
+        "definition": "CHECK (((required_level IS NULL) OR (required_level = ANY (ARRAY['L0'::text, 'L1'::text, 'L2'::text, 'L3'::text, 'L4'::text, 'L5'::text, 'L6'::text]))))"
+      },
+      {
+        "kind": "u",
+        "name": "academy_content_slug_key",
+        "table": "academy_content",
+        "definition": "UNIQUE (slug)"
+      },
+      {
+        "kind": "c",
+        "name": "academy_content_status_check",
+        "table": "academy_content",
+        "definition": "CHECK ((status = ANY (ARRAY['draft'::text, 'published'::text, 'archived'::text])))"
+      },
+      {
+        "kind": "f",
+        "name": "assistant_conversations_creator_id_fkey",
+        "table": "assistant_conversations",
+        "definition": "FOREIGN KEY (creator_id) REFERENCES auth.users(id) ON DELETE CASCADE"
+      },
+      {
+        "kind": "p",
+        "name": "assistant_conversations_pkey",
+        "table": "assistant_conversations",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "kind": "f",
+        "name": "assistant_messages_conversation_id_fkey",
+        "table": "assistant_messages",
+        "definition": "FOREIGN KEY (conversation_id) REFERENCES assistant_conversations(id) ON DELETE CASCADE"
+      },
+      {
+        "kind": "p",
+        "name": "assistant_messages_pkey",
+        "table": "assistant_messages",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "kind": "c",
+        "name": "assistant_messages_role_check",
+        "table": "assistant_messages",
+        "definition": "CHECK ((role = ANY (ARRAY['user'::text, 'assistant'::text, 'tool'::text])))"
+      },
+      {
+        "kind": "f",
+        "name": "brand_invites_invited_by_staff_fkey",
+        "table": "brand_invites",
+        "definition": "FOREIGN KEY (invited_by_staff) REFERENCES auth.users(id)"
+      },
+      {
+        "kind": "p",
+        "name": "brand_invites_pkey",
+        "table": "brand_invites",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "kind": "c",
+        "name": "brand_invites_role_check",
+        "table": "brand_invites",
+        "definition": "CHECK ((role = ANY (ARRAY['owner'::text, 'member'::text])))"
+      },
+      {
+        "kind": "u",
+        "name": "brand_invites_token_key",
+        "table": "brand_invites",
+        "definition": "UNIQUE (token)"
+      },
+      {
+        "kind": "f",
+        "name": "brand_invites_workspace_id_fkey",
+        "table": "brand_invites",
+        "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE CASCADE"
+      },
+      {
+        "kind": "p",
+        "name": "brand_users_pkey",
+        "table": "brand_users",
+        "definition": "PRIMARY KEY (user_id)"
+      },
+      {
+        "kind": "c",
+        "name": "brand_users_role_check",
+        "table": "brand_users",
+        "definition": "CHECK ((role = ANY (ARRAY['owner'::text, 'member'::text])))"
+      },
+      {
+        "kind": "f",
+        "name": "brand_users_user_id_fkey",
+        "table": "brand_users",
+        "definition": "FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE"
+      },
+      {
+        "kind": "f",
+        "name": "brand_users_workspace_id_fkey",
+        "table": "brand_users",
+        "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE CASCADE"
+      },
+      {
+        "kind": "p",
+        "name": "campaign_missions_pkey",
+        "table": "campaign_missions",
+        "definition": "PRIMARY KEY (campaign_id, mission_id)"
+      },
+      {
+        "kind": "f",
+        "name": "campaign_missions_workspace_id_campaign_id_fkey",
+        "table": "campaign_missions",
+        "definition": "FOREIGN KEY (workspace_id, campaign_id) REFERENCES campaigns(workspace_id, id) ON DELETE CASCADE"
+      },
+      {
+        "kind": "f",
+        "name": "campaign_missions_workspace_id_mission_id_fkey",
+        "table": "campaign_missions",
+        "definition": "FOREIGN KEY (workspace_id, mission_id) REFERENCES missions(workspace_id, id) ON DELETE CASCADE"
+      },
+      {
+        "kind": "c",
+        "name": "campaign_participants_approved_count_check",
+        "table": "campaign_participants",
+        "definition": "CHECK ((approved_count >= 0))"
+      },
+      {
+        "kind": "u",
+        "name": "campaign_participants_campaign_id_creator_id_key",
+        "table": "campaign_participants",
+        "definition": "UNIQUE (campaign_id, creator_id)"
+      },
+      {
+        "kind": "f",
+        "name": "campaign_participants_creator_id_fkey",
+        "table": "campaign_participants",
+        "definition": "FOREIGN KEY (creator_id) REFERENCES creators(id) ON DELETE CASCADE"
+      },
+      {
+        "kind": "p",
+        "name": "campaign_participants_pkey",
+        "table": "campaign_participants",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "kind": "f",
+        "name": "campaign_participants_workspace_id_campaign_id_fkey",
+        "table": "campaign_participants",
+        "definition": "FOREIGN KEY (workspace_id, campaign_id) REFERENCES campaigns(workspace_id, id) ON DELETE CASCADE"
+      },
+      {
+        "kind": "f",
+        "name": "campaign_rank_snapshots_campaign_id_fkey",
+        "table": "campaign_rank_snapshots",
+        "definition": "FOREIGN KEY (campaign_id) REFERENCES campaigns(id) ON DELETE CASCADE"
+      },
+      {
+        "kind": "p",
+        "name": "campaign_rank_snapshots_pkey",
+        "table": "campaign_rank_snapshots",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "kind": "c",
+        "name": "campaigns_check",
+        "table": "campaigns",
+        "definition": "CHECK ((ends_at > starts_at))"
+      },
+      {
+        "kind": "c",
+        "name": "campaigns_completion_bonus_points_check",
+        "table": "campaigns",
+        "definition": "CHECK ((completion_bonus_points >= 0))"
+      },
+      {
+        "kind": "c",
+        "name": "campaigns_completion_bonus_xp_check",
+        "table": "campaigns",
+        "definition": "CHECK ((completion_bonus_xp >= 0))"
+      },
+      {
+        "kind": "c",
+        "name": "campaigns_goal_metric_check",
+        "table": "campaigns",
+        "definition": "CHECK ((goal_metric = 'approved_submissions'::text))"
+      },
+      {
+        "kind": "c",
+        "name": "campaigns_goal_target_check",
+        "table": "campaigns",
+        "definition": "CHECK ((goal_target >= 1))"
+      },
+      {
+        "kind": "p",
+        "name": "campaigns_pkey",
+        "table": "campaigns",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "kind": "c",
+        "name": "campaigns_status_check",
+        "table": "campaigns",
+        "definition": "CHECK ((status = ANY (ARRAY['draft'::text, 'active'::text, 'closed'::text, 'settled'::text])))"
+      },
+      {
+        "kind": "f",
+        "name": "campaigns_workspace_id_fkey",
+        "table": "campaigns",
+        "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE CASCADE"
+      },
+      {
+        "kind": "u",
+        "name": "campaigns_workspace_id_id_key",
+        "table": "campaigns",
+        "definition": "UNIQUE (workspace_id, id)"
+      },
+      {
+        "kind": "u",
+        "name": "campaigns_workspace_id_slug_key",
+        "table": "campaigns",
+        "definition": "UNIQUE (workspace_id, slug)"
+      },
+      {
+        "kind": "p",
+        "name": "content_categories_pkey",
+        "table": "content_categories",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "kind": "u",
+        "name": "content_categories_slug_key",
+        "table": "content_categories",
+        "definition": "UNIQUE (slug)"
+      },
+      {
+        "kind": "f",
+        "name": "content_item_tags_content_id_fkey",
+        "table": "content_item_tags",
+        "definition": "FOREIGN KEY (content_id) REFERENCES content_items(id) ON DELETE CASCADE"
+      },
+      {
+        "kind": "p",
+        "name": "content_item_tags_pkey",
+        "table": "content_item_tags",
+        "definition": "PRIMARY KEY (content_id, tag_id)"
+      },
+      {
+        "kind": "f",
+        "name": "content_item_tags_tag_id_fkey",
+        "table": "content_item_tags",
+        "definition": "FOREIGN KEY (tag_id) REFERENCES content_tags(id) ON DELETE CASCADE"
+      },
+      {
+        "kind": "c",
+        "name": "content_items_audience_check",
+        "table": "content_items",
+        "definition": "CHECK ((audience = ANY (ARRAY['creator'::text, 'brand'::text])))"
+      },
+      {
+        "kind": "f",
+        "name": "content_items_category_id_fkey",
+        "table": "content_items",
+        "definition": "FOREIGN KEY (category_id) REFERENCES content_categories(id) ON DELETE SET NULL"
+      },
+      {
+        "kind": "c",
+        "name": "content_items_kind_check",
+        "table": "content_items",
+        "definition": "CHECK ((kind = ANY (ARRAY['article'::text, 'announcement'::text])))"
+      },
+      {
+        "kind": "p",
+        "name": "content_items_pkey",
+        "table": "content_items",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "kind": "c",
+        "name": "content_items_scheduled_chk",
+        "table": "content_items",
+        "definition": "CHECK (((status <> 'scheduled'::text) OR (scheduled_for IS NOT NULL)))"
+      },
+      {
+        "kind": "u",
+        "name": "content_items_slug_key",
+        "table": "content_items",
+        "definition": "UNIQUE (slug)"
+      },
+      {
+        "kind": "c",
+        "name": "content_items_status_check",
+        "table": "content_items",
+        "definition": "CHECK ((status = ANY (ARRAY['draft'::text, 'scheduled'::text, 'published'::text, 'archived'::text])))"
+      },
+      {
+        "kind": "f",
+        "name": "content_items_workspace_id_fkey",
+        "table": "content_items",
+        "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id)"
+      },
+      {
+        "kind": "p",
+        "name": "content_tags_pkey",
+        "table": "content_tags",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "kind": "u",
+        "name": "content_tags_slug_key",
+        "table": "content_tags",
+        "definition": "UNIQUE (slug)"
+      },
+      {
+        "kind": "f",
+        "name": "creator_portfolio_links_creator_id_fkey",
+        "table": "creator_portfolio_links",
+        "definition": "FOREIGN KEY (creator_id) REFERENCES creators(id) ON DELETE CASCADE"
+      },
+      {
+        "kind": "p",
+        "name": "creator_portfolio_links_pkey",
+        "table": "creator_portfolio_links",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "kind": "c",
+        "name": "creator_portfolio_links_platform_type_check",
+        "table": "creator_portfolio_links",
+        "definition": "CHECK ((platform_type = ANY (ARRAY['instagram'::text, 'threads'::text, 'tiktok'::text, 'youtube'::text, 'website'::text, 'case_study'::text, 'other'::text])))"
+      },
+      {
+        "kind": "c",
+        "name": "creator_portfolio_links_title_check",
+        "table": "creator_portfolio_links",
+        "definition": "CHECK ((length(TRIM(BOTH FROM title)) > 0))"
+      },
+      {
+        "kind": "c",
+        "name": "creator_portfolio_links_url_check",
+        "table": "creator_portfolio_links",
+        "definition": "CHECK ((url ~* '^https?://'::text))"
+      },
+      {
+        "kind": "c",
+        "name": "creator_portfolio_links_url_public_http_check",
+        "table": "creator_portfolio_links",
+        "definition": "CHECK (private.is_valid_public_http_url(url))"
+      },
+      {
+        "kind": "f",
+        "name": "creator_portfolio_links_workspace_id_fkey",
+        "table": "creator_portfolio_links",
+        "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id)"
+      },
+      {
+        "kind": "f",
+        "name": "creator_public_passports_creator_id_fkey",
+        "table": "creator_public_passports",
+        "definition": "FOREIGN KEY (creator_id) REFERENCES creators(id) ON DELETE CASCADE"
+      },
+      {
+        "kind": "u",
+        "name": "creator_public_passports_creator_id_key",
+        "table": "creator_public_passports",
+        "definition": "UNIQUE (creator_id)"
+      },
+      {
+        "kind": "p",
+        "name": "creator_public_passports_pkey",
+        "table": "creator_public_passports",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "kind": "u",
+        "name": "creator_public_passports_public_token_hash_key",
+        "table": "creator_public_passports",
+        "definition": "UNIQUE (public_token_hash)"
+      },
+      {
+        "kind": "f",
+        "name": "creator_public_profile_snapshots_creator_id_fkey",
+        "table": "creator_public_profile_snapshots",
+        "definition": "FOREIGN KEY (creator_id) REFERENCES creators(id) ON DELETE CASCADE"
+      },
+      {
+        "kind": "c",
+        "name": "creator_public_profile_snapshots_highlights_check",
+        "table": "creator_public_profile_snapshots",
+        "definition": "CHECK ((jsonb_typeof(highlights) = 'array'::text))"
+      },
+      {
+        "kind": "c",
+        "name": "creator_public_profile_snapshots_highlights_check1",
+        "table": "creator_public_profile_snapshots",
+        "definition": "CHECK ((jsonb_array_length(highlights) <= 3))"
+      },
+      {
+        "kind": "c",
+        "name": "creator_public_profile_snapshots_highlights_public_shape_check",
+        "table": "creator_public_profile_snapshots",
+        "definition": "CHECK (private.is_valid_public_profile_highlights(highlights))"
+      },
+      {
+        "kind": "p",
+        "name": "creator_public_profile_snapshots_pkey",
+        "table": "creator_public_profile_snapshots",
+        "definition": "PRIMARY KEY (workspace_id, creator_id)"
+      },
+      {
+        "kind": "f",
+        "name": "creator_public_profile_snapshots_published_by_fkey",
+        "table": "creator_public_profile_snapshots",
+        "definition": "FOREIGN KEY (published_by) REFERENCES creators(id) ON DELETE CASCADE"
+      },
+      {
+        "kind": "f",
+        "name": "creator_public_profile_snapshots_workspace_id_fkey",
+        "table": "creator_public_profile_snapshots",
+        "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id)"
+      },
+      {
+        "kind": "c",
+        "name": "creator_review_notes_category_check",
+        "table": "creator_review_notes",
+        "definition": "CHECK ((category = ANY (ARRAY['quality'::text, 'brand_safety'::text, 'fit'::text, 'social'::text, 'other'::text])))"
+      },
+      {
+        "kind": "f",
+        "name": "creator_review_notes_creator_id_fkey",
+        "table": "creator_review_notes",
+        "definition": "FOREIGN KEY (creator_id) REFERENCES creators(id) ON DELETE CASCADE"
+      },
+      {
+        "kind": "p",
+        "name": "creator_review_notes_pkey",
+        "table": "creator_review_notes",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "kind": "f",
+        "name": "creator_review_notes_workspace_id_fkey",
+        "table": "creator_review_notes",
+        "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id)"
+      },
+      {
+        "kind": "f",
+        "name": "creator_review_statuses_creator_id_fkey",
+        "table": "creator_review_statuses",
+        "definition": "FOREIGN KEY (creator_id) REFERENCES creators(id) ON DELETE CASCADE"
+      },
+      {
+        "kind": "p",
+        "name": "creator_review_statuses_pkey",
+        "table": "creator_review_statuses",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "kind": "c",
+        "name": "creator_review_statuses_risk_level_check",
+        "table": "creator_review_statuses",
+        "definition": "CHECK ((risk_level = ANY (ARRAY['low'::text, 'medium'::text, 'high'::text, 'unknown'::text])))"
+      },
+      {
+        "kind": "c",
+        "name": "creator_review_statuses_status_check",
+        "table": "creator_review_statuses",
+        "definition": "CHECK ((status = ANY (ARRAY['needs_review'::text, 'approved'::text, 'flagged'::text])))"
+      },
+      {
+        "kind": "u",
+        "name": "creator_review_statuses_workspace_id_creator_id_key",
+        "table": "creator_review_statuses",
+        "definition": "UNIQUE (workspace_id, creator_id)"
+      },
+      {
+        "kind": "f",
+        "name": "creator_review_statuses_workspace_id_fkey",
+        "table": "creator_review_statuses",
+        "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id)"
+      },
+      {
+        "kind": "c",
+        "name": "creator_social_accounts_avg_comments_check",
+        "table": "creator_social_accounts",
+        "definition": "CHECK (((avg_comments IS NULL) OR (avg_comments >= (0)::numeric)))"
+      },
+      {
+        "kind": "c",
+        "name": "creator_social_accounts_avg_likes_check",
+        "table": "creator_social_accounts",
+        "definition": "CHECK (((avg_likes IS NULL) OR (avg_likes >= (0)::numeric)))"
+      },
+      {
+        "kind": "f",
+        "name": "creator_social_accounts_creator_id_fkey",
+        "table": "creator_social_accounts",
+        "definition": "FOREIGN KEY (creator_id) REFERENCES creators(id) ON DELETE CASCADE"
+      },
+      {
+        "kind": "u",
+        "name": "creator_social_accounts_creator_id_platform_handle_normaliz_key",
+        "table": "creator_social_accounts",
+        "definition": "UNIQUE (creator_id, platform, handle_normalized)"
+      },
+      {
+        "kind": "c",
+        "name": "creator_social_accounts_engagement_rate_check",
+        "table": "creator_social_accounts",
+        "definition": "CHECK (((engagement_rate IS NULL) OR (engagement_rate >= (0)::numeric)))"
+      },
+      {
+        "kind": "c",
+        "name": "creator_social_accounts_follower_count_check",
+        "table": "creator_social_accounts",
+        "definition": "CHECK (((follower_count IS NULL) OR (follower_count >= 0)))"
+      },
+      {
+        "kind": "c",
+        "name": "creator_social_accounts_following_count_check",
+        "table": "creator_social_accounts",
+        "definition": "CHECK (((following_count IS NULL) OR (following_count >= 0)))"
+      },
+      {
+        "kind": "c",
+        "name": "creator_social_accounts_freshness_score_check",
+        "table": "creator_social_accounts",
+        "definition": "CHECK (((freshness_score IS NULL) OR ((freshness_score >= 0) AND (freshness_score <= 100))))"
+      },
+      {
+        "kind": "p",
+        "name": "creator_social_accounts_pkey",
+        "table": "creator_social_accounts",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "kind": "c",
+        "name": "creator_social_accounts_platform_check",
+        "table": "creator_social_accounts",
+        "definition": "CHECK ((platform = ANY (ARRAY['instagram'::text, 'threads'::text])))"
+      },
+      {
+        "kind": "c",
+        "name": "creator_social_accounts_post_count_check",
+        "table": "creator_social_accounts",
+        "definition": "CHECK (((post_count IS NULL) OR (post_count >= 0)))"
+      },
+      {
+        "kind": "c",
+        "name": "creator_social_accounts_posting_frequency_check",
+        "table": "creator_social_accounts",
+        "definition": "CHECK (((posting_frequency IS NULL) OR (posting_frequency >= (0)::numeric)))"
+      },
+      {
+        "kind": "c",
+        "name": "creator_social_accounts_sync_status_check",
+        "table": "creator_social_accounts",
+        "definition": "CHECK ((sync_status = ANY (ARRAY['pending'::text, 'synced'::text, 'stale'::text, 'failed'::text, 'rate_limited'::text])))"
+      },
+      {
+        "kind": "f",
+        "name": "creator_social_accounts_workspace_id_fkey",
+        "table": "creator_social_accounts",
+        "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id)"
+      },
+      {
+        "kind": "f",
+        "name": "creator_social_scan_snapshots_account_id_fkey",
+        "table": "creator_social_scan_snapshots",
+        "definition": "FOREIGN KEY (account_id) REFERENCES creator_social_accounts(id) ON DELETE CASCADE"
+      },
+      {
+        "kind": "p",
+        "name": "creator_social_scan_snapshots_pkey",
+        "table": "creator_social_scan_snapshots",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "kind": "c",
+        "name": "creator_social_scan_snapshots_status_check",
+        "table": "creator_social_scan_snapshots",
+        "definition": "CHECK ((status = ANY (ARRAY['synced'::text, 'stale'::text, 'failed'::text, 'rate_limited'::text])))"
+      },
+      {
+        "kind": "f",
+        "name": "creators_id_fkey",
+        "table": "creators",
+        "definition": "FOREIGN KEY (id) REFERENCES auth.users(id) ON DELETE CASCADE"
+      },
+      {
+        "kind": "p",
+        "name": "creators_pkey",
+        "table": "creators",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "kind": "u",
+        "name": "creators_referral_code_key",
+        "table": "creators",
+        "definition": "UNIQUE (referral_code)"
+      },
+      {
+        "kind": "f",
+        "name": "creators_referred_by_fkey",
+        "table": "creators",
+        "definition": "FOREIGN KEY (referred_by) REFERENCES creators(id)"
+      },
+      {
+        "kind": "c",
+        "name": "creators_status_chk",
+        "table": "creators",
+        "definition": "CHECK ((status = ANY (ARRAY['active'::text, 'suspended'::text, 'pending_review'::text])))"
+      },
+      {
+        "kind": "f",
+        "name": "creators_workspace_id_fkey",
+        "table": "creators",
+        "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id)"
+      },
+      {
+        "kind": "f",
+        "name": "earnings_balances_creator_id_fkey",
+        "table": "earnings_balances",
+        "definition": "FOREIGN KEY (creator_id) REFERENCES creators(id) ON DELETE CASCADE"
+      },
+      {
+        "kind": "u",
+        "name": "earnings_balances_creator_id_workspace_id_key",
+        "table": "earnings_balances",
+        "definition": "UNIQUE (creator_id, workspace_id)"
+      },
+      {
+        "kind": "p",
+        "name": "earnings_balances_pkey",
+        "table": "earnings_balances",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "kind": "f",
+        "name": "earnings_balances_workspace_id_fkey",
+        "table": "earnings_balances",
+        "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id)"
+      },
+      {
+        "kind": "f",
+        "name": "earnings_transactions_creator_id_fkey",
+        "table": "earnings_transactions",
+        "definition": "FOREIGN KEY (creator_id) REFERENCES creators(id) ON DELETE CASCADE"
+      },
+      {
+        "kind": "p",
+        "name": "earnings_transactions_pkey",
+        "table": "earnings_transactions",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "kind": "c",
+        "name": "earnings_transactions_type_check",
+        "table": "earnings_transactions",
+        "definition": "CHECK ((type = ANY (ARRAY['earn'::text, 'adjust'::text])))"
+      },
+      {
+        "kind": "f",
+        "name": "earnings_transactions_workspace_id_fkey",
+        "table": "earnings_transactions",
+        "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id)"
+      },
+      {
+        "kind": "f",
+        "name": "kb_chunks_document_id_fkey",
+        "table": "kb_chunks",
+        "definition": "FOREIGN KEY (document_id) REFERENCES kb_documents(id) ON DELETE CASCADE"
+      },
+      {
+        "kind": "p",
+        "name": "kb_chunks_pkey",
+        "table": "kb_chunks",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "kind": "p",
+        "name": "kb_documents_pkey",
+        "table": "kb_documents",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "kind": "c",
+        "name": "kb_documents_source_type_check",
+        "table": "kb_documents",
+        "definition": "CHECK ((source_type = ANY (ARRAY['article'::text, 'mission_brief'::text, 'reward'::text, 'level'::text, 'legal'::text])))"
+      },
+      {
+        "kind": "u",
+        "name": "kb_documents_source_type_source_ref_locale_key",
+        "table": "kb_documents",
+        "definition": "UNIQUE (source_type, source_ref, locale)"
+      },
+      {
+        "kind": "f",
+        "name": "mission_shortlists_creator_id_fkey",
+        "table": "mission_shortlists",
+        "definition": "FOREIGN KEY (creator_id) REFERENCES creators(id) ON DELETE CASCADE"
+      },
+      {
+        "kind": "u",
+        "name": "mission_shortlists_mission_id_creator_id_key",
+        "table": "mission_shortlists",
+        "definition": "UNIQUE (mission_id, creator_id)"
+      },
+      {
+        "kind": "f",
+        "name": "mission_shortlists_mission_id_fkey",
+        "table": "mission_shortlists",
+        "definition": "FOREIGN KEY (mission_id) REFERENCES missions(id) ON DELETE CASCADE"
+      },
+      {
+        "kind": "p",
+        "name": "mission_shortlists_pkey",
+        "table": "mission_shortlists",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "kind": "c",
+        "name": "mission_shortlists_source_check",
+        "table": "mission_shortlists",
+        "definition": "CHECK ((source = ANY (ARRAY['manual'::text, 'applicant'::text, 'match'::text, 'review_queue'::text])))"
+      },
+      {
+        "kind": "c",
+        "name": "mission_shortlists_status_check",
+        "table": "mission_shortlists",
+        "definition": "CHECK ((status = ANY (ARRAY['shortlisted'::text, 'invited'::text, 'dismissed'::text, 'accepted'::text, 'declined'::text])))"
+      },
+      {
+        "kind": "f",
+        "name": "mission_shortlists_workspace_id_fkey",
+        "table": "mission_shortlists",
+        "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id)"
+      },
+      {
+        "kind": "f",
+        "name": "mission_submissions_creator_id_fkey",
+        "table": "mission_submissions",
+        "definition": "FOREIGN KEY (creator_id) REFERENCES creators(id) ON DELETE CASCADE"
+      },
+      {
+        "kind": "u",
+        "name": "mission_submissions_mission_id_creator_id_key",
+        "table": "mission_submissions",
+        "definition": "UNIQUE (mission_id, creator_id)"
+      },
+      {
+        "kind": "f",
+        "name": "mission_submissions_mission_id_fkey",
+        "table": "mission_submissions",
+        "definition": "FOREIGN KEY (mission_id) REFERENCES missions(id) ON DELETE CASCADE"
+      },
+      {
+        "kind": "p",
+        "name": "mission_submissions_pkey",
+        "table": "mission_submissions",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "kind": "c",
+        "name": "mission_submissions_quality_rating_check",
+        "table": "mission_submissions",
+        "definition": "CHECK (((quality_rating IS NULL) OR ((quality_rating >= 1) AND (quality_rating <= 5))))"
+      },
+      {
+        "kind": "c",
+        "name": "mission_submissions_status_check",
+        "table": "mission_submissions",
+        "definition": "CHECK ((status = ANY (ARRAY['applied'::text, 'joined'::text, 'submitted'::text, 'under_review'::text, 'approved'::text, 'rejected'::text, 'expired'::text, 'declined'::text])))"
+      },
+      {
+        "kind": "f",
+        "name": "mission_submissions_workspace_id_fkey",
+        "table": "mission_submissions",
+        "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id)"
+      },
+      {
+        "kind": "c",
+        "name": "missions_access_type_check",
+        "table": "missions",
+        "definition": "CHECK ((access_type = ANY (ARRAY['open'::text, 'application'::text])))"
+      },
+      {
+        "kind": "f",
+        "name": "missions_created_by_fkey",
+        "table": "missions",
+        "definition": "FOREIGN KEY (created_by) REFERENCES auth.users(id) ON DELETE SET NULL"
+      },
+      {
+        "kind": "c",
+        "name": "missions_effort_check",
+        "table": "missions",
+        "definition": "CHECK ((effort = ANY (ARRAY['low'::text, 'medium'::text, 'high'::text])))"
+      },
+      {
+        "kind": "c",
+        "name": "missions_mission_type_check",
+        "table": "missions",
+        "definition": "CHECK ((mission_type = ANY (ARRAY['koc_trial'::text, 'ugc'::text, 'clipping'::text, 'affiliate'::text, 'performance_cpm'::text, 'live_commerce'::text, 'brand_ambassador'::text])))"
+      },
+      {
+        "kind": "p",
+        "name": "missions_pkey",
+        "table": "missions",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "kind": "c",
+        "name": "missions_status_chk",
+        "table": "missions",
+        "definition": "CHECK ((status = ANY (ARRAY['draft'::text, 'active'::text, 'closed'::text])))"
+      },
+      {
+        "kind": "f",
+        "name": "missions_workspace_id_fkey",
+        "table": "missions",
+        "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id)"
+      },
+      {
+        "kind": "u",
+        "name": "missions_workspace_id_slug_key",
+        "table": "missions",
+        "definition": "UNIQUE (workspace_id, slug)"
+      },
+      {
+        "kind": "u",
+        "name": "missions_ws_id_uniq",
+        "table": "missions",
+        "definition": "UNIQUE (workspace_id, id)"
+      },
+      {
+        "kind": "p",
+        "name": "notifications_pkey",
+        "table": "notifications",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "kind": "c",
+        "name": "notifications_type_check",
+        "table": "notifications",
+        "definition": "CHECK ((type = ANY (ARRAY['submission_approved'::text, 'submission_rejected'::text, 'redemption_ready'::text, 'level_up'::text, 'application_accepted'::text, 'application_declined'::text, 'campaign_goal_reached'::text, 'campaign_prize_awarded'::text, 'campaign_started'::text])))"
+      },
+      {
+        "kind": "f",
+        "name": "notifications_user_id_fkey",
+        "table": "notifications",
+        "definition": "FOREIGN KEY (user_id) REFERENCES creators(id) ON DELETE CASCADE"
+      },
+      {
+        "kind": "f",
+        "name": "notifications_workspace_id_fkey",
+        "table": "notifications",
+        "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id)"
+      },
+      {
+        "kind": "f",
+        "name": "operator_audit_events_creator_id_fkey",
+        "table": "operator_audit_events",
+        "definition": "FOREIGN KEY (creator_id) REFERENCES creators(id) ON DELETE SET NULL"
+      },
+      {
+        "kind": "f",
+        "name": "operator_audit_events_mission_id_fkey",
+        "table": "operator_audit_events",
+        "definition": "FOREIGN KEY (mission_id) REFERENCES missions(id) ON DELETE SET NULL"
+      },
+      {
+        "kind": "p",
+        "name": "operator_audit_events_pkey",
+        "table": "operator_audit_events",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "kind": "f",
+        "name": "operator_audit_events_workspace_id_fkey",
+        "table": "operator_audit_events",
+        "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id)"
+      },
+      {
+        "kind": "f",
+        "name": "point_balances_creator_id_fkey",
+        "table": "point_balances",
+        "definition": "FOREIGN KEY (creator_id) REFERENCES creators(id) ON DELETE CASCADE"
+      },
+      {
+        "kind": "u",
+        "name": "point_balances_creator_id_workspace_id_key",
+        "table": "point_balances",
+        "definition": "UNIQUE (creator_id, workspace_id)"
+      },
+      {
+        "kind": "p",
+        "name": "point_balances_pkey",
+        "table": "point_balances",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "kind": "f",
+        "name": "point_balances_workspace_id_fkey",
+        "table": "point_balances",
+        "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id)"
+      },
+      {
+        "kind": "f",
+        "name": "point_transactions_creator_id_fkey",
+        "table": "point_transactions",
+        "definition": "FOREIGN KEY (creator_id) REFERENCES creators(id) ON DELETE CASCADE"
+      },
+      {
+        "kind": "p",
+        "name": "point_transactions_pkey",
+        "table": "point_transactions",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "kind": "c",
+        "name": "point_transactions_type_check",
+        "table": "point_transactions",
+        "definition": "CHECK ((type = ANY (ARRAY['earn'::text, 'redeem'::text, 'expire'::text, 'adjust'::text, 'referral'::text, 'bonus'::text, 'multiplier'::text])))"
+      },
+      {
+        "kind": "f",
+        "name": "point_transactions_workspace_id_fkey",
+        "table": "point_transactions",
+        "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id)"
+      },
+      {
+        "kind": "f",
+        "name": "redemption_codes_gift_id_fkey",
+        "table": "redemption_codes",
+        "definition": "FOREIGN KEY (gift_id) REFERENCES redemption_gifts(id) ON DELETE CASCADE"
+      },
+      {
+        "kind": "f",
+        "name": "redemption_codes_issued_to_fkey",
+        "table": "redemption_codes",
+        "definition": "FOREIGN KEY (issued_to) REFERENCES creators(id)"
+      },
+      {
+        "kind": "p",
+        "name": "redemption_codes_pkey",
+        "table": "redemption_codes",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "kind": "c",
+        "name": "redemption_codes_status_check",
+        "table": "redemption_codes",
+        "definition": "CHECK ((status = ANY (ARRAY['available'::text, 'issued'::text])))"
+      },
+      {
+        "kind": "f",
+        "name": "redemption_codes_workspace_id_fkey",
+        "table": "redemption_codes",
+        "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id)"
+      },
+      {
+        "kind": "c",
+        "name": "redemption_gifts_gift_type_check",
+        "table": "redemption_gifts",
+        "definition": "CHECK ((gift_type = ANY (ARRAY['voucher'::text, 'physical'::text, 'digital'::text, 'experience'::text])))"
+      },
+      {
+        "kind": "p",
+        "name": "redemption_gifts_pkey",
+        "table": "redemption_gifts",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "kind": "f",
+        "name": "redemption_gifts_workspace_id_fkey",
+        "table": "redemption_gifts",
+        "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id)"
+      },
+      {
+        "kind": "f",
+        "name": "redemptions_code_id_fkey",
+        "table": "redemptions",
+        "definition": "FOREIGN KEY (code_id) REFERENCES redemption_codes(id)"
+      },
+      {
+        "kind": "f",
+        "name": "redemptions_creator_id_fkey",
+        "table": "redemptions",
+        "definition": "FOREIGN KEY (creator_id) REFERENCES creators(id) ON DELETE CASCADE"
+      },
+      {
+        "kind": "f",
+        "name": "redemptions_gift_id_fkey",
+        "table": "redemptions",
+        "definition": "FOREIGN KEY (gift_id) REFERENCES redemption_gifts(id)"
+      },
+      {
+        "kind": "p",
+        "name": "redemptions_pkey",
+        "table": "redemptions",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "kind": "c",
+        "name": "redemptions_status_check",
+        "table": "redemptions",
+        "definition": "CHECK ((status = ANY (ARRAY['fulfilled'::text, 'cancelled'::text])))"
+      },
+      {
+        "kind": "f",
+        "name": "redemptions_workspace_id_fkey",
+        "table": "redemptions",
+        "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id)"
+      },
+      {
+        "kind": "p",
+        "name": "staff_users_pkey",
+        "table": "staff_users",
+        "definition": "PRIMARY KEY (user_id)"
+      },
+      {
+        "kind": "f",
+        "name": "staff_users_user_id_fkey",
+        "table": "staff_users",
+        "definition": "FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE"
+      },
+      {
+        "kind": "p",
+        "name": "workspace_budget_transactions_pkey",
+        "table": "workspace_budget_transactions",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "kind": "c",
+        "name": "workspace_budget_transactions_type_check",
+        "table": "workspace_budget_transactions",
+        "definition": "CHECK ((type = ANY (ARRAY['topup'::text, 'debit'::text, 'adjust'::text])))"
+      },
+      {
+        "kind": "f",
+        "name": "workspace_budget_transactions_workspace_id_fkey",
+        "table": "workspace_budget_transactions",
+        "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE CASCADE"
+      },
+      {
+        "kind": "c",
+        "name": "workspace_budgets_balance_check",
+        "table": "workspace_budgets",
+        "definition": "CHECK ((balance >= (0)::numeric))"
+      },
+      {
+        "kind": "p",
+        "name": "workspace_budgets_pkey",
+        "table": "workspace_budgets",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "kind": "f",
+        "name": "workspace_budgets_workspace_id_fkey",
+        "table": "workspace_budgets",
+        "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE CASCADE"
+      },
+      {
+        "kind": "u",
+        "name": "workspace_budgets_workspace_id_key",
+        "table": "workspace_budgets",
+        "definition": "UNIQUE (workspace_id)"
+      },
+      {
+        "kind": "p",
+        "name": "workspaces_pkey",
+        "table": "workspaces",
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "kind": "c",
+        "name": "workspaces_plan_check",
+        "table": "workspaces",
+        "definition": "CHECK ((plan = ANY (ARRAY['starter'::text, 'growth'::text, 'enterprise'::text])))"
+      },
+      {
+        "kind": "u",
+        "name": "workspaces_slug_key",
+        "table": "workspaces",
+        "definition": "UNIQUE (slug)"
+      }
+    ],
+    "storageBuckets": [
+      {
+        "id": "creator-avatars",
+        "public": true
+      }
+    ],
+    "storagePolicies": [
+      {
+        "name": "creator_avatar_objects_public_read",
+        "roles": [
+          "public"
+        ],
+        "table": "objects",
+        "command": "SELECT"
+      },
+      {
+        "name": "creator_avatar_objects_self_delete",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "objects",
+        "command": "DELETE"
+      },
+      {
+        "name": "creator_avatar_objects_self_insert",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "objects",
+        "command": "INSERT"
+      },
+      {
+        "name": "creator_avatar_objects_self_update",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "objects",
+        "command": "UPDATE"
+      }
+    ]
+  }
+}

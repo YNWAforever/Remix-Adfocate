@@ -1,0 +1,23 @@
+
+> lint
+> eslint .
+
+
+C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\scripts\audit\capture-schema.mjs
+  52:1  error  'process' is not defined  no-undef
+
+C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\scripts\audit\configure-local-auth.mjs
+  27:1  error  'process' is not defined  no-undef
+
+C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\src\components\admin\PublicationProofReview.tsx
+  285:6  warning  React Hook useEffect has a missing dependency: 'review?.checklist'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\src\lib\queries\activeMission.ts
+  348:6  warning  React Hook useEffect has a missing dependency: 'mutation'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  532:6  warning  React Hook useEffect has a missing dependency: 'mutation'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\src\routes\_app.onboarding.tsx
+  110:9  warning  The 'effectiveOnboarding' conditional could make the dependencies of useMemo Hook (at line 115) change on every render. Move it inside the useMemo callback. Alternatively, wrap the initialization of 'effectiveOnboarding' in its own useMemo() Hook  react-hooks/exhaustive-deps
+
+✖ 6 problems (2 errors, 4 warnings)
+

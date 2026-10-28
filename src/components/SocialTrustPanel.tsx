@@ -1,33 +1,15 @@
 import { useState } from "react";
-import {
-  useAddSocialAccount,
-  useConfirmVerification,
-  useIssueVerification,
-  useScanSocialAccount,
-  useSocialAccounts,
-  useUseSocialAvatar,
-  type SocialPlatform,
-} from "@/lib/queries/kocmax";
+import { useAddSocialAccount, useConfirmVerification, useIssueVerification, useScanSocialAccount, useSocialAccounts, useUseSocialAvatar, type SocialHandle, type SocialPlatform } from "@/lib/queries/kocmax";
 import { useI18n } from "@/lib/i18n";
+import { projectSocialAccounts, socialPlatformName, type SocialAccountPresentation } from "@/lib/socialAccountPresentation";
+import { platformDisplayLabelKey } from "@/lib/labels";
+import { SocialAccountSummary } from "./SocialAccountSummary";
 
-const PLATFORMS: Array<{ id: SocialPlatform; label: string }> = [
-  { id: "instagram", label: "Instagram" },
-  { id: "threads", label: "Threads" },
-];
+const CONNECTABLE = ["instagram", "threads"] as const;
+const button = "rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-2 text-xs font-bold disabled:opacity-50";
+const number = (value?: number | null) => value == null ? "—" : new Intl.NumberFormat("en-HK").format(value);
 
-function formatNumber(value?: number | null) {
-  return value == null ? "—" : new Intl.NumberFormat("en-US").format(value);
-}
-
-function formatPercent(value?: number | null) {
-  return value == null ? "—" : `${value}%`;
-}
-
-function formatHandle(handle: string) {
-  return handle.startsWith("@") ? handle : `@${handle}`;
-}
-
-export function SocialTrustPanel() {
+export function SocialTrustPanel({ presentations, legacyHandles = [] }: { presentations?: SocialAccountPresentation[]; legacyHandles?: SocialHandle[] } = {}) {
   const { t } = useI18n();
   const accounts = useSocialAccounts();
   const add = useAddSocialAccount();
@@ -35,163 +17,80 @@ export function SocialTrustPanel() {
   const avatar = useUseSocialAvatar();
   const issue = useIssueVerification();
   const confirm = useConfirmVerification();
-  const [handles, setHandles] = useState<Record<SocialPlatform, string>>({ instagram: "", threads: "" });
+  const [handles, setHandles] = useState<Partial<Record<SocialPlatform, string>>>({});
   const [codes, setCodes] = useState<Record<string, string>>({});
-  const [errs, setErrs] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const pending = add.isPending || scan.isPending || avatar.isPending || issue.isPending || confirm.isPending;
+  const rows = presentations ?? projectSocialAccounts(accounts.data ?? [], legacyHandles);
+  const platforms = [...new Set([...rows.map(row => row.platform), ...CONNECTABLE])];
 
-  if (accounts.isLoading) return <p className="text-sm text-[var(--color-soft-ink)]">Loading social trust...</p>;
-  if (accounts.isError) return <p className="text-sm text-[var(--color-magenta)]">Social trust failed to load</p>;
+  async function run(key: string, work: () => Promise<unknown>) {
+    setErrors(current => ({ ...current, [key]: "" }));
+    try { await work(); }
+    catch (error) {
+      const code = error && typeof error === "object" && "code" in error ? String(error.code) : "";
+      const keyForCode: Record<string, string> = { code_expired: "app.social.errCodeExpired", code_not_in_bio: "app.social.errCodeNotInBio", handle_taken: "app.social.errHandleTaken", provider_unavailable: "app.social.errUnavailable" };
+      setErrors(current => ({ ...current, [key]: t(keyForCode[code] ?? "app.social.actionError") }));
+    }
+  }
+  const requestCode = (id: string) => run(id, async () => { const result = await issue.mutateAsync(id); setCodes(current => ({ ...current, [id]: result.code })); });
 
-  return (
-    <section className="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 shadow-[4px_4px_0_0_var(--color-ink)]">
-      <h2 className="font-heading font-bold">Social trust</h2>
-      <div className="space-y-3">
-        {PLATFORMS.map((platform) => {
-          const account = accounts.data?.find((item) => item.platform === platform.id);
-          return (
-            <div key={platform.id} className="space-y-2 rounded-xl border-2 border-[var(--color-ink)] p-3">
-              <div className="flex items-center justify-between gap-2">
-                <span className="font-heading font-bold">{platform.label}</span>
-                {account?.sync_status === "synced" ? (
-                  <span className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-2 py-0.5 text-xs font-bold">
-                    API-synced
-                  </span>
-                ) : null}
+  if (accounts.isLoading && !rows.length) return <p role="status">{t("app.social.loading")}</p>;
+  return <section className="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 shadow-[4px_4px_0_0_var(--color-ink)]">
+    <h2 className="font-heading font-bold">{t("app.profile.socialAccounts")}</h2>
+    {accounts.isError ? <div role="alert" className="space-y-2 text-sm"><p>{t("app.social.loadError")}</p><button type="button" className={button} onClick={() => void accounts.refetch()}>{t("common.retry")}</button></div> : null}
+    <p className="text-xs text-[var(--color-soft-ink)]">{t("app.social.optionalHelp")}</p>
+    {platforms.map(platform => {
+      const platformRows = rows.filter(row => row.platform === platform);
+      const label = t(platformDisplayLabelKey(socialPlatformName(platform)));
+      const connectable = CONNECTABLE.includes(platform as SocialPlatform);
+      const inputKey = platform as SocialPlatform;
+      const handle = handles[inputKey] ?? platformRows.find(row => row.source === "legacy")?.handle ?? "";
+      return <div key={platform} className="space-y-3 rounded-xl border-2 border-[var(--color-ink)] p-3">
+        {!platformRows.length ? <h3 className="font-heading font-bold">{label}</h3> : null}
+        {platformRows.map(row => {
+          const account = row.accountId ? accounts.data?.find(item => item.id === row.accountId) : undefined;
+          return <div key={row.accountId ?? row.handle} className="space-y-3 border-b border-[var(--color-ink)] pb-3 last:border-b-0 last:pb-0">
+            <SocialAccountSummary account={row} />
+            {account ? <>
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <span>{number(account.follower_count)}</span>
+                <span>{t("app.social.engagement")} <span>{account.engagement_rate == null ? "—" : `${account.engagement_rate}%`}</span></span>
+                <span>{t("app.social.avgLikes")} {number(account.avg_likes)}</span>
+                <span>{t("app.social.avgComments")} {number(account.avg_comments)}</span>
               </div>
-
-              {account ? (
-                <>
-                  <div className="flex items-center justify-between gap-3 text-sm">
-                    <span className="text-[var(--color-soft-ink)]">{formatHandle(account.handle)}</span>
-                    <span className="font-heading font-bold">{formatNumber(account.follower_count)}</span>
-                  </div>
-                  <div className="grid grid-cols-2 gap-2 text-xs">
-                    <span>
-                      <span className="text-[var(--color-soft-ink)]">Engagement </span>
-                      <span>{formatPercent(account.engagement_rate)}</span>
-                    </span>
-                    <span>
-                      <span className="text-[var(--color-soft-ink)]">Avg likes </span>
-                      <span>{formatNumber(account.avg_likes)}</span>
-                    </span>
-                    <span>
-                      <span className="text-[var(--color-soft-ink)]">Avg comments </span>
-                      <span>{formatNumber(account.avg_comments)}</span>
-                    </span>
-                    <span>
-                      <span className="text-[var(--color-soft-ink)]">Freshness </span>
-                      <span>{account.freshness_score ?? "—"}</span>
-                    </span>
-                  </div>
-                  {account.owner_verified ? (
-                    <p className="text-xs font-bold text-[var(--color-acid-ink,var(--color-ink))]">✓ {t("app.social.verified")}</p>
-                  ) : codes[account.id] ? (
-                    <div className="space-y-1">
-                      <p className="text-xs text-[var(--color-soft-ink)]">
-                        {t("app.social.verifyInstructions", { platform: platform.label })}
-                      </p>
-                      <p className="font-mono text-sm font-bold tracking-widest">{codes[account.id]}</p>
-                      {errs[account.id] && <p className="text-xs text-[var(--color-magenta)]">{errs[account.id]}</p>}
-                      <div className="flex gap-2">
-                        <button
-                          type="button"
-                          onClick={async () => {
-                            setErrs((e) => ({ ...e, [account.id]: "" }));
-                            try {
-                              await confirm.mutateAsync(account.id);
-                              setCodes((cs) => { const n = { ...cs }; delete n[account.id]; return n; });
-                            } catch (err) {
-                              const code = (err as { code?: string }).code;
-                              const key =
-                                code === "code_not_in_bio" ? "app.social.errCodeNotInBio"
-                                : code === "code_expired" ? "app.social.errCodeExpired"
-                                : code === "provider_unavailable" ? "app.social.errUnavailable"
-                                : code === "handle_taken" ? "app.social.errHandleTaken"
-                                : "common.saveError";
-                              setErrs((e) => ({ ...e, [account.id]: t(key) }));
-                            }
-                          }}
-                          disabled={confirm.isPending}
-                          className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 text-xs font-bold disabled:opacity-50"
-                        >
-                          {t("app.social.verifyNow")}
-                        </button>
-                        <button
-                          type="button"
-                          onClick={async () => {
-                            const { code } = await issue.mutateAsync(account.id);
-                            setCodes((cs) => ({ ...cs, [account.id]: code }));
-                          }}
-                          disabled={issue.isPending}
-                          className="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-xs font-bold disabled:opacity-50"
-                        >
-                          {t("app.social.verifyReissue")}
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={async () => {
-                        const { code } = await issue.mutateAsync(account.id);
-                        setCodes((cs) => ({ ...cs, [account.id]: code }));
-                      }}
-                      disabled={issue.isPending}
-                      className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 text-xs font-bold disabled:opacity-50"
-                    >
-                      {t("app.social.verifyCta")}
-                    </button>
-                  )}
-                  {account.api_synced_at ? (
-                    <p className="text-xs text-[var(--color-soft-ink)]">
-                      Last synced {new Date(account.api_synced_at).toLocaleDateString()}
-                    </p>
-                  ) : null}
-                  {account.external_avatar_url ? (
-                    <div className="flex items-center gap-3">
-                      <img
-                        src={account.external_avatar_url}
-                        alt=""
-                        className="h-10 w-10 rounded-full border-2 border-[var(--color-ink)] object-cover"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => avatar.mutateAsync(account.id)}
-                        className="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-xs font-bold"
-                      >
-                        Use as Adfocate avatar
-                      </button>
-                    </div>
-                  ) : null}
-                  <button
-                    type="button"
-                    onClick={() => scan.mutateAsync(account.id)}
-                    className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 text-xs font-bold"
-                  >
-                    Refresh {platform.label}
-                  </button>
-                </>
-              ) : (
-                <div className="flex gap-2">
-                  <input
-                    value={handles[platform.id]}
-                    onChange={(event) => setHandles((current) => ({ ...current, [platform.id]: event.target.value }))}
-                    aria-label={`${platform.label} handle`}
-                    className="min-w-0 flex-1 rounded-xl border-2 border-[var(--color-ink)] bg-white px-3 py-2 text-sm"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => add.mutateAsync({ platform: platform.id, handle: handles[platform.id] })}
-                    className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 text-xs font-bold"
-                  >
-                    Save {platform.label}
-                  </button>
+              {!row.ownershipVerified ? codes[account.id] ? <div className="space-y-2">
+                <p className="text-xs">{t("app.social.verifyInstructions", { platform: label })}</p>
+                <p className="break-all font-mono font-bold">{codes[account.id]}</p>
+                <div className="flex flex-wrap gap-2">
+                  <button type="button" className={button} disabled={pending} onClick={() => void run(account.id, async () => {
+                    await confirm.mutateAsync(account.id); setCodes(current => { const next = { ...current }; delete next[account.id]; return next; });
+                  })}>{t("app.social.verifyNow")}</button>
+                  <button type="button" className={button} disabled={pending} onClick={() => void requestCode(account.id)}>{t("app.social.verifyReissue")}</button>
                 </div>
-              )}
-            </div>
-          );
+              </div> : <button type="button" className={button} disabled={pending} onClick={() => void requestCode(account.id)}>{t("app.social.verifyCta")}</button> : null}
+              <button type="button" className={button} disabled={pending} onClick={() => void run(account.id, () => scan.mutateAsync(account.id))}>{t("app.social.refresh", { platform: label })}</button>
+              {account.external_avatar_url ? <div className="flex flex-wrap items-center gap-3">
+                <img src={account.external_avatar_url} alt="" className="h-10 w-10 rounded-full border-2 border-[var(--color-ink)] object-cover" />
+                <button type="button" className={button} disabled={pending} onClick={() => void run(account.id, () => avatar.mutateAsync(account.id))}>{t("app.social.useAvatar")}</button>
+              </div> : null}
+              {errors[account.id] ? <p role="alert" className="text-sm text-[var(--color-magenta)]">{errors[account.id]}</p> : null}
+            </> : null}
+          </div>;
         })}
-      </div>
-    </section>
-  );
+        {connectable ? <form className="space-y-2" onSubmit={event => {
+          event.preventDefault(); if (!handle.trim() || pending) return;
+          void run(platform, () => add.mutateAsync({ platform: inputKey, handle }));
+        }}>
+          <label className="block text-sm">{t("common.platformHandleLabel", { platform: label })}
+            <input value={handle} onChange={event => setHandles(current => ({ ...current, [platform]: event.target.value }))}
+              aria-label={t("common.platformHandleLabel", { platform: label })} disabled={pending}
+              className="w-full min-w-0 rounded-xl border-2 border-[var(--color-ink)] bg-white px-3 py-2 text-sm" />
+          </label>
+          <button type="submit" className={button} disabled={pending || !handle.trim()}>{t("app.social.save", { platform: label })}</button>
+          {errors[platform] ? <p role="alert" className="text-sm text-[var(--color-magenta)]">{errors[platform]}</p> : null}
+        </form> : null}
+      </div>;
+    })}
+  </section>;
 }

@@ -1,0 +1,61 @@
+"""Approved B2 metadata preflight only. No create/start/SQL/client/fixture calls."""
+from pathlib import Path
+import os,sys,json,hashlib,subprocess,socket,datetime,shutil
+
+R=Path(__file__).resolve().parents[1];os.chdir(R)
+V=Path('docs/verification');M=V/'D19-B2-runtime-manifest-neutrality-guard.json'
+EXPECTED='96d3afa5e6b982f9ed537d2c95d45fd9dc3b7dc230f96d9649ef5d6bfffcc417'
+def read(p):return json.loads(Path(p).read_text(encoding='utf-8-sig'))
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def write(p,x):Path(p).write_text(json.dumps(x,ensure_ascii=False,indent=2)+'\n',encoding='utf-8',newline='\n')
+assert sha(M)==EXPECTED
+m=read(M);spec=m['target'];project=spec['projectId'];private=Path('.codex-tmp')/project
+assert not private.exists(),'Existing run directory requires exact receipt reconciliation, never overwrite'
+fp=read(V/'code-fingerprint.json')
+assert fp['fingerprint']==m['candidate']['fingerprint']
+for f in fp['files']:assert hashlib.sha256(Path(f['path']).read_bytes().decode('utf-8').replace('\r\n','\n').encode()).hexdigest()==f['sha256'],f['path']
+env=os.environ.copy()
+for k in list(env):
+ if k.startswith('DOCKER_'):env.pop(k)
+env['DOCKER_CONTEXT']='desktop-linux'
+def docker(*args,missing=False):
+ r=subprocess.run(['docker','--context','desktop-linux',*args],env=env,capture_output=True,text=True,timeout=25)
+ if r.returncode:
+  if missing and any(x in r.stderr.lower()for x in ['no such','not found']):return None
+  raise RuntimeError('Docker metadata failed: '+r.stderr[:500])
+ return r.stdout.strip()
+endpoint=docker('context','inspect','desktop-linux','--format','{{.Endpoints.docker.Host}}')
+assert endpoint=='npipe:////./pipe/dockerDesktopLinuxEngine'
+engine=json.loads(docker('info','--format','{"id":{{json .ID}},"name":{{json .Name}},"version":{{json .ServerVersion}},"os":{{json .OSType}},"memoryBytes":{{json .MemTotal}}}'))
+assert engine['os']=='linux'and engine['name']=='docker-desktop'
+assert not docker('ps','-aq','--filter','label=com.supabase.cli.project='+project)
+containers={s:'supabase_'+s+'_'+project for s in ['db','auth','rest','kong','storage']}
+for name in containers.values():assert docker('container','inspect',name,missing=True)is None,name
+assert docker('network','inspect',spec['networkName'],missing=True)is None
+assert docker('volume','inspect',spec['databaseVolumeName'],missing=True)is None
+images={}
+fmt='{"id":{{json .Id}},"tags":{{json .RepoTags}},"entrypoint":{{json (index .Config "Entrypoint")}},"cmd":{{json (index .Config "Cmd")}},"volumes":{{json (index .Config "Volumes")}},"user":{{json (index .Config "User")}}}'
+for service,image in spec['serviceImageIds'].items():
+ metadata=json.loads(docker('image','inspect','--format',fmt,image))
+ assert metadata['id']==image
+ images[service]=metadata
+ports={}
+for name in ['web','api','database']:
+ port=spec['ports'][name]
+ with socket.socket()as sock:
+  sock.setsockopt(socket.SOL_SOCKET,socket.SO_EXCLUSIVEADDRUSE,1)
+  sock.bind(('127.0.0.1',port))
+ ports[name]={'host':'127.0.0.1','port':port,'exclusiveBindAvailableAtPreflight':True}
+proxy=subprocess.run(['netsh','interface','portproxy','show','all'],capture_output=True,text=True,timeout=15)
+assert proxy.returncode==0,'Portproxy metadata unavailable'
+assert not any(str(x['port'])in proxy.stdout.split()for x in ports.values()),'Proposed port has a portproxy rule'
+private.mkdir()
+for phase in ['role','core','browser']:(private/phase).mkdir()
+owner='2026-10-25 direct user approval reply call_adfe83a16c4341c9afca1939641ce508; B2 manifest '+EXPECTED
+write(private/'runtime-authorization.private.json',{'kind':'B2_RUNTIME_AUTHORIZATION','approved':True,'manifestSha256':EXPECTED,'sourceFingerprint':fp['fingerprint'],'ownerReference':owner,'approvalText':'批准這份 manifest 的 B2 runtime 範圍','scope':'Only the exact reviewed manifest; incident OPEN, release HOLD, provider disabled; no production/old-target mutations/commit/push/merge/deploy'})
+before=private/'before';before.mkdir()
+for name in ['adfocate-delivery.json','evidence-integrity.json','implementation_backlog.csv','audit_case_coverage.csv','code-fingerprint.json','finding_traceability.csv']:
+ shutil.copyfile(V/name,before/name)
+receipt={'atUtc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'manifestSha256':EXPECTED,'sourceFingerprint':fp['fingerprint'],'ownerReference':owner,'engine':engine,'endpoint':endpoint,'projectId':project,'proposedContainerNames':containers,'projectWasAbsent':True,'volumeWasAbsent':True,'networkWasAbsent':True,'images':images,'ports':ports,'portProxyRulesForProposedPorts':0,'actualResourcesCreated':0,'applicationClientsCreated':0,'SQLExecuted':False,'credentialsReadFromOldTargets':False,'pristineRpcRerun':False}
+write(private/'preflight.private.json',receipt)
+print(json.dumps({'status':'PASS_READ_ONLY_PREFLIGHT','projectId':project,'engine':engine,'cachedImages':len(images),'absentNewResources':True,'portsAvailable':ports,'actualResourcesCreated':0,'runtimeApprovalRecorded':True}))

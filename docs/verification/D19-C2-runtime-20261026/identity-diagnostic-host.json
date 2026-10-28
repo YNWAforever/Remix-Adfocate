@@ -1,0 +1,89 @@
+{
+  "at": "2026-10-25T17:50:52.861665+00:00",
+  "scope": "Host permission boundary diagnostic: readonly exact five approved C1 IDs; no keys, SQL, SDK, Auth, fixture or lifecycle action",
+  "results": [
+    {
+      "command": [
+        "docker",
+        "context",
+        "inspect",
+        "--format",
+        "{{.Endpoints.docker.Host}}"
+      ],
+      "exit": 0,
+      "stdout": "npipe:////./pipe/dockerDesktopLinuxEngine",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "docker",
+        "version",
+        "--format",
+        "{{.Server.Version}}"
+      ],
+      "exit": 0,
+      "stdout": "29.8.1",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "docker",
+        "inspect",
+        "--format",
+        "{\"Id\":{{json .Id}},\"Image\":{{json .Image}},\"Status\":{{json .State.Status}},\"Running\":{{json .State.Running}}}",
+        "a4e387ca84bfd11e815f697e0c407b12b8a610d29691517d8d8ecaef91957956"
+      ],
+      "exit": 0,
+      "stdout": "{\"Id\":\"a4e387ca84bfd11e815f697e0c407b12b8a610d29691517d8d8ecaef91957956\",\"Image\":\"sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453\",\"Status\":\"running\",\"Running\":true}",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "docker",
+        "inspect",
+        "--format",
+        "{\"Id\":{{json .Id}},\"Image\":{{json .Image}},\"Status\":{{json .State.Status}},\"Running\":{{json .State.Running}}}",
+        "37d469d0b42d137b01f7df915fed7bd8a8393961cc69ec08f5a9a872ec917489"
+      ],
+      "exit": 0,
+      "stdout": "{\"Id\":\"37d469d0b42d137b01f7df915fed7bd8a8393961cc69ec08f5a9a872ec917489\",\"Image\":\"sha256:ac6d4b1e961ae5a1a24d283967485f8195b767a8476e1044959d7a250c2da3f0\",\"Status\":\"running\",\"Running\":true}",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "docker",
+        "inspect",
+        "--format",
+        "{\"Id\":{{json .Id}},\"Image\":{{json .Image}},\"Status\":{{json .State.Status}},\"Running\":{{json .State.Running}}}",
+        "eeb1c762e84d82cfa9b40beb85c3ccd54cb9e1bc99f47b9564f23b5d4fed0ba2"
+      ],
+      "exit": 0,
+      "stdout": "{\"Id\":\"eeb1c762e84d82cfa9b40beb85c3ccd54cb9e1bc99f47b9564f23b5d4fed0ba2\",\"Image\":\"sha256:2f8e7b656f09db697a8875177694b417b35cb76c21370de07fc54e711e902326\",\"Status\":\"running\",\"Running\":true}",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "docker",
+        "inspect",
+        "--format",
+        "{\"Id\":{{json .Id}},\"Image\":{{json .Image}},\"Status\":{{json .State.Status}},\"Running\":{{json .State.Running}}}",
+        "c68a68b5ea60116a998cf3b61f4cdfbf737101361ae0866a8d8f83d0313ba253"
+      ],
+      "exit": 0,
+      "stdout": "{\"Id\":\"c68a68b5ea60116a998cf3b61f4cdfbf737101361ae0866a8d8f83d0313ba253\",\"Image\":\"sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d\",\"Status\":\"running\",\"Running\":true}",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "docker",
+        "inspect",
+        "--format",
+        "{\"Id\":{{json .Id}},\"Image\":{{json .Image}},\"Status\":{{json .State.Status}},\"Running\":{{json .State.Running}}}",
+        "c42f68a7940631a8567994903bd04987da7a15bd01de3599369b80589a6f1387"
+      ],
+      "exit": 0,
+      "stdout": "{\"Id\":\"c42f68a7940631a8567994903bd04987da7a15bd01de3599369b80589a6f1387\",\"Image\":\"sha256:ead6d49b9873d65a030c6c44b46676f4276b234becd6d7819c254351b5400d95\",\"Status\":\"running\",\"Running\":true}",
+      "stderr": ""
+    }
+  ]
+}

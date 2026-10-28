@@ -22,6 +22,7 @@ function proof(id: string, workspaceId: string, creatorId = "creator-1") {
 const requests: URL[] = [];
 let clientSequence = 0;
 let membershipError = false;
+let roleActive = true;
 const app = new Hono<AdminEnv>().route("/api/admin", adminRoutes);
 const path = "/api/admin/creators/creator-1/publication-proofs";
 
@@ -30,6 +31,7 @@ beforeEach(() => {
   vi.stubEnv("ADMIN_SECRET", "local-test-secret");
   requests.length = 0;
   membershipError = false;
+  roleActive = true;
   clients.makeUserClient.mockImplementation((userId: string) => ({
     auth: { getUser: async () => ({ data: { user: {
       id: userId, email: `${userId}@test.local`, email_confirmed_at: "2026-08-01T00:00:00.000Z",
@@ -49,9 +51,17 @@ beforeEach(() => {
           user_id, email: `${user_id}@test.local`, active: true,
         })),
         brand_users: [
-          { user_id: "operator-1", workspace_id: "workspace-owned", active: true },
+          { user_id: "operator-1", workspace_id: "workspace-owned", active: true, workspaces: { id: "workspace-owned", slug: "owned" } },
           { user_id: "operator-1", workspace_id: "workspace-revoked", active: false },
-          { user_id: "operator-2", workspace_id: "workspace-other", active: true },
+          { user_id: "operator-2", workspace_id: "workspace-other", active: true, workspaces: { id: "workspace-other", slug: "other" } },
+        ],
+        staff_workspace_roles: [
+          { user_id: "operator-1", workspace_id: "workspace-owned", role: "reviewer", active: roleActive, revision: 1 },
+          { user_id: "operator-2", workspace_id: "workspace-other", role: "reviewer", active: true, revision: 1 },
+        ],
+        creators: [
+          { id: "creator-1", workspace_id: "workspace-owned" },
+          { id: "creator-2", workspace_id: "workspace-other" },
         ],
         mission_publication_proof_attempts: [
           proof("owned", "workspace-owned"), proof("other", "workspace-other"),
@@ -75,9 +85,9 @@ beforeEach(() => {
 afterEach(() => vi.unstubAllEnvs());
 
 describe("creator case publication proof authorization", () => {
-  it("returns only this creator's proofs in the authenticated staff member's active workspaces", async () => {
+  it("returns only this creator's proofs in the authenticated staff member's assigned workspace", async () => {
     const response = await app.request(path, { headers: {
-      Authorization: "Bearer operator-1", "x-operator-id": "operator-2", "X-Workspace-Slug": "other",
+      Authorization: "Bearer operator-1", "x-operator-id": "operator-2", "X-Workspace-Slug": "owned",
     } });
     expect(response.status).toBe(200);
     const body = await response.json();
@@ -90,18 +100,18 @@ describe("creator case publication proof authorization", () => {
     expect(membership?.searchParams.get("active")).toBe("eq.true");
   });
 
-  it("returns no proofs and never queries attempts for staff without active workspace membership", async () => {
+  it("denies access and never queries attempts for staff without active workspace membership", async () => {
     const response = await app.request(path, { headers: { Authorization: "Bearer unassigned" } });
-    expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({ proofs: { status: "available", value: [] } });
+    expect(response.status).toBe(403);
+    expect((await response.json()).code).toBe("WORKSPACE_MEMBERSHIP_REQUIRED");
     expect(requests.some((url) => url.pathname.endsWith("/mission_publication_proof_attempts"))).toBe(false);
   });
 
   it("fails closed when the membership lookup fails", async () => {
     membershipError = true;
     const response = await app.request(path, { headers: { Authorization: "Bearer operator-1" } });
-    expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({ proofs: { status: "unavailable", reason: "source_error" } });
+    expect(response.status).toBe(503);
+    expect((await response.json()).code).toBe("WORKSPACE_UNAVAILABLE");
     expect(requests.some((url) => url.pathname.endsWith("/mission_publication_proof_attempts"))).toBe(false);
   });
 
@@ -109,8 +119,25 @@ describe("creator case publication proof authorization", () => {
     const response = await app.request(path, { headers: {
       "x-admin-secret": "local-test-secret", "x-operator-id": "operator-1",
     } });
-    expect(response.status).toBe(403);
+    expect(response.status).toBe(401);
     expect(clients.serviceClient).not.toHaveBeenCalled();
+  });
+
+  it("requires an active creator.read capability in addition to workspace membership", async () => {
+    roleActive = false;
+    const response = await app.request(path, { headers: { Authorization: "Bearer operator-1" } });
+    expect(response.status).toBe(403);
+    expect((await response.json()).code).toBe("STAFF_CAPABILITY_REQUIRED");
+    expect(requests.some((url) => url.pathname.endsWith("/mission_publication_proof_attempts"))).toBe(false);
+  });
+
+  it.each([
+    { url: path, workspace: "other" },
+    { url: "/api/admin/creators/creator-2/publication-proofs", workspace: "owned" },
+  ])("rejects another workspace or its creator before reading proofs ($url, $workspace)", async ({ url, workspace }) => {
+    const response = await app.request(url, { headers: { Authorization: "Bearer operator-1", "X-Workspace-Slug": workspace } });
+    expect(response.status).toBe(404);
+    expect(requests.some((url) => url.pathname.endsWith("/mission_publication_proof_attempts"))).toBe(false);
   });
 
   it.each([

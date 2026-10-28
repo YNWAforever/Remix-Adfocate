@@ -1,0 +1,12 @@
+{
+  "command": [
+    "C:\\Python314\\python.exe",
+    "C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023\\docs\\verification\\D19-migration-preservation-20261026\\verify-preservation.py",
+    "--claims"
+  ],
+  "exit": 1,
+  "stdout": "{\"status\": \"FAIL_STALE_MIGRATION_ACCEPTANCE_SCOPE\", \"issues\": [\"Pending C2 forward73 nonempty-preservation checks are not reconciled in the current remaining list\", \"UC-R04 lacks an explicit whole-current-case unverified label\"], \"actualTargetCalls\": 0, \"productTestFailure\": false}\n",
+  "stderr": "",
+  "productTestFailure": false,
+  "scope": "Metadata scope check only; no test suite or target action"
+}

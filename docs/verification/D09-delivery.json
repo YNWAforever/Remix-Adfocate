@@ -1,0 +1,411 @@
+{
+  "task": "D09",
+  "updatedAt": "2026-10-22T21:48:36.826304+00:00",
+  "executionModel": {
+    "verifiedFrom": "execution interface turn_context",
+    "model": "gpt-6.1-sol",
+    "switched": false
+  },
+  "modelVerification": "current session execution turn_context rechecked; no switch",
+  "newResult": {
+    "code": "implemented; existing DTO consumers, category list and eligibility extended",
+    "test": "verified local/full suite and real disposable API/UI",
+    "deployment": "not-deployed",
+    "runtime": "verified disposable Edge only"
+  },
+  "headSha": "7cfa3dc84c821719a4dff754229a591c81786c53",
+  "branch": "codex/adfocate-r1-pilot-20261023",
+  "commit": null,
+  "priorCodeFingerprint": "51f635f49b22960943af450c65d924ebae5b0aca4d8795a2c3cfae1c36a89dbb",
+  "codeFingerprint": "23176b626e0d34ec86ab433c4e3d97df4c616f75932c1ecc7dfda2dd5c1f4dbd",
+  "changedFiles": [
+    "e2e/mission-discovery.spec.ts",
+    "scripts/audit/run-discovery.mjs",
+    "scripts/audit/run-integration.mjs",
+    "server/lib/missionDecision.ts",
+    "server/lib/missionMatch.test.ts",
+    "server/lib/missionMatch.ts",
+    "server/routes/match.ts",
+    "server/routes/missions.ts",
+    "server/routes/onboarding.ts",
+    "server/test/audit-mission-list-contract.test.ts",
+    "server/test/audit-mission-list-projection.test.ts",
+    "src/components/-MissionFacts.test.tsx",
+    "src/components/MissionCard.contract.test.tsx",
+    "src/components/MissionCard.tsx",
+    "src/components/MissionCommitmentSummary.test.tsx",
+    "src/components/MissionCommitmentSummary.tsx",
+    "src/components/MissionFacts.tsx",
+    "src/components/RequestFeedback.tsx",
+    "src/components/admin/MissionEditor.tsx",
+    "src/components/components.test.tsx",
+    "src/components/onboarding/OnboardingSteps.tsx",
+    "src/lib/creatorFormatting.ts",
+    "src/lib/i18n.dict.ts",
+    "src/lib/labels.ts",
+    "src/lib/missionCategories.test.ts",
+    "src/lib/missionCategories.ts",
+    "src/lib/missionMeta.ts",
+    "src/lib/queries/kocmax.ts",
+    "src/routes/-_app.match.test.tsx",
+    "src/routes/-_app.mission.index.test.tsx",
+    "src/routes/-admin.missions.editor.test.tsx",
+    "src/routes/_app.home.tsx",
+    "src/routes/_app.match.tsx",
+    "src/routes/_app.mission.$missionSlug.tsx",
+    "src/routes/_app.mission.index.tsx",
+    "src/routes/_app.onboarding.tsx"
+  ],
+  "gates": [
+    {
+      "gate": "D09-contract",
+      "command": "node node_modules/vitest/vitest.mjs run server/test/audit-mission-list-projection.test.ts src/components/MissionCard.contract.test.tsx src/lib/missionCategories.test.ts src/routes/-_app.mission.index.test.tsx server/lib/missionMatch.test.ts src/components/-MissionFacts.test.tsx src/components/MissionCommitmentSummary.test.tsx src/routes/-admin.missions.editor.test.tsx src/routes/-_app.match.test.tsx src/lib/-missionMeta.test.ts --maxWorkers=2 --minWorkers=1",
+      "passed": 90,
+      "files": 10,
+      "log": "logs/D09-contract-green.log"
+    },
+    {
+      "gate": "D09-consumers",
+      "command": "node node_modules/vitest/vitest.mjs run src/routes/-_app.mission src/routes/-_app.match src/routes/-_app.home src/routes/-_app.onboarding src/components/onboarding src/components/CreatorWorkHome.test.tsx src/lib/useCreatorActivation.test.tsx src/lib/i18n.test.ts server/lib/missionAuthoring.test.ts --maxWorkers=2 --minWorkers=1",
+      "passed": 131,
+      "files": 10,
+      "log": "logs/D09-consumers.log"
+    },
+    {
+      "gate": "D09-general-card",
+      "command": "node node_modules/vitest/vitest.mjs run src/components/components.test.tsx src/components/MissionCard.contract.test.tsx --maxWorkers=2 --minWorkers=1",
+      "passed": 19,
+      "files": 2,
+      "log": "logs/D09-general-card-green.log"
+    },
+    {
+      "gate": "D09-real-api",
+      "command": "node scripts/audit/run-integration.mjs mission-list",
+      "passed": 6,
+      "files": 1,
+      "log": "logs/D09-integration-green.log",
+      "finalRerun": "logs/D09-browser-final.log"
+    },
+    {
+      "gate": "D09-existing-integration",
+      "command": "node scripts/audit/run-legacy-integration.mjs server/test/missions.test.ts server/test/match.test.ts server/test/onboarding.test.ts",
+      "passed": 35,
+      "files": 3,
+      "log": "logs/D09-legacy-integration.log"
+    },
+    {
+      "gate": "D09-browser",
+      "command": "node scripts/audit/run-discovery.mjs",
+      "passed": 1,
+      "apiPassed": 6,
+      "skipped": 0,
+      "log": "logs/D09-browser-final.log"
+    },
+    {
+      "gate": "D09-full-suite",
+      "command": "npm exec --offline --yes --package=node@22 -- node node_modules/vitest/vitest.mjs run --maxWorkers=2 --minWorkers=1 --reporter=default --reporter=json --outputFile=.codex-tmp/D09-full-suite.json",
+      "node": "22.23.4",
+      "passed": 1686,
+      "skipped": 318,
+      "failed": 0,
+      "audit16Passed": 16,
+      "original194Passed": 194,
+      "log": "logs/D09-full-suite.log"
+    },
+    {
+      "gate": "D09-typecheck",
+      "command": "npm run type-check",
+      "exit": 0,
+      "log": "logs/D09-typecheck-final.log"
+    },
+    {
+      "gate": "D09-lint",
+      "command": "npm run lint",
+      "exit": 0,
+      "errors": 0,
+      "preExistingWarnings": 4,
+      "log": "logs/D09-lint-final.log"
+    },
+    {
+      "gate": "D09-native-esm",
+      "command": "tsc server/lib/missionMatch.ts --outDir .codex-tmp/D09-native-esm --rootDir . --target es2022 --module esnext --moduleResolution bundler --skipLibCheck --types node; Node22 native import compiled missionMatch.js",
+      "exit": 0,
+      "log": "logs/D09-native-esm-node22.log"
+    },
+    {
+      "gate": "D09-build",
+      "command": "npm exec --offline --yes --package=node@22 -- npm run build",
+      "exit": 0,
+      "log": "logs/D09-build-node22.log"
+    },
+    {
+      "gate": "D09-manifest",
+      "command": "npm run release:manifest:check",
+      "exit": 0,
+      "log": "logs/D09-manifest-check.log"
+    },
+    {
+      "gate": "D09-diff",
+      "command": "git diff --check",
+      "exit": 0,
+      "log": "logs/D09-diff-check.log"
+    }
+  ],
+  "browser": {
+    "runId": "4050e434-7dbf-4990-a3bc-8038aef35a49",
+    "target": {
+      "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+      "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+      "disposable": true,
+      "projectId": "adfocate-r1-empty-20261023",
+      "proxy": "none",
+      "apiPort": 56421,
+      "apiContainerId": "1b9c41318298d79308db7782f51474541ad5abf0120fa93b96a2a9ea59d043ee",
+      "databaseContainerId": "e7c8efa295cd5544a8b2a100a73b6953cd6ddd486aaf394f231482067523e12d",
+      "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+      "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+      "networkId": "9e5d3069e8255d70b8eef56020c8ea2618fdb2626d92d9a04e51ea2de41a98e0"
+    },
+    "tests": [
+      {
+        "title": "D09 real decision DTO, filters, retry and qualification stay consistent across list and detail",
+        "ok": true,
+        "results": [
+          {
+            "status": "passed",
+            "duration": 21657
+          }
+        ]
+      }
+    ],
+    "stats": {
+      "startTime": "2026-10-22T21:34:16.503Z",
+      "duration": 28443.923,
+      "expected": 1,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "auth": "real local Creator sign-in; two separate Creator contexts",
+    "browser": "installed Edge; emulated 360px and desktop",
+    "externalProviders": "external HTTP blocked; paid-provider credentials empty; no real notification or publication",
+    "faultInjection": "503 negative transport only; successful decision data comes from real Auth/API/PostgREST",
+    "neutrality": true,
+    "limitations": [
+      "No Safari/WebKit or physical-device acceptance.",
+      "No load/performance certification or paid-provider evaluation."
+    ]
+  },
+  "decisionRoundtrip": {
+    "runId": "4050e434-7dbf-4990-a3bc-8038aef35a49",
+    "missionIds": [
+      "7fc59bfa-a605-4f84-b2af-5a3d736e5380",
+      "9f838fcd-c294-4143-b7dd-66088d4ca70d",
+      "7c15763b-c2c6-4704-93c1-015940c43304",
+      "9c95550c-151e-4339-9134-edeb2e16d335"
+    ],
+    "realSerializedListAndDetailEqual": true,
+    "cashZeroAndNullDistinct": true,
+    "petTravelAndUnknownFilter": true,
+    "noDetailRequestBeforeCardOpen": true,
+    "retry503PreservedFilter": true,
+    "lowXpJoinDeniedAndReloaded": true,
+    "unverifiedL3StillLocked": true,
+    "viewports": [
+      360,
+      1280
+    ],
+    "noHorizontalOverflowAt360": true,
+    "unknownCashDetailFullyReadable": true,
+    "publication": "not performed",
+    "paidProviders": "disabled"
+  },
+  "financialNeutrality": {
+    "runId": "4050e434-7dbf-4990-a3bc-8038aef35a49",
+    "before": {
+      "xp": 10,
+      "budget": null,
+      "points": 50,
+      "cashLedger": 0,
+      "pointLedger": 0,
+      "redemptions": 0,
+      "budgetLedger": 0,
+      "withdrawable": 0,
+      "rewardInventory": []
+    },
+    "after": {
+      "xp": 10,
+      "budget": null,
+      "points": 50,
+      "cashLedger": 0,
+      "pointLedger": 0,
+      "redemptions": 0,
+      "budgetLedger": 0,
+      "withdrawable": 0,
+      "rewardInventory": []
+    },
+    "allEqual": true,
+    "note": "Existing legacy join grants 10 XP during fixture setup. The measured UI flow contains reads and rejected joins only; no XP normalization."
+  },
+  "apiContract": {
+    "runId": "4050e434-7dbf-4990-a3bc-8038aef35a49",
+    "target": {
+      "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+      "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+      "disposable": true,
+      "projectId": "adfocate-r1-empty-20261023",
+      "proxy": "none",
+      "apiPort": 56421,
+      "apiContainerId": "1b9c41318298d79308db7782f51474541ad5abf0120fa93b96a2a9ea59d043ee",
+      "databaseContainerId": "e7c8efa295cd5544a8b2a100a73b6953cd6ddd486aaf394f231482067523e12d",
+      "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+      "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+      "networkId": "9e5d3069e8255d70b8eef56020c8ea2618fdb2626d92d9a04e51ea2de41a98e0"
+    },
+    "missionIds": [
+      "7fc59bfa-a605-4f84-b2af-5a3d736e5380",
+      "9f838fcd-c294-4143-b7dd-66088d4ca70d",
+      "7c15763b-c2c6-4704-93c1-015940c43304",
+      "9c95550c-151e-4339-9134-edeb2e16d335"
+    ],
+    "foreignMissionId": "10c90641-5178-41b8-a104-25ec50ed7714",
+    "decisionFields": [
+      "cash_reward",
+      "required_level",
+      "platforms",
+      "deliverables",
+      "effort",
+      "brand",
+      "deadline",
+      "quota",
+      "filled",
+      "points_reward",
+      "access_type",
+      "mission_type"
+    ],
+    "neutrality": {
+      "before": {
+        "xp": 10,
+        "points": 50,
+        "withdrawable": 0,
+        "budget": null,
+        "pointLedger": 0,
+        "cashLedger": 0,
+        "redemptions": 0,
+        "budgetLedger": 0,
+        "rewardInventory": []
+      },
+      "after": {
+        "xp": 10,
+        "points": 50,
+        "withdrawable": 0,
+        "budget": null,
+        "pointLedger": 0,
+        "cashLedger": 0,
+        "redemptions": 0,
+        "budgetLedger": 0,
+        "rewardInventory": []
+      },
+      "allEqual": true
+    },
+    "externalProviders": "LLM enhancement mocked; external HTTP blocked; no notifications sent",
+    "cleanup": "retained exact IDs; no reset or delete"
+  },
+  "schema": {
+    "changed": false,
+    "newMigrationCount": 0,
+    "manifestDigest": "a1cfcb804a2d369df16a2e7542cde4346429bcfb652a7707efdf929c0e62ff86",
+    "diff": "schema-diff.json",
+    "observation": "D09-schema-observation.json",
+    "productionQueried": false,
+    "productionWrites": false
+  },
+  "cases": [
+    "UC-C07",
+    "UC-C08",
+    "UC-A17 (DTO/category support only; D12 remains open)"
+  ],
+  "redEvidence": [
+    {
+      "log": "logs/D09-contract-red.log",
+      "classification": "16 product failures / 33 passed before DTO, fact, category and eligibility fixes"
+    },
+    {
+      "log": "logs/D09-editor-red.log",
+      "classification": "fixture prop error, excluded from product RED"
+    },
+    {
+      "log": "logs/D09-editor-contract-red.log",
+      "classification": "corrected fixture; 2 product failures / 12 passed with former category options"
+    },
+    {
+      "log": "logs/D09-integration-initial.log",
+      "classification": "mixed fixture errors and product failures; not a clean product-only RED"
+    },
+    {
+      "log": "logs/D09-integration-contract-red.log",
+      "classification": "3 real recommendation DTO/verification failures; setup XP hook failure was fixture expectation error"
+    },
+    {
+      "log": "logs/D09-native-esm-red.log",
+      "classification": "emitted runtime import compatibility failure; fixed .js extension"
+    },
+    {
+      "log": "logs/D09-browser-readability-red.log",
+      "classification": "genuine 360px decision text clipping; screenshot D09-unknown-cash-detail-360-red.png"
+    },
+    {
+      "log": "logs/D09-full-suite-initial.log",
+      "classification": "1685 pass / 1 fail / 318 skip; old optional-facts-omitted assertion conflicts with explicit-unknown requirement; updated to assert unknown cash/platform/eligibility and no zero promise; 16 audit and 194 contracts unchanged"
+    }
+  ],
+  "browserAttempts": [
+    {
+      "log": "logs/D09-browser-initial.log",
+      "result": "passed before adding visual non-clipping assertion"
+    },
+    {
+      "log": "logs/D09-browser-navigation-attempt1.log",
+      "result": "document navigation ERR_ABORTED; cause not established"
+    },
+    {
+      "log": "logs/D09-browser-navigation-attempt2.log",
+      "result": "same ERR_ABORTED despite Home readiness assertions; no product Auth change"
+    },
+    {
+      "log": "logs/D09-browser-readability-red.log",
+      "result": "reached new assertion; text clipped at 360px"
+    },
+    {
+      "log": "logs/D09-browser-hidden-link.log",
+      "result": "readability passed; test selected hidden mobile link on desktop"
+    },
+    {
+      "log": "logs/D09-browser-desktop-label.log",
+      "result": "readability passed; desktop test used mobile accessible name"
+    },
+    {
+      "log": "logs/D09-browser-duplicate-link.log",
+      "result": "readability passed; desktop link name ambiguous"
+    },
+    {
+      "log": "logs/D09-browser-final.log",
+      "result": "6 real API + 1 full browser pass; main navigation scoped by observed accessible roles; all persistence/neutrality assertions retained"
+    }
+  ],
+  "limitations": [
+    "No deployment, production query, CI verification or real membership change.",
+    "318 skipped tests are not passes; 6 D09 API and 35 affected existing real integration cases were run. Earlier R1/D08 handoff evidence is retained, not all rerun for D09.",
+    "No Safari/WebKit, physical-device, whole-site accessibility or load/performance certification.",
+    "UC-A17 authoring/publish validation remains owned by D12; only decision DTO/category preservation is covered here. Onboarding/home consumer contracts and API were tested; no new full onboarding browser roundtrip.",
+    "Four existing lint warnings, existing route export warnings and large bundle warning remain.",
+    "Two document-navigation aborts remain of unestablished cause. Final UI navigates through real visible main navigation; explicit detail hard reload remains tested.",
+    "Prior D08 intermittent completion-dialog absence remains recorded. No new independent agent review; sequential author self-review only."
+  ],
+  "historicalCorrection": "Existing join_mission grants 10 XP. D09 records setup separately before measuring read/rejected-join neutrality. Prior D08 prose attributed 0->10 to welcome XP without establishing that source; raw historical snapshots/results are retained.",
+  "rollback": "D09-delivery.md#rollback",
+  "nextTask": "D12",
+  "push": false,
+  "merge": false,
+  "deploy": false
+}

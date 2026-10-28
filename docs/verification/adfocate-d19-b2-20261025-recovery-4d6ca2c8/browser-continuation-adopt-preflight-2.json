@@ -1,0 +1,12 @@
+{
+  "phase": "adopt",
+  "runtimeChildStarted": false,
+  "sourceFingerprint": "e83998d178061043688016056a5a78fc61df58bac28f3d0d0b66d639306037bd",
+  "resource": {
+    "observedAt": "2026-10-25T10:24:07.447318+00:00",
+    "physicalFreeGiB": 7.636802673339844,
+    "commitHeadroomGiB": 11.021038055419922,
+    "requiredGiB": 3,
+    "gatePassed": true
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "sourceSha256": "292b1868fa0a5b9132f1e031995ebeeba361a453c1b3b629da700e790f5914ef",
+  "removedCancellationBodies": 6,
+  "preserved": "opaque IDs, count/status/history and before/pending/after financial snapshots; raw synthetic bodies retained only in ignored private scratch"
+}

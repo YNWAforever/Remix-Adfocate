@@ -1,0 +1,95 @@
+{
+  "scope": "Exact current1648-file checkpoint before approved696e continuation; original source/data/receipt evidence retained.",
+  "files": [
+    {
+      "path": "docs/verification/adfocate-delivery.json",
+      "copy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-before/adfocate-delivery.json",
+      "sha256": "3d80ef80c919be19d67f75e5c8355ffed746c6673253b59a6c2d5804044cd447"
+    },
+    {
+      "path": "docs/verification/code-fingerprint.json",
+      "copy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-before/code-fingerprint.json",
+      "sha256": "f7416d43f05b77effa404a7abb306de159017b0173061595c429656367ee3c03"
+    },
+    {
+      "path": "docs/verification/audit_case_coverage.csv",
+      "copy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-before/audit_case_coverage.csv",
+      "sha256": "7070cdc48bccc19d86d2682105a7f60183d1be31720afe5c6461c20b42a66fcb"
+    },
+    {
+      "path": "docs/verification/implementation_backlog.csv",
+      "copy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-before/implementation_backlog.csv",
+      "sha256": "f9c1dcec9d243aab114661a2665955dd2efaece92d70fc06c42e2f64d3df221b"
+    },
+    {
+      "path": "docs/verification/finding_traceability.csv",
+      "copy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-before/finding_traceability.csv",
+      "sha256": "21880878a5c76e00d964c858131d07f22ccd96dd2c194d74d0338040bea1c7f4"
+    },
+    {
+      "path": "docs/verification/adfocate-task-ledger.md",
+      "copy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-before/adfocate-task-ledger.md",
+      "sha256": "f688fdcd251c6e140625110d45fa79962217f1fc84321f400c772509901799f9"
+    },
+    {
+      "path": "docs/verification/D19-C1-delivery.json",
+      "copy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-before/D19-C1-delivery.json",
+      "sha256": "93a7a88cfe3bd8203dec21f1483317c19f6452a869556b7c91642d876f22ef7a"
+    },
+    {
+      "path": "docs/verification/D19-C1-delivery.md",
+      "copy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-before/D19-C1-delivery.md",
+      "sha256": "857801d23937115724db03e24d0f8951bf726727ce13124f7362dd738a024f62"
+    },
+    {
+      "path": "docs/verification/D19-C1-gates.json",
+      "copy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-before/D19-C1-gates.json",
+      "sha256": "538c4093bb0c37b1c557593be01e61801a710c37d1e665afd3cc9391ba39cb2a"
+    },
+    {
+      "path": "docs/verification/D19-C1-case-coverage.json",
+      "copy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-before/D19-C1-case-coverage.json",
+      "sha256": "eab3a5de9efe8bc22ca306d9381a545ab06d7d7db44adea034790ecc2b6d5953"
+    },
+    {
+      "path": "docs/verification/D19-C1-remaining-acceptance.json",
+      "copy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-before/D19-C1-remaining-acceptance.json",
+      "sha256": "25370292f7496023357483b85081517f0beb9d31a2b76470d59b9a1a43fe0250"
+    },
+    {
+      "path": "docs/verification/D19-C1-rollback.json",
+      "copy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-before/D19-C1-rollback.json",
+      "sha256": "1b8fac933ba92742f39ac1756f38b0ac5905bffdd3284f67755e692bcda17476"
+    },
+    {
+      "path": "docs/verification/D19-C1-integrity.json",
+      "copy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-before/D19-C1-integrity.json",
+      "sha256": "e0167353a8608c2d6cc06cdd30edf050a66235ac93a021b3f3ca285327a759bf"
+    },
+    {
+      "path": "docs/verification/D19-C1-runtime-verification-summary.json",
+      "copy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-before/D19-C1-runtime-verification-summary.json",
+      "sha256": "767b81b79d577bc246e2eda805e63861d99bed0f459fdbbf6daa817b30174fc0"
+    },
+    {
+      "path": "docs/verification/D19-C1-R1-applicability-reconciliation.json",
+      "copy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-before/D19-C1-R1-applicability-reconciliation.json",
+      "sha256": "8a2ed916f9d5ffed44a06b1bd95660a684334b8d7f0e3fbe12116ddda9dac2ed"
+    },
+    {
+      "path": "docs/verification/D19-C1-R1-applicability-verification.json",
+      "copy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-before/D19-C1-R1-applicability-verification.json",
+      "sha256": "e9c768ed6a567df72456cc48183db3d9df970c958cc6c726aae3e1aa1d40985e"
+    },
+    {
+      "path": "docs/verification/evidence-integrity.json",
+      "copy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-before/evidence-integrity.json",
+      "sha256": "e0e6f3361e9c5260240d8cff3726ff9bb8f60049dbce57cdfb21a8567d6cdc05"
+    },
+    {
+      "path": "docs/superpowers/plans/2026-10-23-adfocate-implementation-plan.md",
+      "copy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-before/2026-10-23-adfocate-implementation-plan.md",
+      "sha256": "6ccb2e047468b788909bbfd1d2e56afb14535a81abfbb0a93a65e7f7149a14fa"
+    }
+  ]
+}

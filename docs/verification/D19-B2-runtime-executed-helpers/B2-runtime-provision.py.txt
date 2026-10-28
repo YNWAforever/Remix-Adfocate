@@ -1,0 +1,103 @@
+"""Creates only the five approved B2 resources; does not start or query services."""
+from pathlib import Path
+import os,json,hashlib,subprocess,secrets,base64,hmac,time,datetime,sys,ipaddress
+
+R=Path(__file__).resolve().parents[1];os.chdir(R)
+M=Path('docs/verification/D19-B2-runtime-manifest-neutrality-guard.json')
+m=json.loads(M.read_text(encoding='utf-8-sig'));s=m['target'];P=Path('.codex-tmp')/s['projectId']
+def read(p):return json.loads(Path(p).read_text(encoding='utf-8-sig'))
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def write(p,x):Path(p).write_text(json.dumps(x,ensure_ascii=False,indent=2)+'\n',encoding='utf-8',newline='\n')
+auth=read(P/'runtime-authorization.private.json');pre=read(P/'preflight.private.json')
+assert auth['approved']and sha(M)==auth['manifestSha256']==pre['manifestSha256']
+assert auth['sourceFingerprint']==m['candidate']['fingerprint']
+resume=sys.argv[1:]==['--resume-after-network-capacity']
+assert resume or not(P/'provision-journal.private.jsonl').exists(),'Never automatically rerun provision'
+if resume:
+ capacity=read(P/'network-capacity-resolution.private.json')
+ assert capacity['newProjectResourcesAbsent'] and capacity['overlaps']==0 and capacity['manifestResourceCapsUnchanged']
+ assert not(P/'created-resources.private.json').exists()
+ assert ipaddress.ip_network(capacity['selectedSubnet']).is_private and ipaddress.ip_network(capacity['selectedSubnet']).prefixlen==28
+ binding=read('docs/verification/code-fingerprint.json')
+ assert binding['fingerprint']==auth['sourceFingerprint']
+ for row in binding['files']:assert hashlib.sha256(Path(row['path']).read_bytes().decode('utf-8').replace('\r\n','\n').encode()).hexdigest()==row['sha256'],row['path']
+env=os.environ.copy()
+for k in list(env):
+ if k.startswith('DOCKER_'):env.pop(k)
+env['DOCKER_CONTEXT']='desktop-linux'
+def docker(*args):
+ r=subprocess.run(['docker','--context','desktop-linux',*args],env=env,capture_output=True,text=True,timeout=45)
+ if r.returncode:raise RuntimeError('Docker operation failed: '+r.stderr[:600])
+ return r.stdout.strip()
+def journal(x):
+ with(P/'provision-journal.private.jsonl').open('a',encoding='utf-8',newline='\n')as f:
+  f.write(json.dumps(x,separators=(',',':'))+'\n');f.flush();os.fsync(f.fileno())
+def operation(label,args):
+ journal({'atUtc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'state':'intent','label':label,'argv':args})
+ try:
+  result=docker(*args);journal({'state':'succeeded','label':label,'result':result});return result
+ except Exception:
+  journal({'state':'unknown','label':label});raise
+assert docker('context','inspect','--format','{{.Endpoints.docker.Host}}')==pre['endpoint']
+assert json.loads(docker('info','--format','{{json .ID}}'))==pre['engine']['id']
+assert not docker('ps','-aq','--filter','label=com.supabase.cli.project='+s['projectId'])
+config=P/'config';config.mkdir(exist_ok=resume)
+secret=read(P/'infra-secrets.private.json')if resume else{'databasePassword':secrets.token_hex(24),'authDatabasePassword':secrets.token_hex(24),'restDatabasePassword':secrets.token_hex(24),'storageDatabasePassword':secrets.token_hex(24),'jwtSecret':secrets.token_hex(32)}
+write(P/'infra-secrets.private.json',secret)
+def b64(x):return base64.urlsafe_b64encode(x).rstrip(b'=').decode()
+def jwt(role):
+ now=int(time.time());h=b64(b'{"alg":"HS256","typ":"JWT"}');p=b64(json.dumps({'role':role,'iss':'supabase','iat':now,'exp':now+86400},separators=(',',':')).encode());return h+'.'+p+'.'+b64(hmac.new(secret['jwtSecret'].encode(),(h+'.'+p).encode(),hashlib.sha256).digest())
+priorKeys=read(P/'keys.private.json')if resume else None
+anon=priorKeys['ANON_KEY']if priorKeys else jwt('anon');service=priorKeys['SERVICE_ROLE_KEY']if priorKeys else jwt('service_role');pg='post'+'gres'
+write(P/'keys.private.json',{'API_URL':'http://127.0.0.1:'+str(s['ports']['api']),'ANON_KEY':anon,'SERVICE_ROLE_KEY':service})
+def envfile(name,values):
+ path=config/(name+'.env');assert all('\n'not in str(v)for v in values.values());path.write_text(''.join(k+'='+str(v)+'\n'for k,v in values.items()),encoding='utf-8',newline='\n');return path
+db=envfile('db',{'POSTGRES_USER':pg,'POSTGRES_DB':pg,'POSTGRES_'+'PASS'+'WORD':secret['databasePassword'],'PGDATA':'/var/lib/postgresql/data','PGPORT':'5432','JWT_SECRET':secret['jwtSecret'],'JWT_EXP':'3600','POSTGRES_INITDB_ARGS':'--auth-local=trust --auth-host=scram-sha-256'})
+gotrue=envfile('auth',{'GOTRUE_API_HOST':'0.0.0.0','GOTRUE_API_PORT':'9999','API_EXTERNAL_URL':'http://127.0.0.1:'+str(s['ports']['api']),'GOTRUE_DB_DRIVER':pg,'GOTRUE_DB_DATABASE_URL':f"{pg}://supabase_auth_admin:{secret['authDatabasePassword']}@db:5432/{pg}",'GOTRUE_SITE_URL':'http://127.0.0.1:'+str(s['ports']['web']),'GOTRUE_URI_ALLOW_LIST':'http://127.0.0.1:'+str(s['ports']['web'])+'/**','GOTRUE_DISABLE_SIGNUP':'false','GOTRUE_JWT_ADMIN_ROLES':'service_role','GOTRUE_JWT_AUD':'authenticated','GOTRUE_JWT_DEFAULT_GROUP_NAME':'authenticated','GOTRUE_JWT_EXP':'3600','GOTRUE_JWT_SECRET':secret['jwtSecret'],'GOTRUE_EXTERNAL_EMAIL_ENABLED':'true','GOTRUE_MAILER_AUTOCONFIRM':'true','GOTRUE_EXTERNAL_PHONE_ENABLED':'true','GOTRUE_SMS_AUTOCONFIRM':'true','GOTRUE_EXTERNAL_GOOGLE_ENABLED':'false','GOTRUE_LOG_LEVEL':'warn'})
+rest=envfile('rest',{'PGRST_DB_URI':f"{pg}://authenticator:{secret['restDatabasePassword']}@db:5432/{pg}",'PGRST_DB_SCHEMAS':'public,storage','PGRST_DB_EXTRA_SEARCH_PATH':'public,extensions','PGRST_DB_ANON_ROLE':'anon','PGRST_JWT_SECRET':secret['jwtSecret'],'PGRST_DB_USE_LEGACY_GUCS':'false','PGRST_LOG_LEVEL':'warn','PGRST_DB_POOL':'5'})
+storage=envfile('storage',{'ANON_KEY':anon,'SERVICE_KEY':service,'PGRST_JWT_SECRET':secret['jwtSecret'],'JWT_SECRET':secret['jwtSecret'],'POSTGREST_URL':'http://rest:3000','DATABASE_URL':f"{pg}://supabase_storage_admin:{secret['storageDatabasePassword']}@db:5432/{pg}",'STORAGE_BACKEND':'file','FILE_STORAGE_BACKEND_PATH':'/var/lib/storage','FILE_SIZE_LIMIT':'52428800','TENANT_ID':s['projectId'],'REGION':'local','GLOBAL_S3_BUCKET':s['projectId'],'ENABLE_IMAGE_TRANSFORMATION':'false','DB_POOL_MAX':'5','LOG_LEVEL':'warn'})
+kong=envfile('kong',{'KONG_DATABASE':'off','KONG_DECLARATIVE_CONFIG':'/etc/kong/kong.yml','KONG_PROXY_LISTEN':'0.0.0.0:8000','KONG_ADMIN_LISTEN':'off','KONG_DNS_ORDER':'LAST,A,CNAME','KONG_PLUGINS':'cors,key-auth,acl','KONG_NGINX_WORKER_PROCESSES':'1','KONG_PROXY_ACCESS_LOG':'off','KONG_PROXY_ERROR_LOG':'/dev/stderr','KONG_LOG_LEVEL':'warn'})
+cors={'name':'cors','config':{'origins':['http://127.0.0.1:'+str(s['ports']['web'])],'methods':['GET','POST','PUT','PATCH','DELETE','OPTIONS','HEAD'],'headers':['Accept','Authorization','Content-Type','apikey','X-Client-Info','Prefer','Accept-Profile','Content-Profile','Range','X-Upsert'],'exposed_headers':['Content-Range','Range','X-Total-Count'],'credentials':True}}
+gateway={'_format_version':'2.1','_transform':True,'consumers':[{'username':'anon','keyauth_credentials':[{'key':anon}],'acls':[{'group':'anon'}]},{'username':'service_role','keyauth_credentials':[{'key':service}],'acls':[{'group':'admin'}]}],'services':[]}
+for name,port,path in [('auth',9999,'auth'),('rest',3000,'rest'),('storage',5000,'storage')]:
+ plugins=[cors]
+ if name!='storage':plugins+=[{'name':'key-auth','config':{'hide_credentials':False}},{'name':'acl','config':{'hide_groups_header':True,'allow':['anon','admin']}}]
+ gateway['services'].append({'name':name+'-v1','url':f'http://{name}:{port}/','routes':[{'name':name+'-v1','paths':['/'+path+'/v1/'],'strip_path':True}],'plugins':plugins})
+write(config/'kong.json',gateway)
+label=['--label','adfocate.run='+s['plannedOwnerRunId'],'--label','com.supabase.cli.project='+s['projectId']]
+networkArgs=['--subnet',capacity['selectedSubnet'],'--gateway',capacity['selectedGateway']]if resume else[]
+network=operation('network-create',['network','create','--driver','bridge',*networkArgs,'--opt','com.docker.network.bridge.enable_ip_masquerade=false','--opt','com.docker.network.bridge.host_binding_ipv4=127.0.0.1',*label,s['networkName']])
+assert len(network)==64
+volume=operation('volume-create',['volume','create',*label,s['databaseVolumeName']]);assert volume==s['databaseVolumeName']
+ids={};commands={}
+for name,efile in [('db',db),('auth',gotrue),('rest',rest),('kong',kong),('storage',storage)]:
+ args=['create','--pull','never','--name',pre['proposedContainerNames'][name],*label,'--network',s['networkName'],'--network-alias',name,'--restart','no','--env-file',str(efile)]
+ if name=='db':args+=['--mount','type=volume,source='+volume+',target=/var/lib/postgresql/data','--publish','127.0.0.1:'+str(s['ports']['database'])+':5432']
+ if name=='kong':args+=['--publish','127.0.0.1:'+str(s['ports']['api'])+':8000']
+ if name=='storage':args+=['--tmpfs','/var/lib/storage:rw,size=268435456']
+ args+=[s['serviceImageIds'][name]];commands[name]=args
+ ids[name]=operation('container-create-'+name,args);assert len(ids[name])==64
+ write(P/'created-resources.private.json',{'projectId':s['projectId'],'networkId':network,'volumeName':volume,'containerIds':ids})
+operation('gateway-config-copy',['cp',str(config/'kong.json'),ids['kong']+':/etc/kong/kong.yml'])
+fmt='{"id":{{json .Id}},"image":{{json .Image}},"running":{{json .State.Running}},"created":{{json .Created}},"project":{{json (index .Config.Labels "com.supabase.cli.project")}},"host":{{json .HostConfig}} ,"mounts":{{json .Mounts}}}'
+metadata={name:json.loads(docker('inspect','--format',fmt,cid))for name,cid in ids.items()}
+for name,c in metadata.items():
+ assert c['id']==ids[name]and c['image']==s['serviceImageIds'][name]and c['project']==s['projectId']and not c['running']
+ assert c['host']['NetworkMode']==s['networkName']and c['host']['RestartPolicy']['Name']=='no'
+ mounted=[x for x in(c['mounts']or[])if x['Type']!='tmpfs']
+ if name=='db':assert len(mounted)==1 and mounted[0]['Name']==volume and mounted[0]['Destination']=='/var/lib/postgresql/data'and mounted[0]['RW']
+ else:assert not mounted
+ bindings=c['host']['PortBindings']or{}
+ if name in ['db','kong']:
+  assert len(bindings)==1
+  b=next(iter(bindings.values()));assert len(b)==1 and b[0]['HostIp']=='127.0.0.1'and int(b[0]['HostPort'])==s['ports']['database'if name=='db'else'api']
+ else:assert not bindings
+ if name=='storage':assert c['host']['Tmpfs']=={'/var/lib/storage':'rw,size=268435456'}
+ elif c['host'].get('Tmpfs'):raise RuntimeError('Unexpected tmpfs')
+vi=json.loads(docker('volume','inspect','--format','{"name":{{json .Name}},"created":{{json .CreatedAt}},"labels":{{json .Labels}}}',volume))
+assert vi['labels']['adfocate.run']==s['plannedOwnerRunId']
+identity={'runId':s['plannedOwnerRunId'],'ownerAuthorization':auth['ownerReference'],'disposable':True,'projectId':s['projectId'],'proxy':'none','apiPort':s['ports']['api'],'apiContainerId':ids['kong'],'databaseContainerId':ids['db'],'apiImageId':s['serviceImageIds']['kong'],'databaseImageId':s['serviceImageIds']['db'],'networkId':network}
+receipt={'manifestSha256':auth['manifestSha256'],'sourceFingerprint':auth['sourceFingerprint'],'identity':identity,'containerIds':ids,'createdThisRun':True,'volumeWasAbsent':True,'networkWasAbsent':True,'volumeName':volume,'databaseCreatedAt':metadata['db']['created'],'volumeCreatedAt':vi['created'],'bootstrap':{'verified':False}}
+write(P/'target-receipt.private.json',receipt)
+write(P/'prestart.private.json',{'manifestSha256':auth['manifestSha256'],'sourceFingerprint':auth['sourceFingerprint'],'identity':identity,'commands':commands,'containerMetadata':metadata,'volume':vi,'freshConfigDigests':[{ 'path':str(p),'sha256':sha(p)}for p in sorted(config.iterdir())],'allCreatedNotStarted':True,'applicationSQLExecuted':False,'clientsCreated':False,'oldTargetsReadOrChanged':False})
+print(json.dumps({'status':'CREATED_PRESTART_IDENTITIES_VERIFIED','projectId':s['projectId'],'containers':ids,'networkId':network,'volume':volume,'allStopped':True,'applicationSQLExecuted':False,'clientsCreated':False}))

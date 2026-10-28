@@ -3,7 +3,9 @@ import { describe, expect, it } from "vitest";
 import { createApp } from "../app";
 import {
   activeMissionIntegrationSkipReason,
+  makeCreator,
   serviceForTests,
+  userForJwt,
 } from "./helpers";
 import {
   seedPublicationProofReleaseFixture,
@@ -186,6 +188,15 @@ integrationSuite("publication proof asset grant live path", () => {
     try {
       expect(body.asset).toMatchObject({ uploadState: "pending" });
       expect(body.expiresInSeconds).toBeGreaterThan(0);
+      const stranger = await makeCreator(`proof-stranger-${randomUUID()}@test.local`);
+      const foreignRead = await userForJwt(stranger.jwt).from("mission_publication_proof_assets")
+        .select("id").eq("id", body.asset!.id!);
+      expect(foreignRead.error).toBeNull();
+      expect(foreignRead.data).toEqual([]);
+      const foreignWorkspace = await app.request(`/api/my-missions/${fixture.submission.id}/workspace`, {
+        headers: { Authorization: `Bearer ${stranger.jwt}`, "X-Workspace-Slug": fixture.workspace.slug },
+      });
+      expect(foreignWorkspace.status).toBe(404);
     } finally {
       if (body.asset?.id) {
         const removed = await serviceForTests()

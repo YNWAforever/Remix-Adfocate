@@ -1,0 +1,30 @@
+{
+  "command": [
+    "python",
+    "docs/verification/D19-redemption-replay-20261026/verify-delivery.py",
+    "--preseal"
+  ],
+  "exit": 0,
+  "fileOnly": true,
+  "actualTargetCalls": 0,
+  "result": {
+    "status": "PASS_CURRENT_C33_LOCAL_DELIVERY_NOT_R1",
+    "source": "4f2c3faa22bf835911a55dc7bb099910e4308fc1b7a5570d58f32386708934b9",
+    "fullNative": 2155,
+    "fullSkipped": 363,
+    "nativeC33Included": 21,
+    "separateWalletImpact": 8,
+    "releaseFoundation": 108,
+    "sourceMigrations": 74,
+    "original73Unchanged": true,
+    "originalCases": 107,
+    "priorEvidenceRecordsPreserved": 2439,
+    "currentRuntimeApproved": false,
+    "oldE8Approved": true,
+    "actualTargetCalls": 0,
+    "incidentOpen": true,
+    "releaseHold": true,
+    "providerEnabled": false,
+    "preseal": true
+  }
+}

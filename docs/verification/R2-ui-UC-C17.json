@@ -1,0 +1,14 @@
+{
+  "runId": "08530ddb-c357-4638-8ab8-af5854f42fa3",
+  "value": {
+    "actualPublishedParentIds": [
+      "cc539efc-f987-4214-81e0-40b406b64000",
+      "0a2d67b0-ffb1-4c4d-b79a-e841ecc0b9ab"
+    ],
+    "qualification": "real API/me data and existing eligibility gate",
+    "emptyBundle": "explicit transport mock; global retained Academy rows were not deleted",
+    "fault": "explicit 503",
+    "lessonsCreated": 0,
+    "curriculumApproval": false
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "at": "2026-10-24T09:11:24.536016+00:00",
+  "cause": "Docker internal network suppressed actual published ports; identity verifier refused before application SQL/SDK",
+  "oldNetworkId": "e25f9235fbb3985f45fee8bc767561158678c209b3cbd27dcb36afaa936af088",
+  "before": {
+    "db": {
+      "id": "2dddb46db112301b0195f17ad44827110c589039f2b5a1b7ecb6427fac47e00a",
+      "image": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+      "ports": {
+        "5432/tcp": []
+      },
+      "intendedBindings": {
+        "5432/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "56632"
+          }
+        ]
+      }
+    },
+    "auth": {
+      "id": "f17c40dc58d2743ab0d2d926bd05cbf2cf6cec4cc38c94a3ba30280903c26eda",
+      "image": "sha256:ac6d4b1e961ae5a1a24d283967485f8195b767a8476e1044959d7a250c2da3f0",
+      "ports": {},
+      "intendedBindings": {}
+    },
+    "rest": {
+      "id": "a705ab958489220a0ae006095b55d02a1db79f64120192ec458994691012501d",
+      "image": "sha256:2f8e7b656f09db697a8875177694b417b35cb76c21370de07fc54e711e902326",
+      "ports": {
+        "3000/tcp": null
+      },
+      "intendedBindings": {}
+    },
+    "kong": {
+      "id": "091455be05d4a6728d59775411dd075ea615ff5f2e0710b4f9918d82566a272d",
+      "image": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+      "ports": {
+        "8000/tcp": []
+      },
+      "intendedBindings": {
+        "8000/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "56631"
+          }
+        ]
+      }
+    },
+    "storage": {
+      "id": "e98a4217bc70a77763ad5320fa1f2493bca7fc29e853d6ff9a725cca1c7c3429",
+      "image": "sha256:ead6d49b9873d65a030c6c44b46676f4276b234becd6d7819c254351b5400d95",
+      "ports": {
+        "5000/tcp": null
+      },
+      "intendedBindings": {}
+    }
+  },
+  "oldBusinessDataTouched": false,
+  "replacement": "new exact dedicated loopback bridge, masquerading disabled; external fetch/provider disabled separately",
+  "newNetworkId": "0746102a8514b8478cf318962c1af645e83a0383dcf38939030433b020e80c88",
+  "sameContainerIds": true,
+  "sameNewDataVolume": true,
+  "restartInterruption": "Auth started before DB was ready after rebind; logs retained, DB pg_isready passed before this single exact-ID restart",
+  "restartedAuthId": "f17c40dc58d2743ab0d2d926bd05cbf2cf6cec4cc38c94a3ba30280903c26eda",
+  "oldTargetsTouched": false,
+  "finishedAt": "2026-10-24T09:13:23.932222+00:00"
+}

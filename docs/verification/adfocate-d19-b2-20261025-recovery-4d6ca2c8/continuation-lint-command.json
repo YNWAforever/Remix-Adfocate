@@ -1,0 +1,15 @@
+{
+  "startedAt": "2026-10-25T09:04:28.746524+00:00",
+  "finishedAt": "2026-10-25T09:04:57.938931+00:00",
+  "command": [
+    "node",
+    "node_modules/eslint/bin/eslint.js",
+    "."
+  ],
+  "exit": 1,
+  "sourceFingerprint": "bcdca7995d43a33278d887aa9e44032c047194dc04c1dd8252e2c55843bfc4bb",
+  "integrationCredentialsAvailable": false,
+  "actualC1TargetUsed": false,
+  "log": "continuation-lint.log",
+  "layer": "LOCAL_OFFLINE_MOCK_AND_OWNED_LOOPBACK_UNIT_TRANSPORT"
+}

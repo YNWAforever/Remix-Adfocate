@@ -1,0 +1,48 @@
+{
+  "productionQueried": false,
+  "productionWrites": false,
+  "previousManifestDigest": "44909fc5e4981f81b57281326c7db3117e9e76b4dc2c94806b7aa52fca621d12",
+  "manifestDigest": "3e6809f9a51b1ac7ebb9f770160aab27f02523ebf69fc47f8fe38f44d05f6363",
+  "manifestEntries": 42,
+  "distinctDeclaredCapabilities": 587,
+  "effectiveCapabilities": 584,
+  "newDenialContracts": 58,
+  "oldManifestEntriesPreserved": true,
+  "oldSqlChecksumsPreserved": true,
+  "forwardMigration": "supabase/migrations/20261023192141_pilot_legacy_access_hardening.sql",
+  "acl": "D19-legacy-acl-migration.json",
+  "targets": {
+    "empty": {
+      "checks": {
+        "identity": true,
+        "tables": true,
+        "policies": true,
+        "functions": true,
+        "singleWorkspaceConstraints": true,
+        "oldHistoryPreserved": true,
+        "onlyOneForwardHistory": true,
+        "oldWorkspaceGrants": true,
+        "oldPlatformGrants": true
+      },
+      "historyBefore": 71,
+      "historyAfter": 72
+    },
+    "shaped": {
+      "checks": {
+        "identity": true,
+        "tables": true,
+        "policies": true,
+        "functions": true,
+        "singleWorkspaceConstraints": true,
+        "oldHistoryPreserved": true,
+        "onlyOneForwardHistory": true,
+        "oldWorkspaceGrants": true,
+        "oldPlatformGrants": true
+      },
+      "historyBefore": 55,
+      "historyAfter": 56
+    }
+  },
+  "fullCatalogRoundtrip": "D19-runtime-catalog-before.json / D19-runtime-catalog-after.json; all public base-table ACL/columns/constraints/indexes/triggers, public/private function definitions hashes/ACLs and public/storage policies exactly equal after runtime",
+  "historyPolicy": "Only actually executed forward migration added; no old version/checksum/name/statement edits. Schema/grants defects are separate from missing membership."
+}

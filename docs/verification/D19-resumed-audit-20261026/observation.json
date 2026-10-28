@@ -1,0 +1,75 @@
+{
+  "at": "2026-10-26T02:50:14.315136+00:00",
+  "goalObservation": {
+    "path": "docs/verification/D19-resumed-audit-20261026/goal-observation.json",
+    "sha256": "458b6cc9242e953c947ba6120646adf4249d10d158e43bc9a5266720654e19a1"
+  },
+  "goalStatusObserved": "active",
+  "priorBlockedAudit": {
+    "path": "docs/verification/D19-blocked-audit-20261026/goal-transition.json",
+    "sha256": "cc818e36c13e3642ecc24fc720c00869200b68de0695f63b73ea6cbb7790602e"
+  },
+  "resumedRunFreshAudit": true,
+  "resumedBlockingTurn": 1,
+  "threshold": 3,
+  "conditionKey": "CURRENT_4F_CB_C2_RUNTIME_AUTHORIZATION_NOT_GRANTED",
+  "currentRuntimeApproved": false,
+  "ownerReference": null,
+  "newHumanRuntimeDecision": false,
+  "newApprovalQuestion": false,
+  "previousTurnClassification": "PROGRESS: corrected canonical D19 step4 and recorded actual blocked transition; no runtime acceptance credit",
+  "thisTurnClassification": "NO_PRODUCT_PROGRESS_VERIFIED_UNCHANGED_BLOCKER; control-state synchronization only",
+  "sourceRecordsUnchanged": 793,
+  "sourceFingerprint": "4f2c3faa22bf835911a55dc7bb099910e4308fc1b7a5570d58f32386708934b9",
+  "originalCaseRowsUnchanged": 107,
+  "frozen": [
+    {
+      "path": "docs/verification/code-fingerprint.json",
+      "sha256": "e67a1fa981883c2cf8341e9f2823b3dea9360c28ffe6e4c0f16bce89a50f4684"
+    },
+    {
+      "path": "docs/verification/audit_case_coverage.csv",
+      "sha256": "85f2e2dfd775488ad6c07095525e0d6c094c8b22c71e796944272330c3aa205d"
+    },
+    {
+      "path": "docs/verification/D19-C2-current-source-runtime-manifest.json",
+      "sha256": "cb93361481d8d6a42785077809c4e5338745ffcb2c3e41ffc62ed72631f59a65"
+    },
+    {
+      "path": "docs/verification/D19-redemption-replay-20261026/runtime-authorization.json",
+      "sha256": "6ba3a4ba2d58ac36049e8ad478ae7ee7acf314beabb18faf66f5123a763dcb7d"
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/runtime-authorization.json",
+      "sha256": "a909d1c60409db853da5949ee0b6ae29d6f69694fbd2c0bae313c3661557e894"
+    }
+  ],
+  "archive": {
+    "exactPath": "C:\\Users\\laich\\Downloads\\Adfocate_Audit_Test_Pack_2026-10-22.zip",
+    "exists": false,
+    "broaderSearch": false
+  },
+  "before": [
+    {
+      "path": "docs/verification/adfocate-delivery.json",
+      "before": "docs/verification/D19-resumed-audit-20261026/before/docs/verification/adfocate-delivery.json",
+      "sha256": "3423feaca4c68c35f2111cef1823cfb68d37fd9d9c4b8eaf3c54580e35e26755"
+    },
+    {
+      "path": "docs/verification/evidence-integrity.json",
+      "before": "docs/verification/D19-resumed-audit-20261026/before/docs/verification/evidence-integrity.json",
+      "sha256": "2eb65e077aa560c43cf6219f7a92a4b23ce98f2daed4da4cd67f3896372a5102"
+    }
+  ],
+  "priorEvidenceRecords": 2803,
+  "actualTargetCalls": 0,
+  "newTests": 0,
+  "commit": null,
+  "push": false,
+  "merge": false,
+  "deploy": false,
+  "incidentOpen": true,
+  "releaseHold": true,
+  "providerEnabled": false,
+  "nextAction": "Reply to the existing unchanged cb933614 C2 approval item. No runtime permission is inferred from goal resumption; identity/provenance precede any authorized client/setup. No new question or rerun."
+}

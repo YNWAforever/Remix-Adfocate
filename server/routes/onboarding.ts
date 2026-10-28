@@ -1,4 +1,6 @@
 import { Hono } from "hono";
+import { MISSION_LIST_SELECT, serializeMission } from "../lib/missionDecision.js";
+import { missionCategoryValues } from "../../src/lib/missionCategories.js";
 import type { Env } from "../app.js";
 import { makeUserClient, serviceClient } from "../lib/supabase.js";
 
@@ -79,23 +81,25 @@ onboardingRoutes.post("/social/connect", async (c) => {
 /** GET /api/onboarding/recommended-missions — up to 3 open missions matching categories. */
 onboardingRoutes.get("/recommended-missions", async (c) => {
   const supabase = makeUserClient(c.get("jwt"));
-  const { data: me } = await supabase
+  const { data: me, error: creatorError } = await supabase
     .from("creators")
     .select("categories")
     .eq("id", c.get("userId"))
     .single();
+  if (creatorError) return c.json({ error: creatorError.message, code: "db_error" }, 500);
 
   let q = supabase
     .from("missions")
-    .select("id, slug, title, category, points_reward, deadline")
+    .select(MISSION_LIST_SELECT)
+    .eq("workspace_id", c.get("workspaceId"))
     .eq("status", "active")
     .eq("access_type", "open")
     .limit(3);
-  if (me?.categories?.length) q = q.in("category", me.categories);
+  if (me?.categories?.length) q = q.in("category", [...new Set((me.categories as string[]).flatMap(missionCategoryValues))]);
 
   const { data, error } = await q;
   if (error) return c.json({ error: error.message, code: "db_error" }, 500);
-  return c.json({ missions: data ?? [] });
+  return c.json({ missions: (data ?? []).map(serializeMission) });
 });
 
 /** POST /api/onboarding/complete — award the welcome bonus (idempotent) + finish. */

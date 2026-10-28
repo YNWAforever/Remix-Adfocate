@@ -1,0 +1,33 @@
+{
+  "startedAt": "2026-10-25T19:12:45.730580+00:00",
+  "command": [
+    "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "--config",
+    "docs/verification/D19-wallet-notifications-offline-20261026/vitest.offline.mjs",
+    "--reporter=default",
+    "--reporter=json",
+    "--outputFile.json=docs/verification/D19-wallet-notifications-offline-20261026/boundary-final-native.json"
+  ],
+  "node": "v22.23.4",
+  "resource": {
+    "at": "2026-10-25T19:12:45.608934+00:00",
+    "freePhysicalGiB": 4.343231201171875,
+    "freeCommitGiB": 4.560169219970703,
+    "minimumGiB": 3,
+    "freeDiskGiB": 21.90660858154297
+  },
+  "credentialsProxiesPreloadsStripped": true,
+  "integrationDisabled": true,
+  "label": "boundary-final",
+  "log": "docs/verification/D19-wallet-notifications-offline-20261026/boundary-final.log",
+  "runtimeTargetCallsRequested": false,
+  "sourceFingerprint": "ead55a808470f90d72290905db90933cb4a6df48eaba519d4587339a4659b71d",
+  "sourceRecords": 789,
+  "npmExecpathProvided": "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+  "pid": 26228,
+  "sourceUnchangedAfter": true,
+  "endedAt": "2026-10-25T19:12:50.286806+00:00",
+  "exit": 0
+}

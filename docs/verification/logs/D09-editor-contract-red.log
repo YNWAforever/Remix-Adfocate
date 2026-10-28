@@ -1,0 +1,60 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ❯ src/routes/-admin.missions.editor.test.tsx (14 tests | 2 failed) 1438ms
+   × MissionEditor > retains the existing travel category visibly and on an unrelated edit 146ms
+     → expect(element).toHaveValue(travel)
+
+Expected the element to have value:
+  travel
+Received:
+
+   × MissionEditor > retains the existing 原有未知長中文分類 category visibly and on an unrelated edit 42ms
+     → expect(element).toHaveValue(原有未知長中文分類)
+
+Expected the element to have value:
+  原有未知長中文分類
+Received:
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/routes/-admin.missions.editor.test.tsx > MissionEditor > retains the existing travel category visibly and on an unrelated edit
+Error: expect(element).toHaveValue(travel)
+
+Expected the element to have value:
+  travel
+Received:
+
+ ❯ src/routes/-admin.missions.editor.test.tsx:35:54
+     33|     const onSave = vi.fn().mockResolvedValue({});
+     34|     renderEditor({mode:"edit",initial:{...active,status:"draft",catego…
+     35|     expect(screen.getByRole("combobox",{name:"分類"})).toHaveValue(cat…
+       |                                                      ^
+     36|     fireEvent.change(screen.getByLabelText("標題"),{target:{value:"Upd…
+     37|     fireEvent.click(screen.getByRole("button",{name:/儲存/}));
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/routes/-admin.missions.editor.test.tsx > MissionEditor > retains the existing 原有未知長中文分類 category visibly and on an unrelated edit
+Error: expect(element).toHaveValue(原有未知長中文分類)
+
+Expected the element to have value:
+  原有未知長中文分類
+Received:
+
+ ❯ src/routes/-admin.missions.editor.test.tsx:35:54
+     33|     const onSave = vi.fn().mockResolvedValue({});
+     34|     renderEditor({mode:"edit",initial:{...active,status:"draft",catego…
+     35|     expect(screen.getByRole("combobox",{name:"分類"})).toHaveValue(cat…
+       |                                                      ^
+     36|     fireEvent.change(screen.getByLabelText("標題"),{target:{value:"Upd…
+     37|     fireEvent.click(screen.getByRole("button",{name:/儲存/}));
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 12 passed (14)
+   Start at  04:54:50
+   Duration  4.40s (transform 379ms, setup 301ms, collect 647ms, tests 1.44s, environment 1.36s, prepare 238ms)
+

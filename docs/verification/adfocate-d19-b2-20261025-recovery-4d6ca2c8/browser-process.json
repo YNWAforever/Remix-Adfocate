@@ -1,0 +1,16 @@
+{
+  "phase": "browser",
+  "command": [
+    "node",
+    "scripts/audit/run-pilot-browser.mjs"
+  ],
+  "manifestSha256": "a0f09af0a7bce75e6842a1d42042ac4471e757c184574d7e5dcf9a23fdc57989",
+  "sourceFingerprint": "6285bca02a74bedf3eda7259238366e9023fcc0cae24fe5e7c874ae9dd118d7b",
+  "startedAt": "2026-10-25T07:39:07.880280+00:00",
+  "noAutomaticRetry": true,
+  "providerEnabled": false,
+  "state": "completed",
+  "pid": 32608,
+  "finishedAt": "2026-10-25T07:40:52.874901+00:00",
+  "exitCode": 1
+}

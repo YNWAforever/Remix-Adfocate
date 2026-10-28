@@ -1,0 +1,132 @@
+{
+  "at": "2026-10-24T05:16:49.534Z",
+  "sourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+  "runId": "a6cb60d6-37ca-4f96-9379-4a332469ab81",
+  "target": {
+    "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+    "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+    "disposable": true,
+    "projectId": "adfocate-r1-empty-20261023",
+    "proxy": "none",
+    "apiPort": 56421,
+    "apiContainerId": "1b9c41318298d79308db7782f51474541ad5abf0120fa93b96a2a9ea59d043ee",
+    "databaseContainerId": "e7c8efa295cd5544a8b2a100a73b6953cd6ddd486aaf394f231482067523e12d",
+    "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+    "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+    "networkId": "9e5d3069e8255d70b8eef56020c8ea2618fdb2626d92d9a04e51ea2de41a98e0"
+  },
+  "before": {
+    "xp": 145,
+    "budget": 8875,
+    "points": 550,
+    "cashLedger": 1,
+    "pointLedger": 1,
+    "redemptions": 0,
+    "budgetLedger": 1,
+    "withdrawable": 125,
+    "rewardInventory": [
+      {
+        "id": "6c91d97e-4a80-401a-8eef-21e51165d6f6",
+        "stock_qty": 3,
+        "stock_remaining": 3
+      }
+    ]
+  },
+  "after": {
+    "xp": 145,
+    "budget": 8875,
+    "points": 550,
+    "cashLedger": 1,
+    "pointLedger": 1,
+    "redemptions": 0,
+    "budgetLedger": 1,
+    "withdrawable": 125,
+    "rewardInventory": [
+      {
+        "id": "6c91d97e-4a80-401a-8eef-21e51165d6f6",
+        "stock_qty": 3,
+        "stock_remaining": 3
+      }
+    ]
+  },
+  "allEqual": true,
+  "legacyBefore": [
+    {
+      "id": "8bf1bf1b-2558-4ffa-983a-00f68a822dd1",
+      "status": "approved",
+      "xpAwarded": 135,
+      "pointsAwarded": 500
+    }
+  ],
+  "legacyAfter": [
+    {
+      "id": "8bf1bf1b-2558-4ffa-983a-00f68a822dd1",
+      "status": "approved",
+      "xpAwarded": 135,
+      "pointsAwarded": 500
+    }
+  ],
+  "initialSnapshots": [
+    {
+      "xp": 0,
+      "points": 50,
+      "withdrawable": 0,
+      "budget": 9000,
+      "pointLedger": 0,
+      "cashLedger": 0,
+      "redemptions": 0,
+      "budgetLedger": 0,
+      "rewardInventory": [
+        {
+          "id": "6c91d97e-4a80-401a-8eef-21e51165d6f6",
+          "stock_qty": 3,
+          "stock_remaining": 3
+        }
+      ]
+    },
+    {
+      "xp": 0,
+      "points": 50,
+      "withdrawable": 0,
+      "budget": 9000,
+      "pointLedger": 0,
+      "cashLedger": 0,
+      "redemptions": 0,
+      "budgetLedger": 0,
+      "rewardInventory": [
+        {
+          "id": "6c91d97e-4a80-401a-8eef-21e51165d6f6",
+          "stock_qty": 3,
+          "stock_remaining": 3
+        }
+      ]
+    }
+  ],
+  "checks": {
+    "rawFinancialSnapshotEqual": true,
+    "legacyIssuedAnchorsEqual": true,
+    "oneDurablePending": true,
+    "fundedBudget": true,
+    "inventoryPresent": true,
+    "reloadPersisted": true,
+    "creatorInternalIdHidden": true,
+    "historyPreserved": true
+  },
+  "persisted": {
+    "creatorId": "c9bc89af-41b1-4f37-a525-87eb8c4b13c6",
+    "submissionId": "ef350ef1-ac4a-488d-bb2e-65d9980257a4",
+    "workflowId": "14878891-a9eb-4e26-a5eb-87bcf1c6f3c4",
+    "itemId": "0a83c04b-54f1-4a9d-9ad7-a020c5c95080",
+    "pendingRewardId": "6fdf2c11-c561-438f-b327-5d8abc822dd6",
+    "creatorVisiblePrivateId": null,
+    "financeId": "6fdf2c11-c561-438f-b327-5d8abc822dd6",
+    "historyEvents": 15,
+    "allVisibleFieldsSame": true
+  },
+  "financialMeaning": "Existing legacy approval issued500points/135XP/125cash and debited125 from9000 enforced budget; active join added10XP before the pending baseline. These existing effects are not neutral. Pending completion/reload creates no issuance, ledger, withdrawable, budget or inventory mutation. No external payment or provider.",
+  "fundedFixture": {
+    "initialBudget": 9000,
+    "enforced": true,
+    "initialStock": 3
+  }
+}

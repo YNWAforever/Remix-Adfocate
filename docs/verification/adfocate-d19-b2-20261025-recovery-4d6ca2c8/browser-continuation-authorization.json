@@ -1,0 +1,19 @@
+{
+  "kind": "B2_RUNTIME_AUTHORIZATION",
+  "approved": true,
+  "manifestSha256": "696e94c29e62a27e820d7d12f5aa74c0d1e7b62f97f3b57db787074512a2626d",
+  "sourceFingerprint": "e83998d178061043688016056a5a78fc61df58bac28f3d0d0b66d639306037bd",
+  "ownerReference": "2026-10-25 direct human reply call_4715f74b8ded413ea520b4491078088f: approved same existing C1 fixture continuation; manifest 696e94c29e62a27e820d7d12f5aa74c0d1e7b62f97f3b57db787074512a2626d; zero additional physical resources/subjects/domain setup fixtures; no legacy replay; bounded six existing actor sessions plus one Creator UI login; retain incidentOPEN/releaseHOLD/providerdisabled.",
+  "approvedAt": "2026-10-25T10:13:51.105586+00:00",
+  "recordedAtHongKong": "2026-10-25T18:13:51.105586+08:00",
+  "additionalResources": 0,
+  "resourceLifecycleAllowed": false,
+  "existingDataAdoptionApproved": true,
+  "apiCaseCarryoverApprovedAfterReadOnlyRevalidation": 17,
+  "apiCasesRerun": 0,
+  "existingActorSessionRenewals": 6,
+  "additionalCreatorUiLogin": 1,
+  "newAuthSubjects": 0,
+  "newDomainSetupFixtures": 0,
+  "legacyIssuanceReplayAllowed": false
+}

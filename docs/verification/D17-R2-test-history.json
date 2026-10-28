@@ -1,0 +1,80 @@
+{
+  "initialRed": {
+    "evidence": "D17-R2-browser-red-initial.json",
+    "failed": 4,
+    "productEvidence": [
+      "Admin heading collapsed",
+      "Guide 320px overflow"
+    ],
+    "harnessIssues": [
+      "Readiness assumed every main contains a heading",
+      "Incorrect parent field label"
+    ]
+  },
+  "correctedRed": {
+    "evidence": "D17-R2-browser-red.json",
+    "failed": 4,
+    "productEvidence": [
+      "Heading width 0 at 1024 and 10px at 1280",
+      "Guide scroll width327 at viewport320",
+      "34 locked-card contrast nodes on guide"
+    ],
+    "harnessIssue": "Mobile menu locator used its old accessible name after toggle"
+  },
+  "interim": {
+    "evidence": "D17-R2-browser-interim.json",
+    "passed": 4
+  },
+  "productionAttempt1": {
+    "evidence": "D17-R2-browser-final-attempt1.json",
+    "passed": 4,
+    "failed": 1,
+    "harnessIssue": "Creator queue contained the exact two owned Creators, not zero; corrected to assert both IDs"
+  },
+  "productionAttempt2": {
+    "evidence": "D17-R2-browser-final-attempt2.json",
+    "passed": 5,
+    "qualification": "Performance collection initially lacked a CLS budget assertion; recorded over-budget metrics prompted a new failing regression, not a quality PASS"
+  },
+  "clsRed": {
+    "evidence": "D17-R2-browser-profile-cls-red.json",
+    "failed": 1,
+    "details": "CLS budget .1 exceeded on home and admin pages; source rectangles retained"
+  },
+  "clsGreen": {
+    "evidence": "D17-R2-browser-profile-cls-green.json",
+    "passed": 1,
+    "productRepair": "Stable admin grid slots and reserved home action/earnings loading footprints"
+  },
+  "harnessTypecheck": {
+    "evidence": "D17-R2-initial-gate-exits.json",
+    "exit": 2,
+    "rootCause": "Duplicate width record key; renamed viewportWidth, preserved assertions"
+  },
+  "final": {
+    "evidence": "D17-R2-browser-final.json",
+    "passed": 5,
+    "skipped": 0,
+    "flaky": 0
+  },
+  "postGatesPerformance": {
+    "evidence": "D17-R2-browser-profile-final-post-gates.json",
+    "passed": 1,
+    "reason": "The last full browser run overlapped the start of typecheck briefly; retained all raw samples and renewed performance sequentially after every gate completed."
+  },
+  "lintAttempt": {
+    "evidence": "D17-R2-lint-attempt-gate-exits.json",
+    "exit": 1,
+    "rootCause": "New inspector omitted explicit Node URL/console imports required by no-undef; added builtin imports, no app change"
+  },
+  "portIdentity": {
+    "red": "D17-R2-advisor-port-red.json",
+    "redPassed": 1,
+    "redFailed": 3,
+    "green": "D17-R2-advisor-port-green.json",
+    "greenPassed": 4,
+    "harnessIssue": "Initial ESM builtin mocks lacked default export; kept separately as mock-setup, not product RED",
+    "implementation": "Inspect exact DB container published5432 mapping before SQL or direct CLI setup; reject missing/wrong/non-loopback binding",
+    "preHardeningFull": "D17-R2-pre-port-gate-exits.json;1950 pass/363skip; final full rerun includes4 new assertions"
+  }
+}

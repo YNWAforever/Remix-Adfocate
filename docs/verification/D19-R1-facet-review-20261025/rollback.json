@@ -1,0 +1,59 @@
+{
+  "kind": "LOCAL_METADATA_REVIEW_ONLY_NOT_EXECUTED",
+  "sourceFingerprint": "e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993",
+  "sourceChanges": 0,
+  "before": [
+    {
+      "path": "docs/verification/adfocate-delivery.json",
+      "sha256": "416ce0c3931bb10132ef96d604c7aa5625ae2c5fd6e7770b6da37c1518031aff",
+      "before": "docs/verification/D19-R1-facet-review-20261025/before/docs/verification/adfocate-delivery.json"
+    },
+    {
+      "path": "docs/verification/audit_case_coverage.csv",
+      "sha256": "e7e1917eaa3df3be77d9eab118bb3d2c9b676c35a031fdd10afcc502a831259a",
+      "before": "docs/verification/D19-R1-facet-review-20261025/before/docs/verification/audit_case_coverage.csv"
+    },
+    {
+      "path": "docs/verification/implementation_backlog.csv",
+      "sha256": "6653b3890f665129e1ba307a68ed5e1a28a44df496e0d5b48d4dd7f49b5f695a",
+      "before": "docs/verification/D19-R1-facet-review-20261025/before/docs/verification/implementation_backlog.csv"
+    },
+    {
+      "path": "docs/verification/adfocate-task-ledger.md",
+      "sha256": "76386221a79859207a43483308a8f0bfb5b1fceb5c73c27fe43417d044a6674b",
+      "before": "docs/verification/D19-R1-facet-review-20261025/before/docs/verification/adfocate-task-ledger.md"
+    },
+    {
+      "path": "docs/verification/evidence-integrity.json",
+      "sha256": "9a71fb2037a7d77192f9cc4c614c1b0e8983f912b6037e1f5cc3f4367acf4681",
+      "before": "docs/verification/D19-R1-facet-review-20261025/before/docs/verification/evidence-integrity.json"
+    },
+    {
+      "path": "docs/verification/code-fingerprint.json",
+      "sha256": "0a9accc29ddb559a26fbcbcee2d9d4828fa8bdf63374b0a8d781d3f86885399d",
+      "before": "docs/verification/D19-R1-facet-review-20261025/before/docs/verification/code-fingerprint.json"
+    },
+    {
+      "path": "docs/verification/D19-C2-application-runtime-manifest.json",
+      "sha256": "eb5ca8f03a85c5589cc6cbf27ec0ca5524e8600fd2914ad1d4d73f17eec5009a",
+      "before": "docs/verification/D19-R1-facet-review-20261025/before/docs/verification/D19-C2-application-runtime-manifest.json"
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/runtime-authorization.json",
+      "sha256": "d5ca3dcd9ad8c4e14f0707e2b29c3bb25a1f6dd955e908fb591620281c76d019",
+      "before": "docs/verification/D19-R1-facet-review-20261025/before/docs/verification/D19-application-runtime-preparation-20261025/runtime-authorization.json"
+    }
+  ],
+  "instructions": [
+    "Verify this review after-hashes and preserve any later/user edits before any selective local metadata restoration.",
+    "Use only checkpoint exact before copies for changed verification metadata; do not reset/clean dirty checkout.",
+    "Retain this review and all historical logs/results/seals. Restoring an older label does not prove acceptance.",
+    "No data or schema rollback is applicable: no runtime action was performed. Original incident remains OPEN and unrestored."
+  ],
+  "c2ManifestUnchanged": true,
+  "c2ApprovalUnchanged": true,
+  "releaseHold": true,
+  "providerEnabled": false,
+  "afterIntegrity": "docs/verification/D19-r1-facet-review-integrity.json",
+  "modelSettingWrites": "None; restoring metadata cannot change the observed interface selection."
+}

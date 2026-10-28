@@ -1,0 +1,26 @@
+{
+  "status": "PASS_CURRENT_LOCAL_HANDOFF_AND_PARTIAL_ORIGIN_RUNTIME_RECORDS_NOT_R1_ACCEPTANCE",
+  "sourceFingerprint": "e83998d178061043688016056a5a78fc61df58bac28f3d0d0b66d639306037bd",
+  "localPassed": 2082,
+  "failed": 0,
+  "gatedSkip": 363,
+  "original16": 16,
+  "protected194": 194,
+  "originApiPassed": 17,
+  "originBrowserPassFailNotRun": [
+    2,
+    1,
+    2
+  ],
+  "newSourceRuntimeApproved": false,
+  "incidentOpen": true,
+  "releaseHold": true,
+  "providerEnabled": false,
+  "checkedAt": "2026-10-25T09:54:42.892952+00:00",
+  "command": [
+    "python",
+    "docs/verification/D19-C1-runtime-check-records.py"
+  ],
+  "exit": 0,
+  "scope": "Local files/reports/source/provenance only; no Docker/SQL/Auth/SDK/window-state calls. No test suite rerun or new runtime acceptance."
+}

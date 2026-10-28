@@ -1,0 +1,62 @@
+// @vitest-environment node
+// Executes the actual private Docker capture helper with a substituted child
+// command. The real child emits controlled bytes; no Docker/SQL/client/Auth call.
+import { describe, expect, it } from "vitest";
+import { readFileSync } from "node:fs";
+import { execFileSync, type ExecFileSyncOptionsWithStringEncoding } from "node:child_process";
+import { resolve } from "node:path";
+import process from "node:process";
+import ts from "typescript";
+
+type Capture = { ok: true; text: string; bytes: number } | { ok: false; code: string | null; status: number | null; capturedBytes: number };
+type Docker = (args: string[], options: { input: string }) => string;
+type Child = (command: string, args: string[], options: ExecFileSyncOptionsWithStringEncoding) => string;
+
+function capture(unit: string, count: number, exit = 0): Capture {
+  const path = resolve("scripts/audit/local-targets.mjs");
+  const parsed = ts.createSourceFile(path, readFileSync(path, "utf8"), ts.ScriptTarget.Latest, true, ts.ScriptKind.JS);
+  const helpers = parsed.statements.filter((s): s is ts.FunctionDeclaration => ts.isFunctionDeclaration(s) && s.name?.text === "docker");
+  expect(helpers).toHaveLength(1);
+  // Evaluate only this unchanged-source helper, not its target/credential module.
+  // Dependency injection keeps the production helper private and all guards intact.
+  const factory = new Function("execFileSync", `${helpers[0].getText(parsed)}\nreturn docker;`) as (child: Child) => Docker;
+  const docker = factory((command, args, options) => {
+    expect(command).toBe("docker"); expect(args).toEqual(["exec", "offline-output-probe"]);
+    const writer = `process.stdout.write(JSON.stringify({payload:${JSON.stringify(unit)}.repeat(${count}),tail:"complete"}));process.exitCode=${exit};`;
+    return execFileSync(process.execPath, ["-e", writer], options);
+  });
+  try {
+    const text = docker(["exec", "offline-output-probe"], { input: "Offline process-byte fixture only" });
+    return { ok: true, text, bytes: Buffer.byteLength(text, "utf8") };
+  } catch (cause) {
+    const failure = cause as { code?: string; status?: number; stdout?: string | Buffer };
+    return { ok: false, code: failure.code ?? null, status: failure.status ?? null,
+      capturedBytes: typeof failure.stdout === "string" ? Buffer.byteLength(failure.stdout) : failure.stdout?.length ?? 0 };
+  }
+}
+
+describe("Docker owner transport captures complete bounded catalog output", () => {
+  it("returns a complete 2MiB catalog-shaped JSON instead of ENOBUFS at the default1MiB", () => {
+    const result = capture("x", 2 * 1024 * 1024);
+    expect(result.ok, result.ok ? "Complete result" : JSON.stringify(result)).toBe(true);
+    if (!result.ok) return;
+    const data = JSON.parse(result.text);
+    expect(data.payload).toHaveLength(2 * 1024 * 1024); expect(data.tail).toBe("complete");
+    expect(result.bytes).toBe(Buffer.byteLength(JSON.stringify({ payload: data.payload, tail: "complete" })));
+  });
+  it("preserves complete multibyte Unicode output above1MiB of bytes", () => {
+    const result = capture("界", 500_000);
+    expect(result.ok, result.ok ? "Complete UTF8 result" : JSON.stringify(result)).toBe(true);
+    if (!result.ok) return;
+    const data = JSON.parse(result.text);
+    expect(data.payload).toBe("界".repeat(500_000)); expect(data.tail).toBe("complete");
+    expect(result.bytes).toBeGreaterThan(1_500_000);
+  });
+  it("still rejects output larger than the bounded capture budget", () => {
+    const result = capture("x", 9 * 1024 * 1024);
+    expect(result).toMatchObject({ ok: false, code: "ENOBUFS" });
+  });
+  it("still rejects a failing child even when it printed a complete small result", () => {
+    expect(capture("x", 16, 7)).toMatchObject({ ok: false, status: 7 });
+  });
+});

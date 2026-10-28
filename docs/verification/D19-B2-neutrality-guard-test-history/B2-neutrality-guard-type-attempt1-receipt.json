@@ -1,0 +1,17 @@
+{
+  "gate": "type",
+  "command": "npm run type-check",
+  "sourceFingerprint": "ef27c6a7ccbcc75626f38a739cc00fd0a56ca36c0e9e446c3dfac8707a46197f",
+  "sourceRecords": 779,
+  "sourceUnchangedAfter": true,
+  "startedAt": "2026-10-25T01:18:46.642Z",
+  "finishedAt": "2026-10-25T01:19:11.791Z",
+  "exit": 2,
+  "error": null,
+  "logSha256": "859bbd6d9726a83bdb6673917da307e581273740a391fce22a09b41fc471defd",
+  "freeGiBBefore": 9.183956146240234,
+  "freeGiBAfter": 8.066390991210938,
+  "offline": true,
+  "realTargetIntegrationEnabled": false,
+  "providerKeysSupplied": false
+}

@@ -1,0 +1,698 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > lists creators with default needs_review status when no review row exists
+GoTrueClient@sb-127-auth-token:1 (2.108.1) 2026-10-22T19:00:53.247Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > lists creators with default needs_review status when no review row exists
+GoTrueClient@sb-127-auth-token:2 (2.108.1) 2026-10-22T19:00:53.256Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > lists creators with default needs_review status when no review row exists
+GoTrueClient@sb-127-auth-token:3 (2.108.1) 2026-10-22T19:00:53.267Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > updates review status, creates an optional note, and writes audit events
+GoTrueClient@sb-127-auth-token:4 (2.108.1) 2026-10-22T19:00:53.646Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > updates review status, creates an optional note, and writes audit events
+GoTrueClient@sb-127-auth-token:5 (2.108.1) 2026-10-22T19:00:53.688Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > updates review status, creates an optional note, and writes audit events
+GoTrueClient@sb-127-auth-token:6 (2.108.1) 2026-10-22T19:00:53.694Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > updates review status, creates an optional note, and writes audit events
+GoTrueClient@sb-127-auth-token:7 (2.108.1) 2026-10-22T19:00:53.724Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > returns creator detail with notes, shortlists, social summary, mission history, and audit timeline
+GoTrueClient@sb-127-auth-token:8 (2.108.1) 2026-10-22T19:00:54.239Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > returns creator detail with notes, shortlists, social summary, mission history, and audit timeline
+GoTrueClient@sb-127-auth-token:9 (2.108.1) 2026-10-22T19:00:54.300Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > returns creator detail with notes, shortlists, social summary, mission history, and audit timeline
+GoTrueClient@sb-127-auth-token:10 (2.108.1) 2026-10-22T19:00:54.318Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > returns creator detail with notes, shortlists, social summary, mission history, and audit timeline
+GoTrueClient@sb-127-auth-token:11 (2.108.1) 2026-10-22T19:00:54.350Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > returns creator detail with notes, shortlists, social summary, mission history, and audit timeline
+GoTrueClient@sb-127-auth-token:12 (2.108.1) 2026-10-22T19:00:54.444Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > returns creator detail with notes, shortlists, social summary, mission history, and audit timeline
+GoTrueClient@sb-127-auth-token:13 (2.108.1) 2026-10-22T19:00:54.501Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > returns creator detail with notes, shortlists, social summary, mission history, and audit timeline
+GoTrueClient@sb-127-auth-token:14 (2.108.1) 2026-10-22T19:00:54.508Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > returns creator detail with notes, shortlists, social summary, mission history, and audit timeline
+GoTrueClient@sb-127-auth-token:15 (2.108.1) 2026-10-22T19:00:54.549Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > returns creator detail with notes, shortlists, social summary, mission history, and audit timeline
+GoTrueClient@sb-127-auth-token:16 (2.108.1) 2026-10-22T19:00:54.687Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > returns creator detail with notes, shortlists, social summary, mission history, and audit timeline
+GoTrueClient@sb-127-auth-token:17 (2.108.1) 2026-10-22T19:00:54.760Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > returns creator detail with notes, shortlists, social summary, mission history, and audit timeline
+GoTrueClient@sb-127-auth-token:18 (2.108.1) 2026-10-22T19:00:54.766Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > returns creator detail with notes, shortlists, social summary, mission history, and audit timeline
+GoTrueClient@sb-127-auth-token:19 (2.108.1) 2026-10-22T19:00:54.786Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > requires a note when flagging a creator review
+GoTrueClient@sb-127-auth-token:20 (2.108.1) 2026-10-22T19:00:55.323Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > requires a note when flagging a creator review
+GoTrueClient@sb-127-auth-token:21 (2.108.1) 2026-10-22T19:00:55.363Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > requires a note when flagging a creator review
+GoTrueClient@sb-127-auth-token:22 (2.108.1) 2026-10-22T19:00:55.374Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > requires a note when shortlisting a flagged creator
+GoTrueClient@sb-127-auth-token:23 (2.108.1) 2026-10-22T19:00:55.716Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > requires a note when shortlisting a flagged creator
+GoTrueClient@sb-127-auth-token:24 (2.108.1) 2026-10-22T19:00:55.755Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > requires a note when shortlisting a flagged creator
+GoTrueClient@sb-127-auth-token:25 (2.108.1) 2026-10-22T19:00:55.772Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > requires a note when shortlisting a flagged creator
+GoTrueClient@sb-127-auth-token:26 (2.108.1) 2026-10-22T19:00:55.807Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > requires a note when shortlisting a flagged creator
+GoTrueClient@sb-127-auth-token:27 (2.108.1) 2026-10-22T19:00:55.859Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > requires a note when shortlisting a flagged creator
+GoTrueClient@sb-127-auth-token:28 (2.108.1) 2026-10-22T19:00:55.912Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > requires a note when shortlisting a flagged creator
+GoTrueClient@sb-127-auth-token:29 (2.108.1) 2026-10-22T19:00:55.922Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > requires a note when shortlisting a flagged creator
+GoTrueClient@sb-127-auth-token:30 (2.108.1) 2026-10-22T19:00:55.974Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > blocks invited status for a flagged creator
+GoTrueClient@sb-127-auth-token:31 (2.108.1) 2026-10-22T19:00:56.324Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > blocks invited status for a flagged creator
+GoTrueClient@sb-127-auth-token:32 (2.108.1) 2026-10-22T19:00:56.372Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > blocks invited status for a flagged creator
+GoTrueClient@sb-127-auth-token:33 (2.108.1) 2026-10-22T19:00:56.384Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > blocks invited status for a flagged creator
+GoTrueClient@sb-127-auth-token:34 (2.108.1) 2026-10-22T19:00:56.416Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > blocks invited status for a flagged creator
+GoTrueClient@sb-127-auth-token:35 (2.108.1) 2026-10-22T19:00:56.480Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > blocks invited status for a flagged creator
+GoTrueClient@sb-127-auth-token:36 (2.108.1) 2026-10-22T19:00:56.527Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > blocks invited status for a flagged creator
+GoTrueClient@sb-127-auth-token:37 (2.108.1) 2026-10-22T19:00:56.541Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > blocks invited status for a flagged creator
+GoTrueClient@sb-127-auth-token:38 (2.108.1) 2026-10-22T19:00:56.589Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > blocks invited status for a flagged creator
+GoTrueClient@sb-127-auth-token:39 (2.108.1) 2026-10-22T19:00:56.674Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > blocks invited status for a flagged creator
+GoTrueClient@sb-127-auth-token:40 (2.108.1) 2026-10-22T19:00:56.718Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > blocks invited status for a flagged creator
+GoTrueClient@sb-127-auth-token:41 (2.108.1) 2026-10-22T19:00:56.723Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > blocks invited status for a flagged creator
+GoTrueClient@sb-127-auth-token:42 (2.108.1) 2026-10-22T19:00:56.763Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > preserves created_by while updating updated_by when re-shortlisting an existing row
+GoTrueClient@sb-127-auth-token:43 (2.108.1) 2026-10-22T19:00:57.274Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > preserves created_by while updating updated_by when re-shortlisting an existing row
+GoTrueClient@sb-127-auth-token:44 (2.108.1) 2026-10-22T19:00:57.319Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > preserves created_by while updating updated_by when re-shortlisting an existing row
+GoTrueClient@sb-127-auth-token:45 (2.108.1) 2026-10-22T19:00:57.328Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > preserves created_by while updating updated_by when re-shortlisting an existing row
+GoTrueClient@sb-127-auth-token:46 (2.108.1) 2026-10-22T19:00:57.373Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > preserves created_by while updating updated_by when re-shortlisting an existing row
+GoTrueClient@sb-127-auth-token:47 (2.108.1) 2026-10-22T19:00:57.669Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > preserves created_by while updating updated_by when re-shortlisting an existing row
+GoTrueClient@sb-127-auth-token:48 (2.108.1) 2026-10-22T19:00:57.716Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > preserves created_by while updating updated_by when re-shortlisting an existing row
+GoTrueClient@sb-127-auth-token:49 (2.108.1) 2026-10-22T19:00:57.723Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > preserves created_by while updating updated_by when re-shortlisting an existing row
+GoTrueClient@sb-127-auth-token:50 (2.108.1) 2026-10-22T19:00:57.775Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > treats concurrent first-time shortlist posts as an idempotent upsert
+GoTrueClient@sb-127-auth-token:51 (2.108.1) 2026-10-22T19:00:58.400Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+GoTrueClient@sb-127-auth-token:52 (2.108.1) 2026-10-22T19:00:58.402Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > treats concurrent first-time shortlist posts as an idempotent upsert
+GoTrueClient@sb-127-auth-token:53 (2.108.1) 2026-10-22T19:00:58.462Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > treats concurrent first-time shortlist posts as an idempotent upsert
+GoTrueClient@sb-127-auth-token:54 (2.108.1) 2026-10-22T19:00:58.464Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > treats concurrent first-time shortlist posts as an idempotent upsert
+GoTrueClient@sb-127-auth-token:55 (2.108.1) 2026-10-22T19:00:58.468Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > treats concurrent first-time shortlist posts as an idempotent upsert
+GoTrueClient@sb-127-auth-token:56 (2.108.1) 2026-10-22T19:00:58.473Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > treats concurrent first-time shortlist posts as an idempotent upsert
+GoTrueClient@sb-127-auth-token:57 (2.108.1) 2026-10-22T19:00:58.492Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > treats concurrent first-time shortlist posts as an idempotent upsert
+GoTrueClient@sb-127-auth-token:58 (2.108.1) 2026-10-22T19:00:58.498Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > creates creator notes through the admin note endpoint
+GoTrueClient@sb-127-auth-token:59 (2.108.1) 2026-10-22T19:00:58.972Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > creates creator notes through the admin note endpoint
+GoTrueClient@sb-127-auth-token:60 (2.108.1) 2026-10-22T19:00:59.014Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > creates creator notes through the admin note endpoint
+GoTrueClient@sb-127-auth-token:61 (2.108.1) 2026-10-22T19:00:59.019Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > creates creator notes through the admin note endpoint
+GoTrueClient@sb-127-auth-token:62 (2.108.1) 2026-10-22T19:00:59.041Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > lists mission shortlist rows through the admin shortlist endpoint
+GoTrueClient@sb-127-auth-token:63 (2.108.1) 2026-10-22T19:00:59.420Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > lists mission shortlist rows through the admin shortlist endpoint
+GoTrueClient@sb-127-auth-token:64 (2.108.1) 2026-10-22T19:00:59.478Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > lists mission shortlist rows through the admin shortlist endpoint
+GoTrueClient@sb-127-auth-token:65 (2.108.1) 2026-10-22T19:00:59.483Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > lists mission shortlist rows through the admin shortlist endpoint
+GoTrueClient@sb-127-auth-token:66 (2.108.1) 2026-10-22T19:00:59.537Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > lists mission shortlist rows through the admin shortlist endpoint
+GoTrueClient@sb-127-auth-token:67 (2.108.1) 2026-10-22T19:00:59.664Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > lists mission shortlist rows through the admin shortlist endpoint
+GoTrueClient@sb-127-auth-token:68 (2.108.1) 2026-10-22T19:00:59.702Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > lists mission shortlist rows through the admin shortlist endpoint
+GoTrueClient@sb-127-auth-token:69 (2.108.1) 2026-10-22T19:00:59.720Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > lists mission shortlist rows through the admin shortlist endpoint
+GoTrueClient@sb-127-auth-token:70 (2.108.1) 2026-10-22T19:00:59.752Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > preserves an existing shortlist note when updating only the shortlist status
+GoTrueClient@sb-127-auth-token:71 (2.108.1) 2026-10-22T19:01:00.155Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > preserves an existing shortlist note when updating only the shortlist status
+GoTrueClient@sb-127-auth-token:72 (2.108.1) 2026-10-22T19:01:00.200Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > preserves an existing shortlist note when updating only the shortlist status
+GoTrueClient@sb-127-auth-token:73 (2.108.1) 2026-10-22T19:01:00.210Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > preserves an existing shortlist note when updating only the shortlist status
+GoTrueClient@sb-127-auth-token:74 (2.108.1) 2026-10-22T19:01:00.258Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > preserves an existing shortlist note when updating only the shortlist status
+GoTrueClient@sb-127-auth-token:75 (2.108.1) 2026-10-22T19:01:00.358Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > preserves an existing shortlist note when updating only the shortlist status
+GoTrueClient@sb-127-auth-token:76 (2.108.1) 2026-10-22T19:01:00.405Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > preserves an existing shortlist note when updating only the shortlist status
+GoTrueClient@sb-127-auth-token:77 (2.108.1) 2026-10-22T19:01:00.420Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > preserves an existing shortlist note when updating only the shortlist status
+GoTrueClient@sb-127-auth-token:78 (2.108.1) 2026-10-22T19:01:00.455Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > rejects shortlists when the mission and creator belong to different workspaces
+GoTrueClient@sb-127-auth-token:79 (2.108.1) 2026-10-22T19:01:00.807Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > rejects shortlists when the mission and creator belong to different workspaces
+GoTrueClient@sb-127-auth-token:80 (2.108.1) 2026-10-22T19:01:00.854Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > rejects shortlists when the mission and creator belong to different workspaces
+GoTrueClient@sb-127-auth-token:81 (2.108.1) 2026-10-22T19:01:00.872Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > hides flagged creators by default in a mission-scoped queue
+GoTrueClient@sb-127-auth-token:82 (2.108.1) 2026-10-22T19:01:01.585Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > hides flagged creators by default in a mission-scoped queue
+GoTrueClient@sb-127-auth-token:83 (2.108.1) 2026-10-22T19:01:01.646Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > hides flagged creators by default in a mission-scoped queue
+GoTrueClient@sb-127-auth-token:84 (2.108.1) 2026-10-22T19:01:01.658Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > hides flagged creators by default in a mission-scoped queue
+GoTrueClient@sb-127-auth-token:85 (2.108.1) 2026-10-22T19:01:01.690Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > hides flagged creators by default in a mission-scoped queue
+GoTrueClient@sb-127-auth-token:86 (2.108.1) 2026-10-22T19:01:01.755Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > hides flagged creators by default in a mission-scoped queue
+GoTrueClient@sb-127-auth-token:87 (2.108.1) 2026-10-22T19:01:01.803Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > hides flagged creators by default in a mission-scoped queue
+GoTrueClient@sb-127-auth-token:88 (2.108.1) 2026-10-22T19:01:01.818Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > hides flagged creators by default in a mission-scoped queue
+GoTrueClient@sb-127-auth-token:89 (2.108.1) 2026-10-22T19:01:01.850Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > hides flagged creators by default in a mission-scoped queue
+GoTrueClient@sb-127-auth-token:90 (2.108.1) 2026-10-22T19:01:01.898Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > hides flagged creators by default in a mission-scoped queue
+GoTrueClient@sb-127-auth-token:91 (2.108.1) 2026-10-22T19:01:01.946Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > hides flagged creators by default in a mission-scoped queue
+GoTrueClient@sb-127-auth-token:92 (2.108.1) 2026-10-22T19:01:01.960Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > hides flagged creators by default in a mission-scoped queue
+GoTrueClient@sb-127-auth-token:93 (2.108.1) 2026-10-22T19:01:01.975Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > hides flagged creators by default in a mission-scoped queue
+GoTrueClient@sb-127-auth-token:94 (2.108.1) 2026-10-22T19:01:02.071Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > hides flagged creators by default in a mission-scoped queue
+GoTrueClient@sb-127-auth-token:95 (2.108.1) 2026-10-22T19:01:02.119Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > hides flagged creators by default in a mission-scoped queue
+GoTrueClient@sb-127-auth-token:96 (2.108.1) 2026-10-22T19:01:02.130Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > hides flagged creators by default in a mission-scoped queue
+GoTrueClient@sb-127-auth-token:97 (2.108.1) 2026-10-22T19:01:02.147Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > does not use social-source avatars as queue avatars
+GoTrueClient@sb-127-auth-token:98 (2.108.1) 2026-10-22T19:01:02.475Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > does not use social-source avatars as queue avatars
+GoTrueClient@sb-127-auth-token:99 (2.108.1) 2026-10-22T19:01:02.512Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > does not use social-source avatars as queue avatars
+GoTrueClient@sb-127-auth-token:100 (2.108.1) 2026-10-22T19:01:02.519Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > does not use social-source avatars as queue avatars
+GoTrueClient@sb-127-auth-token:101 (2.108.1) 2026-10-22T19:01:02.536Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > keeps approved creators first in mission queues before applying the secondary sort
+GoTrueClient@sb-127-auth-token:102 (2.108.1) 2026-10-22T19:01:03.098Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > keeps approved creators first in mission queues before applying the secondary sort
+GoTrueClient@sb-127-auth-token:103 (2.108.1) 2026-10-22T19:01:03.138Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > keeps approved creators first in mission queues before applying the secondary sort
+GoTrueClient@sb-127-auth-token:104 (2.108.1) 2026-10-22T19:01:03.151Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > keeps approved creators first in mission queues before applying the secondary sort
+GoTrueClient@sb-127-auth-token:105 (2.108.1) 2026-10-22T19:01:03.184Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > keeps approved creators first in mission queues before applying the secondary sort
+GoTrueClient@sb-127-auth-token:106 (2.108.1) 2026-10-22T19:01:03.259Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > keeps approved creators first in mission queues before applying the secondary sort
+GoTrueClient@sb-127-auth-token:107 (2.108.1) 2026-10-22T19:01:03.300Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > keeps approved creators first in mission queues before applying the secondary sort
+GoTrueClient@sb-127-auth-token:108 (2.108.1) 2026-10-22T19:01:03.320Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/operator-crm.test.ts > operator CRM admin API > keeps approved creators first in mission queues before applying the secondary sort
+GoTrueClient@sb-127-auth-token:109 (2.108.1) 2026-10-22T19:01:03.338Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+ ❯ server/test/operator-crm.test.ts (15 tests | 1 failed) 13398ms
+   ✓ operator CRM admin API > lists creators with default needs_review status when no review row exists 990ms
+   ✓ operator CRM admin API > updates review status, creates an optional note, and writes audit events 469ms
+   ✓ operator CRM admin API > returns creator detail with notes, shortlists, social summary, mission history, and audit timeline 1067ms
+   ✓ operator CRM admin API > requires a note when flagging a creator review 530ms
+   ✓ operator CRM admin API > requires a note when shortlisting a flagged creator 599ms
+   ✓ operator CRM admin API > blocks invited status for a flagged creator 790ms
+   ✓ operator CRM admin API > preserves created_by while updating updated_by when re-shortlisting an existing row 1251ms
+   ✓ operator CRM admin API > treats concurrent first-time shortlist posts as an idempotent upsert 621ms
+   ✓ operator CRM admin API > creates creator notes through the admin note endpoint 437ms
+   ✓ operator CRM admin API > lists mission shortlist rows through the admin shortlist endpoint 775ms
+   ✓ operator CRM admin API > preserves an existing shortlist note when updating only the shortlist status 629ms
+   × operator CRM admin API > rejects shortlists when the mission and creator belong to different workspaces 499ms
+     → expected 'NOT_FOUND' to be 'not_found' // Object.is equality
+   ✓ operator CRM admin API > hides flagged creators by default in a mission-scoped queue 1182ms
+   ✓ operator CRM admin API > does not use social-source avatars as queue avatars 389ms
+   ✓ operator CRM admin API > keeps approved creators first in mission queues before applying the secondary sort 801ms
+stderr | server/test/passport.test.ts > creator passport > a fresh creator gets all-null scores and no badges
+GoTrueClient@sb-127-auth-token:1 (2.108.1) 2026-10-22T19:01:07.739Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/passport.test.ts > creator passport > a fresh creator gets all-null scores and no badges
+GoTrueClient@sb-127-auth-token:2 (2.108.1) 2026-10-22T19:01:07.768Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/passport.test.ts > creator passport > a fresh creator gets all-null scores and no badges
+GoTrueClient@sb-127-auth-token:3 (2.108.1) 2026-10-22T19:01:07.785Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/passport.test.ts > creator passport > computes reliability from concluded submissions (in-flight ignored)
+GoTrueClient@sb-127-auth-token:4 (2.108.1) 2026-10-22T19:01:08.151Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/passport.test.ts > creator passport > computes reliability from concluded submissions (in-flight ignored)
+GoTrueClient@sb-127-auth-token:5 (2.108.1) 2026-10-22T19:01:08.229Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/passport.test.ts > creator passport > computes reliability from concluded submissions (in-flight ignored)
+GoTrueClient@sb-127-auth-token:6 (2.108.1) 2026-10-22T19:01:08.265Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/passport.test.ts > creator passport > computes reliability from concluded submissions (in-flight ignored)
+GoTrueClient@sb-127-auth-token:7 (2.108.1) 2026-10-22T19:01:08.270Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/passport.test.ts > creator passport > reliability is null when only in-flight submissions exist
+GoTrueClient@sb-127-auth-token:8 (2.108.1) 2026-10-22T19:01:08.596Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/passport.test.ts > creator passport > reliability is null when only in-flight submissions exist
+GoTrueClient@sb-127-auth-token:9 (2.108.1) 2026-10-22T19:01:08.669Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/passport.test.ts > creator passport > reliability is null when only in-flight submissions exist
+GoTrueClient@sb-127-auth-token:10 (2.108.1) 2026-10-22T19:01:08.698Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/passport.test.ts > creator passport > reliability is null when only in-flight submissions exist
+GoTrueClient@sb-127-auth-token:11 (2.108.1) 2026-10-22T19:01:08.725Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/passport.test.ts > creator passport > computes influence from social-handle followers and earns social_linked
+GoTrueClient@sb-127-auth-token:12 (2.108.1) 2026-10-22T19:01:08.955Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/passport.test.ts > creator passport > computes influence from social-handle followers and earns social_linked
+GoTrueClient@sb-127-auth-token:13 (2.108.1) 2026-10-22T19:01:09.030Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/passport.test.ts > creator passport > computes influence from social-handle followers and earns social_linked
+GoTrueClient@sb-127-auth-token:14 (2.108.1) 2026-10-22T19:01:09.038Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/passport.test.ts > creator passport > computes influence from social-handle followers and earns social_linked
+GoTrueClient@sb-127-auth-token:15 (2.108.1) 2026-10-22T19:01:09.101Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/passport.test.ts > creator passport > computes influence from social-handle followers and earns social_linked
+GoTrueClient@sb-127-auth-token:16 (2.108.1) 2026-10-22T19:01:09.158Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/passport.test.ts > creator passport > computes influence from social-handle followers and earns social_linked
+GoTrueClient@sb-127-auth-token:17 (2.108.1) 2026-10-22T19:01:09.173Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/passport.test.ts > creator passport > computes influence from social-handle followers and earns social_linked
+GoTrueClient@sb-127-auth-token:18 (2.108.1) 2026-10-22T19:01:09.190Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/passport.test.ts > creator passport > computes content from quality ratings (unrated approvals excluded)
+GoTrueClient@sb-127-auth-token:19 (2.108.1) 2026-10-22T19:01:09.521Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/passport.test.ts > creator passport > computes content from quality ratings (unrated approvals excluded)
+GoTrueClient@sb-127-auth-token:20 (2.108.1) 2026-10-22T19:01:09.597Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/passport.test.ts > creator passport > computes content from quality ratings (unrated approvals excluded)
+GoTrueClient@sb-127-auth-token:21 (2.108.1) 2026-10-22T19:01:09.626Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/passport.test.ts > creator passport > computes content from quality ratings (unrated approvals excluded)
+GoTrueClient@sb-127-auth-token:22 (2.108.1) 2026-10-22T19:01:09.643Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/passport.test.ts > creator passport > computes brand safety as the non-rejection rate (expired excluded)
+GoTrueClient@sb-127-auth-token:23 (2.108.1) 2026-10-22T19:01:09.988Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/passport.test.ts > creator passport > computes brand safety as the non-rejection rate (expired excluded)
+GoTrueClient@sb-127-auth-token:24 (2.108.1) 2026-10-22T19:01:10.060Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/passport.test.ts > creator passport > computes brand safety as the non-rejection rate (expired excluded)
+GoTrueClient@sb-127-auth-token:25 (2.108.1) 2026-10-22T19:01:10.097Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/passport.test.ts > creator passport > computes brand safety as the non-rejection rate (expired excluded)
+GoTrueClient@sb-127-auth-token:26 (2.108.1) 2026-10-22T19:01:10.101Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/passport.test.ts > creator passport > content and brand safety are null for a creator with no rated/reviewed work
+GoTrueClient@sb-127-auth-token:27 (2.108.1) 2026-10-22T19:01:10.363Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/passport.test.ts > creator passport > content and brand safety are null for a creator with no rated/reviewed work
+GoTrueClient@sb-127-auth-token:28 (2.108.1) 2026-10-22T19:01:10.437Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/passport.test.ts > creator passport > content and brand safety are null for a creator with no rated/reviewed work
+GoTrueClient@sb-127-auth-token:29 (2.108.1) 2026-10-22T19:01:10.472Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/passport.test.ts > creator passport > content and brand safety are null for a creator with no rated/reviewed work
+GoTrueClient@sb-127-auth-token:30 (2.108.1) 2026-10-22T19:01:10.477Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/passport.test.ts > creator passport > earns content_pro and spotless from 3+ high-quality reviewed submissions
+GoTrueClient@sb-127-auth-token:31 (2.108.1) 2026-10-22T19:01:10.820Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/passport.test.ts > creator passport > earns content_pro and spotless from 3+ high-quality reviewed submissions
+GoTrueClient@sb-127-auth-token:32 (2.108.1) 2026-10-22T19:01:10.875Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/passport.test.ts > creator passport > earns content_pro and spotless from 3+ high-quality reviewed submissions
+GoTrueClient@sb-127-auth-token:33 (2.108.1) 2026-10-22T19:01:10.911Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/passport.test.ts > creator passport > earns content_pro and spotless from 3+ high-quality reviewed submissions
+GoTrueClient@sb-127-auth-token:34 (2.108.1) 2026-10-22T19:01:10.915Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/passport.test.ts > creator passport > earns level_l1 once xp crosses L1 and referrer with a referred creator
+GoTrueClient@sb-127-auth-token:35 (2.108.1) 2026-10-22T19:01:11.430Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/passport.test.ts > creator passport > earns level_l1 once xp crosses L1 and referrer with a referred creator
+GoTrueClient@sb-127-auth-token:36 (2.108.1) 2026-10-22T19:01:11.501Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/passport.test.ts > creator passport > earns level_l1 once xp crosses L1 and referrer with a referred creator
+GoTrueClient@sb-127-auth-token:37 (2.108.1) 2026-10-22T19:01:11.526Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/passport.test.ts > creator passport > earns level_l1 once xp crosses L1 and referrer with a referred creator
+GoTrueClient@sb-127-auth-token:38 (2.108.1) 2026-10-22T19:01:11.538Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/passport.test.ts > creator passport > prefers API-synced follower counts over self-reported followers
+GoTrueClient@sb-127-auth-token:39 (2.108.1) 2026-10-22T19:01:11.760Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/passport.test.ts > creator passport > prefers API-synced follower counts over self-reported followers
+GoTrueClient@sb-127-auth-token:40 (2.108.1) 2026-10-22T19:01:11.834Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/passport.test.ts > creator passport > prefers API-synced follower counts over self-reported followers
+GoTrueClient@sb-127-auth-token:41 (2.108.1) 2026-10-22T19:01:11.853Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/passport.test.ts > creator passport > prefers API-synced follower counts over self-reported followers
+GoTrueClient@sb-127-auth-token:42 (2.108.1) 2026-10-22T19:01:11.919Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/passport.test.ts > creator passport > prefers API-synced follower counts over self-reported followers
+GoTrueClient@sb-127-auth-token:43 (2.108.1) 2026-10-22T19:01:11.970Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/passport.test.ts > creator passport > prefers API-synced follower counts over self-reported followers
+GoTrueClient@sb-127-auth-token:44 (2.108.1) 2026-10-22T19:01:11.979Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/passport.test.ts > creator passport > prefers API-synced follower counts over self-reported followers
+GoTrueClient@sb-127-auth-token:45 (2.108.1) 2026-10-22T19:01:12.036Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/passport.test.ts > creator passport > prefers API-synced follower counts over self-reported followers
+GoTrueClient@sb-127-auth-token:46 (2.108.1) 2026-10-22T19:01:12.041Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/passport.test.ts > creator passport > prefers API-synced follower counts over self-reported followers
+GoTrueClient@sb-127-auth-token:47 (2.108.1) 2026-10-22T19:01:12.098Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/passport.test.ts > creator passport > prefers API-synced follower counts over self-reported followers
+GoTrueClient@sb-127-auth-token:48 (2.108.1) 2026-10-22T19:01:12.179Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/passport.test.ts > creator passport > prefers API-synced follower counts over self-reported followers
+GoTrueClient@sb-127-auth-token:49 (2.108.1) 2026-10-22T19:01:12.231Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/passport.test.ts > creator passport > prefers API-synced follower counts over self-reported followers
+GoTrueClient@sb-127-auth-token:50 (2.108.1) 2026-10-22T19:01:12.302Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/passport.test.ts > creator passport > prefers API-synced follower counts over self-reported followers
+GoTrueClient@sb-127-auth-token:51 (2.108.1) 2026-10-22T19:01:12.333Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/passport.test.ts > creator passport > prefers API-synced follower counts over self-reported followers
+GoTrueClient@sb-127-auth-token:52 (2.108.1) 2026-10-22T19:01:12.347Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/passport.test.ts > creator passport > returns db_error when synced social accounts cannot be loaded
+GoTrueClient@sb-127-auth-token:53 (2.108.1) 2026-10-22T19:01:12.620Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/passport.test.ts > creator passport > returns db_error when synced social accounts cannot be loaded
+GoTrueClient@sb-127-auth-token:54 (2.108.1) 2026-10-22T19:01:12.690Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/passport.test.ts > creator passport > returns db_error when synced social accounts cannot be loaded
+GoTrueClient@sb-127-auth-token:55 (2.108.1) 2026-10-22T19:01:12.725Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/passport.test.ts > creator passport > returns db_error when synced social accounts cannot be loaded
+GoTrueClient@sb-127-auth-token:56 (2.108.1) 2026-10-22T19:01:12.729Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+ ✓ server/test/passport.test.ts (11 tests) 6744ms
+   ✓ creator passport > a fresh creator gets all-null scores and no badges 805ms
+   ✓ creator passport > computes reliability from concluded submissions (in-flight ignored) 485ms
+   ✓ creator passport > reliability is null when only in-flight submissions exist 450ms
+   ✓ creator passport > computes influence from social-handle followers and earns social_linked 474ms
+   ✓ creator passport > computes content from quality ratings (unrated approvals excluded) 443ms
+   ✓ creator passport > computes brand safety as the non-rejection rate (expired excluded) 464ms
+   ✓ creator passport > content and brand safety are null for a creator with no rated/reviewed work 376ms
+   ✓ creator passport > earns content_pro and spotless from 3+ high-quality reviewed submissions 440ms
+   ✓ creator passport > earns level_l1 once xp crosses L1 and referrer with a referred creator 625ms
+   ✓ creator passport > prefers API-synced follower counts over self-reported followers 811ms
+   ✓ creator passport > returns db_error when synced social accounts cannot be loaded 367ms
+stderr | server/test/admin-staff.test.ts > requireStaff gate + GET /admin/me > 200 for a valid staff JWT
+GoTrueClient@sb-127-auth-token:1 (2.108.1) 2026-10-22T19:01:15.900Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/admin-staff.test.ts > requireStaff gate + GET /admin/me > 403 not_staff for a valid non-staff JWT
+GoTrueClient@sb-127-auth-token:2 (2.108.1) 2026-10-22T19:01:16.098Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/admin-staff.test.ts > requireStaff gate + GET /admin/me > 403 not_staff for a valid non-staff JWT
+GoTrueClient@sb-127-auth-token:3 (2.108.1) 2026-10-22T19:01:16.137Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/admin-staff.test.ts > requireStaff gate + GET /admin/me > does not auto-promote an allow-listed email
+GoTrueClient@sb-127-auth-token:4 (2.108.1) 2026-10-22T19:01:16.388Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/admin-staff.test.ts > requireStaff gate + GET /admin/me > does not auto-promote an allow-listed email
+GoTrueClient@sb-127-auth-token:5 (2.108.1) 2026-10-22T19:01:16.443Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/admin-staff.test.ts > requireStaff gate + GET /admin/me > does not auto-promote a staff-domain email
+GoTrueClient@sb-127-auth-token:6 (2.108.1) 2026-10-22T19:01:16.720Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/admin-staff.test.ts > requireStaff gate + GET /admin/me > does not auto-promote a staff-domain email
+GoTrueClient@sb-127-auth-token:7 (2.108.1) 2026-10-22T19:01:16.770Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/admin-staff.test.ts > requireStaff gate + GET /admin/me > audit attribution uses the staff identity, not client headers
+GoTrueClient@sb-127-auth-token:8 (2.108.1) 2026-10-22T19:01:17.354Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/admin-staff.test.ts > requireStaff gate + GET /admin/me > audit attribution uses the staff identity, not client headers
+GoTrueClient@sb-127-auth-token:9 (2.108.1) 2026-10-22T19:01:17.401Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/admin-staff.test.ts > requireStaff gate + GET /admin/me > audit attribution uses the staff identity, not client headers
+GoTrueClient@sb-127-auth-token:10 (2.108.1) 2026-10-22T19:01:17.418Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/admin-staff.test.ts > requireStaff gate + GET /admin/me > audit attribution uses the staff identity, not client headers
+GoTrueClient@sb-127-auth-token:11 (2.108.1) 2026-10-22T19:01:17.436Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+ ✓ server/test/admin-staff.test.ts (7 tests) 2694ms
+   ✓ requireStaff gate + GET /admin/me > 200 for a valid staff JWT 577ms
+   ✓ requireStaff gate + GET /admin/me > 403 not_staff for a valid non-staff JWT 300ms
+   ✓ requireStaff gate + GET /admin/me > does not auto-promote an allow-listed email 325ms
+   ✓ requireStaff gate + GET /admin/me > does not auto-promote a staff-domain email 337ms
+   ✓ requireStaff gate + GET /admin/me > audit attribution uses the staff identity, not client headers 594ms
+stderr | server/test/assistant.test.ts > assistant chat route > does not leak another creator's conversations
+GoTrueClient@sb-127-auth-token:1 (2.108.1) 2026-10-22T19:01:19.991Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/assistant.test.ts > assistant chat route > does not leak another creator's conversations
+GoTrueClient@sb-127-auth-token:2 (2.108.1) 2026-10-22T19:01:20.049Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/assistant.test.ts > assistant chat route > does not leak another creator's conversations
+GoTrueClient@sb-127-auth-token:3 (2.108.1) 2026-10-22T19:01:20.127Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+ ❯ server/test/assistant.test.ts (2 tests | 1 failed) 1427ms
+   × assistant chat route > answers and persists a conversation 91ms
+     → expected 400 to be 200 // Object.is equality
+stderr | server/test/insights.test.ts > admin insights > rejects an invalid window with 422
+GoTrueClient@sb-127-auth-token:1 (2.108.1) 2026-10-22T19:01:22.454Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/insights.test.ts > admin insights > rejects an invalid window with 422
+GoTrueClient@sb-127-auth-token:2 (2.108.1) 2026-10-22T19:01:22.463Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/insights.test.ts > admin insights > returns a well-formed insights payload for staff
+GoTrueClient@sb-127-auth-token:3 (2.108.1) 2026-10-22T19:01:22.475Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/insights.test.ts > admin insights > returns a well-formed insights payload for staff
+GoTrueClient@sb-127-auth-token:4 (2.108.1) 2026-10-22T19:01:22.530Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/insights.test.ts > admin insights > returns a well-formed insights payload for staff
+GoTrueClient@sb-127-auth-token:5 (2.108.1) 2026-10-22T19:01:22.541Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/insights.test.ts > admin insights > returns a well-formed insights payload for staff
+GoTrueClient@sb-127-auth-token:6 (2.108.1) 2026-10-22T19:01:22.557Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/insights.test.ts > admin insights > rejects an inaccessible workspace without leaking data
+GoTrueClient@sb-127-auth-token:7 (2.108.1) 2026-10-22T19:01:22.607Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/insights.test.ts > admin insights > rejects an inaccessible workspace without leaking data
+GoTrueClient@sb-127-auth-token:8 (2.108.1) 2026-10-22T19:01:22.660Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/insights.test.ts > admin insights > rejects an inaccessible workspace without leaking data
+GoTrueClient@sb-127-auth-token:9 (2.108.1) 2026-10-22T19:01:22.667Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+ ✓ server/test/insights.test.ts (4 tests) 1633ms
+stderr | server/test/radar.test.ts > admin radar > returns 422 for an unsupported days value
+GoTrueClient@sb-127-auth-token:1 (2.108.1) 2026-10-22T19:01:26.082Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/radar.test.ts > admin radar > returns 422 for an unsupported days value
+GoTrueClient@sb-127-auth-token:2 (2.108.1) 2026-10-22T19:01:26.089Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/radar.test.ts > admin radar > returns a well-formed radar payload for staff
+GoTrueClient@sb-127-auth-token:3 (2.108.1) 2026-10-22T19:01:26.113Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/radar.test.ts > admin radar > returns a well-formed radar payload for staff
+GoTrueClient@sb-127-auth-token:4 (2.108.1) 2026-10-22T19:01:26.160Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/radar.test.ts > admin radar > returns a well-formed radar payload for staff
+GoTrueClient@sb-127-auth-token:5 (2.108.1) 2026-10-22T19:01:26.170Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/radar.test.ts > admin radar > returns a well-formed radar payload for staff
+GoTrueClient@sb-127-auth-token:6 (2.108.1) 2026-10-22T19:01:26.186Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/radar.test.ts > admin radar > rejects an inaccessible workspace without leaking data
+GoTrueClient@sb-127-auth-token:7 (2.108.1) 2026-10-22T19:01:26.205Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/radar.test.ts > admin radar > rejects an inaccessible workspace without leaking data
+GoTrueClient@sb-127-auth-token:8 (2.108.1) 2026-10-22T19:01:26.258Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/radar.test.ts > admin radar > rejects an inaccessible workspace without leaking data
+GoTrueClient@sb-127-auth-token:9 (2.108.1) 2026-10-22T19:01:26.266Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+ ✓ server/test/radar.test.ts (4 tests) 2012ms
+stderr | server/test/bootstrap.test.ts > bootstrap (first login) > creates an email creator and returns created:true, then false on repeat
+GoTrueClient@sb-127-auth-token:1 (2.108.1) 2026-10-22T19:01:28.564Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/bootstrap.test.ts > bootstrap (first login) > creates an email creator and returns created:true, then false on repeat
+GoTrueClient@sb-127-auth-token:2 (2.108.1) 2026-10-22T19:01:28.647Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/bootstrap.test.ts > bootstrap (first login) > creates an email creator and returns created:true, then false on repeat
+GoTrueClient@sb-127-auth-token:3 (2.108.1) 2026-10-22T19:01:28.689Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/bootstrap.test.ts > bootstrap (first login) > creates an email creator and returns created:true, then false on repeat
+GoTrueClient@sb-127-auth-token:4 (2.108.1) 2026-10-22T19:01:28.763Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/bootstrap.test.ts > bootstrap (first login) > creates an email creator and returns created:true, then false on repeat
+GoTrueClient@sb-127-auth-token:5 (2.108.1) 2026-10-22T19:01:28.849Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+ ❯ server/test/bootstrap.test.ts (2 tests | 1 failed) 1391ms
+   ✓ bootstrap (first login) > creates an email creator and returns created:true, then false on repeat 880ms
+   × bootstrap (first login) > creates a PHONE-primary creator with no email (display_name = E.164) 111ms
+     → Phone logins are disabled
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  server/test/assistant.test.ts > assistant chat route > answers and persists a conversation
+AssertionError: expected 400 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 400
+
+ ❯ server/test/assistant.test.ts:63:24
+     61|       body: JSON.stringify({ request_id: randomUUID(), message: "點樣…
+     62|     });
+     63|     expect(res.status).toBe(200);
+       |                        ^
+     64|     const json = await res.json();
+     65|     expect(json.answer).toContain("積分");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  server/test/bootstrap.test.ts > bootstrap (first login) > creates a PHONE-primary creator with no email (display_name = E.164)
+AuthApiError: Phone logins are disabled
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  server/test/operator-crm.test.ts > operator CRM admin API > rejects shortlists when the mission and creator belong to different workspaces
+AssertionError: expected 'NOT_FOUND' to be 'not_found' // Object.is equality
+
+Expected: "not_found"
+Received: "NOT_FOUND"
+
+ ❯ server/test/operator-crm.test.ts:391:39
+    389|       });
+    390|       expect(res.status).toBe(404);
+    391|       expect((await res.json()).code).toBe("not_found");
+       |                                       ^
+    392|     } finally {
+    393|       await svc.from("mission_shortlists").delete().eq("mission_id", m…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+ Test Files  3 failed | 4 passed (7)
+      Tests  3 failed | 42 passed (45)
+   Start at  03:00:36
+   Duration  52.85s (transform 677ms, setup 4.05s, collect 3.06s, tests 29.30s, environment 13.97s, prepare 1.15s)
+

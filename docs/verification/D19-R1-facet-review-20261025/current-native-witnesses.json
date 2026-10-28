@@ -1,0 +1,376 @@
+{
+  "sourceFingerprint": "e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993",
+  "reference": {
+    "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-full-final.json",
+    "sha256": "21f201bc34e65a56b7d4e59b90ccf14492ef68e4ce2cf02c86378cfe92c96df3"
+  },
+  "sourceScope": "Existing native full result, not rerun; passed local contracts remain distinct from skipped live tests.",
+  "assertions": [
+    {
+      "path": "server/test/active-mission-schema.test.ts",
+      "title": "active mission migration contract authorizes and tenant-scopes backfill before workflow or contract lookup",
+      "status": "passed"
+    },
+    {
+      "path": "server/test/active-mission-schema.test.ts",
+      "title": "active mission migration contract locks before replay and reconstructs immutable cycle snapshots with tenant-bound joins",
+      "status": "passed"
+    },
+    {
+      "path": "server/test/active-mission-schema.test.ts",
+      "title": "active mission migration contract defines the publication proof schema and tenant-safe immutable boundary",
+      "status": "passed"
+    },
+    {
+      "path": "server/test/active-mission-schema.test.ts",
+      "title": "active mission migration contract preserves cross-workspace campaign creators without weakening mission tenant integrity",
+      "status": "passed"
+    },
+    {
+      "path": "server/test/active-mission-schema.test.ts",
+      "title": "active mission migration contract defines the normalized workflow, guarded RPCs, RLS, private assets, and reward boundary",
+      "status": "passed"
+    },
+    {
+      "path": "server/test/active-mission-schema.test.ts",
+      "title": "active mission migration contract requires relationally scoped canonical draft-asset object paths",
+      "status": "passed"
+    },
+    {
+      "path": "server/test/active-mission-schema.test.ts",
+      "title": "active mission workflow schema (skipped: RUN_INTEGRATION=1 is required) preserves terminal state and rejects cross-owner create",
+      "status": "skipped"
+    },
+    {
+      "path": "server/test/active-mission-schema.test.ts",
+      "title": "active mission workflow schema (skipped: RUN_INTEGRATION=1 is required) rejects cross-workspace relationships, access, and asset scopes",
+      "status": "skipped"
+    },
+    {
+      "path": "server/test/active-mission-schema.test.ts",
+      "title": "active mission workflow schema (skipped: RUN_INTEGRATION=1 is required) enforces publication proof tenant ownership, immutability, privacy, and relationships",
+      "status": "skipped"
+    },
+    {
+      "path": "server/test/active-mission-schema.test.ts",
+      "title": "publication proof asset rollout policy aligns the proof asset table and private bucket with the seven-type Phase 2 MIME contract",
+      "status": "passed"
+    },
+    {
+      "path": "server/test/active-mission-schema.test.ts",
+      "title": "publication proof asset rollout policy uses the Phase 2 MIME map and workflow-scoped canonical path",
+      "status": "passed"
+    },
+    {
+      "path": "server/test/active-mission-schema.test.ts",
+      "title": "publication proof asset rollout policy assigns unique migration versions in the publication-proof asset guard order",
+      "status": "passed"
+    },
+    {
+      "path": "server/test/active-mission-schema.test.ts",
+      "title": "publication proof lifecycle guards restricts states and makes staging concurrent-safe",
+      "status": "passed"
+    },
+    {
+      "path": "server/test/active-mission-schema.test.ts",
+      "title": "publication proof public RPC guards guards the active callable create and finalize functions",
+      "status": "passed"
+    },
+    {
+      "path": "server/test/active-mission-schema.test.ts",
+      "title": "publication proof immutable submit transaction defines one guarded atomic submit RPC without reward or legacy mutations",
+      "status": "passed"
+    },
+    {
+      "path": "server/test/active-mission-schema.test.ts",
+      "title": "publication proof operator review lifecycle defines guarded exact-attempt claim, correction, and verification RPCs",
+      "status": "passed"
+    },
+    {
+      "path": "server/test/active-mission-schema.test.ts",
+      "title": "publication proof operator review lifecycle locks the canonical rows and enforces current-attempt claim ownership",
+      "status": "passed"
+    },
+    {
+      "path": "server/test/active-mission-schema.test.ts",
+      "title": "publication proof operator review lifecycle requires the six-key checklist and categorized non-blank corrections",
+      "status": "passed"
+    },
+    {
+      "path": "server/test/active-mission-schema.test.ts",
+      "title": "publication proof operator review lifecycle uses snapshotted SLAs, completes required aggregates, and stays reward-neutral",
+      "status": "passed"
+    },
+    {
+      "path": "server/test/active-mission-schema.test.ts",
+      "title": "publication proof operator review lifecycle keeps mixed required verified and approved items in publication progress",
+      "status": "passed"
+    },
+    {
+      "path": "server/test/active-mission-schema.test.ts",
+      "title": "publication proof correction checksum replay contract limits checksum replay to the current submitted attempt and emits a resubmission event",
+      "status": "passed"
+    },
+    {
+      "path": "server/test/active-missions.test.ts",
+      "title": "active mission repository without a live database stops at a 404 ownership anchor for another creator or workspace",
+      "status": "passed"
+    },
+    {
+      "path": "server/test/active-missions.test.ts",
+      "title": "active mission creator upload service abandons an owner/path-scoped pending asset when signed URL creation fails without masking that failure",
+      "status": "passed"
+    },
+    {
+      "path": "server/test/active-missions.test.ts",
+      "title": "active mission routes without a live database returns 404 without leaking cross-creator existence",
+      "status": "passed"
+    },
+    {
+      "path": "server/test/active-missions.test.ts",
+      "title": "active mission routes without a live database rejects unsupported upload metadata before creating an asset",
+      "status": "passed"
+    },
+    {
+      "path": "server/test/active-missions.test.ts",
+      "title": "active mission routes without a live database finalizes an owned asset after metadata verification",
+      "status": "passed"
+    },
+    {
+      "path": "server/test/active-missions.test.ts",
+      "title": "active mission creator submit migration contract is atomic, service-only, idempotent, asset-scoped, and reward-neutral",
+      "status": "passed"
+    },
+    {
+      "path": "server/test/active-missions.test.ts",
+      "title": "active mission failed upload cleanup migration contract is service-only, owner/path-scoped, and cannot abandon finalized assets",
+      "status": "passed"
+    },
+    {
+      "path": "server/test/active-missions.test.ts",
+      "title": "active mission operator routes without a live database authorizes detail before returning ten-minute signed asset URLs",
+      "status": "passed"
+    },
+    {
+      "path": "server/test/active-missions.test.ts",
+      "title": "publication proof operator review migration contract keeps canonical lock order, exact-attempt guards, and terminal decisions atomic",
+      "status": "passed"
+    },
+    {
+      "path": "server/test/active-missions.test.ts",
+      "title": "active mission publication proof routes requires guarded mutation headers and workflow context",
+      "status": "passed"
+    },
+    {
+      "path": "server/test/active-missions.test.ts",
+      "title": "active mission publication proof routes rejects string expectedRevision before repository access",
+      "status": "passed"
+    },
+    {
+      "path": "server/test/active-missions.test.ts",
+      "title": "active mission publication proof routes rejects null expectedRevision before repository access",
+      "status": "passed"
+    },
+    {
+      "path": "server/test/active-missions.test.ts",
+      "title": "active mission publication proof routes rejects fractional expectedRevision before repository access",
+      "status": "passed"
+    },
+    {
+      "path": "server/test/active-missions.test.ts",
+      "title": "active mission publication proof routes rejects negative expectedRevision before repository access",
+      "status": "passed"
+    },
+    {
+      "path": "server/test/active-missions.test.ts",
+      "title": "active mission publication proof routes rejects non-object JSON body before repository access",
+      "status": "passed"
+    },
+    {
+      "path": "server/test/active-missions.test.ts",
+      "title": "active mission publication proof routes maps tenant/not-found errors without invoking the proof mutation",
+      "status": "passed"
+    },
+    {
+      "path": "server/test/active-missions.test.ts",
+      "title": "active mission publication proof finalize route passes workflow and guarded mutation context to finalize",
+      "status": "passed"
+    },
+    {
+      "path": "server/test/active-missions.test.ts",
+      "title": "active mission publication proof submit routes returns the creator-safe publication projection for the requested work item",
+      "status": "passed"
+    },
+    {
+      "path": "server/test/active-missions.test.ts",
+      "title": "active mission publication proof submit routes passes guarded immutable proof input to the repository",
+      "status": "passed"
+    },
+    {
+      "path": "server/test/active-missions.test.ts",
+      "title": "active mission publication proof submit routes returns the current proof summary for a differing stale submission",
+      "status": "passed"
+    },
+    {
+      "path": "server/test/admin.test.ts",
+      "title": "admin submission review approves once: awards 250 points + 100 XP, and is idempotent",
+      "status": "skipped"
+    },
+    {
+      "path": "server/test/publication-proof-asset-grant-live.test.ts",
+      "title": "publication proof asset grant live path creates a grant for the browser fixture's valid PNG evidence path",
+      "status": "skipped"
+    },
+    {
+      "path": "server/test/publication-proof-asset-grant-live.test.ts",
+      "title": "publication proof asset grant live path uploads and finalizes GIF evidence",
+      "status": "skipped"
+    },
+    {
+      "path": "server/test/publication-proof-asset-grant-live.test.ts",
+      "title": "publication proof asset grant live path uploads and finalizes MP4 evidence",
+      "status": "skipped"
+    },
+    {
+      "path": "server/test/publication-proof-review-live.test.ts",
+      "title": "publication proof operator review live integration enforces tenant, concurrent claim, ownership, correction deadline, retry, and reward neutrality",
+      "status": "skipped"
+    },
+    {
+      "path": "server/test/publication-proof-review-live.test.ts",
+      "title": "publication proof operator review live integration verifies only the exact claimed attempt and completes the required aggregate without rewards",
+      "status": "skipped"
+    },
+    {
+      "path": "server/test/wallet.test.ts",
+      "title": "earnings wallet counts a submitted cash mission as pending (not yet available)",
+      "status": "skipped"
+    },
+    {
+      "path": "server/test/wallet.test.ts",
+      "title": "earnings wallet moves cash to available on approval + records an earnings transaction",
+      "status": "skipped"
+    },
+    {
+      "path": "server/test/wallet.test.ts",
+      "title": "earnings wallet a non-cash mission credits no earnings",
+      "status": "skipped"
+    },
+    {
+      "path": "server/lib/activeMission/publicationProof.test.ts",
+      "title": "publication proof evidence validates the private evidence MIME and 20 MB policy",
+      "status": "passed"
+    },
+    {
+      "path": "server/lib/activeMission/publicationProof.test.ts",
+      "title": "publication proof evidence creates an owner-scoped ten-minute grant at the canonical proof-evidence path",
+      "status": "passed"
+    },
+    {
+      "path": "server/lib/activeMission/publicationProof.test.ts",
+      "title": "publication proof evidence cleans up the pending row when signing fails",
+      "status": "passed"
+    },
+    {
+      "path": "server/lib/activeMission/publicationProof.test.ts",
+      "title": "publication proof evidence finalizes only through the owner/path-scoped RPC and is retry-safe",
+      "status": "passed"
+    },
+    {
+      "path": "server/lib/activeMission/publicationProof.test.ts",
+      "title": "publication proof evidence maps already_finalized to a controlled state error",
+      "status": "passed"
+    },
+    {
+      "path": "server/lib/activeMission/publicationProof.test.ts",
+      "title": "publication proof evidence maps already_assigned to a controlled state error",
+      "status": "passed"
+    },
+    {
+      "path": "server/lib/activeMission/publicationProof.test.ts",
+      "title": "publication proof evidence maps wrong_state to a controlled state error",
+      "status": "passed"
+    },
+    {
+      "path": "server/lib/activeMission/publicationProof.test.ts",
+      "title": "publication proof evidence reuses a deterministic path for the same idempotency key",
+      "status": "passed"
+    },
+    {
+      "path": "src/routes/-admin.active-missions.test.tsx",
+      "title": "publication proof queue filters applies proof state, lateness, metadata, platform, deadline, mission, and reviewer only after Apply",
+      "status": "passed"
+    },
+    {
+      "path": "src/routes/-admin.active-missions.test.tsx",
+      "title": "admin publication proof review route routes a server-reported setup requirement through the separate compatibility client",
+      "status": "passed"
+    },
+    {
+      "path": "src/routes/-admin.active-missions.test.tsx",
+      "title": "admin publication proof review route refreshes a setup race reported as WRONG_STATE and hides history-only setup",
+      "status": "passed"
+    },
+    {
+      "path": "src/routes/-admin.active-missions.test.tsx",
+      "title": "admin publication proof review route binds Task 9 proof hooks to the exact current attempt",
+      "status": "passed"
+    },
+    {
+      "path": "src/routes/-admin.active-missions.test.tsx",
+      "title": "admin publication proof review route reuses the same idempotency key when a verification response is lost and retried",
+      "status": "passed"
+    },
+    {
+      "path": "src/routes/-admin.active-missions.test.tsx",
+      "title": "admin publication proof review route reloads stale proof state and routes proof auth failures through AdminAuthContext",
+      "status": "passed"
+    },
+    {
+      "path": "src/routes/-admin.active-missions.test.tsx",
+      "title": "admin publication proof review route emits verified only after the canonical verify action succeeds",
+      "status": "passed"
+    },
+    {
+      "path": "src/routes/-admin.active-missions.test.tsx",
+      "title": "admin publication proof review route emits review-started only after claim succeeds",
+      "status": "passed"
+    },
+    {
+      "path": "src/routes/-admin.active-missions.test.tsx",
+      "title": "admin publication proof review route emits category-only correction telemetry after the correction succeeds",
+      "status": "passed"
+    },
+    {
+      "path": "src/routes/-admin.active-missions.test.tsx",
+      "title": "admin publication proof review route emits metadata recovery only for a real unavailable-to-available refresh",
+      "status": "passed"
+    },
+    {
+      "path": "src/routes/-admin.active-missions.test.tsx",
+      "title": "admin publication proof review route does not claim recovery when already-available metadata stays available",
+      "status": "passed"
+    },
+    {
+      "path": "src/routes/-admin.active-missions.test.tsx",
+      "title": "admin publication proof review route emits unavailable, not recovery, for an available-to-unavailable refresh",
+      "status": "passed"
+    },
+    {
+      "path": "src/routes/-admin.active-missions.test.tsx",
+      "title": "admin publication proof review route keeps an unavailable refresh classified as unavailable without claiming recovery",
+      "status": "passed"
+    },
+    {
+      "path": "src/routes/-admin.active-missions.test.tsx",
+      "title": "admin publication proof review route does not emit operator mutation outcomes when the action fails",
+      "status": "passed"
+    },
+    {
+      "path": "src/routes/-admin.active-missions.test.tsx",
+      "title": "admin mission completion review route renders completion below publication proof and emits review-viewed once per revision",
+      "status": "passed"
+    }
+  ],
+  "newTestRuns": 0
+}

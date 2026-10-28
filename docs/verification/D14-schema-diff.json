@@ -1,0 +1,50 @@
+{
+  "target": {
+    "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+    "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+    "disposable": true,
+    "projectId": "adfocate-r1-empty-20261023",
+    "proxy": "none",
+    "apiPort": 56421,
+    "apiContainerId": "1b9c41318298d79308db7782f51474541ad5abf0120fa93b96a2a9ea59d043ee",
+    "databaseContainerId": "e7c8efa295cd5544a8b2a100a73b6953cd6ddd486aaf394f231482067523e12d",
+    "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+    "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+    "networkId": "9e5d3069e8255d70b8eef56020c8ea2618fdb2626d92d9a04e51ea2de41a98e0"
+  },
+  "readOnly": true,
+  "productionQueried": false,
+  "reference": "schema-empty-catalog.json for Academy objects; D13-schema-observation.json for migration history",
+  "sections": {
+    "tables": {
+      "referenceCount": 1,
+      "currentCount": 1,
+      "unchanged": true
+    },
+    "grants": {
+      "referenceCount": 14,
+      "currentCount": 14,
+      "unchanged": true
+    },
+    "policies": {
+      "referenceCount": 1,
+      "currentCount": 1,
+      "unchanged": true
+    },
+    "constraints": {
+      "referenceCount": 0,
+      "currentCount": 0,
+      "unchanged": true
+    },
+    "columns": {
+      "referenceCount": 0,
+      "currentCount": 0,
+      "unchanged": true
+    }
+  },
+  "historyUnchanged": true,
+  "historyCount": 67,
+  "newMigrations": 0,
+  "sourceSqlUnchanged": true,
+  "note": "The original observed query does not enumerate Academy columns/constraints; the fresh D14 schema observation lists columns, RLS/grants/policies. No SQL or migration source was modified."
+}

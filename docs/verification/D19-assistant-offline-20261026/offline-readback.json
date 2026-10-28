@@ -1,0 +1,437 @@
+{
+  "identity": {
+    "transport": "in-process-Hono-and-JSDOM",
+    "database": "scripted-memory-fake",
+    "provider": "dependency-injected-mock",
+    "actualAuth": false,
+    "persistent": false,
+    "externalNetwork": false
+  },
+  "observations": [
+    {
+      "test": "offline assistant UI to API boundary with explicit scripted transports > opens, traps keyboard focus, closes with Escape and reopens without a provider request",
+      "trace": {
+        "requests": [],
+        "rpc": [],
+        "history": [],
+        "chats": [],
+        "embedCalls": 0,
+        "deniedExternalFetch": 0,
+        "realProviderCalls": 0
+      },
+      "fakeSessionReads": 0,
+      "fakeClientFactories": 0,
+      "scriptedEntries": 0,
+      "scriptedMessages": 0
+    },
+    {
+      "test": "offline assistant UI to API boundary with explicit scripted transports > uses the saved conversation and chronological scoped history for a second question",
+      "trace": {
+        "requests": [
+          {
+            "method": "POST",
+            "path": "/api/assistant/chat",
+            "requestId": "98fd6589-cf9b-4b69-a6e1-e7560b190557",
+            "status": 200
+          },
+          {
+            "method": "POST",
+            "path": "/api/assistant/chat",
+            "requestId": "0b8b72ca-e013-445f-b07c-8ca72e85dfe6",
+            "status": 200
+          }
+        ],
+        "rpc": [
+          "reserve_assistant_request",
+          "claim_assistant_request",
+          "match_kb_chunks",
+          "save_assistant_turn",
+          "reserve_assistant_request",
+          "claim_assistant_request",
+          "match_kb_chunks",
+          "save_assistant_turn"
+        ],
+        "history": [
+          {
+            "projection": "role, content",
+            "filters": [
+              [
+                "conversation_id",
+                "00000000-0000-4000-8000-000000000703"
+              ]
+            ],
+            "order": [
+              [
+                "created_at",
+                false
+              ],
+              [
+                "turn_order",
+                false
+              ]
+            ],
+            "limit": 20
+          }
+        ],
+        "chats": [
+          {
+            "roles": [
+              "system",
+              "user"
+            ],
+            "content": [
+              "[system prompt omitted from public evidence]",
+              "Synthetic first question"
+            ],
+            "tools": [
+              "get_my_points",
+              "get_my_missions"
+            ]
+          },
+          {
+            "roles": [
+              "system",
+              "user",
+              "assistant",
+              "user"
+            ],
+            "content": [
+              "[system prompt omitted from public evidence]",
+              "Synthetic first question",
+              "Synthetic offline answer with a source",
+              "Synthetic second question"
+            ],
+            "tools": [
+              "get_my_points",
+              "get_my_missions"
+            ]
+          }
+        ],
+        "embedCalls": 2,
+        "deniedExternalFetch": 0,
+        "realProviderCalls": 0
+      },
+      "fakeSessionReads": 2,
+      "fakeClientFactories": 4,
+      "scriptedEntries": 2,
+      "scriptedMessages": 4
+    },
+    {
+      "test": "offline assistant UI to API boundary with explicit scripted transports > retains a429 input and UUID, then generates once after an explicit successful retry",
+      "trace": {
+        "requests": [
+          {
+            "method": "POST",
+            "path": "/api/assistant/chat",
+            "requestId": "146ed977-bf76-494f-8e40-f4f269e12539",
+            "status": 429
+          },
+          {
+            "method": "POST",
+            "path": "/api/assistant/chat",
+            "requestId": "146ed977-bf76-494f-8e40-f4f269e12539",
+            "status": 200
+          }
+        ],
+        "rpc": [
+          "reserve_assistant_request",
+          "reserve_assistant_request",
+          "claim_assistant_request",
+          "match_kb_chunks",
+          "save_assistant_turn"
+        ],
+        "history": [],
+        "chats": [
+          {
+            "roles": [
+              "system",
+              "user"
+            ],
+            "content": [
+              "[system prompt omitted from public evidence]",
+              "Synthetic first question"
+            ],
+            "tools": [
+              "get_my_points",
+              "get_my_missions"
+            ]
+          }
+        ],
+        "embedCalls": 1,
+        "deniedExternalFetch": 0,
+        "realProviderCalls": 0
+      },
+      "fakeSessionReads": 2,
+      "fakeClientFactories": 4,
+      "scriptedEntries": 1,
+      "scriptedMessages": 2
+    },
+    {
+      "test": "offline assistant UI to API boundary with explicit scripted transports > shows history503, keeps the input and avoids regeneration on same-request pending retry",
+      "trace": {
+        "requests": [
+          {
+            "method": "POST",
+            "path": "/api/assistant/chat",
+            "requestId": "f016d16f-f1da-4da0-9ba8-53b43565ae68",
+            "status": 200
+          },
+          {
+            "method": "POST",
+            "path": "/api/assistant/chat",
+            "requestId": "ac543fb9-c026-48bb-ab59-a34d2f719e50",
+            "status": 503
+          },
+          {
+            "method": "POST",
+            "path": "/api/assistant/chat",
+            "requestId": "ac543fb9-c026-48bb-ab59-a34d2f719e50",
+            "status": 202
+          }
+        ],
+        "rpc": [
+          "reserve_assistant_request",
+          "claim_assistant_request",
+          "match_kb_chunks",
+          "save_assistant_turn",
+          "reserve_assistant_request",
+          "reserve_assistant_request"
+        ],
+        "history": [
+          {
+            "projection": "role, content",
+            "filters": [
+              [
+                "conversation_id",
+                "00000000-0000-4000-8000-000000000703"
+              ]
+            ],
+            "order": [
+              [
+                "created_at",
+                false
+              ],
+              [
+                "turn_order",
+                false
+              ]
+            ],
+            "limit": 20
+          }
+        ],
+        "chats": [
+          {
+            "roles": [
+              "system",
+              "user"
+            ],
+            "content": [
+              "[system prompt omitted from public evidence]",
+              "Synthetic first question"
+            ],
+            "tools": [
+              "get_my_points",
+              "get_my_missions"
+            ]
+          }
+        ],
+        "embedCalls": 1,
+        "deniedExternalFetch": 0,
+        "realProviderCalls": 0
+      },
+      "fakeSessionReads": 3,
+      "fakeClientFactories": 6,
+      "scriptedEntries": 2,
+      "scriptedMessages": 2
+    },
+    {
+      "test": "offline assistant UI to API boundary with explicit scripted transports > checks an unknown generation outcome without automatically posting or generating again",
+      "trace": {
+        "requests": [
+          {
+            "method": "POST",
+            "path": "/api/assistant/chat",
+            "requestId": "65992792-6014-46c3-84c7-5518dcc5d37a",
+            "status": 503
+          },
+          {
+            "method": "GET",
+            "path": "/api/assistant/requests/65992792-6014-46c3-84c7-5518dcc5d37a",
+            "status": 200
+          }
+        ],
+        "rpc": [
+          "reserve_assistant_request",
+          "claim_assistant_request",
+          "match_kb_chunks",
+          "mark_assistant_request_unknown",
+          "get_assistant_request"
+        ],
+        "history": [],
+        "chats": [
+          {
+            "roles": [
+              "system",
+              "user"
+            ],
+            "content": [
+              "[system prompt omitted from public evidence]",
+              "Synthetic first question"
+            ],
+            "tools": [
+              "get_my_points",
+              "get_my_missions"
+            ]
+          }
+        ],
+        "embedCalls": 1,
+        "deniedExternalFetch": 0,
+        "realProviderCalls": 0
+      },
+      "fakeSessionReads": 2,
+      "fakeClientFactories": 3,
+      "scriptedEntries": 1,
+      "scriptedMessages": 0
+    },
+    {
+      "test": "offline assistant UI to API boundary with explicit scripted transports > labels a lost save response unconfirmed then replaces it from status without a second generation",
+      "trace": {
+        "requests": [
+          {
+            "method": "POST",
+            "path": "/api/assistant/chat",
+            "requestId": "b951154b-b885-4eb4-a581-1e32dc496dc7",
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/assistant/requests/b951154b-b885-4eb4-a581-1e32dc496dc7",
+            "status": 200
+          }
+        ],
+        "rpc": [
+          "reserve_assistant_request",
+          "claim_assistant_request",
+          "match_kb_chunks",
+          "save_assistant_turn",
+          "mark_assistant_request_unknown",
+          "get_assistant_request"
+        ],
+        "history": [],
+        "chats": [
+          {
+            "roles": [
+              "system",
+              "user"
+            ],
+            "content": [
+              "[system prompt omitted from public evidence]",
+              "Synthetic first question"
+            ],
+            "tools": [
+              "get_my_points",
+              "get_my_missions"
+            ]
+          }
+        ],
+        "embedCalls": 1,
+        "deniedExternalFetch": 0,
+        "realProviderCalls": 0
+      },
+      "fakeSessionReads": 2,
+      "fakeClientFactories": 3,
+      "scriptedEntries": 1,
+      "scriptedMessages": 2
+    },
+    {
+      "test": "offline assistant UI to API boundary with explicit scripted transports > dispatches an unsupported reward/role tool to a denial without a financial or access RPC",
+      "trace": {
+        "requests": [
+          {
+            "method": "POST",
+            "path": "/api/assistant/chat",
+            "requestId": "abde7e82-e685-4e55-a59f-8208787f4435",
+            "status": 200
+          }
+        ],
+        "rpc": [
+          "reserve_assistant_request",
+          "claim_assistant_request",
+          "match_kb_chunks",
+          "save_assistant_turn"
+        ],
+        "history": [],
+        "chats": [
+          {
+            "roles": [
+              "system",
+              "user"
+            ],
+            "content": [
+              "[system prompt omitted from public evidence]",
+              "Synthetic first question"
+            ],
+            "tools": [
+              "get_my_points",
+              "get_my_missions"
+            ]
+          },
+          {
+            "roles": [
+              "system",
+              "user",
+              "assistant",
+              "tool"
+            ],
+            "content": [
+              "[system prompt omitted from public evidence]",
+              "Synthetic first question",
+              "",
+              "unknown tool: issue_reward_and_grant_admin"
+            ],
+            "tools": [
+              "get_my_points",
+              "get_my_missions"
+            ]
+          }
+        ],
+        "embedCalls": 1,
+        "deniedExternalFetch": 0,
+        "realProviderCalls": 0
+      },
+      "fakeSessionReads": 1,
+      "fakeClientFactories": 2,
+      "scriptedEntries": 1,
+      "scriptedMessages": 2
+    },
+    {
+      "test": "offline assistant UI to API boundary with explicit scripted transports > keeps the mission assistance default disabled before any scripted DB or provider call",
+      "trace": {
+        "requests": [
+          {
+            "method": "POST",
+            "path": "/assistant/mission-assist",
+            "requestId": "00000000-0000-4000-8000-000000000704",
+            "status": 503
+          }
+        ],
+        "rpc": [],
+        "history": [],
+        "chats": [],
+        "embedCalls": 0,
+        "deniedExternalFetch": 0,
+        "realProviderCalls": 0
+      },
+      "fakeSessionReads": 0,
+      "fakeClientFactories": 0,
+      "scriptedEntries": 0,
+      "scriptedMessages": 0
+    }
+  ],
+  "actualTargetCalls": 0,
+  "actualSdkClients": 0,
+  "actualAuthSubjectsOrFixtures": 0,
+  "physicalSqlCalls": 0,
+  "actualProviderCalls": 0,
+  "scope": "Actual Launcher/Panel/Query hook/apiFetch/Hono route/RAG/tool dispatch with scripted memory Auth/storage and injected mock provider; not DB atomicity, real Auth/RLS, independent-instance quota, browser/device, paid provider quality or pending financial neutrality."
+}

@@ -1,0 +1,10 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ✓ scripts/release/pilot.test.ts (6 tests) 10ms
+
+ Test Files  1 passed (1)
+      Tests  6 passed (6)
+   Start at  00:56:37
+   Duration  1.67s (transform 71ms, setup 301ms, collect 111ms, tests 10ms, environment 885ms, prepare 125ms)
+

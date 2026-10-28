@@ -11,6 +11,7 @@ import { useI18n } from "@/lib/i18n";
 import { categoryLabelKey, platformDisplayLabelKey } from "@/lib/labels";
 import { useMe, useUpdateProfile, type SocialHandle } from "@/lib/queries/kocmax";
 import { supabase } from "@/lib/supabase";
+import { useCanShowPreviousData } from "@/components/RequestFeedback";
 
 export const Route = createFileRoute("/_app/profile")({ component: Profile });
 
@@ -23,6 +24,7 @@ function Profile() {
   const navigate = useNavigate();
   const qc = useQueryClient();
   const me = useMe();
+  const showSavedProfile = useCanShowPreviousData(me, ["me"]);
   const update = useUpdateProfile();
 
   const [editing, setEditing] = useState(false);
@@ -31,6 +33,7 @@ function Profile() {
   const [handles, setHandles] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const platforms = [...new Set<string>([...(me.data?.social_handles ?? []).map(item => item.platform), ...PLATFORMS.filter(platform => !(me.data?.social_handles ?? []).some(item => item.platform.toLowerCase() === platform.toLowerCase()))])];
 
   function startEdit() {
     const d = me.data;
@@ -46,12 +49,20 @@ function Profile() {
   async function save() {
     setError(null);
     const existing = me.data?.social_handles ?? [];
-    const social_handles: SocialHandle[] = PLATFORMS.flatMap((p) => {
+    const social_handles: SocialHandle[] = [...existing];
+    for (const p of platforms) {
       const handle = (handles[p] ?? "").trim();
-      if (!handle) return [];
-      const prev = existing.find((s) => s.platform === p);
-      return [{ platform: p, handle, followers: prev?.followers ?? null, verified: prev?.verified ?? false }];
-    });
+      let index = -1;
+      social_handles.forEach((row, position) => { if (row.platform === p) index = position; });
+      if (index >= 0 && social_handles[index].handle === handle) continue;
+      if (!handle) {
+        for (let i = social_handles.length - 1; i >= 0; i--) if (social_handles[i].platform === p) social_handles.splice(i, 1);
+      } else {
+        const next = { platform: p, handle, followers: null, verified: false };
+        if (index >= 0) social_handles[index] = next;
+        else social_handles.push(next);
+      }
+    }
     try {
       await update.mutateAsync({ display_name: displayName.trim() || undefined, categories, social_handles });
       setEditing(false);
@@ -80,10 +91,11 @@ function Profile() {
       </div>
     );
   }
-  if (me.isError || !me.data) {
+  if (!me.data || !showSavedProfile) {
     return (
       <div className="mx-auto max-w-lg p-4">
-        <p className="text-sm text-[var(--color-magenta)]">{t("common.loadFailed")}</p>
+        <p role="alert" className="text-sm text-[var(--color-magenta)]">{t("common.loadFailed")}</p>
+        <button type="button" className="btn-primary" onClick={() => void me.refetch()}>{t("common.retry")}</button>
       </div>
     );
   }
@@ -124,7 +136,8 @@ function Profile() {
         </div>
       </section>
 
-      {error && <p className="text-sm text-[var(--color-magenta)]">{error}</p>}
+      {me.isError ? <div role="alert" className="text-sm"><p>{t("app.social.loadError")}</p><button type="button" onClick={() => void me.refetch()}>{t("common.retry")}</button></div> : null}
+      {error && <p role="alert" className="text-sm text-[var(--color-magenta)]">{error}</p>}
 
       {!editing ? (
         <div className="grid gap-6 lg:grid-cols-[1.2fr_1fr]">
@@ -145,23 +158,7 @@ function Profile() {
             </section>
 
             <section className="space-y-3">
-              <h2 className="font-heading font-bold">{t("app.profile.socialAccounts")}</h2>
-              {d.social_handles?.length ? (
-                <ul className="space-y-1">
-                  {d.social_handles.map((s) => (
-                    <li
-                      key={s.platform}
-                      className="flex items-center justify-between rounded-xl border-2 border-[var(--color-ink)] bg-white px-3 py-2 text-sm"
-                    >
-                      <span className="font-heading font-semibold">{t(platformDisplayLabelKey(s.platform))}</span>
-                      <span className="text-[var(--color-soft-ink)]">{s.handle}</span>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="text-sm text-[var(--color-soft-ink)]">{t("app.profile.notSet")}</p>
-              )}
-              <SocialTrustPanel />
+              <SocialTrustPanel presentations={d.social_accounts} legacyHandles={d.social_handles} />
             </section>
           </div>
 
@@ -202,7 +199,7 @@ function Profile() {
           </div>
         </div>
       ) : (
-        <div className="mx-auto w-full max-w-lg space-y-6">
+        <fieldset disabled={update.isPending} aria-busy={update.isPending} className="mx-auto min-w-0 w-full max-w-lg space-y-6">
           <section className="space-y-2">
             <h2 className="font-heading font-bold">{t("app.profile.displayName")}</h2>
             <input
@@ -220,8 +217,9 @@ function Profile() {
 
           <section className="space-y-2">
             <h2 className="font-heading font-bold">{t("app.profile.socialAccounts")}</h2>
+            <p className="text-xs">{t("app.social.legacyEditHelp")}</p>
             <div className="space-y-2">
-              {PLATFORMS.map((p) => (
+              {platforms.map((p) => (
                 <input
                   key={p}
                   value={handles[p] ?? ""}
@@ -254,7 +252,7 @@ function Profile() {
               {update.isPending ? t("app.profile.saving") : t("app.profile.save")}
             </button>
           </div>
-        </div>
+        </fieldset>
       )}
     </div>
   );

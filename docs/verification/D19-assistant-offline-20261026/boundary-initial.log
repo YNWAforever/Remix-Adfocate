@@ -1,0 +1,20 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ❯ docs/verification/D19-assistant-offline-20261026/assistant-boundary.test.tsx (8 tests) 379ms
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  docs/verification/D19-assistant-offline-20261026/assistant-boundary.test.tsx [ docs/verification/D19-assistant-offline-20261026/assistant-boundary.test.tsx ]
+Error: ENOENT: no such file or directory, open 'C:\docs\verification\D19-assistant-offline-20261026\offline-readback.json'
+ ❯ docs/verification/D19-assistant-offline-20261026/assistant-boundary.test.tsx:158:3
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+ Test Files  1 failed (1)
+      Tests  8 passed (8)
+   Start at  01:06:53
+   Duration  3.44s (transform 327ms, setup 354ms, collect 822ms, tests 379ms, environment 1.55s, prepare 153ms)
+
+JSON report written to C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/docs/verification/D19-assistant-offline-20261026/boundary-initial-native.json

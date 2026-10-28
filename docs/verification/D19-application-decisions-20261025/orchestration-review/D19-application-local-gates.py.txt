@@ -1,0 +1,52 @@
+from pathlib import Path
+import ctypes,datetime,hashlib,json,os,subprocess,sys,time
+R=Path(__file__).resolve().parents[1];V=R/'docs/verification/D19-application-decisions-20261025'
+mode=sys.argv[1];label=sys.argv[2]if len(sys.argv)>2 else mode
+assert label.replace('-','').isalnum()
+node=Path('C:/Users/laich/AppData/Local/npm-cache/_npx/52027bd8fc0022aa/node_modules/node/bin/node.exe')
+npm=Path('C:/Program Files/nodejs/node_modules/npm/bin/npm-cli.js');assert node.is_file()and npm.is_file()
+class Memory(ctypes.Structure):
+ _fields_=[('length',ctypes.c_ulong),('load',ctypes.c_ulong)]+[(n,ctypes.c_ulonglong)for n in ['totalPhys','availPhys','totalPage','availPage','totalVirtual','availVirtual','availExtended']]
+m=Memory();m.length=ctypes.sizeof(m);assert ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(m))
+reading={'freePhysicalGiB':m.availPhys/2**30,'freeCommitGiB':m.availPage/2**30,'minimumGiB':3}
+def put(name,obj):(V/name).write_text(json.dumps(obj,ensure_ascii=True,indent=2)+'\n',encoding='utf-8',newline='\n')
+assert not(V/f'{label}-command.json').exists(),'Do not overwrite an executed gate receipt'
+put(f'{label}-resource.json',reading)
+if min(reading['freePhysicalGiB'],reading['freeCommitGiB'])<3:raise SystemExit('RESOURCE_GATE_BLOCKED_NO_CHILD')
+commands={
+ 'operator':['node_modules/vitest/vitest.mjs','run','src/routes/-admin.applications.test.tsx','--maxWorkers=1','--minWorkers=1','--reporter=json','--outputFile='+str(V/f'{label}.json')],
+ 'creator':['node_modules/vitest/vitest.mjs','run','src/routes/-_app.mission.$missionSlug.test.tsx','--maxWorkers=1','--minWorkers=1','--reporter=json','--outputFile='+str(V/f'{label}.json')],
+ 'api':['node_modules/vitest/vitest.mjs','run','server/test/audit-application-decisions.test.ts','--maxWorkers=1','--minWorkers=1','--reporter=json','--outputFile='+str(V/f'{label}.json')],
+ 'bindings':['node_modules/vitest/vitest.mjs','run','server/test/b2-runtime-manifest.test.ts','server/test/b2-target-context.test.ts','server/test/b2-browser-recovery.test.ts','--maxWorkers=1','--minWorkers=1','--reporter=json','--outputFile='+str(V/f'{label}.json')],
+ 'release':['node_modules/vitest/vitest.mjs','run','scripts/release/preflight.test.ts','server/test/audit-application-decisions.test.ts','server/test/b2-runtime-manifest.test.ts','--maxWorkers=1','--minWorkers=1','--reporter=json','--outputFile='+str(V/f'{label}.json')],
+ 'focused':['node_modules/vitest/vitest.mjs','run','server/test/audit-application-decisions.test.ts','server/test/audit-application-decisions.embedded.test.ts','server/test/applications.test.ts','src/routes/-admin.applications.test.tsx','src/audit-tests','--maxWorkers=1','--minWorkers=1','--reporter=json','--outputFile='+str(V/f'{label}.json')],
+ 'full':['node_modules/vitest/vitest.mjs','run','--no-file-parallelism','--reporter=json','--outputFile='+str(V/f'{label}.json')],
+ 'type':['node_modules/typescript/bin/tsc','--noEmit'],
+ 'lint':['node_modules/eslint/bin/eslint.js','.'],
+ 'build':[str(npm),'run','build'],
+ 'esm':['scripts/check-esm-extensions.mjs'],
+ 'manifest':['node_modules/vite-node/vite-node.mjs','--script','scripts/release/manifest-cli.ts','check'],
+ 'manifest-write':['node_modules/vite-node/vite-node.mjs','--script','scripts/release/manifest-cli.ts','write'],
+ 'permission':['node_modules/vitest/vitest.mjs','run','server/devApi.test.ts','server/devApi.transport.test.ts','scripts/release/manifest.test.ts','scripts/release/staff-access.test.ts','--maxWorkers=1','--minWorkers=1','--reporter=json','--outputFile='+str(V/f'{label}.json')],
+}
+cmd=[str(node),*commands[mode]];env={k:v for k,v in os.environ.items()if not any(s in k.upper()for s in ['SUPABASE','DATABASE','INTEGRATION','PROVIDER','OPENAI','ANTHROPIC','GEMINI','VERCEL','ADFOCATE_B2','ADFOCATE_TEST','API_KEY','TOKEN','PASSWORD','SECRET'])}
+env['TZ']='Asia/Hong_Kong';env['npm_execpath']=str(npm);env['PATH']=str(node.parent)+os.pathsep+env.get('PATH','')
+record={'startedAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),'command':cmd,'nodeVersion':subprocess.check_output([str(node),'--version'],text=True).strip(),'npmExecpathProvided':True,'childPathPrefersSameNode22':True,'offlineOnly':True,'actualTargetUsed':False,'packageDownloadOrInstall':False,'resource':reading}
+source=json.loads((V/'candidate-source.json').read_text(encoding='utf-8'))if(V/'candidate-source.json').is_file()else None
+def check_source():
+ if source:
+  for f in source['files']:assert hashlib.sha256((R/f['path']).read_text(encoding='utf-8').replace('\r\n','\n').encode()).hexdigest()==f['sha256'],f['path']
+check_source()
+if source:record['sourceFingerprint']=source['fingerprint'];record['sourceRecords']=len(source['files'])
+with(V/f'{label}.log').open('w',encoding='utf-8')as log:
+ p=subprocess.Popen(cmd,cwd=R,env=env,stdout=log,stderr=subprocess.STDOUT);record['pid']=p.pid;put(f'{label}-started.json',record);print(json.dumps({'label':label,'pid':p.pid,'status':'RUNNING','offlineOnly':True}),flush=True);code=p.wait()
+record['endedAt']=datetime.datetime.now(datetime.timezone.utc).isoformat();record['exit']=code;put(f'{label}-command.json',record)
+if mode=='manifest-write'and source:
+ changed=[f['path']for f in source['files']if hashlib.sha256((R/f['path']).read_text(encoding='utf-8').replace('\r\n','\n').encode()).hexdigest()!=f['sha256']]
+ assert set(changed)<={'supabase/release-manifest.json'},changed
+ put(f'{label}-intentional-output.json',{'allowedOutput':'supabase/release-manifest.json','changed':changed,'postWriteSourceRefreshRequired':True})
+else:check_source()
+summary={'label':label,'exit':code}
+if mode in ['operator','release','bindings','permission','creator','api','focused','full']and(V/f'{label}.json').is_file():
+ r=json.loads((V/f'{label}.json').read_text(encoding='utf-8'));summary.update({'passed':r['numPassedTests'],'failed':r['numFailedTests'],'skipped':r['numPendingTests'],'files':len(r['testResults'])})
+print(json.dumps(summary),flush=True);sys.exit(code)

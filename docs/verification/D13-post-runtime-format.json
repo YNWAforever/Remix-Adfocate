@@ -1,0 +1,6 @@
+{
+  "path": "src/lib/authFeedback.ts",
+  "change": "remove extra EOF blank line only",
+  "emittedJavaScriptEqual": true,
+  "emittedJavaScriptSha256": "956008c3ee604298b83a39c662b796c14ea2907e9f8900b5b91ba106ce370960"
+}

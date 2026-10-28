@@ -1,0 +1,1277 @@
+{
+  "scope": "Actual Creator route/query/apiFetch/Hono/asset helpers; scripted Auth, repository reads, RPC and Storage only. No real DB, RLS, bytes access, browser or neutrality acceptance.",
+  "observations": [
+    {
+      "test": "uploads actual file bytes through the owner workflow path and finalizes with their SHA256",
+      "commands": [
+        {
+          "name": "create_publication_proof_asset",
+          "args": {
+            "p_submission": "10000000-0000-4000-8000-000000000004",
+            "p_creator": "10000000-0000-4000-8000-000000000001",
+            "p_workspace": "10000000-0000-4000-8000-000000000003",
+            "p_work_item": "10000000-0000-4000-8000-000000000005",
+            "p_filename": "offline-proof.png",
+            "p_mime_type": "image/png",
+            "p_byte_size": 70,
+            "p_storage_object_path": "10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000006/10000000-0000-4000-8000-000000000005/proof-evidence/fe3fa93e-59e9-4e47-9b6c-f56196fed49f.png",
+            "p_grant_seconds": 600,
+            "p_expected_state": "approved_to_publish",
+            "p_expected_revision": 4,
+            "p_idempotency_key": "fe3fa93e-59e9-4e47-9b6c-f56196fed49f"
+          }
+        },
+        {
+          "name": "finalize_publication_proof_asset",
+          "args": {
+            "p_submission": "10000000-0000-4000-8000-000000000004",
+            "p_creator": "10000000-0000-4000-8000-000000000001",
+            "p_workspace": "10000000-0000-4000-8000-000000000003",
+            "p_work_item": "10000000-0000-4000-8000-000000000005",
+            "p_asset": "1ff22d81-4ddd-4f45-9eb6-f62b10dca27d",
+            "p_checksum": "abc58d5127d7cdf313beb9ec8ee839860a9c6bfbc48c8b8eb6a3f7d8bb63de6f",
+            "p_expected_state": "approved_to_publish",
+            "p_expected_revision": 4,
+            "p_idempotency_key": "3414105c-0cbe-47af-a92e-b04471b1629c"
+          }
+        }
+      ],
+      "requests": [
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/workspace",
+          "method": "GET",
+          "status": 200,
+          "body": null,
+          "actor": "10000000-0000-4000-8000-000000000001"
+        },
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/publication/10000000-0000-4000-8000-000000000005",
+          "method": "GET",
+          "status": 200,
+          "body": null,
+          "actor": "10000000-0000-4000-8000-000000000001"
+        },
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/publication/10000000-0000-4000-8000-000000000005/assets/upload-grant",
+          "method": "POST",
+          "status": 200,
+          "body": {
+            "expectedState": "approved_to_publish",
+            "expectedRevision": 4,
+            "fileName": "offline-proof.png",
+            "contentType": "image/png",
+            "sizeBytes": 70
+          },
+          "actor": "10000000-0000-4000-8000-000000000001"
+        },
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/publication/10000000-0000-4000-8000-000000000005",
+          "method": "GET",
+          "status": 200,
+          "body": null,
+          "actor": "10000000-0000-4000-8000-000000000001"
+        },
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/workspace",
+          "method": "GET",
+          "status": 200,
+          "body": null,
+          "actor": "10000000-0000-4000-8000-000000000001"
+        },
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/publication/10000000-0000-4000-8000-000000000005/assets/1ff22d81-4ddd-4f45-9eb6-f62b10dca27d/finalize",
+          "method": "POST",
+          "status": 200,
+          "body": {
+            "expectedState": "approved_to_publish",
+            "expectedRevision": 4,
+            "checksum": "abc58d5127d7cdf313beb9ec8ee839860a9c6bfbc48c8b8eb6a3f7d8bb63de6f"
+          },
+          "actor": "10000000-0000-4000-8000-000000000001"
+        },
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/publication/10000000-0000-4000-8000-000000000005",
+          "method": "GET",
+          "status": 200,
+          "body": null,
+          "actor": "10000000-0000-4000-8000-000000000001"
+        },
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/workspace",
+          "method": "GET",
+          "status": 200,
+          "body": null,
+          "actor": "10000000-0000-4000-8000-000000000001"
+        }
+      ],
+      "uploads": [
+        {
+          "bucket": "mission-publication-proof-assets",
+          "path": "10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000006/10000000-0000-4000-8000-000000000005/proof-evidence/fe3fa93e-59e9-4e47-9b6c-f56196fed49f.png",
+          "bytes": 70,
+          "sha256": "abc58d5127d7cdf313beb9ec8ee839860a9c6bfbc48c8b8eb6a3f7d8bb63de6f",
+          "upsert": false,
+          "tokenMatches": true
+        }
+      ],
+      "rows": [
+        {
+          "id": "foreign-preexisting-mock",
+          "storage_object_path": "10000000-0000-4000-8000-000000000002/foreign.png",
+          "upload_state": "ready",
+          "mime_type": "image/png",
+          "byte_size": 3,
+          "upload_grant_expires_at": "2026-11-01T00:00:00Z"
+        },
+        {
+          "id": "1ff22d81-4ddd-4f45-9eb6-f62b10dca27d",
+          "storage_object_path": "10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000006/10000000-0000-4000-8000-000000000005/proof-evidence/fe3fa93e-59e9-4e47-9b6c-f56196fed49f.png",
+          "upload_state": "finalized",
+          "mime_type": "image/png",
+          "byte_size": 70,
+          "upload_grant_expires_at": "2026-10-25T21:20:11.181Z",
+          "checksum": "abc58d5127d7cdf313beb9ec8ee839860a9c6bfbc48c8b8eb6a3f7d8bb63de6f",
+          "content_checksum": "abc58d5127d7cdf313beb9ec8ee839860a9c6bfbc48c8b8eb6a3f7d8bb63de6f"
+        }
+      ],
+      "realSdkClients": 0,
+      "deniedExternalFetches": 0,
+      "financialSentinel": {
+        "points": 400,
+        "cashAvailable": "47.25",
+        "pendingReward": 15,
+        "budget": "452.75",
+        "ledgerIds": [
+          "existing-memory-ledger"
+        ]
+      },
+      "financialStateIsScriptedNotRealNeutrality": true
+    },
+    {
+      "test": "rejects MIME and over-limit files before any grant while retaining URL inputs",
+      "commands": [],
+      "requests": [
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/workspace",
+          "method": "GET",
+          "status": 200,
+          "body": null,
+          "actor": "10000000-0000-4000-8000-000000000001"
+        },
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/publication/10000000-0000-4000-8000-000000000005",
+          "method": "GET",
+          "status": 200,
+          "body": null,
+          "actor": "10000000-0000-4000-8000-000000000001"
+        }
+      ],
+      "uploads": [],
+      "rows": [
+        {
+          "id": "foreign-preexisting-mock",
+          "storage_object_path": "10000000-0000-4000-8000-000000000002/foreign.png",
+          "upload_state": "ready",
+          "mime_type": "image/png",
+          "byte_size": 3,
+          "upload_grant_expires_at": "2026-11-01T00:00:00Z"
+        }
+      ],
+      "realSdkClients": 0,
+      "deniedExternalFetches": 0,
+      "financialSentinel": {
+        "points": 400,
+        "cashAvailable": "47.25",
+        "pendingReward": 15,
+        "budget": "452.75",
+        "ledgerIds": [
+          "existing-memory-ledger"
+        ]
+      },
+      "financialStateIsScriptedNotRealNeutrality": true
+    },
+    {
+      "test": "preserves fields after signing failure, calls exact owned cleanup and allows explicit file reselection",
+      "commands": [
+        {
+          "name": "create_publication_proof_asset",
+          "args": {
+            "p_submission": "10000000-0000-4000-8000-000000000004",
+            "p_creator": "10000000-0000-4000-8000-000000000001",
+            "p_workspace": "10000000-0000-4000-8000-000000000003",
+            "p_work_item": "10000000-0000-4000-8000-000000000005",
+            "p_filename": "offline-proof.png",
+            "p_mime_type": "image/png",
+            "p_byte_size": 70,
+            "p_storage_object_path": "10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000006/10000000-0000-4000-8000-000000000005/proof-evidence/2da2ce0d-fef9-4e2d-b116-e6d2a6d3925c.png",
+            "p_grant_seconds": 600,
+            "p_expected_state": "approved_to_publish",
+            "p_expected_revision": 4,
+            "p_idempotency_key": "2da2ce0d-fef9-4e2d-b116-e6d2a6d3925c"
+          }
+        },
+        {
+          "name": "abandon_publication_proof_asset",
+          "args": {
+            "p_submission": "10000000-0000-4000-8000-000000000004",
+            "p_creator": "10000000-0000-4000-8000-000000000001",
+            "p_workspace": "10000000-0000-4000-8000-000000000003",
+            "p_work_item": "10000000-0000-4000-8000-000000000005",
+            "p_asset": "c8a62b0f-0b94-44d0-86af-4de7525cd2a1",
+            "p_storage_object_path": "10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000006/10000000-0000-4000-8000-000000000005/proof-evidence/2da2ce0d-fef9-4e2d-b116-e6d2a6d3925c.png"
+          }
+        },
+        {
+          "name": "create_publication_proof_asset",
+          "args": {
+            "p_submission": "10000000-0000-4000-8000-000000000004",
+            "p_creator": "10000000-0000-4000-8000-000000000001",
+            "p_workspace": "10000000-0000-4000-8000-000000000003",
+            "p_work_item": "10000000-0000-4000-8000-000000000005",
+            "p_filename": "offline-proof.png",
+            "p_mime_type": "image/png",
+            "p_byte_size": 70,
+            "p_storage_object_path": "10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000006/10000000-0000-4000-8000-000000000005/proof-evidence/5955cdf9-c933-427e-998e-c9a4d9e07acf.png",
+            "p_grant_seconds": 600,
+            "p_expected_state": "approved_to_publish",
+            "p_expected_revision": 4,
+            "p_idempotency_key": "5955cdf9-c933-427e-998e-c9a4d9e07acf"
+          }
+        },
+        {
+          "name": "finalize_publication_proof_asset",
+          "args": {
+            "p_submission": "10000000-0000-4000-8000-000000000004",
+            "p_creator": "10000000-0000-4000-8000-000000000001",
+            "p_workspace": "10000000-0000-4000-8000-000000000003",
+            "p_work_item": "10000000-0000-4000-8000-000000000005",
+            "p_asset": "f52c2cfa-1f1d-48a8-ae76-0ba4570e463f",
+            "p_checksum": "abc58d5127d7cdf313beb9ec8ee839860a9c6bfbc48c8b8eb6a3f7d8bb63de6f",
+            "p_expected_state": "approved_to_publish",
+            "p_expected_revision": 4,
+            "p_idempotency_key": "7bc6a635-e164-4f58-b085-f55f28f69393"
+          }
+        }
+      ],
+      "requests": [
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/workspace",
+          "method": "GET",
+          "status": 200,
+          "body": null,
+          "actor": "10000000-0000-4000-8000-000000000001"
+        },
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/publication/10000000-0000-4000-8000-000000000005",
+          "method": "GET",
+          "status": 200,
+          "body": null,
+          "actor": "10000000-0000-4000-8000-000000000001"
+        },
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/publication/10000000-0000-4000-8000-000000000005/assets/upload-grant",
+          "method": "POST",
+          "status": 500,
+          "body": {
+            "expectedState": "approved_to_publish",
+            "expectedRevision": 4,
+            "fileName": "offline-proof.png",
+            "contentType": "image/png",
+            "sizeBytes": 70
+          },
+          "actor": "10000000-0000-4000-8000-000000000001"
+        },
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/publication/10000000-0000-4000-8000-000000000005/assets/upload-grant",
+          "method": "POST",
+          "status": 200,
+          "body": {
+            "expectedState": "approved_to_publish",
+            "expectedRevision": 4,
+            "fileName": "offline-proof.png",
+            "contentType": "image/png",
+            "sizeBytes": 70
+          },
+          "actor": "10000000-0000-4000-8000-000000000001"
+        },
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/publication/10000000-0000-4000-8000-000000000005",
+          "method": "GET",
+          "status": 200,
+          "body": null,
+          "actor": "10000000-0000-4000-8000-000000000001"
+        },
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/workspace",
+          "method": "GET",
+          "status": 200,
+          "body": null,
+          "actor": "10000000-0000-4000-8000-000000000001"
+        },
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/publication/10000000-0000-4000-8000-000000000005/assets/f52c2cfa-1f1d-48a8-ae76-0ba4570e463f/finalize",
+          "method": "POST",
+          "status": 200,
+          "body": {
+            "expectedState": "approved_to_publish",
+            "expectedRevision": 4,
+            "checksum": "abc58d5127d7cdf313beb9ec8ee839860a9c6bfbc48c8b8eb6a3f7d8bb63de6f"
+          },
+          "actor": "10000000-0000-4000-8000-000000000001"
+        },
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/publication/10000000-0000-4000-8000-000000000005",
+          "method": "GET",
+          "status": 200,
+          "body": null,
+          "actor": "10000000-0000-4000-8000-000000000001"
+        },
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/workspace",
+          "method": "GET",
+          "status": 200,
+          "body": null,
+          "actor": "10000000-0000-4000-8000-000000000001"
+        }
+      ],
+      "uploads": [
+        {
+          "bucket": "mission-publication-proof-assets",
+          "path": "10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000006/10000000-0000-4000-8000-000000000005/proof-evidence/5955cdf9-c933-427e-998e-c9a4d9e07acf.png",
+          "bytes": 70,
+          "sha256": "abc58d5127d7cdf313beb9ec8ee839860a9c6bfbc48c8b8eb6a3f7d8bb63de6f",
+          "upsert": false,
+          "tokenMatches": true
+        }
+      ],
+      "rows": [
+        {
+          "id": "foreign-preexisting-mock",
+          "storage_object_path": "10000000-0000-4000-8000-000000000002/foreign.png",
+          "upload_state": "ready",
+          "mime_type": "image/png",
+          "byte_size": 3,
+          "upload_grant_expires_at": "2026-11-01T00:00:00Z"
+        },
+        {
+          "id": "f52c2cfa-1f1d-48a8-ae76-0ba4570e463f",
+          "storage_object_path": "10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000006/10000000-0000-4000-8000-000000000005/proof-evidence/5955cdf9-c933-427e-998e-c9a4d9e07acf.png",
+          "upload_state": "finalized",
+          "mime_type": "image/png",
+          "byte_size": 70,
+          "upload_grant_expires_at": "2026-10-25T21:20:11.330Z",
+          "checksum": "abc58d5127d7cdf313beb9ec8ee839860a9c6bfbc48c8b8eb6a3f7d8bb63de6f",
+          "content_checksum": "abc58d5127d7cdf313beb9ec8ee839860a9c6bfbc48c8b8eb6a3f7d8bb63de6f"
+        }
+      ],
+      "realSdkClients": 0,
+      "deniedExternalFetches": 0,
+      "financialSentinel": {
+        "points": 400,
+        "cashAvailable": "47.25",
+        "pendingReward": 15,
+        "budget": "452.75",
+        "ledgerIds": [
+          "existing-memory-ledger"
+        ]
+      },
+      "financialStateIsScriptedNotRealNeutrality": true
+    },
+    {
+      "test": "retains the signing error and mock pending receipt if best-effort cleanup also fails",
+      "commands": [
+        {
+          "name": "create_publication_proof_asset",
+          "args": {
+            "p_submission": "10000000-0000-4000-8000-000000000004",
+            "p_creator": "10000000-0000-4000-8000-000000000001",
+            "p_workspace": "10000000-0000-4000-8000-000000000003",
+            "p_work_item": "10000000-0000-4000-8000-000000000005",
+            "p_filename": "offline-proof.png",
+            "p_mime_type": "image/png",
+            "p_byte_size": 8,
+            "p_storage_object_path": "10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000006/10000000-0000-4000-8000-000000000005/proof-evidence/0c4d45a8-29c6-4b9f-997a-ce653115a2ea.png",
+            "p_grant_seconds": 600,
+            "p_expected_state": "approved_to_publish",
+            "p_expected_revision": 4,
+            "p_idempotency_key": "0c4d45a8-29c6-4b9f-997a-ce653115a2ea"
+          }
+        },
+        {
+          "name": "abandon_publication_proof_asset",
+          "args": {
+            "p_submission": "10000000-0000-4000-8000-000000000004",
+            "p_creator": "10000000-0000-4000-8000-000000000001",
+            "p_workspace": "10000000-0000-4000-8000-000000000003",
+            "p_work_item": "10000000-0000-4000-8000-000000000005",
+            "p_asset": "1beb6580-8344-49c8-b27d-9191d0b8d76e",
+            "p_storage_object_path": "10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000006/10000000-0000-4000-8000-000000000005/proof-evidence/0c4d45a8-29c6-4b9f-997a-ce653115a2ea.png"
+          }
+        }
+      ],
+      "requests": [
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/publication/10000000-0000-4000-8000-000000000005/assets/upload-grant",
+          "method": "POST",
+          "status": 500,
+          "body": {
+            "fileName": "offline-proof.png",
+            "contentType": "image/png",
+            "sizeBytes": 8,
+            "expectedState": "approved_to_publish",
+            "expectedRevision": 4
+          },
+          "actor": "10000000-0000-4000-8000-000000000001"
+        }
+      ],
+      "uploads": [],
+      "rows": [
+        {
+          "id": "foreign-preexisting-mock",
+          "storage_object_path": "10000000-0000-4000-8000-000000000002/foreign.png",
+          "upload_state": "ready",
+          "mime_type": "image/png",
+          "byte_size": 3,
+          "upload_grant_expires_at": "2026-11-01T00:00:00Z"
+        },
+        {
+          "id": "1beb6580-8344-49c8-b27d-9191d0b8d76e",
+          "storage_object_path": "10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000006/10000000-0000-4000-8000-000000000005/proof-evidence/0c4d45a8-29c6-4b9f-997a-ce653115a2ea.png",
+          "upload_state": "pending",
+          "mime_type": "image/png",
+          "byte_size": 8,
+          "upload_grant_expires_at": "2026-10-25T21:20:11.347Z"
+        }
+      ],
+      "realSdkClients": 0,
+      "deniedExternalFetches": 0,
+      "financialSentinel": {
+        "points": 400,
+        "cashAvailable": "47.25",
+        "pendingReward": 15,
+        "budget": "452.75",
+        "ledgerIds": [
+          "existing-memory-ledger"
+        ]
+      },
+      "financialStateIsScriptedNotRealNeutrality": true
+    },
+    {
+      "test": "retains the URL after a Storage failure without claiming a finalize or cleanup that did not run",
+      "commands": [
+        {
+          "name": "create_publication_proof_asset",
+          "args": {
+            "p_submission": "10000000-0000-4000-8000-000000000004",
+            "p_creator": "10000000-0000-4000-8000-000000000001",
+            "p_workspace": "10000000-0000-4000-8000-000000000003",
+            "p_work_item": "10000000-0000-4000-8000-000000000005",
+            "p_filename": "offline-proof.png",
+            "p_mime_type": "image/png",
+            "p_byte_size": 70,
+            "p_storage_object_path": "10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000006/10000000-0000-4000-8000-000000000005/proof-evidence/1fee1b06-058d-4da3-8988-a86233ba9a6a.png",
+            "p_grant_seconds": 600,
+            "p_expected_state": "approved_to_publish",
+            "p_expected_revision": 4,
+            "p_idempotency_key": "1fee1b06-058d-4da3-8988-a86233ba9a6a"
+          }
+        },
+        {
+          "name": "create_publication_proof_asset",
+          "args": {
+            "p_submission": "10000000-0000-4000-8000-000000000004",
+            "p_creator": "10000000-0000-4000-8000-000000000001",
+            "p_workspace": "10000000-0000-4000-8000-000000000003",
+            "p_work_item": "10000000-0000-4000-8000-000000000005",
+            "p_filename": "offline-proof.png",
+            "p_mime_type": "image/png",
+            "p_byte_size": 70,
+            "p_storage_object_path": "10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000006/10000000-0000-4000-8000-000000000005/proof-evidence/48fed294-967d-4b69-a3a4-2a5a3c71d56f.png",
+            "p_grant_seconds": 600,
+            "p_expected_state": "approved_to_publish",
+            "p_expected_revision": 4,
+            "p_idempotency_key": "48fed294-967d-4b69-a3a4-2a5a3c71d56f"
+          }
+        },
+        {
+          "name": "finalize_publication_proof_asset",
+          "args": {
+            "p_submission": "10000000-0000-4000-8000-000000000004",
+            "p_creator": "10000000-0000-4000-8000-000000000001",
+            "p_workspace": "10000000-0000-4000-8000-000000000003",
+            "p_work_item": "10000000-0000-4000-8000-000000000005",
+            "p_asset": "54f23dc0-9891-4e6a-a17d-5390e8d1f7be",
+            "p_checksum": "abc58d5127d7cdf313beb9ec8ee839860a9c6bfbc48c8b8eb6a3f7d8bb63de6f",
+            "p_expected_state": "approved_to_publish",
+            "p_expected_revision": 4,
+            "p_idempotency_key": "e30d5471-fd04-47d0-8523-2b76f1c28749"
+          }
+        }
+      ],
+      "requests": [
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/workspace",
+          "method": "GET",
+          "status": 200,
+          "body": null,
+          "actor": "10000000-0000-4000-8000-000000000001"
+        },
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/publication/10000000-0000-4000-8000-000000000005",
+          "method": "GET",
+          "status": 200,
+          "body": null,
+          "actor": "10000000-0000-4000-8000-000000000001"
+        },
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/publication/10000000-0000-4000-8000-000000000005/assets/upload-grant",
+          "method": "POST",
+          "status": 200,
+          "body": {
+            "expectedState": "approved_to_publish",
+            "expectedRevision": 4,
+            "fileName": "offline-proof.png",
+            "contentType": "image/png",
+            "sizeBytes": 70
+          },
+          "actor": "10000000-0000-4000-8000-000000000001"
+        },
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/publication/10000000-0000-4000-8000-000000000005",
+          "method": "GET",
+          "status": 200,
+          "body": null,
+          "actor": "10000000-0000-4000-8000-000000000001"
+        },
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/workspace",
+          "method": "GET",
+          "status": 200,
+          "body": null,
+          "actor": "10000000-0000-4000-8000-000000000001"
+        },
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/publication/10000000-0000-4000-8000-000000000005/assets/upload-grant",
+          "method": "POST",
+          "status": 200,
+          "body": {
+            "expectedState": "approved_to_publish",
+            "expectedRevision": 4,
+            "fileName": "offline-proof.png",
+            "contentType": "image/png",
+            "sizeBytes": 70
+          },
+          "actor": "10000000-0000-4000-8000-000000000001"
+        },
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/publication/10000000-0000-4000-8000-000000000005",
+          "method": "GET",
+          "status": 200,
+          "body": null,
+          "actor": "10000000-0000-4000-8000-000000000001"
+        },
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/workspace",
+          "method": "GET",
+          "status": 200,
+          "body": null,
+          "actor": "10000000-0000-4000-8000-000000000001"
+        },
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/publication/10000000-0000-4000-8000-000000000005/assets/54f23dc0-9891-4e6a-a17d-5390e8d1f7be/finalize",
+          "method": "POST",
+          "status": 200,
+          "body": {
+            "expectedState": "approved_to_publish",
+            "expectedRevision": 4,
+            "checksum": "abc58d5127d7cdf313beb9ec8ee839860a9c6bfbc48c8b8eb6a3f7d8bb63de6f"
+          },
+          "actor": "10000000-0000-4000-8000-000000000001"
+        },
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/publication/10000000-0000-4000-8000-000000000005",
+          "method": "GET",
+          "status": 200,
+          "body": null,
+          "actor": "10000000-0000-4000-8000-000000000001"
+        },
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/workspace",
+          "method": "GET",
+          "status": 200,
+          "body": null,
+          "actor": "10000000-0000-4000-8000-000000000001"
+        }
+      ],
+      "uploads": [
+        {
+          "bucket": "mission-publication-proof-assets",
+          "path": "10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000006/10000000-0000-4000-8000-000000000005/proof-evidence/1fee1b06-058d-4da3-8988-a86233ba9a6a.png",
+          "bytes": 70,
+          "sha256": "abc58d5127d7cdf313beb9ec8ee839860a9c6bfbc48c8b8eb6a3f7d8bb63de6f",
+          "upsert": false,
+          "tokenMatches": true
+        },
+        {
+          "bucket": "mission-publication-proof-assets",
+          "path": "10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000006/10000000-0000-4000-8000-000000000005/proof-evidence/48fed294-967d-4b69-a3a4-2a5a3c71d56f.png",
+          "bytes": 70,
+          "sha256": "abc58d5127d7cdf313beb9ec8ee839860a9c6bfbc48c8b8eb6a3f7d8bb63de6f",
+          "upsert": false,
+          "tokenMatches": true
+        }
+      ],
+      "rows": [
+        {
+          "id": "foreign-preexisting-mock",
+          "storage_object_path": "10000000-0000-4000-8000-000000000002/foreign.png",
+          "upload_state": "ready",
+          "mime_type": "image/png",
+          "byte_size": 3,
+          "upload_grant_expires_at": "2026-11-01T00:00:00Z"
+        },
+        {
+          "id": "b3561546-f788-4f39-8109-c787cf903301",
+          "storage_object_path": "10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000006/10000000-0000-4000-8000-000000000005/proof-evidence/1fee1b06-058d-4da3-8988-a86233ba9a6a.png",
+          "upload_state": "pending",
+          "mime_type": "image/png",
+          "byte_size": 70,
+          "upload_grant_expires_at": "2026-10-25T21:20:11.401Z"
+        },
+        {
+          "id": "54f23dc0-9891-4e6a-a17d-5390e8d1f7be",
+          "storage_object_path": "10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000006/10000000-0000-4000-8000-000000000005/proof-evidence/48fed294-967d-4b69-a3a4-2a5a3c71d56f.png",
+          "upload_state": "finalized",
+          "mime_type": "image/png",
+          "byte_size": 70,
+          "upload_grant_expires_at": "2026-10-25T21:20:11.418Z",
+          "checksum": "abc58d5127d7cdf313beb9ec8ee839860a9c6bfbc48c8b8eb6a3f7d8bb63de6f",
+          "content_checksum": "abc58d5127d7cdf313beb9ec8ee839860a9c6bfbc48c8b8eb6a3f7d8bb63de6f"
+        }
+      ],
+      "realSdkClients": 0,
+      "deniedExternalFetches": 0,
+      "financialSentinel": {
+        "points": 400,
+        "cashAvailable": "47.25",
+        "pendingReward": 15,
+        "budget": "452.75",
+        "ledgerIds": [
+          "existing-memory-ledger"
+        ]
+      },
+      "financialStateIsScriptedNotRealNeutrality": true
+    },
+    {
+      "test": "shows a failed evidence row and retained inputs when finalize returns an actual route409",
+      "commands": [
+        {
+          "name": "create_publication_proof_asset",
+          "args": {
+            "p_submission": "10000000-0000-4000-8000-000000000004",
+            "p_creator": "10000000-0000-4000-8000-000000000001",
+            "p_workspace": "10000000-0000-4000-8000-000000000003",
+            "p_work_item": "10000000-0000-4000-8000-000000000005",
+            "p_filename": "offline-proof.png",
+            "p_mime_type": "image/png",
+            "p_byte_size": 70,
+            "p_storage_object_path": "10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000006/10000000-0000-4000-8000-000000000005/proof-evidence/2a383c44-6beb-4e04-a42f-7f8e9f13bc9d.png",
+            "p_grant_seconds": 600,
+            "p_expected_state": "approved_to_publish",
+            "p_expected_revision": 4,
+            "p_idempotency_key": "2a383c44-6beb-4e04-a42f-7f8e9f13bc9d"
+          }
+        },
+        {
+          "name": "finalize_publication_proof_asset",
+          "args": {
+            "p_submission": "10000000-0000-4000-8000-000000000004",
+            "p_creator": "10000000-0000-4000-8000-000000000001",
+            "p_workspace": "10000000-0000-4000-8000-000000000003",
+            "p_work_item": "10000000-0000-4000-8000-000000000005",
+            "p_asset": "861bc855-72e9-4829-89ac-ef1c5e467899",
+            "p_checksum": "abc58d5127d7cdf313beb9ec8ee839860a9c6bfbc48c8b8eb6a3f7d8bb63de6f",
+            "p_expected_state": "approved_to_publish",
+            "p_expected_revision": 4,
+            "p_idempotency_key": "4e94b451-a246-4758-afcb-f711aeab3330"
+          }
+        }
+      ],
+      "requests": [
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/workspace",
+          "method": "GET",
+          "status": 200,
+          "body": null,
+          "actor": "10000000-0000-4000-8000-000000000001"
+        },
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/publication/10000000-0000-4000-8000-000000000005",
+          "method": "GET",
+          "status": 200,
+          "body": null,
+          "actor": "10000000-0000-4000-8000-000000000001"
+        },
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/publication/10000000-0000-4000-8000-000000000005/assets/upload-grant",
+          "method": "POST",
+          "status": 200,
+          "body": {
+            "expectedState": "approved_to_publish",
+            "expectedRevision": 4,
+            "fileName": "offline-proof.png",
+            "contentType": "image/png",
+            "sizeBytes": 70
+          },
+          "actor": "10000000-0000-4000-8000-000000000001"
+        },
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/publication/10000000-0000-4000-8000-000000000005",
+          "method": "GET",
+          "status": 200,
+          "body": null,
+          "actor": "10000000-0000-4000-8000-000000000001"
+        },
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/workspace",
+          "method": "GET",
+          "status": 200,
+          "body": null,
+          "actor": "10000000-0000-4000-8000-000000000001"
+        },
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/publication/10000000-0000-4000-8000-000000000005/assets/861bc855-72e9-4829-89ac-ef1c5e467899/finalize",
+          "method": "POST",
+          "status": 409,
+          "body": {
+            "expectedState": "approved_to_publish",
+            "expectedRevision": 4,
+            "checksum": "abc58d5127d7cdf313beb9ec8ee839860a9c6bfbc48c8b8eb6a3f7d8bb63de6f"
+          },
+          "actor": "10000000-0000-4000-8000-000000000001"
+        }
+      ],
+      "uploads": [
+        {
+          "bucket": "mission-publication-proof-assets",
+          "path": "10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000006/10000000-0000-4000-8000-000000000005/proof-evidence/2a383c44-6beb-4e04-a42f-7f8e9f13bc9d.png",
+          "bytes": 70,
+          "sha256": "abc58d5127d7cdf313beb9ec8ee839860a9c6bfbc48c8b8eb6a3f7d8bb63de6f",
+          "upsert": false,
+          "tokenMatches": true
+        }
+      ],
+      "rows": [
+        {
+          "id": "foreign-preexisting-mock",
+          "storage_object_path": "10000000-0000-4000-8000-000000000002/foreign.png",
+          "upload_state": "ready",
+          "mime_type": "image/png",
+          "byte_size": 3,
+          "upload_grant_expires_at": "2026-11-01T00:00:00Z"
+        },
+        {
+          "id": "861bc855-72e9-4829-89ac-ef1c5e467899",
+          "storage_object_path": "10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000006/10000000-0000-4000-8000-000000000005/proof-evidence/2a383c44-6beb-4e04-a42f-7f8e9f13bc9d.png",
+          "upload_state": "pending",
+          "mime_type": "image/png",
+          "byte_size": 70,
+          "upload_grant_expires_at": "2026-10-25T21:20:11.479Z"
+        }
+      ],
+      "realSdkClients": 0,
+      "deniedExternalFetches": 0,
+      "financialSentinel": {
+        "points": 400,
+        "cashAvailable": "47.25",
+        "pendingReward": 15,
+        "budget": "452.75",
+        "ledgerIds": [
+          "existing-memory-ledger"
+        ]
+      },
+      "financialStateIsScriptedNotRealNeutrality": true
+    },
+    {
+      "test": "derives Creator, workspace and workflow from trusted route context despite extra spoofed body IDs",
+      "commands": [
+        {
+          "name": "create_publication_proof_asset",
+          "args": {
+            "p_submission": "10000000-0000-4000-8000-000000000004",
+            "p_creator": "10000000-0000-4000-8000-000000000001",
+            "p_workspace": "10000000-0000-4000-8000-000000000003",
+            "p_work_item": "10000000-0000-4000-8000-000000000005",
+            "p_filename": "offline-proof.png",
+            "p_mime_type": "image/png",
+            "p_byte_size": 8,
+            "p_storage_object_path": "10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000006/10000000-0000-4000-8000-000000000005/proof-evidence/338d8c1a-5b12-45d9-afa3-bb0157f5bbf2.png",
+            "p_grant_seconds": 600,
+            "p_expected_state": "approved_to_publish",
+            "p_expected_revision": 4,
+            "p_idempotency_key": "338d8c1a-5b12-45d9-afa3-bb0157f5bbf2"
+          }
+        }
+      ],
+      "requests": [
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/publication/10000000-0000-4000-8000-000000000005/assets/upload-grant",
+          "method": "POST",
+          "status": 200,
+          "body": {
+            "fileName": "offline-proof.png",
+            "contentType": "image/png",
+            "sizeBytes": 8,
+            "expectedState": "approved_to_publish",
+            "expectedRevision": 4,
+            "creatorId": "10000000-0000-4000-8000-000000000002",
+            "workspaceId": "foreign",
+            "workflowId": "foreign"
+          },
+          "actor": "10000000-0000-4000-8000-000000000001"
+        }
+      ],
+      "uploads": [],
+      "rows": [
+        {
+          "id": "foreign-preexisting-mock",
+          "storage_object_path": "10000000-0000-4000-8000-000000000002/foreign.png",
+          "upload_state": "ready",
+          "mime_type": "image/png",
+          "byte_size": 3,
+          "upload_grant_expires_at": "2026-11-01T00:00:00Z"
+        },
+        {
+          "id": "34ba6365-c5a7-4025-aa17-a6398c0e3d91",
+          "storage_object_path": "10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000006/10000000-0000-4000-8000-000000000005/proof-evidence/338d8c1a-5b12-45d9-afa3-bb0157f5bbf2.png",
+          "upload_state": "pending",
+          "mime_type": "image/png",
+          "byte_size": 8,
+          "upload_grant_expires_at": "2026-10-25T21:20:11.506Z"
+        }
+      ],
+      "realSdkClients": 0,
+      "deniedExternalFetches": 0,
+      "financialSentinel": {
+        "points": 400,
+        "cashAvailable": "47.25",
+        "pendingReward": 15,
+        "budget": "452.75",
+        "ledgerIds": [
+          "existing-memory-ledger"
+        ]
+      },
+      "financialStateIsScriptedNotRealNeutrality": true
+    },
+    {
+      "test": "keeps backend MIME and size limits when a caller bypasses the UI",
+      "commands": [],
+      "requests": [
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/publication/10000000-0000-4000-8000-000000000005/assets/upload-grant",
+          "method": "POST",
+          "status": 400,
+          "body": {
+            "fileName": "offline-proof.png",
+            "contentType": "image/png",
+            "sizeBytes": 20971521,
+            "expectedState": "approved_to_publish",
+            "expectedRevision": 4
+          },
+          "actor": "10000000-0000-4000-8000-000000000001"
+        },
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/publication/10000000-0000-4000-8000-000000000005/assets/upload-grant",
+          "method": "POST",
+          "status": 400,
+          "body": {
+            "fileName": "offline-proof.png",
+            "contentType": "application/octet-stream",
+            "sizeBytes": 8,
+            "expectedState": "approved_to_publish",
+            "expectedRevision": 4
+          },
+          "actor": "10000000-0000-4000-8000-000000000001"
+        }
+      ],
+      "uploads": [],
+      "rows": [
+        {
+          "id": "foreign-preexisting-mock",
+          "storage_object_path": "10000000-0000-4000-8000-000000000002/foreign.png",
+          "upload_state": "ready",
+          "mime_type": "image/png",
+          "byte_size": 3,
+          "upload_grant_expires_at": "2026-11-01T00:00:00Z"
+        }
+      ],
+      "realSdkClients": 0,
+      "deniedExternalFetches": 0,
+      "financialSentinel": {
+        "points": 400,
+        "cashAvailable": "47.25",
+        "pendingReward": 15,
+        "budget": "452.75",
+        "ledgerIds": [
+          "existing-memory-ledger"
+        ]
+      },
+      "financialStateIsScriptedNotRealNeutrality": true
+    },
+    {
+      "test": "preserves inputs on the canonical expiry error and recovers only with a newly selected grant",
+      "commands": [
+        {
+          "name": "create_publication_proof_asset",
+          "args": {
+            "p_submission": "10000000-0000-4000-8000-000000000004",
+            "p_creator": "10000000-0000-4000-8000-000000000001",
+            "p_workspace": "10000000-0000-4000-8000-000000000003",
+            "p_work_item": "10000000-0000-4000-8000-000000000005",
+            "p_filename": "offline-proof.png",
+            "p_mime_type": "image/png",
+            "p_byte_size": 70,
+            "p_storage_object_path": "10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000006/10000000-0000-4000-8000-000000000005/proof-evidence/0641811d-7f99-4130-8f43-a37bcf1448b6.png",
+            "p_grant_seconds": 600,
+            "p_expected_state": "approved_to_publish",
+            "p_expected_revision": 4,
+            "p_idempotency_key": "0641811d-7f99-4130-8f43-a37bcf1448b6"
+          }
+        },
+        {
+          "name": "finalize_publication_proof_asset",
+          "args": {
+            "p_submission": "10000000-0000-4000-8000-000000000004",
+            "p_creator": "10000000-0000-4000-8000-000000000001",
+            "p_workspace": "10000000-0000-4000-8000-000000000003",
+            "p_work_item": "10000000-0000-4000-8000-000000000005",
+            "p_asset": "420d7dca-fe43-4162-9ea2-c6366580edd5",
+            "p_checksum": "abc58d5127d7cdf313beb9ec8ee839860a9c6bfbc48c8b8eb6a3f7d8bb63de6f",
+            "p_expected_state": "approved_to_publish",
+            "p_expected_revision": 4,
+            "p_idempotency_key": "a581a906-1317-449a-ab12-ad77f02125e9"
+          }
+        },
+        {
+          "name": "create_publication_proof_asset",
+          "args": {
+            "p_submission": "10000000-0000-4000-8000-000000000004",
+            "p_creator": "10000000-0000-4000-8000-000000000001",
+            "p_workspace": "10000000-0000-4000-8000-000000000003",
+            "p_work_item": "10000000-0000-4000-8000-000000000005",
+            "p_filename": "offline-proof.png",
+            "p_mime_type": "image/png",
+            "p_byte_size": 70,
+            "p_storage_object_path": "10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000006/10000000-0000-4000-8000-000000000005/proof-evidence/3952bbdf-10b0-4277-8500-457ad35677d8.png",
+            "p_grant_seconds": 600,
+            "p_expected_state": "approved_to_publish",
+            "p_expected_revision": 4,
+            "p_idempotency_key": "3952bbdf-10b0-4277-8500-457ad35677d8"
+          }
+        },
+        {
+          "name": "finalize_publication_proof_asset",
+          "args": {
+            "p_submission": "10000000-0000-4000-8000-000000000004",
+            "p_creator": "10000000-0000-4000-8000-000000000001",
+            "p_workspace": "10000000-0000-4000-8000-000000000003",
+            "p_work_item": "10000000-0000-4000-8000-000000000005",
+            "p_asset": "dd793ea2-8768-4bb1-ab10-14302115d7c6",
+            "p_checksum": "abc58d5127d7cdf313beb9ec8ee839860a9c6bfbc48c8b8eb6a3f7d8bb63de6f",
+            "p_expected_state": "approved_to_publish",
+            "p_expected_revision": 4,
+            "p_idempotency_key": "7ba77930-cfe9-46ef-949a-ec2c2a0febcb"
+          }
+        }
+      ],
+      "requests": [
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/workspace",
+          "method": "GET",
+          "status": 200,
+          "body": null,
+          "actor": "10000000-0000-4000-8000-000000000001"
+        },
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/publication/10000000-0000-4000-8000-000000000005",
+          "method": "GET",
+          "status": 200,
+          "body": null,
+          "actor": "10000000-0000-4000-8000-000000000001"
+        },
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/publication/10000000-0000-4000-8000-000000000005/assets/upload-grant",
+          "method": "POST",
+          "status": 200,
+          "body": {
+            "expectedState": "approved_to_publish",
+            "expectedRevision": 4,
+            "fileName": "offline-proof.png",
+            "contentType": "image/png",
+            "sizeBytes": 70
+          },
+          "actor": "10000000-0000-4000-8000-000000000001"
+        },
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/publication/10000000-0000-4000-8000-000000000005",
+          "method": "GET",
+          "status": 200,
+          "body": null,
+          "actor": "10000000-0000-4000-8000-000000000001"
+        },
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/workspace",
+          "method": "GET",
+          "status": 200,
+          "body": null,
+          "actor": "10000000-0000-4000-8000-000000000001"
+        },
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/publication/10000000-0000-4000-8000-000000000005/assets/420d7dca-fe43-4162-9ea2-c6366580edd5/finalize",
+          "method": "POST",
+          "status": 409,
+          "body": {
+            "expectedState": "approved_to_publish",
+            "expectedRevision": 4,
+            "checksum": "abc58d5127d7cdf313beb9ec8ee839860a9c6bfbc48c8b8eb6a3f7d8bb63de6f"
+          },
+          "actor": "10000000-0000-4000-8000-000000000001"
+        },
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/publication/10000000-0000-4000-8000-000000000005/assets/upload-grant",
+          "method": "POST",
+          "status": 200,
+          "body": {
+            "expectedState": "approved_to_publish",
+            "expectedRevision": 4,
+            "fileName": "offline-proof.png",
+            "contentType": "image/png",
+            "sizeBytes": 70
+          },
+          "actor": "10000000-0000-4000-8000-000000000001"
+        },
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/publication/10000000-0000-4000-8000-000000000005",
+          "method": "GET",
+          "status": 200,
+          "body": null,
+          "actor": "10000000-0000-4000-8000-000000000001"
+        },
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/workspace",
+          "method": "GET",
+          "status": 200,
+          "body": null,
+          "actor": "10000000-0000-4000-8000-000000000001"
+        },
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/publication/10000000-0000-4000-8000-000000000005/assets/dd793ea2-8768-4bb1-ab10-14302115d7c6/finalize",
+          "method": "POST",
+          "status": 200,
+          "body": {
+            "expectedState": "approved_to_publish",
+            "expectedRevision": 4,
+            "checksum": "abc58d5127d7cdf313beb9ec8ee839860a9c6bfbc48c8b8eb6a3f7d8bb63de6f"
+          },
+          "actor": "10000000-0000-4000-8000-000000000001"
+        },
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/publication/10000000-0000-4000-8000-000000000005",
+          "method": "GET",
+          "status": 200,
+          "body": null,
+          "actor": "10000000-0000-4000-8000-000000000001"
+        },
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/workspace",
+          "method": "GET",
+          "status": 200,
+          "body": null,
+          "actor": "10000000-0000-4000-8000-000000000001"
+        }
+      ],
+      "uploads": [
+        {
+          "bucket": "mission-publication-proof-assets",
+          "path": "10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000006/10000000-0000-4000-8000-000000000005/proof-evidence/0641811d-7f99-4130-8f43-a37bcf1448b6.png",
+          "bytes": 70,
+          "sha256": "abc58d5127d7cdf313beb9ec8ee839860a9c6bfbc48c8b8eb6a3f7d8bb63de6f",
+          "upsert": false,
+          "tokenMatches": true
+        },
+        {
+          "bucket": "mission-publication-proof-assets",
+          "path": "10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000006/10000000-0000-4000-8000-000000000005/proof-evidence/3952bbdf-10b0-4277-8500-457ad35677d8.png",
+          "bytes": 70,
+          "sha256": "abc58d5127d7cdf313beb9ec8ee839860a9c6bfbc48c8b8eb6a3f7d8bb63de6f",
+          "upsert": false,
+          "tokenMatches": true
+        }
+      ],
+      "rows": [
+        {
+          "id": "foreign-preexisting-mock",
+          "storage_object_path": "10000000-0000-4000-8000-000000000002/foreign.png",
+          "upload_state": "ready",
+          "mime_type": "image/png",
+          "byte_size": 3,
+          "upload_grant_expires_at": "2026-11-01T00:00:00Z"
+        },
+        {
+          "id": "420d7dca-fe43-4162-9ea2-c6366580edd5",
+          "storage_object_path": "10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000006/10000000-0000-4000-8000-000000000005/proof-evidence/0641811d-7f99-4130-8f43-a37bcf1448b6.png",
+          "upload_state": "pending",
+          "mime_type": "image/png",
+          "byte_size": 70,
+          "upload_grant_expires_at": "2026-10-25T21:20:11.567Z"
+        },
+        {
+          "id": "dd793ea2-8768-4bb1-ab10-14302115d7c6",
+          "storage_object_path": "10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000006/10000000-0000-4000-8000-000000000005/proof-evidence/3952bbdf-10b0-4277-8500-457ad35677d8.png",
+          "upload_state": "finalized",
+          "mime_type": "image/png",
+          "byte_size": 70,
+          "upload_grant_expires_at": "2026-10-25T21:20:11.588Z",
+          "checksum": "abc58d5127d7cdf313beb9ec8ee839860a9c6bfbc48c8b8eb6a3f7d8bb63de6f",
+          "content_checksum": "abc58d5127d7cdf313beb9ec8ee839860a9c6bfbc48c8b8eb6a3f7d8bb63de6f"
+        }
+      ],
+      "realSdkClients": 0,
+      "deniedExternalFetches": 0,
+      "financialSentinel": {
+        "points": 400,
+        "cashAvailable": "47.25",
+        "pendingReward": 15,
+        "budget": "452.75",
+        "ledgerIds": [
+          "existing-memory-ledger"
+        ]
+      },
+      "financialStateIsScriptedNotRealNeutrality": true
+    },
+    {
+      "test": "does not enumerate an A submission or reach asset RPCs for scripted same-workspace Creator B",
+      "commands": [],
+      "requests": [
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/publication/10000000-0000-4000-8000-000000000005/assets/upload-grant",
+          "method": "POST",
+          "status": 404,
+          "body": {
+            "fileName": "offline-proof.png",
+            "contentType": "image/png",
+            "sizeBytes": 8,
+            "expectedState": "approved_to_publish",
+            "expectedRevision": 4
+          },
+          "actor": "10000000-0000-4000-8000-000000000002"
+        },
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/publication/10000000-0000-4000-8000-000000000005/assets/foreign-asset/finalize",
+          "method": "POST",
+          "status": 404,
+          "body": {
+            "fileName": "offline-proof.png",
+            "contentType": "image/png",
+            "sizeBytes": 8,
+            "expectedState": "approved_to_publish",
+            "expectedRevision": 4,
+            "checksum": "hash"
+          },
+          "actor": "10000000-0000-4000-8000-000000000002"
+        }
+      ],
+      "uploads": [],
+      "rows": [
+        {
+          "id": "foreign-preexisting-mock",
+          "storage_object_path": "10000000-0000-4000-8000-000000000002/foreign.png",
+          "upload_state": "ready",
+          "mime_type": "image/png",
+          "byte_size": 3,
+          "upload_grant_expires_at": "2026-11-01T00:00:00Z"
+        }
+      ],
+      "realSdkClients": 0,
+      "deniedExternalFetches": 0,
+      "financialSentinel": {
+        "points": 400,
+        "cashAvailable": "47.25",
+        "pendingReward": 15,
+        "budget": "452.75",
+        "ledgerIds": [
+          "existing-memory-ledger"
+        ]
+      },
+      "financialStateIsScriptedNotRealNeutrality": true
+    },
+    {
+      "test": "calls exact draft-asset abandonment after signing failure without touching existing mock rows",
+      "commands": [
+        {
+          "name": "create_active_mission_asset",
+          "args": {
+            "p_submission": "10000000-0000-4000-8000-000000000004",
+            "p_creator": "10000000-0000-4000-8000-000000000001",
+            "p_workspace": "10000000-0000-4000-8000-000000000003",
+            "p_work_item": "10000000-0000-4000-8000-000000000005",
+            "p_filename": "offline-proof.png",
+            "p_mime_type": "image/png",
+            "p_byte_size": 8,
+            "p_extension": "png",
+            "p_grant_seconds": 600
+          }
+        },
+        {
+          "name": "abandon_active_mission_asset",
+          "args": {
+            "p_submission": "10000000-0000-4000-8000-000000000004",
+            "p_creator": "10000000-0000-4000-8000-000000000001",
+            "p_workspace": "10000000-0000-4000-8000-000000000003",
+            "p_work_item": "10000000-0000-4000-8000-000000000005",
+            "p_asset": "3dfe0cf2-a4d8-4cf7-b7a6-fbff87c434a9",
+            "p_storage_object_path": "10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000006/10000000-0000-4000-8000-000000000005/assets/3dfe0cf2-a4d8-4cf7-b7a6-fbff87c434a9.png"
+          }
+        }
+      ],
+      "requests": [
+        {
+          "path": "/api/my-missions/10000000-0000-4000-8000-000000000004/work-items/10000000-0000-4000-8000-000000000005/assets/upload-grant",
+          "method": "POST",
+          "status": 500,
+          "body": {
+            "fileName": "offline-proof.png",
+            "contentType": "image/png",
+            "sizeBytes": 8,
+            "expectedState": "approved_to_publish",
+            "expectedRevision": 4
+          },
+          "actor": "10000000-0000-4000-8000-000000000001"
+        }
+      ],
+      "uploads": [],
+      "rows": [
+        {
+          "id": "foreign-preexisting-mock",
+          "storage_object_path": "10000000-0000-4000-8000-000000000002/foreign.png",
+          "upload_state": "ready",
+          "mime_type": "image/png",
+          "byte_size": 3,
+          "upload_grant_expires_at": "2026-11-01T00:00:00Z"
+        }
+      ],
+      "realSdkClients": 0,
+      "deniedExternalFetches": 0,
+      "financialSentinel": {
+        "points": 400,
+        "cashAvailable": "47.25",
+        "pendingReward": 15,
+        "budget": "452.75",
+        "ledgerIds": [
+          "existing-memory-ledger"
+        ]
+      },
+      "financialStateIsScriptedNotRealNeutrality": true
+    }
+  ]
+}

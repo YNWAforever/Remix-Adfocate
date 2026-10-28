@@ -1,0 +1,31 @@
+{
+  "startedAt": "2026-10-25T18:25:48.842857+00:00",
+  "command": [
+    "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "server/test/audit-docker-output-capture.test.ts",
+    "server/test/application-supplement.test.ts",
+    "server/test/b2-runtime-manifest.test.ts",
+    "--no-file-parallelism",
+    "--reporter=default",
+    "--reporter=json",
+    "--outputFile.json=docs/verification/D19-C2-runtime-20261026/transport-focused-results.json"
+  ],
+  "node": "v22.23.4",
+  "resource": {
+    "at": "2026-10-25T18:25:48.841791+00:00",
+    "freePhysicalGiB": 5.951560974121094,
+    "freeCommitGiB": 7.1358184814453125,
+    "minimumGiB": 3,
+    "freeDiskGiB": 22.028606414794922
+  },
+  "credentialsProxiesPreloadsStripped": true,
+  "integrationDisabled": true,
+  "label": "transport-focused",
+  "log": "docs/verification/D19-C2-runtime-20261026/transport-focused.log",
+  "runtimeTargetCallsRequested": false,
+  "pid": 25304,
+  "endedAt": "2026-10-25T18:26:03.631829+00:00",
+  "exit": 0
+}

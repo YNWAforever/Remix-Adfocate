@@ -1,0 +1,29 @@
+{
+  "startedAt": "2026-10-25T13:00:38.980864+00:00",
+  "command": [
+    "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "server/test/audit-application-decisions.test.ts",
+    "--maxWorkers=1",
+    "--minWorkers=1",
+    "--reporter=json",
+    "--outputFile=C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023\\docs\\verification\\D19-application-decisions-20261025\\no-body-compatibility-red.json"
+  ],
+  "nodeVersion": "v22.23.4",
+  "npmExecpathProvided": true,
+  "childPathPrefersSameNode22": true,
+  "offlineOnly": true,
+  "actualTargetUsed": false,
+  "packageDownloadOrInstall": false,
+  "resource": {
+    "freePhysicalGiB": 5.859088897705078,
+    "freeCommitGiB": 9.849761962890625,
+    "minimumGiB": 3
+  },
+  "sourceFingerprint": "8903076cc99050405998bf1218d29539935377a5bfab7baf52490100678e261e",
+  "sourceRecords": 785,
+  "pid": 18936,
+  "endedAt": "2026-10-25T13:00:41.637581+00:00",
+  "exit": 1
+}

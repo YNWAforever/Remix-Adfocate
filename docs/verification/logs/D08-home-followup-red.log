@@ -1,0 +1,724 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ❯ src/components/CreatorWorkHome.test.tsx (14 tests | 2 failed) 1686ms
+   × Creator work home (unit transport fixtures) > prioritizes a revision over an earlier draft and links directly to the canonical work item 142ms
+     → expected "spy" to be called with arguments: [ 'activation_action_viewed', …(1) ]
+
+Received: 
+
+  1st spy call:
+
+  Array [
+-   "activation_action_viewed",
++   "dashboard_viewed",
+    Object {
+-     "actionKind": "revise",
+-     "locale": "en",
++     "creatorLevel": "L1",
++     "locale": "zh",
+    },
+  ]
+
+  2nd spy call:
+
+  Array [
+    "activation_action_viewed",
+    Object {
+-     "actionKind": "revise",
+-     "locale": "en",
++     "actionKind": "submit_proof",
++     "locale": "zh",
+    },
+  ]
+
+
+Number of calls: 2
+
+   × Creator work home (unit transport fixtures) > shows verified proof as awaiting completion rather than another publishing action 1030ms
+     → Unable to find role="link" and name "View verified proof"
+
+Ignored nodes: comments, script, style, option
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"mx-auto w-full max-w-lg space-y-6 p-4 lg:max-w-5xl"[39m
+    [36m>[39m
+      [36m<header[39m
+        [33mclass[39m=[32m"space-y-4"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-center justify-end gap-2"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"Switch language"[39m
+            [33mclass[39m=[32m"inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-2 border-[var(--color-ink)] bg-white text-sm font-bold text-[var(--color-ink)] font-heading transition-transform hover:-translate-y-0.5 lg:hidden"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0m中[0m
+          [36m</button>[39m
+          [36m<a[39m
+            [33maria-label[39m=[32m"Creator Passport"[39m
+            [33mclass[39m=[32m"rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 font-mono text-xs font-bold"[39m
+            [33mhref[39m=[32m"/passport"[39m
+          [36m>[39m
+            [0m🌱[0m
+            [0m [0m
+            [0mKOC Starter[0m
+          [36m</a>[39m
+          [36m<a[39m
+            [33maria-label[39m=[32m"Profile"[39m
+            [33mclass[39m=[32m"flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border-2 border-[var(--color-ink)] bg-white font-heading font-bold shadow-[2px_2px_0_0_var(--color-ink)]"[39m
+            [33mhref[39m=[32m"/profile"[39m
+          [36m>[39m
+            [0mC[0m
+          [36m</a>[39m
+        [36m</div>[39m
+        [36m<div>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"font-mono text-[11px] uppercase tracking-[0.18em]"[39m
+          [36m>[39m
+            [0mADFOCATE · KOCMAX[0m
+          [36m</p>[39m
+          [36m<h1[39m
+            [33mclass[39m=[32m"mt-1 font-display text-2xl font-bold"[39m
+          [36m>[39m
+            [0mWelcome back, Creator[0m
+          [36m</h1>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"mt-1 text-sm text-[var(--color-soft-ink)]"[39m
+          [36m>[39m
+            [0mYour next action, active work, and earnings are all here.[0m
+          [36m</p>[39m
+        [36m</div>[39m
+      [36m</header>[39m
+      [36m<section[39m
+        [33maria-labelledby[39m=[32m"_r_1m_"[39m
+        [33mclass[39m=[32m"pastel-card rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-acid)] p-5"[39m
+      [36m>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-wider"[39m
+        [36m>[39m
+          [36m<svg[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"lucide lucide-sparkles h-4 w-4"[39m
+            [33mfill[39m=[32m"none"[39m
+            [33mheight[39m=[32m"24"[39m
+            [33mstroke[39m=[32m"currentColor"[39m
+            [33mstroke-linecap[39m=[32m"round"[39m
+            [33mstroke-linejoin[39m=[32m"round"[39m
+            [33mstroke-width[39m=[32m"2"[39m
+            [33mviewBox[39m=[32m"0 0 24 24"[39m
+            [33mwidth[39m=[32m"24"[39m
+            [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+          [36m>[39m
+            [36m<path[39m
+              [33md[39m=[32m"M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"[39m
+            [36m/>[39m
+            [36m<path[39m
+              [33md[39m=[32m"M20 2v4"[39m
+            [36m/>[39m
+            [36m<path[39m
+              [33md[39m=[32m"M22 4h-4"[39m
+            [36m/>[39m
+            [36m<circle[39m
+              [33mcx[39m=[32m"4"[39m
+              [33mcy[39m=[32m"20"[39m
+              [33mr[39m=[32m"2"[39m
+            [36m/>[39m
+          [36m</svg>[39m
+          [0mNext best action[0m
+        [36m</p>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"mt-3 break-words text-sm font-semibold"[39m
+        [36m>[39m
+          [0mMission verified[0m
+        [36m</p>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"mt-2 font-heading text-xl font-bold"[39m
+          [33mid[39m=[32m"_r_1m_"[39m
+        [36m>[39m
+          [0mView publishing instructions[0m
+        [36m</h2>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"mt-2 text-sm leading-relaxed text-[var(--color-soft-ink)]"[39m
+        [36m>[39m
+          [0mYou are responsible for publishing only when instructed.[0m
+        [36m</p>[39m
+        [36m<dl[39m
+          [33mclass[39m=[32m"mt-3 space-y-1 text-sm"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex items-center gap-2"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-clock3 lucide-clock-3 h-4 w-4"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"24"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"24"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"12"[39m
+                [33mcy[39m=[32m"12"[39m
+                [33mr[39m=[32m"10"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M12 6v6h4"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [36m<dt[39m
+              [33mclass[39m=[32m"font-semibold"[39m
+            [36m>[39m
+              [0mDeadline[0m
+            [36m</dt>[39m
+            [36m<dd>[39m
+              [0m28 Oct 2026[0m
+            [36m</dd>[39m
+          [36m</div>[39m
+        [36m</dl>[39m
+        [36m<a[39m
+          [33mclass[39m=[32m"mt-4 inline-flex min-h-11 items-center justify-center gap-2 rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-ink)] px-5 py-2 font-bold text-white no-underline transition hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"[39m
+          [33mhref[39m=[32m"/my/verified?item=item-verified"[39m
+        [36m>[39m
+          [0mView publishing instructions[0m
+          [36m<svg[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"lucide lucide-arrow-right h-4 w-4"[39m
+            [...
+
+Ignored nodes: comments, script, style, option
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"mx-auto w-full max-w-lg space-y-6 p-4 lg:max-w-5xl"[39m
+    [36m>[39m
+      [36m<header[39m
+        [33mclass[39m=[32m"space-y-4"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-center justify-end gap-2"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"Switch language"[39m
+            [33mclass[39m=[32m"inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-2 border-[var(--color-ink)] bg-white text-sm font-bold text-[var(--color-ink)] font-heading transition-transform hover:-translate-y-0.5 lg:hidden"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0m中[0m
+          [36m</button>[39m
+          [36m<a[39m
+            [33maria-label[39m=[32m"Creator Passport"[39m
+            [33mclass[39m=[32m"rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 font-mono text-xs font-bold"[39m
+            [33mhref[39m=[32m"/passport"[39m
+          [36m>[39m
+            [0m🌱[0m
+            [0m [0m
+            [0mKOC Starter[0m
+          [36m</a>[39m
+          [36m<a[39m
+            [33maria-label[39m=[32m"Profile"[39m
+            [33mclass[39m=[32m"flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border-2 border-[var(--color-ink)] bg-white font-heading font-bold shadow-[2px_2px_0_0_var(--color-ink)]"[39m
+            [33mhref[39m=[32m"/profile"[39m
+          [36m>[39m
+            [0mC[0m
+          [36m</a>[39m
+        [36m</div>[39m
+        [36m<div>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"font-mono text-[11px] uppercase tracking-[0.18em]"[39m
+          [36m>[39m
+            [0mADFOCATE · KOCMAX[0m
+          [36m</p>[39m
+          [36m<h1[39m
+            [33mclass[39m=[32m"mt-1 font-display text-2xl font-bold"[39m
+          [36m>[39m
+            [0mWelcome back, Creator[0m
+          [36m</h1>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"mt-1 text-sm text-[var(--color-soft-ink)]"[39m
+          [36m>[39m
+            [0mYour next action, active work, and earnings are all here.[0m
+          [36m</p>[39m
+        [36m</div>[39m
+      [36m</header>[39m
+      [36m<section[39m
+        [33maria-labelledby[39m=[32m"_r_1m_"[39m
+        [33mclass[39m=[32m"pastel-card rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-acid)] p-5"[39m
+      [36m>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-wider"[39m
+        [36m>[39m
+          [36m<svg[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"lucide lucide-sparkles h-4 w-4"[39m
+            [33mfill[39m=[32m"none"[39m
+            [33mheight[39m=[32m"24"[39m
+            [33mstroke[39m=[32m"currentColor"[39m
+            [33mstroke-linecap[39m=[32m"round"[39m
+            [33mstroke-linejoin[39m=[32m"round"[39m
+            [33mstroke-width[39m=[32m"2"[39m
+            [33mviewBox[39m=[32m"0 0 24 24"[39m
+            [33mwidth[39m=[32m"24"[39m
+            [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+          [36m>[39m
+            [36m<path[39m
+              [33md[39m=[32m"M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"[39m
+            [36m/>[39m
+            [36m<path[39m
+              [33md[39m=[32m"M20 2v4"[39m
+            [36m/>[39m
+            [36m<path[39m
+              [33md[39m=[32m"M22 4h-4"[39m
+            [36m/>[39m
+            [36m<circle[39m
+              [33mcx[39m=[32m"4"[39m
+              [33mcy[39m=[32m"20"[39m
+              [33mr[39m=[32m"2"[39m
+            [36m/>[39m
+          [36m</svg>[39m
+          [0mNext best action[0m
+        [36m</p>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"mt-3 break-words text-sm font-semibold"[39m
+        [36m>[39m
+          [0mMission verified[0m
+        [36m</p>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"mt-2 font-heading text-xl font-bold"[39m
+          [33mid[39m=[32m"_r_1m_"[39m
+        [36m>[39m
+          [0mView publishing instructions[0m
+        [36m</h2>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"mt-2 text-sm leading-relaxed text-[var(--color-soft-ink)]"[39m
+        [36m>[39m
+          [0mYou are responsible for publishing only when instructed.[0m
+        [36m</p>[39m
+        [36m<dl[39m
+          [33mclass[39m=[32m"mt-3 space-y-1 text-sm"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex items-center gap-2"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-clock3 lucide-clock-3 h-4 w-4"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"24"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"24"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"12"[39m
+                [33mcy[39m=[32m"12"[39m
+                [33mr[39m=[32m"10"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M12 6v6h4"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [36m<dt[39m
+              [33mclass[39m=[32m"font-semibold"[39m
+            [36m>[39m
+              [0mDeadline[0m
+            [36m</dt>[39m
+            [36m<dd>[39m
+              [0m28 Oct 2026[0m
+            [36m</dd>[39m
+          [36m</div>[39m
+        [36m</dl>[39m
+        [36m<a[39m
+          [33mclass[39m=[32m"mt-4 inline-flex min-h-11 items-center justify-center gap-2 rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-ink)] px-5 py-2 font-bold text-white no-underline transition hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"[39m
+          [33mhref[39m=[32m"/my/verified?item=item-verified"[39m
+        [36m>[39m
+          [0mView publishing instructions[0m
+          [36m<svg[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"lucide lucide-arrow-right h-4 w-4"[39m
+            [...
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/CreatorWorkHome.test.tsx > Creator work home (unit transport fixtures) > prioritizes a revision over an earlier draft and links directly to the canonical work item
+AssertionError: expected "spy" to be called with arguments: [ 'activation_action_viewed', …(1) ]
+
+Received: 
+
+  1st spy call:
+
+  Array [
+-   "activation_action_viewed",
++   "dashboard_viewed",
+    Object {
+-     "actionKind": "revise",
+-     "locale": "en",
++     "creatorLevel": "L1",
++     "locale": "zh",
+    },
+  ]
+
+  2nd spy call:
+
+  Array [
+    "activation_action_viewed",
+    Object {
+-     "actionKind": "revise",
+-     "locale": "en",
++     "actionKind": "submit_proof",
++     "locale": "zh",
+    },
+  ]
+
+
+Number of calls: 2
+
+ ❯ src/components/CreatorWorkHome.test.tsx:66:25
+     64|     expect(screen.getByText("28 Oct 2026")).toBeInTheDocument();
+     65|     expect(screen.queryByText("item-revision")).not.toBeInTheDocument(…
+     66|     expect(mocks.track).toHaveBeenCalledWith("activation_action_viewed…
+       |                         ^
+     67|     expect(mocks.track).not.toHaveBeenCalledWith("activation_action_vi…
+     68|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/components/CreatorWorkHome.test.tsx > Creator work home (unit transport fixtures) > shows verified proof as awaiting completion rather than another publishing action
+TestingLibraryElementError: Unable to find role="link" and name "View verified proof"
+
+Ignored nodes: comments, script, style, option
+<body>
+  <div>
+    <div
+      class="mx-auto w-full max-w-lg space-y-6 p-4 lg:max-w-5xl"
+    >
+      <header
+        class="space-y-4"
+      >
+        <div
+          class="flex items-center justify-end gap-2"
+        >
+          <button
+            aria-label="Switch language"
+            class="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-2 border-[var(--color-ink)] bg-white text-sm font-bold text-[var(--color-ink)] font-heading transition-transform hover:-translate-y-0.5 lg:hidden"
+            type="button"
+          >
+            中
+          </button>
+          <a
+            aria-label="Creator Passport"
+            class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 font-mono text-xs font-bold"
+            href="/passport"
+          >
+            🌱
+             
+            KOC Starter
+          </a>
+          <a
+            aria-label="Profile"
+            class="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border-2 border-[var(--color-ink)] bg-white font-heading font-bold shadow-[2px_2px_0_0_var(--color-ink)]"
+            href="/profile"
+          >
+            C
+          </a>
+        </div>
+        <div>
+          <p
+            class="font-mono text-[11px] uppercase tracking-[0.18em]"
+          >
+            ADFOCATE · KOCMAX
+          </p>
+          <h1
+            class="mt-1 font-display text-2xl font-bold"
+          >
+            Welcome back, Creator
+          </h1>
+          <p
+            class="mt-1 text-sm text-[var(--color-soft-ink)]"
+          >
+            Your next action, active work, and earnings are all here.
+          </p>
+        </div>
+      </header>
+      <section
+        aria-labelledby="_r_1m_"
+        class="pastel-card rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-acid)] p-5"
+      >
+        <p
+          class="flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-wider"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-sparkles h-4 w-4"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"
+            />
+            <path
+              d="M20 2v4"
+            />
+            <path
+              d="M22 4h-4"
+            />
+            <circle
+              cx="4"
+              cy="20"
+              r="2"
+            />
+          </svg>
+          Next best action
+        </p>
+        <p
+          class="mt-3 break-words text-sm font-semibold"
+        >
+          Mission verified
+        </p>
+        <h2
+          class="mt-2 font-heading text-xl font-bold"
+          id="_r_1m_"
+        >
+          View publishing instructions
+        </h2>
+        <p
+          class="mt-2 text-sm leading-relaxed text-[var(--color-soft-ink)]"
+        >
+          You are responsible for publishing only when instructed.
+        </p>
+        <dl
+          class="mt-3 space-y-1 text-sm"
+        >
+          <div
+            class="flex items-center gap-2"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-clock3 lucide-clock-3 h-4 w-4"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <circle
+                cx="12"
+                cy="12"
+                r="10"
+              />
+              <path
+                d="M12 6v6h4"
+              />
+            </svg>
+            <dt
+              class="font-semibold"
+            >
+              Deadline
+            </dt>
+            <dd>
+              28 Oct 2026
+            </dd>
+          </div>
+        </dl>
+        <a
+          class="mt-4 inline-flex min-h-11 items-center justify-center gap-2 rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-ink)] px-5 py-2 font-bold text-white no-underline transition hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+          href="/my/verified?item=item-verified"
+        >
+          View publishing instructions
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-arrow-right h-4 w-4"
+            [...
+
+Ignored nodes: comments, script, style, option
+<body>
+  <div>
+    <div
+      class="mx-auto w-full max-w-lg space-y-6 p-4 lg:max-w-5xl"
+    >
+      <header
+        class="space-y-4"
+      >
+        <div
+          class="flex items-center justify-end gap-2"
+        >
+          <button
+            aria-label="Switch language"
+            class="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-2 border-[var(--color-ink)] bg-white text-sm font-bold text-[var(--color-ink)] font-heading transition-transform hover:-translate-y-0.5 lg:hidden"
+            type="button"
+          >
+            中
+          </button>
+          <a
+            aria-label="Creator Passport"
+            class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 font-mono text-xs font-bold"
+            href="/passport"
+          >
+            🌱
+             
+            KOC Starter
+          </a>
+          <a
+            aria-label="Profile"
+            class="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border-2 border-[var(--color-ink)] bg-white font-heading font-bold shadow-[2px_2px_0_0_var(--color-ink)]"
+            href="/profile"
+          >
+            C
+          </a>
+        </div>
+        <div>
+          <p
+            class="font-mono text-[11px] uppercase tracking-[0.18em]"
+          >
+            ADFOCATE · KOCMAX
+          </p>
+          <h1
+            class="mt-1 font-display text-2xl font-bold"
+          >
+            Welcome back, Creator
+          </h1>
+          <p
+            class="mt-1 text-sm text-[var(--color-soft-ink)]"
+          >
+            Your next action, active work, and earnings are all here.
+          </p>
+        </div>
+      </header>
+      <section
+        aria-labelledby="_r_1m_"
+        class="pastel-card rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-acid)] p-5"
+      >
+        <p
+          class="flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-wider"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-sparkles h-4 w-4"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"
+            />
+            <path
+              d="M20 2v4"
+            />
+            <path
+              d="M22 4h-4"
+            />
+            <circle
+              cx="4"
+              cy="20"
+              r="2"
+            />
+          </svg>
+          Next best action
+        </p>
+        <p
+          class="mt-3 break-words text-sm font-semibold"
+        >
+          Mission verified
+        </p>
+        <h2
+          class="mt-2 font-heading text-xl font-bold"
+          id="_r_1m_"
+        >
+          View publishing instructions
+        </h2>
+        <p
+          class="mt-2 text-sm leading-relaxed text-[var(--color-soft-ink)]"
+        >
+          You are responsible for publishing only when instructed.
+        </p>
+        <dl
+          class="mt-3 space-y-1 text-sm"
+        >
+          <div
+            class="flex items-center gap-2"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-clock3 lucide-clock-3 h-4 w-4"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <circle
+                cx="12"
+                cy="12"
+                r="10"
+              />
+              <path
+                d="M12 6v6h4"
+              />
+            </svg>
+            <dt
+              class="font-semibold"
+            >
+              Deadline
+            </dt>
+            <dd>
+              28 Oct 2026
+            </dd>
+          </div>
+        </dl>
+        <a
+          class="mt-4 inline-flex min-h-11 items-center justify-center gap-2 rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-ink)] px-5 py-2 font-bold text-white no-underline transition hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+          href="/my/verified?item=item-verified"
+        >
+          View publishing instructions
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-arrow-right h-4 w-4"
+            [...
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/components/CreatorWorkHome.test.tsx:159:30
+    157|     mocks.api.mockResolvedValue(workspace("verified", "proof_verified"…
+    158|     renderHome();
+    159|     const cta = await screen.findByRole("link", { name: "View verified…
+       |                              ^
+    160|     expect(cta.closest("section")).toHaveTextContent("Adfocate is chec…
+    161|     expect(cta).toHaveAttribute("href", "/my/verified?item=item-verifi…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 12 passed (14)
+   Start at  04:01:27
+   Duration  3.60s (transform 248ms, setup 215ms, collect 694ms, tests 1.69s, environment 731ms, prepare 100ms)
+

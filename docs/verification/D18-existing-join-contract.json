@@ -1,0 +1,19 @@
+{
+  "target": {
+    "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+    "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+    "disposable": true,
+    "projectId": "adfocate-r1-empty-20261023",
+    "proxy": "none",
+    "apiPort": 56421,
+    "apiContainerId": "1b9c41318298d79308db7782f51474541ad5abf0120fa93b96a2a9ea59d043ee",
+    "databaseContainerId": "e7c8efa295cd5544a8b2a100a73b6953cd6ddd486aaf394f231482067523e12d",
+    "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+    "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+    "networkId": "9e5d3069e8255d70b8eef56020c8ea2618fdb2626d92d9a04e51ea2de41a98e0"
+  },
+  "readOnly": true,
+  "function": "private.join_mission(uuid)",
+  "definition": "CREATE OR REPLACE FUNCTION private.join_mission(p_mission uuid)\n RETURNS mission_submissions\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO 'public'\nAS $function$\r\ndeclare\r\n  v_creator uuid := auth.uid();\r\n  v_ws uuid;\r\n  v_level text;\r\n  m record;\r\n  v_rows int;\r\n  v_sub public.mission_submissions;\r\nbegin\r\n  if v_creator is null then raise exception 'not_authenticated'; end if;\r\n\r\n  select workspace_id, level into v_ws, v_level\r\n    from public.creators where id = v_creator;\r\n  if v_ws is null then raise exception 'not_found'; end if;\r\n\r\n  select id, workspace_id, status, access_type, deadline, required_level, quota, filled\r\n    into m from public.missions where id = p_mission;\r\n  if m.id is null or m.workspace_id <> v_ws then raise exception 'not_found'; end if;\r\n  if m.status <> 'active' then raise exception 'closed'; end if;\r\n  if m.access_type <> 'open' then raise exception 'not_open'; end if;\r\n  if m.deadline is not null and m.deadline < current_date then raise exception 'closed'; end if;\r\n\r\n  -- Effective-level gate. L2+ missions need both XP and a verified handle;\r\n  -- the codes are decomposed so the message is honest (earn XP vs verify).\r\n  -- level_ordinal is 1-indexed (L0=1, L1=2, L2=3...) — compare against\r\n  -- level_ordinal('L2'), NOT a bare 2, so the verification gate applies to L2+\r\n  -- only and L0/L1 missions stay XP-only.\r\n  if public.level_ordinal(m.required_level) >= public.level_ordinal('L2') then\r\n    if public.level_ordinal(v_level) < public.level_ordinal(m.required_level) then\r\n      raise exception 'level_locked';\r\n    elsif not exists (\r\n      select 1 from public.creator_social_accounts\r\n      where creator_id = v_creator and owner_verified\r\n    ) then\r\n      raise exception 'verification_required';\r\n    end if;\r\n  elsif public.level_ordinal(v_level) < public.level_ordinal(m.required_level) then\r\n    raise exception 'level_locked';\r\n  end if;\r\n\r\n  if exists (select 1 from public.mission_submissions\r\n             where mission_id = p_mission and creator_id = v_creator)\r\n    then raise exception 'already_joined'; end if;\r\n\r\n  update public.missions set filled = filled + 1\r\n    where id = p_mission and filled < quota;\r\n  get diagnostics v_rows = row_count;\r\n  if v_rows = 0 then raise exception 'mission_full'; end if;\r\n\r\n  begin\r\n    insert into public.mission_submissions\r\n      (mission_id, creator_id, workspace_id, status, xp_awarded)\r\n      values (p_mission, v_creator, v_ws, 'joined', 10)\r\n      returning * into v_sub;\r\n  exception when unique_violation then\r\n    raise exception 'already_joined';\r\n  end;\r\n  update public.creators set xp = xp + 10 where id = v_creator;\r\n  return v_sub;\r\nend;\r\n$function$",
+  "note": "Existing join XP is separate from the subsequent draft/proof/pending-reward neutrality baseline; no XP code changed in D18."
+}

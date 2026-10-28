@@ -1,0 +1,31 @@
+{
+  "startedAt": "2026-10-25T12:48:46.729768+00:00",
+  "command": [
+    "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "server/test/b2-runtime-manifest.test.ts",
+    "server/test/b2-target-context.test.ts",
+    "server/test/b2-browser-recovery.test.ts",
+    "--maxWorkers=1",
+    "--minWorkers=1",
+    "--reporter=json",
+    "--outputFile=C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023\\docs\\verification\\D19-application-decisions-20261025\\bindings-final.json"
+  ],
+  "nodeVersion": "v22.23.4",
+  "npmExecpathProvided": true,
+  "childPathPrefersSameNode22": true,
+  "offlineOnly": true,
+  "actualTargetUsed": false,
+  "packageDownloadOrInstall": false,
+  "resource": {
+    "freePhysicalGiB": 8.596900939941406,
+    "freeCommitGiB": 11.903495788574219,
+    "minimumGiB": 3
+  },
+  "sourceFingerprint": "8ecf61fac6899d707edc1431f73fdf6bb37d060e65baa44a005fe07078a54b00",
+  "sourceRecords": 785,
+  "pid": 32240,
+  "endedAt": "2026-10-25T12:48:58.439279+00:00",
+  "exit": 0
+}

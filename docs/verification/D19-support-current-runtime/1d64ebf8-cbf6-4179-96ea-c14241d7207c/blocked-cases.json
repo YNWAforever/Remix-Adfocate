@@ -1,0 +1,8 @@
+{
+  "status": "BLOCKED_GLOBAL_RPC_REQUIRES_PRISTINE_DB",
+  "tests": [
+    "close_due_campaigns closes past-deadline active only, idempotent",
+    "snapshot_campaign_leaderboards captures active-campaign ranks"
+  ],
+  "reason": "Zero-argument global mutators cannot be bounded to this run on the existing retained fixture targets; original tests and SQL are unchanged, these are not passes"
+}

@@ -1,0 +1,26 @@
+{
+  "at": "2026-10-25T14:56:03.490983+00:00",
+  "sourceMigrations": 73,
+  "prior72ChecksumsChanged": false,
+  "sourceSqlChangesThisTurn": 0,
+  "actualServerSqlCallsThisTurn": 0,
+  "currentTargetSchema": "UNKNOWN_THIS_TURN; historical C1 evidence72 only",
+  "proposedForwardMigration": {
+    "file": "supabase/migrations/20261025120934_application_decisions.sql",
+    "sha256": "abbfc0499afbe771e36540443a93c979521be1fe70c321f6fb8ff6996a45a35c",
+    "baselineMigrationCount": 72,
+    "forwardOnly": true,
+    "expectedBefore": "Exact72 history and no new function/history; any partial state stops. No replace/reset/history rewrite.",
+    "allowedWrites": [
+      "One new function with explicit ACL",
+      "One new history row in same transaction",
+      "Local PostgREST schema reload notification"
+    ]
+  },
+  "protectedReleaseManifest": {
+    "path": "supabase/release-manifest.json",
+    "sha256": "4659eda99773b5b1c8cd5e3b569de2e2240b1626d135f4843d0a8dded67e5997"
+  },
+  "manifestGate": "PASS_LOCAL",
+  "runtimeApproved": false
+}

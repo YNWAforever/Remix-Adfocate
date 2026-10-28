@@ -1,0 +1,13 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ✓ src/components/admin/RewardHandoffQueue.test.tsx (19 tests) 610ms
+ ✓ src/components/admin/WorkspaceSwitcher.test.tsx (6 tests) 208ms
+ ✓ src/components/admin/StaffAccessShell.test.tsx (4 tests) 223ms
+
+ Test Files  3 passed (3)
+      Tests  29 passed (29)
+   Start at  21:00:26
+   Duration  6.94s (transform 250ms, setup 638ms, collect 874ms, tests 1.04s, environment 3.15s, prepare 437ms)
+
+JSON report written to C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/.codex-tmp/D18-ui-green.json

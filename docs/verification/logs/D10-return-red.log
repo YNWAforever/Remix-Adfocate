@@ -1,0 +1,705 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ❯ src/routes/-admin.creators-access.test.tsx (3 tests | 1 failed) 1198ms
+   × restores the selected creator focus and scroll after returning to the same queue 1029ms
+     → expect(element).toHaveFocus()
+
+Expected element with focus:
+  <a
+  data-creator-id="a"
+  href="#detail"
+>
+  Return to this creator
+</a>
+Received element with focus:
+  <body>
+  <div>
+    <div
+      class="space-y-4"
+    >
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <div
+          class="grid gap-3 md:grid-cols-[minmax(0,1.4fr)_repeat(3,minmax(0,0.8fr))_minmax(0,0.9fr)]"
+        >
+          <label
+            class="flex min-w-0 items-center gap-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white px-3"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-search h-4 w-4 shrink-0"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="m21 21-4.34-4.34"
+              />
+              <circle
+                cx="11"
+                cy="11"
+                r="8"
+              />
+            </svg>
+            <input
+              aria-label="Search creators"
+              class="h-9 min-w-0 flex-1 bg-transparent text-sm outline-none"
+              placeholder="Search creators"
+              value=""
+            />
+          </label>
+          <label
+            class="space-y-1 text-xs font-bold text-[var(--color-soft-ink)]"
+          >
+            <span>
+              Status
+            </span>
+            <select
+              aria-label="Status filter"
+              class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white px-2 text-sm font-medium text-[var(--color-ink)]"
+            >
+              <option
+                value="all"
+              >
+                all
+              </option>
+              <option
+                value="needs_review"
+              >
+                Needs review
+              </option>
+              <option
+                value="approved"
+              >
+                Approved
+              </option>
+              <option
+                value="flagged"
+              >
+                Flagged
+              </option>
+            </select>
+          </label>
+          <label
+            class="space-y-1 text-xs font-bold text-[var(--color-soft-ink)]"
+          >
+            <span>
+              Risk
+            </span>
+            <select
+              aria-label="Risk filter"
+              class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white px-2 text-sm font-medium text-[var(--color-ink)]"
+            >
+              <option
+                value="all"
+              >
+                all
+              </option>
+              <option
+                value="unknown"
+              >
+                unknown
+              </option>
+              <option
+                value="low"
+              >
+                low
+              </option>
+              <option
+                value="medium"
+              >
+                medium
+              </option>
+              <option
+                value="high"
+              >
+                high
+              </option>
+            </select>
+          </label>
+          <label
+            class="space-y-1 text-xs font-bold text-[var(--color-soft-ink)]"
+          >
+            <span>
+              Sort
+            </span>
+            <select
+              aria-label="Sort creators"
+              class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white px-2 text-sm font-medium text-[var(--color-ink)]"
+            >
+              <option
+                value="last_activity"
+              >
+                last_activity
+              </option>
+              <option
+                value="trust_score"
+              >
+                trust_score
+              </option>
+              <option
+                value="level"
+              >
+                level
+              </option>
+              <option
+                value="social_freshness"
+              >
+                social_freshness
+              </option>
+            </select>
+          </label>
+          <div
+            class="space-y-1 text-xs font-bold text-[var(--color-soft-ink)]"
+          >
+            <span>
+              Queue
+            </span>
+            <div
+              class="flex h-9 items-center rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-sky)] px-3 text-sm font-medium text-[var(--color-ink)]"
+            >
+              1
+               creators
+            </div>
+          </div>
+        </div>
+      </section>
+      <nav
+        aria-label="Creator queue pages"
+        class="flex items-center gap-3"
+      >
+        <button
+          disabled=""
+          type="button"
+        >
+          上一頁 / Previous
+        </button>
+        <span
+          aria-live="polite"
+        >
+          1
+           /·
+          1
+        </span>
+        <button
+          disabled=""
+          type="button"
+        >
+          下一頁 / Next
+        </button>
+      </nav>
+      <div
+        class="space-y-3"
+      >
+        <a
+          data-creator-id="a"
+          href="#detail"
+        >
+          Return to this creator
+        </a>
+      </div>
+    </div>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style, option
+[36m<html>[39m
+  [36m<head />[39m
+  [36m<body>[39m
+    [36m<div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"space-y-4"[39m
+      [36m>[39m
+        [36m<section[39m
+          [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"grid gap-3 md:grid-cols-[minmax(0,1.4fr)_repeat(3,minmax(0,0.8fr))_minmax(0,0.9fr)]"[39m
+          [36m>[39m
+            [36m<label[39m
+              [33mclass[39m=[32m"flex min-w-0 items-center gap-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white px-3"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-search h-4 w-4 shrink-0"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"m21 21-4.34-4.34"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"11"[39m
+                  [33mcy[39m=[32m"11"[39m
+                  [33mr[39m=[32m"8"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+              [36m<input[39m
+                [33maria-label[39m=[32m"Search creators"[39m
+                [33mclass[39m=[32m"h-9 min-w-0 flex-1 bg-transparent text-sm outline-none"[39m
+                [33mplaceholder[39m=[32m"Search creators"[39m
+                [33mvalue[39m=[32m""[39m
+              [36m/>[39m
+            [36m</label>[39m
+            [36m<label[39m
+              [33mclass[39m=[32m"space-y-1 text-xs font-bold text-[var(--color-soft-ink)]"[39m
+            [36m>[39m
+              [36m<span>[39m
+                [0mStatus[0m
+              [36m</span>[39m
+              [36m<select[39m
+                [33maria-label[39m=[32m"Status filter"[39m
+                [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white px-2 text-sm font-medium text-[var(--color-ink)]"[39m
+              [36m/>[39m
+            [36m</label>[39m
+            [36m<label[39m
+              [33mclass[39m=[32m"space-y-1 text-xs font-bold text-[var(--color-soft-ink)]"[39m
+            [36m>[39m
+              [36m<span>[39m
+                [0mRisk[0m
+              [36m</span>[39m
+              [36m<select[39m
+                [33maria-label[39m=[32m"Risk filter"[39m
+                [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white px-2 text-sm font-medium text-[var(--color-ink)]"[39m
+              [36m/>[39m
+            [36m</label>[39m
+            [36m<label[39m
+              [33mclass[39m=[32m"space-y-1 text-xs font-bold text-[var(--color-soft-ink)]"[39m
+            [36m>[39m
+              [36m<span>[39m
+                [0mSort[0m
+              [36m</span>[39m
+              [36m<select[39m
+                [33maria-label[39m=[32m"Sort creators"[39m
+                [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white px-2 text-sm font-medium text-[var(--color-ink)]"[39m
+              [36m/>[39m
+            [36m</label>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"space-y-1 text-xs font-bold text-[var(--color-soft-ink)]"[39m
+            [36m>[39m
+              [36m<span>[39m
+                [0mQueue[0m
+              [36m</span>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex h-9 items-center rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-sky)] px-3 text-sm font-medium text-[var(--color-ink)]"[39m
+              [36m>[39m
+                [0m1[0m
+                [0m creators[0m
+              [36m</div>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</section>[39m
+        [36m<nav[39m
+          [33maria-label[39m=[32m"Creator queue pages"[39m
+          [33mclass[39m=[32m"flex items-center gap-3"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33mdisabled[39m=[32m""[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0m上一頁 / Previous[0m
+          [36m</button>[39m
+          [36m<span[39m
+            [33maria-live[39m=[32m"polite"[39m
+          [36m>[39m
+            [0m1[0m
+            [0m / [0m
+            [0m1[0m
+          [36m</span>[39m
+          [36m<button[39m
+            [33mdisabled[39m=[32m""[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0m下一頁 / Next[0m
+          [36m</button>[39m
+        [36m</nav>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"space-y-3"[39m
+        [36m>[39m
+          [36m<a[39m
+            [33mdata-creator-id[39m=[32m"a"[39m
+            [33mhref[39m=[32m"#detail"[39m
+          [36m>[39m
+            [0mReturn to this creator[0m
+          [36m</a>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</body>[39m
+[36m</html>[39m
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/routes/-admin.creators-access.test.tsx > restores the selected creator focus and scroll after returning to the same queue
+Error: expect(element).toHaveFocus()
+
+Expected element with focus:
+  <a
+  data-creator-id="a"
+  href="#detail"
+>
+  Return to this creator
+</a>
+Received element with focus:
+  <body>
+  <div>
+    <div
+      class="space-y-4"
+    >
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <div
+          class="grid gap-3 md:grid-cols-[minmax(0,1.4fr)_repeat(3,minmax(0,0.8fr))_minmax(0,0.9fr)]"
+        >
+          <label
+            class="flex min-w-0 items-center gap-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white px-3"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-search h-4 w-4 shrink-0"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="m21 21-4.34-4.34"
+              />
+              <circle
+                cx="11"
+                cy="11"
+                r="8"
+              />
+            </svg>
+            <input
+              aria-label="Search creators"
+              class="h-9 min-w-0 flex-1 bg-transparent text-sm outline-none"
+              placeholder="Search creators"
+              value=""
+            />
+          </label>
+          <label
+            class="space-y-1 text-xs font-bold text-[var(--color-soft-ink)]"
+          >
+            <span>
+              Status
+            </span>
+            <select
+              aria-label="Status filter"
+              class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white px-2 text-sm font-medium text-[var(--color-ink)]"
+            >
+              <option
+                value="all"
+              >
+                all
+              </option>
+              <option
+                value="needs_review"
+              >
+                Needs review
+              </option>
+              <option
+                value="approved"
+              >
+                Approved
+              </option>
+              <option
+                value="flagged"
+              >
+                Flagged
+              </option>
+            </select>
+          </label>
+          <label
+            class="space-y-1 text-xs font-bold text-[var(--color-soft-ink)]"
+          >
+            <span>
+              Risk
+            </span>
+            <select
+              aria-label="Risk filter"
+              class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white px-2 text-sm font-medium text-[var(--color-ink)]"
+            >
+              <option
+                value="all"
+              >
+                all
+              </option>
+              <option
+                value="unknown"
+              >
+                unknown
+              </option>
+              <option
+                value="low"
+              >
+                low
+              </option>
+              <option
+                value="medium"
+              >
+                medium
+              </option>
+              <option
+                value="high"
+              >
+                high
+              </option>
+            </select>
+          </label>
+          <label
+            class="space-y-1 text-xs font-bold text-[var(--color-soft-ink)]"
+          >
+            <span>
+              Sort
+            </span>
+            <select
+              aria-label="Sort creators"
+              class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white px-2 text-sm font-medium text-[var(--color-ink)]"
+            >
+              <option
+                value="last_activity"
+              >
+                last_activity
+              </option>
+              <option
+                value="trust_score"
+              >
+                trust_score
+              </option>
+              <option
+                value="level"
+              >
+                level
+              </option>
+              <option
+                value="social_freshness"
+              >
+                social_freshness
+              </option>
+            </select>
+          </label>
+          <div
+            class="space-y-1 text-xs font-bold text-[var(--color-soft-ink)]"
+          >
+            <span>
+              Queue
+            </span>
+            <div
+              class="flex h-9 items-center rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-sky)] px-3 text-sm font-medium text-[var(--color-ink)]"
+            >
+              1
+               creators
+            </div>
+          </div>
+        </div>
+      </section>
+      <nav
+        aria-label="Creator queue pages"
+        class="flex items-center gap-3"
+      >
+        <button
+          disabled=""
+          type="button"
+        >
+          上一頁 / Previous
+        </button>
+        <span
+          aria-live="polite"
+        >
+          1
+           /·
+          1
+        </span>
+        <button
+          disabled=""
+          type="button"
+        >
+          下一頁 / Next
+        </button>
+      </nav>
+      <div
+        class="space-y-3"
+      >
+        <a
+          data-creator-id="a"
+          href="#detail"
+        >
+          Return to this creator
+        </a>
+      </div>
+    </div>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style, option
+<html>
+  <head />
+  <body>
+    <div>
+      <div
+        class="space-y-4"
+      >
+        <section
+          class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+        >
+          <div
+            class="grid gap-3 md:grid-cols-[minmax(0,1.4fr)_repeat(3,minmax(0,0.8fr))_minmax(0,0.9fr)]"
+          >
+            <label
+              class="flex min-w-0 items-center gap-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white px-3"
+            >
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-search h-4 w-4 shrink-0"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="m21 21-4.34-4.34"
+                />
+                <circle
+                  cx="11"
+                  cy="11"
+                  r="8"
+                />
+              </svg>
+              <input
+                aria-label="Search creators"
+                class="h-9 min-w-0 flex-1 bg-transparent text-sm outline-none"
+                placeholder="Search creators"
+                value=""
+              />
+            </label>
+            <label
+              class="space-y-1 text-xs font-bold text-[var(--color-soft-ink)]"
+            >
+              <span>
+                Status
+              </span>
+              <select
+                aria-label="Status filter"
+                class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white px-2 text-sm font-medium text-[var(--color-ink)]"
+              />
+            </label>
+            <label
+              class="space-y-1 text-xs font-bold text-[var(--color-soft-ink)]"
+            >
+              <span>
+                Risk
+              </span>
+              <select
+                aria-label="Risk filter"
+                class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white px-2 text-sm font-medium text-[var(--color-ink)]"
+              />
+            </label>
+            <label
+              class="space-y-1 text-xs font-bold text-[var(--color-soft-ink)]"
+            >
+              <span>
+                Sort
+              </span>
+              <select
+                aria-label="Sort creators"
+                class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white px-2 text-sm font-medium text-[var(--color-ink)]"
+              />
+            </label>
+            <div
+              class="space-y-1 text-xs font-bold text-[var(--color-soft-ink)]"
+            >
+              <span>
+                Queue
+              </span>
+              <div
+                class="flex h-9 items-center rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-sky)] px-3 text-sm font-medium text-[var(--color-ink)]"
+              >
+                1
+                 creators
+              </div>
+            </div>
+          </div>
+        </section>
+        <nav
+          aria-label="Creator queue pages"
+          class="flex items-center gap-3"
+        >
+          <button
+            disabled=""
+            type="button"
+          >
+            上一頁 / Previous
+          </button>
+          <span
+            aria-live="polite"
+          >
+            1
+             / 
+            1
+          </span>
+          <button
+            disabled=""
+            type="button"
+          >
+            下一頁 / Next
+          </button>
+        </nav>
+        <div
+          class="space-y-3"
+        >
+          <a
+            data-creator-id="a"
+            href="#detail"
+          >
+            Return to this creator
+          </a>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
+ ❯ src/routes/-admin.creators-access.test.tsx:35:33
+     33|   render(<QueryClientProvider client={qc}><C/></QueryClientProvider>);
+     34|   const row=await screen.findByText("Return to this creator");
+     35|   await waitFor(()=>expect(row).toHaveFocus());
+       |                                 ^
+     36|   expect(scroll).toHaveBeenCalledWith({top:340,behavior:"instant"});
+     37|   expect(sessionStorage.getItem("adfocate-queue-focus")).toBeNull();
+ ❯ runWithExpensiveErrorDiagnosticsDisabled node_modules/@testing-library/dom/dist/config.js:47:12
+ ❯ checkCallback node_modules/@testing-library/dom/dist/wait-for.js:124:77
+ ❯ Timeout.checkRealTimersCallback node_modules/@testing-library/dom/dist/wait-for.js:118:16
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 2 passed (3)
+   Start at  02:02:57
+   Duration  8.03s (transform 238ms, setup 821ms, collect 564ms, tests 1.20s, environment 3.57s, prepare 1.10s)
+

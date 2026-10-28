@@ -1,0 +1,107 @@
+{
+  "checkerSha256": "8cbf3244ffb50aaf1cb4fc7d196d7bc7661e8e0f143145f07a6e0d361d811be7",
+  "preseal": {
+    "command": [
+      "C:\\Python314\\python.exe",
+      "docs/verification/D19-assistant-offline-20261026/verify-assistant.py",
+      "--preseal"
+    ],
+    "startedAt": "2026-10-25T17:18:42.201707+00:00",
+    "endedAt": "2026-10-25T17:18:42.800018+00:00",
+    "exit": 0,
+    "stdout": "{\"status\": \"PASS_OFFLINE_ASSISTANT_ASSERTIONS_SEAL_PENDING\", \"sourceFingerprint\": \"e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993\", \"sourceRecordsUnchanged\": 788, \"standaloneTests\": {\"passed\": 8, \"failed\": 0, \"skipped\": 0}, \"targetedLintAndType\": \"PASS\", \"retainedNativeFull\": {\"passed\": 2129, \"failed\": 0, \"skipped\": 363}, \"retainedLegacyMemory\": {\"passed\": 7, \"failed\": 0, \"skipped\": 0}, \"countsMustRemainSeparate\": true, \"casesWithNewEvidence\": [\"UC-C19\", \"UC-Q04\", \"UC-Q05\"], \"originalCasesPreserved\": 107, \"priorEvidenceRecordsPreserved\": 2196, \"currentEvidenceRecords\": null, \"initialEvidenceWriterFailurePreserved\": true, \"c2SourceManifestApprovalUnchanged\": true, \"c2ApprovalPending\": true, \"actualTargetCalls\": 0, \"actualSdkClients\": 0, \"actualProviderCalls\": 0, \"incidentOpen\": true, \"releaseHold\": true, \"providerEnabled\": false, \"wholeR1Verified\": false}\n",
+    "stderr": "",
+    "result": {
+      "status": "PASS_OFFLINE_ASSISTANT_ASSERTIONS_SEAL_PENDING",
+      "sourceFingerprint": "e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993",
+      "sourceRecordsUnchanged": 788,
+      "standaloneTests": {
+        "passed": 8,
+        "failed": 0,
+        "skipped": 0
+      },
+      "targetedLintAndType": "PASS",
+      "retainedNativeFull": {
+        "passed": 2129,
+        "failed": 0,
+        "skipped": 363
+      },
+      "retainedLegacyMemory": {
+        "passed": 7,
+        "failed": 0,
+        "skipped": 0
+      },
+      "countsMustRemainSeparate": true,
+      "casesWithNewEvidence": [
+        "UC-C19",
+        "UC-Q04",
+        "UC-Q05"
+      ],
+      "originalCasesPreserved": 107,
+      "priorEvidenceRecordsPreserved": 2196,
+      "currentEvidenceRecords": null,
+      "initialEvidenceWriterFailurePreserved": true,
+      "c2SourceManifestApprovalUnchanged": true,
+      "c2ApprovalPending": true,
+      "actualTargetCalls": 0,
+      "actualSdkClients": 0,
+      "actualProviderCalls": 0,
+      "incidentOpen": true,
+      "releaseHold": true,
+      "providerEnabled": false,
+      "wholeR1Verified": false
+    }
+  },
+  "scope": "File-only evidence checker; not an application/memory test suite or physical-target runtime. Final terminal receipt is captured, resealed, then checked again.",
+  "final": {
+    "command": [
+      "C:\\Python314\\python.exe",
+      "docs/verification/D19-assistant-offline-20261026/verify-assistant.py"
+    ],
+    "startedAt": "2026-10-25T17:20:53.692801+00:00",
+    "endedAt": "2026-10-25T17:20:55.261727+00:00",
+    "exit": 0,
+    "stdout": "{\"status\": \"PASS_OFFLINE_ASSISTANT_BOUNDARY_NOT_REAL_AUTH_RLS_PROVIDER_ACCEPTANCE\", \"sourceFingerprint\": \"e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993\", \"sourceRecordsUnchanged\": 788, \"standaloneTests\": {\"passed\": 8, \"failed\": 0, \"skipped\": 0}, \"targetedLintAndType\": \"PASS\", \"retainedNativeFull\": {\"passed\": 2129, \"failed\": 0, \"skipped\": 363}, \"retainedLegacyMemory\": {\"passed\": 7, \"failed\": 0, \"skipped\": 0}, \"countsMustRemainSeparate\": true, \"casesWithNewEvidence\": [\"UC-C19\", \"UC-Q04\", \"UC-Q05\"], \"originalCasesPreserved\": 107, \"priorEvidenceRecordsPreserved\": 2196, \"currentEvidenceRecords\": 2249, \"initialEvidenceWriterFailurePreserved\": true, \"c2SourceManifestApprovalUnchanged\": true, \"c2ApprovalPending\": true, \"actualTargetCalls\": 0, \"actualSdkClients\": 0, \"actualProviderCalls\": 0, \"incidentOpen\": true, \"releaseHold\": true, \"providerEnabled\": false, \"wholeR1Verified\": false}\n",
+    "stderr": "",
+    "result": {
+      "status": "PASS_OFFLINE_ASSISTANT_BOUNDARY_NOT_REAL_AUTH_RLS_PROVIDER_ACCEPTANCE",
+      "sourceFingerprint": "e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993",
+      "sourceRecordsUnchanged": 788,
+      "standaloneTests": {
+        "passed": 8,
+        "failed": 0,
+        "skipped": 0
+      },
+      "targetedLintAndType": "PASS",
+      "retainedNativeFull": {
+        "passed": 2129,
+        "failed": 0,
+        "skipped": 363
+      },
+      "retainedLegacyMemory": {
+        "passed": 7,
+        "failed": 0,
+        "skipped": 0
+      },
+      "countsMustRemainSeparate": true,
+      "casesWithNewEvidence": [
+        "UC-C19",
+        "UC-Q04",
+        "UC-Q05"
+      ],
+      "originalCasesPreserved": 107,
+      "priorEvidenceRecordsPreserved": 2196,
+      "currentEvidenceRecords": 2249,
+      "initialEvidenceWriterFailurePreserved": true,
+      "c2SourceManifestApprovalUnchanged": true,
+      "c2ApprovalPending": true,
+      "actualTargetCalls": 0,
+      "actualSdkClients": 0,
+      "actualProviderCalls": 0,
+      "incidentOpen": true,
+      "releaseHold": true,
+      "providerEnabled": false,
+      "wholeR1Verified": false
+    }
+  }
+}

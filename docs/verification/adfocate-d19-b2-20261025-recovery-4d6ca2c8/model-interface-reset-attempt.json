@@ -1,0 +1,11 @@
+{
+  "at": "2026-10-25T09:54:39.305456+00:00",
+  "kernelResetOutcome": "js kernel reset",
+  "reinitializedOnce": true,
+  "outcome": "failed to write kernel assets: 系統找不到指定的路徑。 (os error 3)",
+  "uiAppsListed": false,
+  "uiWindowStateReturned": false,
+  "selectedModelObserved": false,
+  "modelSwitchPerformed": false,
+  "furtherRetryOrAlternateBypass": false
+}

@@ -1,0 +1,12 @@
+{
+  "runId": "560c5421-28dc-45f0-bdd5-56f32cffdb02",
+  "bodyPersistedAfterRefresh": true,
+  "introductionSeparated": true,
+  "noInventedLessons": true,
+  "trustGateRetained": true,
+  "retry": {
+    "status": 503,
+    "explicitlyMockedResponses": 2,
+    "recovery": "retry reads real persisted local API data"
+  }
+}

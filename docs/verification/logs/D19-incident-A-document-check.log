@@ -1,0 +1,3 @@
+command: python docs/verification/D19-incident-A-check-records.py
+{"status": "PASS_LOCAL_RECORD_INTEGRITY_Q1_PARTIAL_NO_PREIMAGE_NO_R1_PROMOTION", "checksPassed": 170, "sealedEvidenceCount": 1209, "sourceRecords": 353, "applicationTestConfigMigrationChanges": 0, "priorEvidenceUnchanged": 1159, "Q1": "PARTIAL", "Q2": "NO_CREDIBLE_READABLE_PREIMAGE_FOUND", "Q3": "SCOPED_CURRENT_STATE_VERIFIED", "exactRestoreSupported": false, "incidentOpen": true, "releaseHold": true, "realProviderEnabled": false, "businessDataActions": 0, "newApplicationOrAcceptanceTestRuns": 0}
+This is local document/hash verification, not product acceptance.

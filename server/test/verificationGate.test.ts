@@ -1,5 +1,7 @@
+import { FIXTURE_WORKSPACE_SLUG } from "./helpers";
+import { fixtureName } from "./helpers";
 import { describe, it, expect, beforeAll, afterAll, vi } from "vitest";
-import { createApp } from "../app";
+import { createFixtureStaffApp as createApp } from "./fixtureStaffTransport";
 import { cleanup, hasSupabaseEnv, makeCreator, makeMission, serviceForTests } from "./helpers";
 
 // Mock the provider so confirm finds the code we inject into the returned bio.
@@ -22,7 +24,7 @@ const suite = hasSupabaseEnv ? describe : describe.skip;
 function req(path: string, jwt: string, init: RequestInit = {}) {
   return app.request(`/api${path}`, {
     ...init,
-    headers: { Authorization: `Bearer ${jwt}`, "X-Workspace-Slug": "demo", "Content-Type": "application/json", ...(init.headers ?? {}) },
+    headers: { Authorization: `Bearer ${jwt}`, "X-Workspace-Slug": FIXTURE_WORKSPACE_SLUG, "Content-Type": "application/json", ...(init.headers ?? {}) },
   });
 }
 
@@ -32,7 +34,7 @@ suite("verification + L2 gate", () => {
 
   beforeAll(async () => {
     await cleanup();
-    c = await makeCreator("verify-gate@test.local");
+    c = await makeCreator(fixtureName("verify-gate@test.local"));
     const created = await (await req("/social/accounts", c.jwt, {
       method: "POST", body: JSON.stringify({ platform: "instagram", handle: "@verifyme" }),
     })).json();
@@ -65,18 +67,18 @@ suite("verification + L2 gate", () => {
   });
 
   it("untrusted high-XP creator is blocked from an L2 mission with verification_required", async () => {
-    const u = await makeCreator("xp-no-verify@test.local");
+    const u = await makeCreator(fixtureName("xp-no-verify@test.local"));
     await serviceForTests().from("creators").update({ xp: 5000, level: "L2" }).eq("id", u.userId); // raw L2, no verified handle
-    const mission = await makeMission({ slug: "test-l2-open", access_type: "open", required_level: "L2" });
+    const mission = await makeMission({ slug: fixtureName("test-l2-open"), access_type: "open", required_level: "L2" });
     const res = await req(`/missions/${mission.slug}/join`, u.jwt, { method: "POST" });
     expect(res.status).toBe(409);
     expect((await res.json()).code).toBe("verification_required");
   });
 
   it("low-XP creator gets level_locked (not verification_required)", async () => {
-    const u = await makeCreator("low-xp@test.local");
+    const u = await makeCreator(fixtureName("low-xp@test.local"));
     await serviceForTests().from("creators").update({ xp: 100, level: "L0" }).eq("id", u.userId);
-    const mission = await makeMission({ slug: "test-l2-open2", access_type: "open", required_level: "L2" });
+    const mission = await makeMission({ slug: fixtureName("test-l2-open2"), access_type: "open", required_level: "L2" });
     const res = await req(`/missions/${mission.slug}/join`, u.jwt, { method: "POST" });
     expect(res.status).toBe(409);
     expect((await res.json()).code).toBe("level_locked");
@@ -84,13 +86,13 @@ suite("verification + L2 gate", () => {
 
   it("verified + enough XP can join the L2 mission", async () => {
     await serviceForTests().from("creators").update({ xp: 5000, level: "L2" }).eq("id", c.userId); // c has a verified handle
-    const mission = await makeMission({ slug: "test-l2-open3", access_type: "open", required_level: "L2" });
+    const mission = await makeMission({ slug: fixtureName("test-l2-open3"), access_type: "open", required_level: "L2" });
     const res = await req(`/missions/${mission.slug}/join`, c.jwt, { method: "POST" });
     expect(res.status).toBe(200);
   });
 
   it("operator manual-verify flips a handle without the provider", async () => {
-    const u = await makeCreator("manual-verify@test.local");
+    const u = await makeCreator(fixtureName("manual-verify@test.local"));
     const acc = await (await req("/social/accounts", u.jwt, {
       method: "POST", body: JSON.stringify({ platform: "threads", handle: "manualme" }),
     })).json();

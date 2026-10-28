@@ -1,0 +1,89 @@
+{
+  "sourceFingerprint": "e83998d178061043688016056a5a78fc61df58bac28f3d0d0b66d639306037bd",
+  "schemaSourceChanged": false,
+  "migrationsRawHashesPreserved": 72,
+  "protectedEntries": 42,
+  "protectedManifestDigest": "3e6809f9a51b1ac7ebb9f770160aab27f02523ebf69fc47f8fe38f44d05f6363",
+  "bootstrapProfileDigest": "741ffaa255017fe377c416ce4ca3214793b0379db45001c15c8952ebd19fc41f",
+  "actualImageInitialization": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/db-foundation.json",
+  "actualPrestartAndPostImageRoleGuardsPassed": true,
+  "bootstrapOid10": "supabase_admin SUPERUSER true; ordinary named DB role OID16384 SUPERUSER false",
+  "lastObservedApplicationCatalog": {
+    "authUsers": 0,
+    "publicTables": 0,
+    "bootstrapRole": {
+      "oid": "10",
+      "name": "supabase_admin",
+      "login": true,
+      "superuser": true
+    },
+    "serverVersion": "17.6",
+    "regularNamedRoles": [
+      {
+        "oid": "16446",
+        "name": "authenticator",
+        "login": true,
+        "superuser": false
+      },
+      {
+        "oid": "16384",
+        "name": "postgres",
+        "login": true,
+        "superuser": false
+      },
+      {
+        "oid": "10",
+        "name": "supabase_admin",
+        "login": true,
+        "superuser": true
+      },
+      {
+        "oid": "16504",
+        "name": "supabase_auth_admin",
+        "login": true,
+        "superuser": false
+      },
+      {
+        "oid": "16506",
+        "name": "supabase_storage_admin",
+        "login": true,
+        "superuser": false
+      }
+    ],
+    "applicationHistory": null,
+    "authSchemaMigrations": 7
+  },
+  "lastObservedApplicationCatalogScope": "After immutable DB image initialization, before application migrations and later Auth/Storage service start; not a new full application catalog capture.",
+  "applicationMigrationsApplied": 72,
+  "compatibilityStatementsApplied": 9,
+  "historicalCheckpointCreated": true,
+  "fullObjectsRpcsGrantsRlsHistoryDiff": {
+    "status": "PASS_ORIGIN_C1",
+    "sections": 8,
+    "schemaHistory": 72,
+    "proof": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/application-catalog-after-compatibility.json",
+    "finalUnchanged": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/state-after-independent-ui.json"
+  },
+  "immutableMigrationSeedBaseline": {
+    "status": "CAPTURED_AND_ORIGINAL_ROWS_REVALIDATED_AFTER_PHASES",
+    "file": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/immutable-bootstrap-baseline.json",
+    "buckets": 4,
+    "literalBucketInsertAttempts": 5,
+    "academyContentRows": 31,
+    "contentCategories": 2,
+    "earningsBalanceSeedRows": 0,
+    "AuthHistory": 77,
+    "StorageHistory": 61
+  },
+  "systemServiceCredentialSetup": "Completed only for new C1 authenticator/Auth/Storage system DB credentials under original C1; no human/product staff role or membership changes",
+  "noOldMigrationChecksumChanged": true,
+  "noResetDbPushSeedSql": true,
+  "providerProfileAlignment": {
+    "status": "REFERENCED_PROFILE_MATCHED_EXACTLY",
+    "reference": "D19-pristine-rpc-provider-profile-alignment.json",
+    "currentProof": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/provider-profile-alignment.json",
+    "immutableOldMigrationsChanged": false
+  },
+  "currentSourceDatabaseSchemaWrites": false,
+  "newSourceRuntime": "NOT_RUN"
+}

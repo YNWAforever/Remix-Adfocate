@@ -1,0 +1,23 @@
+{
+  "originalCsvFieldsPreserved": true,
+  "originalAuditResultPreserved": true,
+  "priorD08D09D12D13D14D15D17Preserved": true,
+  "D15ContentCasesUnchanged": true,
+  "sourceFilesVerified": 303,
+  "changedCodeFiles": 34,
+  "fullPass": 1849,
+  "skip": 363,
+  "audit16": 16,
+  "original194": 194,
+  "realApi": 8,
+  "browser": 4,
+  "unclassifiedCredentialMatches": 0,
+  "knownHistoricalFixtures": 1,
+  "taskOnlyReversePatchCheck": "pass; --ignore-space-change handles mixed Windows EOLs; all canonical-LF source hashes verified",
+  "oldSchemaHistorySqlPreserved": true,
+  "noProductionOrRealRoleMembershipWrites": true,
+  "canDeploy": false,
+  "canEnablePilot": false,
+  "content": "BLOCKED_CONTENT_NOT_PROVIDED",
+  "nextTask": "D19"
+}

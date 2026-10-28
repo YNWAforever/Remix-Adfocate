@@ -1,0 +1,573 @@
+
+> test
+> vitest run --maxWorkers=2 --minWorkers=1 --reporter=default --reporter=json --outputFile=docs/verification/logs/full-suite.json
+
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ✓ server/test/active-mission-schema.test.ts (54 tests | 9 skipped) 57ms
+ ✓ server/test/active-missions.test.ts (93 tests | 8 skipped) 129ms
+ ✓ src/routes/-_app.my.$submissionId.test.tsx (25 tests) 909ms
+ ✓ src/routes/-admin.active-missions.test.tsx (35 tests) 2179ms
+ ✓ server/test/notifications-triggers.test.ts (31 tests | 11 skipped) 7ms
+ ✓ src/lib/queries/activeMission.test.tsx (28 tests) 532ms
+ ↓ server/test/campaigns.test.ts (20 tests | 20 skipped)
+ ✓ server/test/reward-handoffs.test.ts (16 tests | 13 skipped) 4ms
+ ✓ server/test/admin-reward-handoffs.test.ts (53 tests) 57ms
+ ✓ src/lib/queries/activeMission.race.test.tsx (21 tests) 2669ms
+ ✓ src/components/admin/ActiveMissionReview.test.tsx (21 tests) 820ms
+ ✓ server/test/admin.test.ts (27 tests | 16 skipped) 13ms
+ ✓ server/lib/activeMission/proofUrl.test.ts (67 tests) 61ms
+ ✓ src/components/admin/MissionCompletionReview.test.tsx (17 tests) 582ms
+ ✓ src/components/active-mission/active-mission.test.tsx (16 tests) 390ms
+ ✓ src/lib/activationAnalytics.test.ts (35 tests) 12ms
+ ↓ server/test/operator-crm.test.ts (15 tests | 15 skipped)
+ ✓ server/test/missions.test.ts (26 tests | 17 skipped) 9ms
+ ✓ src/components/active-mission/active-mission.review.test.tsx (15 tests) 349ms
+ ❯ scripts/release/manifest.test.ts (16 tests | 3 failed) 4103ms
+   × release migration manifest > does not replace an existing artifact on invalid write and leaves no temp file 201ms
+     → EPERM: operation not permitted, rename 'C:\Users\laich\AppData\Local\Packages\sandbox.{4e5f2e88-48c7-4746-aae6-d6012c17de95}\AC\Temp\adfocate-manifest-iu9Zcb\supabase\release-manifest.json.tmp-48720-6296d98d-94da-40b8-b920-510a24ad05ad' -> 'C:\Users\laich\AppData\Local\Packages\sandbox.{4e5f2e88-48c7-4746-aae6-d6012c17de95}\AC\Temp\adfocate-manifest-iu9Zcb\supabase\release-manifest.json'
+   × release migration manifest > runs write as a direct vite-node CLI and prints its digest 841ms
+     → Command failed: C:\Program Files\nodejs\node.exe C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\node_modules\vite-node\vite-node.mjs --script C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\scripts\release\manifest-cli.ts write
+node:internal/fs/promises:785
+  return await PromisePrototypeThen(
+         ^
+
+Error: EPERM: operation not permitted, rename 'C:\Users\laich\AppData\Local\Packages\sandbox.{4e5f2e88-48c7-4746-aae6-d6012c17de95}\AC\Temp\adfocate-manifest-CooMvN\supabase\release-manifest.json.tmp-37472-1d67753c-4beb-42fc-a4ab-19ee2202098b' -> 'C:\Users\laich\AppData\Local\Packages\sandbox.{4e5f2e88-48c7-4746-aae6-d6012c17de95}\AC\Temp\adfocate-manifest-CooMvN\supabase\release-manifest.json'
+    at Proxy.rename (node:internal/fs/promises:785:10)
+    at writeManifest (C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\scripts\release\manifest-cli.ts:27:5)
+    at C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\scripts\release\manifest-cli.ts:53:27
+    at ViteNodeRunner.runModule (file:///C:/Users/laich/Documents/Adfocate/worktrees/creator-activation-spine/node_modules/vite-node/dist/client.mjs:399:5)
+    at ViteNodeRunner.directRequest (file:///C:/Users/laich/Documents/Adfocate/worktrees/creator-activation-spine/node_modules/vite-node/dist/client.mjs:381:5)
+    at ViteNodeRunner.cachedRequest (file:///C:/Users/laich/Documents/Adfocate/worktrees/creator-activation-spine/node_modules/vite-node/dist/client.mjs:206:14)
+    at ViteNodeRunner.executeFile (file:///C:/Users/laich/Documents/Adfocate/worktrees/creator-activation-spine/node_modules/vite-node/dist/client.mjs:169:12)
+    at CAC.run (file:///C:/Users/laich/Documents/Adfocate/worktrees/creator-activation-spine/node_modules/vite-node/dist/cli.mjs:99:5) {
+  errno: -4048,
+  code: 'EPERM',
+  syscall: 'rename',
+  path: 'C:\\Users\\laich\\AppData\\Local\\Packages\\sandbox.{4e5f2e88-48c7-4746-aae6-d6012c17de95}\\AC\\Temp\\adfocate-manifest-CooMvN\\supabase\\release-manifest.json.tmp-37472-1d67753c-4beb-42fc-a4ab-19ee2202098b',
+  dest: 'C:\\Users\\laich\\AppData\\Local\\Packages\\sandbox.{4e5f2e88-48c7-4746-aae6-d6012c17de95}\\AC\\Temp\\adfocate-manifest-CooMvN\\supabase\\release-manifest.json'
+}
+
+Node.js v24.18.0
+
+   ✓ release migration manifest > returns a nonzero usage error for a missing direct CLI command 585ms
+   ✓ release migration manifest > returns a nonzero usage error for a unsupported direct CLI command 567ms
+   × release migration manifest > detects checksum drift, missing files, duplicates, and bad dependencies 138ms
+     → expected [ …(8) ] to deeply equal ArrayContaining{…}
+ ✓ server/test/active-missions-publication-operator.test.ts (11 tests) 43ms
+ ✓ src/routes/-_app.login.test.tsx (19 tests) 520ms
+ ✓ server/lib/social/service.test.ts (15 tests) 28ms
+ ✓ server/test/fixtures/publicationProofRelease.test.ts (21 tests | 2 skipped) 17ms
+ ✓ src/routes/-_app.onboarding.test.tsx (16 tests) 543ms
+ ✓ src/routes/-_app.home.test.tsx (15 tests) 526ms
+ ✓ server/test/reward-contracts.test.ts (8 tests | 5 skipped) 9ms
+ ✓ src/routes/-admin.reward-handoffs.test.tsx (12 tests) 410ms
+ ❯ scripts/release/preflight.test.ts (10 tests | 1 failed) 26ms
+   × release preflight > has a validator for every capability declared by the committed release manifest 12ms
+     → expected [ …(463) ] to have a length of 433 but got 463
+ ✓ src/lib/adminRewardHandoff.test.ts (12 tests) 17ms
+ ✓ src/components/active-mission/active-mission.i18n.test.tsx (13 tests) 340ms
+ ✓ src/components/admin/RewardHandoffQueue.test.tsx (19 tests) 490ms
+ ↓ server/test/missionAuthoring.test.ts (23 tests | 23 skipped)
+ ✓ scripts/release/observer.test.ts (8 tests) 13ms
+ ✓ src/lib/admin.test.ts (13 tests) 18ms
+ ✓ src/lib/i18n.test.tsx (12 tests) 79ms
+ ↓ server/test/profile-media-schema.test.ts (9 tests | 9 skipped)
+ ✓ src/routes/-_app.mission.$missionSlug.test.tsx (19 tests) 374ms
+ ↓ server/test/publication-proof-review-live.test.ts (2 tests | 2 skipped)
+ ✓ server/test/review-hardening-schema.test.ts (9 tests) 10ms
+ ✓ server/lib/missionAuthoring.test.ts (32 tests) 9ms
+ ↓ server/test/campaigns-s2.test.ts (5 tests | 5 skipped)
+ ✓ src/routes/-admin.missions.editor.test.tsx (12 tests) 787ms
+ ❯ src/components/creator-activation.test.tsx (10 tests | 1 failed) 175ms
+   × EarningsSummaryCard > keeps available and pending wallet balances distinct in English 18ms
+     → expect(element).toHaveAttribute("href", "/wallet/earnings") // element.getAttribute("href") === "/wallet/earnings"
+
+Expected the element to have attribute:
+  href="/wallet/earnings"
+Received:
+  href="/wallet"
+ ✓ server/lib/activeMission/state.test.ts (24 tests) 7ms
+ ✓ server/test/applications.test.ts (8 tests | 7 skipped) 3ms
+ ↓ server/test/publication-proof-asset-grant-live.test.ts (3 tests | 3 skipped)
+ ✓ src/routes/-admin.missions.manage.test.tsx (5 tests) 674ms
+   ✓ MissionEditor active workflow authoring > adds, edits, and removes deliverables and checklist items in the exact save payload 309ms
+ ✓ src/components/CreatorProfileMediaPanel.test.tsx (7 tests) 229ms
+ ✓ src/lib/activeMission.test.ts (17 tests) 5ms
+ ✓ server/lib/activeMission/metrics.test.ts (11 tests) 4ms
+ ❯ server/devApi.transport.test.ts (7 tests | 7 failed) 347ms
+   × Vite development API middleware transport contracts > intercepts exact /api and nested /api paths without swallowing /apix 20ms
+     → connect EACCES 127.0.0.1:53382
+   × Vite development API middleware transport contracts > forwards method, body, query, authorization, and cookie headers 4ms
+     → connect EACCES 127.0.0.1:53386
+   × Vite development API middleware transport contracts > preserves duplicate Set-Cookie plus status, statusText, and other headers 2ms
+     → connect EACCES 127.0.0.1:53388
+   × Vite development API middleware transport contracts > completes HEAD and null-body responses without writing a body 2ms
+     → connect EACCES 127.0.0.1:53391
+   × Vite development API middleware transport contracts > delivers response chunks incrementally instead of buffering the full body 7ms
+     → fetch failed
+   × Vite development API middleware transport contracts > cancels the Fetch body when the client aborts 309ms
+     → expected false to be true // Object.is equality
+   × Vite development API middleware transport contracts > completes an app failure as JSON without hanging the Node response 2ms
+     → connect EACCES 127.0.0.1:53398
+ ↓ server/test/profile-media.test.ts (7 tests | 7 skipped)
+ ↓ server/test/publication-proof-operator-read-live.test.ts (2 tests | 2 skipped)
+ ↓ server/test/public-passport.test.ts (3 tests | 3 skipped)
+ ✓ server/test/run-integration-tests.test.ts (6 tests) 8ms
+ ✓ scripts/release/pilot.test.ts (6 tests) 14ms
+ ✓ src/routes/-_app.auth.reset-password.test.tsx (10 tests) 328ms
+ ✓ server/lib/brandAuth.test.ts (11 tests) 5ms
+ ↓ server/test/passport.test.ts (11 tests | 11 skipped)
+ ❯ src/routes/-operator.creators.$creatorId.test.tsx (3 tests | 3 failed) 31ms
+   × operator creator detail > renders profile, review metadata, social metrics, notes, mission history, and audit 27ms
+     → useAdminWorkspace must be used within AdminWorkspaceProvider
+   × operator creator detail > adds an internal note 2ms
+     → useAdminWorkspace must be used within AdminWorkspaceProvider
+   × operator creator detail > requires a note before saving a flagged review 2ms
+     → useAdminWorkspace must be used within AdminWorkspaceProvider
+ ✓ src/lib/notifications.test.ts (21 tests) 12ms
+ ✓ src/routes/-_app.auth.callback.test.tsx (11 tests) 419ms
+ ✓ src/lib/authFeedback.test.ts (18 tests) 6ms
+ ✓ src/components/admin/WorkspaceSwitcher.test.tsx (6 tests) 193ms
+ ✓ src/components/active-mission/RewardPendingCard.review.test.tsx (5 tests) 271ms
+ ✓ server/lib/missionMatch.test.ts (20 tests) 7ms
+Warning: Route file "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/_site.smoke.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\src\routes\-_site.smoke.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+{"status":"failed","error":"RELEASE_PILOT_OBSERVATIONS_PATH is required"}
+ ❯ scripts/release/cli.test.ts (7 tests | 2 failed) 5367ms
+   × release npm entrypoints > fails closed when release:execute runs without database configuration 23ms
+     → expected '' to contain 'RELEASE_DATABASE_URL is required'
+   × release npm entrypoints > fails closed when release:evidence runs without an input file 13ms
+     → expected '' to contain 'usage: evidence.ts --input'
+   ✓ guarded pilot/observer commands > executes the npm/vite-node evaluate boundary even when VITEST is inherited 3151ms
+   ✓ guarded pilot/observer commands > executes the real npm entrypoint and fails closed with JSON 2156ms
+ ✓ src/routes/_site.smoke.test.tsx (14 tests) 1214ms
+ ✓ src/lib/creatorActivation.test.ts (12 tests) 9ms
+ ❯ scripts/release/supabase-workflow-contract.test.ts (9 tests | 3 failed) 19ms
+   × Supabase production workflow > rejects a scheduled trigger 7ms
+     → expected [Function] to throw an error
+   × Supabase production workflow > rejects a pull request trigger 1ms
+     → expected [Function] to throw an error
+   × Supabase production workflow > rejects a reusable workflow trigger 1ms
+     → expected [Function] to throw an error
+ ✓ server/lib/social/rapidApi.test.ts (8 tests) 18ms
+ ✓ scripts/release/deployment.test.ts (8 tests) 23ms
+ ↓ server/test/social-schema.test.ts (4 tests | 4 skipped)
+ ↓ server/test/operator-crm-schema.test.ts (4 tests | 4 skipped)
+ ✓ scripts/release/rehearsal.test.ts (9 tests) 25ms
+ ✓ server/lib/radar.test.ts (10 tests) 5ms
+ ✓ server/test/staffAuth.test.ts (17 tests) 7ms
+ ✓ src/routes/-operator.missions.$missionId.test.tsx (2 tests) 206ms
+ ✓ scripts/release/executor.test.ts (5 tests) 9ms
+ ✓ server/lib/passport.test.ts (21 tests) 6ms
+ ✓ src/components/active-mission/RewardPendingCard.test.tsx (5 tests) 143ms
+ ✓ server/lib/insights.test.ts (8 tests) 5ms
+ ✓ src/components/active-mission/ProofAttemptHistory.review.test.tsx (3 tests) 167ms
+ ✓ src/lib/activeMission.mixed.test.ts (11 tests) 4ms
+ ✓ server/lib/activeMission/publicationProof.test.ts (8 tests) 7ms
+ ✓ scripts/release/evidence.test.ts (7 tests) 20ms
+ ✓ server/test/me.test.ts (7 tests | 5 skipped) 2ms
+ ↓ server/test/social.test.ts (6 tests | 6 skipped)
+ ✓ src/routes/-_app.profile.test.tsx (6 tests) 185ms
+ ✓ src/routes/-_app.guide.track.$trackId.test.tsx (5 tests) 129ms
+ ✓ server/lib/campaignLeaderboard.test.ts (14 tests) 6ms
+ ↓ server/test/verificationGate.test.ts (6 tests | 6 skipped)
+ ↓ server/test/redemption.test.ts (8 tests | 8 skipped)
+ ✓ server/test/responseDiagnostics.test.ts (5 tests) 12ms
+ ✓ src/lib/useCreatorActivation.test.tsx (4 tests) 20ms
+ ✓ server/lib/llm.test.ts (16 tests) 12ms
+ ✓ scripts/release/target-guard.test.ts (9 tests) 13ms
+ ✓ src/components/admin/ContentEditor.test.tsx (5 tests) 245ms
+ ✓ src/components/SocialTrustPanel.test.tsx (7 tests) 145ms
+ ✓ src/routes/-_app.guide.index.test.tsx (9 tests) 240ms
+ ↓ server/test/fixtures/publicationProofRelease.onboarding.test.ts (2 tests | 2 skipped)
+ ✓ server/lib/contentAuthoring.test.ts (17 tests) 9ms
+ ✓ src/components/components.test.tsx (10 tests) 114ms
+ ↓ server/test/admin-staff.test.ts (7 tests | 7 skipped)
+ ✓ server/lib/social/repo.test.ts (2 tests) 5ms
+ ✓ src/routes/-_app.passport.test.tsx (6 tests) 170ms
+ ✓ src/routes/-_app.mission.index.test.tsx (6 tests) 134ms
+ ✓ src/lib/auth-flow.test.ts (8 tests) 11ms
+ ✓ scripts/release/release-acceptance.test.ts (4 tests) 2295ms
+   ✓ production release foundation acceptance > fails closed at the package rehearsal entrypoint without disposable targets 2292ms
+ ✓ src/audit-tests/operator-continuation.audit.test.tsx (5 tests) 191ms
+ ✓ server/lib/campaignAuthoring.test.ts (11 tests) 3ms
+ ✓ server/lib/profileMedia/service.test.ts (4 tests) 5ms
+ ✓ src/components/admin/AcademyEditor.test.tsx (4 tests) 206ms
+ ↓ server/test/wallet.test.ts (4 tests | 4 skipped)
+ ✓ src/lib/queries/kocmax.test.tsx (6 tests) 380ms
+ ✓ server/test/audit-assistant-persistence.test.ts (4 tests) 14ms
+ ✓ src/routes/-brand.test.tsx (3 tests) 79ms
+ ↓ server/test/match.test.ts (3 tests | 3 skipped)
+ ↓ server/test/content.test.ts (5 tests | 5 skipped)
+ ✓ src/routes/-_app.campaigns.test.tsx (3 tests) 65ms
+ ↓ server/test/onboarding.test.ts (6 tests | 6 skipped)
+ ✓ src/components/AuthFeedback.test.tsx (5 tests) 125ms
+ ✓ src/routes/-_app.match.test.tsx (6 tests) 72ms
+ ✓ src/routes/-admin.insights.test.tsx (3 tests) 135ms
+ ✓ src/routes/-_app.my.test.tsx (2 tests) 60ms
+ ✓ src/components/onboarding/OnboardingShell.test.tsx (5 tests) 107ms
+ ✓ src/routes/-admin.missions.index.test.tsx (2 tests) 275ms
+ ↓ server/test/brand.test.ts (7 tests | 7 skipped)
+ ↓ server/test/adminContent.test.ts (6 tests | 6 skipped)
+ ✓ server/lib/operatorCrm/serializers.test.ts (6 tests) 12ms
+ ✓ server/test/audit-admin-scope.test.ts (5 tests) 13ms
+ ✓ src/lib/-missionMeta.test.ts (10 tests) 5ms
+ ↓ server/test/leveling.test.ts (3 tests | 3 skipped)
+ ↓ server/test/adminAcademy.test.ts (5 tests | 5 skipped)
+ ✓ src/components/active-mission/ProofAttemptHistory.copy.test.tsx (1 test) 113ms
+ ✓ src/routes/-admin.campaigns.test.tsx (2 tests) 202ms
+ ↓ server/test/assistant.test.ts (2 tests | 2 skipped)
+ ✓ src/routes/-brand.resources.index.test.tsx (2 tests) 80ms
+ ✓ src/audit-tests/admin-live-followup.audit.test.tsx (2 tests) 110ms
+ ✓ src/components/assistant/AssistantPanel.test.tsx (4 tests) 107ms
+ ↓ server/test/brandResources.test.ts (5 tests | 5 skipped)
+ ✓ src/routes/-admin.radar.test.tsx (4 tests) 150ms
+ ✓ src/audit-tests/crm-atomicity.audit.test.ts (2 tests) 3ms
+ ✓ server/lib/social/passportSocial.test.ts (5 tests) 4ms
+ ✓ scripts/seed-reward-handoff-acceptance.test.ts (5 tests) 4ms
+ ✓ src/components/admin/AdminSideNav.test.tsx (5 tests) 161ms
+ ✓ server/lib/engagedRoster.test.ts (4 tests) 13ms
+ ↓ server/test/notifications-api.test.ts (5 tests | 5 skipped)
+ ✓ src/components/LevelUpModal.test.tsx (6 tests) 36ms
+ ✓ server/test/cron-daily.test.ts (4 tests) 20ms
+ ✓ src/components/HookPanel.test.tsx (5 tests) 90ms
+ ✓ src/components/-MissionBrief.test.tsx (4 tests) 67ms
+ ✓ server/test/cron-social-refresh.test.ts (4 tests) 17ms
+ ✓ src/components/MissionCommitmentSummary.test.tsx (3 tests) 93ms
+ ✓ src/routes/-app.auth.callback.test.tsx (3 tests) 244ms
+ ✓ src/routes/-_app.gate.test.tsx (3 tests) 6ms
+ ✓ src/components/active-mission/ProofAttemptHistory.reward-locales.test.tsx (2 tests) 89ms
+ ↓ server/test/copilot.test.ts (4 tests | 4 skipped)
+ ↓ server/test/insights.test.ts (4 tests | 4 skipped)
+ ✓ src/components/SideNav.test.tsx (3 tests) 269ms
+ ✓ src/routes/-_app.news.index.test.tsx (2 tests) 24ms
+ ↓ server/test/radar.test.ts (4 tests | 4 skipped)
+ ✓ src/routes/-passport.$token.test.tsx (1 test) 38ms
+ ✓ src/audit-tests/admin-creators.audit.test.tsx (2 tests) 189ms
+ ✓ src/routes/-admin.applications.test.tsx (1 test) 119ms
+ ✓ server/lib/assistant/chat.test.ts (2 tests) 5ms
+ ↓ server/test/academy.test.ts (4 tests | 4 skipped)
+ ✓ src/lib/levels.test.ts (4 tests) 3ms
+ ✓ src/routes/-brand.resources.$slug.test.tsx (1 test) 41ms
+ ❯ server/devApi.test.ts (2 tests | 2 failed) 31ms
+   × Vite development API middleware > routes /api requests to Hono instead of the SPA fallback 26ms
+     → fetch failed
+   × Vite development API middleware > preserves Vite's SPA fallback for non-API requests 4ms
+     → fetch failed
+ ✓ src/components/AcademyTrackCard.test.tsx (3 tests) 35ms
+ ✓ src/audit-tests/admin-decisions.audit.test.tsx (1 test) 115ms
+ ✓ src/lib/brand.test.ts (4 tests) 11ms
+ ✓ src/routes/-admin.submissions.test.tsx (1 test) 82ms
+ ✓ src/components/admin/StaffAuthGate.test.tsx (3 tests) 76ms
+ ✓ src/components/-MissionFacts.test.tsx (5 tests) 80ms
+ ✓ src/routes/-_app.notifications.test.tsx (3 tests) 35ms
+ ↓ server/test/bootstrap.test.ts (2 tests | 2 skipped)
+ ✓ src/components/BottomNav.test.tsx (2 tests) 210ms
+ ✓ src/routes/-admin.engaged.test.tsx (1 test) 54ms
+ ✓ src/routes/-admin.test.tsx (1 test) 43ms
+ ✓ src/components/LevelProgress.test.tsx (4 tests) 30ms
+ ✓ server/lib/academyAuthoring.test.ts (7 tests) 5ms
+ ✓ server/lib/missionActivity.test.ts (2 tests) 3ms
+ ✓ src/routes/-admin.creators.test.tsx (1 test) 57ms
+stderr | src/components/marketing/MarketingHeader.test.tsx > MarketingHeader > logged-out: shows Log in / Join linking to /login
+React does not recognize the `activeProps` prop on a DOM element. If you intentionally want it to appear in the DOM as a custom attribute, spell it as lowercase `activeprops` instead. If you accidentally passed it from a parent component, remove it from the DOM element.
+
+ ✓ src/components/marketing/MarketingHeader.test.tsx (2 tests) 105ms
+ ✓ server/lib/assistant/retrieve.test.ts (2 tests) 4ms
+ ✓ src/audit-tests/my-missions.audit.test.tsx (3 tests) 57ms
+ ✓ server/lib/hookGen.test.ts (4 tests) 3ms
+ ✓ server/lib/assistant/tools.test.ts (3 tests) 3ms
+ ✓ src/lib/queries/redemption-earnings.test.tsx (2 tests) 159ms
+ ✓ src/components/brand/BrandNav.test.tsx (2 tests) 63ms
+ ✓ server/lib/trust.test.ts (7 tests) 3ms
+ ✓ src/components/admin/TrendChart.test.tsx (3 tests) 59ms
+ ✓ server/test/audit-legacy-evidence.test.ts (7 tests) 6ms
+ ✓ src/components/LevelChip.test.tsx (3 tests) 36ms
+ ✓ src/routes/-_app.wallet.test.tsx (1 test) 61ms
+ ↓ server/test/academy-seed.test.ts (3 tests | 3 skipped)
+ ↓ server/test/mission-authoring-schema.test.ts (2 tests | 2 skipped)
+ ✓ src/components/ScoreRing.test.tsx (4 tests) 53ms
+ ✓ server/lib/assistant/requestPolicy.test.ts (6 tests) 13ms
+ ✓ scripts/release/process.test.ts (1 test) 8ms
+ ✓ src/components/RedeemGiftCard.test.tsx (2 tests) 99ms
+ ✓ src/components/admin/ArrayInput.test.tsx (3 tests) 44ms
+ ✓ src/routes/-_app.redemption.history.test.tsx (1 test) 30ms
+ ✓ src/components/PassportTrustSummary.test.tsx (1 test) 47ms
+ ✓ src/lib/queries/assistant.test.tsx (1 test) 98ms
+ ✓ src/lib/creatorActivation.statuses.test.ts (3 tests) 3ms
+ ✓ server/lib/llm.assistant.test.ts (2 tests) 7ms
+ ✓ src/components/admin/PlatformPicker.test.tsx (3 tests) 93ms
+ ✓ src/lib/creatorFormatting.test.ts (6 tests) 22ms
+ ✓ src/lib/passport.test.ts (4 tests) 4ms
+ ✓ src/lib/creatorQueueSearch.test.ts (13 tests) 7ms
+ ✓ src/main.analytics.test.tsx (1 test) 42ms
+ ✓ src/audit-tests/staff-unavailable.audit.test.tsx (1 test) 129ms
+ ✓ src/components/IdentityHeader.test.tsx (2 tests) 136ms
+ ✓ src/lib/workspaceCalendar.test.ts (6 tests) 26ms
+ ✓ src/routes/-_app.my.layout.test.tsx (1 test) 29ms
+ ✓ server/lib/assistant/chunk.test.ts (3 tests) 5ms
+ ✓ scripts/release/ci-workflow-contract.test.ts (1 test) 3ms
+ ✓ src/components/LangToggle.test.tsx (1 test) 74ms
+ ✓ src/components/Markdown.test.tsx (2 tests) 82ms
+ ✓ server/test/audit-schema-compatibility.test.ts (2 tests) 2ms
+ ✓ src/components/NotificationBadge.test.tsx (3 tests) 33ms
+ ✓ server/test/workspace.test.ts (2 tests) 11ms
+ ✓ server/lib/assistant/collect.test.ts (2 tests) 4ms
+ ✓ server/lib/assistant/prompt.test.ts (2 tests) 2ms
+ ✓ src/lib/guideProgress.test.ts (2 tests) 3ms
+ ✓ src/lib/useRealtimeBalance.test.tsx (1 test) 2ms
+ ✓ server/test/app.test.ts (1 test) 14ms
+ ✓ src/lib/workspace.test.ts (1 test) 2ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 22 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  server/devApi.test.ts > Vite development API middleware > routes /api requests to Hono instead of the SPA fallback
+ FAIL  server/devApi.test.ts > Vite development API middleware > preserves Vite's SPA fallback for non-API requests
+ FAIL  server/devApi.transport.test.ts > Vite development API middleware transport contracts > delivers response chunks incrementally instead of buffering the full body
+TypeError: fetch failed
+Caused by: Error: connect EACCES 127.0.0.1:49771
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+Serialized Error: { errno: -4092, code: 'EACCES', syscall: 'connect', address: '127.0.0.1', port: 49771 }
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/22]⎯
+
+ FAIL  server/devApi.transport.test.ts > Vite development API middleware transport contracts > intercepts exact /api and nested /api paths without swallowing /apix
+Error: connect EACCES 127.0.0.1:53382
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/22]⎯
+
+ FAIL  server/devApi.transport.test.ts > Vite development API middleware transport contracts > forwards method, body, query, authorization, and cookie headers
+Error: connect EACCES 127.0.0.1:53386
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/22]⎯
+
+ FAIL  server/devApi.transport.test.ts > Vite development API middleware transport contracts > preserves duplicate Set-Cookie plus status, statusText, and other headers
+Error: connect EACCES 127.0.0.1:53388
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/22]⎯
+
+ FAIL  server/devApi.transport.test.ts > Vite development API middleware transport contracts > completes HEAD and null-body responses without writing a body
+Error: connect EACCES 127.0.0.1:53391
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/22]⎯
+
+ FAIL  server/devApi.transport.test.ts > Vite development API middleware transport contracts > cancels the Fetch body when the client aborts
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ server/devApi.transport.test.ts:252:32
+    250|     if (wasCanceled === null) closeBody();
+    251| 
+    252|     expect(receivedFirstChunk).toBe(true);
+       |                                ^
+    253|     expect(wasCanceled).toBe(true);
+    254|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/22]⎯
+
+ FAIL  server/devApi.transport.test.ts > Vite development API middleware transport contracts > completes an app failure as JSON without hanging the Node response
+Error: connect EACCES 127.0.0.1:53398
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/22]⎯
+
+ FAIL  src/components/creator-activation.test.tsx > EarningsSummaryCard > keeps available and pending wallet balances distinct in English
+Error: expect(element).toHaveAttribute("href", "/wallet/earnings") // element.getAttribute("href") === "/wallet/earnings"
+
+Expected the element to have attribute:
+  href="/wallet/earnings"
+Received:
+  href="/wallet"
+ ❯ src/components/creator-activation.test.tsx:210:71
+    208|     expect(screen.getByText("HK$1,234.50")).toBeInTheDocument();
+    209|     expect(screen.getByText("HK$250.00")).toBeInTheDocument();
+    210|     expect(screen.getByRole("link", { name: "View wallet details" })).…
+       |                                                                       ^
+    211|       "href",
+    212|       "/wallet/earnings",
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/22]⎯
+
+ FAIL  src/routes/-operator.creators.$creatorId.test.tsx > operator creator detail > renders profile, review metadata, social metrics, notes, mission history, and audit
+ FAIL  src/routes/-operator.creators.$creatorId.test.tsx > operator creator detail > adds an internal note
+ FAIL  src/routes/-operator.creators.$creatorId.test.tsx > operator creator detail > requires a note before saving a flagged review
+Error: useAdminWorkspace must be used within AdminWorkspaceProvider
+ ❯ Module.useAdminWorkspace src/components/admin/AdminWorkspaceContext.tsx:55:19
+     53| export function useAdminWorkspace(): Ctx {
+     54|   const ctx = useContext(AdminWorkspaceContext);
+     55|   if (!ctx) throw new Error("useAdminWorkspace must be used within Adm…
+       |                   ^
+     56|   return ctx;
+     57| }
+ ❯ OperatorCreatorDetailRoute src/routes/operator.creators.$creatorId.tsx:74:25
+ ❯ Object.react_stack_bottom_frame ../creator-activation-spine/node_modules/react-dom/cjs/react-dom-client.development.js:25904:20
+ ❯ renderWithHooks ../creator-activation-spine/node_modules/react-dom/cjs/react-dom-client.development.js:7662:22
+ ❯ updateFunctionComponent ../creator-activation-spine/node_modules/react-dom/cjs/react-dom-client.development.js:10166:19
+ ❯ beginWork ../creator-activation-spine/node_modules/react-dom/cjs/react-dom-client.development.js:11778:18
+ ❯ runWithFiberInDEV ../creator-activation-spine/node_modules/react-dom/cjs/react-dom-client.development.js:874:13
+ ❯ performUnitOfWork ../creator-activation-spine/node_modules/react-dom/cjs/react-dom-client.development.js:17641:22
+ ❯ workLoopSync ../creator-activation-spine/node_modules/react-dom/cjs/react-dom-client.development.js:17469:41
+ ❯ renderRootSync ../creator-activation-spine/node_modules/react-dom/cjs/react-dom-client.development.js:17450:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/22]⎯
+
+ FAIL  scripts/release/cli.test.ts > release npm entrypoints > fails closed when release:execute runs without database configuration
+AssertionError: expected '' to contain 'RELEASE_DATABASE_URL is required'
+
+- Expected
++ Received
+
+- RELEASE_DATABASE_URL is required
+
+ ❯ scripts/release/cli.test.ts:95:27
+     93| 
+     94|     expect(result.status).not.toBe(0);
+     95|     expect(result.output).toContain("RELEASE_DATABASE_URL is required"…
+       |                           ^
+     96|   }, 180000);
+     97| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/22]⎯
+
+ FAIL  scripts/release/cli.test.ts > release npm entrypoints > fails closed when release:evidence runs without an input file
+AssertionError: expected '' to contain 'usage: evidence.ts --input'
+
+- Expected
++ Received
+
+- usage: evidence.ts --input
+
+ ❯ scripts/release/cli.test.ts:102:27
+    100| 
+    101|     expect(result.status).not.toBe(0);
+    102|     expect(result.output).toContain("usage: evidence.ts --input");
+       |                           ^
+    103|   }, 180000);
+    104| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/22]⎯
+
+ FAIL  scripts/release/manifest.test.ts > release migration manifest > does not replace an existing artifact on invalid write and leaves no temp file
+Error: EPERM: operation not permitted, rename 'C:\Users\laich\AppData\Local\Packages\sandbox.{4e5f2e88-48c7-4746-aae6-d6012c17de95}\AC\Temp\adfocate-manifest-iu9Zcb\supabase\release-manifest.json.tmp-48720-6296d98d-94da-40b8-b920-510a24ad05ad' -> 'C:\Users\laich\AppData\Local\Packages\sandbox.{4e5f2e88-48c7-4746-aae6-d6012c17de95}\AC\Temp\adfocate-manifest-iu9Zcb\supabase\release-manifest.json'
+ ❯ writeManifest scripts/release/manifest-cli.ts:29:5
+     27|       { encoding: "utf8", flag: "wx" },
+     28|     );
+     29|     await rename(temporary, target);
+       |     ^
+     30|   } finally {
+     31|     await unlink(temporary).catch((error: unknown) => {
+ ❯ scripts/release/manifest.test.ts:409:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/22]⎯
+
+ FAIL  scripts/release/manifest.test.ts > release migration manifest > runs write as a direct vite-node CLI and prints its digest
+Error: Command failed: C:\Program Files\nodejs\node.exe C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\node_modules\vite-node\vite-node.mjs --script C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\scripts\release\manifest-cli.ts write
+node:internal/fs/promises:785
+  return await PromisePrototypeThen(
+         ^
+
+Error: EPERM: operation not permitted, rename 'C:\Users\laich\AppData\Local\Packages\sandbox.{4e5f2e88-48c7-4746-aae6-d6012c17de95}\AC\Temp\adfocate-manifest-CooMvN\supabase\release-manifest.json.tmp-37472-1d67753c-4beb-42fc-a4ab-19ee2202098b' -> 'C:\Users\laich\AppData\Local\Packages\sandbox.{4e5f2e88-48c7-4746-aae6-d6012c17de95}\AC\Temp\adfocate-manifest-CooMvN\supabase\release-manifest.json'
+    at Proxy.rename (node:internal/fs/promises:785:10)
+    at writeManifest (C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\scripts\release\manifest-cli.ts:27:5)
+    at C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\scripts\release\manifest-cli.ts:53:27
+    at ViteNodeRunner.runModule (file:///C:/Users/laich/Documents/Adfocate/worktrees/creator-activation-spine/node_modules/vite-node/dist/client.mjs:399:5)
+    at ViteNodeRunner.directRequest (file:///C:/Users/laich/Documents/Adfocate/worktrees/creator-activation-spine/node_modules/vite-node/dist/client.mjs:381:5)
+    at ViteNodeRunner.cachedRequest (file:///C:/Users/laich/Documents/Adfocate/worktrees/creator-activation-spine/node_modules/vite-node/dist/client.mjs:206:14)
+    at ViteNodeRunner.executeFile (file:///C:/Users/laich/Documents/Adfocate/worktrees/creator-activation-spine/node_modules/vite-node/dist/client.mjs:169:12)
+    at CAC.run (file:///C:/Users/laich/Documents/Adfocate/worktrees/creator-activation-spine/node_modules/vite-node/dist/cli.mjs:99:5) {
+  errno: -4048,
+  code: 'EPERM',
+  syscall: 'rename',
+  path: 'C:\\Users\\laich\\AppData\\Local\\Packages\\sandbox.{4e5f2e88-48c7-4746-aae6-d6012c17de95}\\AC\\Temp\\adfocate-manifest-CooMvN\\supabase\\release-manifest.json.tmp-37472-1d67753c-4beb-42fc-a4ab-19ee2202098b',
+  dest: 'C:\\Users\\laich\\AppData\\Local\\Packages\\sandbox.{4e5f2e88-48c7-4746-aae6-d6012c17de95}\\AC\\Temp\\adfocate-manifest-CooMvN\\supabase\\release-manifest.json'
+}
+
+Node.js v24.18.0
+
+ ❯ writeManifest scripts/release/manifest-cli.ts:27:5
+     25|       temporary,
+     26|       `${JSON.stringify(manifest, null, 2)}\n`,
+     27|       { encoding: "utf8", flag: "wx" },
+       |     ^
+     28|     );
+     29|     await rename(temporary, target);
+ ❯ scripts/release/manifest-cli.ts:53:27
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/22]⎯
+
+ FAIL  scripts/release/manifest.test.ts > release migration manifest > detects checksum drift, missing files, duplicates, and bad dependencies
+AssertionError: expected [ …(8) ] to deeply equal ArrayContaining{…}
+
+- Expected
++ Received
+
+- ArrayContaining [
+-   "checksum drift: 20260715163350",
+-   "missing migration file: 20260805120000",
++ Array [
++   "missing reviewed migration: 20261022171843_audit_assistant_requests.sql",
+    "duplicate migration version",
++   "migration order mismatch",
++   "last migration mismatch: 20261022171843",
++   "checksum drift: 20260715163350",
+    "unknown dependency: 19990101000000",
++   "missing migration file: 20261022171843",
++   "manifest content drift",
+  ]
+
+ ❯ scripts/release/manifest.test.ts:466:7
+    464|     expect(
+    465|       await validateManifest(manifest as unknown as ReleaseManifest, r…
+    466|     ).toEqual(
+       |       ^
+    467|       expect.arrayContaining([
+    468|         "checksum drift: 20260715163350",
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/22]⎯
+
+ FAIL  scripts/release/preflight.test.ts > release preflight > has a validator for every capability declared by the committed release manifest
+AssertionError: expected [ …(463) ] to have a length of 433 but got 463
+
+- Expected
++ Received
+
+- 433
++ 463
+
+ ❯ scripts/release/preflight.test.ts:15:26
+     13|     ];
+     14| 
+     15|     expect(capabilities).toHaveLength(433);
+       |                          ^
+     16|     expect(capabilities.filter((capability) => !hasCapabilityValidator…
+     17|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/22]⎯
+
+ FAIL  scripts/release/supabase-workflow-contract.test.ts > Supabase production workflow > rejects a scheduled trigger
+ FAIL  scripts/release/supabase-workflow-contract.test.ts > Supabase production workflow > rejects a pull request trigger
+ FAIL  scripts/release/supabase-workflow-contract.test.ts > Supabase production workflow > rejects a reusable workflow trigger
+AssertionError: expected [Function] to throw an error
+ ❯ scripts/release/supabase-workflow-contract.test.ts:223:69
+    221| 
+    222|   it.each(unsafeMutations)("rejects %s", (_name, mutatedWorkflow) => {
+    223|     expect(() => expectProductionWorkflowContract(mutatedWorkflow)).to…
+       |                                                                     ^
+    224|   });
+    225| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/22]⎯
+
+ Test Files  8 failed | 188 passed | 36 skipped (232)
+      Tests  22 failed | 1600 passed | 304 skipped (1926)
+   Start at  01:25:52
+   Duration  238.29s (transform 5.25s, setup 65.47s, collect 48.25s, tests 37.48s, environment 238.44s, prepare 32.77s)
+
+JSON report written to C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/docs/verification/logs/full-suite.json

@@ -1,6 +1,6 @@
 // server/test/missionAuthoring.test.ts
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { createApp } from "../app";
+import { createFixtureStaffApp as createApp } from "./fixtureStaffTransport";
 import { makeCreator, makeMission, cleanup, hasSupabaseEnv } from "./helpers";
 
 process.env.ADMIN_SECRET = process.env.ADMIN_SECRET || "test-admin-secret";

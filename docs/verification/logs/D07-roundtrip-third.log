@@ -1,0 +1,35 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ❯ server/test/audit-workflow-roundtrip.test.ts (3 tests | 1 failed) 9172ms
+   × D07 exact-ID disposable workflow roundtrip > persists race/join, receipt, revision, proof correction, one pending reward and cancellation without financial effects 5377ms
+     → /admin/active-missions/c92fb8f9-483f-4998-8278-d713ae3f3552/reward-handoff/cancel: {"error":"reasonCategory is invalid","code":"VALIDATION_FAILED"}: expected 400 to be 200 // Object.is equality
+   ✓ D07 exact-ID disposable workflow roundtrip > retains the legacy join/submit/review journey with evidence validation 659ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  server/test/audit-workflow-roundtrip.test.ts > D07 exact-ID disposable workflow roundtrip > persists race/join, receipt, revision, proof correction, one pending reward and cancellation without financial effects
+AssertionError: /admin/active-missions/c92fb8f9-483f-4998-8278-d713ae3f3552/reward-handoff/cancel: {"error":"reasonCategory is invalid","code":"VALIDATION_FAILED"}: expected 400 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 400
+
+ ❯ request server/test/audit-workflow-roundtrip.test.ts:21:104
+     19|       "X-Workspace-Slug":fixture.slug, "Content-Type":"application/jso…
+     20|       ...(body === undefined ? {} : {body:JSON.stringify(body)}) });
+     21|     const result = await response.json(); expect(response.status,`${pa…
+       |                                                                                                        ^
+     22|   }
+     23|   it("persists race/join, receipt, revision, proof correction, one pen…
+ ❯ server/test/audit-workflow-roundtrip.test.ts:93:24
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 2 passed (3)
+   Start at  02:16:12
+   Duration  10.11s (transform 484ms, setup 260ms, collect 48ms, tests 9.17s, environment 0ms, prepare 208ms)
+

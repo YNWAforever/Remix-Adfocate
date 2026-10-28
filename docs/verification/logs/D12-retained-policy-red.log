@@ -1,0 +1,746 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ❯ src/components/admin/ProofPolicyFields.test.tsx (12 tests | 1 failed | 11 skipped) 1140ms
+   × D12 policy fields through the real authoring form > reports malformed retained policy after switching to legacy and preserves it for repair 1139ms
+     → Unable to find role="alert"
+
+Ignored nodes: comments, script, style, option
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<fieldset[39m
+      [33mclass[39m=[32m"min-w-0 space-y-5"[39m
+      [33mtabindex[39m=[32m"-1"[39m
+    [36m>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"font-heading font-bold"[39m
+        [36m>[39m
+          [0m基本[0m
+        [36m</h2>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m品牌[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"品牌"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mdisabled[39m=[32m""[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m標題 (zh-HK)[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"標題"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mvalue[39m=[32m"合成作者任務"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m任務網址代號（英數字及連字號）[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"任務網址代號"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mvalue[39m=[32m"synthetic-authoring"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m分類[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"分類"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m任務類型[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"任務類型"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m參與方式[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"參與方式"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m等級要求[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"等級要求"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+          [36m/>[39m
+        [36m</label>[39m
+      [36m</section>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"font-heading font-bold"[39m
+        [36m>[39m
+          [0m獎勵[0m
+        [36m</h2>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m積分獎勵[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"積分獎勵"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mtype[39m=[32m"number"[39m
+            [33mvalue[39m=[32m"500"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m現金獎勵 (HK$)[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"現金獎勵"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mtype[39m=[32m"number"[39m
+            [33mvalue[39m=[32m"125"[39m
+          [36m/>[39m
+        [36m</label>[39m
+      [36m</section>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"font-heading font-bold"[39m
+        [36m>[39m
+          [0m名額與期限[0m
+        [36m</h2>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m名額[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"名額"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mmin[39m=[32m"1"[39m
+            [33mtype[39m=[32m"number"[39m
+            [33mvalue[39m=[32m"10"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m截止日期[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"截止日期"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mtype[39m=[32m"date"[39m
+            [33mvalue[39m=[32m"2030-11-30"[39m
+          [36m/>[39m
+        [36m</label>[39m
+      [36m</section>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"font-heading font-bold"[39m
+        [36m>[39m
+          [0m簡介[0m
+        [36m</h2>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m任務簡介[0m
+          [36m<textarea[39m
+            [33maria-label[39m=[32m"任務簡介"[39m
+            [33mclass[39m=[32m"w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"[39m
+            [33mrows[39m=[32m"4"[39m
+          [36m>[39m
+            [0m測試交付要求[0m
+          [36m</textarea>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m交付流程[0m
+          [36m<select[39m
+            [33maria-label[39m=[32...
+
+Ignored nodes: comments, script, style, option
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<fieldset[39m
+      [33mclass[39m=[32m"min-w-0 space-y-5"[39m
+      [33mtabindex[39m=[32m"-1"[39m
+    [36m>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"font-heading font-bold"[39m
+        [36m>[39m
+          [0m基本[0m
+        [36m</h2>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m品牌[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"品牌"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mdisabled[39m=[32m""[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m標題 (zh-HK)[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"標題"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mvalue[39m=[32m"合成作者任務"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m任務網址代號（英數字及連字號）[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"任務網址代號"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mvalue[39m=[32m"synthetic-authoring"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m分類[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"分類"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m任務類型[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"任務類型"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m參與方式[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"參與方式"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m等級要求[0m
+          [36m<select[39m
+            [33maria-label[39m=[32m"等級要求"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+          [36m/>[39m
+        [36m</label>[39m
+      [36m</section>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"font-heading font-bold"[39m
+        [36m>[39m
+          [0m獎勵[0m
+        [36m</h2>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m積分獎勵[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"積分獎勵"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mtype[39m=[32m"number"[39m
+            [33mvalue[39m=[32m"500"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m現金獎勵 (HK$)[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"現金獎勵"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mtype[39m=[32m"number"[39m
+            [33mvalue[39m=[32m"125"[39m
+          [36m/>[39m
+        [36m</label>[39m
+      [36m</section>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"font-heading font-bold"[39m
+        [36m>[39m
+          [0m名額與期限[0m
+        [36m</h2>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m名額[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"名額"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mmin[39m=[32m"1"[39m
+            [33mtype[39m=[32m"number"[39m
+            [33mvalue[39m=[32m"10"[39m
+          [36m/>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m截止日期[0m
+          [36m<input[39m
+            [33maria-label[39m=[32m"截止日期"[39m
+            [33mclass[39m=[32m"h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"[39m
+            [33mtype[39m=[32m"date"[39m
+            [33mvalue[39m=[32m"2030-11-30"[39m
+          [36m/>[39m
+        [36m</label>[39m
+      [36m</section>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"font-heading font-bold"[39m
+        [36m>[39m
+          [0m簡介[0m
+        [36m</h2>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m任務簡介[0m
+          [36m<textarea[39m
+            [33maria-label[39m=[32m"任務簡介"[39m
+            [33mclass[39m=[32m"w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"[39m
+            [33mrows[39m=[32m"4"[39m
+          [36m>[39m
+            [0m測試交付要求[0m
+          [36m</textarea>[39m
+        [36m</label>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"block text-sm"[39m
+        [36m>[39m
+          [0m交付流程[0m
+          [36m<select[39m
+            [33maria-label[39m=[32...
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/admin/ProofPolicyFields.test.tsx > D12 policy fields through the real authoring form > reports malformed retained policy after switching to legacy and preserves it for repair
+TestingLibraryElementError: Unable to find role="alert"
+
+Ignored nodes: comments, script, style, option
+<body>
+  <div>
+    <fieldset
+      class="min-w-0 space-y-5"
+      tabindex="-1"
+    >
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          基本
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          品牌
+          <select
+            aria-label="品牌"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            disabled=""
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          標題 (zh-HK)
+          <input
+            aria-label="標題"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            value="合成作者任務"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          任務網址代號（英數字及連字號）
+          <input
+            aria-label="任務網址代號"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            value="synthetic-authoring"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          分類
+          <select
+            aria-label="分類"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          任務類型
+          <select
+            aria-label="任務類型"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          參與方式
+          <select
+            aria-label="參與方式"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          等級要求
+          <select
+            aria-label="等級要求"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+          />
+        </label>
+      </section>
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          獎勵
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          積分獎勵
+          <input
+            aria-label="積分獎勵"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            type="number"
+            value="500"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          現金獎勵 (HK$)
+          <input
+            aria-label="現金獎勵"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            type="number"
+            value="125"
+          />
+        </label>
+      </section>
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          名額與期限
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          名額
+          <input
+            aria-label="名額"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            min="1"
+            type="number"
+            value="10"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          截止日期
+          <input
+            aria-label="截止日期"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            type="date"
+            value="2030-11-30"
+          />
+        </label>
+      </section>
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          簡介
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          任務簡介
+          <textarea
+            aria-label="任務簡介"
+            class="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"
+            rows="4"
+          >
+            測試交付要求
+          </textarea>
+        </label>
+        <label
+          class="block text-sm"
+        >
+          交付流程
+          <select
+            aria-label=[32...
+
+Ignored nodes: comments, script, style, option
+<body>
+  <div>
+    <fieldset
+      class="min-w-0 space-y-5"
+      tabindex="-1"
+    >
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          基本
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          品牌
+          <select
+            aria-label="品牌"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            disabled=""
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          標題 (zh-HK)
+          <input
+            aria-label="標題"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            value="合成作者任務"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          任務網址代號（英數字及連字號）
+          <input
+            aria-label="任務網址代號"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            value="synthetic-authoring"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          分類
+          <select
+            aria-label="分類"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          任務類型
+          <select
+            aria-label="任務類型"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          參與方式
+          <select
+            aria-label="參與方式"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          等級要求
+          <select
+            aria-label="等級要求"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+          />
+        </label>
+      </section>
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          獎勵
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          積分獎勵
+          <input
+            aria-label="積分獎勵"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            type="number"
+            value="500"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          現金獎勵 (HK$)
+          <input
+            aria-label="現金獎勵"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            type="number"
+            value="125"
+          />
+        </label>
+      </section>
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          名額與期限
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          名額
+          <input
+            aria-label="名額"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            min="1"
+            type="number"
+            value="10"
+          />
+        </label>
+        <label
+          class="block text-sm"
+        >
+          截止日期
+          <input
+            aria-label="截止日期"
+            class="h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50"
+            type="date"
+            value="2030-11-30"
+          />
+        </label>
+      </section>
+      <section
+        class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+      >
+        <h2
+          class="font-heading font-bold"
+        >
+          簡介
+        </h2>
+        <label
+          class="block text-sm"
+        >
+          任務簡介
+          <textarea
+            aria-label="任務簡介"
+            class="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm"
+            rows="4"
+          >
+            測試交付要求
+          </textarea>
+        </label>
+        <label
+          class="block text-sm"
+        >
+          交付流程
+          <select
+            aria-label=[32...
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/components/admin/ProofPolicyFields.test.tsx:99:25
+     97|     fireEvent.change(screen.getByLabelText("交付流程"), { target: { va…
+     98|     save();
+     99|     expect(await screen.findByRole("alert")).toHaveTextContent("發佈證…
+       |                         ^
+    100|     expect(onSave).not.toHaveBeenCalled();
+    101|     fireEvent.change(screen.getByLabelText("交付流程"), { target: { va…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+⎯⎯⎯⎯⎯⎯ Unhandled Errors ⎯⎯⎯⎯⎯⎯
+
+Vitest caught 1 unhandled error during the test run.
+This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+Error: invalid_proof_evidence_policy
+ ❯ src/components/admin/MissionEditor.tsx:65:37
+     63|     void templateKey;
+     64|     const proofEvidencePolicy = parsedEvidencePolicy(proofEvidencePoli…
+     65|     if (!proofEvidencePolicy) throw new Error("invalid_proof_evidence_…
+       |                                     ^
+     66|     return {
+     67|       ...template,
+ ❯ toTemplatePayload src/components/admin/MissionEditor.tsx:62:20
+ ❯ submit src/components/admin/MissionEditor.tsx:165:30
+ ❯ executeDispatch node_modules/react-dom/cjs/react-dom-client.development.js:19116:9
+ ❯ runWithFiberInDEV node_modules/react-dom/cjs/react-dom-client.development.js:874:13
+ ❯ processDispatchQueue node_modules/react-dom/cjs/react-dom-client.development.js:19166:19
+ ❯ node_modules/react-dom/cjs/react-dom-client.development.js:19767:9
+ ❯ batchedUpdates$1 node_modules/react-dom/cjs/react-dom-client.development.js:3255:40
+ ❯ dispatchEventForPluginEventSystem node_modules/react-dom/cjs/react-dom-client.development.js:19320:7
+
+This error originated in "src/components/admin/ProofPolicyFields.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "reports malformed retained policy after switching to legacy and preserves it for repair". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 11 skipped (12)
+     Errors  1 error
+   Start at  12:16:11
+   Duration  4.23s (transform 291ms, setup 446ms, collect 712ms, tests 1.14s, environment 1.49s, prepare 186ms)
+

@@ -1,0 +1,60 @@
+{
+  "at": "2026-10-25T16:27:45.132838+00:00",
+  "scope": "Selective local verification metadata/artifact rollback only. Application/runtime source and C2 authority unchanged; no physical data/schema operation to reverse.",
+  "before": [
+    {
+      "path": "docs/verification/adfocate-delivery.json",
+      "sha256": "7c3927c0d375630ceb1d54b6236cb0c8bd47e85cf2a7e940f9eaa53fcf351c1c",
+      "before": "docs/verification/D19-legacy-sql-memory-20261026/before/docs/verification/adfocate-delivery.json"
+    },
+    {
+      "path": "docs/verification/audit_case_coverage.csv",
+      "sha256": "070cd21967fd698f1a7297255e72f446262edaea5404c92a458550e3836da201",
+      "before": "docs/verification/D19-legacy-sql-memory-20261026/before/docs/verification/audit_case_coverage.csv"
+    },
+    {
+      "path": "docs/verification/implementation_backlog.csv",
+      "sha256": "1b5c4381b24963fe10c5e23f769cfb390d02b96997221e741cb0e980360cda4d",
+      "before": "docs/verification/D19-legacy-sql-memory-20261026/before/docs/verification/implementation_backlog.csv"
+    },
+    {
+      "path": "docs/verification/adfocate-task-ledger.md",
+      "sha256": "f5e55c5fdedab0df49249a9d1cc5e3d2db28a4544a414596e22b20fd20242fd9",
+      "before": "docs/verification/D19-legacy-sql-memory-20261026/before/docs/verification/adfocate-task-ledger.md"
+    },
+    {
+      "path": "docs/verification/evidence-integrity.json",
+      "sha256": "962f3506b20cedac49bb2beff610fd65d58de7e7eee079dc2abacc2e98e5d3a3",
+      "before": "docs/verification/D19-legacy-sql-memory-20261026/before/docs/verification/evidence-integrity.json"
+    },
+    {
+      "path": "docs/verification/code-fingerprint.json",
+      "sha256": "0a9accc29ddb559a26fbcbcee2d9d4828fa8bdf63374b0a8d781d3f86885399d",
+      "before": "docs/verification/D19-legacy-sql-memory-20261026/before/docs/verification/code-fingerprint.json"
+    },
+    {
+      "path": "docs/verification/D19-C2-application-runtime-manifest.json",
+      "sha256": "eb5ca8f03a85c5589cc6cbf27ec0ca5524e8600fd2914ad1d4d73f17eec5009a",
+      "before": "docs/verification/D19-legacy-sql-memory-20261026/before/docs/verification/D19-C2-application-runtime-manifest.json"
+    },
+    {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/runtime-authorization.json",
+      "sha256": "d5ca3dcd9ad8c4e14f0707e2b29c3bb25a1f6dd955e908fb591620281c76d019",
+      "before": "docs/verification/D19-legacy-sql-memory-20261026/before/docs/verification/D19-application-runtime-preparation-20261025/runtime-authorization.json"
+    }
+  ],
+  "instructions": [
+    "Verify after-integrity and preserve any later/user edits before restoring only explicitly changed local metadata from these exact before copies.",
+    "Retain this evidence and all earlier logs, manifests, source revisions, seals and incident records; do not reset/clean checkout.",
+    "New standalone artifacts are non-runtime verification documents; they can remain archived without affecting application behavior.",
+    "No restore/delete/rebuild/stop/cleanup of targets or fixtures is authorized. In-memory engines were closed; nothing was persisted to a target.",
+    "Restoring an older label is not proof of acceptance or a reversal of the original campaign incident."
+  ],
+  "afterIntegrity": "docs/verification/D19-legacy-sql-memory-integrity.json",
+  "applicationSourceOrSqlRollback": "NONE_NEEDED_UNCHANGED",
+  "physicalDataRollback": "NOT_APPLICABLE_NO_TARGET_ACTIONS",
+  "originalIncident": "OPEN_UNRESTORED",
+  "releaseHold": true,
+  "providerEnabled": false,
+  "c2SourceManifestApprovalUnchanged": true
+}

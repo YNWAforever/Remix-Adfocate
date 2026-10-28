@@ -1,0 +1,66 @@
+{
+  "defaultTemplateFailures": [
+    {
+      "service": "db",
+      "containerId": "a4e387ca84bfd11e815f697e0c407b12b8a610d29691517d8d8ecaef91957956",
+      "guardTemplateExit": 1,
+      "guardTemplateError": "template parsing error: template: :1:284: executing \"\" at <.HostConfig.Tmpfs>: map has no entry for key \"Tmpfs\"",
+      "running": true,
+      "exit": 0,
+      "hostHasTmpfs": false,
+      "networkHasPorts": true,
+      "mountCount": 1
+    },
+    {
+      "service": "auth",
+      "containerId": "37d469d0b42d137b01f7df915fed7bd8a8393961cc69ec08f5a9a872ec917489",
+      "guardTemplateExit": 1,
+      "guardTemplateError": "template parsing error: template: :1:284: executing \"\" at <.HostConfig.Tmpfs>: map has no entry for key \"Tmpfs\"",
+      "running": true,
+      "exit": 0,
+      "hostHasTmpfs": false,
+      "networkHasPorts": true,
+      "mountCount": 0
+    },
+    {
+      "service": "rest",
+      "containerId": "eeb1c762e84d82cfa9b40beb85c3ccd54cb9e1bc99f47b9564f23b5d4fed0ba2",
+      "guardTemplateExit": 1,
+      "guardTemplateError": "template parsing error: template: :1:284: executing \"\" at <.HostConfig.Tmpfs>: map has no entry for key \"Tmpfs\"",
+      "running": true,
+      "exit": 0,
+      "hostHasTmpfs": false,
+      "networkHasPorts": true,
+      "mountCount": 0
+    },
+    {
+      "service": "kong",
+      "containerId": "c68a68b5ea60116a998cf3b61f4cdfbf737101361ae0866a8d8f83d0313ba253",
+      "guardTemplateExit": 1,
+      "guardTemplateError": "template parsing error: template: :1:284: executing \"\" at <.HostConfig.Tmpfs>: map has no entry for key \"Tmpfs\"",
+      "running": true,
+      "exit": 0,
+      "hostHasTmpfs": false,
+      "networkHasPorts": true,
+      "mountCount": 0
+    },
+    {
+      "service": "storage",
+      "containerId": "c42f68a7940631a8567994903bd04987da7a15bd01de3599369b80589a6f1387",
+      "guardTemplateExit": 0,
+      "guardTemplateError": "",
+      "running": true,
+      "exit": 0,
+      "hostHasTmpfs": true,
+      "networkHasPorts": true,
+      "mountCount": 0
+    }
+  ],
+  "dockerApi": {
+    "client": "1.56",
+    "server": "1.56",
+    "minimum": "1.40"
+  },
+  "applicationKeysRead": false,
+  "appClientsCreated": 0
+}

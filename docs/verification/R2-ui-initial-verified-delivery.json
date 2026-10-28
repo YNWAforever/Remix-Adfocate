@@ -1,0 +1,188 @@
+{
+  "id": "R2_UI_FOLLOWUP_20261024",
+  "at": "2026-10-24T01:26:58.402207+00:00",
+  "headSha": "7cfa3dc84c821719a4dff754229a591c81786c53",
+  "branch": "codex/adfocate-r1-pilot-20261023",
+  "commit": null,
+  "priorCodeFingerprint": "544f5a717aa6550e1dad0acdb3c69041c8530f25f6dd1ed05ca43a847779aa7b",
+  "codeFingerprint": "00946052ddb2f89512ce8d5aaa4b0131f21c48f0935a27382747720235081197",
+  "sourceRecords": 342,
+  "changedFiles": [
+    "e2e/r2-support-ui.spec.ts",
+    "playwright.r2-support.config.ts",
+    "scripts/audit/prepare-r2-support-browser.ts",
+    "scripts/audit/run-r2-support-browser.mjs",
+    "src/components/admin/AcademyMetadataFields.tsx",
+    "src/components/admin/AcademyMetadataForm.test.tsx",
+    "src/routes/-r2-support-ui.test.tsx",
+    "src/components/admin/AcademyEditor.test.tsx",
+    "src/components/admin/AcademyEditor.tsx",
+    "src/routes/_app.campaigns.index.tsx",
+    "src/routes/_app.guide.index.tsx",
+    "src/routes/_app.redemption.history.tsx",
+    "src/routes/admin.applications.tsx",
+    "src/routes/admin.campaigns.index.tsx",
+    "src/routes/admin.content.index.tsx"
+  ],
+  "taskMappings": [
+    "D04",
+    "D15",
+    "D19"
+  ],
+  "cases": [
+    "UC-C15",
+    "UC-C16",
+    "UC-C17",
+    "UC-A45",
+    "UC-A49"
+  ],
+  "finding": "F27",
+  "newResult": {
+    "code": "Six existing support routes extended with shared recoverable feedback; parent raw JSON replaced with business fields and metadata three-way rebase. Existing engines/gates retained.",
+    "test": "1949 passed / 363 explicitly gated skipped / 274 files; original16+194; 18 new R2 assertions; 7 real local Edge cases; 5 static gates",
+    "deployment": "not-deployed",
+    "runtime": "7 real local Edge journeys with owned Auth/API/RLS/DB; actual empty scopes and eligibility, metadata persisted across hard reload and real409; explicit empty/fault mocks labelled."
+  },
+  "testCounts": {
+    "passed": 1949,
+    "skipped": 363,
+    "failed": 0,
+    "files": 274,
+    "newR2Assertions": 18
+  },
+  "browser": {
+    "runId": "08530ddb-c357-4638-8ab8-af5854f42fa3",
+    "target": {
+      "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+      "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+      "disposable": true,
+      "projectId": "adfocate-r1-empty-20261023",
+      "proxy": "none",
+      "apiPort": 56421,
+      "apiContainerId": "1b9c41318298d79308db7782f51474541ad5abf0120fa93b96a2a9ea59d043ee",
+      "databaseContainerId": "e7c8efa295cd5544a8b2a100a73b6953cd6ddd486aaf394f231482067523e12d",
+      "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+      "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+      "networkId": "9e5d3069e8255d70b8eef56020c8ea2618fdb2626d92d9a04e51ea2de41a98e0"
+    },
+    "tests": [
+      {
+        "title": "UC-C15 real empty redemption history, return entrance and recovery",
+        "ok": true,
+        "results": [
+          {
+            "status": "passed",
+            "duration": 16183
+          }
+        ]
+      },
+      {
+        "title": "UC-C16 real no-active-challenge state and failed-read retry",
+        "ok": true,
+        "results": [
+          {
+            "status": "passed",
+            "duration": 5029
+          }
+        ]
+      },
+      {
+        "title": "UC-C17 real Academy readable/preparing and locked eligibility; empty and fault UI",
+        "ok": true,
+        "results": [
+          {
+            "status": "passed",
+            "duration": 4270
+          }
+        ]
+      },
+      {
+        "title": "UC-A45 real empty applications, recoverable failure and reload",
+        "ok": true,
+        "results": [
+          {
+            "status": "passed",
+            "duration": 1955
+          }
+        ]
+      },
+      {
+        "title": "UC-A49 challenge/content empty entrances, preserved filter and retry",
+        "ok": true,
+        "results": [
+          {
+            "status": "passed",
+            "duration": 2295
+          }
+        ]
+      },
+      {
+        "title": "F27 parent metadata saves with explicit retry and survives hard reload",
+        "ok": true,
+        "results": [
+          {
+            "status": "passed",
+            "duration": 2241
+          }
+        ]
+      },
+      {
+        "title": "F27 real 409 compares latest and preserves both authored and concurrent metadata",
+        "ok": true,
+        "results": [
+          {
+            "status": "passed",
+            "duration": 2954
+          }
+        ]
+      }
+    ],
+    "stats": {
+      "startTime": "2026-10-24T01:13:46.881Z",
+      "duration": 52025.229999999996,
+      "expected": 7,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "passed": 7,
+    "emptyReadCounts": {
+      "history": 0,
+      "campaigns": 0,
+      "applications": 0,
+      "adminCampaigns": 0,
+      "content": 9
+    },
+    "browser": "Installed desktop Edge; 390x844 and 1280x900 CSS viewports; not physical mobile/Safari",
+    "scope": "Real local Auth/API/RLS/DB successful reads and metadata writes; explicit fault/empty mocks labelled in each UI record; no curriculum, external provider or formal staff cutover."
+  },
+  "schemaManifestDigest": "3e6809f9a51b1ac7ebb9f770160aab27f02523ebf69fc47f8fe38f44d05f6363",
+  "schemaDiff": "R2-ui-schema-diff.json",
+  "neutrality": "R2-ui-neutrality.json",
+  "fixture": "R2-ui-fixture.json",
+  "taskOnlyPatch": "R2-ui-changes.patch",
+  "limitations": [
+    "Not deployed; no commit/push/merge/CI/hosted or production access/data/membership/role changes. Formal staff cutover remains open.",
+    "D15 BLOCKED_CONTENT_NOT_PROVIDED: UC-C18/UC-A51 still require four approved real lessons. Only three explicit synthetic parent tracks created; no lesson units or real curriculum approval.",
+    "True AI provider remains disabled; no paid AI, external notifications/invites/publication or payment. D20 live-quality/usage and durable staff/context-bound request review remain open.",
+    "Academy empty bundle and global content empty-list UI use explicit transport mocks because earlier global rows are retained. Successful scoped empty reads, Academy eligibility, metadata save/hard reload and real409 use actual owned Auth/API/RLS/DB. All 503 faults are explicit transport mocks.",
+    "Only installed desktop Edge at 390x844 /1280x900 CSS viewports; no physical device/Safari/native zoom/manual AT or hosted/field performance acceptance. Four pre-existing lint warnings and route-discovery warning remain.",
+    "R2 raw snapshot equality covers this new UI/metadata fixture (zero ledgers, no funded budget/inventory). D19 funded pending/cancel/reapproval neutrality and full legacy/active handoff remain historical at their own fingerprint; not renewed by this UI task.",
+    "Existing shared audit factory appends one fixture-created event to workflow-runtime.jsonl. Prior bytes are preserved as an exact prefix and copied to R2-ui-prior-workflow-runtime.jsonl; all new IDs retained, no broad delete/reset.",
+    "F27 closure is the specified parent metadata form plus retained D12/lesson work, not a claim that every administrative field or all R2 quality gaps are certified."
+  ],
+  "rollback": "Review only R2-ui-changes.patch hunks and newly added task files after reverse check; preserve earlier dirty work, parent rows, exact fixtures, grants and audit/history. No reset/clean, old-server security rollback, down migration or broad cleanup. Recompute fingerprint and rerun affected gates after any repair.",
+  "nextTask": {
+    "id": "D17",
+    "status": "REMAINING_R2_QUALITY_AND_OWNER_ACCEPTANCE_OPEN",
+    "scope": "Selected manual/native/hosted quality and named advisor-owner acceptance; authorization and actual runtime/device availability required for dependent checks. D15 content remains independently blocked."
+  },
+  "authorization": {
+    "productionDataOrRoles": false,
+    "realProvider": false,
+    "externalMessagesOrPayments": false,
+    "push": false,
+    "merge": false,
+    "deploy": false
+  }
+}

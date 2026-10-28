@@ -1,0 +1,30 @@
+{
+  "startedAt": "2026-10-25T19:40:56.756856+00:00",
+  "command": [
+    "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+    "node_modules/supabase/dist/supabase.js",
+    "migration",
+    "new",
+    "--help"
+  ],
+  "node": "v22.23.4",
+  "resource": {
+    "at": "2026-10-25T19:40:56.630917+00:00",
+    "freePhysicalGiB": 4.992374420166016,
+    "freeCommitGiB": 3.9219589233398438,
+    "minimumGiB": 3,
+    "freeDiskGiB": 21.90941619873047
+  },
+  "credentialsProxiesPreloadsStripped": true,
+  "integrationDisabled": true,
+  "label": "cli-help",
+  "log": "docs/verification/D19-redemption-replay-20261026/cli-help.log",
+  "runtimeTargetCallsRequested": false,
+  "sourceFingerprint": "ead55a808470f90d72290905db90933cb4a6df48eaba519d4587339a4659b71d",
+  "sourceRecords": 789,
+  "npmExecpathProvided": "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+  "pid": 12736,
+  "sourceUnchangedAfter": true,
+  "endedAt": "2026-10-25T19:40:57.669966+00:00",
+  "exit": 1
+}

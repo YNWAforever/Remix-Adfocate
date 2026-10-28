@@ -1,0 +1,1070 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ❯ server/test/audit-mission-list-projection.test.ts (8 tests | 1 failed) 41ms
+   × D09 serialized mission-list contract (projection-aware unit transport) > keeps unknown category TrAvEl findable verbatim 12ms
+     → expected [] to have a length of 1 but got +0
+ ❯ src/routes/-_app.mission.index.test.tsx (8 tests | 1 failed) 487ms
+   × mission discovery > retains the selected filter and stale facts on retry, then hides protected cached facts on 403 286ms
+     → Unable to find an accessible element with the role "button" and name "重試"
+
+Here are the accessible roles:
+
+  heading:
+
+  Name "限時任務":
+  [36m<h1[39m
+    [33mclass[39m=[32m"font-display text-2xl font-bold"[39m
+  [36m/>[39m
+
+  Name "所有任務":
+  [36m<h2[39m
+    [33mclass[39m=[32m"sr-only"[39m
+  [36m/>[39m
+
+  Name "夏日美妝開箱":
+  [36m<h3[39m
+    [33mclass[39m=[32m"mt-1 line-clamp-2 font-heading font-semibold"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "全部":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m"filter-pill shrink-0 "[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "社交":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m"filter-pill shrink-0 "[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "美容":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m"filter-pill shrink-0 "[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "餐飲":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m"filter-pill shrink-0 "[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "生活":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m"filter-pill shrink-0 "[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "寵物":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m"filter-pill shrink-0 "[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "旅遊":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"true"[39m
+    [33mclass[39m=[32m"filter-pill shrink-0 filter-pill-active"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  alert:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"text-sm text-[var(--color-magenta)]"[39m
+    [33mrole[39m=[32m"alert"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  link:
+
+  Name "旅遊 夏日美妝開箱 800 積分 2026年8月31日 現金獎勵 HK$1,200.00 品牌 Glow Labs 任務類型 原創內容 參加方式 申請制 平台 Instagram、TikTok 交付內容 1 條 Reel、3 個限時動態 所需內容 中 名額狀態 暫不可參加 所需等級 L1 狀態 審批中":
+  [36m<a[39m
+    [33mhref[39m=[32m"/mission/beauty-reel"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  article:
+
+  Name "":
+  [36m<article[39m
+    [33mclass[39m=[32m"pastel-card flex gap-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  term:
+
+  Name "":
+  [36m<dt[39m
+    [33mclass[39m=[32m"font-semibold text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dt[39m
+    [33mclass[39m=[32m"font-semibold text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dt[39m
+    [33mclass[39m=[32m"font-semibold text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dt[39m
+    [33mclass[39m=[32m"font-semibold text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dt[39m
+    [33mclass[39m=[32m"font-semibold text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dt[39m
+    [33mclass[39m=[32m"font-semibold text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dt[39m
+    [33mclass[39m=[32m"font-semibold text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dt[39m
+    [33mclass[39m=[32m"font-semibold text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dt[39m
+    [33mclass[39m=[32m"font-semibold text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dt[39m
+    [33mclass[39m=[32m"font-semibold text-[var(--color-soft-ink)]"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  definition:
+
+  Name "":
+  [36m<dd[39m
+    [33mclass[39m=[32m"min-w-0 break-words"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dd[39m
+    [33mclass[39m=[32m"min-w-0 break-words"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dd[39m
+    [33mclass[39m=[32m"min-w-0 break-words"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dd[39m
+    [33mclass[39m=[32m"min-w-0 break-words"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dd[39m
+    [33mclass[39m=[32m"min-w-0 break-words"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dd[39m
+    [33mclass[39m=[32m"min-w-0 break-words"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dd[39m
+    [33mclass[39m=[32m"min-w-0 break-words"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dd[39m
+    [33mclass[39m=[32m"min-w-0 break-words"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dd[39m
+    [33mclass[39m=[32m"min-w-0 break-words"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dd[39m
+    [33mclass[39m=[32m"min-w-0 break-words"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style, option
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"mx-auto max-w-lg space-y-4 p-4 lg:max-w-5xl"[39m
+    [36m>[39m
+      [36m<h1[39m
+        [33mclass[39m=[32m"font-display text-2xl font-bold"[39m
+      [36m>[39m
+        [0m限時任務[0m
+      [36m</h1>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"scrollbar-none flex gap-2 overflow-x-auto pb-1"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33maria-pressed[39m=[32m"false"[39m
+          [33mclass[39m=[32m"filter-pill shrink-0 "[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0m全部[0m
+        [36m</button>[39m
+        [36m<button[39m
+          [33maria-pressed[39m=[32m"false"[39m
+          [33mclass[39m=[32m"filter-pill shrink-0 "[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0m社交[0m
+        [36m</button>[39m
+        [36m<button[39m
+          [33maria-pressed[39m=[32m"false"[39m
+          [33mclass[39m=[32m"filter-pill shrink-0 "[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0m美容[0m
+        [36m</button>[39m
+        [36m<button[39m
+          [33maria-pressed[39m=[32m"false"[39m
+          [33mclass[39m=[32m"filter-pill shrink-0 "[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0m餐飲[0m
+        [36m</button>[39m
+        [36m<button[39m
+          [33maria-pressed[39m=[32m"false"[39m
+          [33mclass[39m=[32m"filter-pill shrink-0 "[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0m生活[0m
+        [36m</button>[39m
+        [36m<button[39m
+          [33maria-pressed[39m=[32m"false"[39m
+          [33mclass[39m=[32m"filter-pill shrink-0 "[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0m寵物[0m
+        [36m</button>[39m
+        [36m<button[39m
+          [33maria-pressed[39m=[32m"true"[39m
+          [33mclass[39m=[32m"filter-pill shrink-0 filter-pill-active"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0m旅遊[0m
+        [36m</button>[39m
+      [36m</div>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"text-sm text-[var(--color-magenta)]"[39m
+        [33mrole[39m=[32m"alert"[39m
+      [36m>[39m
+        [0m載入失敗[0m
+      [36m</p>[39m
+      [36m<h2[39m
+        [33mclass[39m=[32m"sr-only"[39m
+      [36m>[39m
+        [0m所有任務[0m
+      [36m</h2>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"grid gap-2 lg:grid-cols-2"[39m
+      [36m>[39m
+        [36m<a[39m
+          [33mhref[39m=[32m"/mission/beauty-reel"[39m
+        [36m>[39m
+          [36m<article[39m
+            [33mclass[39m=[32m"pastel-card flex gap-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"h-20 w-20 shrink-0 overflow-hidden rounded-xl border-2 border-[var(--color-ink)] bg-[var(--color-muted,#E4E4E4)]"[39m
+            [36m/>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"min-w-0 flex-1"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"inline-block rounded-full border-[1.5px] border-[var(--color-ink)] bg-[var(--color-acid)] px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-wide text-[var(--color-ink)] "[39m
+              [36m>[39m
+                [0m旅遊[0m
+              [36m</span>[39m
+              [36m<h3[39m
+                [33mclass[39m=[32m"mt-1 line-clamp-2 font-heading font-semibold"[39m
+              [36m>[39m
+                [0m夏日美妝開箱[0m
+              [36m</h3>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-[var(--color-soft-ink)]"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"flex items-center gap-1"[39m
+                [36m>[39m
+                  [36m<svg[39m
+                    [33maria-hidden[39m=[32m"true"[39m
+                    [33mclass[39m=[32m"lucide lucide-star"[39m
+                    [33mfill[39m=[32m"none"[39m
+                    [33mheight[39m=[32m"14"[39m
+                    [33mstroke[39m=[32m"currentColor"[39m
+                    [33mstroke-linecap[39m=[32m"round"[39m
+                    [33mstroke-linejoin[39m=[32m"round"[39m
+                    [33mstroke-width[39m=[32m"2"[39m
+                    [33mviewBox[39m=[32m"0 0 24 24"[39m
+                    [33mwidth[39m=[32m"14"[39m
+                    [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                  [36m>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"[39m
+                    [36m/>[39m
+                  [36m</svg>[39m
+                  [0m800 積分[0m
+                [36m</span>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"flex items-center gap-1"[39m
+                [36m>[39m
+                  [36m<svg[39m
+                    [33maria-hidden[39m=[32m"true"[39m
+                    [33mclass[39m=[32m"lucide lucide-clock"[39m
+                    [33mfill[39m=[32m"none"[39m
+                    [33mheight[39m=[32m"14"[39m
+                    [33mstroke[39m=[32m"currentColor"[39m
+                    [33mstroke-linecap[39m=[32m"round"[39m
+                    [33mstroke-linejoin[39m=[32m"round"[39m
+                    [33mstroke-width[39m=[32m"2"[39m
+                    [33mviewBox[39m=[32m"0 0 24 24"[39m
+                    [33mwidth[39m=[32m"14"[39m
+                    [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                  [36m>[39m
+                    [36m<circle[39m
+                      [33mcx[39m=[32m"12"[39m
+                      [33mcy[39m=[32m"12"[39m
+                      [33mr[39m=[32m"10"[39m
+                    [36m/>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M12 6v6l4 2"[39m
+                    [36m/>[39m
+                  [36m</svg>[39m
+                  [0m2026年8月31日[0m
+                [36m</span>[39m
+              [36m</div>[39m
+              [36m<dl[39m
+                [33mclass[39m=[32m"mt-3 grid gap-1 text-xs"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"grid grid-cols-[auto_1fr] gap-2"[39m
+                [36m>[39m
+                  [36m<dt[39m
+                    [33mclass[39m=[32m"font-semibold text-[var(--color-soft-ink)]"[39m
+                  [36m>[39m
+                    [0m現金獎勵[0m
+                  [36m</dt>[39m
+                  [36m<dd[39m
+                    [33mclass[39m=[32m"min-w-0 break-words"[39m
+                  [36m>[39m
+                    [0mHK$1,200.00[0m
+                  [36m</dd>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"grid grid-cols-[auto_1fr] gap-2"[39m
+                [36m>[39m
+                  [36m<dt[39m
+                    [33mclass[39m=[32m"font-semibold text-[var(--color-soft-ink)]"[39m
+                  [36m>[39m
+                    [0m品牌[0m
+                  [36m</dt>[39m
+                  [36m<dd[39m
+                    [33mclass[39m=[32m"min-w-0 break-words"[39m
+                  [36m>[39m
+                    [0mGlow Labs[0m
+                  [36m</dd>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"grid grid-cols-[auto_1fr] gap-2"[39m
+                [36m>[39m
+                  [36m<dt[39m
+                    [33mclass[39m=[32m"font-semibold text-[var(--color-soft-ink)]"[39m
+                  [36m>[39m
+                    [0m任務類型[0m
+                  [36m</dt>[39m
+                  [36m<dd[39m
+                    [33mclass[39m=[32m"min-w-0 break-words"[39m
+                  [36m>[39m
+                    [0m原創內容[0m
+                  [36m</dd>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"grid grid-cols-[auto_1fr] gap-2"[39m
+                [36m>[39m
+                  [36m<dt[39m
+                    [33mclass[39m=[32m"font-semibold text-[var(--color-soft-ink)]"[39m
+                  [36m>[39m
+                    [0m參加方式[0m
+                  [36m</dt>[39m
+                  [36m<dd[39m
+                    [33mclass[39m=[32m"min-w-0 break-words"[39m
+                  [36m>[39m
+                    [0m申請制[0m
+                  [36m</dd>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"grid grid-cols-[auto_1fr] gap-2"[39m
+                [36m>[39m
+                  [36m<dt[39m
+                    [33mclass[39m=[32m"font-semibold text-[var(--color-soft-ink)]"[39m
+                  [36m>[39m
+                    [0m平台[0m
+                  [36m</dt>[39m
+                  [36m<dd[39m
+                    [33mclass[39m=[32m"min-w-0 break-words"[39m
+                  [36m>[39m
+                    [0mInstagram、TikTok[0m
+                  [36m</dd>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"grid grid-cols-[auto_1fr] gap-2"[39m
+                [36m>[39m
+                  [36m<dt[39m
+                    [33mclass[39m=[32m"font-semibold text-[var(--color-soft-ink)]"[39m
+                  [36m>[39m
+                    [0m交付內容[0m
+                  [36m</dt>[39m
+                  [36m<dd[39m
+                    [33mclass[39m=[32m"min-w-0 break-words"[39m
+                  [36m>[39m
+                    [0m1 條 Reel、3 個限時動態[0m
+                  [36m</dd>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"grid grid-cols-[auto_1fr] gap-2"[39m
+                [36m>[39m
+                  [36m<dt[39m
+                    [33mclass[39m=[32m"font-semibold text-[var(--color-soft-ink)]"[39m
+                  [36m>[39m
+                    [0m所需內容[0m
+                  [36m</dt>[39m
+                  [36m<dd[39m
+                    [33mclass[39m=[32m"min-w-0 break-words"[39m
+                  [36m>[39m
+                    [0m中[0m
+                  [36m</dd>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"grid grid-cols-[auto_1fr] gap-2"[39m
+                [36m>[39m
+                  [36m<dt[39m
+                    [33mclass[39m=[32m"font-semibold text-[var(--color-soft-ink)]"[39m
+                  [36m>[39m
+                    [0m名額狀態[0m
+                  [36m</dt>[39m
+                  [36m<dd[39m
+                    [33mclass[39m=[32m"min-w-0 break-words"[39m
+                  [36m>[39m
+                    [0m暫不可參加[0m
+                  [36m</dd>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"grid grid-cols-[auto_1fr] gap-2"[39m
+                [36m>[39m
+                  [36m<dt[39m
+                    [33mclass[39m=[32m"font-semibold text-[var(--color-soft-ink)]"[39m
+                  [36m>[39m
+                    [0m所需等級[0m
+                  [36m</dt>[39m
+                  [36m<dd[39m
+                    [33mclass[39m=[32m"min-w-0 break-words"[39m
+                  [36m>[39m
+                    [0mL1[0m
+                  [36m</dd>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"grid grid-cols-[auto_1fr] gap-2"[39m
+                [36m>[39m
+                  [36m<dt[39m
+                    [33mclass[39m=[32m"font-semibold text-[var(--color-soft-ink)]"[39m
+                  [36m>[39m
+                    [0m狀態[0m
+                  [36m</dt>[39m
+                  [36m<dd[39m
+                    [33mclass[39m=[32m"min-w-0 break-words"[39m
+                  [36m>[39m
+                    [0m審批中[0m
+                  [36m</dd>[39m
+                [36m</div>[39m
+              [36m</dl>[39m
+            [36m</div>[39m
+          [36m</article>[39m
+        [36m</a>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  server/test/audit-mission-list-projection.test.ts > D09 serialized mission-list contract (projection-aware unit transport) > keeps unknown category TrAvEl findable verbatim
+AssertionError: expected [] to have a length of 1 but got +0
+
+- Expected
++ Received
+
+- 1
++ 0
+
+ ❯ server/test/audit-mission-list-projection.test.ts:78:22
+     76|     state.rows[0].category = category;
+     77|     const { missions } = await (await app.request(`/missions?category=…
+     78|     expect(missions).toHaveLength(1);
+       |                      ^
+     79|     expect(missions[0].category).toBe(category);
+     80|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/routes/-_app.mission.index.test.tsx > mission discovery > retains the selected filter and stale facts on retry, then hides protected cached facts on 403
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "重試"
+
+Here are the accessible roles:
+
+  heading:
+
+  Name "限時任務":
+  <h1
+    class="font-display text-2xl font-bold"
+  />
+
+  Name "所有任務":
+  <h2
+    class="sr-only"
+  />
+
+  Name "夏日美妝開箱":
+  <h3
+    class="mt-1 line-clamp-2 font-heading font-semibold"
+  />
+
+  --------------------------------------------------
+  button:
+
+  Name "全部":
+  <button
+    aria-pressed="false"
+    class="filter-pill shrink-0 "
+    type="button"
+  />
+
+  Name "社交":
+  <button
+    aria-pressed="false"
+    class="filter-pill shrink-0 "
+    type="button"
+  />
+
+  Name "美容":
+  <button
+    aria-pressed="false"
+    class="filter-pill shrink-0 "
+    type="button"
+  />
+
+  Name "餐飲":
+  <button
+    aria-pressed="false"
+    class="filter-pill shrink-0 "
+    type="button"
+  />
+
+  Name "生活":
+  <button
+    aria-pressed="false"
+    class="filter-pill shrink-0 "
+    type="button"
+  />
+
+  Name "寵物":
+  <button
+    aria-pressed="false"
+    class="filter-pill shrink-0 "
+    type="button"
+  />
+
+  Name "旅遊":
+  <button
+    aria-pressed="true"
+    class="filter-pill shrink-0 filter-pill-active"
+    type="button"
+  />
+
+  --------------------------------------------------
+  alert:
+
+  Name "":
+  <p
+    class="text-sm text-[var(--color-magenta)]"
+    role="alert"
+  />
+
+  --------------------------------------------------
+  link:
+
+  Name "旅遊 夏日美妝開箱 800 積分 2026年8月31日 現金獎勵 HK$1,200.00 品牌 Glow Labs 任務類型 原創內容 參加方式 申請制 平台 Instagram、TikTok 交付內容 1 條 Reel、3 個限時動態 所需內容 中 名額狀態 暫不可參加 所需等級 L1 狀態 審批中":
+  <a
+    href="/mission/beauty-reel"
+  />
+
+  --------------------------------------------------
+  article:
+
+  Name "":
+  <article
+    class="pastel-card flex gap-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+  />
+
+  --------------------------------------------------
+  term:
+
+  Name "":
+  <dt
+    class="font-semibold text-[var(--color-soft-ink)]"
+  />
+
+  Name "":
+  <dt
+    class="font-semibold text-[var(--color-soft-ink)]"
+  />
+
+  Name "":
+  <dt
+    class="font-semibold text-[var(--color-soft-ink)]"
+  />
+
+  Name "":
+  <dt
+    class="font-semibold text-[var(--color-soft-ink)]"
+  />
+
+  Name "":
+  <dt
+    class="font-semibold text-[var(--color-soft-ink)]"
+  />
+
+  Name "":
+  <dt
+    class="font-semibold text-[var(--color-soft-ink)]"
+  />
+
+  Name "":
+  <dt
+    class="font-semibold text-[var(--color-soft-ink)]"
+  />
+
+  Name "":
+  <dt
+    class="font-semibold text-[var(--color-soft-ink)]"
+  />
+
+  Name "":
+  <dt
+    class="font-semibold text-[var(--color-soft-ink)]"
+  />
+
+  Name "":
+  <dt
+    class="font-semibold text-[var(--color-soft-ink)]"
+  />
+
+  --------------------------------------------------
+  definition:
+
+  Name "":
+  <dd
+    class="min-w-0 break-words"
+  />
+
+  Name "":
+  <dd
+    class="min-w-0 break-words"
+  />
+
+  Name "":
+  <dd
+    class="min-w-0 break-words"
+  />
+
+  Name "":
+  <dd
+    class="min-w-0 break-words"
+  />
+
+  Name "":
+  <dd
+    class="min-w-0 break-words"
+  />
+
+  Name "":
+  <dd
+    class="min-w-0 break-words"
+  />
+
+  Name "":
+  <dd
+    class="min-w-0 break-words"
+  />
+
+  Name "":
+  <dd
+    class="min-w-0 break-words"
+  />
+
+  Name "":
+  <dd
+    class="min-w-0 break-words"
+  />
+
+  Name "":
+  <dd
+    class="min-w-0 break-words"
+  />
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style, option
+<body>
+  <div>
+    <div
+      class="mx-auto max-w-lg space-y-4 p-4 lg:max-w-5xl"
+    >
+      <h1
+        class="font-display text-2xl font-bold"
+      >
+        限時任務
+      </h1>
+      <div
+        class="scrollbar-none flex gap-2 overflow-x-auto pb-1"
+      >
+        <button
+          aria-pressed="false"
+          class="filter-pill shrink-0 "
+          type="button"
+        >
+          全部
+        </button>
+        <button
+          aria-pressed="false"
+          class="filter-pill shrink-0 "
+          type="button"
+        >
+          社交
+        </button>
+        <button
+          aria-pressed="false"
+          class="filter-pill shrink-0 "
+          type="button"
+        >
+          美容
+        </button>
+        <button
+          aria-pressed="false"
+          class="filter-pill shrink-0 "
+          type="button"
+        >
+          餐飲
+        </button>
+        <button
+          aria-pressed="false"
+          class="filter-pill shrink-0 "
+          type="button"
+        >
+          生活
+        </button>
+        <button
+          aria-pressed="false"
+          class="filter-pill shrink-0 "
+          type="button"
+        >
+          寵物
+        </button>
+        <button
+          aria-pressed="true"
+          class="filter-pill shrink-0 filter-pill-active"
+          type="button"
+        >
+          旅遊
+        </button>
+      </div>
+      <p
+        class="text-sm text-[var(--color-magenta)]"
+        role="alert"
+      >
+        載入失敗
+      </p>
+      <h2
+        class="sr-only"
+      >
+        所有任務
+      </h2>
+      <div
+        class="grid gap-2 lg:grid-cols-2"
+      >
+        <a
+          href="/mission/beauty-reel"
+        >
+          <article
+            class="pastel-card flex gap-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+          >
+            <div
+              class="h-20 w-20 shrink-0 overflow-hidden rounded-xl border-2 border-[var(--color-ink)] bg-[var(--color-muted,#E4E4E4)]"
+            />
+            <div
+              class="min-w-0 flex-1"
+            >
+              <span
+                class="inline-block rounded-full border-[1.5px] border-[var(--color-ink)] bg-[var(--color-acid)] px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-wide text-[var(--color-ink)] "
+              >
+                旅遊
+              </span>
+              <h3
+                class="mt-1 line-clamp-2 font-heading font-semibold"
+              >
+                夏日美妝開箱
+              </h3>
+              <div
+                class="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-[var(--color-soft-ink)]"
+              >
+                <span
+                  class="flex items-center gap-1"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="lucide lucide-star"
+                    fill="none"
+                    height="14"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    width="14"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"
+                    />
+                  </svg>
+                  800 積分
+                </span>
+                <span
+                  class="flex items-center gap-1"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="lucide lucide-clock"
+                    fill="none"
+                    height="14"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    width="14"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <circle
+                      cx="12"
+                      cy="12"
+                      r="10"
+                    />
+                    <path
+                      d="M12 6v6l4 2"
+                    />
+                  </svg>
+                  2026年8月31日
+                </span>
+              </div>
+              <dl
+                class="mt-3 grid gap-1 text-xs"
+              >
+                <div
+                  class="grid grid-cols-[auto_1fr] gap-2"
+                >
+                  <dt
+                    class="font-semibold text-[var(--color-soft-ink)]"
+                  >
+                    現金獎勵
+                  </dt>
+                  <dd
+                    class="min-w-0 break-words"
+                  >
+                    HK$1,200.00
+                  </dd>
+                </div>
+                <div
+                  class="grid grid-cols-[auto_1fr] gap-2"
+                >
+                  <dt
+                    class="font-semibold text-[var(--color-soft-ink)]"
+                  >
+                    品牌
+                  </dt>
+                  <dd
+                    class="min-w-0 break-words"
+                  >
+                    Glow Labs
+                  </dd>
+                </div>
+                <div
+                  class="grid grid-cols-[auto_1fr] gap-2"
+                >
+                  <dt
+                    class="font-semibold text-[var(--color-soft-ink)]"
+                  >
+                    任務類型
+                  </dt>
+                  <dd
+                    class="min-w-0 break-words"
+                  >
+                    原創內容
+                  </dd>
+                </div>
+                <div
+                  class="grid grid-cols-[auto_1fr] gap-2"
+                >
+                  <dt
+                    class="font-semibold text-[var(--color-soft-ink)]"
+                  >
+                    參加方式
+                  </dt>
+                  <dd
+                    class="min-w-0 break-words"
+                  >
+                    申請制
+                  </dd>
+                </div>
+                <div
+                  class="grid grid-cols-[auto_1fr] gap-2"
+                >
+                  <dt
+                    class="font-semibold text-[var(--color-soft-ink)]"
+                  >
+                    平台
+                  </dt>
+                  <dd
+                    class="min-w-0 break-words"
+                  >
+                    Instagram、TikTok
+                  </dd>
+                </div>
+                <div
+                  class="grid grid-cols-[auto_1fr] gap-2"
+                >
+                  <dt
+                    class="font-semibold text-[var(--color-soft-ink)]"
+                  >
+                    交付內容
+                  </dt>
+                  <dd
+                    class="min-w-0 break-words"
+                  >
+                    1 條 Reel、3 個限時動態
+                  </dd>
+                </div>
+                <div
+                  class="grid grid-cols-[auto_1fr] gap-2"
+                >
+                  <dt
+                    class="font-semibold text-[var(--color-soft-ink)]"
+                  >
+                    所需內容
+                  </dt>
+                  <dd
+                    class="min-w-0 break-words"
+                  >
+                    中
+                  </dd>
+                </div>
+                <div
+                  class="grid grid-cols-[auto_1fr] gap-2"
+                >
+                  <dt
+                    class="font-semibold text-[var(--color-soft-ink)]"
+                  >
+                    名額狀態
+                  </dt>
+                  <dd
+                    class="min-w-0 break-words"
+                  >
+                    暫不可參加
+                  </dd>
+                </div>
+                <div
+                  class="grid grid-cols-[auto_1fr] gap-2"
+                >
+                  <dt
+                    class="font-semibold text-[var(--color-soft-ink)]"
+                  >
+                    所需等級
+                  </dt>
+                  <dd
+                    class="min-w-0 break-words"
+                  >
+                    L1
+                  </dd>
+                </div>
+                <div
+                  class="grid grid-cols-[auto_1fr] gap-2"
+                >
+                  <dt
+                    class="font-semibold text-[var(--color-soft-ink)]"
+                  >
+                    狀態
+                  </dt>
+                  <dd
+                    class="min-w-0 break-words"
+                  >
+                    審批中
+                  </dd>
+                </div>
+              </dl>
+            </div>
+          </article>
+        </a>
+      </div>
+    </div>
+  </div>
+</body>
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/routes/-_app.mission.index.test.tsx:71:28
+     69|     const {rerender}=renderMissions();
+     70|     fireEvent.click(screen.getByRole("button",{name:"旅遊"}));
+     71|     fireEvent.click(screen.getByRole("button",{name:"重試"}));
+       |                            ^
+     72|     expect(retry).toHaveBeenCalledOnce();
+     73|     expect(screen.getByRole("button",{name:"旅遊"})).toHaveAttribute("…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+ Test Files  2 failed (2)
+      Tests  2 failed | 14 passed (16)
+   Start at  05:07:05
+   Duration  4.57s (transform 388ms, setup 937ms, collect 1.25s, tests 528ms, environment 3.26s, prepare 575ms)
+

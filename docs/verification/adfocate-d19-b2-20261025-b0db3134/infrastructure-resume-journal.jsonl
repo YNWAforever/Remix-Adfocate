@@ -1,0 +1,8 @@
+{"state": "intent", "kind": "start-same-captured-db", "containerId": "cc5bebd05d4f77658ee2647b2449a5188e8425d2ae2057864389a6c23c0bbbb1", "reason": "PG_VERSION already initialized; resume server without reinitializing data"}
+{"state": "succeeded", "kind": "start-same-captured-db", "containerId": "cc5bebd05d4f77658ee2647b2449a5188e8425d2ae2057864389a6c23c0bbbb1"}
+{"state": "intent", "kind": "owner-infrastructure-sql", "label": "infra-before-forward-repair", "querySha256": "00a37e1e10504d19cc45fda4f9a91031430bb31abb620631604c9a3588757060", "containerId": "cc5bebd05d4f77658ee2647b2449a5188e8425d2ae2057864389a6c23c0bbbb1"}
+{"state": "succeeded", "label": "infra-before-forward-repair", "exit": 0, "outputSha256": "1b830340c7a822bf756e3aca96eebd4cc5b3db978e44e7b014443c806459e049"}
+{"state": "intent", "kind": "owner-infrastructure-sql", "label": "infra-create-required-admin", "querySha256": "89209d76d1a7d9bfa11372a8d3aadad634369409050f6a7b6fddb1bea6684145", "containerId": "cc5bebd05d4f77658ee2647b2449a5188e8425d2ae2057864389a6c23c0bbbb1"}
+{"state": "succeeded", "label": "infra-create-required-admin", "exit": 0, "outputSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"}
+{"state": "intent", "kind": "pinned-image-infrastructure-migrate", "containerId": "cc5bebd05d4f77658ee2647b2449a5188e8425d2ae2057864389a6c23c0bbbb1", "scriptSha256": "eb6a57848a73dfbc3b8e40edbadcc7a933f1099ac62cef8c138a18115655b745", "fileCount": 59}
+{"state": "unknown", "kind": "pinned-image-infrastructure-migrate", "exit": 3, "logSha256": "6f2ffdd90f598b2036b790606ebc6e11e884bf8231c00a2cbe1e42deade8e29a"}

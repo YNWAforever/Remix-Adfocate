@@ -1,0 +1,10 @@
+{
+  "reference": {
+    "path": "docs/verification/D08-prior-code-fingerprint.json",
+    "sha256": "64f39ccd6048acb97ffdbb2890b045a95b62264ab7eec7dcb8ff4d42a9fde456"
+  },
+  "oldScopeRecords": 140,
+  "currentScopeRecords": 788,
+  "currentProofGrantTestMatchesOldLaterSnapshot": true,
+  "qualification": "Matching one test file in a later partial source snapshot is not a direct binding of the earlier standalone log to its full application/SQL/target/auth state. Missing source records remain unbound, not assumed unchanged."
+}

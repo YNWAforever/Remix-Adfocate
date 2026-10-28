@@ -1,0 +1,78 @@
+{
+  "node": "v22.23.4",
+  "sourceFingerprint": "9c5b1ea02ec1391c4373452f1a7cbfdfeed144c36d349d5bb09c2728abf993ed",
+  "results": [
+    {
+      "name": "typecheck",
+      "command": [
+        "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+        "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+        "run",
+        "type-check"
+      ],
+      "exit": 0,
+      "durationMs": 17637
+    },
+    {
+      "name": "harness-typecheck",
+      "command": [
+        "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+        "node_modules/typescript/bin/tsc",
+        "--noEmit",
+        "-p",
+        ".codex-tmp/tsconfig.D17-R2.json"
+      ],
+      "exit": 0,
+      "durationMs": 15439
+    },
+    {
+      "name": "lint",
+      "command": [
+        "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+        "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+        "run",
+        "lint"
+      ],
+      "exit": 0,
+      "durationMs": 9109
+    },
+    {
+      "name": "manifest",
+      "command": [
+        "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+        "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+        "run",
+        "release:manifest:check"
+      ],
+      "exit": 0,
+      "durationMs": 1787
+    },
+    {
+      "name": "build",
+      "command": [
+        "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+        "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+        "run",
+        "build"
+      ],
+      "exit": 0,
+      "durationMs": 30127
+    },
+    {
+      "name": "full-suite",
+      "command": [
+        "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+        "node_modules/vitest/vitest.mjs",
+        "run",
+        "--maxWorkers=1",
+        "--minWorkers=1",
+        "--no-file-parallelism",
+        "--reporter=dot",
+        "--reporter=json",
+        "--outputFile=.codex-tmp/D17-R2-full-suite.json"
+      ],
+      "exit": 0,
+      "durationMs": 467058
+    }
+  ]
+}

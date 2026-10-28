@@ -8,7 +8,7 @@ export const redemptionRoutes = new Hono<Env>();
 
 // RPC raise-messages double as stable codes. Map them to HTTP; anything else is a 500.
 const RPC_409 = new Set([
-  "insufficient_points", "out_of_stock", "closed", "not_authenticated",
+  "insufficient_points", "out_of_stock", "closed", "not_authenticated", "request_conflict",
 ]);
 function rpcError(c: Context<Env>, error: PostgrestError) {
   const msg = error.message ?? "";
@@ -33,10 +33,16 @@ redemptionRoutes.get("/gifts", async (c) => {
 
 /** Redeem a gift → atomic point deduction + code claim. Returns the redemption (incl. code). */
 redemptionRoutes.post("/redeem", async (c) => {
-  const { gift_id } = await c.req.json<{ gift_id?: string }>().catch(() => ({ gift_id: undefined }));
+  const body = await c.req.json<{ gift_id?: string; client_request_id?: unknown }>().catch(() => null);
+  const { gift_id, client_request_id } = body ?? {};
   if (!gift_id) return c.json({ error: "gift_id required", code: "bad_request" }, 400);
+  if (client_request_id !== undefined && (typeof client_request_id !== "string" || !/^[a-f0-9]{8}-(?:[a-f0-9]{4}-){3}[a-f0-9]{12}$/i.test(client_request_id))) {
+    return c.json({ error: "Valid client_request_id required", code: "bad_request" }, 400);
+  }
   const supabase = makeUserClient(c.get("jwt"));
-  const { data, error } = await supabase.rpc("redeem_gift", { p_gift: gift_id });
+  // Old callers without an intent retain their distinct-new-redemption contract.
+  const { data, error } = await supabase.rpc(client_request_id === undefined ? "redeem_gift" : "redeem_gift_with_request",
+    client_request_id === undefined ? { p_gift: gift_id } : { p_gift: gift_id, p_request_id: client_request_id });
   if (error) return rpcError(c, error);
   return c.json(data);
 });

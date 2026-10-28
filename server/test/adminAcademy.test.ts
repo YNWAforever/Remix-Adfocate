@@ -1,5 +1,6 @@
+import { fixtureName } from "./helpers";
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { createApp } from "../app";
+import { createFixtureStaffApp as createApp } from "./fixtureStaffTransport";
 import { serviceForTests, cleanup, hasSupabaseEnv } from "./helpers";
 
 process.env.ADMIN_SECRET = process.env.ADMIN_SECRET || "test-admin-secret";
@@ -18,7 +19,7 @@ function adminreq(path: string, init: RequestInit = {}) {
 // test rows by slug directly (same local-scoped pattern as campaigns.test.ts's serviceForTests()
 // deletes) in addition to the shared cleanup() for parity with adminContent.test.ts.
 async function cleanupAcademyTestRows() {
-  await serviceForTests().from("academy_content").delete().in("slug", ["t-bad", "r-test-1"]);
+  await serviceForTests().from("academy_content").delete().in("slug", [fixtureName("t-bad"), fixtureName("r-test-1")]);
 }
 
 suite("admin academy CRUD", () => {
@@ -51,7 +52,7 @@ suite("admin academy CRUD", () => {
   it("creates → publishes → archives a draft", async () => {
     const create = await adminreq("/admin/academy", {
       method: "POST",
-      body: JSON.stringify({ kind: "resource", slug: "r-test-1", title_zh: "測試資源" }),
+      body: JSON.stringify({ kind: "resource", slug: fixtureName("r-test-1"), title_zh: "測試資源" }),
     });
     expect(create.status).toBe(201);
     const { item } = await create.json();

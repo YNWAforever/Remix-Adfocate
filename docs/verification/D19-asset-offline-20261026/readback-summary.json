@@ -1,0 +1,44 @@
+{
+  "sourceFingerprint": "4f2c3faa22bf835911a55dc7bb099910e4308fc1b7a5570d58f32386708934b9",
+  "trace": {
+    "path": "docs/verification/D19-asset-offline-20261026/boundary-valid-fixture-readback.json",
+    "sha256": "df651909e1f30de96d1b2285524943abf0afa89289c64ce3dd8adc2389c8fdcb"
+  },
+  "tests": [
+    "uploads actual file bytes through the owner workflow path and finalizes with their SHA256",
+    "rejects MIME and over-limit files before any grant while retaining URL inputs",
+    "preserves fields after signing failure, calls exact owned cleanup and allows explicit file reselection",
+    "retains the signing error and mock pending receipt if best-effort cleanup also fails",
+    "retains the URL after a Storage failure without claiming a finalize or cleanup that did not run",
+    "shows a failed evidence row and retained inputs when finalize returns an actual route409",
+    "derives Creator, workspace and workflow from trusted route context despite extra spoofed body IDs",
+    "keeps backend MIME and size limits when a caller bypasses the UI",
+    "preserves inputs on the canonical expiry error and recovers only with a newly selected grant",
+    "does not enumerate an A submission or reach asset RPCs for scripted same-workspace Creator B",
+    "calls exact draft-asset abandonment after signing failure without touching existing mock rows"
+  ],
+  "actualLayers": [
+    "CreatorMissionWorkspace",
+    "useProofEvidenceUpload/apiFetch",
+    "Hono createActiveMissionRoutes",
+    "createProofEvidenceUploadGrant/finalizeProofEvidence/createUploadGrant"
+  ],
+  "scriptedLayers": [
+    "Auth session/context",
+    "repository workspace/publication reads and owner predicate",
+    "all RPC outcomes/row mutations",
+    "Storage signing and byte upload"
+  ],
+  "fileFixture": {
+    "path": "docs/verification/D19-asset-offline-20261026/one-pixel.png",
+    "sha256": "abc58d5127d7cdf313beb9ec8ee839860a9c6bfbc48c8b8eb6a3f7d8bb63de6f"
+  },
+  "actualTargetCalls": 0,
+  "realSdkClients": 0,
+  "actualSqlCalls": 0,
+  "actualProviderCalls": 0,
+  "browserExecuted": false,
+  "pendingRewardNeutralityMeasured": false,
+  "financialSentinel": "Frozen explicit mock values only. Not DB before/after, original incident evidence or funded financial neutrality.",
+  "cleanupLimit": "Calls and exact IDs/paths verified through actual helpers. Mock cleanup failure leaves a pending receipt; Storage upload failure has no automatic abandon. Full actual cleanup/lifetime/RLS/object-byte behavior remains unverified."
+}

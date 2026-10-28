@@ -1,0 +1,21 @@
+{
+  "phase": "capabilities",
+  "startedAt": "2026-10-24T05:11:07.259535+00:00",
+  "finishedAt": "2026-10-24T05:11:29.042231+00:00",
+  "sourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+  "command": "npm.cmd exec --offline --yes --package=node@22 -- node node_modules/vite-node/vite-node.mjs scripts/audit/verify-capabilities.mjs",
+  "exit": 0,
+  "log": "logs/D19-current-capabilities.log",
+  "priorEvidenceRestored": 956,
+  "captured": [
+    {
+      "historicalPath": "docs/verification/disposable-capabilities.json",
+      "captured": "docs/verification/D19-current-runtime/capabilities/disposable-capabilities.json",
+      "bytes": 154812,
+      "sha256": "2f1b60584cc401c18aa8f1695a294a31034a7972af893e263005f93f4fd1f7d8",
+      "oldBytesRestored": true,
+      "appendOnlyDelta": false
+    }
+  ],
+  "scope": "Existing tests/runner, fresh exact-owned fixtures; no production target, external providers or cleanup; original evidence bytes restored after phase"
+}

@@ -1,0 +1,75 @@
+{
+  "runId": "a6cb60d6-37ca-4f96-9379-4a332469ab81",
+  "target": {
+    "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+    "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+    "disposable": true,
+    "projectId": "adfocate-r1-empty-20261023",
+    "proxy": "none",
+    "apiPort": 56421,
+    "apiContainerId": "1b9c41318298d79308db7782f51474541ad5abf0120fa93b96a2a9ea59d043ee",
+    "databaseContainerId": "e7c8efa295cd5544a8b2a100a73b6953cd6ddd486aaf394f231482067523e12d",
+    "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+    "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+    "networkId": "9e5d3069e8255d70b8eef56020c8ea2618fdb2626d92d9a04e51ea2de41a98e0"
+  },
+  "workspaceIds": [
+    "c9fc2a14-9d8f-4d81-a54b-9229040663de",
+    "27b53ea4-4a29-45f8-9576-305a49a46659"
+  ],
+  "missionIds": [
+    "213a10a9-3aa6-4171-9ab9-74b18046874b",
+    "6b12a396-2adf-46a7-aa2c-f79e7c1c362a"
+  ],
+  "authIds": [
+    "c9bc89af-41b1-4f37-a525-87eb8c4b13c6",
+    "12786c9b-8ed1-425c-95dc-a13b6020ad67",
+    "100a6123-7cac-448d-af83-18cda94d3ae9",
+    "2f502548-f8ca-481a-a50b-5d2b2234f9c7",
+    "c8fb7f93-2e3f-4cee-9044-12b92cbde219",
+    "0b2e805a-ba4d-4d10-8237-b3a36576671d",
+    "fe82ff87-b60b-4991-bfa4-2c503cbae7a7",
+    "bf40b4b2-82ff-48f5-9e6f-e07e15a9e6ef",
+    "3e6cc6b3-9d68-4dcc-be11-7777c8e0dd13",
+    "1ed4d606-d0c4-4a68-97f7-7f89c688bab6",
+    "f7900cc9-6462-46ec-95d5-0a9aff03f024"
+  ],
+  "initialSnapshots": [
+    {
+      "xp": 0,
+      "points": 50,
+      "withdrawable": 0,
+      "budget": 9000,
+      "pointLedger": 0,
+      "cashLedger": 0,
+      "redemptions": 0,
+      "budgetLedger": 0,
+      "rewardInventory": [
+        {
+          "id": "6c91d97e-4a80-401a-8eef-21e51165d6f6",
+          "stock_qty": 3,
+          "stock_remaining": 3
+        }
+      ]
+    },
+    {
+      "xp": 0,
+      "points": 50,
+      "withdrawable": 0,
+      "budget": 9000,
+      "pointLedger": 0,
+      "cashLedger": 0,
+      "redemptions": 0,
+      "budgetLedger": 0,
+      "rewardInventory": [
+        {
+          "id": "6c91d97e-4a80-401a-8eef-21e51165d6f6",
+          "stock_qty": 3,
+          "stock_remaining": 3
+        }
+      ]
+    }
+  ],
+  "platformEditorFixtureRunId": "872c97c2-0729-4411-8e89-b9518e463086",
+  "cleanup": "none; exact owned IDs retained"
+}

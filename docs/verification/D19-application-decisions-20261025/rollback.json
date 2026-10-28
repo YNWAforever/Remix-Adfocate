@@ -1,0 +1,174 @@
+{
+  "sourceFingerprint": "1d3df1fe48e87d784b18ff5bfde3ebe438411187bac6a28d83a3ff6d21f02191",
+  "previousSourceFingerprint": "e83998d178061043688016056a5a78fc61df58bac28f3d0d0b66d639306037bd",
+  "sourceRestoreScope": [
+    "scripts/release/manifest.test.ts",
+    "scripts/release/manifest.ts",
+    "scripts/release/preflight.test.ts",
+    "server/routes/admin.ts",
+    "server/test/b2-runtime-manifest.test.ts",
+    "src/routes/-_app.mission.$missionSlug.test.tsx",
+    "src/routes/-admin.applications.test.tsx",
+    "src/routes/_app.mission.$missionSlug.tsx",
+    "src/routes/admin.applications.tsx",
+    "supabase/release-manifest.json"
+  ],
+  "newSourceFiles": [
+    "server/test/audit-application-decisions.test.ts",
+    "server/test/audit-application-decisions.embedded.test.ts",
+    "supabase/migrations/20261025120934_application_decisions.sql"
+  ],
+  "beforeImages": [
+    {
+      "path": "docs/verification/evidence-integrity.json",
+      "beforeCopy": "docs/verification/D19-application-decisions-20261025/before/docs/verification/evidence-integrity.json",
+      "sha256": "c13d7dc091024715a7bafb32e163cf3ca4f5ef6f3b2267d31c139d480f466cc2"
+    },
+    {
+      "path": "docs/verification/code-fingerprint.json",
+      "beforeCopy": "docs/verification/D19-application-decisions-20261025/before/docs/verification/code-fingerprint.json",
+      "sha256": "f7416d43f05b77effa404a7abb306de159017b0173061595c429656367ee3c03"
+    },
+    {
+      "path": "docs/verification/adfocate-delivery.json",
+      "beforeCopy": "docs/verification/D19-application-decisions-20261025/before/docs/verification/adfocate-delivery.json",
+      "sha256": "41bf5f16238e954be06e7e6ac528df608a42bb4a2425d2b43cf47e67fea36fb2"
+    },
+    {
+      "path": "docs/verification/audit_case_coverage.csv",
+      "beforeCopy": "docs/verification/D19-application-decisions-20261025/before/docs/verification/audit_case_coverage.csv",
+      "sha256": "f1953d5e9839c5a9cd9e6219fb29e5eee69baf3f43b747e12aa51163aa110484"
+    },
+    {
+      "path": "docs/verification/implementation_backlog.csv",
+      "beforeCopy": "docs/verification/D19-application-decisions-20261025/before/docs/verification/implementation_backlog.csv",
+      "sha256": "9bff3c2b41c3111b687fdad0247af07873d11172dd0227eef7ab6538ea328d45"
+    },
+    {
+      "path": "docs/verification/D19-C1-remaining-acceptance.json",
+      "beforeCopy": "docs/verification/D19-application-decisions-20261025/before/docs/verification/D19-C1-remaining-acceptance.json",
+      "sha256": "d294d4dc03dd194e61b5164b4b47cac6cf644fe5b08c39331d5c5ea3ff4dc1c2"
+    },
+    {
+      "path": "docs/verification/D19-C1-continuation-case-coverage.json",
+      "beforeCopy": "docs/verification/D19-application-decisions-20261025/before/docs/verification/D19-C1-continuation-case-coverage.json",
+      "sha256": "9a87aed8b7a28a5fd2fc6f2b63fbfd80c8f00c3f03ff0621bbf9e82597e6ca2b"
+    },
+    {
+      "path": "supabase/release-manifest.json",
+      "beforeCopy": "docs/verification/D19-application-decisions-20261025/before/supabase/release-manifest.json",
+      "sha256": "3d908920fca9f95f94f219b5ae206672bbaa8773cb5e1db69bd5fb9c898d1bf8"
+    },
+    {
+      "path": "server/routes/admin.ts",
+      "beforeCopy": "docs/verification/D19-application-decisions-20261025/before/server/routes/admin.ts",
+      "sha256": "d420b11f2fe089276003a03f5d8f4606b1e24ccadc0e2b9fb87aa2a65fdb3552"
+    },
+    {
+      "path": "src/routes/admin.applications.tsx",
+      "beforeCopy": "docs/verification/D19-application-decisions-20261025/before/src/routes/admin.applications.tsx",
+      "sha256": "0b55f788db229402b5e07c28dc8c856a22a61a527824889bc6ce7d5eaab5126b"
+    },
+    {
+      "path": "src/routes/-admin.applications.test.tsx",
+      "beforeCopy": "docs/verification/D19-application-decisions-20261025/before/src/routes/-admin.applications.test.tsx",
+      "sha256": "0c2a7f5dbc45ca11e787e30af60a1a6356e88d3fee903dd45987c3cffcc2a927"
+    },
+    {
+      "path": "src/lib/admin.ts",
+      "beforeCopy": "docs/verification/D19-application-decisions-20261025/before/src/lib/admin.ts",
+      "sha256": "6fcbe556f956c89f3465f420a86c7c2378503bb0239b1315513139dd42f736f6"
+    },
+    {
+      "path": "docs/superpowers/plans/2026-10-23-adfocate-implementation-plan.md",
+      "beforeCopy": "docs/verification/D19-application-decisions-20261025/before/docs/superpowers/plans/2026-10-23-adfocate-implementation-plan.md",
+      "sha256": "077d693ab3818ccda72d6bace742781020b90488c5be7f05a9731e0a7cd36c03"
+    },
+    {
+      "path": "docs/verification/adfocate-task-ledger.md",
+      "beforeCopy": "docs/verification/D19-application-decisions-20261025/before/docs/verification/adfocate-task-ledger.md",
+      "sha256": "5f2b915f6ba789156b7860bd69e8e9ddd0a5ce182b3f40e7e7849767f4dfad72"
+    },
+    {
+      "path": "src/routes/_app.mission.$missionSlug.tsx",
+      "beforeCopy": "docs/verification/D19-application-decisions-20261025/before/src/routes/_app.mission.$missionSlug.tsx",
+      "sha256": "a77f9d270cb14081c267be8a8cb7ba57acfb37fd13983ff964d2483eea9bfbbe"
+    },
+    {
+      "path": "src/routes/-_app.mission.$missionSlug.test.tsx",
+      "beforeCopy": "docs/verification/D19-application-decisions-20261025/before/src/routes/-_app.mission.$missionSlug.test.tsx",
+      "sha256": "1300b1380b3ceab37b2e152e64a5358517eb570850aec6e5e1b289a1d85d1267"
+    },
+    {
+      "path": "scripts/release/manifest.ts",
+      "beforeCopy": "docs/verification/D19-application-decisions-20261025/before/scripts/release/manifest.ts",
+      "sha256": "450b0b227b3b53a39b40fd184dee21d040e762889e7e0c4f9eec5c797d196d5d"
+    },
+    {
+      "path": "scripts/release/manifest.test.ts",
+      "beforeCopy": "docs/verification/D19-application-decisions-20261025/before/scripts/release/manifest.test.ts",
+      "sha256": "ac2794ce0d26cdc0dd256d8b6a8d3ac9c39ddbb8d12138c087fd00a400c7c48b"
+    },
+    {
+      "path": "server/test/b2-runtime-manifest.test.ts",
+      "beforeCopy": "docs/verification/D19-application-decisions-20261025/before/server/test/b2-runtime-manifest.test.ts",
+      "sha256": "e18727e627666c343e47392fe0af8823fc36dfe9d788f66076fbb8c109b4843f"
+    },
+    {
+      "path": "scripts/release/preflight.test.ts",
+      "beforeCopy": "docs/verification/D19-application-decisions-20261025/before/scripts/release/preflight.test.ts",
+      "sha256": "b9f7a85317dd5365c0604e71204ae09dce120fb5d813022f3875be10eed5622f"
+    }
+  ],
+  "reconstruction": {
+    "method": "In-memory reconstruction of the previous782-file source using exact before copies for changed paths. No checkout files were restored.",
+    "fingerprint": "e83998d178061043688016056a5a78fc61df58bac28f3d0d0b66d639306037bd",
+    "passed": true
+  },
+  "dataRollbackExecuted": false,
+  "serverTargetSchemaApplied": false,
+  "resourceStopDeleteResetRecreateAllowed": false,
+  "originalIncident": "OPEN_UNRESTORED",
+  "releaseHold": true,
+  "providerEnabled": false,
+  "warning": "Restoring application/docs does not restore the three incident campaigns, revoke sessions or undo any earlier runtime effects. No data or lifecycle action is authorized. If this migration is later applied, use a separately reviewed forward response; never alter an old checksum or run a down/reset.",
+  "metadataFiles": [
+    {
+      "path": "docs/verification/code-fingerprint.json",
+      "beforeCopy": "docs/verification/D19-application-decisions-20261025/before/docs/verification/code-fingerprint.json",
+      "beforeSha256": "f7416d43f05b77effa404a7abb306de159017b0173061595c429656367ee3c03",
+      "afterSha256": "70878120339358fdd2e7403d4c34f99a50b13e24225e10af8a8b8d045d97faa8"
+    },
+    {
+      "path": "docs/verification/adfocate-delivery.json",
+      "beforeCopy": "docs/verification/D19-application-decisions-20261025/before/docs/verification/adfocate-delivery.json",
+      "beforeSha256": "41bf5f16238e954be06e7e6ac528df608a42bb4a2425d2b43cf47e67fea36fb2",
+      "afterSha256": "cb982231c64042e851ffc8b1cb25b0e1422a575fc8c830c40a5001096f224fa9"
+    },
+    {
+      "path": "docs/verification/audit_case_coverage.csv",
+      "beforeCopy": "docs/verification/D19-application-decisions-20261025/before/docs/verification/audit_case_coverage.csv",
+      "beforeSha256": "f1953d5e9839c5a9cd9e6219fb29e5eee69baf3f43b747e12aa51163aa110484",
+      "afterSha256": "9f5b3c1e9a5b6adfbd2781670d24aad168dad1548486e7de0446b8c57609939d"
+    },
+    {
+      "path": "docs/verification/implementation_backlog.csv",
+      "beforeCopy": "docs/verification/D19-application-decisions-20261025/before/docs/verification/implementation_backlog.csv",
+      "beforeSha256": "9bff3c2b41c3111b687fdad0247af07873d11172dd0227eef7ab6538ea328d45",
+      "afterSha256": "d72f4e9eae61278240b0dd11d4ea57cb545924d428e2aa4b67217bb09dbbf5d9"
+    },
+    {
+      "path": "docs/superpowers/plans/2026-10-23-adfocate-implementation-plan.md",
+      "beforeCopy": "docs/verification/D19-application-decisions-20261025/before/docs/superpowers/plans/2026-10-23-adfocate-implementation-plan.md",
+      "beforeSha256": "077d693ab3818ccda72d6bace742781020b90488c5be7f05a9731e0a7cd36c03",
+      "afterSha256": "aa6856a72da46b2d73ab55a39cb001df44323560c7762906fb3ef0d63f49fece"
+    },
+    {
+      "path": "docs/verification/adfocate-task-ledger.md",
+      "beforeCopy": "docs/verification/D19-application-decisions-20261025/before/docs/verification/adfocate-task-ledger.md",
+      "beforeSha256": "5f2b915f6ba789156b7860bd69e8e9ddd0a5ce182b3f40e7e7849767f4dfad72",
+      "afterSha256": "fa6642b8b4420a2087a61409aa4288c8d307c43545e2d6ba0451b75bec7df74f"
+    }
+  ],
+  "dynamicEvidenceSeals": "Current seal files are regenerated after source/metadata selection. Their prior bytes are preserved in the checkpoint; after-hashes are excluded from rollback metadata to avoid a self-referential hash cycle."
+}

@@ -1,0 +1,37 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+stderr | src/components/RedeemGiftCard.intent.test.tsx > UC-C33 actual redemption component/hook preserves a single unacknowledged intent > after reload with exhausted stock the existing history entry recovers the saved code without another POST
+Error: Not implemented: window.scrollTo
+    at module.exports (C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\node_modules\jsdom\lib\jsdom\browser\not-implemented.js:9:17)
+    at C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\node_modules\jsdom\lib\jsdom\browser\Window.js:960:7
+    at Object.fn (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@tanstack/router-core/src/scroll-restoration.ts:366:11)
+    at file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@tanstack/router-core/src/router.ts:1285:18
+    at Set.forEach (<anonymous>)
+    at RouterCore.emit (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@tanstack/router-core/src/router.ts:1283:22)
+    at file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@tanstack/react-router/src/Match.tsx:243:14
+    at Object.react_stack_bottom_frame (C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\node_modules\react-dom\cjs\react-dom-client.development.js:25989:20)
+    at runWithFiberInDEV (C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\node_modules\react-dom\cjs\react-dom-client.development.js:874:13)
+    at commitHookEffectListMount (C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\node_modules\react-dom\cjs\react-dom-client.development.js:13249:29) undefined
+
+stderr | src/components/RedeemGiftCard.intent.test.tsx > UC-C33 actual redemption component/hook preserves a single unacknowledged intent > after reload with exhausted stock the existing history entry recovers the saved code without another POST
+Error: Not implemented: window.scrollTo
+    at module.exports (C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\node_modules\jsdom\lib\jsdom\browser\not-implemented.js:9:17)
+    at C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\node_modules\jsdom\lib\jsdom\browser\Window.js:960:7
+    at Object.fn (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@tanstack/router-core/src/scroll-restoration.ts:366:11)
+    at file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@tanstack/router-core/src/router.ts:1285:18
+    at Set.forEach (<anonymous>)
+    at RouterCore.emit (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@tanstack/router-core/src/router.ts:1283:22)
+    at file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@tanstack/react-router/src/Match.tsx:243:14
+    at Object.react_stack_bottom_frame (C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\node_modules\react-dom\cjs\react-dom-client.development.js:25989:20)
+    at runWithFiberInDEV (C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\node_modules\react-dom\cjs\react-dom-client.development.js:874:13)
+    at commitHookEffectListMount (C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\node_modules\react-dom\cjs\react-dom-client.development.js:13249:29) undefined
+
+ ✓ src/components/RedeemGiftCard.intent.test.tsx (11 tests) 977ms
+
+ Test Files  1 passed (1)
+      Tests  11 passed (11)
+   Start at  04:16:12
+   Duration  4.82s (transform 312ms, setup 375ms, collect 1.45s, tests 977ms, environment 1.49s, prepare 170ms)
+
+JSON report written to C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/docs/verification/D19-redemption-replay-20261026/client-history-green-native.json

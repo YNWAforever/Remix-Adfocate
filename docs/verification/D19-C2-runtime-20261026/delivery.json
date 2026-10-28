@@ -1,0 +1,131 @@
+{
+  "at": "2026-10-25T18:54:25.692708+00:00",
+  "status": "PASS_LOCAL_TRANSPORT_REPAIR_APPROVED_E8_RUNTIME_STOPPED_PRECLAIM_NEW_RUNTIME_UNAPPROVED",
+  "task": "D19",
+  "sourceFingerprint": "ead55a808470f90d72290905db90933cb4a6df48eaba519d4587339a4659b71d",
+  "sourceRecords": 789,
+  "head": "7cfa3dc84c821719a4dff754229a591c81786c53",
+  "code": "Existing Docker owner transport gains a bounded8MiB output buffer. Four native real-child regressions; all other787 prior sources unchanged, including73 migrations and all business/UI/identity/expiry assertions.",
+  "test": {
+    "passed": 2133,
+    "failed": 0,
+    "skipped": 363,
+    "files": 293
+  },
+  "protectedGroups": {
+    "originalAudit16": {
+      "passed": 16,
+      "failed": 0,
+      "skipped": 0,
+      "total": 16
+    },
+    "protected194": {
+      "passed": 194,
+      "failed": 0,
+      "skipped": 0,
+      "total": 194
+    },
+    "supplement26": {
+      "passed": 26,
+      "failed": 0,
+      "skipped": 0,
+      "total": 26
+    },
+    "transport4": {
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0,
+      "total": 4
+    }
+  },
+  "gates": {
+    "path": "docs/verification/D19-C2-runtime-20261026/gates.json",
+    "sha256": "ebcff36961ddcaf6041b4b76a8aa63af9fb4d275a2a57312f89003b5f402dc33"
+  },
+  "runtime": "Approved original e8 C2 attempted twice and stopped before claim/migration/SDK/Auth/fixture. Full physical identity and subsequent read-only70-family/eight-section catalog/state preservation proven at recorded times. Current ead55 source has no application runtime approval or execution.",
+  "runtimeReconciliation": {
+    "path": "docs/verification/D19-C2-runtime-20261026/runtime-reconciliation.json",
+    "sha256": "ac94ea31024fcd5d3bfcae067f54bd30b97b8bf0583d22a96c5010e534cdbc8c"
+  },
+  "originalC2Approval": {
+    "path": "docs/verification/D19-C2-runtime-20261026/owner-approval.json",
+    "sha256": "ce8a572a88b8fb7be8c27b36b17ae49f5687206e65eb7def0bacfd59bf46242a"
+  },
+  "originalC2AuthorizationStillTrue": {
+    "path": "docs/verification/D19-application-runtime-preparation-20261025/runtime-authorization.json",
+    "sha256": "a909d1c60409db853da5949ee0b6ae29d6f69694fbd2c0bae313c3661557e894"
+  },
+  "proposedRuntimeManifest": {
+    "path": "docs/verification/D19-C2-transport-continuation-runtime-manifest.json",
+    "sha256": "f5caccfdc354e7209b320064f08c9a59ce73cc0ae4bdfca4bcde6e255b424ba0"
+  },
+  "proposedRuntimeAuthorization": {
+    "path": "docs/verification/D19-C2-transport-preparation-20261026/runtime-authorization.json",
+    "sha256": "8b95af97e36481ce22bf5f06e0293a1be0430bd5855e069b20c36cd574bd3b0d"
+  },
+  "proposedRuntimeApproved": false,
+  "localArchivesExecuted": false,
+  "currentSourceWriterAttempts": 0,
+  "applicationApiScenariosExecuted": 0,
+  "applicationBrowserScenariosExecuted": 0,
+  "newAuthSubjectsCreated": 0,
+  "newDomainFixturesCreated": 0,
+  "migrationWrites": 0,
+  "dockerLifecycleActions": 0,
+  "productionOrFormalMembershipWrites": 0,
+  "providerCalls": 0,
+  "schema": {
+    "path": "docs/verification/D19-C2-runtime-20261026/schema-diff.json",
+    "sha256": "29f93ce6192d4069cdc2912018750120e48063a8b3cb748c690a4cc9a1c9f58c"
+  },
+  "financialReadonlyPreservation": {
+    "path": "docs/verification/D19-C2-runtime-20261026/financial-preservation.json",
+    "sha256": "911bd588324a7a148b93121302fb3862b9ddb6343585fd508c7ebe3b08f67802"
+  },
+  "pendingRewardBusinessNeutralityThisTurn": "NOT_EXERCISED; read-only window only, prior696e result remains source-bound",
+  "caseCoverage": {
+    "path": "docs/verification/D19-C2-runtime-20261026/case-coverage.json",
+    "sha256": "a8823abdfa66c493c6699fb62e7284dc95d01efceffe5a8953a754c4439abefa"
+  },
+  "remaining": {
+    "path": "docs/verification/D19-C2-runtime-20261026/remaining-acceptance.json",
+    "sha256": "bbd49d7fede03dcc0fcd85be513b53cfb1e1c1e3314621bf4f455d01f5f77d48"
+  },
+  "rollback": {
+    "path": "docs/verification/D19-C2-runtime-20261026/rollback.json",
+    "sha256": "2f7a4f2d5229a2d7f0214da71b5a147fac8627da7271a2a429e1a6d27757cf45"
+  },
+  "blockers": [
+    "D15 approved lesson content UC-C18/UC-A51",
+    "Named advisor owners, physical devices/manual AT and hosted candidate evidence",
+    "Formal staff membership/role owner handoff; active membership0 is a scope issue",
+    "Original3-campaign incident OPEN/unrestored; shaped target forensic-only",
+    "Original audit ZIP absent at the exact provided Downloads path; sealed original107 fields retained, no fresh archive hash verification",
+    "Release HOLD; not deployed; real provider disabled"
+  ],
+  "incidentOpen": true,
+  "restored": false,
+  "releaseHold": true,
+  "providerEnabled": false,
+  "wholeR1Verified": false,
+  "deployment": "NOT_DEPLOYED",
+  "commit": null,
+  "push": false,
+  "merge": false,
+  "nextTask": "Review the final transport-continuation manifest/source. If explicitly approved, archive only the three exact unconsumed local receipt/result files, reverify all five service identities and full readonly provenance, then execute the unchanged C2 scope once. Independently retain original R1 gaps and R2/external blockers; no696e/pristine rerun or automatic waiver.",
+  "changedThisTurn": [
+    "scripts/audit/local-targets.mjs",
+    "server/test/audit-docker-output-capture.test.ts",
+    "docs/verification/D19-C2-runtime-20261026/",
+    "docs/verification/D19-C2-transport-preparation-20261026/",
+    "docs/verification/D19-C2-transport-continuation-runtime-manifest.json",
+    "docs/verification/D19-C2-runtime-integrity.json",
+    "docs/verification/code-fingerprint.json",
+    "docs/verification/adfocate-delivery.json",
+    "docs/verification/audit_case_coverage.csv",
+    "docs/verification/implementation_backlog.csv",
+    "docs/verification/adfocate-task-ledger.md",
+    "docs/verification/evidence-integrity.json",
+    "docs/verification/D19-application-runtime-preparation-20261025/runtime-authorization.json"
+  ]
+}

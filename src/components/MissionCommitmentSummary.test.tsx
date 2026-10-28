@@ -48,7 +48,7 @@ describe("MissionCommitmentSummary", () => {
     expect(screen.queryByText("平台")).not.toBeInTheDocument();
     expect(screen.queryByText("截止日期")).not.toBeInTheDocument();
     expect(screen.queryByText("預計投入")).not.toBeInTheDocument();
-    expect(screen.getByText("1,200 積分")).toBeInTheDocument();
+    expect(screen.getByText(/1,200 積分.*現金獎勵: 未提供/)).toBeInTheDocument();
   });
 
   it("omits a deadline that cannot be formatted", () => {

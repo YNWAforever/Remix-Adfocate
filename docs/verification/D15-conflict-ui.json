@@ -1,0 +1,29 @@
+{
+  "runId": "d9c86453-c8a7-42eb-9353-1df5dd59309c",
+  "status": 409,
+  "transportMock": false,
+  "before": [
+    {
+      "lessonId": "81237899-cb40-4f13-8f35-19b9c88a6e8a",
+      "completedAt": "2026-10-23T10:04:02.269634+00:00",
+      "contentVersion": 1
+    }
+  ],
+  "after": [
+    {
+      "lessonId": "81237899-cb40-4f13-8f35-19b9c88a6e8a",
+      "completedAt": "2026-10-23T10:04:02.269634+00:00",
+      "contentVersion": 1
+    },
+    {
+      "lessonId": "0d1e1a51-47d7-4bc8-b0d7-feb83b2f0b26",
+      "completedAt": "2026-10-23T10:04:07.32474+00:00",
+      "contentVersion": 2
+    }
+  ],
+  "progress": {
+    "total": 2,
+    "completed": 2
+  },
+  "oldReadingPreservedUntilRefresh": true
+}

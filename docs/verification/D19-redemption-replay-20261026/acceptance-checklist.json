@@ -1,0 +1,160 @@
+{
+  "at": "2026-10-25T20:50:48.626379+00:00",
+  "sourceFingerprint": "4f2c3faa22bf835911a55dc7bb099910e4308fc1b7a5570d58f32386708934b9",
+  "wholeR1Verified": false,
+  "actualRuntimeThisTask": false,
+  "items": [
+    {
+      "id": "R1-LOCAL-GATES",
+      "layer": "local",
+      "status": "PASS",
+      "dependencies": [],
+      "completeWhen": "Final source has audit16, protected194, applicable full suite and release/type/lint/build/schema gates passing.",
+      "evidence": "gates.json",
+      "remaining": "No further local suite rerun required unless code changes;363 skipped cases are not passed integration."
+    },
+    {
+      "id": "C2-APPLICATIONS",
+      "layer": "isolated integration/browser",
+      "status": "NOT_RUN_CURRENT_SOURCE",
+      "dependencies": [
+        "Explicit current manifest/source approval",
+        "Fresh exact five-service identity and complete readonly provenance before client/setup"
+      ],
+      "completeWhen": "Forward73 applies once preserving original72 catalog/history/seeds/rows; real Auth/RLS/API race/rollback/replay/notifications and three Edge scenarios pass with complete9-family financial equality.",
+      "browserUnrun": [
+        "Operator503 preserves edited reason; explicit retry persists",
+        "Creator reload shows exact saved decline reason",
+        "Second operator wins; stale operator real409 attribution/input preserved; explicit refresh removes processed row"
+      ]
+    },
+    {
+      "id": "C33-REDEMPTION",
+      "layer": "isolated integration/browser",
+      "status": "LOCAL_MEMORY10_UI11_PASS_ONLY",
+      "dependencies": [
+        "Separate bounded forward74 and synthetic redemption manifest/approval",
+        "Identity before client/setup",
+        "Complete migration/trigger/PostgREST stack"
+      ],
+      "completeWhen": "Lost response/manual retry/reload and two independent-session same-intent calls return one saved own code, one debit and one stock use; late fault rolls back exact financial rows; foreign actor cannot obtain code; browser stock0/history recovers saved code.",
+      "browserUnrun": [
+        "Actual response loss, reload, same intent retry",
+        "Actual exhausted-stock/history recovery",
+        "Actor/workspace switch during in-flight request and foreign-recipient denial"
+      ],
+      "excludedFromC2": true
+    },
+    {
+      "id": "LEGACY-ACTIVE-PROOF-PENDING",
+      "layer": "historical isolated API/browser",
+      "status": "APPROVED696E_COMPLETED_AT_E839_RETAINED_NOT_REPLAYED",
+      "dependencies": [
+        "Current-source dependency and exact target/provenance revalidation before carry-forward"
+      ],
+      "completeWhen": "Retained role8/core9/composite browser5+2 obligations and pending/history/financial window are carried only with exact dependency/state evidence; if affected, obtain a new bounded scope rather than replay old issuance.",
+      "remaining": "No new cold/full107 browser acceptance. No rerun of completed696e/pristine RPC."
+    },
+    {
+      "id": "BINARY-ASSETS",
+      "layer": "isolated integration/browser",
+      "status": "PARTIAL",
+      "cases": [
+        "UC-C29",
+        "UC-A14"
+      ],
+      "dependencies": [
+        "Bounded owned file/object fixture and cleanup authority",
+        "Verified real Storage/Auth/RLS target"
+      ],
+      "completeWhen": "Actual creator upload/limits/failure recovery, owned failed cleanup, old attempt/proof ownership and foreign Creator/workspace byte/read/write denial pass; exact owned object receipts remain.",
+      "browserUnrun": [
+        "Creator binary upload failure/recovery and limits",
+        "Proof attachment ownership/old attempt and private byte access"
+      ]
+    },
+    {
+      "id": "CREATOR-ISOLATION",
+      "layer": "isolated integration/browser",
+      "status": "PARTIAL",
+      "cases": [
+        "UC-S01"
+      ],
+      "dependencies": [
+        "Approved separate two-Creator owned fixture scope"
+      ],
+      "completeWhen": "Creator B cannot enumerate/read/write A workflow,item,draft,proof in same workspace; exact A/B rows and private bytes unchanged.",
+      "browserUnrun": [
+        "Two signed-in Creator sessions navigating or submitting A IDs"
+      ]
+    },
+    {
+      "id": "LEGACY-APPROVAL-REPLAY",
+      "layer": "isolated integration/browser",
+      "status": "MEMORY_SQL_CORE7_PASS_ONLY",
+      "cases": [
+        "UC-A11"
+      ],
+      "dependencies": [
+        "Separate exact submission/financial scope approval",
+        "Full migration/score/trigger stack"
+      ],
+      "completeWhen": "Signed-in operator/API, same-submission independent-session race/replay, saved note/rating/score/XP/cash/budget readbacks and UI reload show one approval effect; late failures roll back all relevant families.",
+      "excludedFromC2": true
+    },
+    {
+      "id": "GATE14-AND-ORIGINAL107",
+      "layer": "applicability/acceptance",
+      "status": "ALL_REQUIRED_NO_WAIVER",
+      "dependencies": [
+        "Per-case named owner and exact source/environment/evidence applicability"
+      ],
+      "completeWhen": "All14 original GATE expectations retain semantics; full financial prize/settlement/tie/qualification, cron HTTP rejection/last-success notification and producer/work-item click-through gaps are closed with actual evidence. C13/C14/C36 offline8 and C33 local21 do not close whole cases.",
+      "evidence": "remaining-acceptance.json"
+    },
+    {
+      "id": "D15-CONTENT",
+      "layer": "R2/content",
+      "status": "BLOCKED_CONTENT_NOT_PROVIDED",
+      "cases": [
+        "UC-C18",
+        "UC-A51"
+      ],
+      "dependencies": [
+        "Owner supplies/approves four real lesson units and references"
+      ],
+      "completeWhen": "Real approved units and persisted learner progress meet original UC-C18/A51 semantics; synthetic drafts cannot substitute."
+    },
+    {
+      "id": "ADVISOR-DEVICE-HOSTED",
+      "layer": "R2/owner/device/hosted",
+      "status": "BLOCKED_EVIDENCE_OR_OWNER",
+      "dependencies": [
+        "Named advisor owner",
+        "Physical devices/manual AT availability",
+        "Authorized exact hosted candidate"
+      ],
+      "completeWhen": "Named owners sign the remaining acceptance with actual device/Safari/manual AT and hosted performance/product outcome evidence as applicable; desktop CSS viewport mocks are kept separate."
+    },
+    {
+      "id": "FORMAL-STAFF",
+      "layer": "production owner handoff",
+      "status": "BLOCKED_NO_FORMAL_MEMBERSHIP_ROLE_WRITES_AUTHORIZED",
+      "dependencies": [
+        "Formal owner selects/approves exact single-workspace staff membership/capability handoff"
+      ],
+      "completeWhen": "Owner-led real role scope is verified before intended formal use. Prior successful login with active membership0 is a scope issue; do not remove checks or repeat login as a fix. brand_users.user_id remains the one-workspace PK."
+    },
+    {
+      "id": "INCIDENT-RELEASE-PROVIDER",
+      "layer": "incident/release",
+      "status": "OPEN_HOLD_DISABLED",
+      "dependencies": [
+        "Separate incident owner decision based on trustworthy evidence",
+        "Separate release/pilot authorization after acceptance"
+      ],
+      "completeWhen": "Do not infer restoration or incident closure from acceptance on a new fixture. Original3 remain OPEN/unrestored; shaped is forensic-only. This delivery never authorizes restore/delete/container lifecycle, push/merge/deploy, provider or payments."
+    }
+  ],
+  "classification": "D15/advisor/device/hosted and formal staff constraints remain separately visible; current technical R1 also has unmet integration/browser/original-case facets."
+}

@@ -1,0 +1,64 @@
+{
+  "at": "2026-10-25T07:38:05.063749+00:00",
+  "source": "core/workflow-runtime.jsonl",
+  "sourceFingerprint": "6285bca02a74bedf3eda7259238366e9023fcc0cae24fe5e7c874ae9dd118d7b",
+  "manifestSha256": "a0f09af0a7bce75e6842a1d42042ac4471e757c184574d7e5dcf9a23fdc57989",
+  "phase": "core",
+  "windows": [
+    {
+      "caseId": "D07-active",
+      "actorsCompared": 1,
+      "beforeAfterExactlyEqual": true,
+      "pendingSnapshotPresent": true,
+      "nineFinancialFamiliesAndAllWorkspaceXpCompared": true,
+      "inventoryCompared": true,
+      "result": "passed",
+      "totals": [
+        {
+          "xp": 10,
+          "points": 50,
+          "withdrawable": 0,
+          "budget": 9000,
+          "pointLedger": 0,
+          "cashLedger": 0,
+          "budgetLedger": 0
+        }
+      ]
+    },
+    {
+      "caseId": "D19-reapproval",
+      "actorsCompared": 2,
+      "beforeAfterExactlyEqual": true,
+      "pendingSnapshotPresent": false,
+      "nineFinancialFamiliesAndAllWorkspaceXpCompared": true,
+      "inventoryCompared": true,
+      "result": "passed",
+      "totals": [
+        {
+          "xp": 145,
+          "points": 550,
+          "withdrawable": 125,
+          "budget": 8875,
+          "pointLedger": 1,
+          "cashLedger": 1,
+          "budgetLedger": 1
+        },
+        {
+          "xp": 0,
+          "points": 50,
+          "withdrawable": 0,
+          "budget": 8875,
+          "pointLedger": 0,
+          "cashLedger": 0,
+          "budgetLedger": 1
+        }
+      ],
+      "issuedLegacyAnchorUnchanged": true,
+      "historyRetained": true
+    }
+  ],
+  "browserAcceptance": "NOT_RUN",
+  "wholeR1Verified": false,
+  "legacyIssuanceSeparateFromPending": true,
+  "providerEnabled": false
+}

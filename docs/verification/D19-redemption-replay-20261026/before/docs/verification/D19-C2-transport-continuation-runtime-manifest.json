@@ -1,0 +1,1117 @@
+{
+  "schemaVersion": 2,
+  "kind": "D19_B2_EXECUTION_SPEC",
+  "id": "D19-C2-APPLICATION-SUPPLEMENT-transport-r1",
+  "preparedAtUtc": "2026-10-25T18:28:46.007582+00:00",
+  "reviewOnly": true,
+  "ownerApproved": false,
+  "canExecute": false,
+  "runtimeManifestComplete": true,
+  "specificationReady": true,
+  "candidate": {
+    "fingerprint": "ead55a808470f90d72290905db90933cb4a6df48eaba519d4587339a4659b71d",
+    "records": 789,
+    "head": "7cfa3dc84c821719a4dff754229a591c81786c53",
+    "branch": "codex/adfocate-r1-pilot-20261023",
+    "dirty": true
+  },
+  "target": {
+    "status": "EXISTING_C1_REVALIDATE_BEFORE_SQL_OR_CLIENT_NO_CURRENT_RUNTIME_AUTHORITY",
+    "projectId": "adfocate-d19-b2-20261025-recovery-4d6ca2c8",
+    "plannedOwnerRunId": "4d6ca2c8-b9c2-4457-bda8-7c03ac533f61",
+    "networkName": "adfocate-d19-b2-20261025-recovery-4d6ca2c8-net",
+    "databaseVolumeName": "adfocate-d19-b2-20261025-recovery-4d6ca2c8-db-data",
+    "resourceCaps": {
+      "projects": 1,
+      "persistentDataVolumes": 1,
+      "networks": 1,
+      "containers": 5
+    },
+    "serviceImageIds": {
+      "db": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+      "auth": "sha256:ac6d4b1e961ae5a1a24d283967485f8195b767a8476e1044959d7a250c2da3f0",
+      "rest": "sha256:2f8e7b656f09db697a8875177694b417b35cb76c21370de07fc54e711e902326",
+      "kong": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+      "storage": "sha256:ead6d49b9873d65a030c6c44b46676f4276b234becd6d7819c254351b5400d95"
+    },
+    "imageCacheAvailability": "All exact pinned images verified cached during approved C1; no pull performed.",
+    "ports": {
+      "host": "127.0.0.1",
+      "api": 56921,
+      "database": 56922,
+      "web": 56910,
+      "availability": "Exact existing API/DB mappings must match; local web56910 must be free and listening PID must equal new exact child; no fallback/reuse/kill by port.",
+      "proxy": "none"
+    },
+    "networkProfile": {
+      "mode": "dedicated-bridge-no-masquerade",
+      "internal": false,
+      "enable_ip_masquerade": false,
+      "host_binding_ipv4": "127.0.0.1",
+      "exclusiveFiveMembers": true,
+      "notAPhysicalFirewallClaim": true,
+      "proposedIpam": {
+        "subnet": "10.251.220.0/28",
+        "gateway": "10.251.220.1",
+        "status": "Actual C1 subnet/gateway verified before creation; five captured members; no old network mutation."
+      }
+    },
+    "storage": "Actual HostConfig declares only /var/lib/storage rw,size=268435456; Docker omits tmpfs from Mounts. New source requires exactly one matching live kernel tmpfs mount with rw and exact capacity when omitted; unexpected mounts remain rejected.",
+    "databaseMount": "Only the new exact named volume at /var/lib/postgresql/data; no old volume/bind/volumes-from",
+    "actualContainerIds": {
+      "db": "a4e387ca84bfd11e815f697e0c407b12b8a610d29691517d8d8ecaef91957956",
+      "auth": "37d469d0b42d137b01f7df915fed7bd8a8393961cc69ec08f5a9a872ec917489",
+      "rest": "eeb1c762e84d82cfa9b40beb85c3ccd54cb9e1bc99f47b9564f23b5d4fed0ba2",
+      "kong": "c68a68b5ea60116a998cf3b61f4cdfbf737101361ae0866a8d8f83d0313ba253",
+      "storage": "c42f68a7940631a8567994903bd04987da7a15bd01de3599369b80589a6f1387"
+    },
+    "actualNetworkId": "bcc7bcc4cd4a519135d4e54d904024cbebb77786707dcecb6c994694b322e65c",
+    "actualVolumeCreatedAt": "2026-10-25T06:02:04Z",
+    "credentials": "Read only existing exact C1 local key file after physical identity; no hosted or failed-B2 credentials.",
+    "exclusions": [
+      "Retired shaped project/containers/network/volume",
+      "Existing empty target or old fixture data as fallback",
+      "Existing pristine project/volume/global acceptance rerun",
+      "Production/hosted/shared proxies",
+      "Arbitrary new resources beyond manifest",
+      "Retained failed B2 project adfocate-d19-b2-20261025-b0db3134, its five containers, network and volume; do not read its secrets or use it for acceptance"
+    ],
+    "storageTmpfs": {
+      "destination": "/var/lib/storage",
+      "sizeBytes": 268435456
+    },
+    "provisioning": "ZERO Docker resource/lifecycle actions. New exact approved synthetic fixture namespace and forward73 function only after identity and full readonly preservation checks.",
+    "databaseInitialization": {
+      "initialDatabaseUser": "supabase_admin",
+      "databaseName": "postgres",
+      "pgdata": "/var/lib/postgresql/data",
+      "requiredBootstrapRole": {
+        "oid": 10,
+        "name": "supabase_admin",
+        "superuser": true
+      },
+      "requiredOrdinaryDatabaseRole": {
+        "name": "postgres",
+        "oidMustDifferFrom": 10,
+        "superuser": false
+      },
+      "prestartGuardPath": "D19-B2-recovery-db-bootstrap-guard.py",
+      "prestartGuardSha256": "b1a1e81f5cfbe585dd29beb10472b4e0e35d7ad2d3af8e986fa893e7b8bb5bdc",
+      "requiredStages": [
+        "Historical immutable C1 initialization already proven; do not repeat or mutate roles. Current five-service identity before SQL/clients."
+      ],
+      "freshSecretsOnly": true,
+      "neverAdoptFailedB2ClusterOrVolume": true,
+      "noResetOrBootstrapRoleRenameSurgery": true,
+      "systemServiceCredentialSetup": "Already completed under original C1; no credential setup/DB role writes in this continuation.",
+      "applicationClientGate": "Do not repeat initialization or72 bootstrap. Fresh physical identity, complete original70-family rows/catalog/history, then exact reviewed forward73 transaction before any SDK or Auth/setup."
+    },
+    "additionalAllocationOnly": {
+      "newProjects": 0,
+      "newPersistentDataVolumes": 0,
+      "newNetworks": 0,
+      "newContainers": 0,
+      "existingC1ResourceCounts": {
+        "projects": 1,
+        "persistentDataVolumes": 1,
+        "networks": 1,
+        "containers": 5
+      },
+      "existingFailedB2ResourceCounts": {
+        "projects": 1,
+        "persistentDataVolumes": 1,
+        "networks": 1,
+        "containers": 5
+      },
+      "allResourcesRetained": true,
+      "noNewLifecycleAuthority": true
+    }
+  },
+  "bootstrap": {
+    "historicalLegacy": {
+      "phase": "core",
+      "workspaceId": "2bb528a0-bf68-4a3c-a7b1-708aeb517e81",
+      "missionId": "f40f4b8d-4cba-4fb9-b7f9-833218395753",
+      "creatorId": "02d2d080-bc2e-4dd5-b8ee-0006e91c7436",
+      "submissionId": "1bb5331f-8f98-44d6-86fb-e741b3ac727c",
+      "namespace": "bc1ba016-c483-4484-bb5b-706f9c74f2e6",
+      "contentUrls": [
+        "wwww"
+      ],
+      "queueIndex": 0,
+      "countedWithinCoreCaps": true,
+      "notIncidentBeforeImage": true
+    },
+    "profilePath": "D19-B2-recovery-bootstrap-profile.json",
+    "profileDigest": "741ffaa255017fe377c416ce4ca3214793b0379db45001c15c8952ebd19fc41f",
+    "receiptPolicy": "Preserve original verified receipt. After approval create a separate source/manifest-bound receipt referencing original allocation/bootstrap; before adoption require live identity. Adopted baseline records fresh successful revalidation, not a new initialization.",
+    "executor": "NONE. Already verified 72 migrations / 9 compatibility statements / four persistent buckets. Revalidate sealed catalog/profile/history/seeds read-only; no migration/bootstrap/compatibility replay.",
+    "immutableBaseline": "Capture after full profile, excluding only five explicitly owned historical-checkpoint rows (workspace/Auth/Creator/mission/submission). Hash migration seed rows; must remain unchanged after every phase and at final readback. Auth/storage service schema-migration baseline recorded independently.",
+    "initialDatabaseUser": "supabase_admin",
+    "requiredBeforeImageProfile": "Pure guard passes actual prestart configuration and post-image role-OID catalog; expected mock data is insufficient."
+  },
+  "fixture": {
+    "phases": [
+      {
+        "phase": "role",
+        "purpose": "Existing shared identity/journal transport selector only; never rerun original role8.",
+        "plannedNamespace": "90ffc505-7abe-4b4c-8041-a6c954509278",
+        "plannedPrimaryWorkspaceId": "db200130-3b5f-407c-8c6a-5122c7e1f372",
+        "plannedMissions": [
+          {
+            "kind": "race",
+            "id": "9a9c3d14-8959-4b80-a0e1-1bfd1b7bc1cf",
+            "templateId": "17bc1b44-4308-4b99-bdf7-85799b87b142",
+            "requirementId": "10861832-bd71-471f-8a9f-a8a8daade311"
+          },
+          {
+            "kind": "fault",
+            "id": "39e417f9-ca7f-44a3-bbfc-ba635c11d089",
+            "templateId": "1a350f65-ade2-4002-88d5-13cfebcf6936",
+            "requirementId": "7da7276c-b986-4c92-90db-603f621dac39"
+          },
+          {
+            "kind": "decline",
+            "id": "2d38b491-9755-4f83-97ab-7ecc64de5164",
+            "templateId": "0a724d2c-ef8d-45e1-acf7-4fc7eb1b06c4",
+            "requirementId": "fbefee1e-48ae-459b-9b83-425c3733677b"
+          },
+          {
+            "kind": "stale",
+            "id": "16601b1f-1525-4503-952d-b50ee4c48128",
+            "templateId": "06682c10-f02d-4358-adad-45f86184f921",
+            "requirementId": "afe4d602-2580-4e21-858b-b59784b4b6c9"
+          }
+        ],
+        "authSubjectsCap": 6
+      }
+    ],
+    "rowScopes": {
+      "workspaces": {
+        "relation": "public.workspaces",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace-self"
+      },
+      "creators": {
+        "relation": "public.creators",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "missions": {
+        "relation": "public.missions",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "mission_submissions": {
+        "relation": "public.mission_submissions",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "mission_deliverable_templates": {
+        "relation": "public.mission_deliverable_templates",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "mission_deliverable_requirements": {
+        "relation": "public.mission_deliverable_requirements",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "mission_workflows": {
+        "relation": "public.mission_workflows",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "mission_work_items": {
+        "relation": "public.mission_work_items",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "mission_working_drafts": {
+        "relation": "public.mission_working_drafts",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "mission_draft_versions": {
+        "relation": "public.mission_draft_versions",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "mission_draft_assets": {
+        "relation": "public.mission_draft_assets",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "mission_review_rounds": {
+        "relation": "public.mission_review_rounds",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "mission_review_items": {
+        "relation": "public.mission_review_items",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "mission_revision_grants": {
+        "relation": "public.mission_revision_grants",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "mission_fulfillments": {
+        "relation": "public.mission_fulfillments",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "mission_workflow_events": {
+        "relation": "public.mission_workflow_events",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "mission_publication_instructions": {
+        "relation": "public.mission_publication_instructions",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "mission_publication_proof_attempts": {
+        "relation": "public.mission_publication_proof_attempts",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "mission_publication_proof_assets": {
+        "relation": "public.mission_publication_proof_assets",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "mission_publication_proof_reviews": {
+        "relation": "public.mission_publication_proof_reviews",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "mission_publication_proof_review_items": {
+        "relation": "public.mission_publication_proof_review_items",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "mission_reward_contracts": {
+        "relation": "public.mission_reward_contracts",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "mission_completion_decisions": {
+        "relation": "public.mission_completion_decisions",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "mission_pending_rewards": {
+        "relation": "public.mission_pending_rewards",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "point_balances": {
+        "relation": "public.point_balances",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "earnings_balances": {
+        "relation": "public.earnings_balances",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "point_transactions": {
+        "relation": "public.point_transactions",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "earnings_transactions": {
+        "relation": "public.earnings_transactions",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "workspace_budgets": {
+        "relation": "public.workspace_budgets",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "workspace_budget_transactions": {
+        "relation": "public.workspace_budget_transactions",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "redemption_gifts": {
+        "relation": "public.redemption_gifts",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "redemption_codes": {
+        "relation": "public.redemption_codes",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "redemptions": {
+        "relation": "public.redemptions",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "notifications": {
+        "relation": "public.notifications",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "creator_review_statuses": {
+        "relation": "public.creator_review_statuses",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "creator_review_notes": {
+        "relation": "public.creator_review_notes",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "operator_audit_events": {
+        "relation": "public.operator_audit_events",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "legacy_evidence_corrections": {
+        "relation": "public.legacy_evidence_corrections",
+        "key": [
+          "request_id"
+        ],
+        "selector": "workspace"
+      },
+      "operator_crm_command_receipts": {
+        "relation": "public.operator_crm_command_receipts",
+        "key": [
+          "request_id"
+        ],
+        "selector": "workspace"
+      },
+      "assistant_requests": {
+        "relation": "public.assistant_requests",
+        "key": [
+          "request_id"
+        ],
+        "selector": "workspace"
+      },
+      "creator_social_accounts": {
+        "relation": "public.creator_social_accounts",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "creator_portfolio_links": {
+        "relation": "public.creator_portfolio_links",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "brand_invites": {
+        "relation": "public.brand_invites",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "campaigns": {
+        "relation": "public.campaigns",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "campaign_participants": {
+        "relation": "public.campaign_participants",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "campaign_rank_snapshots": {
+        "relation": "public.campaign_rank_snapshots",
+        "key": [
+          "id"
+        ],
+        "selector": "workspace"
+      },
+      "auth_users": {
+        "relation": "auth.users",
+        "key": [
+          "id"
+        ],
+        "selector": "auth-self"
+      },
+      "staff_users": {
+        "relation": "public.staff_users",
+        "key": [
+          "user_id"
+        ],
+        "selector": "auth-user"
+      },
+      "brand_users": {
+        "relation": "public.brand_users",
+        "key": [
+          "user_id"
+        ],
+        "selector": "auth-user"
+      },
+      "staff_workspace_roles": {
+        "relation": "public.staff_workspace_roles",
+        "key": [
+          "user_id",
+          "workspace_id"
+        ],
+        "selector": "auth-user"
+      },
+      "staff_platform_roles": {
+        "relation": "public.staff_platform_roles",
+        "key": [
+          "user_id",
+          "role"
+        ],
+        "selector": "auth-user"
+      },
+      "staff_access_audit": {
+        "relation": "public.staff_access_audit",
+        "key": [
+          "id"
+        ],
+        "selector": "auth-user"
+      },
+      "staff_access_commands": {
+        "relation": "public.staff_access_commands",
+        "key": [
+          "request_id"
+        ],
+        "selector": "staff-command"
+      },
+      "academy_content": {
+        "relation": "public.academy_content",
+        "key": [
+          "id"
+        ],
+        "selector": "academy"
+      },
+      "academy_lessons": {
+        "relation": "public.academy_lessons",
+        "key": [
+          "id"
+        ],
+        "selector": "lesson"
+      },
+      "creator_lesson_progress": {
+        "relation": "public.creator_lesson_progress",
+        "key": [
+          "creator_id",
+          "lesson_id",
+          "content_version"
+        ],
+        "selector": "creator"
+      },
+      "assistant_conversations": {
+        "relation": "public.assistant_conversations",
+        "key": [
+          "id"
+        ],
+        "selector": "creator"
+      },
+      "assistant_messages": {
+        "relation": "public.assistant_messages",
+        "key": [
+          "id"
+        ],
+        "selector": "conversation"
+      },
+      "workflow_notification_dedupe": {
+        "relation": "private.mission_workflow_notification_dedupe",
+        "key": [
+          "recipient_id",
+          "notification_type",
+          "entity_type",
+          "entity_id",
+          "semantic_key"
+        ],
+        "selector": "recipient"
+      },
+      "draft_submission_idempotency": {
+        "relation": "private.mission_draft_submission_idempotency",
+        "key": [
+          "mission_work_item_id",
+          "idempotency_key"
+        ],
+        "selector": "workspace"
+      },
+      "auth_identities": {
+        "relation": "auth.identities",
+        "key": [
+          "id"
+        ],
+        "selector": "auth-user"
+      },
+      "auth_sessions": {
+        "relation": "auth.sessions",
+        "key": [
+          "id"
+        ],
+        "selector": "auth-user"
+      },
+      "auth_refresh_tokens": {
+        "relation": "auth.refresh_tokens",
+        "key": [
+          "id"
+        ],
+        "selector": "auth-user"
+      },
+      "auth_audit_log_entries": {
+        "relation": "auth.audit_log_entries",
+        "key": [
+          "id"
+        ],
+        "selector": "auth-audit"
+      },
+      "auth_mfa_factors": {
+        "relation": "auth.mfa_factors",
+        "key": [
+          "id"
+        ],
+        "selector": "auth-user"
+      },
+      "auth_mfa_challenges": {
+        "relation": "auth.mfa_challenges",
+        "key": [
+          "id"
+        ],
+        "selector": "auth-factor"
+      },
+      "auth_mfa_amr_claims": {
+        "relation": "auth.mfa_amr_claims",
+        "key": [
+          "id"
+        ],
+        "selector": "auth-session"
+      },
+      "auth_one_time_tokens": {
+        "relation": "auth.one_time_tokens",
+        "key": [
+          "id"
+        ],
+        "selector": "auth-user"
+      },
+      "auth_flow_state": {
+        "relation": "auth.flow_state",
+        "key": [
+          "id"
+        ],
+        "selector": "auth-user"
+      },
+      "storage_objects": {
+        "relation": "storage.objects",
+        "key": [
+          "id"
+        ],
+        "selector": "storage"
+      }
+    },
+    "rowCaps": {
+      "role": {
+        "workspaces": 1,
+        "creators": 2,
+        "missions": 4,
+        "mission_submissions": 4,
+        "mission_deliverable_templates": 4,
+        "mission_deliverable_requirements": 4,
+        "mission_workflows": 3,
+        "mission_work_items": 3,
+        "mission_working_drafts": 3,
+        "mission_draft_versions": 0,
+        "mission_draft_assets": 0,
+        "mission_review_rounds": 0,
+        "mission_review_items": 0,
+        "mission_revision_grants": 0,
+        "mission_fulfillments": 3,
+        "mission_workflow_events": 24,
+        "mission_publication_instructions": 3,
+        "mission_publication_proof_attempts": 0,
+        "mission_publication_proof_assets": 0,
+        "mission_publication_proof_reviews": 0,
+        "mission_publication_proof_review_items": 0,
+        "mission_reward_contracts": 3,
+        "mission_completion_decisions": 0,
+        "mission_pending_rewards": 0,
+        "point_balances": 0,
+        "earnings_balances": 0,
+        "point_transactions": 0,
+        "earnings_transactions": 0,
+        "workspace_budgets": 0,
+        "workspace_budget_transactions": 0,
+        "redemption_gifts": 0,
+        "redemption_codes": 0,
+        "redemptions": 0,
+        "notifications": 12,
+        "creator_review_statuses": 0,
+        "creator_review_notes": 0,
+        "operator_audit_events": 4,
+        "legacy_evidence_corrections": 0,
+        "operator_crm_command_receipts": 4,
+        "assistant_requests": 0,
+        "creator_social_accounts": 0,
+        "creator_portfolio_links": 0,
+        "brand_invites": 0,
+        "campaigns": 0,
+        "campaign_participants": 0,
+        "campaign_rank_snapshots": 0,
+        "auth_users": 6,
+        "staff_users": 4,
+        "brand_users": 3,
+        "staff_workspace_roles": 3,
+        "staff_platform_roles": 0,
+        "staff_access_audit": 0,
+        "staff_access_commands": 0,
+        "academy_content": 0,
+        "academy_lessons": 0,
+        "creator_lesson_progress": 0,
+        "assistant_conversations": 0,
+        "assistant_messages": 0,
+        "workflow_notification_dedupe": 12,
+        "draft_submission_idempotency": 0,
+        "auth_identities": 6,
+        "auth_sessions": 6,
+        "auth_refresh_tokens": 12,
+        "auth_audit_log_entries": 48,
+        "auth_mfa_factors": 0,
+        "auth_mfa_challenges": 0,
+        "auth_mfa_amr_claims": 12,
+        "auth_one_time_tokens": 0,
+        "auth_flow_state": 0,
+        "storage_objects": 0,
+        "requests": 400
+      }
+    },
+    "transportWriteCapPerProcess": 400,
+    "cleanupApproved": false,
+    "retention": "Keep all business/Auth fixtures and journals, including failures. No data cleanup or reseed.",
+    "syntheticRoleBootstrap": "Four additional exact updates of new OperatorA only: membership active false/true and role operator/finance_viewer/operator to prove live replay denial, with verified before values. Failure stops without automatic compensation. Only three exact newly created synthetic staff subjects in new workspace, owner SQL because service_role is SELECT-only. granted_by=self is a fixture bootstrap, not product/admin role-management acceptance.",
+    "auth": "Six auto-confirmed example.test subjects; six password sign-ins; three real setup sessions injected into isolated browser contexts. No UI login claim, email, invitation, or original subject session renewal.",
+    "children": "Returned Auth/submission/workflow descendants are captured immediately by exact IDs or scoped70-family readback; unresolved response/receipt stops without retry.",
+    "ddlFaults": "Create/drop only two namespace-scoped private fault functions and exact triggers, predicate one new submission; verify function hash before exact drop. No original object replace/drop.",
+    "financialBoundary": "No ledger/balance/budget/inventory writes or pending/completion creation. Original +10XP and filled increment only for each actually accepted new application, once. Preserve all preexisting70-family rows and full financial row contents."
+  },
+  "execution": {
+    "artifactNamespace": "90ffc505-7abe-4b4c-8041-a6c954509278",
+    "phaseSelector": "role",
+    "originalApiReruns": 0,
+    "originalBrowserReruns": 0,
+    "parallelAgents": false,
+    "parallelRuntimePhases": false,
+    "pristineRpcRerun": false,
+    "commands": [
+      {
+        "offline": true,
+        "argv": [
+          "node",
+          "node_modules/vite-node/vite-node.mjs",
+          "--script",
+          "scripts/audit/execute-application-supplement.mjs",
+          "docs/verification/D19-C2-transport-continuation-runtime-manifest.json",
+          "--offline-check"
+        ]
+      },
+      {
+        "offline": false,
+        "argv": [
+          "node",
+          "node_modules/vite-node/vite-node.mjs",
+          "--script",
+          "scripts/audit/execute-application-supplement.mjs",
+          "docs/verification/D19-C2-transport-continuation-runtime-manifest.json",
+          "--execute"
+        ]
+      }
+    ],
+    "environment": {
+      "ADFOCATE_B2_MANIFEST_PATH": "docs/verification/D19-C2-transport-continuation-runtime-manifest.json",
+      "ADFOCATE_B2_PHASE": "role",
+      "ADFOCATE_B2_AUTHORIZATION_PATH": "docs/verification/D19-C2-transport-preparation-20261026/runtime-authorization.json"
+    },
+    "order": [
+      "Separate approval of this final manifest digest and source; original approved e8 C2 attempts remain historical",
+      "Exact local-only archive of the three listed unconsumed receipt/result files after matching raw hashes and absent claim/journal; no target mutation",
+      "File-only source/authority checks; derive new source-bound local receipt from original allocation provenance",
+      "Fresh full five-service Docker identity before SQL/keys/client; host process permission must allow the exact named pipe",
+      "Full unchanged raw catalog with bounded8MiB capture; original72 history/eight-section catalog/seeds/service history/old70 rows and root-ID checks",
+      "One-time local claim only after complete provenance; no automatic restart",
+      "Forward73 and preserved catalog/rows diff",
+      "Six bounded Auth subjects/new fixture",
+      "API race/rollback/replay/permissions",
+      "Three application browser scenarios",
+      "Final full row preservation/caps/financial readback"
+    ],
+    "matrix": {
+      "api": [
+        "Four real Creator apply + duplicate409, one saved row each",
+        "Missing membership and finance capability403",
+        "Direct authenticated RPC403 and wrong workspace argument with own new submission FORBIDDEN",
+        "Owned audit and workflow failure503 fully roll back, same request later succeeds",
+        "Exact replay no second quota/XP/workflow/audit/receipt; changed payload409",
+        "Two real operators accept/decline concurrently; one winner + saved actor/time to loser",
+        "Application accepted/declined notification recipient/type/slug/unread match saved state; other Creator cannot see it"
+      ],
+      "browser": [
+        "503 mock preserves row/input, edited reason explicit retry saves",
+        "Creator reload displays exact saved decline reason",
+        "Second operator commits, stale operator gets real409 attribution and preserved input; explicit refresh removes processed row"
+      ]
+    },
+    "localAppServer": "One new exact-source node/Vite child at56910, ownership PID checked before health/UI, only exact own child stopped on exit. No Docker lifecycle actions.",
+    "browser": "Installed Microsoft Edge, desktop only; no Safari/physical mobile/AT claim; trace/video/screenshots disabled to avoid credential/author text artifacts.",
+    "providers": "External HTTP denied except exact local app/C1 API; all real AI keys blank. No real notifications/publication/payment.",
+    "resourceGate": "Fresh physical and available commit >=3GiB before execution; no automatic fallback."
+  },
+  "supplement": {
+    "kind": "APPLICATION_DECISIONS_ONLY",
+    "originManifestSha256": "696e94c29e62a27e820d7d12f5aa74c0d1e7b62f97f3b57db787074512a2626d",
+    "originManifest": {
+      "path": "docs/verification/D19-C1-browser-continuation-runtime-manifest.json",
+      "sha256": "696e94c29e62a27e820d7d12f5aa74c0d1e7b62f97f3b57db787074512a2626d"
+    },
+    "originFinalReadback": {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/68d510a8-82a8-42bd-b3e8-4561580a7a19/final-readback-after-collection.json",
+      "sha256": "d8293fc21dfad2bfaa7356a7922b0e6b4dfc3e3f9a9df16d495ad4946469e87d"
+    },
+    "originTargetReceipt": {
+      "path": ".codex-tmp/adfocate-d19-b2-20261025-recovery-4d6ca2c8/browser-continuation-target-receipt.private.json",
+      "sha256": "6b306db6a8f8ffa07b516be16bb247748bd5aa17a6e0778a810998dbc1c0dd3e"
+    },
+    "originCatalog": {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/application-catalog-after-compatibility.json",
+      "sha256": "0928527242f8fd35e078ee3e3336bf08b435306a56ca143c4a03bde34ab7100c"
+    },
+    "originImmutableBaseline": {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/68d510a8-82a8-42bd-b3e8-4561580a7a19/immutable-bootstrap-baseline.json",
+      "sha256": "5c6e85de2c88da1a54fcd7bdbd809db8e06b8b60b45006efd870630f7fcee483"
+    },
+    "source": {
+      "path": "docs/verification/D19-C2-transport-preparation-20261026/candidate-source.json",
+      "sha256": "912b68ac3a53bf2593b48a04f5fcad28dc9918658d8bd787a73228230dea4b9a"
+    },
+    "resourceAdds": {
+      "projects": 0,
+      "volumes": 0,
+      "networks": 0,
+      "containers": 0
+    },
+    "authSubjects": 6,
+    "workspaces": 1,
+    "missions": 4,
+    "schema": {
+      "file": "supabase/migrations/20261025120934_application_decisions.sql",
+      "sha256": "abbfc0499afbe771e36540443a93c979521be1fe70c321f6fb8ff6996a45a35c",
+      "baselineMigrationCount": 72,
+      "forwardOnly": true,
+      "expectedBefore": "Exact72 history and no new function/history; any partial state stops. No replace/reset/history rewrite.",
+      "allowedWrites": [
+        "One new function with explicit ACL",
+        "One new history row in same transaction",
+        "Local PostgREST schema reload notification"
+      ]
+    },
+    "baselineVersions": [
+      "0001",
+      "0002",
+      "0003",
+      "0004",
+      "0005",
+      "0006",
+      "0007",
+      "0008",
+      "0009",
+      "0010",
+      "0011",
+      "0012",
+      "0013",
+      "0014",
+      "0015",
+      "0016",
+      "0017",
+      "0018",
+      "0019",
+      "0020",
+      "0021",
+      "0022",
+      "0023",
+      "0024",
+      "0025",
+      "0026",
+      "0027",
+      "0028",
+      "20260618135028",
+      "20260619013000",
+      "20260715163350",
+      "20260717190420",
+      "20260718134500",
+      "20260718193000",
+      "20260718210000",
+      "20260718213000",
+      "20260719133000",
+      "20260719160000",
+      "20260719200000",
+      "20260719220000",
+      "20260720033542",
+      "20260720175319",
+      "20260720193637",
+      "20260723090000",
+      "20260723170000",
+      "20260725090000",
+      "20260725110000",
+      "20260725130000",
+      "20260725140000",
+      "20260725143000",
+      "20260725150000",
+      "20260727120000",
+      "20260727130000",
+      "20260728135000",
+      "20260729010000",
+      "20260731100000",
+      "20260731110000",
+      "20260731120000",
+      "20260731130000",
+      "20260731140000",
+      "20260731150000",
+      "20260805120000",
+      "20261022170454",
+      "20261022170751",
+      "20261022171111",
+      "20261022171843",
+      "20261022182544",
+      "20261023091050",
+      "20261023093445",
+      "20261023095521",
+      "20261023124149",
+      "20261023192141"
+    ],
+    "originalApiReruns": 0,
+    "originalBrowserReruns": 0,
+    "legacyIssuance": false,
+    "providerEnabled": false,
+    "cleanupApproved": false,
+    "incidentOpen": true,
+    "releaseHold": true,
+    "runtimeApproved": false
+  },
+  "approval": {
+    "runtimeApproved": false,
+    "receipt": "docs/verification/D19-C2-transport-preparation-20261026/runtime-authorization.json",
+    "sourceBound": true,
+    "origin696eIsCompletedNotReused": true,
+    "requestedDecision": "Approve this final source/digest continuation on the same existing C1 resources and the three exact local unconsumed receipt/result archives, then the unchanged forward73, six generated local Auth subjects, one workspace, four missions, two exact owned fault object sets, four new-OperatorA fixture changes, application API, three Edge scenarios and final row comparisons. No original acceptance reruns, old fixture writes, Docker lifecycle, provider, payment, production access or publication.",
+    "originalC2ApprovalCompletedWithPreWriteStop": true
+  },
+  "abortAndRollback": {
+    "onFailure": "Stop dependent operations; retain exact IDs/claims/journals/receipts as UNKNOWN when response lost. No auto retry/reseed/data compensation or role repair.",
+    "schemaRollback": "No automatic down migration. Keep function/history and old code available; future owner-reviewed forward change only. No existing72 checksum changes.",
+    "cleanup": "No business/Auth data deletion; only explicitly reviewed exact two owned temporary fault triggers/functions removed after hash and full rollback assertion. Interrupted fault remains for review.",
+    "incident": "Original3 campaign incident remains OPEN/unrestored; shaped forensic-only, no target lifecycle or acceptance reuse; release HOLD."
+  },
+  "remaining": [
+    "BINARY-ASSET-OWNERSHIP",
+    "CROSS-CREATOR-WORKFLOW full read/write/proof isolation",
+    "LEGACY-APPROVAL-REPLAY if fresh evidence required",
+    "GATE14 applicability and original107 acceptance gaps",
+    "D15 content UC-C18/A51",
+    "Named advisor owner/device/manual AT/hosted",
+    "Formal staff handoff",
+    "Audit archive absent at supplied exact path",
+    "Model display was directly observed on this thread in retained interface evidence; no model change or provider ID inferred."
+  ],
+  "invariants": {
+    "productionWrites": false,
+    "formalMembershipOrRoleWrites": false,
+    "commit": false,
+    "push": false,
+    "merge": false,
+    "deploy": false,
+    "providerEnabled": false,
+    "incidentOpen": true,
+    "releaseHold": true,
+    "wholeR1Verified": false
+  },
+  "continuation": {
+    "kind": "PRECLAIM_OUTPUT_TRANSPORT_CORRECTION_ONLY",
+    "originalApprovedManifest": {
+      "path": "docs/verification/D19-C2-application-runtime-manifest.json",
+      "sha256": "eb5ca8f03a85c5589cc6cbf27ec0ca5524e8600fd2914ad1d4d73f17eec5009a"
+    },
+    "originalApproval": {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/runtime-authorization.json",
+      "sha256": "a909d1c60409db853da5949ee0b6ae29d6f69694fbd2c0bae313c3661557e894"
+    },
+    "actualHumanApproval": {
+      "path": "docs/verification/D19-C2-runtime-20261026/owner-approval.json",
+      "sha256": "ce8a572a88b8fb7be8c27b36b17ae49f5687206e65eb7def0bacfd59bf46242a"
+    },
+    "previousApprovedSource": {
+      "fingerprint": "e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993",
+      "records": 788,
+      "head": "7cfa3dc84c821719a4dff754229a591c81786c53",
+      "branch": "codex/adfocate-r1-pilot-20261023",
+      "dirty": true
+    },
+    "sourceDelta": {
+      "path": "docs/verification/D19-C2-runtime-20261026/source-after-transport-fix.json",
+      "sha256": "b334757e961afdf32a1bb03121909a4fc4cadb266bfc79ab584be38527692a19"
+    },
+    "attempts": [
+      {
+        "path": "docs/verification/D19-C2-runtime-20261026/runtime-command.json",
+        "sha256": "88e4903d49c2c6fba26f5ffce2f8eea36e51b69203ac4cf23fc600a35dada8e2"
+      },
+      {
+        "path": "docs/verification/D19-C2-runtime-20261026/permission-continuation-command.json",
+        "sha256": "971d9f06e18d1620f53f889d13566c979b823c5f8d1d77984a142f324ebc2083"
+      }
+    ],
+    "failure": "Default transport failed at Docker pipe identity; explicitly reviewed same-source host continuation passed identity but stopped at first raw catalog SELECT with ENOBUFS, before claim/migration/SDK/Auth/fixture.",
+    "outputMeasurement": {
+      "path": "docs/verification/D19-C2-runtime-20261026/catalog-output-measurement.json",
+      "sha256": "1a0f1bc83a737ed37be663d406207fbccf2aa4940dc7e4c514f7e94a3fe74359"
+    },
+    "postFailureReadonly": {
+      "path": "docs/verification/D19-C2-runtime-20261026/post-provenance-failure.json",
+      "sha256": "5d2bb8bcca26478cacdbbf0c5ebd9274f0d40ebea98e3a9bbb1089d3b0e2cea6"
+    },
+    "postFailureObservedAt": "2026-10-25T18:17:10.803Z",
+    "postFailureState": {
+      "history": 72,
+      "missions": 6,
+      "newHistory": 0,
+      "workspaces": 6,
+      "newFunction": 0,
+      "authSubjects": 84,
+      "newWorkspace": 0
+    },
+    "historicalStateNotFreshAuthority": true,
+    "fullFreshIdentityAndProvenanceRequired": true,
+    "allowedLocalArchives": [
+      {
+        "source": {
+          "path": ".codex-tmp/adfocate-d19-b2-20261025-recovery-4d6ca2c8/90ffc505-7abe-4b4c-8041-a6c954509278/role/supplement-target-receipt.private.json",
+          "sha256": "bb05ae09f455158c61058fdfd92d7a0524ab00484c8708576e5e320e91634a79"
+        },
+        "destination": ".codex-tmp/adfocate-d19-b2-20261025-recovery-4d6ca2c8/90ffc505-7abe-4b4c-8041-a6c954509278/role/transport-failure-preserved/supplement-target-receipt.private.json",
+        "operation": "Exact local file move after separate approval; no deletion/overwrite, no target operation",
+        "executed": false
+      },
+      {
+        "source": {
+          "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/90ffc505-7abe-4b4c-8041-a6c954509278/role/identity.json",
+          "sha256": "69e89e771694e20cb76ce11c6bc4d67ee78ffb885acf49cb91bd581c850f37a8"
+        },
+        "destination": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/90ffc505-7abe-4b4c-8041-a6c954509278/role/transport-failure-preserved/identity.json",
+        "operation": "Exact local file move after separate approval; no deletion/overwrite, no target operation",
+        "executed": false
+      },
+      {
+        "source": {
+          "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/90ffc505-7abe-4b4c-8041-a6c954509278/role/result.json",
+          "sha256": "e824aed1fb0abc15cff0204fb73cde86b83e1dc23cff04b061c44c80aa2a2a18"
+        },
+        "destination": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/90ffc505-7abe-4b4c-8041-a6c954509278/role/transport-failure-preserved/result.json",
+        "operation": "Exact local file move after separate approval; no deletion/overwrite, no target operation",
+        "executed": false
+      }
+    ],
+    "localArchivesExecuted": false,
+    "archivePreconditions": [
+      "All three exact raw source hashes still match; destinations absent.",
+      "Private supplement-claim.json and owned-journal.jsonl absent; only identity/result exist in public phase.",
+      "No forward73/new Auth/workspace/mission or domain setup has occurred; changed/unknown state stops for read-only reconciliation."
+    ],
+    "sameFixtureIdsAndCaps": true,
+    "sameNamespace": "90ffc505-7abe-4b4c-8041-a6c954509278",
+    "sourceChangedExistingPaths": [
+      "scripts/audit/local-targets.mjs"
+    ],
+    "sourceAddedPaths": [
+      "server/test/audit-docker-output-capture.test.ts"
+    ],
+    "unchangedSqlIdentityAssertionsExpiryAndBusinessLogic": true,
+    "boundedBytes": 8388608,
+    "automaticRetry": false,
+    "stoppingRule": "Any identity/provenance mismatch, capture overflow, missing response, failed assertion or unknown write stops. Retain receipts and exact IDs; never clear claim/journal, reseed, compensate or rerun automatically."
+  }
+}

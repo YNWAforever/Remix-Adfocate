@@ -1,0 +1,14 @@
+{
+  "runId": "5ba41678-aa1a-42c8-8fa1-beee1b972542",
+  "dismissKeepsInput": true,
+  "spaLeaveCancelled": true,
+  "beforeUnloadCancelled": true,
+  "confirmedTabLeave": true,
+  "prompts": 4,
+  "dialogTypes": [
+    "confirm",
+    "confirm",
+    "beforeunload"
+  ],
+  "externalActions": "none"
+}

@@ -1,3 +1,5 @@
+import { FIXTURE_WORKSPACE_SLUG, DEMO_WS } from "./helpers";
+import { fixtureName } from "./helpers";
 import { describe, it, expect, beforeAll, afterAll, vi } from "vitest";
 import { createApp } from "../app";
 import { hasSupabaseEnv, makeCreator, serviceForTests } from "./helpers";
@@ -39,9 +41,9 @@ vi.mock("../lib/social/rapidApi.js", () => ({
 const { app } = createApp();
 const suite = hasSupabaseEnv ? describe : describe.skip;
 const PUBLIC_PASSPORT_EMAILS = [
-  "public-passport@test.local",
-  "public-profile-media@test.local",
-  "public-self-report@test.local",
+  fixtureName("public-passport@test.local"),
+  fixtureName("public-profile-media@test.local"),
+  fixtureName("public-self-report@test.local"),
 ];
 
 function req(path: string, jwt: string, init: RequestInit = {}) {
@@ -49,7 +51,7 @@ function req(path: string, jwt: string, init: RequestInit = {}) {
     ...init,
     headers: {
       Authorization: `Bearer ${jwt}`,
-      "X-Workspace-Slug": "demo",
+      "X-Workspace-Slug": FIXTURE_WORKSPACE_SLUG,
       "Content-Type": "application/json",
       ...(init.headers ?? {}),
     },
@@ -78,7 +80,7 @@ suite("public passport privacy", () => {
   afterAll(cleanupPublicPassportCreators, 120_000);
 
   it("creates, resolves, and revokes a public passport without raw social leaks", async () => {
-    const c = await makeCreator("public-passport@test.local");
+    const c = await makeCreator(fixtureName("public-passport@test.local"));
     const created = await (
       await req("/social/accounts", c.jwt, {
         method: "POST",
@@ -89,7 +91,7 @@ suite("public passport privacy", () => {
     const svc = serviceForTests();
     await svc.from("creator_review_statuses").insert({
       creator_id: c.userId,
-      workspace_id: "00000000-0000-0000-0000-0000000000aa",
+      workspace_id: DEMO_WS,
       status: "flagged",
       risk_level: "high",
       summary: "Internal-only summary.",
@@ -97,7 +99,7 @@ suite("public passport privacy", () => {
     });
     await svc.from("creator_review_notes").insert({
       creator_id: c.userId,
-      workspace_id: "00000000-0000-0000-0000-0000000000aa",
+      workspace_id: DEMO_WS,
       operator_id: "privacy-test",
       category: "brand_safety",
       body: "Internal-only note.",
@@ -112,7 +114,7 @@ suite("public passport privacy", () => {
     const publicRes = await app.request(`/api/public/passports/${token}`);
     expect(publicRes.status).toBe(200);
     const body = await publicRes.json();
-    expect(body.creator.displayName).toBe("public-passport@test.local");
+    expect(body.creator.displayName).toBe(fixtureName("public-passport@test.local"));
     expect(body.badges).not.toContain("social_linked");
     expect(body.socialTrustBadges).toContain("social_scan_connected");
     expect(JSON.stringify(body)).not.toContain("secretcreator");
@@ -136,14 +138,14 @@ suite("public passport privacy", () => {
   }, 120_000);
 
   it("shows selected avatar and highlights publicly only after explicit profile media publish", async () => {
-    const c = await makeCreator("public-profile-media@test.local");
+    const c = await makeCreator(fixtureName("public-profile-media@test.local"));
     const svc = serviceForTests();
 
     await svc.from("creators").update({ avatar_url: "https://cdn.example.com/draft-avatar.jpg" }).eq("id", c.userId);
     await svc.from("creator_portfolio_links").insert([
       {
         creator_id: c.userId,
-        workspace_id: "00000000-0000-0000-0000-0000000000aa",
+        workspace_id: DEMO_WS,
         url: "https://example.com/public-highlight",
         title: "Public campaign",
         platform_type: "website",
@@ -153,7 +155,7 @@ suite("public passport privacy", () => {
       },
       {
         creator_id: c.userId,
-        workspace_id: "00000000-0000-0000-0000-0000000000aa",
+        workspace_id: DEMO_WS,
         url: "https://example.com/private-link",
         title: "Private campaign",
         platform_type: "website",
@@ -187,7 +189,7 @@ suite("public passport privacy", () => {
   }, 120_000);
 
   it("does not derive public social badges or influence from self-reported handles alone", async () => {
-    const c = await makeCreator("public-self-report@test.local");
+    const c = await makeCreator(fixtureName("public-self-report@test.local"));
     const profile = await req("/me/profile", c.jwt, {
       method: "PUT",
       body: JSON.stringify({

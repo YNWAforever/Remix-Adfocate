@@ -1,5 +1,6 @@
 import type { PassportSocialHandle } from "../passport.js";
 import type { SocialAccountRecord } from "./types.js";
+import { projectSocialAccounts, type LegacySocialHandle, type SocialAccountPresentation } from "../../../src/lib/socialAccountPresentation.js";
 
 export type PrivateSocialTrustAccount = {
   id: string;
@@ -18,6 +19,7 @@ export type PrivateSocialTrustAccount = {
 export type PrivateSocialTrustSummary = {
   accounts: PrivateSocialTrustAccount[];
   badges: string[];
+  presentations: SocialAccountPresentation[];
 };
 
 const PUBLIC_SOCIAL_TRUST_BADGE_ALLOWLIST = new Set([
@@ -39,7 +41,7 @@ export function effectiveSocialHandles(input: {
   return input.selfReportedHandles ?? null;
 }
 
-export function privateSocialTrustSummary(accounts: SocialAccountRecord[]): PrivateSocialTrustSummary {
+export function privateSocialTrustSummary(accounts: SocialAccountRecord[], legacy: LegacySocialHandle[] = []): PrivateSocialTrustSummary {
   const synced = accounts.filter((account) => account.sync_status === "synced" || account.sync_status === "stale");
   const badges = new Set<string>();
 
@@ -59,9 +61,10 @@ export function privateSocialTrustSummary(accounts: SocialAccountRecord[]): Priv
       freshnessScore: account.freshness_score,
       apiSyncedAt: account.api_synced_at,
       ownerVerified: account.owner_verified,
-      labels: ["API-synced", "Ownership not verified"],
+      labels: ["API-synced", account.owner_verified ? "Ownership verified" : "Ownership not verified"],
     })),
     badges: [...badges],
+    presentations: projectSocialAccounts(accounts, legacy),
   };
 }
 

@@ -549,6 +549,8 @@ const REVIEWED_MIGRATIONS = [
     phase: "publication_proof",
     dependsOn: ["20260723170000"],
     capabilities: [
+      "grant-removed:service_role.public.create_publication_proof_asset(uuid,uuid,uuid,uuid,text,text,bigint,text,integer)",
+      "grant-removed:service_role.public.finalize_publication_proof_asset(uuid,uuid,uuid,uuid,uuid,text)",
       "constraint:public.mission_publication_proof_assets.mission_publication_proof_assets_pending_attempt_check",
       "function:private.guard_publication_proof_asset_mutation",
       "function:public.create_publication_proof_asset",
@@ -820,6 +822,274 @@ const REVIEWED_MIGRATIONS = [
     transactionExpectation: "transactional",
     replayExpectation: "migration_history_noop",
   },
+  {
+    version: "20261022170454", name: "audit_legacy_evidence", phase: "legacy_evidence",
+    dependsOn: ["20260805120000"],
+    capabilities: ["function:private.valid_legacy_evidence", "function:private.guard_legacy_submission_evidence", "trigger:public.legacy_submission_evidence_guard",
+      "table:public.legacy_evidence_corrections", "rls:public.legacy_evidence_corrections", "column:public.mission_submissions.evidence_revision",
+      "function:public.request_legacy_evidence_correction", "grant:service_role.public.request_legacy_evidence_correction(uuid,uuid,uuid,uuid,bigint,text)"],
+    transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
+  },
+  {
+    version: "20261022170751", name: "audit_crm_commands", phase: "operator_crm",
+    dependsOn: ["20261022170454"],
+    capabilities: ["column:public.creator_review_statuses.revision", "table:public.operator_crm_command_receipts",
+      "rls:public.operator_crm_command_receipts", "function:private.execute_creator_crm_command",
+      "function:public.apply_creator_review_command", "function:public.add_creator_review_note_command",
+      "grant:service_role.public.apply_creator_review_command(uuid,uuid,uuid,bigint,uuid,text,text,text,text)",
+      "grant:service_role.public.add_creator_review_note_command(uuid,uuid,uuid,bigint,uuid,text,text)"],
+    transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
+  },
+  {
+    version: "20261022171111", name: "audit_creator_queue", phase: "operator_crm",
+    dependsOn: ["20261022170751"],
+    capabilities: ["function:public.list_creator_review_queue_page", "index:public.creators.creators_workspace_id_page_idx",
+      "grant:service_role.public.list_creator_review_queue_page(uuid,uuid,uuid,text,text,text,text,integer)"],
+    transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
+  },
+  {
+    version: "20261022171843", name: "audit_assistant_requests", phase: "assistant_requests",
+    dependsOn: ["20261022171111"],
+    capabilities: ["table:public.assistant_requests", "rls:public.assistant_requests", "policy:public.assistant_requests.assistant_requests_self",
+      "column:public.assistant_messages.request_id", "column:public.assistant_messages.turn_order", "index:public.assistant_messages.assistant_messages_request_role_idx",
+      "function:public.reserve_assistant_request", "function:public.claim_assistant_request", "function:public.save_assistant_turn",
+      "function:public.mark_assistant_request_unknown", "function:public.get_assistant_request",
+      "grant:service_role.public.reserve_assistant_request(uuid,uuid,uuid,text,text,uuid,text)",
+      "grant:service_role.public.claim_assistant_request(uuid,uuid,uuid)",
+      "grant:service_role.public.save_assistant_turn(uuid,uuid,uuid,text,jsonb)",
+      "grant:service_role.public.mark_assistant_request_unknown(uuid,uuid,uuid)",
+      "grant:authenticated.public.get_assistant_request(uuid,uuid)"],
+    transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
+  },
+  {
+    version: "20261022182544", name: "audit_legacy_review_notes", phase: "legacy_evidence",
+    dependsOn: ["20261022170454", "20261022171843"],
+    capabilities: ["column:public.mission_submissions.reviewer_notes"],
+    transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
+  },
+  {
+    version: "20261023091050", name: "academy_learning", phase: "academy_learning",
+    dependsOn: ["20261022182544"],
+    capabilities: ["table:public.academy_lessons", "table:public.creator_lesson_progress",
+      "constraint:public.academy_lessons.academy_lessons_pkey", "constraint:public.creator_lesson_progress.creator_lesson_progress_pkey",
+      "constraint:public.creator_lesson_progress.creator_lesson_progress_lesson_id_content_version_fkey", "constraint:public.academy_lessons.academy_lesson_published_content",
+      "index:public.academy_lessons.academy_lessons_track_order", "index:public.creator_lesson_progress.creator_lesson_progress_lesson",
+      "grant:authenticated.public.academy_lessons(select)", "grant:authenticated.public.creator_lesson_progress(select)",
+      "grant:service_role.public.academy_lessons(select)", "grant:service_role.public.creator_lesson_progress(select)",
+      "rls:public.academy_lessons", "rls:public.creator_lesson_progress",
+      "policy:public.academy_lessons.academy_lessons_published_eligible", "policy:public.creator_lesson_progress.creator_lesson_progress_self",
+      "index:public.academy_lessons.academy_lesson_one_published", "index:public.academy_lessons.academy_lesson_one_draft",
+      "function:private.can_read_academy_track", "function:public.can_read_academy_track", "function:public.get_academy_learning",
+      "function:public.complete_academy_lesson", "function:public.author_academy_lesson", "function:private.guard_academy_lesson_history",
+      "trigger:public.academy_lesson_history_guard",
+      "grant:authenticated.public.get_academy_learning(uuid,text)", "grant:authenticated.public.complete_academy_lesson(uuid,uuid,integer)",
+      "grant:authenticated.public.can_read_academy_track(uuid)", "grant:service_role.public.author_academy_lesson(uuid,uuid,uuid,integer,integer,jsonb,text,text)"],
+    transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
+  },
+  {
+    version: "20261023093445", name: "academy_learning_conflicts", phase: "academy_learning",
+    dependsOn: ["20261023091050"],
+    capabilities: ["function:public.can_read_academy_track", "function:public.complete_academy_lesson", "function:public.author_academy_lesson",
+      "grant:authenticated.public.can_read_academy_track(uuid)", "grant:authenticated.public.complete_academy_lesson(uuid,uuid,integer)",
+      "grant:service_role.public.author_academy_lesson(uuid,uuid,uuid,integer,integer,jsonb,text,text)"],
+    transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
+  },
+  {
+    version: "20261023095521", name: "academy_approval_index", phase: "academy_learning",
+    dependsOn: ["20261023093445"], capabilities: ["index:public.academy_lessons.academy_lessons_approved_by"],
+    transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
+  },
+  {
+    "version": "20261023124149",
+    "name": "staff_access_capabilities",
+    "phase": "staff_access",
+    "dependsOn": [
+      "20261023095521"
+    ],
+    "capabilities": [
+      "table:public.staff_workspace_roles",
+      "table:public.staff_platform_roles",
+      "table:public.staff_access_audit",
+      "table:public.staff_access_commands",
+      "rls:public.staff_workspace_roles",
+      "rls:public.staff_platform_roles",
+      "rls:public.staff_access_audit",
+      "rls:public.staff_access_commands",
+      "grant:service_role.public.staff_workspace_roles(select)",
+      "grant:service_role.public.staff_platform_roles(select)",
+      "grant:service_role.public.staff_access_audit(select)",
+      "grant:service_role.public.staff_access_commands(select)",
+      "function:private.apply_staff_access",
+      "function:private.bootstrap_staff_access",
+      "function:public.set_staff_workspace_role",
+      "grant:service_role.public.set_staff_workspace_role(uuid,uuid,uuid,text,boolean,integer,uuid,text)",
+      "constraint:public.staff_workspace_roles.staff_workspace_roles_pkey",
+      "constraint:public.staff_platform_roles.staff_platform_roles_pkey",
+      "constraint:public.staff_access_audit.staff_access_audit_request_id_key",
+      "constraint:public.staff_access_commands.staff_access_commands_request_id_fkey",
+      "column:public.staff_workspace_roles.revision",
+      "column:public.staff_platform_roles.revision",
+      "index:public.staff_workspace_roles.staff_workspace_roles_workspace",
+      "index:public.staff_workspace_roles.staff_workspace_roles_granted_by",
+      "index:public.staff_platform_roles.staff_platform_roles_granted_by",
+      "index:public.staff_access_audit.staff_access_audit_workspace",
+      "index:public.staff_access_audit.staff_access_audit_user",
+      "index:public.staff_access_audit.staff_access_audit_actor"
+    ],
+    "transactionExpectation": "transactional",
+    "replayExpectation": "migration_history_noop"
+  },
+{
+  "version": "20261023192141",
+  "name": "pilot_legacy_access_hardening",
+  "phase": "staff_access",
+  "dependsOn": [
+    "20261023124149"
+  ],
+  "capabilities": [
+    "grant-removed:anon.public.creator_social_accounts(select)",
+    "grant-removed:anon.public.creator_social_accounts(insert)",
+    "grant-removed:anon.public.creator_social_accounts(update)",
+    "grant-removed:anon.public.creator_social_accounts(delete)",
+    "grant-removed:authenticated.public.creator_social_accounts(truncate)",
+    "grant-removed:authenticated.public.creator_social_accounts(insert)",
+    "grant-removed:authenticated.public.creator_social_accounts(update)",
+    "grant-removed:anon.public.creator_social_scan_snapshots(select)",
+    "grant-removed:anon.public.creator_social_scan_snapshots(insert)",
+    "grant-removed:anon.public.creator_social_scan_snapshots(update)",
+    "grant-removed:anon.public.creator_social_scan_snapshots(delete)",
+    "grant-removed:authenticated.public.creator_social_scan_snapshots(truncate)",
+    "grant-removed:authenticated.public.creator_social_scan_snapshots(insert)",
+    "grant-removed:authenticated.public.creator_social_scan_snapshots(update)",
+    "grant-removed:authenticated.public.creator_social_scan_snapshots(delete)",
+    "grant-removed:anon.public.creator_public_passports(select)",
+    "grant-removed:anon.public.creator_public_passports(insert)",
+    "grant-removed:anon.public.creator_public_passports(update)",
+    "grant-removed:anon.public.creator_public_passports(delete)",
+    "grant-removed:authenticated.public.creator_public_passports(truncate)",
+    "grant-removed:authenticated.public.creator_public_passports(insert)",
+    "grant-removed:authenticated.public.creator_public_passports(update)",
+    "grant-removed:anon.public.creator_review_statuses(select)",
+    "grant-removed:anon.public.creator_review_statuses(insert)",
+    "grant-removed:anon.public.creator_review_statuses(update)",
+    "grant-removed:anon.public.creator_review_statuses(delete)",
+    "grant-removed:authenticated.public.creator_review_statuses(truncate)",
+    "grant-removed:authenticated.public.creator_review_statuses(select)",
+    "grant-removed:authenticated.public.creator_review_statuses(insert)",
+    "grant-removed:authenticated.public.creator_review_statuses(update)",
+    "grant-removed:authenticated.public.creator_review_statuses(delete)",
+    "grant-removed:anon.public.creator_review_notes(select)",
+    "grant-removed:anon.public.creator_review_notes(insert)",
+    "grant-removed:anon.public.creator_review_notes(update)",
+    "grant-removed:anon.public.creator_review_notes(delete)",
+    "grant-removed:authenticated.public.creator_review_notes(truncate)",
+    "grant-removed:authenticated.public.creator_review_notes(select)",
+    "grant-removed:authenticated.public.creator_review_notes(insert)",
+    "grant-removed:authenticated.public.creator_review_notes(update)",
+    "grant-removed:authenticated.public.creator_review_notes(delete)",
+    "grant-removed:anon.public.mission_shortlists(select)",
+    "grant-removed:anon.public.mission_shortlists(insert)",
+    "grant-removed:anon.public.mission_shortlists(update)",
+    "grant-removed:anon.public.mission_shortlists(delete)",
+    "grant-removed:authenticated.public.mission_shortlists(truncate)",
+    "grant-removed:authenticated.public.mission_shortlists(select)",
+    "grant-removed:authenticated.public.mission_shortlists(insert)",
+    "grant-removed:authenticated.public.mission_shortlists(update)",
+    "grant-removed:authenticated.public.mission_shortlists(delete)",
+    "grant-removed:anon.public.operator_audit_events(select)",
+    "grant-removed:anon.public.operator_audit_events(insert)",
+    "grant-removed:anon.public.operator_audit_events(update)",
+    "grant-removed:anon.public.operator_audit_events(delete)",
+    "grant-removed:authenticated.public.operator_audit_events(truncate)",
+    "grant-removed:authenticated.public.operator_audit_events(select)",
+    "grant-removed:authenticated.public.operator_audit_events(insert)",
+    "grant-removed:authenticated.public.operator_audit_events(update)",
+    "grant-removed:authenticated.public.operator_audit_events(delete)"
+  ],
+  "transactionExpectation": "transactional",
+  "replayExpectation": "migration_history_noop"
+},
+  {
+    version: "20261025120934", name: "application_decisions", phase: "operator_crm",
+    dependsOn: ["20260715163350", "20261022170751", "20261023192141"],
+    capabilities: ["function:public.decide_mission_application",
+      "grant:service_role.public.decide_mission_application(uuid,uuid,uuid,uuid,bigint,text,text)",
+      "grant-removed:anon.public.decide_mission_application(uuid,uuid,uuid,uuid,bigint,text,text)",
+      "grant-removed:authenticated.public.decide_mission_application(uuid,uuid,uuid,uuid,bigint,text,text)"],
+    transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
+  },
+  {
+    version: "20261025194402", name: "redemption_intents", phase: "redemption",
+    dependsOn: [], // Existing tables and redeem_gift are in the pinned baseline.
+    capabilities: [
+      "column:public.redemptions.client_request_id",
+      "index:public.redemptions.redemptions_creator_request_uniq",
+      "function:public.redeem_gift_with_request",
+      "grant:authenticated.public.redeem_gift_with_request(uuid,uuid)",
+      "grant:service_role.public.redeem_gift_with_request(uuid,uuid)",
+      "grant-removed:anon.public.redeem_gift_with_request(uuid,uuid)",
+      "grant-removed:public.public.redeem_gift_with_request(uuid,uuid)",
+    ],
+    transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
+  },
+  {
+    version: "20261028140231", name: "legacy_submission_xp_once", phase: "legacy_evidence",
+    dependsOn: ["20260805120000", "20261022182544"],
+    capabilities: [
+      "function:public.submit_mission",
+      "grant:authenticated.public.submit_mission(uuid,text[],jsonb)",
+      "grant:service_role.public.submit_mission(uuid,text[],jsonb)",
+      "grant-removed:anon.public.submit_mission(uuid,text[],jsonb)",
+      "grant-removed:public.public.submit_mission(uuid,text[],jsonb)",
+    ],
+    transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
+  },
+  {
+    version: "20261028140709", name: "legacy_evidence_url_authority", phase: "legacy_evidence",
+    dependsOn: ["20261022170454", "20261022182544"],
+    capabilities: [
+      "function:private.valid_legacy_evidence",
+      "function:public.request_legacy_evidence_correction",
+      "function:public.get_legacy_correction_evidence",
+      "grant:service_role.private.valid_legacy_evidence(text[])",
+      "grant:service_role.public.request_legacy_evidence_correction(uuid,uuid,uuid,uuid,bigint,text)",
+      "grant:service_role.public.get_legacy_correction_evidence(uuid,uuid)",
+      "grant-removed:authenticated.private.valid_legacy_evidence(text[])",
+      "grant-removed:anon.private.valid_legacy_evidence(text[])",
+      "grant-removed:public.private.valid_legacy_evidence(text[])",
+      "grant-removed:authenticated.public.request_legacy_evidence_correction(uuid,uuid,uuid,uuid,bigint,text)",
+      "grant-removed:anon.public.request_legacy_evidence_correction(uuid,uuid,uuid,uuid,bigint,text)",
+      "grant-removed:public.public.request_legacy_evidence_correction(uuid,uuid,uuid,uuid,bigint,text)",
+      "grant-removed:authenticated.public.get_legacy_correction_evidence(uuid,uuid)",
+      "grant-removed:anon.public.get_legacy_correction_evidence(uuid,uuid)",
+      "grant-removed:public.public.get_legacy_correction_evidence(uuid,uuid)",
+    ],
+    transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
+  },
+  {
+    version: "20261028155000", name: "legacy_evidence_review_validity", phase: "legacy_evidence",
+    dependsOn: ["20261028140709"],
+    capabilities: [
+      "function:public.legacy_evidence_sql_valid",
+      "grant:service_role.public.legacy_evidence_sql_valid(public.mission_submissions)",
+      "grant-removed:authenticated.public.legacy_evidence_sql_valid(public.mission_submissions)",
+      "grant-removed:anon.public.legacy_evidence_sql_valid(public.mission_submissions)",
+      "grant-removed:public.public.legacy_evidence_sql_valid(public.mission_submissions)",
+    ],
+    transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
+  },
+  {
+    version: "20261029000000", name: "assistant_reservation_claim", phase: "assistant_requests",
+    dependsOn: ["20261022171843"],
+    capabilities: [
+      "function:public.claim_assistant_request",
+      "grant:service_role.public.claim_assistant_request(uuid,uuid,uuid)",
+      "grant-removed:authenticated.public.claim_assistant_request(uuid,uuid,uuid)",
+      "grant-removed:anon.public.claim_assistant_request(uuid,uuid,uuid)",
+      "grant-removed:public.public.claim_assistant_request(uuid,uuid,uuid)",
+    ],
+    transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
+  },
 ] as const satisfies readonly ReviewedMigration[];
 
 const NON_RELEASE_TIMESTAMP_MIGRATIONS = new Set([
@@ -884,7 +1154,20 @@ const MIGRATION_KEYS = [
   "transactionExpectation",
   "replayExpectation",
 ] as const;
-const CAPABILITY_PATTERN = /^(?:(?:table|column|constraint|constraint-removed|index|function|policy|storage-policy|storage-bucket|trigger|rls):[a-z][a-z0-9_-]*(?:\.[a-z][a-z0-9_-]*)+|grant:[a-z][a-z0-9_]*\.[a-z][a-z0-9_]*\.[a-z][a-z0-9_]*\([a-z0-9_,\x5b\x5d]+\))$/;
+const CAPABILITY_PATTERN = /^(?:(?:table|column|constraint|constraint-removed|index|function|policy|storage-policy|storage-bucket|trigger|rls):[a-z][a-z0-9_-]*(?:\.[a-z][a-z0-9_-]*)+|grant(?:-removed)?:[a-z][a-z0-9_]*\.[a-z][a-z0-9_]*\.[a-z][a-z0-9_]*\([a-z0-9_.,\x5b\x5d]+\))$/;
+
+/** The final schema must satisfy the last explicit requirement for each object.
+ * Historical entries stay intact; later removal declarations replace their earlier positives. */
+export function currentReleaseCapabilities(manifest: ReleaseManifest): string[] {
+  const current = new Map<string, string>();
+  for (const migration of manifest.migrations) {
+    for (const capability of migration.capabilities) {
+      const key = capability.replace(/^(constraint|grant)-removed:/, "$1:");
+      current.set(key, capability);
+    }
+  }
+  return [...current.values()];
+}
 
 function canonicalSqlText(value: string | Buffer): Buffer {
   const text = typeof value === "string" ? value : value.toString("utf8");
@@ -982,7 +1265,7 @@ export function parseReleaseManifest(value: unknown): ReleaseManifest {
     if (
       migration.phase !== "active_mission" &&
       migration.phase !== "publication_proof" &&
-      migration.phase !== "reward_handoff"
+      migration.phase !== "reward_handoff" && migration.phase !== "legacy_evidence" && migration.phase !== "operator_crm" && migration.phase !== "assistant_requests" && migration.phase !== "academy_learning" && migration.phase !== "staff_access" && migration.phase !== "redemption"
     ) {
       invalid(`${path}.phase`, "is invalid");
     }
@@ -1154,6 +1437,7 @@ export async function validateManifest(
     "active_mission",
     "publication_proof",
     "reward_handoff",
+    "legacy_evidence", "operator_crm", "assistant_requests", "academy_learning", "staff_access", "redemption",
   ] satisfies ReleasePhase[]) {
     if (!parsed.migrations.some((migration) => migration.phase === phase)) {
       pushUnique(errors, `missing release phase: ${phase}`);

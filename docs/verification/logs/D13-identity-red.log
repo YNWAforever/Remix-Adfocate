@@ -1,0 +1,1594 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ❯ src/routes/-_app.login.test.tsx (21 tests | 2 failed | 19 skipped) 193ms
+   × D13 shared email access > uses the Adfocate brand and one email field across methods 136ms
+     → Unable to find an accessible element with the role "heading" and name "登入 Adfocate"
+
+Here are the accessible roles:
+
+  button:
+
+  Name "切換語言":
+  <button
+    aria-label="切換語言"
+    class="tag-mono"
+    type="button"
+  />
+
+  Name "顯示密碼":
+  <button
+    aria-pressed="false"
+    class="shrink-0 rounded-xl border-2 border-[var(--color-ink)] bg-white px-3 py-3 text-xs font-bold text-[var(--color-ink)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45"
+    type="button"
+  />
+
+  Name "登入":
+  <button
+    class="btn-primary w-full focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45 disabled:opacity-50 motion-reduce:transition-none"
+    type="submit"
+  />
+
+  Name "忘記密碼？":
+  <button
+    class="w-full text-center text-sm text-[var(--color-soft-ink)] underline focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45 disabled:opacity-50"
+    type="button"
+  />
+
+  Name "初次使用 Adfocate？建立帳戶":
+  <button
+    class="w-full rounded-full border-2 border-[var(--color-ink)] bg-white py-2 text-center text-sm font-bold text-[var(--color-ink)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45 disabled:opacity-50"
+    type="button"
+  />
+
+  Name "用電郵連結登入":
+  <button
+    class="btn-ink w-full focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45 disabled:opacity-50 motion-reduce:transition-none"
+    type="submit"
+  />
+
+  Name "用 Google 登入":
+  <button
+    class="w-full rounded-full border-2 border-[var(--color-ink)] bg-white py-2 font-heading font-bold text-[var(--color-ink)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45"
+    type="button"
+  />
+
+  --------------------------------------------------
+  heading:
+
+  Name "登入 KOCmax":
+  <h1
+    class="mt-4 font-display text-3xl font-bold text-[var(--color-ink)]"
+  />
+
+  Name "用密碼登入":
+  <h2
+    class="font-heading text-base font-bold text-[var(--color-ink)]"
+    id="login-password-heading"
+  />
+
+  Name "想改用一次性連結？":
+  <h2
+    class="font-heading text-base font-bold text-[var(--color-ink)]"
+    id="login-magic-heading"
+  />
+
+  --------------------------------------------------
+  region:
+
+  Name "用密碼登入":
+  <section
+    aria-labelledby="login-password-heading"
+    class="mt-5 space-y-3 rounded-xl border-2 border-[var(--color-ink)] bg-white p-4"
+  />
+
+  Name "想改用一次性連結？":
+  <section
+    aria-labelledby="login-magic-heading"
+    class="space-y-3"
+  />
+
+  --------------------------------------------------
+  textbox:
+
+  Name "電郵地址":
+  <input
+    aria-invalid="false"
+    autocomplete="email"
+    class="w-full rounded-xl border-2 border-[var(--color-ink)] bg-white p-3 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45"
+    id="login-password-email"
+    placeholder="[email-redacted]"
+    required=""
+    type="email"
+    value=""
+  />
+
+  Name "電郵地址":
+  <input
+    aria-describedby="login-email-help"
+    aria-invalid="false"
+    autocomplete="email"
+    class="w-full rounded-xl border-2 border-[var(--color-ink)] bg-white p-3 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45"
+    id="login-email"
+    placeholder="[email-redacted]"
+    required=""
+    type="email"
+    value=""
+  />
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  <p
+    class="text-sm text-[var(--color-soft-ink)]"
+    id="login-password-help"
+  />
+
+  Name "":
+  <p
+    class="text-sm text-[var(--color-soft-ink)]"
+    id="login-email-help"
+  />
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style, option
+<body>
+  <div>
+    <div
+      class="relative flex min-h-screen items-center justify-center overflow-hidden bg-[var(--color-paper)] px-4 py-10"
+    >
+      <div
+        aria-hidden="true"
+        class="dot-pattern pointer-events-none absolute inset-0 z-0 opacity-30"
+      />
+      <div
+        class="relative z-10 w-full max-w-md"
+      >
+        <div
+          class="mb-4 flex items-center justify-between"
+        >
+          <span
+            class="font-display text-xl font-bold tracking-tight text-[var(--color-ink)]"
+          >
+            Adfocate
+            <span
+              class="text-[var(--color-magenta)]"
+            >
+              .
+            </span>
+          </span>
+          <button
+            aria-label="切換語言"
+            class="tag-mono"
+            type="button"
+          >
+            EN · 繁
+          </button>
+        </div>
+        <div
+          class="pastel-card p-6 sm:p-8"
+        >
+          <span
+            class="sticker"
+          >
+            創作者登入
+          </span>
+          <h1
+            class="mt-4 font-display text-3xl font-bold text-[var(--color-ink)]"
+          >
+            登入 KOCmax
+          </h1>
+          <section
+            aria-labelledby="login-password-heading"
+            class="mt-5 space-y-3 rounded-xl border-2 border-[var(--color-ink)] bg-white p-4"
+          >
+            <h2
+              class="font-heading text-base font-bold text-[var(--color-ink)]"
+              id="login-password-heading"
+            >
+              用密碼登入
+            </h2>
+            <form
+              aria-busy="false"
+              class="space-y-2"
+            >
+              <label
+                class="block font-heading text-sm font-bold text-[var(--color-ink)]"
+                for="login-password-email"
+              >
+                電郵地址
+              </label>
+              <input
+                aria-invalid="false"
+                autocomplete="email"
+                class="w-full rounded-xl border-2 border-[var(--color-ink)] bg-white p-3 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45"
+                id="login-password-email"
+                placeholder="[email-redacted]"
+                required=""
+                type="email"
+                value=""
+              />
+              <label
+                class="block font-heading text-sm font-bold text-[var(--color-ink)]"
+                for="login-password"
+              >
+                密碼
+              </label>
+              <p
+                class="text-sm text-[var(--color-soft-ink)]"
+                id="login-password-help"
+              >
+                最少 8 個字元。
+              </p>
+              <div
+                class="flex items-center gap-2"
+              >
+                <input
+                  aria-describedby="login-password-help"
+                  aria-invalid="false"
+                  autocomplete="current-password"
+                  class="w-full rounded-xl border-2 border-[var(--color-ink)] bg-white p-3 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45"
+                  id="login-password"
+                  required=""
+                  type="password"
+                  value=""
+                />
+                <button
+                  aria-pressed="false"
+                  class="shrink-0 rounded-xl border-2 border-[var(--color-ink)] bg-white px-3 py-3 text-xs font-bold text-[var(--color-ink)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45"
+                  type="button"
+                >
+                  顯示密碼
+                </button>
+              </div>
+              <button
+                class="btn-primary w-full focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45 disabled:opacity-50 motion-reduce:transition-none"
+                type="submit"
+              >
+                登入
+              </button>
+            </form>
+            <div
+              class="space-y-2"
+            >
+              <button
+                class="w-full text-center text-sm text-[var(--color-soft-ink)] underline focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45 disabled:opacity-50"
+                type="button"
+              >
+                忘記密碼？
+              </button>
+              <button
+                class="w-full rounded-full border-2 border-[var(--color-ink)] bg-white py-2 text-center text-sm font-bold text-[var(--color-ink)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45 disabled:opacity-50"
+                type="button"
+              >
+                初次使用 Adfocate？建立帳戶
+              </button>
+            </div>
+          </section>
+          <div
+            aria-hidden="true"
+            class="mt-5 flex items-center gap-3"
+          >
+            <span
+              class="h-0.5 flex-1 bg-[var(--color-ink)]/20"
+            />
+            <span
+              class="font-mono text-xs uppercase tracking-wide text-[var(--color-soft-ink)]"
+            >
+              或
+            </span>
+            <span
+              class="h-0.5 flex-1 bg-[var(--color-ink)]/20"
+            />
+          </div>
+          <div
+            class="mt-3 space-y-3 rounded-xl border-2 border-[var(--color-ink)] bg-white p-4"
+          >
+            <section
+              aria-labelledby="login-magic-heading"
+              class="space-y-3"
+            >
+              <h2
+                class="font-heading text-base font-bold text-[var(--color-ink)]"
+                id="login-magic-heading"
+              >
+                想改用一次性連結？
+              </h2>
+              <form
+                aria-busy="false"
+                class="space-y-2"
+              >
+                <label
+                  class="block font-heading text-sm font-bold text-[var(--color-ink)]"
+                  for="login-email"
+                >
+                  電郵地址
+                </label>
+                <p
+                  class="text-sm text-[var(--color-soft-ink)]"
+                  id="login-email-help"
+                >
+                  我們會透過電郵傳送一次性登入連結，讓你建立或開啟創作者檔案。
+                </p>
+                <input
+                  aria-describedby="login-email-help"
+                  aria-invalid="false"
+                  autocomplete="email"
+                  class="w-full rounded-xl border-2 border-[var(--color-ink)] bg-white p-3 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45"
+                  id="login-email"
+                  placeholder="[email-redacted]"
+                  required=""
+                  type="email"
+                  value=""
+                />
+                <button
+                  class="btn-ink w-full focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45 disabled:opacity-50 motion-reduce:transition-none"
+                  type="submit"
+                >
+                  用電郵連結登入
+                </button>
+              </form>
+            </section>
+            <button
+              class="w-full rounded-full border-2 border-[var(--color-ink)] bg-white py-2 font-heading font-bold text-[var(--color-ink)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45"
+              type="button"
+            >
+              用 Google 登入
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+   × D13 shared email access > keeps the email while switching from password to magic link 57ms
+     → Unable to find an accessible element with the role "button" and name "選擇電郵登入連結"
+
+Here are the accessible roles:
+
+  button:
+
+  Name "切換語言":
+  <button
+    aria-label="切換語言"
+    class="tag-mono"
+    type="button"
+  />
+
+  Name "顯示密碼":
+  <button
+    aria-pressed="false"
+    class="shrink-0 rounded-xl border-2 border-[var(--color-ink)] bg-white px-3 py-3 text-xs font-bold text-[var(--color-ink)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45"
+    type="button"
+  />
+
+  Name "登入":
+  <button
+    class="btn-primary w-full focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45 disabled:opacity-50 motion-reduce:transition-none"
+    type="submit"
+  />
+
+  Name "忘記密碼？":
+  <button
+    class="w-full text-center text-sm text-[var(--color-soft-ink)] underline focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45 disabled:opacity-50"
+    type="button"
+  />
+
+  Name "初次使用 Adfocate？建立帳戶":
+  <button
+    class="w-full rounded-full border-2 border-[var(--color-ink)] bg-white py-2 text-center text-sm font-bold text-[var(--color-ink)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45 disabled:opacity-50"
+    type="button"
+  />
+
+  Name "用電郵連結登入":
+  <button
+    class="btn-ink w-full focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45 disabled:opacity-50 motion-reduce:transition-none"
+    type="submit"
+  />
+
+  Name "用 Google 登入":
+  <button
+    class="w-full rounded-full border-2 border-[var(--color-ink)] bg-white py-2 font-heading font-bold text-[var(--color-ink)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45"
+    type="button"
+  />
+
+  --------------------------------------------------
+  heading:
+
+  Name "登入 KOCmax":
+  <h1
+    class="mt-4 font-display text-3xl font-bold text-[var(--color-ink)]"
+  />
+
+  Name "用密碼登入":
+  <h2
+    class="font-heading text-base font-bold text-[var(--color-ink)]"
+    id="login-password-heading"
+  />
+
+  Name "想改用一次性連結？":
+  <h2
+    class="font-heading text-base font-bold text-[var(--color-ink)]"
+    id="login-magic-heading"
+  />
+
+  --------------------------------------------------
+  region:
+
+  Name "用密碼登入":
+  <section
+    aria-labelledby="login-password-heading"
+    class="mt-5 space-y-3 rounded-xl border-2 border-[var(--color-ink)] bg-white p-4"
+  />
+
+  Name "想改用一次性連結？":
+  <section
+    aria-labelledby="login-magic-heading"
+    class="space-y-3"
+  />
+
+  --------------------------------------------------
+  textbox:
+
+  Name "電郵地址":
+  <input
+    aria-invalid="false"
+    autocomplete="email"
+    class="w-full rounded-xl border-2 border-[var(--color-ink)] bg-white p-3 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45"
+    id="login-password-email"
+    placeholder="[email-redacted]"
+    required=""
+    type="email"
+    value="[email-redacted]"
+  />
+
+  Name "電郵地址":
+  <input
+    aria-describedby="login-email-help"
+    aria-invalid="false"
+    autocomplete="email"
+    class="w-full rounded-xl border-2 border-[var(--color-ink)] bg-white p-3 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45"
+    id="login-email"
+    placeholder="[email-redacted]"
+    required=""
+    type="email"
+    value=""
+  />
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  <p
+    class="text-sm text-[var(--color-soft-ink)]"
+    id="login-password-help"
+  />
+
+  Name "":
+  <p
+    class="text-sm text-[var(--color-soft-ink)]"
+    id="login-email-help"
+  />
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style, option
+<body>
+  <div>
+    <div
+      class="relative flex min-h-screen items-center justify-center overflow-hidden bg-[var(--color-paper)] px-4 py-10"
+    >
+      <div
+        aria-hidden="true"
+        class="dot-pattern pointer-events-none absolute inset-0 z-0 opacity-30"
+      />
+      <div
+        class="relative z-10 w-full max-w-md"
+      >
+        <div
+          class="mb-4 flex items-center justify-between"
+        >
+          <span
+            class="font-display text-xl font-bold tracking-tight text-[var(--color-ink)]"
+          >
+            Adfocate
+            <span
+              class="text-[var(--color-magenta)]"
+            >
+              .
+            </span>
+          </span>
+          <button
+            aria-label="切換語言"
+            class="tag-mono"
+            type="button"
+          >
+            EN · 繁
+          </button>
+        </div>
+        <div
+          class="pastel-card p-6 sm:p-8"
+        >
+          <span
+            class="sticker"
+          >
+            創作者登入
+          </span>
+          <h1
+            class="mt-4 font-display text-3xl font-bold text-[var(--color-ink)]"
+          >
+            登入 KOCmax
+          </h1>
+          <section
+            aria-labelledby="login-password-heading"
+            class="mt-5 space-y-3 rounded-xl border-2 border-[var(--color-ink)] bg-white p-4"
+          >
+            <h2
+              class="font-heading text-base font-bold text-[var(--color-ink)]"
+              id="login-password-heading"
+            >
+              用密碼登入
+            </h2>
+            <form
+              aria-busy="false"
+              class="space-y-2"
+            >
+              <label
+                class="block font-heading text-sm font-bold text-[var(--color-ink)]"
+                for="login-password-email"
+              >
+                電郵地址
+              </label>
+              <input
+                aria-invalid="false"
+                autocomplete="email"
+                class="w-full rounded-xl border-2 border-[var(--color-ink)] bg-white p-3 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45"
+                id="login-password-email"
+                placeholder="[email-redacted]"
+                required=""
+                type="email"
+                value="[email-redacted]"
+              />
+              <label
+                class="block font-heading text-sm font-bold text-[var(--color-ink)]"
+                for="login-password"
+              >
+                密碼
+              </label>
+              <p
+                class="text-sm text-[var(--color-soft-ink)]"
+                id="login-password-help"
+              >
+                最少 8 個字元。
+              </p>
+              <div
+                class="flex items-center gap-2"
+              >
+                <input
+                  aria-describedby="login-password-help"
+                  aria-invalid="false"
+                  autocomplete="current-password"
+                  class="w-full rounded-xl border-2 border-[var(--color-ink)] bg-white p-3 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45"
+                  id="login-password"
+                  required=""
+                  type="password"
+                  value=""
+                />
+                <button
+                  aria-pressed="false"
+                  class="shrink-0 rounded-xl border-2 border-[var(--color-ink)] bg-white px-3 py-3 text-xs font-bold text-[var(--color-ink)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45"
+                  type="button"
+                >
+                  顯示密碼
+                </button>
+              </div>
+              <button
+                class="btn-primary w-full focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45 disabled:opacity-50 motion-reduce:transition-none"
+                type="submit"
+              >
+                登入
+              </button>
+            </form>
+            <div
+              class="space-y-2"
+            >
+              <button
+                class="w-full text-center text-sm text-[var(--color-soft-ink)] underline focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45 disabled:opacity-50"
+                type="button"
+              >
+                忘記密碼？
+              </button>
+              <button
+                class="w-full rounded-full border-2 border-[var(--color-ink)] bg-white py-2 text-center text-sm font-bold text-[var(--color-ink)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45 disabled:opacity-50"
+                type="button"
+              >
+                初次使用 Adfocate？建立帳戶
+              </button>
+            </div>
+          </section>
+          <div
+            aria-hidden="true"
+            class="mt-5 flex items-center gap-3"
+          >
+            <span
+              class="h-0.5 flex-1 bg-[var(--color-ink)]/20"
+            />
+            <span
+              class="font-mono text-xs uppercase tracking-wide text-[var(--color-soft-ink)]"
+            >
+              或
+            </span>
+            <span
+              class="h-0.5 flex-1 bg-[var(--color-ink)]/20"
+            />
+          </div>
+          <div
+            class="mt-3 space-y-3 rounded-xl border-2 border-[var(--color-ink)] bg-white p-4"
+          >
+            <section
+              aria-labelledby="login-magic-heading"
+              class="space-y-3"
+            >
+              <h2
+                class="font-heading text-base font-bold text-[var(--color-ink)]"
+                id="login-magic-heading"
+              >
+                想改用一次性連結？
+              </h2>
+              <form
+                aria-busy="false"
+                class="space-y-2"
+              >
+                <label
+                  class="block font-heading text-sm font-bold text-[var(--color-ink)]"
+                  for="login-email"
+                >
+                  電郵地址
+                </label>
+                <p
+                  class="text-sm text-[var(--color-soft-ink)]"
+                  id="login-email-help"
+                >
+                  我們會透過電郵傳送一次性登入連結，讓你建立或開啟創作者檔案。
+                </p>
+                <input
+                  aria-describedby="login-email-help"
+                  aria-invalid="false"
+                  autocomplete="email"
+                  class="w-full rounded-xl border-2 border-[var(--color-ink)] bg-white p-3 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45"
+                  id="login-email"
+                  placeholder="[email-redacted]"
+                  required=""
+                  type="email"
+                  value=""
+                />
+                <button
+                  class="btn-ink w-full focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45 disabled:opacity-50 motion-reduce:transition-none"
+                  type="submit"
+                >
+                  用電郵連結登入
+                </button>
+              </form>
+            </section>
+            <button
+              class="w-full rounded-full border-2 border-[var(--color-ink)] bg-white py-2 font-heading font-bold text-[var(--color-ink)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45"
+              type="button"
+            >
+              用 Google 登入
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+ ❯ src/lib/auth-flow.test.ts (18 tests | 2 failed | 8 skipped) 35ms
+   × finishAuth > returns an onboarded creator to the requested local work page 25ms
+     → expected "spy" to be called with arguments: [ Array(1) ]
+
+Received: 
+
+  1st spy call:
+
+  Array [
+    Object {
+-     "to": "/mission/sample?from=profile#requirements",
++     "to": "/home",
+    },
+  ]
+
+
+Number of calls: 1
+
+   × finishAuth > carries the safe return through incomplete onboarding 2ms
+     → expected "spy" to be called with arguments: [ { to: '/onboarding', …(1) } ]
+
+Received: 
+
+  1st spy call:
+
+  Array [
+    Object {
+-     "search": Object {
+-       "next": "/profile",
+-     },
+      "to": "/onboarding",
+    },
+  ]
+
+
+Number of calls: 1
+
+ ❯ server/lib/social/passportSocial.test.ts (9 tests | 4 failed | 5 skipped) 12ms
+   × passport social inputs > keeps legacy handles visible without granting ownership or a sync 7ms
+     → expected undefined to deeply equal [ ObjectContaining{…} ]
+   × passport social inputs > retains conflicting handles and all pending or failed canonical accounts 1ms
+     → expected undefined to deeply equal [ ObjectContaining{…}, …(1) ]
+   × passport social inputs > deduplicates a matching legacy handle and never leaks verification secrets 3ms
+     → Target cannot be null or undefined.
+   × passport social inputs > reports actual verified ownership without a contradictory unverified label 1ms
+     → expected [ 'API-synced', …(1) ] to include 'Ownership verified'
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 8 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  server/lib/social/passportSocial.test.ts > passport social inputs > keeps legacy handles visible without granting ownership or a sync
+AssertionError: expected undefined to deeply equal [ ObjectContaining{…} ]
+
+- Expected: 
+Array [
+  ObjectContaining {
+    "accountId": null,
+    "handle": "@legacy",
+    "lastSyncedAt": null,
+    "ownershipVerified": false,
+    "platform": "instagram",
+    "source": "legacy",
+    "syncStatus": "not_connected",
+  },
+]
+
++ Received: 
+undefined
+
+ ❯ server/lib/social/passportSocial.test.ts:40:34
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+ FAIL  server/lib/social/passportSocial.test.ts > passport social inputs > retains conflicting handles and all pending or failed canonical accounts
+AssertionError: expected undefined to deeply equal [ ObjectContaining{…}, …(1) ]
+
+- Expected: 
+Array [
+  ObjectContaining {
+    "accountId": "first",
+    "handle": "first",
+    "legacyHandles": Array [
+      "@old",
+    ],
+    "ownershipVerified": false,
+    "source": "conflict",
+    "syncStatus": "pending",
+  },
+  ObjectContaining {
+    "accountId": "second",
+    "handle": "second",
+    "legacyHandles": Array [
+      "@old",
+    ],
+    "ownershipVerified": false,
+    "source": "conflict",
+    "syncStatus": "failed",
+  },
+]
+
++ Received: 
+undefined
+
+ ❯ server/lib/social/passportSocial.test.ts:50:34
+     48|     const before = JSON.stringify({ canonical, legacy });
+     49|     const result = privateSocialTrustSummary(canonical, legacy);
+     50|     expect(result.presentations).toEqual([
+       |                                  ^
+     51|       expect.objectContaining({ accountId: "first", handle: "first", s…
+     52|       expect.objectContaining({ accountId: "second", handle: "second",…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+ FAIL  server/lib/social/passportSocial.test.ts > passport social inputs > deduplicates a matching legacy handle and never leaks verification secrets
+AssertionError: Target cannot be null or undefined.
+ ❯ server/lib/social/passportSocial.test.ts:59:34
+     57|   it("deduplicates a matching legacy handle and never leaks verificati…
+     58|     const result = privateSocialTrustSummary([account({ verification_c…
+     59|     expect(result.presentations).toHaveLength(1);
+       |                                  ^
+     60|     expect(result.presentations[0]).toMatchObject({ source: "canonical…
+     61|     expect(JSON.stringify(result)).not.toContain("private-code");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯
+
+ FAIL  server/lib/social/passportSocial.test.ts > passport social inputs > reports actual verified ownership without a contradictory unverified label
+AssertionError: expected [ 'API-synced', …(1) ] to include 'Ownership verified'
+ ❯ server/lib/social/passportSocial.test.ts:66:39
+     64|   it("reports actual verified ownership without a contradictory unveri…
+     65|     const result = privateSocialTrustSummary([account({ owner_verified…
+     66|     expect(result.accounts[0].labels).toContain("Ownership verified");
+       |                                       ^
+     67|     expect(result.accounts[0].labels).not.toContain("Ownership not ver…
+     68|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯
+
+ FAIL  src/lib/auth-flow.test.ts > finishAuth > returns an onboarded creator to the requested local work page
+AssertionError: expected "spy" to be called with arguments: [ Array(1) ]
+
+Received: 
+
+  1st spy call:
+
+  Array [
+    Object {
+-     "to": "/mission/sample?from=profile#requirements",
++     "to": "/home",
+    },
+  ]
+
+
+Number of calls: 1
+
+ ❯ src/lib/auth-flow.test.ts:43:22
+     41|     apiFetch.mockResolvedValueOnce({ created: false }).mockResolvedVal…
+     42|     await finishAuth(navigate as never);
+     43|     expect(navigate).toHaveBeenCalledWith({ to: "/mission/sample?from=…
+       |                      ^
+     44|   });
+     45| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯
+
+ FAIL  src/lib/auth-flow.test.ts > finishAuth > carries the safe return through incomplete onboarding
+AssertionError: expected "spy" to be called with arguments: [ { to: '/onboarding', …(1) } ]
+
+Received: 
+
+  1st spy call:
+
+  Array [
+    Object {
+-     "search": Object {
+-       "next": "/profile",
+-     },
+      "to": "/onboarding",
+    },
+  ]
+
+
+Number of calls: 1
+
+ ❯ src/lib/auth-flow.test.ts:50:22
+     48|     apiFetch.mockResolvedValueOnce({ created: true }).mockResolvedValu…
+     49|     await finishAuth(navigate as never);
+     50|     expect(navigate).toHaveBeenCalledWith({ to: "/onboarding", search:…
+       |                      ^
+     51|   });
+     52| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/8]⎯
+
+ FAIL  src/routes/-_app.login.test.tsx > D13 shared email access > uses the Adfocate brand and one email field across methods
+TestingLibraryElementError: Unable to find an accessible element with the role "heading" and name "登入 Adfocate"
+
+Here are the accessible roles:
+
+  button:
+
+  Name "切換語言":
+  <button
+    aria-label="切換語言"
+    class="tag-mono"
+    type="button"
+  />
+
+  Name "顯示密碼":
+  <button
+    aria-pressed="false"
+    class="shrink-0 rounded-xl border-2 border-[var(--color-ink)] bg-white px-3 py-3 text-xs font-bold text-[var(--color-ink)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45"
+    type="button"
+  />
+
+  Name "登入":
+  <button
+    class="btn-primary w-full focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45 disabled:opacity-50 motion-reduce:transition-none"
+    type="submit"
+  />
+
+  Name "忘記密碼？":
+  <button
+    class="w-full text-center text-sm text-[var(--color-soft-ink)] underline focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45 disabled:opacity-50"
+    type="button"
+  />
+
+  Name "初次使用 Adfocate？建立帳戶":
+  <button
+    class="w-full rounded-full border-2 border-[var(--color-ink)] bg-white py-2 text-center text-sm font-bold text-[var(--color-ink)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45 disabled:opacity-50"
+    type="button"
+  />
+
+  Name "用電郵連結登入":
+  <button
+    class="btn-ink w-full focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45 disabled:opacity-50 motion-reduce:transition-none"
+    type="submit"
+  />
+
+  Name "用 Google 登入":
+  <button
+    class="w-full rounded-full border-2 border-[var(--color-ink)] bg-white py-2 font-heading font-bold text-[var(--color-ink)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45"
+    type="button"
+  />
+
+  --------------------------------------------------
+  heading:
+
+  Name "登入 KOCmax":
+  <h1
+    class="mt-4 font-display text-3xl font-bold text-[var(--color-ink)]"
+  />
+
+  Name "用密碼登入":
+  <h2
+    class="font-heading text-base font-bold text-[var(--color-ink)]"
+    id="login-password-heading"
+  />
+
+  Name "想改用一次性連結？":
+  <h2
+    class="font-heading text-base font-bold text-[var(--color-ink)]"
+    id="login-magic-heading"
+  />
+
+  --------------------------------------------------
+  region:
+
+  Name "用密碼登入":
+  <section
+    aria-labelledby="login-password-heading"
+    class="mt-5 space-y-3 rounded-xl border-2 border-[var(--color-ink)] bg-white p-4"
+  />
+
+  Name "想改用一次性連結？":
+  <section
+    aria-labelledby="login-magic-heading"
+    class="space-y-3"
+  />
+
+  --------------------------------------------------
+  textbox:
+
+  Name "電郵地址":
+  <input
+    aria-invalid="false"
+    autocomplete="email"
+    class="w-full rounded-xl border-2 border-[var(--color-ink)] bg-white p-3 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45"
+    id="login-password-email"
+    placeholder="[email-redacted]"
+    required=""
+    type="email"
+    value=""
+  />
+
+  Name "電郵地址":
+  <input
+    aria-describedby="login-email-help"
+    aria-invalid="false"
+    autocomplete="email"
+    class="w-full rounded-xl border-2 border-[var(--color-ink)] bg-white p-3 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45"
+    id="login-email"
+    placeholder="[email-redacted]"
+    required=""
+    type="email"
+    value=""
+  />
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  <p
+    class="text-sm text-[var(--color-soft-ink)]"
+    id="login-password-help"
+  />
+
+  Name "":
+  <p
+    class="text-sm text-[var(--color-soft-ink)]"
+    id="login-email-help"
+  />
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style, option
+<body>
+  <div>
+    <div
+      class="relative flex min-h-screen items-center justify-center overflow-hidden bg-[var(--color-paper)] px-4 py-10"
+    >
+      <div
+        aria-hidden="true"
+        class="dot-pattern pointer-events-none absolute inset-0 z-0 opacity-30"
+      />
+      <div
+        class="relative z-10 w-full max-w-md"
+      >
+        <div
+          class="mb-4 flex items-center justify-between"
+        >
+          <span
+            class="font-display text-xl font-bold tracking-tight text-[var(--color-ink)]"
+          >
+            Adfocate
+            <span
+              class="text-[var(--color-magenta)]"
+            >
+              .
+            </span>
+          </span>
+          <button
+            aria-label="切換語言"
+            class="tag-mono"
+            type="button"
+          >
+            EN · 繁
+          </button>
+        </div>
+        <div
+          class="pastel-card p-6 sm:p-8"
+        >
+          <span
+            class="sticker"
+          >
+            創作者登入
+          </span>
+          <h1
+            class="mt-4 font-display text-3xl font-bold text-[var(--color-ink)]"
+          >
+            登入 KOCmax
+          </h1>
+          <section
+            aria-labelledby="login-password-heading"
+            class="mt-5 space-y-3 rounded-xl border-2 border-[var(--color-ink)] bg-white p-4"
+          >
+            <h2
+              class="font-heading text-base font-bold text-[var(--color-ink)]"
+              id="login-password-heading"
+            >
+              用密碼登入
+            </h2>
+            <form
+              aria-busy="false"
+              class="space-y-2"
+            >
+              <label
+                class="block font-heading text-sm font-bold text-[var(--color-ink)]"
+                for="login-password-email"
+              >
+                電郵地址
+              </label>
+              <input
+                aria-invalid="false"
+                autocomplete="email"
+                class="w-full rounded-xl border-2 border-[var(--color-ink)] bg-white p-3 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45"
+                id="login-password-email"
+                placeholder="[email-redacted]"
+                required=""
+                type="email"
+                value=""
+              />
+              <label
+                class="block font-heading text-sm font-bold text-[var(--color-ink)]"
+                for="login-password"
+              >
+                密碼
+              </label>
+              <p
+                class="text-sm text-[var(--color-soft-ink)]"
+                id="login-password-help"
+              >
+                最少 8 個字元。
+              </p>
+              <div
+                class="flex items-center gap-2"
+              >
+                <input
+                  aria-describedby="login-password-help"
+                  aria-invalid="false"
+                  autocomplete="current-password"
+                  class="w-full rounded-xl border-2 border-[var(--color-ink)] bg-white p-3 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45"
+                  id="login-password"
+                  required=""
+                  type="password"
+                  value=""
+                />
+                <button
+                  aria-pressed="false"
+                  class="shrink-0 rounded-xl border-2 border-[var(--color-ink)] bg-white px-3 py-3 text-xs font-bold text-[var(--color-ink)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45"
+                  type="button"
+                >
+                  顯示密碼
+                </button>
+              </div>
+              <button
+                class="btn-primary w-full focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45 disabled:opacity-50 motion-reduce:transition-none"
+                type="submit"
+              >
+                登入
+              </button>
+            </form>
+            <div
+              class="space-y-2"
+            >
+              <button
+                class="w-full text-center text-sm text-[var(--color-soft-ink)] underline focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45 disabled:opacity-50"
+                type="button"
+              >
+                忘記密碼？
+              </button>
+              <button
+                class="w-full rounded-full border-2 border-[var(--color-ink)] bg-white py-2 text-center text-sm font-bold text-[var(--color-ink)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45 disabled:opacity-50"
+                type="button"
+              >
+                初次使用 Adfocate？建立帳戶
+              </button>
+            </div>
+          </section>
+          <div
+            aria-hidden="true"
+            class="mt-5 flex items-center gap-3"
+          >
+            <span
+              class="h-0.5 flex-1 bg-[var(--color-ink)]/20"
+            />
+            <span
+              class="font-mono text-xs uppercase tracking-wide text-[var(--color-soft-ink)]"
+            >
+              或
+            </span>
+            <span
+              class="h-0.5 flex-1 bg-[var(--color-ink)]/20"
+            />
+          </div>
+          <div
+            class="mt-3 space-y-3 rounded-xl border-2 border-[var(--color-ink)] bg-white p-4"
+          >
+            <section
+              aria-labelledby="login-magic-heading"
+              class="space-y-3"
+            >
+              <h2
+                class="font-heading text-base font-bold text-[var(--color-ink)]"
+                id="login-magic-heading"
+              >
+                想改用一次性連結？
+              </h2>
+              <form
+                aria-busy="false"
+                class="space-y-2"
+              >
+                <label
+                  class="block font-heading text-sm font-bold text-[var(--color-ink)]"
+                  for="login-email"
+                >
+                  電郵地址
+                </label>
+                <p
+                  class="text-sm text-[var(--color-soft-ink)]"
+                  id="login-email-help"
+                >
+                  我們會透過電郵傳送一次性登入連結，讓你建立或開啟創作者檔案。
+                </p>
+                <input
+                  aria-describedby="login-email-help"
+                  aria-invalid="false"
+                  autocomplete="email"
+                  class="w-full rounded-xl border-2 border-[var(--color-ink)] bg-white p-3 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45"
+                  id="login-email"
+                  placeholder="[email-redacted]"
+                  required=""
+                  type="email"
+                  value=""
+                />
+                <button
+                  class="btn-ink w-full focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45 disabled:opacity-50 motion-reduce:transition-none"
+                  type="submit"
+                >
+                  用電郵連結登入
+                </button>
+              </form>
+            </section>
+            <button
+              class="w-full rounded-full border-2 border-[var(--color-ink)] bg-white py-2 font-heading font-bold text-[var(--color-ink)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45"
+              type="button"
+            >
+              用 Google 登入
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/routes/-_app.login.test.tsx:58:19
+     56|   it("uses the Adfocate brand and one email field across methods", () …
+     57|     renderLogin();
+     58|     expect(screen.getByRole("heading", { name: "登入 Adfocate" })).toB…
+       |                   ^
+     59|     expect(screen.getAllByLabelText("電郵地址")).toHaveLength(1);
+     60|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/8]⎯
+
+ FAIL  src/routes/-_app.login.test.tsx > D13 shared email access > keeps the email while switching from password to magic link
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "選擇電郵登入連結"
+
+Here are the accessible roles:
+
+  button:
+
+  Name "切換語言":
+  <button
+    aria-label="切換語言"
+    class="tag-mono"
+    type="button"
+  />
+
+  Name "顯示密碼":
+  <button
+    aria-pressed="false"
+    class="shrink-0 rounded-xl border-2 border-[var(--color-ink)] bg-white px-3 py-3 text-xs font-bold text-[var(--color-ink)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45"
+    type="button"
+  />
+
+  Name "登入":
+  <button
+    class="btn-primary w-full focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45 disabled:opacity-50 motion-reduce:transition-none"
+    type="submit"
+  />
+
+  Name "忘記密碼？":
+  <button
+    class="w-full text-center text-sm text-[var(--color-soft-ink)] underline focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45 disabled:opacity-50"
+    type="button"
+  />
+
+  Name "初次使用 Adfocate？建立帳戶":
+  <button
+    class="w-full rounded-full border-2 border-[var(--color-ink)] bg-white py-2 text-center text-sm font-bold text-[var(--color-ink)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45 disabled:opacity-50"
+    type="button"
+  />
+
+  Name "用電郵連結登入":
+  <button
+    class="btn-ink w-full focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45 disabled:opacity-50 motion-reduce:transition-none"
+    type="submit"
+  />
+
+  Name "用 Google 登入":
+  <button
+    class="w-full rounded-full border-2 border-[var(--color-ink)] bg-white py-2 font-heading font-bold text-[var(--color-ink)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45"
+    type="button"
+  />
+
+  --------------------------------------------------
+  heading:
+
+  Name "登入 KOCmax":
+  <h1
+    class="mt-4 font-display text-3xl font-bold text-[var(--color-ink)]"
+  />
+
+  Name "用密碼登入":
+  <h2
+    class="font-heading text-base font-bold text-[var(--color-ink)]"
+    id="login-password-heading"
+  />
+
+  Name "想改用一次性連結？":
+  <h2
+    class="font-heading text-base font-bold text-[var(--color-ink)]"
+    id="login-magic-heading"
+  />
+
+  --------------------------------------------------
+  region:
+
+  Name "用密碼登入":
+  <section
+    aria-labelledby="login-password-heading"
+    class="mt-5 space-y-3 rounded-xl border-2 border-[var(--color-ink)] bg-white p-4"
+  />
+
+  Name "想改用一次性連結？":
+  <section
+    aria-labelledby="login-magic-heading"
+    class="space-y-3"
+  />
+
+  --------------------------------------------------
+  textbox:
+
+  Name "電郵地址":
+  <input
+    aria-invalid="false"
+    autocomplete="email"
+    class="w-full rounded-xl border-2 border-[var(--color-ink)] bg-white p-3 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45"
+    id="login-password-email"
+    placeholder="[email-redacted]"
+    required=""
+    type="email"
+    value="[email-redacted]"
+  />
+
+  Name "電郵地址":
+  <input
+    aria-describedby="login-email-help"
+    aria-invalid="false"
+    autocomplete="email"
+    class="w-full rounded-xl border-2 border-[var(--color-ink)] bg-white p-3 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45"
+    id="login-email"
+    placeholder="[email-redacted]"
+    required=""
+    type="email"
+    value=""
+  />
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  <p
+    class="text-sm text-[var(--color-soft-ink)]"
+    id="login-password-help"
+  />
+
+  Name "":
+  <p
+    class="text-sm text-[var(--color-soft-ink)]"
+    id="login-email-help"
+  />
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style, option
+<body>
+  <div>
+    <div
+      class="relative flex min-h-screen items-center justify-center overflow-hidden bg-[var(--color-paper)] px-4 py-10"
+    >
+      <div
+        aria-hidden="true"
+        class="dot-pattern pointer-events-none absolute inset-0 z-0 opacity-30"
+      />
+      <div
+        class="relative z-10 w-full max-w-md"
+      >
+        <div
+          class="mb-4 flex items-center justify-between"
+        >
+          <span
+            class="font-display text-xl font-bold tracking-tight text-[var(--color-ink)]"
+          >
+            Adfocate
+            <span
+              class="text-[var(--color-magenta)]"
+            >
+              .
+            </span>
+          </span>
+          <button
+            aria-label="切換語言"
+            class="tag-mono"
+            type="button"
+          >
+            EN · 繁
+          </button>
+        </div>
+        <div
+          class="pastel-card p-6 sm:p-8"
+        >
+          <span
+            class="sticker"
+          >
+            創作者登入
+          </span>
+          <h1
+            class="mt-4 font-display text-3xl font-bold text-[var(--color-ink)]"
+          >
+            登入 KOCmax
+          </h1>
+          <section
+            aria-labelledby="login-password-heading"
+            class="mt-5 space-y-3 rounded-xl border-2 border-[var(--color-ink)] bg-white p-4"
+          >
+            <h2
+              class="font-heading text-base font-bold text-[var(--color-ink)]"
+              id="login-password-heading"
+            >
+              用密碼登入
+            </h2>
+            <form
+              aria-busy="false"
+              class="space-y-2"
+            >
+              <label
+                class="block font-heading text-sm font-bold text-[var(--color-ink)]"
+                for="login-password-email"
+              >
+                電郵地址
+              </label>
+              <input
+                aria-invalid="false"
+                autocomplete="email"
+                class="w-full rounded-xl border-2 border-[var(--color-ink)] bg-white p-3 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45"
+                id="login-password-email"
+                placeholder="[email-redacted]"
+                required=""
+                type="email"
+                value="[email-redacted]"
+              />
+              <label
+                class="block font-heading text-sm font-bold text-[var(--color-ink)]"
+                for="login-password"
+              >
+                密碼
+              </label>
+              <p
+                class="text-sm text-[var(--color-soft-ink)]"
+                id="login-password-help"
+              >
+                最少 8 個字元。
+              </p>
+              <div
+                class="flex items-center gap-2"
+              >
+                <input
+                  aria-describedby="login-password-help"
+                  aria-invalid="false"
+                  autocomplete="current-password"
+                  class="w-full rounded-xl border-2 border-[var(--color-ink)] bg-white p-3 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45"
+                  id="login-password"
+                  required=""
+                  type="password"
+                  value=""
+                />
+                <button
+                  aria-pressed="false"
+                  class="shrink-0 rounded-xl border-2 border-[var(--color-ink)] bg-white px-3 py-3 text-xs font-bold text-[var(--color-ink)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45"
+                  type="button"
+                >
+                  顯示密碼
+                </button>
+              </div>
+              <button
+                class="btn-primary w-full focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45 disabled:opacity-50 motion-reduce:transition-none"
+                type="submit"
+              >
+                登入
+              </button>
+            </form>
+            <div
+              class="space-y-2"
+            >
+              <button
+                class="w-full text-center text-sm text-[var(--color-soft-ink)] underline focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45 disabled:opacity-50"
+                type="button"
+              >
+                忘記密碼？
+              </button>
+              <button
+                class="w-full rounded-full border-2 border-[var(--color-ink)] bg-white py-2 text-center text-sm font-bold text-[var(--color-ink)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45 disabled:opacity-50"
+                type="button"
+              >
+                初次使用 Adfocate？建立帳戶
+              </button>
+            </div>
+          </section>
+          <div
+            aria-hidden="true"
+            class="mt-5 flex items-center gap-3"
+          >
+            <span
+              class="h-0.5 flex-1 bg-[var(--color-ink)]/20"
+            />
+            <span
+              class="font-mono text-xs uppercase tracking-wide text-[var(--color-soft-ink)]"
+            >
+              或
+            </span>
+            <span
+              class="h-0.5 flex-1 bg-[var(--color-ink)]/20"
+            />
+          </div>
+          <div
+            class="mt-3 space-y-3 rounded-xl border-2 border-[var(--color-ink)] bg-white p-4"
+          >
+            <section
+              aria-labelledby="login-magic-heading"
+              class="space-y-3"
+            >
+              <h2
+                class="font-heading text-base font-bold text-[var(--color-ink)]"
+                id="login-magic-heading"
+              >
+                想改用一次性連結？
+              </h2>
+              <form
+                aria-busy="false"
+                class="space-y-2"
+              >
+                <label
+                  class="block font-heading text-sm font-bold text-[var(--color-ink)]"
+                  for="login-email"
+                >
+                  電郵地址
+                </label>
+                <p
+                  class="text-sm text-[var(--color-soft-ink)]"
+                  id="login-email-help"
+                >
+                  我們會透過電郵傳送一次性登入連結，讓你建立或開啟創作者檔案。
+                </p>
+                <input
+                  aria-describedby="login-email-help"
+                  aria-invalid="false"
+                  autocomplete="email"
+                  class="w-full rounded-xl border-2 border-[var(--color-ink)] bg-white p-3 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45"
+                  id="login-email"
+                  placeholder="[email-redacted]"
+                  required=""
+                  type="email"
+                  value=""
+                />
+                <button
+                  class="btn-ink w-full focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45 disabled:opacity-50 motion-reduce:transition-none"
+                  type="submit"
+                >
+                  用電郵連結登入
+                </button>
+              </form>
+            </section>
+            <button
+              class="w-full rounded-full border-2 border-[var(--color-ink)] bg-white py-2 font-heading font-bold text-[var(--color-ink)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45"
+              type="button"
+            >
+              用 Google 登入
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/routes/-_app.login.test.tsx:65:28
+     63|     renderLogin();
+     64|     fireEvent.change(screen.getAllByLabelText("電郵地址")[0], { target…
+     65|     fireEvent.click(screen.getByRole("button", { name: "選擇電郵登入連…
+       |                            ^
+     66|     expect(screen.getAllByLabelText("電郵地址")).toHaveLength(1);
+     67|     expect(screen.getByLabelText("電郵地址")).toHaveValue("fixture@exa…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/8]⎯
+
+ Test Files  3 failed (3)
+      Tests  8 failed | 8 passed | 32 skipped (48)
+   Start at  12:46:08
+   Duration  28.96s (transform 368ms, setup 4.92s, collect 2.21s, tests 241ms, environment 19.35s, prepare 1.21s)
+

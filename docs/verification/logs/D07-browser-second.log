@@ -1,0 +1,88 @@
+Warning: Route file "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/_site.smoke.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\src\routes\-_site.smoke.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Browser fixture created on verified disposable target; credentials retained only in ignored local file.
+[WebServer] (node:3212) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[WebServer] Warning: Route file "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/_site.smoke.test.tsx" does not export a Route. This file will not be included in the route tree.
+[WebServer] 
+[WebServer] If this file is not intended to be a route, you can exclude it using one of these options:
+[WebServer]   1. Rename the file to "C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\src\routes\-_site.smoke.test.tsx" (prefix with "-")
+[WebServer]   2. Use 'routeFileIgnorePattern' in your config to match this file
+[WebServer] 
+[WebServer] Current configuration:
+[WebServer]   routeFileIgnorePrefix: "-"
+[WebServer]   routeFileIgnorePattern: undefined
+
+Running 1 test using 1 worker
+
+
+(node:46536) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1/1] e2e\creator-operator-mission.spec.ts:6:1 › real roles reload one durable pending reward and its revision/proof history
+[WebServer] [tanstack-router] These exports from "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/admin.reward-handoffs.tsx" will not be code-split and will increase your bundle size:
+
+[WebServer] - AdminRewardHandoffsRoute
+[WebServer] For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+
+[WebServer] [tanstack-router] These exports from "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/admin.active-missions.tsx" will not be code-split and will increase your bundle size:
+[WebServer] - AdminActiveMissionsLayout
+[WebServer] For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+
+[WebServer] [tanstack-router] These exports from "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/admin.active-missions.index.tsx" will not be code-split and will increase your bundle size:
+[WebServer] - AdminActiveMissionsRoute
+[WebServer] For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+[WebServer] [tanstack-router] These exports from "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/_app.news.index.tsx" will not be code-split and will increase your bundle size:
+
+[WebServer] - NewsFeed
+[WebServer] For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+[WebServer] [tanstack-router] These exports from "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/admin.active-missions.$workflowId.tsx" will not be code-split and will increase your bundle size:
+
+[WebServer] - AdminActiveMissionReviewRoute
+[WebServer] For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+
+[WebServer] [tanstack-router] These exports from "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/_app.my.$submissionId.tsx" will not be code-split and will increase your bundle size:
+[WebServer] - CreatorMissionWorkspace
+[WebServer] For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+  1) e2e\creator-operator-mission.spec.ts:6:1 › real roles reload one durable pending reward and its revision/proof history 
+
+    Error: expect(page).not.toHaveURL(expected) failed
+
+    Expected pattern: not /\/login$/
+    Received string: "http://127.0.0.1:56400/login"
+    Timeout: 15000ms
+
+    Call log:
+      - Expect "not toHaveURL" with timeout 15000ms
+        5 × locator resolved to <html lang="en">…</html>
+          - unexpected value "http://127.0.0.1:56400/login"
+        3 × locator resolved to <html lang="zh-Hant-HK">…</html>
+          - unexpected value "http://127.0.0.1:56400/login"
+        25 × locator resolved to <html lang="en">…</html>
+           - unexpected value "http://127.0.0.1:56400/login"
+
+
+      18 |     await page.locator('input[type="password"]') .fill(actor.password);
+      19 |     await page.getByRole("button",{name:"Sign in",exact:true}).click();
+    > 20 |     await expect(page).not.toHaveURL(/\/login$/);
+         |                            ^
+      21 |   }
+      22 |   async function api<T>(jwt:string,path:string,method="GET",data?:unknown,key?:string):Promise<T>{
+      23 |     const response=await request.fetch(`/api${path}`,{method,headers:{Authorization:`Bearer ${jwt}`,"X-Workspace-Slug":fixture.slug,
+        at login (C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\e2e\creator-operator-mission.spec.ts:20:28)
+        at C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\e2e\creator-operator-mission.spec.ts:72:3
+
+    Error Context: test-results\creator-operator-mission-r-2d702--its-revision-proof-history\error-context.md
+
+
+  1 failed
+    e2e\creator-operator-mission.spec.ts:6:1 › real roles reload one durable pending reward and its revision/proof history 

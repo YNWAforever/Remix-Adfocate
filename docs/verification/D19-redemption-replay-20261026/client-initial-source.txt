@@ -1,0 +1,58 @@
+import { afterEach,beforeEach,describe,expect,it,vi } from "vitest";
+import { cleanup,fireEvent,render,screen,waitFor } from "@testing-library/react";
+import { QueryClient,QueryClientProvider } from "@tanstack/react-query";
+import { randomUUID } from "node:crypto";
+const state=vi.hoisted(()=>({owner:"creator-a",sdk:0}));
+vi.mock("@supabase/supabase-js",()=>({createClient:()=>{state.sdk++;throw new Error("Real SDK forbidden");}}));
+vi.mock("@/lib/supabase",()=>({supabase:{auth:{getSession:async()=>({data:{session:{access_token:`offline-${state.owner}`,user:{id:state.owner}}},error:null})}}}));
+import { RedeemGiftCard } from "../../../src/components/RedeemGiftCard";
+import { I18nProvider } from "../../../src/lib/i18n";
+import { setWorkspaceSlug } from "../../../src/lib/api";
+const gift={id:"00000000-0000-4000-8000-000000000010",name:"Offline gift",points_cost:50,stock_remaining:4,gift_type:"voucher",status:"available"};
+const saved={id:"00000000-0000-4000-8000-000000000100",gift_id:gift.id,code:"A-ONE",points_spent:50,status:"fulfilled",created_at:"2026-10-25T00:00:00Z"};
+const unavailable="Unable to safely retry this redemption. Check your history before starting another.";
+const uuid=/^[a-f0-9]{8}-(?:[a-f0-9]{4}-){3}[a-f0-9]{12}$/i;
+let storage:Map<string,string>,denyStorage:boolean,originalStorage:PropertyDescriptor|undefined;
+let requests:Array<{body:{gift_id:string;client_request_id?:string};authorization:string|null}>;
+let replies:Array<{kind:"lost"|"ok"|"conflict";code?:string}>;
+let clients:QueryClient[];
+function mount(){const qc=new QueryClient({defaultOptions:{queries:{retry:false},mutations:{retry:false}}});clients.push(qc);render(<QueryClientProvider client={qc}><I18nProvider><RedeemGiftCard gift={gift} balance={200}/></I18nProvider></QueryClientProvider>);}
+async function open(){fireEvent.click(await screen.findByRole("button",{name:"Redeem"}));expect(await screen.findByRole("dialog")).toBeVisible();}
+function confirm(){fireEvent.click(screen.getByRole("button",{name:"Confirm"}));}
+beforeEach(()=>{
+  storage=new Map();denyStorage=false;requests=[];replies=[];clients=[];state.owner="creator-a";state.sdk=0;localStorage.setItem("lang","en");setWorkspaceSlug("offline-c33");
+  originalStorage=Object.getOwnPropertyDescriptor(window,"sessionStorage");Object.defineProperty(window,"sessionStorage",{configurable:true,value:{getItem:(k:string)=>{if(denyStorage)throw new Error("Scripted storage unavailable");return storage.get(k)??null;},setItem:(k:string,v:string)=>{if(denyStorage)throw new Error("Scripted storage unavailable");storage.set(k,v);},removeItem:(k:string)=>{if(denyStorage)throw new Error("Scripted storage unavailable");storage.delete(k);}}});
+  vi.stubGlobal("crypto",{randomUUID});
+  vi.stubGlobal("fetch",async(input:RequestInfo|URL,init?:RequestInit)=>{
+    expect(String(input)).toBe("/api/redemption/redeem");expect(init?.method).toBe("POST");const body=JSON.parse(String(init?.body));requests.push({body,authorization:new Headers(init?.headers).get("Authorization")});
+    const reply=replies.shift();expect(reply).toBeDefined();if(reply!.kind==="lost")throw new TypeError("Scripted lost HTTP response after unknown server outcome");
+    if(reply!.kind==="conflict")return new Response(JSON.stringify({code:"request_conflict",error:"request_conflict"}),{status:409});
+    return new Response(JSON.stringify({...saved,code:reply!.code??saved.code}),{status:200});
+  });
+});
+afterEach(async()=>{cleanup();for(const c of clients){await c.cancelQueries();c.clear();}if(originalStorage)Object.defineProperty(window,"sessionStorage",originalStorage);vi.unstubAllGlobals();expect(state.sdk).toBe(0);});
+describe("UC-C33 actual redemption component/hook preserves a single unacknowledged intent",()=>{
+  it("manual retry after a lost response keeps the exact UUID and gift input",async()=>{
+    replies=[{kind:"lost"},{kind:"ok"}];mount();await open();confirm();expect(await screen.findByText("Redemption failed. Please try again.")).toBeVisible();
+    expect(requests[0].body.client_request_id).toMatch(uuid);confirm();expect(await screen.findByText("A-ONE")).toBeVisible();expect(requests).toHaveLength(2);expect(requests[1].body).toEqual(requests[0].body);
+  });
+  it("closing and reopening an unknown result preserves the request",async()=>{
+    replies=[{kind:"lost"},{kind:"ok"}];mount();await open();confirm();await screen.findByText("Redemption failed. Please try again.");fireEvent.click(screen.getByRole("button",{name:"Cancel"}));await open();confirm();await screen.findByText("A-ONE");expect(requests[0].body.client_request_id).toMatch(uuid);expect(requests[1].body).toEqual(requests[0].body);
+  });
+  it("a page/component reload keeps the same tab/owner/workspace/gift intent until acknowledged",async()=>{
+    replies=[{kind:"lost"},{kind:"ok"}];mount();await open();confirm();await screen.findByText("Redemption failed. Please try again.");cleanup();mount();await open();confirm();await screen.findByText("A-ONE");expect(requests[0].body.client_request_id).toMatch(uuid);expect(requests[1].body).toEqual(requests[0].body);
+  });
+  it("acknowledging a confirmed code allows a deliberate new intent",async()=>{
+    replies=[{kind:"ok",code:"A-ONE"},{kind:"ok",code:"A-TWO"}];mount();await open();confirm();await screen.findByText("A-ONE");fireEvent.click(screen.getByRole("button",{name:"Done"}));await open();confirm();await screen.findByText("A-TWO");expect(requests[0].body.client_request_id).toMatch(uuid);expect(requests[1].body.client_request_id).toMatch(uuid);expect(requests[1].body.client_request_id).not.toBe(requests[0].body.client_request_id);
+  });
+  it("an account switch does not reuse another recipient's pending intent",async()=>{
+    replies=[{kind:"lost"},{kind:"lost"},{kind:"ok"}];mount();await open();confirm();await screen.findByText("Redemption failed. Please try again.");cleanup();state.owner="creator-b";mount();await open();confirm();await screen.findByText("Redemption failed. Please try again.");cleanup();state.owner="creator-a";mount();await open();confirm();await screen.findByText("A-ONE");
+    expect(requests[0].body.client_request_id).toMatch(uuid);expect(requests[1].body.client_request_id).not.toBe(requests[0].body.client_request_id);expect(requests[2].body).toEqual(requests[0].body);expect(requests[1].authorization).toBe("Bearer offline-creator-b");
+  });
+  it("unavailable intent storage fails before a POST and offers history while retaining the gift",async()=>{
+    denyStorage=true;replies=[{kind:"ok"}];mount();await open();confirm();expect(await screen.findByText(unavailable)).toBeVisible();expect(screen.getByRole("link",{name:"Redemption History"})).toHaveAttribute("href","/redemption/history");expect(screen.getByRole("dialog")).toHaveTextContent("Offline gift");expect(requests).toHaveLength(0);
+  });
+  it("a request conflict retains the same intent and exposes a safe history recovery path",async()=>{
+    replies=[{kind:"conflict"},{kind:"ok"}];mount();await open();confirm();expect(await screen.findByText(unavailable)).toBeVisible();expect(screen.getByRole("link",{name:"Redemption History"})).toHaveAttribute("href","/redemption/history");confirm();await screen.findByText("A-ONE");expect(requests[0].body.client_request_id).toMatch(uuid);expect(requests[1].body).toEqual(requests[0].body);
+  });
+});

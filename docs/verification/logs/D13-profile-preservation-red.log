@@ -1,0 +1,1197 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ❯ src/routes/-_app.profile.test.tsx (8 tests | 2 failed | 6 skipped) 2109ms
+   × Profile page > preserves legacy platforms outside the editor defaults on an unrelated edit 1075ms
+     → expected "spy" to be called with arguments: [ ObjectContaining{…} ]
+
+Received: 
+
+  1st spy call:
+
+  Array [
+-   ObjectContaining {
++   Object {
++     "categories": Array [
++       "美容",
++       "科技",
++     ],
++     "display_name": "只改名字",
+      "social_handles": Array [
+        Object {
+          "followers": 500,
+          "handle": "@ming",
+          "platform": "Instagram",
+          "verified": true,
+-       },
+-       Object {
+-         "followers": 27,
+-         "handle": "@oldthreads",
+-         "platform": "threads",
+-         "verified": false,
+        },
+      ],
+    },
+  ]
+
+
+Number of calls: 1
+
+
+Ignored nodes: comments, script, style, option
+<html>
+  <head />
+  <body>
+    <div>
+      <div
+        class="mx-auto w-full max-w-lg space-y-6 p-4 lg:max-w-5xl"
+      >
+        <section
+          class="rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 shadow-[4px_4px_0_0_var(--color-ink)] p-5"
+        >
+          <div
+            class="flex flex-wrap items-start justify-between gap-3"
+          >
+            <div
+              class="flex min-w-0 flex-1 flex-wrap items-center gap-4"
+            >
+              <div
+                class="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] font-display text-2xl font-bold"
+              >
+                阿
+              </div>
+              <div
+                class="min-w-0 flex-1 space-y-1"
+              >
+                <h1
+                  class="truncate font-display text-2xl font-bold"
+                >
+                  阿明
+                </h1>
+                <a
+                  class="inline-flex max-w-full items-center gap-1 rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-sm font-bold"
+                  href="/passport"
+                >
+                  <span
+                    aria-hidden="true"
+                    class="shrink-0"
+                  >
+                    🌱
+                  </span>
+                  <span
+                    class="min-w-0 truncate"
+                  >
+                    KOC 新手
+                  </span>
+                  <span
+                    class="shrink-0"
+                  >
+                    · 看護照 →
+                  </span>
+                </a>
+              </div>
+              <div
+                class="flex shrink-0 flex-col gap-2"
+              >
+                <button
+                  class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-4 py-2 text-sm font-heading font-bold"
+                  type="button"
+                >
+                  編輯
+                </button>
+                <button
+                  class="rounded-full border-2 border-[var(--color-ink)] bg-white px-4 py-2 text-sm font-heading font-bold text-[var(--color-magenta)]"
+                  type="button"
+                >
+                  登出
+                </button>
+              </div>
+            </div>
+            <button
+              aria-label="切換語言"
+              class="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-2 border-[var(--color-ink)] bg-white text-sm font-bold text-[var(--color-ink)] font-heading transition-transform hover:-translate-y-0.5"
+              type="button"
+            >
+              EN
+            </button>
+          </div>
+        </section>
+        <div
+          class="grid gap-6 lg:grid-cols-[1.2fr_1fr]"
+        >
+          <div
+            class="space-y-6"
+          >
+            <section
+              class="space-y-2"
+            >
+              <h2
+                class="font-heading font-bold"
+              >
+                內容範疇
+              </h2>
+              <div
+                class="flex flex-wrap gap-2"
+              >
+                <span
+                  class="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-sm"
+                >
+                  美容
+                </span>
+                <span
+                  class="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-sm"
+                >
+                  科技
+                </span>
+              </div>
+            </section>
+            <section
+              class="space-y-3"
+            >
+              <h2
+                class="font-heading font-bold"
+              >
+                社交帳號
+              </h2>
+              <ul
+                class="space-y-1"
+              >
+                <li
+                  class="flex items-center justify-between rounded-xl border-2 border-[var(--color-ink)] bg-white px-3 py-2 text-sm"
+                >
+                  <span
+                    class="font-heading font-semibold"
+                  >
+                    Instagram
+                  </span>
+                  <span
+                    class="text-[var(--color-soft-ink)]"
+                  >
+                    @ming
+                  </span>
+                </li>
+                <li
+                  class="flex items-center justify-between rounded-xl border-2 border-[var(--color-ink)] bg-white px-3 py-2 text-sm"
+                >
+                  <span
+                    class="font-heading font-semibold"
+                  >
+                    threads
+                  </span>
+                  <span
+                    class="text-[var(--color-soft-ink)]"
+                  >
+                    @oldthreads
+                  </span>
+                </li>
+              </ul>
+              <section
+                class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 shadow-[4px_4px_0_0_var(--color-ink)]"
+              >
+                <h2
+                  class="font-heading font-bold"
+                [...
+   × Profile page > does not copy old follower or verification claims to a changed legacy handle 1033ms
+     → expected "spy" to be called with arguments: [ ObjectContaining{…} ]
+
+Received: 
+
+  1st spy call:
+
+  Array [
+-   ObjectContaining {
++   Object {
++     "categories": Array [
++       "美容",
++       "科技",
++     ],
++     "display_name": "阿明",
+      "social_handles": Array [
+        Object {
+-         "followers": null,
++         "followers": 500,
+          "handle": "@newlegacy",
+          "platform": "Instagram",
+-         "verified": false,
++         "verified": true,
+        },
+      ],
+    },
+  ]
+
+
+Number of calls: 1
+
+
+Ignored nodes: comments, script, style, option
+<html>
+  <head />
+  <body>
+    <div>
+      <div
+        class="mx-auto w-full max-w-lg space-y-6 p-4 lg:max-w-5xl"
+      >
+        <section
+          class="rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 shadow-[4px_4px_0_0_var(--color-ink)] p-5"
+        >
+          <div
+            class="flex flex-wrap items-start justify-between gap-3"
+          >
+            <div
+              class="flex min-w-0 flex-1 flex-wrap items-center gap-4"
+            >
+              <div
+                class="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] font-display text-2xl font-bold"
+              >
+                阿
+              </div>
+              <div
+                class="min-w-0 flex-1 space-y-1"
+              >
+                <h1
+                  class="truncate font-display text-2xl font-bold"
+                >
+                  阿明
+                </h1>
+                <a
+                  class="inline-flex max-w-full items-center gap-1 rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-sm font-bold"
+                  href="/passport"
+                >
+                  <span
+                    aria-hidden="true"
+                    class="shrink-0"
+                  >
+                    🌱
+                  </span>
+                  <span
+                    class="min-w-0 truncate"
+                  >
+                    KOC 新手
+                  </span>
+                  <span
+                    class="shrink-0"
+                  >
+                    · 看護照 →
+                  </span>
+                </a>
+              </div>
+              <div
+                class="flex shrink-0 flex-col gap-2"
+              >
+                <button
+                  class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-4 py-2 text-sm font-heading font-bold"
+                  type="button"
+                >
+                  編輯
+                </button>
+                <button
+                  class="rounded-full border-2 border-[var(--color-ink)] bg-white px-4 py-2 text-sm font-heading font-bold text-[var(--color-magenta)]"
+                  type="button"
+                >
+                  登出
+                </button>
+              </div>
+            </div>
+            <button
+              aria-label="切換語言"
+              class="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-2 border-[var(--color-ink)] bg-white text-sm font-bold text-[var(--color-ink)] font-heading transition-transform hover:-translate-y-0.5"
+              type="button"
+            >
+              EN
+            </button>
+          </div>
+        </section>
+        <div
+          class="grid gap-6 lg:grid-cols-[1.2fr_1fr]"
+        >
+          <div
+            class="space-y-6"
+          >
+            <section
+              class="space-y-2"
+            >
+              <h2
+                class="font-heading font-bold"
+              >
+                內容範疇
+              </h2>
+              <div
+                class="flex flex-wrap gap-2"
+              >
+                <span
+                  class="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-sm"
+                >
+                  美容
+                </span>
+                <span
+                  class="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-sm"
+                >
+                  科技
+                </span>
+              </div>
+            </section>
+            <section
+              class="space-y-3"
+            >
+              <h2
+                class="font-heading font-bold"
+              >
+                社交帳號
+              </h2>
+              <ul
+                class="space-y-1"
+              >
+                <li
+                  class="flex items-center justify-between rounded-xl border-2 border-[var(--color-ink)] bg-white px-3 py-2 text-sm"
+                >
+                  <span
+                    class="font-heading font-semibold"
+                  >
+                    Instagram
+                  </span>
+                  <span
+                    class="text-[var(--color-soft-ink)]"
+                  >
+                    @ming
+                  </span>
+                </li>
+              </ul>
+              <section
+                class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 shadow-[4px_4px_0_0_var(--color-ink)]"
+              >
+                <h2
+                  class="font-heading font-bold"
+                >
+                  社交帳號
+                </h2>
+                <p
+                  class="text-xs text-[var(--color-soft-ink)]"
+                >
+                  app.social.optionalHelp
+                </p>
+                <div
+                  class="space-y-3 rounded-xl border-2 border-[var(--color-ink)] p-3"
+                >
+                  <h3
+                    class="font-heading font-bold"
+                  >
+                    instagram
+                  </h3>
+                  <form
+                    class="space-y-2"
+                  >
+                    <label
+                      class="block text-sm"
+                    >
+                      instagram 帳號
+                      <input
+                        aria-label="instagram 帳號"
+                        class="w-full min-w-0 rounded-xl border-2 border-[var(--color-ink)] bg-white px-3 py-2 text-sm"
+                        value=""
+                      />
+                    </label>
+                    <button
+                      class="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-2 text-xs font-bold disabled:opacity-50"
+                      disabled=""
+                      type="submit"
+                    >
+                      app.social.save
+                    </button>
+                  </form>
+                </div>
+                <div
+                  class="space-y-3 rounded-xl border-2 border-[var(--color-ink)] p-3"
+                >
+                  <h3
+                    class="font-heading font-bold"
+                  >
+                    threads
+                  </h3>
+                  <form
+                    class="space-y-2"
+                  >
+                    <label
+                      class="block text-sm"
+                    >
+                      threads 帳號
+                      <input
+                        aria-label="threads 帳號"
+                        class="w-full min-w-0 rounded-xl border-2 border-[var(--color-ink)] bg-white px-3 py-2 text-sm"
+                        value=""
+                      />
+                    </label>
+                    <button
+                      class="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-2 text-xs font-bold disabled:opacity-50"
+                      disabled=""
+                      type="submit"
+                    >
+                      app.social.save
+                    </button>
+                  </form>
+                </div>
+              </section>
+            </section>
+          </div>
+          <div
+            class="space-y-6"
+          >
+            <section
+              class="space-y-4 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 shadow-[4px_4px_0_0_var(--color-ink)]"
+            >
+              <div
+                class="flex flex-wrap items-center justify-between gap-2"
+              >
+                <h2
+                  class="font-heading font-bold"
+                >
+                  創作者媒體
+                </h2>
+                <span
+                  class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 text-sm font-bold"
+                >
+                  0
+                  %
+                </span>
+              </div>
+              <label
+                class="flex cursor-pointer items-center gap-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3 text-sm font-heading font-bold"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="lucide lucide-upload h-4 w-4"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M12 3v12"
+                  />
+                  <path
+                    d="m17 8-5-5-5 5"
+                  />
+                  <path
+                    d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"
+                  />
+                </svg>
+                上載頭像
+                <input
+                  accept="image/png,image/jpeg,image/webp"
+                  aria-label="上載頭像"
+                  class="sr-only"
+                  type="file"
+                />
+              </label>
+              <div
+                class="grid gap-2"
+              >
+                <input
+                  aria-label="作品標題"
+                  class="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+                  placeholder="作品標題"
+                  value=""
+                />
+                <input
+                  aria-label="作品連結"
+                  class="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+                  placeholder="https://example.com/work"
+                  value=""
+                />
+                <select
+                  aria-label="作品類型"
+                  class="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+                />
+                <input
+                  aria-label="作品說明"
+                  class="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+                  placeholder="作品說明"
+                  value=""
+                />
+                <button
+                  aria-label="新增作品"
+                  class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 font-heading font-bold disabled:opacity-50"
+                  disabled=""
+                  type="button"
+                >
+                  新增作品
+                </button>
+              </div>
+              <div
+                class="space-y-2"
+              />
+              <button
+                aria-label="發佈到公開護照"
+                class="w-full rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 font-heading font-bold disabled:opacity-50"
+                type="button"
+              >
+                發佈到公開護照
+              </button>
+            </section>
+            <section
+              class="space-y-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 shadow-[4px_4px_0_0_var(--color-ink)]"
+            >
+              <h2
+                class="font-heading font-bold"
+              >
+                我的邀請碼
+              </h2>
+              <div
+                class="flex items-center gap-2"
+              >
+                <span
+                  class="font-mono text-lg font-bold tracking-widest"
+                >
+                  ABCD1234
+                </span>
+                <button
+                  aria-label="複製邀請碼"
+                  class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 text-xs font-bold disabled:opacity-50"
+                  type="button"
+                >
+                  複製
+                </button>
+              </div>
+              <p
+                class="text-sm text-[var(--color-soft-ink)]"
+              >
+                邀請朋友，各得 200 分
+              </p>
+            </section>
+            <section
+              class="grid grid-cols-2 gap-3"
+            >
+              <a
+                class="rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 text-center font-heading font-semibold"
+                href="/my"
+              >
+                我的任務
+              </a>
+              <a
+                class="rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 text-center font-heading font-semibold"
+                href="/redemption/history"
+              >
+                兌換記錄
+              </a>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/routes/-_app.profile.test.tsx > Profile page > preserves legacy platforms outside the editor defaults on an unrelated edit
+AssertionError: expected "spy" to be called with arguments: [ ObjectContaining{…} ]
+
+Received: 
+
+  1st spy call:
+
+  Array [
+-   ObjectContaining {
++   Object {
++     "categories": Array [
++       "美容",
++       "科技",
++     ],
++     "display_name": "只改名字",
+      "social_handles": Array [
+        Object {
+          "followers": 500,
+          "handle": "@ming",
+          "platform": "Instagram",
+          "verified": true,
+-       },
+-       Object {
+-         "followers": 27,
+-         "handle": "@oldthreads",
+-         "platform": "threads",
+-         "verified": false,
+        },
+      ],
+    },
+  ]
+
+
+Number of calls: 1
+
+
+Ignored nodes: comments, script, style, option
+<html>
+  <head />
+  <body>
+    <div>
+      <div
+        class="mx-auto w-full max-w-lg space-y-6 p-4 lg:max-w-5xl"
+      >
+        <section
+          class="rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 shadow-[4px_4px_0_0_var(--color-ink)] p-5"
+        >
+          <div
+            class="flex flex-wrap items-start justify-between gap-3"
+          >
+            <div
+              class="flex min-w-0 flex-1 flex-wrap items-center gap-4"
+            >
+              <div
+                class="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] font-display text-2xl font-bold"
+              >
+                阿
+              </div>
+              <div
+                class="min-w-0 flex-1 space-y-1"
+              >
+                <h1
+                  class="truncate font-display text-2xl font-bold"
+                >
+                  阿明
+                </h1>
+                <a
+                  class="inline-flex max-w-full items-center gap-1 rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-sm font-bold"
+                  href="/passport"
+                >
+                  <span
+                    aria-hidden="true"
+                    class="shrink-0"
+                  >
+                    🌱
+                  </span>
+                  <span
+                    class="min-w-0 truncate"
+                  >
+                    KOC 新手
+                  </span>
+                  <span
+                    class="shrink-0"
+                  >
+                    · 看護照 →
+                  </span>
+                </a>
+              </div>
+              <div
+                class="flex shrink-0 flex-col gap-2"
+              >
+                <button
+                  class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-4 py-2 text-sm font-heading font-bold"
+                  type="button"
+                >
+                  編輯
+                </button>
+                <button
+                  class="rounded-full border-2 border-[var(--color-ink)] bg-white px-4 py-2 text-sm font-heading font-bold text-[var(--color-magenta)]"
+                  type="button"
+                >
+                  登出
+                </button>
+              </div>
+            </div>
+            <button
+              aria-label="切換語言"
+              class="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-2 border-[var(--color-ink)] bg-white text-sm font-bold text-[var(--color-ink)] font-heading transition-transform hover:-translate-y-0.5"
+              type="button"
+            >
+              EN
+            </button>
+          </div>
+        </section>
+        <div
+          class="grid gap-6 lg:grid-cols-[1.2fr_1fr]"
+        >
+          <div
+            class="space-y-6"
+          >
+            <section
+              class="space-y-2"
+            >
+              <h2
+                class="font-heading font-bold"
+              >
+                內容範疇
+              </h2>
+              <div
+                class="flex flex-wrap gap-2"
+              >
+                <span
+                  class="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-sm"
+                >
+                  美容
+                </span>
+                <span
+                  class="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-sm"
+                >
+                  科技
+                </span>
+              </div>
+            </section>
+            <section
+              class="space-y-3"
+            >
+              <h2
+                class="font-heading font-bold"
+              >
+                社交帳號
+              </h2>
+              <ul
+                class="space-y-1"
+              >
+                <li
+                  class="flex items-center justify-between rounded-xl border-2 border-[var(--color-ink)] bg-white px-3 py-2 text-sm"
+                >
+                  <span
+                    class="font-heading font-semibold"
+                  >
+                    Instagram
+                  </span>
+                  <span
+                    class="text-[var(--color-soft-ink)]"
+                  >
+                    @ming
+                  </span>
+                </li>
+                <li
+                  class="flex items-center justify-between rounded-xl border-2 border-[var(--color-ink)] bg-white px-3 py-2 text-sm"
+                >
+                  <span
+                    class="font-heading font-semibold"
+                  >
+                    threads
+                  </span>
+                  <span
+                    class="text-[var(--color-soft-ink)]"
+                  >
+                    @oldthreads
+                  </span>
+                </li>
+              </ul>
+              <section
+                class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 shadow-[4px_4px_0_0_var(--color-ink)]"
+              >
+                <h2
+                  class="font-heading font-bold"
+                [...
+ ❯ src/routes/-_app.profile.test.tsx:147:50
+
+ ❯ runWithExpensiveErrorDiagnosticsDisabled node_modules/@testing-library/dom/dist/config.js:47:12
+ ❯ checkCallback node_modules/@testing-library/dom/dist/wait-for.js:124:77
+ ❯ Timeout.checkRealTimersCallback node_modules/@testing-library/dom/dist/wait-for.js:118:16
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/routes/-_app.profile.test.tsx > Profile page > does not copy old follower or verification claims to a changed legacy handle
+AssertionError: expected "spy" to be called with arguments: [ ObjectContaining{…} ]
+
+Received: 
+
+  1st spy call:
+
+  Array [
+-   ObjectContaining {
++   Object {
++     "categories": Array [
++       "美容",
++       "科技",
++     ],
++     "display_name": "阿明",
+      "social_handles": Array [
+        Object {
+-         "followers": null,
++         "followers": 500,
+          "handle": "@newlegacy",
+          "platform": "Instagram",
+-         "verified": false,
++         "verified": true,
+        },
+      ],
+    },
+  ]
+
+
+Number of calls: 1
+
+
+Ignored nodes: comments, script, style, option
+<html>
+  <head />
+  <body>
+    <div>
+      <div
+        class="mx-auto w-full max-w-lg space-y-6 p-4 lg:max-w-5xl"
+      >
+        <section
+          class="rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 shadow-[4px_4px_0_0_var(--color-ink)] p-5"
+        >
+          <div
+            class="flex flex-wrap items-start justify-between gap-3"
+          >
+            <div
+              class="flex min-w-0 flex-1 flex-wrap items-center gap-4"
+            >
+              <div
+                class="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] font-display text-2xl font-bold"
+              >
+                阿
+              </div>
+              <div
+                class="min-w-0 flex-1 space-y-1"
+              >
+                <h1
+                  class="truncate font-display text-2xl font-bold"
+                >
+                  阿明
+                </h1>
+                <a
+                  class="inline-flex max-w-full items-center gap-1 rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-sm font-bold"
+                  href="/passport"
+                >
+                  <span
+                    aria-hidden="true"
+                    class="shrink-0"
+                  >
+                    🌱
+                  </span>
+                  <span
+                    class="min-w-0 truncate"
+                  >
+                    KOC 新手
+                  </span>
+                  <span
+                    class="shrink-0"
+                  >
+                    · 看護照 →
+                  </span>
+                </a>
+              </div>
+              <div
+                class="flex shrink-0 flex-col gap-2"
+              >
+                <button
+                  class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-4 py-2 text-sm font-heading font-bold"
+                  type="button"
+                >
+                  編輯
+                </button>
+                <button
+                  class="rounded-full border-2 border-[var(--color-ink)] bg-white px-4 py-2 text-sm font-heading font-bold text-[var(--color-magenta)]"
+                  type="button"
+                >
+                  登出
+                </button>
+              </div>
+            </div>
+            <button
+              aria-label="切換語言"
+              class="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-2 border-[var(--color-ink)] bg-white text-sm font-bold text-[var(--color-ink)] font-heading transition-transform hover:-translate-y-0.5"
+              type="button"
+            >
+              EN
+            </button>
+          </div>
+        </section>
+        <div
+          class="grid gap-6 lg:grid-cols-[1.2fr_1fr]"
+        >
+          <div
+            class="space-y-6"
+          >
+            <section
+              class="space-y-2"
+            >
+              <h2
+                class="font-heading font-bold"
+              >
+                內容範疇
+              </h2>
+              <div
+                class="flex flex-wrap gap-2"
+              >
+                <span
+                  class="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-sm"
+                >
+                  美容
+                </span>
+                <span
+                  class="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-sm"
+                >
+                  科技
+                </span>
+              </div>
+            </section>
+            <section
+              class="space-y-3"
+            >
+              <h2
+                class="font-heading font-bold"
+              >
+                社交帳號
+              </h2>
+              <ul
+                class="space-y-1"
+              >
+                <li
+                  class="flex items-center justify-between rounded-xl border-2 border-[var(--color-ink)] bg-white px-3 py-2 text-sm"
+                >
+                  <span
+                    class="font-heading font-semibold"
+                  >
+                    Instagram
+                  </span>
+                  <span
+                    class="text-[var(--color-soft-ink)]"
+                  >
+                    @ming
+                  </span>
+                </li>
+              </ul>
+              <section
+                class="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 shadow-[4px_4px_0_0_var(--color-ink)]"
+              >
+                <h2
+                  class="font-heading font-bold"
+                >
+                  社交帳號
+                </h2>
+                <p
+                  class="text-xs text-[var(--color-soft-ink)]"
+                >
+                  app.social.optionalHelp
+                </p>
+                <div
+                  class="space-y-3 rounded-xl border-2 border-[var(--color-ink)] p-3"
+                >
+                  <h3
+                    class="font-heading font-bold"
+                  >
+                    instagram
+                  </h3>
+                  <form
+                    class="space-y-2"
+                  >
+                    <label
+                      class="block text-sm"
+                    >
+                      instagram 帳號
+                      <input
+                        aria-label="instagram 帳號"
+                        class="w-full min-w-0 rounded-xl border-2 border-[var(--color-ink)] bg-white px-3 py-2 text-sm"
+                        value=""
+                      />
+                    </label>
+                    <button
+                      class="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-2 text-xs font-bold disabled:opacity-50"
+                      disabled=""
+                      type="submit"
+                    >
+                      app.social.save
+                    </button>
+                  </form>
+                </div>
+                <div
+                  class="space-y-3 rounded-xl border-2 border-[var(--color-ink)] p-3"
+                >
+                  <h3
+                    class="font-heading font-bold"
+                  >
+                    threads
+                  </h3>
+                  <form
+                    class="space-y-2"
+                  >
+                    <label
+                      class="block text-sm"
+                    >
+                      threads 帳號
+                      <input
+                        aria-label="threads 帳號"
+                        class="w-full min-w-0 rounded-xl border-2 border-[var(--color-ink)] bg-white px-3 py-2 text-sm"
+                        value=""
+                      />
+                    </label>
+                    <button
+                      class="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-2 text-xs font-bold disabled:opacity-50"
+                      disabled=""
+                      type="submit"
+                    >
+                      app.social.save
+                    </button>
+                  </form>
+                </div>
+              </section>
+            </section>
+          </div>
+          <div
+            class="space-y-6"
+          >
+            <section
+              class="space-y-4 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 shadow-[4px_4px_0_0_var(--color-ink)]"
+            >
+              <div
+                class="flex flex-wrap items-center justify-between gap-2"
+              >
+                <h2
+                  class="font-heading font-bold"
+                >
+                  創作者媒體
+                </h2>
+                <span
+                  class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 text-sm font-bold"
+                >
+                  0
+                  %
+                </span>
+              </div>
+              <label
+                class="flex cursor-pointer items-center gap-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3 text-sm font-heading font-bold"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="lucide lucide-upload h-4 w-4"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M12 3v12"
+                  />
+                  <path
+                    d="m17 8-5-5-5 5"
+                  />
+                  <path
+                    d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"
+                  />
+                </svg>
+                上載頭像
+                <input
+                  accept="image/png,image/jpeg,image/webp"
+                  aria-label="上載頭像"
+                  class="sr-only"
+                  type="file"
+                />
+              </label>
+              <div
+                class="grid gap-2"
+              >
+                <input
+                  aria-label="作品標題"
+                  class="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+                  placeholder="作品標題"
+                  value=""
+                />
+                <input
+                  aria-label="作品連結"
+                  class="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+                  placeholder="https://example.com/work"
+                  value=""
+                />
+                <select
+                  aria-label="作品類型"
+                  class="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+                />
+                <input
+                  aria-label="作品說明"
+                  class="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+                  placeholder="作品說明"
+                  value=""
+                />
+                <button
+                  aria-label="新增作品"
+                  class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 font-heading font-bold disabled:opacity-50"
+                  disabled=""
+                  type="button"
+                >
+                  新增作品
+                </button>
+              </div>
+              <div
+                class="space-y-2"
+              />
+              <button
+                aria-label="發佈到公開護照"
+                class="w-full rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 font-heading font-bold disabled:opacity-50"
+                type="button"
+              >
+                發佈到公開護照
+              </button>
+            </section>
+            <section
+              class="space-y-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 shadow-[4px_4px_0_0_var(--color-ink)]"
+            >
+              <h2
+                class="font-heading font-bold"
+              >
+                我的邀請碼
+              </h2>
+              <div
+                class="flex items-center gap-2"
+              >
+                <span
+                  class="font-mono text-lg font-bold tracking-widest"
+                >
+                  ABCD1234
+                </span>
+                <button
+                  aria-label="複製邀請碼"
+                  class="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 text-xs font-bold disabled:opacity-50"
+                  type="button"
+                >
+                  複製
+                </button>
+              </div>
+              <p
+                class="text-sm text-[var(--color-soft-ink)]"
+              >
+                邀請朋友，各得 200 分
+              </p>
+            </section>
+            <section
+              class="grid grid-cols-2 gap-3"
+            >
+              <a
+                class="rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 text-center font-heading font-semibold"
+                href="/my"
+              >
+                我的任務
+              </a>
+              <a
+                class="rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 text-center font-heading font-semibold"
+                href="/redemption/history"
+              >
+                兌換記錄
+              </a>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
+ ❯ src/routes/-_app.profile.test.tsx:155:48
+    153|     fireEvent.change(screen.getByLabelText("Instagram 帳號"), { target…
+    154|     fireEvent.click(screen.getByText("儲存"));
+    155|     await waitFor(() => expect(hoisted.update).toHaveBeenCalledWith(ex…
+       |                                                ^
+    156|   });
+    157| });
+ ❯ runWithExpensiveErrorDiagnosticsDisabled node_modules/@testing-library/dom/dist/config.js:47:12
+ ❯ checkCallback node_modules/@testing-library/dom/dist/wait-for.js:124:77
+ ❯ Timeout.checkRealTimersCallback node_modules/@testing-library/dom/dist/wait-for.js:118:16
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 6 skipped (8)
+   Start at  12:56:38
+   Duration  4.86s (transform 246ms, setup 238ms, collect 1.39s, tests 2.11s, environment 813ms, prepare 122ms)
+

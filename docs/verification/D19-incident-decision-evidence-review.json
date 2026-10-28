@@ -1,0 +1,316 @@
+{
+  "asOf": "2026-10-24T10:38:37.903441+00:00",
+  "reviewKind": "EXISTING_LOCAL_RECORDS_ONLY",
+  "sources": [
+    {
+      "id": "E01",
+      "path": "docs/verification/D19-support-current-identity.json",
+      "selector": "/targets/shaped",
+      "sha256": "3a6ac76434d018c1adf91acce8380e3e64b7dd12f547add51b504747e7a03597",
+      "bytes": 8997,
+      "meaning": "Captured disposable target identity; not live-verified this turn",
+      "trust": "SEALED_EXISTING_RECORD"
+    },
+    {
+      "id": "E02",
+      "path": "docs/verification/D19-support-current-schema-before.json",
+      "selector": "/targets/shaped/rows/campaigns",
+      "sha256": "cfce8a39960f8d86ab9c621686ad5b4b6a8249e2fcdea28b4acabfeee09bbdbb",
+      "bytes": 1196282,
+      "meaning": "Before87 campaign hashes aggregate; schema and counts, no keyed original row values",
+      "trust": "SEALED_EXISTING_RECORD"
+    },
+    {
+      "id": "E03",
+      "path": ".codex-tmp/D19-support-current-shaped-rowhashes-before.private.json",
+      "selector": "/campaigns",
+      "sha256": "1c158f8b82d047b7cb8c66f97f6f3ce24b98935d58a26e9b1583724faedc05eb",
+      "bytes": 155892,
+      "meaning": "Private87 MD5 vector anchored to sealed E02; no IDs/column values exported",
+      "trust": "EXISTING_LOCAL_RECORD_WITH_SEPARATE_ANCHOR_OR_SOURCE_HASH"
+    },
+    {
+      "id": "E04",
+      "path": ".codex-tmp/D19-current-shaped-rowhashes-before.private.json",
+      "selector": "/campaigns",
+      "sha256": "1c158f8b82d047b7cb8c66f97f6f3ce24b98935d58a26e9b1583724faedc05eb",
+      "bytes": 155892,
+      "meaning": "Earlier identical87-hash vector; still no row-ID mapping",
+      "trust": "EXISTING_LOCAL_RECORD_WITH_SEPARATE_ANCHOR_OR_SOURCE_HASH"
+    },
+    {
+      "id": "E05",
+      "path": "docs/verification/D19-support-current-schema-after-1.json",
+      "selector": "/targets/shaped/preservation",
+      "sha256": "3b278deae909d8acc3a86d8d8c1d5f763dbbb4b6bf3084476925a320cc110f6d",
+      "bytes": 1197136,
+      "meaning": "Exactly3 baseline campaign hashes absent after initial support; changed-or-removed detector",
+      "trust": "SEALED_EXISTING_RECORD"
+    },
+    {
+      "id": "E06",
+      "path": "docs/verification/D19-support-current-schema-after-4.json",
+      "selector": "/targets/shaped/preservation",
+      "sha256": "d72e9da4f3b0bb13beb8d245dd2a0cdca846f0117e2a4e91bb16eadfe2f4b5a5",
+      "bytes": 1197143,
+      "meaning": "The same original3 hash differences remain at08:21; does not clear incident",
+      "trust": "SEALED_EXISTING_RECORD"
+    },
+    {
+      "id": "E07",
+      "path": "docs/verification/D19-support-current-incident-campaigns.json",
+      "selector": "/affectedCandidatesByClosureWindow",
+      "sha256": "345bf094a2addc74146496caffd3ff8b37e08b25a18019fd497d0ec96d7f9457",
+      "bytes": 1805,
+      "meaning": "Direct after-value projection for3 IDs, labelled candidates by source; capture clock of this projection not explicitly recorded",
+      "trust": "SEALED_EXISTING_RECORD"
+    },
+    {
+      "id": "E08",
+      "path": "docs/verification/D19-fixture-retention.json",
+      "selector": "/support/27",
+      "sha256": "3ad6a2316cf1ee0f6f0e4c7648154e788c0e82ff6ffda4331766eaed6cdd4a88",
+      "bytes": 366454,
+      "meaning": "Prior fixture ownership/retention at19:43Oct23; exact3 IDs retained, no original field values",
+      "trust": "SEALED_EXISTING_RECORD"
+    },
+    {
+      "id": "E09",
+      "path": "docs/verification/D19-support-owned-ids.jsonl",
+      "selector": "lines3938,3940,3951",
+      "sha256": "363353524babed068526f233ea12e44fffba5dbed64dad4da3ddee77960a5ef8",
+      "bytes": 386574,
+      "meaning": "Exact successful campaign ID capture only: table/key/ids, no values",
+      "trust": "SEALED_EXISTING_RECORD"
+    },
+    {
+      "id": "E10",
+      "path": ".codex-tmp/D19-support-current-c1133f56-3d5c-4417-8aa9-133f1dcaab03-support.private.json",
+      "selector": "/testResults/campaigns-s2.test.ts",
+      "sha256": "8e5b537447ab03f80796e9bb068b077a74c3db96912e60d238ed5e52c977be4c",
+      "bytes": 150860,
+      "meaning": "Initial test-file clock and passing global-job assertions; actual RPC numeric results not logged",
+      "trust": "EXISTING_LOCAL_RECORD_WITH_SEPARATE_ANCHOR_OR_SOURCE_HASH"
+    },
+    {
+      "id": "E11",
+      "path": "supabase/migrations/0026_campaigns_s2.sql",
+      "selector": "lines23-36",
+      "sha256": "ac2ed234d9f483a3fc49956cfa04664b7ee0b3cb53a361b4f1bdafb5a2dcc19d",
+      "bytes": 4743,
+      "meaning": "close_due_campaigns writes status/closed_at/updated_at, filters active and due, no settle call; source review only",
+      "trust": "EXISTING_LOCAL_RECORD_WITH_SEPARATE_ANCHOR_OR_SOURCE_HASH"
+    },
+    {
+      "id": "E12",
+      "path": "docs/verification/D19-support-current-snapshot-extent.json",
+      "selector": "/insertedRowCount",
+      "sha256": "cbe3613c855fc369d364c3079c78102af33b5bd8679355c2259610bf5d84aebf",
+      "bytes": 495,
+      "meaning": "Saved exact-time query found0 new snapshot children on pre-existing parents; bounded separate insertion evidence",
+      "trust": "SEALED_EXISTING_RECORD"
+    },
+    {
+      "id": "E13",
+      "path": "docs/verification/D19-support-current-preservation-incident.json",
+      "selector": "/",
+      "sha256": "0cd950f2a27528cdc9a464119a61da452e8e61ae894bcba3605b7e7fe2245948",
+      "bytes": 1491,
+      "meaning": "Original incident record OPEN/unrestored; no raw before image",
+      "trust": "SEALED_EXISTING_RECORD"
+    },
+    {
+      "id": "E14",
+      "path": "docs/verification/D19-pristine-rpc-integrity.json",
+      "selector": "/",
+      "sha256": "b1928b7f3c4bc06e615cfa8a99e0d0947b444a714373ab1d9c196f4cebd2b4a3",
+      "bytes": 2200,
+      "meaning": "Two global cases passed on other pristine data; not old-row restoration evidence",
+      "trust": "SEALED_EXISTING_RECORD"
+    },
+    {
+      "id": "E15",
+      "path": "docs/verification/D19-current-browser-results.json",
+      "selector": "/",
+      "sha256": "d75c293889c5e03393cb0c85f6beaabbbd2f871ce79a90019ada901ede651842",
+      "bytes": 4663,
+      "meaning": "Prior browser evidence atcdf fingerprint; no fresh browser run in this decision-only task",
+      "trust": "SEALED_EXISTING_RECORD"
+    },
+    {
+      "id": "E16",
+      "path": "docs/verification/D17-R2-advisor-owner-acceptance.json",
+      "selector": "/",
+      "sha256": "14a90608a52dff633f28433a1462d71d4a7e7df0ebb09101eb2c21a9912045c8",
+      "bytes": 4040,
+      "meaning": "Named advisor owner and hosted acceptance still missing",
+      "trust": "SEALED_EXISTING_RECORD"
+    }
+  ],
+  "hashEvidence": {
+    "campaignCount": 87,
+    "aggregateSha256": "6f6e6421b75b87320a4dc82918750ec3914cafe5d1b5c972107d3a3d0addb59d",
+    "privateVectorMatchesSealedAggregate": true,
+    "earlierVectorIdentical": true,
+    "missingOriginalRowMd5Set": [
+      "2c992a43374bebf71fc3e5237348342e",
+      "32ae750fb714d21fd20f96d7217dbd13",
+      "d04eb0463aebbcf453f566f8af902682"
+    ],
+    "idToHashMappingAvailable": false,
+    "rawPriorColumnValuesAvailable": false,
+    "hashesAreNotBackups": true
+  },
+  "localSearch": {
+    "method": "Literal three-ID search of existing local evidence only; no DB/Docker/API/backup-system query",
+    "privateRootFilesExamined": 735,
+    "privateRootMatches": [
+      ".codex-tmp\\D19-support-current-incident-older-campaigns.private.json"
+    ],
+    "archivedEvidenceFolders": [
+      ".codex-tmp\\D17-R2-20261024-before\\docs\\verification",
+      ".codex-tmp\\D19-current-20261024-before\\docs\\verification",
+      ".codex-tmp\\D19-docs-before\\docs\\verification",
+      ".codex-tmp\\D19-pristine-rpc-20261024-before\\docs\\verification",
+      ".codex-tmp\\D19-support-current-20261024-before\\docs\\verification",
+      ".codex-tmp\\D20-before\\docs\\verification",
+      ".codex-tmp\\final-review-D17-20261024-before\\docs\\verification",
+      ".codex-tmp\\R2-ui-20261024-before\\docs\\verification",
+      ".codex-tmp\\evidence-unredacted"
+    ],
+    "archivedMatches": [
+      ".codex-tmp\\D17-R2-20261024-before\\docs\\verification\\D19-fixture-retention.json",
+      ".codex-tmp\\D17-R2-20261024-before\\docs\\verification\\D19-support-owned-ids.jsonl",
+      ".codex-tmp\\D19-current-20261024-before\\docs\\verification\\D19-fixture-retention.json",
+      ".codex-tmp\\D19-current-20261024-before\\docs\\verification\\D19-support-owned-ids.jsonl",
+      ".codex-tmp\\D19-pristine-rpc-20261024-before\\docs\\verification\\D19-fixture-retention.json",
+      ".codex-tmp\\D19-pristine-rpc-20261024-before\\docs\\verification\\D19-support-current-incident-campaigns.json",
+      ".codex-tmp\\D19-pristine-rpc-20261024-before\\docs\\verification\\D19-support-owned-ids.jsonl",
+      ".codex-tmp\\R2-ui-20261024-before\\docs\\verification\\D19-fixture-retention.json",
+      ".codex-tmp\\D20-before\\docs\\verification\\D19-fixture-retention.json",
+      ".codex-tmp\\R2-ui-20261024-before\\docs\\verification\\D19-support-owned-ids.jsonl",
+      ".codex-tmp\\D20-before\\docs\\verification\\D19-support-owned-ids.jsonl",
+      ".codex-tmp\\final-review-D17-20261024-before\\docs\\verification\\D19-fixture-retention.json",
+      ".codex-tmp\\final-review-D17-20261024-before\\docs\\verification\\D19-support-owned-ids.jsonl",
+      ".codex-tmp\\D19-support-current-20261024-before\\docs\\verification\\D19-fixture-retention.json",
+      ".codex-tmp\\D19-support-current-20261024-before\\docs\\verification\\D19-support-owned-ids.jsonl"
+    ],
+    "notSearched": [
+      "Docker volumes/filesystem",
+      "database or Auth API",
+      "DB runtime logs not already saved",
+      "backup/PITR/host/provider systems",
+      "unrelated worktrees or user directories"
+    ],
+    "interpretation": "Matching filenames alone do not prove a before image; all matches require timestamp/provenance/field-content review"
+  },
+  "archivedMatchReview": [
+    {
+      "path": ".codex-tmp/D17-R2-20261024-before/docs/verification/D19-fixture-retention.json",
+      "sha256": "3ad6a2316cf1ee0f6f0e4c7648154e788c0e82ff6ffda4331766eaed6cdd4a88",
+      "classification": "ID_CAPTURE_OR_RETENTION_ONLY_NOT_PREIMAGE"
+    },
+    {
+      "path": ".codex-tmp/D17-R2-20261024-before/docs/verification/D19-support-owned-ids.jsonl",
+      "sha256": "363353524babed068526f233ea12e44fffba5dbed64dad4da3ddee77960a5ef8",
+      "classification": "ID_CAPTURE_OR_RETENTION_ONLY_NOT_PREIMAGE"
+    },
+    {
+      "path": ".codex-tmp/D19-current-20261024-before/docs/verification/D19-fixture-retention.json",
+      "sha256": "3ad6a2316cf1ee0f6f0e4c7648154e788c0e82ff6ffda4331766eaed6cdd4a88",
+      "classification": "ID_CAPTURE_OR_RETENTION_ONLY_NOT_PREIMAGE"
+    },
+    {
+      "path": ".codex-tmp/D19-current-20261024-before/docs/verification/D19-support-owned-ids.jsonl",
+      "sha256": "363353524babed068526f233ea12e44fffba5dbed64dad4da3ddee77960a5ef8",
+      "classification": "ID_CAPTURE_OR_RETENTION_ONLY_NOT_PREIMAGE"
+    },
+    {
+      "path": ".codex-tmp/D19-pristine-rpc-20261024-before/docs/verification/D19-fixture-retention.json",
+      "sha256": "3ad6a2316cf1ee0f6f0e4c7648154e788c0e82ff6ffda4331766eaed6cdd4a88",
+      "classification": "ID_CAPTURE_OR_RETENTION_ONLY_NOT_PREIMAGE"
+    },
+    {
+      "path": ".codex-tmp/D19-pristine-rpc-20261024-before/docs/verification/D19-support-current-incident-campaigns.json",
+      "sha256": "345bf094a2addc74146496caffd3ff8b37e08b25a18019fd497d0ec96d7f9457",
+      "classification": "AFTER_PROJECTION_COPY_NOT_PREIMAGE"
+    },
+    {
+      "path": ".codex-tmp/D19-pristine-rpc-20261024-before/docs/verification/D19-support-owned-ids.jsonl",
+      "sha256": "363353524babed068526f233ea12e44fffba5dbed64dad4da3ddee77960a5ef8",
+      "classification": "ID_CAPTURE_OR_RETENTION_ONLY_NOT_PREIMAGE"
+    },
+    {
+      "path": ".codex-tmp/R2-ui-20261024-before/docs/verification/D19-fixture-retention.json",
+      "sha256": "3ad6a2316cf1ee0f6f0e4c7648154e788c0e82ff6ffda4331766eaed6cdd4a88",
+      "classification": "ID_CAPTURE_OR_RETENTION_ONLY_NOT_PREIMAGE"
+    },
+    {
+      "path": ".codex-tmp/D20-before/docs/verification/D19-fixture-retention.json",
+      "sha256": "3ad6a2316cf1ee0f6f0e4c7648154e788c0e82ff6ffda4331766eaed6cdd4a88",
+      "classification": "ID_CAPTURE_OR_RETENTION_ONLY_NOT_PREIMAGE"
+    },
+    {
+      "path": ".codex-tmp/R2-ui-20261024-before/docs/verification/D19-support-owned-ids.jsonl",
+      "sha256": "363353524babed068526f233ea12e44fffba5dbed64dad4da3ddee77960a5ef8",
+      "classification": "ID_CAPTURE_OR_RETENTION_ONLY_NOT_PREIMAGE"
+    },
+    {
+      "path": ".codex-tmp/D20-before/docs/verification/D19-support-owned-ids.jsonl",
+      "sha256": "363353524babed068526f233ea12e44fffba5dbed64dad4da3ddee77960a5ef8",
+      "classification": "ID_CAPTURE_OR_RETENTION_ONLY_NOT_PREIMAGE"
+    },
+    {
+      "path": ".codex-tmp/final-review-D17-20261024-before/docs/verification/D19-fixture-retention.json",
+      "sha256": "3ad6a2316cf1ee0f6f0e4c7648154e788c0e82ff6ffda4331766eaed6cdd4a88",
+      "classification": "ID_CAPTURE_OR_RETENTION_ONLY_NOT_PREIMAGE"
+    },
+    {
+      "path": ".codex-tmp/final-review-D17-20261024-before/docs/verification/D19-support-owned-ids.jsonl",
+      "sha256": "363353524babed068526f233ea12e44fffba5dbed64dad4da3ddee77960a5ef8",
+      "classification": "ID_CAPTURE_OR_RETENTION_ONLY_NOT_PREIMAGE"
+    },
+    {
+      "path": ".codex-tmp/D19-support-current-20261024-before/docs/verification/D19-fixture-retention.json",
+      "sha256": "3ad6a2316cf1ee0f6f0e4c7648154e788c0e82ff6ffda4331766eaed6cdd4a88",
+      "classification": "ID_CAPTURE_OR_RETENTION_ONLY_NOT_PREIMAGE"
+    },
+    {
+      "path": ".codex-tmp/D19-support-current-20261024-before/docs/verification/D19-support-owned-ids.jsonl",
+      "sha256": "363353524babed068526f233ea12e44fffba5dbed64dad4da3ddee77960a5ef8",
+      "classification": "ID_CAPTURE_OR_RETENTION_ONLY_NOT_PREIMAGE"
+    }
+  ],
+  "backupAssessment": {
+    "existingFullKeyedBeforeImageFound": false,
+    "existingSavedFullOldTupleAuditFound": false,
+    "evidenceSupportingExactOriginalClosedAtUpdatedAt": false,
+    "sealedBackupDumpPitrNamedArtifacts": [],
+    "unknownOutsideInspectedCorpus": [
+      "External/local Docker volume backup or snapshot inventory",
+      "Unsaved DB/API/audit logs and whether they include full old tuples",
+      "WAL/PITR availability and recoverability",
+      "Compressed/encrypted/non-indexed exports outside reviewed paths"
+    ],
+    "noneFoundDoesNotMeanNoBackupExistsAnywhere": true
+  },
+  "timeAssessment": {
+    "beforeObservationUTC": "2026-10-24T07:03:47.529Z",
+    "campaignTestFileStartUTC": "2026-10-24T07:12:04.496000+00:00",
+    "campaignTestFileEndUTC": "2026-10-24T07:12:06.550893+00:00",
+    "savedCloseTimestampUTC": "2026-10-24T07:12:04.875188+00:00",
+    "firstSavedFailedHashObservationUTC": "2026-10-24T07:22:23.534Z",
+    "latestSavedOriginalHashFailureUTC": "2026-10-24T08:21:04.754Z",
+    "afterProjectionCaptureClock": "UNKNOWN; no filesystem mtime substituted",
+    "initialRpcNumericResults": "UNKNOWN; assertions passed but did not export exact numbers; pristine1/0/1 are not substituted"
+  },
+  "impactLimits": [
+    "Before/after row hashes cover pre-existing public base rows and auth.users; new rows, Auth sessions/logs and DB stats are not covered by that detector",
+    "Snapshot insertion0 is a separate saved time-window/parent-set query, not a blanket statement about later inserts",
+    "A later baseline pass or other pristine target pass never restores or explains old timestamps",
+    "The before record at-field is a capture-clock label, not a complete transactional keyed-row snapshot; the historical collector used chunked read-only queries. Per-row original value capture times are not supplied."
+  ],
+  "newRuntimeQueries": 0,
+  "pristineRpcReruns": 0,
+  "restorationWrites": 0
+}

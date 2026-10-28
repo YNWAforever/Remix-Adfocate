@@ -1,0 +1,27 @@
+{
+  "startedAt": "2026-10-25T10:45:30.757467+00:00",
+  "finishedAt": "2026-10-25T10:45:41.651754+00:00",
+  "command": [
+    "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+    "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+    "run",
+    "test",
+    "--",
+    "scripts/release/cli.test.ts",
+    "--no-file-parallelism",
+    "--reporter=json",
+    "--outputFile=docs\\verification\\adfocate-d19-b2-20261025-recovery-4d6ca2c8\\node22-npm-cli.json"
+  ],
+  "exit": 0,
+  "nodeVersion": "v22.23.4",
+  "nodeExecutable": "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+  "childPathPrefersSameNode22": true,
+  "sourceFingerprint": "e83998d178061043688016056a5a78fc61df58bac28f3d0d0b66d639306037bd",
+  "integrationCredentialsAvailable": false,
+  "actualC1TargetUsed": false,
+  "packageDownloadOrInstall": false,
+  "npmCli": "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+  "npmExecpathProvided": true,
+  "log": "node22-npm-cli.log",
+  "layer": "LOCAL_OFFLINE_MOCK_AND_OWNED_LOOPBACK_UNIT_TRANSPORT"
+}

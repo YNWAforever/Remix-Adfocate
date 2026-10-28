@@ -1,0 +1,17 @@
+
+[WebServer] (node:45804) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 6 tests using 1 worker
+
+
+(node:8008) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1/6] e2e\mission-assist.spec.ts:19:36 › D20 creator lazy checklist, disabled provider and keyboard close
+[2/6] e2e\mission-assist.spec.ts:19:36 › D20 operator lazy checklist, disabled provider and keyboard close
+[3/6] e2e\mission-assist.spec.ts:36:34 › D20 mock en sources and stale warning retain the question
+[4/6] e2e\mission-assist.spec.ts:36:34 › D20 mock zh sources and stale warning retain the question
+[5/6] e2e\mission-assist.spec.ts:53:1 › D20 unknown outcome does not retry; 429 retry retains ID; 409 stops with input intact
+[6/6] e2e\mission-assist.spec.ts:73:1 › D20 ignores a delayed v1 mock after switching to v2
+  6 passed (12.0s)

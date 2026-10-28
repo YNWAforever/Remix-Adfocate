@@ -1,0 +1,70 @@
+{
+  "sourceFingerprint": "d7cc43ad92ad96b0b7d424a1ce903a42a7e83edc0c57319e8d33ad2d4ed82ac5",
+  "passed": 1982,
+  "failed": 11,
+  "skipped": 363,
+  "testFiles": 278,
+  "files": [
+    {
+      "path": "server/devApi.test.ts",
+      "failures": [
+        {
+          "name": "routes /api requests to Hono instead of the SPA fallback",
+          "message": "TypeError: fetch failed"
+        },
+        {
+          "name": "preserves Vite's SPA fallback for non-API requests",
+          "message": "TypeError: fetch failed"
+        }
+      ]
+    },
+    {
+      "path": "server/devApi.transport.test.ts",
+      "failures": [
+        {
+          "name": "intercepts exact /api and nested /api paths without swallowing /apix",
+          "message": "Error: connect EACCES 127.0.0.1:50221"
+        },
+        {
+          "name": "forwards method, body, query, authorization, and cookie headers",
+          "message": "Error: connect EACCES 127.0.0.1:50225"
+        },
+        {
+          "name": "preserves duplicate Set-Cookie plus status, statusText, and other headers",
+          "message": "Error: connect EACCES 127.0.0.1:50227"
+        },
+        {
+          "name": "completes HEAD and null-body responses without writing a body",
+          "message": "Error: connect EACCES 127.0.0.1:50229"
+        },
+        {
+          "name": "delivers response chunks incrementally instead of buffering the full body",
+          "message": "TypeError: fetch failed"
+        },
+        {
+          "name": "cancels the Fetch body when the client aborts",
+          "message": "AssertionError: expected false to be true // Object.is equality"
+        },
+        {
+          "name": "completes an app failure as JSON without hanging the Node response",
+          "message": "Error: connect EACCES 127.0.0.1:50238"
+        }
+      ]
+    },
+    {
+      "path": "scripts/release/manifest.test.ts",
+      "failures": [
+        {
+          "name": "does not replace an existing artifact on invalid write and leaves no temp file",
+          "message": "Error: EPERM: operation not permitted, rename '<sandbox-temp>\\adfocate-manifest-l2JsJq\\supabase\\release-manifest.json.tmp-17464-7ff4dbf8-ec20-45ef-95b7-763d4fdc786f' -> '<sandbox-temp>\\adfocate-manifest-l2JsJq\\supabase\\release-manifest.json'"
+        },
+        {
+          "name": "runs write as a direct vite-node CLI and prints its digest",
+          "message": "Error: Command failed: C:\\Program Files\\nodejs\\node.exe <worktree>\\node_modules\\vite-node\\vite-node.mjs --script <worktree>\\scripts\\release\\manifest-cli.ts write"
+        }
+      ]
+    }
+  ],
+  "classification": "Local sandbox transport/temp-file restrictions; same unmodified three files subsequently passed25/0 under formally approved execution. EACCES/EPERM are direct errors; fetch/client-abort cascade attribution is corroborated by that same-source recheck.",
+  "productionFixApplied": false
+}

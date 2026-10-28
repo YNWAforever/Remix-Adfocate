@@ -1,0 +1,33 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ❯ server/lib/missionMatch.test.ts (22 tests | 1 failed) 12ms
+   × scoreMissions > does not label an unverified high-XP creator unlocked for an L2 mission 7ms
+     → expected false to be true // Object.is equality
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  server/lib/missionMatch.test.ts > scoreMissions > does not label an unverified high-XP creator unlocked for an L2 mission
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ server/lib/missionMatch.test.ts:80:27
+     78|     const unverified={...creator({level:"L3"}),isTrusted:false};
+     79|     const [scored]=scoreMissions(unverified,[mission({required_level:"…
+     80|     expect(scored.locked).toBe(true);
+       |                           ^
+     81|     expect(scored.rationale).toContain("驗證社交帳號");
+     82|     expect(scored.rationale).not.toContain("升級至");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 21 passed (22)
+   Start at  05:00:29
+   Duration  2.39s (transform 75ms, setup 349ms, collect 57ms, tests 12ms, environment 1.34s, prepare 244ms)
+

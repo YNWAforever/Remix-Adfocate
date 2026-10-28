@@ -1,0 +1,33 @@
+{
+  "at": "2026-10-25T18:35:34.623493+00:00",
+  "status": "PASS_READONLY_WINDOW_PRESERVATION_NOT_APPLICATION_OR_PENDING_REWARD_E2E",
+  "firstAt": "2026-10-25T17:56:34.511Z",
+  "afterAt": "2026-10-25T18:17:10.803Z",
+  "first": {
+    "path": "docs/verification/D19-C2-runtime-20261026/read-only-provenance-checked.json",
+    "sha256": "334c8a887be2e61ef6febd001bc8587c4ec26cbe30842b76cac88fd5abcb048a"
+  },
+  "after": {
+    "path": "docs/verification/D19-C2-runtime-20261026/post-provenance-failure.json",
+    "sha256": "5d2bb8bcca26478cacdbbf0c5ebd9274f0d40ebea98e3a9bbb1089d3b0e2cea6"
+  },
+  "allNineFinancialReadbacksEqual": true,
+  "families": [
+    "redemptions",
+    "point_balances",
+    "redemption_codes",
+    "redemption_gifts",
+    "earnings_balances",
+    "workspace_budgets",
+    "point_transactions",
+    "earnings_transactions",
+    "workspace_budget_transactions"
+  ],
+  "pendingRewardFlowExecuted": false,
+  "newPendingRewards": 0,
+  "paymentOrPayoutActions": 0,
+  "domainOrFinancialWrites": 0,
+  "priorOwned70FamilyRowsUnchanged": true,
+  "wholeCurrentR1Verified": false,
+  "limitations": "No application or pending reward business action occurred. Equal complete readbacks prove preservation over this read-only diagnostic window only; retained696e pending/history/neutrality remain bound to their original source."
+}

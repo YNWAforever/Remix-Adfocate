@@ -1,0 +1,177 @@
+{
+  "at": "2026-10-25T16:45:30.726470+00:00",
+  "tasks": [
+    "D02",
+    "D19"
+  ],
+  "case": "UC-R04",
+  "wholeCurrentCaseVerified": false,
+  "wholeR1Verified": false,
+  "facts": {
+    "path": "docs/verification/D19-migration-preservation-20261026/migration-provenance.json",
+    "sha256": "74e7b20f576ad4632497ba469a5037fc1eb1ccaf98ff2b50c5fc74d0ab0cd5fc"
+  },
+  "historicalShapedScope": {
+    "classification": "HISTORICAL_SOURCE_AND_OUTPUT_ONLY",
+    "directCheckedRowFields": [
+      "status",
+      "content_urls[0]"
+    ],
+    "fixtureCount": {
+      "workspace": 1,
+      "creator": 1,
+      "mission": 1,
+      "submission": 1
+    },
+    "fullBeforeAfterRowSnapshotSaved": false,
+    "existingProofLedgerPreservationProven": false,
+    "oldHistoryCount": 14,
+    "oldHistoryArray": "Captured before migration and copied to output; this file alone is not an independently saved after-history readback.",
+    "secondPass": "pendingOnSecondPass is an observed pending-list query. It does not mean the raw migration SQL was executed twice.",
+    "unknown": [
+      "Full historical submission row equality beyond the two explicit fields",
+      "A nonempty pre-migration proof/ledger cohort and its full before/after row hashes in this shaped witness",
+      "Current state of retired shaped target; not queried and never eligible for acceptance reuse"
+    ]
+  },
+  "historicalC1Scope": {
+    "classification": "SEALED_APPROVED696E_HISTORICAL_FILE_EVIDENCE_ONLY",
+    "source": "e83998d178061043688016056a5a78fc61df58bac28f3d0d0b66d639306037bd",
+    "threePhases": 3,
+    "familiesPerPhase": 70,
+    "uniqueCounts": {
+      "academy_content": 1,
+      "academy_lessons": 0,
+      "assistant_conversations": 1,
+      "assistant_messages": 2,
+      "assistant_requests": 1,
+      "auth_audit_log_entries": 46,
+      "auth_flow_state": 0,
+      "auth_identities": 33,
+      "auth_mfa_amr_claims": 41,
+      "auth_mfa_challenges": 0,
+      "auth_mfa_factors": 0,
+      "auth_one_time_tokens": 0,
+      "auth_refresh_tokens": 43,
+      "auth_sessions": 41,
+      "auth_users": 84,
+      "brand_invites": 0,
+      "brand_users": 21,
+      "campaign_participants": 0,
+      "campaign_rank_snapshots": 0,
+      "campaigns": 0,
+      "creator_lesson_progress": 0,
+      "creator_portfolio_links": 0,
+      "creator_review_notes": 2,
+      "creator_review_statuses": 2,
+      "creator_social_accounts": 0,
+      "creators": 57,
+      "draft_submission_idempotency": 6,
+      "earnings_balances": 6,
+      "earnings_transactions": 2,
+      "legacy_evidence_corrections": 0,
+      "mission_completion_decisions": 5,
+      "mission_deliverable_requirements": 8,
+      "mission_deliverable_templates": 8,
+      "mission_draft_assets": 0,
+      "mission_draft_versions": 6,
+      "mission_fulfillments": 2,
+      "mission_pending_rewards": 4,
+      "mission_publication_instructions": 8,
+      "mission_publication_proof_assets": 0,
+      "mission_publication_proof_attempts": 6,
+      "mission_publication_proof_review_items": 3,
+      "mission_publication_proof_reviews": 6,
+      "mission_review_items": 3,
+      "mission_review_rounds": 6,
+      "mission_revision_grants": 0,
+      "mission_reward_contracts": 3,
+      "mission_submissions": 7,
+      "mission_work_items": 8,
+      "mission_workflow_events": 52,
+      "mission_workflows": 4,
+      "mission_working_drafts": 8,
+      "missions": 6,
+      "notifications": 26,
+      "operator_audit_events": 4,
+      "operator_crm_command_receipts": 2,
+      "point_balances": 6,
+      "point_transactions": 2,
+      "redemption_codes": 0,
+      "redemption_gifts": 3,
+      "redemptions": 0,
+      "staff_access_audit": 24,
+      "staff_access_commands": 24,
+      "staff_platform_roles": 3,
+      "staff_users": 27,
+      "staff_workspace_roles": 19,
+      "storage_objects": 0,
+      "workflow_notification_dedupe": 24,
+      "workspace_budget_transactions": 2,
+      "workspace_budgets": 3,
+      "workspaces": 6
+    },
+    "migrationWindow": "The baseline72 bootstrap precedes the active/proof/legacy acceptance cohorts. These final inventories are not themselves evidence of a later73 migration.",
+    "binaryLimit": "draft assets, publication-proof assets and storage objects are zero. Existing URL proof attempt/review rows are nonempty; binary bytes preservation is not proven."
+  },
+  "currentSourceComparison": {
+    "classification": "DIRECT_CURRENT_FILE_FACT",
+    "raw72Unchanged": true,
+    "protectedLf43Unchanged": true,
+    "historicalShapedLf36Unchanged": true,
+    "sourceMigrations": 73,
+    "protectedManifestMigrations": 43,
+    "differentCountsMeaning": "Protected manifest is a selected forward-release list; full C1 baseline is all72 files. Do not substitute either count for the other or mark all source files applied.",
+    "newForwardOnly": {
+      "file": "supabase/migrations/20261025120934_application_decisions.sql",
+      "sha256": "abbfc0499afbe771e36540443a93c979521be1fe70c321f6fb8ff6996a45a35c",
+      "baselineMigrationCount": 72,
+      "forwardOnly": true,
+      "expectedBefore": "Exact72 history and no new function/history; any partial state stops. No replace/reset/history rewrite.",
+      "allowedWrites": [
+        "One new function with explicit ACL",
+        "One new history row in same transaction",
+        "Local PostgREST schema reload notification"
+      ]
+    }
+  },
+  "plannedC2MigrationPreservation": {
+    "status": "STATIC_SOURCE_CHECKS_EXIST_RUNTIME_NOT_RUN",
+    "classification": "DIRECT_SOURCE_FACT_NOT_RUNTIME_RESULT",
+    "manifestSha256": "eb5ca8f03a85c5589cc6cbf27ec0ca5524e8600fd2914ad1d4d73f17eec5009a",
+    "migration": "72 to73, one new function + explicit ACL + one history row; no replay of the existing72 or9 compatibility statements",
+    "preconditions": [
+      "Existing source-bound C2 approval must become explicit; unchanged authorization template is currently false",
+      "Fresh identity and read-only provenance before claim/migration/client/setup",
+      "Live old row hashes and catalog/history/seeds must equal sealed C1 evidence; mismatch stops without restore or compensation"
+    ],
+    "orderedChecks": [
+      "provenance: async () => {",
+      "oldRows = jsonSql(originalQuery);",
+      "save(\"before.json\"",
+      "migrate: async () => {",
+      "assert.deepEqual(jsonSql(originalQuery), oldRows);",
+      "save(\"migration.json\"",
+      "createClient: async () => {"
+    ],
+    "dataChecks": "Compare originalQuery complete family inventory and nine global financial ID/row-hash sets immediately after migration and before SDK client or new fixture creation.",
+    "catalogChecks": "Compare original eight-section catalog allowing only the one new function/history; independently preserve72 history, service histories and immutable migration seeds; assert original ACL denied for anon/authenticated and allowed for service_role.",
+    "successEvidenceRequired": [
+      "Source/manifest/identity bound before.json with original row hashes and financial ID/hash sets",
+      "migration.json with before/after catalog and both data comparisons true, backed by actual successful assertions",
+      "Final supplement preservation readback; no execution claim from this static review"
+    ],
+    "newTargetRequested": false,
+    "extraFixturesOrWritesApprovedHere": false
+  },
+  "unrunRollbackScope": {
+    "databaseDownOrReset": "FORBIDDEN_NOT_REQUIRED_AS_A_TEST_SHORTCUT",
+    "oldBinaryRedeployment": "NOT_RUN_NOT_AUTHORIZED; no deployment this review",
+    "operationalPolicy": "Keep data/schema/history and original incident evidence; future reviewed forward repair only. Prepared local metadata rollback cannot restore a production database."
+  },
+  "actualTargetCalls": 0,
+  "newApplicationOrMemorySuites": 0,
+  "incidentOpen": true,
+  "releaseHold": true,
+  "providerEnabled": false
+}

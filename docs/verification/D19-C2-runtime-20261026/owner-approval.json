@@ -1,0 +1,28 @@
+{
+  "at": "2026-10-25T17:39:35.514734+00:00",
+  "kind": "DIRECT_HUMAN_RUNTIME_APPROVAL",
+  "questionItemId": "[\"request_user_input_async\",\"call_f61485a0a76947afa36bfffd9b99fab0\",0]",
+  "answer": "\u6279\u51c6\u9019\u4efd C2 runtime \u7bc4\u570d",
+  "ownerReference": "2026-10-26 direct human reply call_f61485a0a76947afa36bfffd9b99fab0 item0: approved exact applications-only C2 runtime",
+  "manifest": {
+    "path": "docs/verification/D19-C2-application-runtime-manifest.json",
+    "sha256": "eb5ca8f03a85c5589cc6cbf27ec0ca5524e8600fd2914ad1d4d73f17eec5009a"
+  },
+  "sourceFingerprint": "e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993",
+  "scope": "Same C1 exact five resources; zero Docker lifecycle/additions. Fresh identity and readonly provenance first; forward73; six synthetic subjects, one workspace, four missions; two exact owned fault sets create/remove; four new-OperatorA fixture membership/capability updates; API +3 UI +row preservation. Own Vite/Edge children only. Original tests/global RPC/legacy issuance not replayed.",
+  "invariants": {
+    "incidentOpen": true,
+    "releaseHold": true,
+    "providerEnabled": false,
+    "productionOrFormalMembershipWrites": false,
+    "commit": false,
+    "push": false,
+    "merge": false,
+    "deploy": false
+  },
+  "beforeAuthorization": {
+    "path": "docs/verification/D19-application-runtime-preparation-20261025/runtime-authorization.json",
+    "sha256": "d5ca3dcd9ad8c4e14f0707e2b29c3bb25a1f6dd955e908fb591620281c76d019",
+    "before": "docs/verification/D19-C2-runtime-20261026/before/docs/verification/D19-application-runtime-preparation-20261025/runtime-authorization.json"
+  }
+}

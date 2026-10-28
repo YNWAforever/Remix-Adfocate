@@ -1,0 +1,35 @@
+{
+  "startedAt": "2026-10-25T17:40:57.449120+00:00",
+  "command": [
+    "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+    "node_modules/vite-node/vite-node.mjs",
+    "--script",
+    "scripts/audit/execute-application-supplement.mjs",
+    "docs/verification/D19-C2-application-runtime-manifest.json",
+    "--execute"
+  ],
+  "sourceFingerprint": "e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993",
+  "sourceRecordsUnchanged": 788,
+  "manifestSha256": "eb5ca8f03a85c5589cc6cbf27ec0ca5524e8600fd2914ad1d4d73f17eec5009a",
+  "authorization": {
+    "path": "docs/verification/D19-application-runtime-preparation-20261025/runtime-authorization.json",
+    "sha256": "a909d1c60409db853da5949ee0b6ae29d6f69694fbd2c0bae313c3661557e894",
+    "approved": true,
+    "ownerReference": "2026-10-26 direct human reply call_f61485a0a76947afa36bfffd9b99fab0 item0: approved exact applications-only C2 runtime"
+  },
+  "resource": {
+    "at": "2026-10-25T17:40:57.447892+00:00",
+    "freePhysicalGiB": 5.4192657470703125,
+    "freeCommitGiB": 10.276481628417969,
+    "minimumGiB": 3,
+    "freeDiskGiB": 22.3984375
+  },
+  "node": "v22.23.4",
+  "envCredentialsProxiesPreloadsStripped": true,
+  "mode": "runtime",
+  "log": ".codex-tmp/D19-C2-runtime-20261026/runtime-output.private.log",
+  "expectedProject": "adfocate-d19-b2-20261025-recovery-4d6ca2c8",
+  "executionNamespace": "90ffc505-7abe-4b4c-8041-a6c954509278",
+  "automaticRestart": false,
+  "pid": 6572
+}

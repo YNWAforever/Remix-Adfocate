@@ -1,0 +1,20 @@
+{
+  "D07": {
+    "code": "Reuse existing workflow/proof/reward engines; extend existing E2E pending snapshot frame only.",
+    "test": "Current full suite incl original16/194; E2E syntax only.",
+    "deployment": "not-deployed",
+    "runtime": "NOT_APPROVED_NOT_RUN_B2"
+  },
+  "D18": {
+    "code": "Existing shared integration snapshot uses complete read-only evidence for B2; join+10 assertion retains its precise Creator delta; no membership/role checks changed.",
+    "test": "Full suite/type pass; actual eight role cases remain gated/unrun.",
+    "deployment": "not-deployed",
+    "runtime": "NOT_APPROVED_NOT_RUN_B2; formal staff scope blocker retained"
+  },
+  "D19": {
+    "code": "Existing browser runner now fails on missing/changed complete pending finance or legacy anchors; same existing snapshot/fixture reused; eight source files plus plan status correction; no product engine/schema/provider changes.",
+    "test": "Full2047 pass/0 fail/363 gated skip/288 files; original16/194;20 new local mock/pure tests; type/lint/build/manifest pass on Node24.18.0; E2E source syntax-only.",
+    "deployment": "not-deployed; no commit/push/merge/deploy",
+    "runtime": "P0 offline only; actual B2 target/SQL/Auth/API/fixture/role/core/browser not approved or run. Incident OPEN/unrestored; release HOLD; provider disabled."
+  }
+}

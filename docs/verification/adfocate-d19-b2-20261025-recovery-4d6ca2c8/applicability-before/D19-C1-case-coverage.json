@@ -1,0 +1,65 @@
+{
+  "sourceFingerprint": "e83998d178061043688016056a5a78fc61df58bac28f3d0d0b66d639306037bd",
+  "originRuntimeSource": "6285bca02a74bedf3eda7259238366e9023fcc0cae24fe5e7c874ae9dd118d7b",
+  "auditCases": 107,
+  "findings": 28,
+  "originalAuditResultOverwritten": false,
+  "full": {
+    "command": [
+      "node",
+      "node_modules/vitest/vitest.mjs",
+      "run",
+      "--no-file-parallelism",
+      "--reporter=json",
+      "--outputFile=docs\\verification\\adfocate-d19-b2-20261025-recovery-4d6ca2c8\\continuation-final-full.json"
+    ],
+    "exit": 0,
+    "passed": 2082,
+    "failed": 0,
+    "gatedSkip": 363,
+    "files": 289,
+    "report": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-final-full.json",
+    "commandReceipt": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-final-full-command.json"
+  },
+  "original16Passed": 16,
+  "protected194Passed": 194,
+  "originalRolesExpected": 8,
+  "originalCoreExpected": 9,
+  "originalBrowserExpected": 5,
+  "extraBrowserObligations": 2,
+  "originActual": {
+    "sourceFingerprint": "6285bca02a74bedf3eda7259238366e9023fcc0cae24fe5e7c874ae9dd118d7b",
+    "role": {
+      "passed": 8,
+      "failed": 0
+    },
+    "core": {
+      "passed": 9,
+      "failed": 0
+    },
+    "browser": {
+      "passed": 2,
+      "failed": 1,
+      "notRun": 2,
+      "phaseExit": 1
+    },
+    "newSourceRuntime": "NOT_RUN_NOT_APPROVED"
+  },
+  "newSourceRoleCoreApiRerun": 0,
+  "newSourceBrowserExecuted": 0,
+  "legacyFinanceApprovalsExecuted": 2,
+  "pendingRewardFinancialNeutrality": "API_WINDOWS_PASS_BROWSER_NOT_MEASURED",
+  "newE2ePersistenceProven": false,
+  "matrix": "D19-C1-browser-continuation-matrix.json",
+  "D15OriginalRowsUnchanged": true,
+  "currentR1Verified": false,
+  "applicability": "C1 17 API cases are not17 accepted audit cases. Wallet/redemption/gift claims/profile/application UI cases outside these scenarios retain separately source-bound older evidence; fresh applicability reconciliation and possibly a separately approved exact-ID manifest remain required. No blanket107-case acceptance.",
+  "evidence": {
+    "state": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/state-after-independent-ui.json",
+    "role": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/role/phase-result.json",
+    "core": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/core/phase-result.json",
+    "browserFailure": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/browser/browser-summary.json",
+    "independentUi": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/browser/independent-role-checks.json",
+    "coreNeutrality": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/core/neutrality-evidence-summary.json"
+  }
+}

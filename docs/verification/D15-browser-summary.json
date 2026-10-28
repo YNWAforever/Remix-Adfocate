@@ -1,0 +1,123 @@
+{
+  "target": {
+    "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+    "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+    "disposable": true,
+    "projectId": "adfocate-r1-empty-20261023",
+    "proxy": "none",
+    "apiPort": 56421,
+    "apiContainerId": "1b9c41318298d79308db7782f51474541ad5abf0120fa93b96a2a9ea59d043ee",
+    "databaseContainerId": "e7c8efa295cd5544a8b2a100a73b6953cd6ddd486aaf394f231482067523e12d",
+    "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+    "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+    "networkId": "9e5d3069e8255d70b8eef56020c8ea2618fdb2626d92d9a04e51ea2de41a98e0"
+  },
+  "runId": "d9c86453-c8a7-42eb-9353-1df5dd59309c",
+  "tests": [
+    {
+      "title": "D15 operator authors, previews, reloads and publishes two synthetic units inside the existing editor",
+      "ok": true,
+      "results": [
+        {
+          "status": "passed",
+          "duration": 9882
+        }
+      ]
+    },
+    {
+      "title": "D15 Creator handles a mocked write failure, completes a real unit and refreshes the same saved progress",
+      "ok": true,
+      "results": [
+        {
+          "status": "passed",
+          "duration": 2819
+        }
+      ]
+    },
+    {
+      "title": "D15 separate Creator context has zero progress and ineligible Creator cannot read locked units",
+      "ok": true,
+      "results": [
+        {
+          "status": "passed",
+          "duration": 2315
+        }
+      ]
+    },
+    {
+      "title": "D15 real version conflict preserves reading and history before an explicit refresh and completion",
+      "ok": true,
+      "results": [
+        {
+          "status": "passed",
+          "duration": 2677
+        }
+      ]
+    }
+  ],
+  "stats": {
+    "startTime": "2026-10-23T10:03:47.752Z",
+    "duration": 20923.261,
+    "expected": 4,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "persisted": {
+    "lessons": [
+      {
+        "id": "81237899-cb40-4f13-8f35-19b9c88a6e8a",
+        "status": "published",
+        "version": 1,
+        "position": 0,
+        "revision": 2,
+        "approvalRef": "SYNTHETIC ONLY/browser/d9c86453-c8a7-42eb-9353-1df5dd59309c"
+      },
+      {
+        "id": "0d1e1a51-47d7-4bc8-b0d7-feb83b2f0b26",
+        "status": "archived",
+        "version": 1,
+        "position": 1,
+        "revision": 3,
+        "approvalRef": "SYNTHETIC ONLY/browser/d9c86453-c8a7-42eb-9353-1df5dd59309c"
+      },
+      {
+        "id": "0d1e1a51-47d7-4bc8-b0d7-feb83b2f0b26",
+        "status": "published",
+        "version": 2,
+        "position": 1,
+        "revision": 2,
+        "approvalRef": "SYNTHETIC ONLY/v2/d9c86453-c8a7-42eb-9353-1df5dd59309c"
+      },
+      {
+        "id": "849de7cd-61d0-42e6-afc0-5542171a83ec",
+        "status": "archived",
+        "version": 1,
+        "position": 100,
+        "revision": 3,
+        "approvalRef": "SYNTHETIC hidden ONLY/d9c86453-c8a7-42eb-9353-1df5dd59309c"
+      }
+    ],
+    "progress": [
+      {
+        "version": 1,
+        "lessonId": "81237899-cb40-4f13-8f35-19b9c88a6e8a",
+        "creatorId": "33b1aa7e-915f-4893-ab3b-841cbe75fee6",
+        "completedAt": "2026-10-23T10:04:02.269634+00:00"
+      },
+      {
+        "version": 2,
+        "lessonId": "0d1e1a51-47d7-4bc8-b0d7-feb83b2f0b26",
+        "creatorId": "33b1aa7e-915f-4893-ab3b-841cbe75fee6",
+        "completedAt": "2026-10-23T10:04:07.32474+00:00"
+      }
+    ]
+  },
+  "auth": "Real local Auth sessions from the identity-gated API fixture; separate Creator contexts.",
+  "browser": "Installed Microsoft Edge; 1280x900 operator and 390x844 Creator viewport emulation.",
+  "content": "Two explicitly synthetic lesson units; test approval references only. No approved curriculum claimed.",
+  "limitations": [
+    "No deployment, hosted runtime, physical device or Safari/WebKit acceptance.",
+    "One completion 503 is an explicit transport mock; successful completion and version-conflict 409 use the real local API and database."
+  ]
+}

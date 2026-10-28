@@ -1,0 +1,77 @@
+{
+  "at": "2026-10-25T10:45:24.916Z",
+  "identity": {
+    "runId": "4d6ca2c8-b9c2-4457-bda8-7c03ac533f61",
+    "ownerAuthorization": "2026-10-25 direct human reply call_4715f74b8ded413ea520b4491078088f: approved same existing C1 fixture continuation; manifest 696e94c29e62a27e820d7d12f5aa74c0d1e7b62f97f3b57db787074512a2626d; zero additional physical resources/subjects/domain setup fixtures; no legacy replay; bounded six existing actor sessions plus one Creator UI login; retain incidentOPEN/releaseHOLD/providerdisabled.",
+    "disposable": true,
+    "projectId": "adfocate-d19-b2-20261025-recovery-4d6ca2c8",
+    "proxy": "none",
+    "apiPort": 56921,
+    "apiContainerId": "c68a68b5ea60116a998cf3b61f4cdfbf737101361ae0866a8d8f83d0313ba253",
+    "databaseContainerId": "a4e387ca84bfd11e815f697e0c407b12b8a610d29691517d8d8ecaef91957956",
+    "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+    "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+    "networkId": "bcc7bcc4cd4a519135d4e54d904024cbebb77786707dcecb6c994694b322e65c"
+  },
+  "lineage": {
+    "projectId": "adfocate-d19-b2-20261025-recovery-4d6ca2c8",
+    "ownerRunId": "4d6ca2c8-b9c2-4457-bda8-7c03ac533f61",
+    "sourceFingerprint": "e83998d178061043688016056a5a78fc61df58bac28f3d0d0b66d639306037bd",
+    "manifestSha256": "696e94c29e62a27e820d7d12f5aa74c0d1e7b62f97f3b57db787074512a2626d",
+    "phase": "browser",
+    "namespace": "ebf1f615-be72-4072-ad97-ee98b150a796",
+    "executionNamespace": "68d510a8-82a8-42bd-b3e8-4561580a7a19"
+  },
+  "source": "Live Auth audit after excluding exact prior log IDs; only action/count/opaque fixture actor ID selected",
+  "newActions": [
+    {
+      "count": 1,
+      "action": "login",
+      "actorId": "35897723-efcc-42e3-92da-ff336344a48d"
+    },
+    {
+      "count": 1,
+      "action": "login",
+      "actorId": "605f9eee-173d-4368-be17-216584546957"
+    },
+    {
+      "count": 2,
+      "action": "login",
+      "actorId": "8de7a4c1-90e4-49da-a1f4-8a5737304390"
+    },
+    {
+      "count": 1,
+      "action": "token_refreshed",
+      "actorId": "8de7a4c1-90e4-49da-a1f4-8a5737304390"
+    },
+    {
+      "count": 1,
+      "action": "token_revoked",
+      "actorId": "8de7a4c1-90e4-49da-a1f4-8a5737304390"
+    },
+    {
+      "count": 1,
+      "action": "login",
+      "actorId": "908693a8-7414-42e0-96ea-f437de6f4812"
+    },
+    {
+      "count": 1,
+      "action": "login",
+      "actorId": "b5b3c2ec-34d2-4de6-9689-721ba2cac3de"
+    },
+    {
+      "count": 1,
+      "action": "login",
+      "actorId": "f220de3a-8331-484f-ab2c-993afa01e943"
+    }
+  ],
+  "actionCounts": {
+    "login": 7,
+    "token_refreshed": 1,
+    "token_revoked": 1
+  },
+  "existingActorsOnly": true,
+  "approvedActorCount": 6,
+  "authSdkCalls": 0,
+  "dataOrSettingsChanged": false
+}

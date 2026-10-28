@@ -1,0 +1,63 @@
+{
+  "at": "2026-10-25T21:35:04.215393+00:00",
+  "source": {
+    "path": "docs/verification/code-fingerprint.json",
+    "sha256": "e67a1fa981883c2cf8341e9f2823b3dea9360c28ffe6e4c0f16bce89a50f4684"
+  },
+  "manifest": {
+    "path": "docs/verification/D19-C2-current-source-runtime-manifest.json",
+    "sha256": "cb93361481d8d6a42785077809c4e5338745ffcb2c3e41ffc62ed72631f59a65"
+  },
+  "currentAuthorization": {
+    "path": "docs/verification/D19-redemption-replay-20261026/runtime-authorization.json",
+    "sha256": "6ba3a4ba2d58ac36049e8ad478ae7ee7acf314beabb18faf66f5123a763dcb7d"
+  },
+  "oldE8Authorization": {
+    "path": "docs/verification/D19-application-runtime-preparation-20261025/runtime-authorization.json",
+    "sha256": "a909d1c60409db853da5949ee0b6ae29d6f69694fbd2c0bae313c3661557e894"
+  },
+  "archive": {
+    "exactPath": "C:\\Users\\laich\\Downloads\\Adfocate_Audit_Test_Pack_2026-10-22.zip",
+    "exists": false,
+    "expectedSha256": "0a9d6b96c5e7e216489b80abd45c28731d8e378eeaa6316158340e780bc859e8",
+    "freshArchiveHashVerified": false,
+    "broaderFilesystemSearch": false
+  },
+  "terminalJobs": [
+    {
+      "receipt": {
+        "path": "docs/verification/D19-asset-offline-20261026/boundary-valid-fixture-command.json",
+        "sha256": "162ef321507e2241fe073e3af3cd61545466a64779739264516383e09e4fdceb"
+      },
+      "pid": 33408,
+      "exit": 0,
+      "endedAt": "2026-10-25T21:10:11.821173+00:00",
+      "state": "TERMINAL_NOT_A_LIVE_WAIT_HANDLE"
+    },
+    {
+      "receipt": {
+        "path": "docs/verification/D19-asset-offline-20261026/lint-final-command.json",
+        "sha256": "58e0b387803c6653dafca6c0a2ab9aa7c68606de489eb951d7cab44d17a7f3b3"
+      },
+      "pid": 42384,
+      "exit": 0,
+      "endedAt": "2026-10-25T21:10:46.734146+00:00",
+      "state": "TERMINAL_NOT_A_LIVE_WAIT_HANDLE"
+    },
+    {
+      "receipt": {
+        "path": "docs/verification/D19-asset-offline-20261026/type-after-resource-command.json",
+        "sha256": "f6f60da53a238f3cdd5dfe8a5c4af20368a8b67ac616d6fad4a7a84ad52a8454"
+      },
+      "pid": 6660,
+      "exit": 0,
+      "endedAt": "2026-10-25T21:13:04.682505+00:00",
+      "state": "TERMINAL_NOT_A_LIVE_WAIT_HANDLE"
+    }
+  ],
+  "noLiveTargetJobWaitClaim": true,
+  "actualTargetCallsThisTurn": 0,
+  "originalIncidentOpen": true,
+  "releaseHold": true,
+  "providerEnabled": false
+}

@@ -1,0 +1,88 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ❯ docs/verification/D19-asset-offline-20261026/assets.test.tsx (11 tests | 5 failed) 465ms
+   × D19 actual asset UI/API boundary with explicit offline adapters > uploads actual file bytes through the owner workflow path and finalizes with their SHA256 148ms
+     → The URL must be of scheme file
+   × D19 actual asset UI/API boundary with explicit offline adapters > preserves fields after signing failure, calls exact owned cleanup and allows explicit file reselection 45ms
+     → The URL must be of scheme file
+   × D19 actual asset UI/API boundary with explicit offline adapters > retains the URL after a Storage failure without claiming a finalize or cleanup that did not run 47ms
+     → The URL must be of scheme file
+   × D19 actual asset UI/API boundary with explicit offline adapters > shows a failed evidence row and retained inputs when finalize returns an actual route409 32ms
+     → The URL must be of scheme file
+   × D19 actual asset UI/API boundary with explicit offline adapters > preserves inputs on the canonical expiry error and recovers only with a newly selected grant 48ms
+     → The URL must be of scheme file
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  docs/verification/D19-asset-offline-20261026/assets.test.tsx > D19 actual asset UI/API boundary with explicit offline adapters > uploads actual file bytes through the owner workflow path and finalizes with their SHA256
+TypeError: The URL must be of scheme file
+ ❯ image docs/verification/D19-asset-offline-20261026/assets.test.tsx:159:37
+    157| }
+    158| const choose = (file: BinaryFile) => fireEvent.change(screen.getByLabe…
+    159| const image = () => new BinaryFile([readFileSync(new URL("./one-pixel.…
+       |                                     ^
+    160| const ready = () => screen.getAllByRole("checkbox", { name: "Use offli…
+    161| const post = (path: string, body: Obj, headers: Obj = {}) => apiFetch(…
+ ❯ docs/verification/D19-asset-offline-20261026/assets.test.tsx:167:37
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  docs/verification/D19-asset-offline-20261026/assets.test.tsx > D19 actual asset UI/API boundary with explicit offline adapters > preserves fields after signing failure, calls exact owned cleanup and allows explicit file reselection
+TypeError: The URL must be of scheme file
+ ❯ image docs/verification/D19-asset-offline-20261026/assets.test.tsx:159:37
+    157| }
+    158| const choose = (file: BinaryFile) => fireEvent.change(screen.getByLabe…
+    159| const image = () => new BinaryFile([readFileSync(new URL("./one-pixel.…
+       |                                     ^
+    160| const ready = () => screen.getAllByRole("checkbox", { name: "Use offli…
+    161| const post = (path: string, body: Obj, headers: Obj = {}) => apiFetch(…
+ ❯ docs/verification/D19-asset-offline-20261026/assets.test.tsx:188:47
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  docs/verification/D19-asset-offline-20261026/assets.test.tsx > D19 actual asset UI/API boundary with explicit offline adapters > retains the URL after a Storage failure without claiming a finalize or cleanup that did not run
+TypeError: The URL must be of scheme file
+ ❯ image docs/verification/D19-asset-offline-20261026/assets.test.tsx:159:37
+    157| }
+    158| const choose = (file: BinaryFile) => fireEvent.change(screen.getByLabe…
+    159| const image = () => new BinaryFile([readFileSync(new URL("./one-pixel.…
+       |                                     ^
+    160| const ready = () => screen.getAllByRole("checkbox", { name: "Use offli…
+    161| const post = (path: string, body: Obj, headers: Obj = {}) => apiFetch(…
+ ❯ docs/verification/D19-asset-offline-20261026/assets.test.tsx:204:49
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  docs/verification/D19-asset-offline-20261026/assets.test.tsx > D19 actual asset UI/API boundary with explicit offline adapters > shows a failed evidence row and retained inputs when finalize returns an actual route409
+TypeError: The URL must be of scheme file
+ ❯ image docs/verification/D19-asset-offline-20261026/assets.test.tsx:159:37
+    157| }
+    158| const choose = (file: BinaryFile) => fireEvent.change(screen.getByLabe…
+    159| const image = () => new BinaryFile([readFileSync(new URL("./one-pixel.…
+       |                                     ^
+    160| const ready = () => screen.getAllByRole("checkbox", { name: "Use offli…
+    161| const post = (path: string, body: Obj, headers: Obj = {}) => apiFetch(…
+ ❯ docs/verification/D19-asset-offline-20261026/assets.test.tsx:212:48
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  docs/verification/D19-asset-offline-20261026/assets.test.tsx > D19 actual asset UI/API boundary with explicit offline adapters > preserves inputs on the canonical expiry error and recovers only with a newly selected grant
+TypeError: The URL must be of scheme file
+ ❯ image docs/verification/D19-asset-offline-20261026/assets.test.tsx:159:37
+    157| }
+    158| const choose = (file: BinaryFile) => fireEvent.change(screen.getByLabe…
+    159| const image = () => new BinaryFile([readFileSync(new URL("./one-pixel.…
+       |                                     ^
+    160| const ready = () => screen.getAllByRole("checkbox", { name: "Use offli…
+    161| const post = (path: string, body: Obj, headers: Obj = {}) => apiFetch(…
+ ❯ docs/verification/D19-asset-offline-20261026/assets.test.tsx:230:50
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+ Test Files  1 failed (1)
+      Tests  5 failed | 6 passed (11)
+   Start at  05:09:21
+   Duration  2.53s (transform 385ms, setup 190ms, collect 999ms, tests 465ms, environment 634ms, prepare 81ms)
+
+JSON report written to C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/docs/verification/D19-asset-offline-20261026/boundary-after-resource-native.json

@@ -1,0 +1,63 @@
+{
+  "checkerSha256": "6eb4cfae062a626279e4d812758c5baf113b659868566bfc0b6c43d2d2a4c1c1",
+  "scope": "File-only current delivery/source/before-image/case/approval/rollback/evidence-integrity checks; not new app tests, SQL or runtime acceptance.",
+  "preseal": {
+    "command": [
+      "C:\\Python314\\python.exe",
+      "C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023\\docs\\verification\\D19-C2-runtime-20261026\\verify-delivery.py",
+      "--preseal"
+    ],
+    "startedAt": "2026-10-25T18:56:05.834258+00:00",
+    "endedAt": "2026-10-25T18:56:06.767089+00:00",
+    "exit": 0,
+    "stdout": "{\"status\": \"PASS_CURRENT_C2_TRANSPORT_DELIVERY_NOT_RUNTIME_OR_R1\", \"source\": \"ead55a808470f90d72290905db90933cb4a6df48eaba519d4587339a4659b71d\", \"sourceRecords\": 789, \"fullPassed\": 2133, \"fullSkipped\": 363, \"originalAudit16\": 16, \"protected194\": 194, \"originalCases\": 107, \"priorEvidenceRecordsPreserved\": 2249, \"originalC2Approval\": true, \"changedSourceRuntimeApproved\": false, \"claimOrDataWrites\": 0, \"incidentOpen\": true, \"releaseHold\": true, \"providerEnabled\": false, \"preseal\": true}\n",
+    "stderr": "",
+    "result": {
+      "status": "PASS_CURRENT_C2_TRANSPORT_DELIVERY_NOT_RUNTIME_OR_R1",
+      "source": "ead55a808470f90d72290905db90933cb4a6df48eaba519d4587339a4659b71d",
+      "sourceRecords": 789,
+      "fullPassed": 2133,
+      "fullSkipped": 363,
+      "originalAudit16": 16,
+      "protected194": 194,
+      "originalCases": 107,
+      "priorEvidenceRecordsPreserved": 2249,
+      "originalC2Approval": true,
+      "changedSourceRuntimeApproved": false,
+      "claimOrDataWrites": 0,
+      "incidentOpen": true,
+      "releaseHold": true,
+      "providerEnabled": false,
+      "preseal": true
+    }
+  },
+  "final": {
+    "command": [
+      "C:\\Python314\\python.exe",
+      "C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023\\docs\\verification\\D19-C2-runtime-20261026\\verify-delivery.py"
+    ],
+    "startedAt": "2026-10-25T18:56:10.542363+00:00",
+    "endedAt": "2026-10-25T18:56:13.366608+00:00",
+    "exit": 0,
+    "stdout": "{\"status\": \"PASS_CURRENT_C2_TRANSPORT_DELIVERY_NOT_RUNTIME_OR_R1\", \"source\": \"ead55a808470f90d72290905db90933cb4a6df48eaba519d4587339a4659b71d\", \"sourceRecords\": 789, \"fullPassed\": 2133, \"fullSkipped\": 363, \"originalAudit16\": 16, \"protected194\": 194, \"originalCases\": 107, \"priorEvidenceRecordsPreserved\": 2249, \"originalC2Approval\": true, \"changedSourceRuntimeApproved\": false, \"claimOrDataWrites\": 0, \"incidentOpen\": true, \"releaseHold\": true, \"providerEnabled\": false, \"preseal\": false}\n",
+    "stderr": "",
+    "result": {
+      "status": "PASS_CURRENT_C2_TRANSPORT_DELIVERY_NOT_RUNTIME_OR_R1",
+      "source": "ead55a808470f90d72290905db90933cb4a6df48eaba519d4587339a4659b71d",
+      "sourceRecords": 789,
+      "fullPassed": 2133,
+      "fullSkipped": 363,
+      "originalAudit16": 16,
+      "protected194": 194,
+      "originalCases": 107,
+      "priorEvidenceRecordsPreserved": 2249,
+      "originalC2Approval": true,
+      "changedSourceRuntimeApproved": false,
+      "claimOrDataWrites": 0,
+      "incidentOpen": true,
+      "releaseHold": true,
+      "providerEnabled": false,
+      "preseal": false
+    }
+  }
+}

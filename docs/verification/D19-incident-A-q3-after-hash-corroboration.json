@@ -1,0 +1,27 @@
+{
+  "rows": [
+    {
+      "campaignId": "937131f9-5417-4ab4-aebd-a5714681f6dd",
+      "currentAfterRowMd5": "5c7ac86b9595bcb533e1655d1a67e0e5",
+      "matchesOriginalMissingBeforeHashes": false,
+      "postIncidentVectorContainsCurrentAfterHash": true,
+      "postRecoveryVectorContainsCurrentAfterHash": true
+    },
+    {
+      "campaignId": "9e2d04e2-cafb-4ff6-988b-348f0279bba3",
+      "currentAfterRowMd5": "06f22d67db0ec6a8c5e85efdfb663812",
+      "matchesOriginalMissingBeforeHashes": false,
+      "postIncidentVectorContainsCurrentAfterHash": true,
+      "postRecoveryVectorContainsCurrentAfterHash": true
+    },
+    {
+      "campaignId": "d80d80dc-4833-4ab2-9e30-48efaef68d1d",
+      "currentAfterRowMd5": "ef813976a7295c6a2d22e3aaf7fed5cb",
+      "matchesOriginalMissingBeforeHashes": false,
+      "postIncidentVectorContainsCurrentAfterHash": true,
+      "postRecoveryVectorContainsCurrentAfterHash": true
+    }
+  ],
+  "meaning": "New keyed AFTER-state fingerprints match saved post-incident vectors. This does not recover the original BEFORE values or map a missing original hash to an ID; it also does not prove there were no transient intervening writes.",
+  "beforeValuesRemain": "UNKNOWN"
+}

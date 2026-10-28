@@ -1,0 +1,13 @@
+{
+  "readOnly": true,
+  "productionQueried": false,
+  "initialWindow": {
+    "baselineAt": "2026-10-24T07:03:47.529Z",
+    "startMs": 1792825829413,
+    "endMs": 1792826049495.878
+  },
+  "newSnapshotRowsOnPreExistingCampaigns": [],
+  "insertedRowCount": 0,
+  "cleanupOrRestoreExecuted": false,
+  "limitation": "Prior row-hash preservation checks detect changed/removed rows, not newly inserted children; this separate exact-time parent-ID check measures the first global snapshot RPC extent."
+}

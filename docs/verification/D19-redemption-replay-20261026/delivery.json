@@ -1,0 +1,115 @@
+{
+  "at": "2026-10-25T20:49:23.418086+00:00",
+  "status": "PASS_LOCAL_C33_REPLAY_REPAIR_AND_DELIVERY_REVIEW_NOT_R1",
+  "tasks": [
+    "D19"
+  ],
+  "sourceFingerprint": "4f2c3faa22bf835911a55dc7bb099910e4308fc1b7a5570d58f32386708934b9",
+  "sourceRecords": 793,
+  "head": "7cfa3dc84c821719a4dff754229a591c81786c53",
+  "code": "Durable per-tab owner/workspace/gift intent, server receipt wrapper calling original redeem_gift once, account/workspace response fence, history recovery, release classification. Original73 SQL and43 reviewed entries unchanged.",
+  "test": {
+    "full": {
+      "passed": 2155,
+      "failed": 0,
+      "skipped": 363,
+      "files": 295
+    },
+    "nativeC33Memory": 10,
+    "nativeC33Ui": 11,
+    "nativeSubsetCountsIncludedInFull": true,
+    "releaseFoundation": 108,
+    "separateWalletImpact": 8,
+    "fourExistingLintWarnings": true,
+    "buildTypeSchemaAndManifestReview": "PASS"
+  },
+  "deployment": "NOT_DEPLOYED",
+  "runtime": "Memory SQL/jsdom/scripted HTTP only; no current target/client/Auth/physical SQL/browser/provider action. New74 NOT_APPLIED.",
+  "actualTargetCalls": 0,
+  "realSdkClients": 0,
+  "physicalSqlCalls": 0,
+  "authSubjectsCreated": 0,
+  "productionOrFormalStaffWrites": 0,
+  "actualProviderCalls": 0,
+  "pendingRewardNeutralityMeasured": false,
+  "gates": {
+    "path": "docs/verification/D19-redemption-replay-20261026/gates.json",
+    "sha256": "7dfd725d889fd09d287fc2bba76f3da897a0e01b7c8a3cf3564a472b63104c3b"
+  },
+  "readbacks": {
+    "path": "docs/verification/D19-redemption-replay-20261026/readback-summary.json",
+    "sha256": "8b8bda0c196c1604a68bca6d740954fdd48f127374dcb6a928544c2d8ef06b45"
+  },
+  "schema": {
+    "path": "docs/verification/D19-redemption-replay-20261026/schema-manifest-final.json",
+    "sha256": "2c681ccbcb180c8cffe894f7c275fe19456e7e4a08166cff4641180816b3620b"
+  },
+  "schemaDiff": {
+    "path": "docs/verification/D19-redemption-replay-20261026/schema-diff-final.json",
+    "sha256": "ae704a6c719b91ce692435e45b7a9a90e2b9b9b3797b39123a83e3d72be2ab94"
+  },
+  "cases": {
+    "path": "docs/verification/D19-redemption-replay-20261026/case-coverage.json",
+    "sha256": "a4c42d33cbbdff97d0c79448bb0729521484a18ee04ef436fbfd4a7c57473ee7"
+  },
+  "remaining": {
+    "path": "docs/verification/D19-redemption-replay-20261026/remaining-acceptance.json",
+    "sha256": "f11a04e490f75ea967b743d0fe607cb2cad6bca6c71ac591687749ca5f59a50a"
+  },
+  "rollback": {
+    "path": "docs/verification/D19-redemption-replay-20261026/rollback.json",
+    "sha256": "b40397f10f6bc203958046758d5758deaa8ed59b46f2f74cb7967fbc26e38635"
+  },
+  "sourceDelta": {
+    "path": "docs/verification/D19-redemption-replay-20261026/source-delta-final.json",
+    "sha256": "8288edfb1b57182e8e2e69cb5b6296728d3952780d6fbfd9631df9cd49205e57"
+  },
+  "failures": {
+    "path": "docs/verification/D19-redemption-replay-20261026/failure-disposition.json",
+    "sha256": "aad3e4c738a2c80fb8d6e8836c3e8b6eb5630fd209bc6f9aef5f5003d16e0a7b"
+  },
+  "runtimeManifest": {
+    "path": "docs/verification/D19-C2-current-source-runtime-manifest.json",
+    "sha256": "cb93361481d8d6a42785077809c4e5338745ffcb2c3e41ffc62ed72631f59a65"
+  },
+  "runtimeApproved": false,
+  "oldE8ActualApprovalStillTrue": true,
+  "f5Superseded": true,
+  "incidentOpen": true,
+  "restored": false,
+  "releaseHold": true,
+  "providerEnabled": false,
+  "wholeR1Verified": false,
+  "commit": null,
+  "push": false,
+  "merge": false,
+  "deploy": false,
+  "blockers": [
+    "D15 approved lesson content UC-C18/UC-A51",
+    "Named advisor owners, physical devices/manual AT and hosted candidate evidence",
+    "Formal staff membership/role owner handoff; active membership0 is a scope issue",
+    "Original3-campaign incident OPEN/unrestored; shaped target forensic-only",
+    "Original audit ZIP absent at the exact provided Downloads path; sealed original107 fields retained, no fresh archive hash verification",
+    "Release HOLD; not deployed; real provider disabled"
+  ],
+  "nextTask": "D19: review the final current-source C2 applications-only manifest and its exact source/digest. Actual original e8 approval remains true; f5 and provisional98 proposals are superseded. No automatic execution or old acceptance replay. Forward74 and real C33 need a separate bounded schema/fixture/financial/browser scope. Continue remaining independent local facets within authorization.",
+  "changedSource": [
+    "scripts/release/contracts.ts",
+    "scripts/release/manifest.test.ts",
+    "scripts/release/manifest.ts",
+    "scripts/release/preflight.test.ts",
+    "server/routes/redemption.ts",
+    "src/components/RedeemGiftCard.tsx",
+    "src/lib/i18n.dict.ts",
+    "src/lib/queries/kocmax.ts",
+    "supabase/release-manifest.json",
+    "server/test/redemption-intent-memory.test.ts",
+    "src/components/RedeemGiftCard.intent.test.tsx",
+    "src/lib/redemptionIntent.ts",
+    "supabase/migrations/20261025194402_redemption_intents.sql"
+  ],
+  "acceptanceChecklist": {
+    "path": "docs/verification/D19-redemption-replay-20261026/acceptance-checklist.json",
+    "sha256": "e1ee5cb42345342b2980ff82271adf64adb655c46cb967af3082e117cfe211a4"
+  }
+}

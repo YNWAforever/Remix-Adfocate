@@ -1,0 +1,1073 @@
+{
+  "scope": "Fresh in-memory PostgreSQL/PGlite, actual current Hono route and SQL; scripted Auth/transport only. No isolated/live target, actual Auth/RLS service, independent-connection concurrency, payment or provider.",
+  "schemaSources": [
+    {
+      "path": "supabase/migrations/0001_init.sql",
+      "rawSha256": "32f4e8cc63137b4432d9fc4a8f4091f774301c9c510545be87e6212aab00d9ce",
+      "executedSha256": "6d479462d1a5cbc72a5e7b5475a16b0e57b118ce852738ab95e4470558165dfc",
+      "scope": "Exact base-table prefix before Realtime"
+    },
+    {
+      "path": "supabase/migrations/0006_redemption.sql",
+      "rawSha256": "2c764a972fa795997ad8e2cb1b56093f79775971a9620bd842a28dedb9ae23b3",
+      "executedSha256": "2c764a972fa795997ad8e2cb1b56093f79775971a9620bd842a28dedb9ae23b3",
+      "scope": "Complete SQL, including actual redeem_gift/ACL/RLS"
+    },
+    {
+      "path": "supabase/migrations/20261025194402_redemption_intents.sql",
+      "rawSha256": "c0bdf76d8d4dda6117c9aaeec537c238e95560c19b12ca20ab131dd89d8f78b6",
+      "executedSha256": "c0bdf76d8d4dda6117c9aaeec537c238e95560c19b12ca20ab131dd89d8f78b6",
+      "scope": "Complete SQL, including actual redeem_gift/ACL/RLS"
+    }
+  ],
+  "observations": [
+    {
+      "test": "UC-C33 current actual redemption SQL/route intent replay > same intent after a lost response returns the same saved code and debits only once",
+      "events": [
+        {
+          "request": "00000000-0000-4000-8000-000000000020",
+          "gift": "00000000-0000-4000-8000-000000000010",
+          "owner": "00000000-0000-4000-8000-000000000001",
+          "status": 200,
+          "result": {
+            "id": "6ac99832-8db8-4d9b-a0cf-4f0fc08d35d1",
+            "code": "A1",
+            "status": "fulfilled",
+            "code_id": "f576771f-b39e-4694-af0b-74f24e33f915",
+            "gift_id": "00000000-0000-4000-8000-000000000010",
+            "created_at": "2026-10-26T03:51:10.062+08:00",
+            "creator_id": "00000000-0000-4000-8000-000000000001",
+            "points_spent": 50,
+            "workspace_id": "00000000-0000-4000-8000-000000000003",
+            "client_request_id": "00000000-0000-4000-8000-000000000020"
+          }
+        },
+        {
+          "request": "00000000-0000-4000-8000-000000000020",
+          "gift": "00000000-0000-4000-8000-000000000010",
+          "owner": "00000000-0000-4000-8000-000000000001",
+          "status": 200,
+          "result": {
+            "id": "6ac99832-8db8-4d9b-a0cf-4f0fc08d35d1",
+            "code": "A1",
+            "status": "fulfilled",
+            "code_id": "f576771f-b39e-4694-af0b-74f24e33f915",
+            "gift_id": "00000000-0000-4000-8000-000000000010",
+            "created_at": "2026-10-26T03:51:10.062+08:00",
+            "creator_id": "00000000-0000-4000-8000-000000000001",
+            "points_spent": 50,
+            "workspace_id": "00000000-0000-4000-8000-000000000003",
+            "client_request_id": "00000000-0000-4000-8000-000000000020"
+          }
+        },
+        {
+          "readback": {
+            "codes": [
+              {
+                "code": "A1",
+                "status": "issued",
+                "issued_to": "00000000-0000-4000-8000-000000000001"
+              },
+              {
+                "code": "A2",
+                "status": "available",
+                "issued_to": null
+              },
+              {
+                "code": "A3",
+                "status": "available",
+                "issued_to": null
+              },
+              {
+                "code": "A4",
+                "status": "available",
+                "issued_to": null
+              },
+              {
+                "code": "B1",
+                "status": "available",
+                "issued_to": null
+              },
+              {
+                "code": "B2",
+                "status": "available",
+                "issued_to": null
+              }
+            ],
+            "stock": [
+              {
+                "id": "00000000-0000-4000-8000-000000000010",
+                "stock_remaining": 3
+              },
+              {
+                "id": "00000000-0000-4000-8000-000000000011",
+                "stock_remaining": 2
+              }
+            ],
+            "ledger": [
+              {
+                "delta": -50,
+                "creator_id": "00000000-0000-4000-8000-000000000001"
+              }
+            ],
+            "balances": [
+              {
+                "balance": 150,
+                "creator_id": "00000000-0000-4000-8000-000000000001"
+              },
+              {
+                "balance": 200,
+                "creator_id": "00000000-0000-4000-8000-000000000002"
+              }
+            ],
+            "redemptions": [
+              {
+                "id": "6ac99832-8db8-4d9b-a0cf-4f0fc08d35d1",
+                "code": "A1",
+                "status": "fulfilled",
+                "code_id": "f576771f-b39e-4694-af0b-74f24e33f915",
+                "gift_id": "00000000-0000-4000-8000-000000000010",
+                "created_at": "2026-10-26T03:51:10.062+08:00",
+                "creator_id": "00000000-0000-4000-8000-000000000001",
+                "points_spent": 50,
+                "workspace_id": "00000000-0000-4000-8000-000000000003",
+                "client_request_id": "00000000-0000-4000-8000-000000000020"
+              }
+            ]
+          }
+        }
+      ],
+      "calls": [
+        {
+          "owner": "00000000-0000-4000-8000-000000000001",
+          "name": "redeem_gift_with_request",
+          "args": {
+            "p_gift": "00000000-0000-4000-8000-000000000010",
+            "p_request_id": "00000000-0000-4000-8000-000000000020"
+          }
+        },
+        {
+          "owner": "00000000-0000-4000-8000-000000000001",
+          "name": "redeem_gift_with_request",
+          "args": {
+            "p_gift": "00000000-0000-4000-8000-000000000010",
+            "p_request_id": "00000000-0000-4000-8000-000000000020"
+          }
+        }
+      ],
+      "after": {
+        "codes": [
+          {
+            "code": "A1",
+            "status": "issued",
+            "issued_to": "00000000-0000-4000-8000-000000000001"
+          },
+          {
+            "code": "A2",
+            "status": "available",
+            "issued_to": null
+          },
+          {
+            "code": "A3",
+            "status": "available",
+            "issued_to": null
+          },
+          {
+            "code": "A4",
+            "status": "available",
+            "issued_to": null
+          },
+          {
+            "code": "B1",
+            "status": "available",
+            "issued_to": null
+          },
+          {
+            "code": "B2",
+            "status": "available",
+            "issued_to": null
+          }
+        ],
+        "stock": [
+          {
+            "id": "00000000-0000-4000-8000-000000000010",
+            "stock_remaining": 3
+          },
+          {
+            "id": "00000000-0000-4000-8000-000000000011",
+            "stock_remaining": 2
+          }
+        ],
+        "ledger": [
+          {
+            "delta": -50,
+            "creator_id": "00000000-0000-4000-8000-000000000001"
+          }
+        ],
+        "balances": [
+          {
+            "balance": 150,
+            "creator_id": "00000000-0000-4000-8000-000000000001"
+          },
+          {
+            "balance": 200,
+            "creator_id": "00000000-0000-4000-8000-000000000002"
+          }
+        ],
+        "redemptions": [
+          {
+            "id": "6ac99832-8db8-4d9b-a0cf-4f0fc08d35d1",
+            "code": "A1",
+            "status": "fulfilled",
+            "code_id": "f576771f-b39e-4694-af0b-74f24e33f915",
+            "gift_id": "00000000-0000-4000-8000-000000000010",
+            "created_at": "2026-10-26T03:51:10.062+08:00",
+            "creator_id": "00000000-0000-4000-8000-000000000001",
+            "points_spent": 50,
+            "workspace_id": "00000000-0000-4000-8000-000000000003",
+            "client_request_id": "00000000-0000-4000-8000-000000000020"
+          }
+        ]
+      },
+      "realSdkClients": 0
+    },
+    {
+      "test": "UC-C33 current actual redemption SQL/route intent replay > a deliberate second new intent still receives a DISTINCT code and its own debit",
+      "events": [
+        {
+          "request": "00000000-0000-4000-8000-000000000020",
+          "gift": "00000000-0000-4000-8000-000000000010",
+          "owner": "00000000-0000-4000-8000-000000000001",
+          "status": 200,
+          "result": {
+            "id": "59d0925f-d4ab-435d-95fa-6da92b986a4c",
+            "code": "A1",
+            "status": "fulfilled",
+            "code_id": "41cc16d4-d527-4c4c-b1f7-df3ba76b2ce1",
+            "gift_id": "00000000-0000-4000-8000-000000000010",
+            "created_at": "2026-10-26T03:51:11.086+08:00",
+            "creator_id": "00000000-0000-4000-8000-000000000001",
+            "points_spent": 50,
+            "workspace_id": "00000000-0000-4000-8000-000000000003",
+            "client_request_id": "00000000-0000-4000-8000-000000000020"
+          }
+        },
+        {
+          "request": "00000000-0000-4000-8000-000000000021",
+          "gift": "00000000-0000-4000-8000-000000000010",
+          "owner": "00000000-0000-4000-8000-000000000001",
+          "status": 200,
+          "result": {
+            "id": "76ccf3fa-a46a-4f38-b2d8-0418827661b0",
+            "code": "A2",
+            "status": "fulfilled",
+            "code_id": "90b96e68-6103-4b5a-bef7-1490271d9f67",
+            "gift_id": "00000000-0000-4000-8000-000000000010",
+            "created_at": "2026-10-26T03:51:11.099+08:00",
+            "creator_id": "00000000-0000-4000-8000-000000000001",
+            "points_spent": 50,
+            "workspace_id": "00000000-0000-4000-8000-000000000003",
+            "client_request_id": "00000000-0000-4000-8000-000000000021"
+          }
+        }
+      ],
+      "calls": [
+        {
+          "owner": "00000000-0000-4000-8000-000000000001",
+          "name": "redeem_gift_with_request",
+          "args": {
+            "p_gift": "00000000-0000-4000-8000-000000000010",
+            "p_request_id": "00000000-0000-4000-8000-000000000020"
+          }
+        },
+        {
+          "owner": "00000000-0000-4000-8000-000000000001",
+          "name": "redeem_gift_with_request",
+          "args": {
+            "p_gift": "00000000-0000-4000-8000-000000000010",
+            "p_request_id": "00000000-0000-4000-8000-000000000021"
+          }
+        }
+      ],
+      "after": {
+        "codes": [
+          {
+            "code": "A1",
+            "status": "issued",
+            "issued_to": "00000000-0000-4000-8000-000000000001"
+          },
+          {
+            "code": "A2",
+            "status": "issued",
+            "issued_to": "00000000-0000-4000-8000-000000000001"
+          },
+          {
+            "code": "A3",
+            "status": "available",
+            "issued_to": null
+          },
+          {
+            "code": "A4",
+            "status": "available",
+            "issued_to": null
+          },
+          {
+            "code": "B1",
+            "status": "available",
+            "issued_to": null
+          },
+          {
+            "code": "B2",
+            "status": "available",
+            "issued_to": null
+          }
+        ],
+        "stock": [
+          {
+            "id": "00000000-0000-4000-8000-000000000010",
+            "stock_remaining": 2
+          },
+          {
+            "id": "00000000-0000-4000-8000-000000000011",
+            "stock_remaining": 2
+          }
+        ],
+        "ledger": [
+          {
+            "delta": -50,
+            "creator_id": "00000000-0000-4000-8000-000000000001"
+          },
+          {
+            "delta": -50,
+            "creator_id": "00000000-0000-4000-8000-000000000001"
+          }
+        ],
+        "balances": [
+          {
+            "balance": 100,
+            "creator_id": "00000000-0000-4000-8000-000000000001"
+          },
+          {
+            "balance": 200,
+            "creator_id": "00000000-0000-4000-8000-000000000002"
+          }
+        ],
+        "redemptions": [
+          {
+            "id": "59d0925f-d4ab-435d-95fa-6da92b986a4c",
+            "code": "A1",
+            "status": "fulfilled",
+            "code_id": "41cc16d4-d527-4c4c-b1f7-df3ba76b2ce1",
+            "gift_id": "00000000-0000-4000-8000-000000000010",
+            "created_at": "2026-10-26T03:51:11.086+08:00",
+            "creator_id": "00000000-0000-4000-8000-000000000001",
+            "points_spent": 50,
+            "workspace_id": "00000000-0000-4000-8000-000000000003",
+            "client_request_id": "00000000-0000-4000-8000-000000000020"
+          },
+          {
+            "id": "76ccf3fa-a46a-4f38-b2d8-0418827661b0",
+            "code": "A2",
+            "status": "fulfilled",
+            "code_id": "90b96e68-6103-4b5a-bef7-1490271d9f67",
+            "gift_id": "00000000-0000-4000-8000-000000000010",
+            "created_at": "2026-10-26T03:51:11.099+08:00",
+            "creator_id": "00000000-0000-4000-8000-000000000001",
+            "points_spent": 50,
+            "workspace_id": "00000000-0000-4000-8000-000000000003",
+            "client_request_id": "00000000-0000-4000-8000-000000000021"
+          }
+        ]
+      },
+      "realSdkClients": 0
+    },
+    {
+      "test": "UC-C33 current actual redemption SQL/route intent replay > retry recovers the original saved result even when that first action exhausted stock",
+      "events": [
+        {
+          "request": "00000000-0000-4000-8000-000000000020",
+          "gift": "00000000-0000-4000-8000-000000000010",
+          "owner": "00000000-0000-4000-8000-000000000001",
+          "status": 200,
+          "result": {
+            "id": "01e8de1e-1740-47f8-8e61-369bda3bd1b6",
+            "code": "A1",
+            "status": "fulfilled",
+            "code_id": "a9d30717-1640-4261-82e6-a507bfa6061e",
+            "gift_id": "00000000-0000-4000-8000-000000000010",
+            "created_at": "2026-10-26T03:51:12.239+08:00",
+            "creator_id": "00000000-0000-4000-8000-000000000001",
+            "points_spent": 50,
+            "workspace_id": "00000000-0000-4000-8000-000000000003",
+            "client_request_id": "00000000-0000-4000-8000-000000000020"
+          }
+        },
+        {
+          "request": "00000000-0000-4000-8000-000000000020",
+          "gift": "00000000-0000-4000-8000-000000000010",
+          "owner": "00000000-0000-4000-8000-000000000001",
+          "status": 200,
+          "result": {
+            "id": "01e8de1e-1740-47f8-8e61-369bda3bd1b6",
+            "code": "A1",
+            "status": "fulfilled",
+            "code_id": "a9d30717-1640-4261-82e6-a507bfa6061e",
+            "gift_id": "00000000-0000-4000-8000-000000000010",
+            "created_at": "2026-10-26T03:51:12.239+08:00",
+            "creator_id": "00000000-0000-4000-8000-000000000001",
+            "points_spent": 50,
+            "workspace_id": "00000000-0000-4000-8000-000000000003",
+            "client_request_id": "00000000-0000-4000-8000-000000000020"
+          }
+        },
+        {
+          "readback": {
+            "codes": [
+              {
+                "code": "A1",
+                "status": "issued",
+                "issued_to": "00000000-0000-4000-8000-000000000001"
+              },
+              {
+                "code": "A2",
+                "status": "available",
+                "issued_to": null
+              },
+              {
+                "code": "A3",
+                "status": "available",
+                "issued_to": null
+              },
+              {
+                "code": "A4",
+                "status": "available",
+                "issued_to": null
+              },
+              {
+                "code": "B1",
+                "status": "available",
+                "issued_to": null
+              },
+              {
+                "code": "B2",
+                "status": "available",
+                "issued_to": null
+              }
+            ],
+            "stock": [
+              {
+                "id": "00000000-0000-4000-8000-000000000010",
+                "stock_remaining": 0
+              },
+              {
+                "id": "00000000-0000-4000-8000-000000000011",
+                "stock_remaining": 2
+              }
+            ],
+            "ledger": [
+              {
+                "delta": -50,
+                "creator_id": "00000000-0000-4000-8000-000000000001"
+              }
+            ],
+            "balances": [
+              {
+                "balance": 150,
+                "creator_id": "00000000-0000-4000-8000-000000000001"
+              },
+              {
+                "balance": 200,
+                "creator_id": "00000000-0000-4000-8000-000000000002"
+              }
+            ],
+            "redemptions": [
+              {
+                "id": "01e8de1e-1740-47f8-8e61-369bda3bd1b6",
+                "code": "A1",
+                "status": "fulfilled",
+                "code_id": "a9d30717-1640-4261-82e6-a507bfa6061e",
+                "gift_id": "00000000-0000-4000-8000-000000000010",
+                "created_at": "2026-10-26T03:51:12.239+08:00",
+                "creator_id": "00000000-0000-4000-8000-000000000001",
+                "points_spent": 50,
+                "workspace_id": "00000000-0000-4000-8000-000000000003",
+                "client_request_id": "00000000-0000-4000-8000-000000000020"
+              }
+            ]
+          }
+        }
+      ],
+      "calls": [
+        {
+          "owner": "00000000-0000-4000-8000-000000000001",
+          "name": "redeem_gift_with_request",
+          "args": {
+            "p_gift": "00000000-0000-4000-8000-000000000010",
+            "p_request_id": "00000000-0000-4000-8000-000000000020"
+          }
+        },
+        {
+          "owner": "00000000-0000-4000-8000-000000000001",
+          "name": "redeem_gift_with_request",
+          "args": {
+            "p_gift": "00000000-0000-4000-8000-000000000010",
+            "p_request_id": "00000000-0000-4000-8000-000000000020"
+          }
+        }
+      ],
+      "after": {
+        "codes": [
+          {
+            "code": "A1",
+            "status": "issued",
+            "issued_to": "00000000-0000-4000-8000-000000000001"
+          },
+          {
+            "code": "A2",
+            "status": "available",
+            "issued_to": null
+          },
+          {
+            "code": "A3",
+            "status": "available",
+            "issued_to": null
+          },
+          {
+            "code": "A4",
+            "status": "available",
+            "issued_to": null
+          },
+          {
+            "code": "B1",
+            "status": "available",
+            "issued_to": null
+          },
+          {
+            "code": "B2",
+            "status": "available",
+            "issued_to": null
+          }
+        ],
+        "stock": [
+          {
+            "id": "00000000-0000-4000-8000-000000000010",
+            "stock_remaining": 0
+          },
+          {
+            "id": "00000000-0000-4000-8000-000000000011",
+            "stock_remaining": 2
+          }
+        ],
+        "ledger": [
+          {
+            "delta": -50,
+            "creator_id": "00000000-0000-4000-8000-000000000001"
+          }
+        ],
+        "balances": [
+          {
+            "balance": 150,
+            "creator_id": "00000000-0000-4000-8000-000000000001"
+          },
+          {
+            "balance": 200,
+            "creator_id": "00000000-0000-4000-8000-000000000002"
+          }
+        ],
+        "redemptions": [
+          {
+            "id": "01e8de1e-1740-47f8-8e61-369bda3bd1b6",
+            "code": "A1",
+            "status": "fulfilled",
+            "code_id": "a9d30717-1640-4261-82e6-a507bfa6061e",
+            "gift_id": "00000000-0000-4000-8000-000000000010",
+            "created_at": "2026-10-26T03:51:12.239+08:00",
+            "creator_id": "00000000-0000-4000-8000-000000000001",
+            "points_spent": 50,
+            "workspace_id": "00000000-0000-4000-8000-000000000003",
+            "client_request_id": "00000000-0000-4000-8000-000000000020"
+          }
+        ]
+      },
+      "realSdkClients": 0
+    },
+    {
+      "test": "UC-C33 current actual redemption SQL/route intent replay > the same intent cannot be changed to another gift and debit a second time",
+      "events": [
+        {
+          "request": "00000000-0000-4000-8000-000000000020",
+          "gift": "00000000-0000-4000-8000-000000000010",
+          "owner": "00000000-0000-4000-8000-000000000001",
+          "status": 200,
+          "result": {
+            "id": "48b6bcf0-fb53-458b-9070-dc07e7c929a8",
+            "code": "A1",
+            "status": "fulfilled",
+            "code_id": "423dd46c-c631-4e40-848a-84fd3e065a83",
+            "gift_id": "00000000-0000-4000-8000-000000000010",
+            "created_at": "2026-10-26T03:51:13.392+08:00",
+            "creator_id": "00000000-0000-4000-8000-000000000001",
+            "points_spent": 50,
+            "workspace_id": "00000000-0000-4000-8000-000000000003",
+            "client_request_id": "00000000-0000-4000-8000-000000000020"
+          }
+        },
+        {
+          "request": "00000000-0000-4000-8000-000000000020",
+          "gift": "00000000-0000-4000-8000-000000000011",
+          "owner": "00000000-0000-4000-8000-000000000001",
+          "status": 409,
+          "result": {
+            "error": "request_conflict",
+            "code": "request_conflict"
+          }
+        },
+        {
+          "readback": {
+            "codes": [
+              {
+                "code": "A1",
+                "status": "issued",
+                "issued_to": "00000000-0000-4000-8000-000000000001"
+              },
+              {
+                "code": "A2",
+                "status": "available",
+                "issued_to": null
+              },
+              {
+                "code": "A3",
+                "status": "available",
+                "issued_to": null
+              },
+              {
+                "code": "A4",
+                "status": "available",
+                "issued_to": null
+              },
+              {
+                "code": "B1",
+                "status": "available",
+                "issued_to": null
+              },
+              {
+                "code": "B2",
+                "status": "available",
+                "issued_to": null
+              }
+            ],
+            "stock": [
+              {
+                "id": "00000000-0000-4000-8000-000000000010",
+                "stock_remaining": 3
+              },
+              {
+                "id": "00000000-0000-4000-8000-000000000011",
+                "stock_remaining": 2
+              }
+            ],
+            "ledger": [
+              {
+                "delta": -50,
+                "creator_id": "00000000-0000-4000-8000-000000000001"
+              }
+            ],
+            "balances": [
+              {
+                "balance": 150,
+                "creator_id": "00000000-0000-4000-8000-000000000001"
+              },
+              {
+                "balance": 200,
+                "creator_id": "00000000-0000-4000-8000-000000000002"
+              }
+            ],
+            "redemptions": [
+              {
+                "id": "48b6bcf0-fb53-458b-9070-dc07e7c929a8",
+                "code": "A1",
+                "status": "fulfilled",
+                "code_id": "423dd46c-c631-4e40-848a-84fd3e065a83",
+                "gift_id": "00000000-0000-4000-8000-000000000010",
+                "created_at": "2026-10-26T03:51:13.392+08:00",
+                "creator_id": "00000000-0000-4000-8000-000000000001",
+                "points_spent": 50,
+                "workspace_id": "00000000-0000-4000-8000-000000000003",
+                "client_request_id": "00000000-0000-4000-8000-000000000020"
+              }
+            ]
+          }
+        }
+      ],
+      "calls": [
+        {
+          "owner": "00000000-0000-4000-8000-000000000001",
+          "name": "redeem_gift_with_request",
+          "args": {
+            "p_gift": "00000000-0000-4000-8000-000000000010",
+            "p_request_id": "00000000-0000-4000-8000-000000000020"
+          }
+        },
+        {
+          "owner": "00000000-0000-4000-8000-000000000001",
+          "name": "redeem_gift_with_request",
+          "args": {
+            "p_gift": "00000000-0000-4000-8000-000000000011",
+            "p_request_id": "00000000-0000-4000-8000-000000000020"
+          }
+        }
+      ],
+      "after": {
+        "codes": [
+          {
+            "code": "A1",
+            "status": "issued",
+            "issued_to": "00000000-0000-4000-8000-000000000001"
+          },
+          {
+            "code": "A2",
+            "status": "available",
+            "issued_to": null
+          },
+          {
+            "code": "A3",
+            "status": "available",
+            "issued_to": null
+          },
+          {
+            "code": "A4",
+            "status": "available",
+            "issued_to": null
+          },
+          {
+            "code": "B1",
+            "status": "available",
+            "issued_to": null
+          },
+          {
+            "code": "B2",
+            "status": "available",
+            "issued_to": null
+          }
+        ],
+        "stock": [
+          {
+            "id": "00000000-0000-4000-8000-000000000010",
+            "stock_remaining": 3
+          },
+          {
+            "id": "00000000-0000-4000-8000-000000000011",
+            "stock_remaining": 2
+          }
+        ],
+        "ledger": [
+          {
+            "delta": -50,
+            "creator_id": "00000000-0000-4000-8000-000000000001"
+          }
+        ],
+        "balances": [
+          {
+            "balance": 150,
+            "creator_id": "00000000-0000-4000-8000-000000000001"
+          },
+          {
+            "balance": 200,
+            "creator_id": "00000000-0000-4000-8000-000000000002"
+          }
+        ],
+        "redemptions": [
+          {
+            "id": "48b6bcf0-fb53-458b-9070-dc07e7c929a8",
+            "code": "A1",
+            "status": "fulfilled",
+            "code_id": "423dd46c-c631-4e40-848a-84fd3e065a83",
+            "gift_id": "00000000-0000-4000-8000-000000000010",
+            "created_at": "2026-10-26T03:51:13.392+08:00",
+            "creator_id": "00000000-0000-4000-8000-000000000001",
+            "points_spent": 50,
+            "workspace_id": "00000000-0000-4000-8000-000000000003",
+            "client_request_id": "00000000-0000-4000-8000-000000000020"
+          }
+        ]
+      },
+      "realSdkClients": 0
+    },
+    {
+      "test": "UC-C33 current actual redemption SQL/route intent replay > a failed debit rolls back stock/code and the same intent can succeed after the balance fixture changes",
+      "events": [
+        {
+          "request": "00000000-0000-4000-8000-000000000020",
+          "gift": "00000000-0000-4000-8000-000000000010",
+          "owner": "00000000-0000-4000-8000-000000000001",
+          "status": 409,
+          "result": {
+            "error": "insufficient_points",
+            "code": "insufficient_points"
+          }
+        },
+        {
+          "request": "00000000-0000-4000-8000-000000000020",
+          "gift": "00000000-0000-4000-8000-000000000010",
+          "owner": "00000000-0000-4000-8000-000000000001",
+          "status": 200,
+          "result": {
+            "id": "756aa049-5664-4b83-b9ae-ca5be18a38f5",
+            "code": "A1",
+            "status": "fulfilled",
+            "code_id": "18e78775-107f-4e79-b73a-4c1983199189",
+            "gift_id": "00000000-0000-4000-8000-000000000010",
+            "created_at": "2026-10-26T03:51:14.765+08:00",
+            "creator_id": "00000000-0000-4000-8000-000000000001",
+            "points_spent": 50,
+            "workspace_id": "00000000-0000-4000-8000-000000000003",
+            "client_request_id": "00000000-0000-4000-8000-000000000020"
+          }
+        }
+      ],
+      "calls": [
+        {
+          "owner": "00000000-0000-4000-8000-000000000001",
+          "name": "redeem_gift_with_request",
+          "args": {
+            "p_gift": "00000000-0000-4000-8000-000000000010",
+            "p_request_id": "00000000-0000-4000-8000-000000000020"
+          }
+        },
+        {
+          "owner": "00000000-0000-4000-8000-000000000001",
+          "name": "redeem_gift_with_request",
+          "args": {
+            "p_gift": "00000000-0000-4000-8000-000000000010",
+            "p_request_id": "00000000-0000-4000-8000-000000000020"
+          }
+        }
+      ],
+      "after": {
+        "codes": [
+          {
+            "code": "A1",
+            "status": "issued",
+            "issued_to": "00000000-0000-4000-8000-000000000001"
+          },
+          {
+            "code": "A2",
+            "status": "available",
+            "issued_to": null
+          },
+          {
+            "code": "A3",
+            "status": "available",
+            "issued_to": null
+          },
+          {
+            "code": "A4",
+            "status": "available",
+            "issued_to": null
+          },
+          {
+            "code": "B1",
+            "status": "available",
+            "issued_to": null
+          },
+          {
+            "code": "B2",
+            "status": "available",
+            "issued_to": null
+          }
+        ],
+        "stock": [
+          {
+            "id": "00000000-0000-4000-8000-000000000010",
+            "stock_remaining": 3
+          },
+          {
+            "id": "00000000-0000-4000-8000-000000000011",
+            "stock_remaining": 2
+          }
+        ],
+        "ledger": [
+          {
+            "delta": -50,
+            "creator_id": "00000000-0000-4000-8000-000000000001"
+          }
+        ],
+        "balances": [
+          {
+            "balance": 50,
+            "creator_id": "00000000-0000-4000-8000-000000000001"
+          },
+          {
+            "balance": 200,
+            "creator_id": "00000000-0000-4000-8000-000000000002"
+          }
+        ],
+        "redemptions": [
+          {
+            "id": "756aa049-5664-4b83-b9ae-ca5be18a38f5",
+            "code": "A1",
+            "status": "fulfilled",
+            "code_id": "18e78775-107f-4e79-b73a-4c1983199189",
+            "gift_id": "00000000-0000-4000-8000-000000000010",
+            "created_at": "2026-10-26T03:51:14.765+08:00",
+            "creator_id": "00000000-0000-4000-8000-000000000001",
+            "points_spent": 50,
+            "workspace_id": "00000000-0000-4000-8000-000000000003",
+            "client_request_id": "00000000-0000-4000-8000-000000000020"
+          }
+        ]
+      },
+      "realSdkClients": 0
+    },
+    {
+      "test": "UC-C33 current actual redemption SQL/route intent replay > another recipient using the same client UUID never receives the first person's code",
+      "events": [
+        {
+          "request": "00000000-0000-4000-8000-000000000020",
+          "gift": "00000000-0000-4000-8000-000000000010",
+          "owner": "00000000-0000-4000-8000-000000000001",
+          "status": 200,
+          "result": {
+            "id": "bf95ab61-7021-4c60-8dcf-1a4654b2bbeb",
+            "code": "A1",
+            "status": "fulfilled",
+            "code_id": "5dd5d971-229a-41a6-ae67-0660f4707e78",
+            "gift_id": "00000000-0000-4000-8000-000000000010",
+            "created_at": "2026-10-26T03:51:16.011+08:00",
+            "creator_id": "00000000-0000-4000-8000-000000000001",
+            "points_spent": 50,
+            "workspace_id": "00000000-0000-4000-8000-000000000003",
+            "client_request_id": "00000000-0000-4000-8000-000000000020"
+          }
+        },
+        {
+          "request": "00000000-0000-4000-8000-000000000020",
+          "gift": "00000000-0000-4000-8000-000000000010",
+          "owner": "00000000-0000-4000-8000-000000000002",
+          "status": 200,
+          "result": {
+            "id": "81f96718-b6cb-4f64-88fd-46936b93f7d3",
+            "code": "A2",
+            "status": "fulfilled",
+            "code_id": "9c823cdb-077d-4216-8292-81a4e4fef65c",
+            "gift_id": "00000000-0000-4000-8000-000000000010",
+            "created_at": "2026-10-26T03:51:16.039+08:00",
+            "creator_id": "00000000-0000-4000-8000-000000000002",
+            "points_spent": 50,
+            "workspace_id": "00000000-0000-4000-8000-000000000003",
+            "client_request_id": "00000000-0000-4000-8000-000000000020"
+          }
+        }
+      ],
+      "calls": [
+        {
+          "owner": "00000000-0000-4000-8000-000000000001",
+          "name": "redeem_gift_with_request",
+          "args": {
+            "p_gift": "00000000-0000-4000-8000-000000000010",
+            "p_request_id": "00000000-0000-4000-8000-000000000020"
+          }
+        },
+        {
+          "owner": "00000000-0000-4000-8000-000000000002",
+          "name": "redeem_gift_with_request",
+          "args": {
+            "p_gift": "00000000-0000-4000-8000-000000000010",
+            "p_request_id": "00000000-0000-4000-8000-000000000020"
+          }
+        }
+      ],
+      "after": {
+        "codes": [
+          {
+            "code": "A1",
+            "status": "issued",
+            "issued_to": "00000000-0000-4000-8000-000000000001"
+          },
+          {
+            "code": "A2",
+            "status": "issued",
+            "issued_to": "00000000-0000-4000-8000-000000000002"
+          },
+          {
+            "code": "A3",
+            "status": "available",
+            "issued_to": null
+          },
+          {
+            "code": "A4",
+            "status": "available",
+            "issued_to": null
+          },
+          {
+            "code": "B1",
+            "status": "available",
+            "issued_to": null
+          },
+          {
+            "code": "B2",
+            "status": "available",
+            "issued_to": null
+          }
+        ],
+        "stock": [
+          {
+            "id": "00000000-0000-4000-8000-000000000010",
+            "stock_remaining": 2
+          },
+          {
+            "id": "00000000-0000-4000-8000-000000000011",
+            "stock_remaining": 2
+          }
+        ],
+        "ledger": [
+          {
+            "delta": -50,
+            "creator_id": "00000000-0000-4000-8000-000000000001"
+          },
+          {
+            "delta": -50,
+            "creator_id": "00000000-0000-4000-8000-000000000002"
+          }
+        ],
+        "balances": [
+          {
+            "balance": 150,
+            "creator_id": "00000000-0000-4000-8000-000000000001"
+          },
+          {
+            "balance": 150,
+            "creator_id": "00000000-0000-4000-8000-000000000002"
+          }
+        ],
+        "redemptions": [
+          {
+            "id": "bf95ab61-7021-4c60-8dcf-1a4654b2bbeb",
+            "code": "A1",
+            "status": "fulfilled",
+            "code_id": "5dd5d971-229a-41a6-ae67-0660f4707e78",
+            "gift_id": "00000000-0000-4000-8000-000000000010",
+            "created_at": "2026-10-26T03:51:16.011+08:00",
+            "creator_id": "00000000-0000-4000-8000-000000000001",
+            "points_spent": 50,
+            "workspace_id": "00000000-0000-4000-8000-000000000003",
+            "client_request_id": "00000000-0000-4000-8000-000000000020"
+          },
+          {
+            "id": "81f96718-b6cb-4f64-88fd-46936b93f7d3",
+            "code": "A2",
+            "status": "fulfilled",
+            "code_id": "9c823cdb-077d-4216-8292-81a4e4fef65c",
+            "gift_id": "00000000-0000-4000-8000-000000000010",
+            "created_at": "2026-10-26T03:51:16.039+08:00",
+            "creator_id": "00000000-0000-4000-8000-000000000002",
+            "points_spent": 50,
+            "workspace_id": "00000000-0000-4000-8000-000000000003",
+            "client_request_id": "00000000-0000-4000-8000-000000000020"
+          }
+        ]
+      },
+      "realSdkClients": 0
+    }
+  ]
+}

@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { adminKeys, fetchApplications, fetchSubmissions } from "@/lib/admin";
 import { useAdminAuth } from "./AdminAuthContext";
 import { useAdminWorkspace } from "./AdminWorkspaceContext";
+import { useStaffAccess } from "./StaffAccessContext";
 
 /**
  * Live counts for the Applications/Submissions sidebar badges. Uses the same query
@@ -12,16 +13,17 @@ import { useAdminWorkspace } from "./AdminWorkspaceContext";
 export function useAdminQueueCounts(): { applications?: number; submissions?: number } {
   const { authed } = useAdminAuth();
   const { workspace } = useAdminWorkspace();
+  const access=useStaffAccess();
   const apps = useQuery({
     queryKey: adminKeys.applications(workspace),
     queryFn: () => fetchApplications(workspace),
-    enabled: authed,
+    enabled: authed && (!access || access.can("application.review")),
     retry: false,
   });
   const subs = useQuery({
     queryKey: adminKeys.submissions("submitted", workspace),
     queryFn: () => fetchSubmissions("submitted", workspace),
-    enabled: authed,
+    enabled: authed && (!access || access.can("submission.review")),
     retry: false,
   });
   return { applications: apps.data?.applications.length, submissions: subs.data?.submissions.length };

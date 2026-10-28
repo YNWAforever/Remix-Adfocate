@@ -1,0 +1,206 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+stderr | server/test/audit-identity-contract.test.ts > D13 owned disposable identity contract
+GoTrueClient@sb-127-auth-token:1 (2.108.1) 2026-10-23T05:30:58.893Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-identity-contract.test.ts > D13 owned disposable identity contract
+GoTrueClient@sb-127-auth-token:2 (2.108.1) 2026-10-23T05:30:59.120Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-identity-contract.test.ts > D13 owned disposable identity contract
+GoTrueClient@sb-127-auth-token:3 (2.108.1) 2026-10-23T05:30:59.366Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-identity-contract.test.ts > D13 owned disposable identity contract
+GoTrueClient@sb-127-auth-token:4 (2.108.1) 2026-10-23T05:30:59.566Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-identity-contract.test.ts > D13 owned disposable identity contract
+GoTrueClient@sb-127-auth-token:5 (2.108.1) 2026-10-23T05:31:00.593Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-identity-contract.test.ts > D13 owned disposable identity contract > returns the same traceable private social projection from Profile and Passport
+GoTrueClient@sb-127-auth-token:6 (2.108.1) 2026-10-23T05:31:00.697Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-identity-contract.test.ts > D13 owned disposable identity contract > returns the same traceable private social projection from Profile and Passport
+GoTrueClient@sb-127-auth-token:7 (2.108.1) 2026-10-23T05:31:00.749Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-identity-contract.test.ts > D13 owned disposable identity contract > returns the same traceable private social projection from Profile and Passport
+GoTrueClient@sb-127-auth-token:8 (2.108.1) 2026-10-23T05:31:00.762Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-identity-contract.test.ts > D13 owned disposable identity contract > returns the same traceable private social projection from Profile and Passport
+GoTrueClient@sb-127-auth-token:9 (2.108.1) 2026-10-23T05:31:00.807Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-identity-contract.test.ts > D13 owned disposable identity contract > returns the same traceable private social projection from Profile and Passport
+GoTrueClient@sb-127-auth-token:10 (2.108.1) 2026-10-23T05:31:00.818Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-identity-contract.test.ts > D13 owned disposable identity contract > returns the same traceable private social projection from Profile and Passport
+GoTrueClient@sb-127-auth-token:11 (2.108.1) 2026-10-23T05:31:00.825Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-identity-contract.test.ts > D13 owned disposable identity contract > keeps canonical handles unchanged across an unrelated profile edit
+GoTrueClient@sb-127-auth-token:12 (2.108.1) 2026-10-23T05:31:00.839Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-identity-contract.test.ts > D13 owned disposable identity contract > keeps canonical handles unchanged across an unrelated profile edit
+GoTrueClient@sb-127-auth-token:13 (2.108.1) 2026-10-23T05:31:00.880Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-identity-contract.test.ts > D13 owned disposable identity contract > keeps canonical handles unchanged across an unrelated profile edit
+GoTrueClient@sb-127-auth-token:14 (2.108.1) 2026-10-23T05:31:00.893Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-identity-contract.test.ts > D13 owned disposable identity contract > keeps canonical handles unchanged across an unrelated profile edit
+GoTrueClient@sb-127-auth-token:15 (2.108.1) 2026-10-23T05:31:00.934Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-identity-contract.test.ts > D13 owned disposable identity contract > keeps Creator RLS and foreign-account actions scoped
+GoTrueClient@sb-127-auth-token:16 (2.108.1) 2026-10-23T05:31:00.953Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-identity-contract.test.ts > D13 owned disposable identity contract > keeps Creator RLS and foreign-account actions scoped
+GoTrueClient@sb-127-auth-token:17 (2.108.1) 2026-10-23T05:31:00.991Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-identity-contract.test.ts > D13 owned disposable identity contract > persists resumable onboarding and awards exactly one existing welcome bonus under replay
+GoTrueClient@sb-127-auth-token:18 (2.108.1) 2026-10-23T05:31:01.006Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-identity-contract.test.ts > D13 owned disposable identity contract > persists resumable onboarding and awards exactly one existing welcome bonus under replay
+GoTrueClient@sb-127-auth-token:19 (2.108.1) 2026-10-23T05:31:01.054Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-identity-contract.test.ts > D13 owned disposable identity contract > persists resumable onboarding and awards exactly one existing welcome bonus under replay
+GoTrueClient@sb-127-auth-token:20 (2.108.1) 2026-10-23T05:31:01.065Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-identity-contract.test.ts > D13 owned disposable identity contract > persists resumable onboarding and awards exactly one existing welcome bonus under replay
+GoTrueClient@sb-127-auth-token:21 (2.108.1) 2026-10-23T05:31:01.106Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-identity-contract.test.ts > D13 owned disposable identity contract > persists resumable onboarding and awards exactly one existing welcome bonus under replay
+GoTrueClient@sb-127-auth-token:22 (2.108.1) 2026-10-23T05:31:01.116Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-identity-contract.test.ts > D13 owned disposable identity contract > persists resumable onboarding and awards exactly one existing welcome bonus under replay
+GoTrueClient@sb-127-auth-token:23 (2.108.1) 2026-10-23T05:31:01.151Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-identity-contract.test.ts > D13 owned disposable identity contract > persists resumable onboarding and awards exactly one existing welcome bonus under replay
+GoTrueClient@sb-127-auth-token:24 (2.108.1) 2026-10-23T05:31:01.198Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+GoTrueClient@sb-127-auth-token:25 (2.108.1) 2026-10-23T05:31:01.199Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+GoTrueClient@sb-127-auth-token:26 (2.108.1) 2026-10-23T05:31:01.201Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+GoTrueClient@sb-127-auth-token:27 (2.108.1) 2026-10-23T05:31:01.202Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-identity-contract.test.ts > D13 owned disposable identity contract > persists resumable onboarding and awards exactly one existing welcome bonus under replay
+GoTrueClient@sb-127-auth-token:28 (2.108.1) 2026-10-23T05:31:01.254Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-identity-contract.test.ts > D13 owned disposable identity contract > persists resumable onboarding and awards exactly one existing welcome bonus under replay
+GoTrueClient@sb-127-auth-token:29 (2.108.1) 2026-10-23T05:31:01.257Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+GoTrueClient@sb-127-auth-token:30 (2.108.1) 2026-10-23T05:31:01.258Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+GoTrueClient@sb-127-auth-token:31 (2.108.1) 2026-10-23T05:31:01.259Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-identity-contract.test.ts > D13 owned disposable identity contract > persists resumable onboarding and awards exactly one existing welcome bonus under replay
+GoTrueClient@sb-127-auth-token:32 (2.108.1) 2026-10-23T05:31:01.310Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-identity-contract.test.ts > D13 owned disposable identity contract > persists resumable onboarding and awards exactly one existing welcome bonus under replay
+GoTrueClient@sb-127-auth-token:33 (2.108.1) 2026-10-23T05:31:01.349Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-identity-contract.test.ts > D13 owned disposable identity contract > persists owned avatar and portfolio media and shares only approved public fields
+GoTrueClient@sb-127-auth-token:34 (2.108.1) 2026-10-23T05:31:02.586Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-identity-contract.test.ts > D13 owned disposable identity contract > persists owned avatar and portfolio media and shares only approved public fields
+GoTrueClient@sb-127-auth-token:35 (2.108.1) 2026-10-23T05:31:02.634Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-identity-contract.test.ts > D13 owned disposable identity contract > persists owned avatar and portfolio media and shares only approved public fields
+GoTrueClient@sb-127-auth-token:36 (2.108.1) 2026-10-23T05:31:02.665Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-identity-contract.test.ts > D13 owned disposable identity contract > persists owned avatar and portfolio media and shares only approved public fields
+GoTrueClient@sb-127-auth-token:37 (2.108.1) 2026-10-23T05:31:02.708Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-identity-contract.test.ts > D13 owned disposable identity contract > persists owned avatar and portfolio media and shares only approved public fields
+GoTrueClient@sb-127-auth-token:38 (2.108.1) 2026-10-23T05:31:02.723Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-identity-contract.test.ts > D13 owned disposable identity contract > persists owned avatar and portfolio media and shares only approved public fields
+GoTrueClient@sb-127-auth-token:39 (2.108.1) 2026-10-23T05:31:02.766Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-identity-contract.test.ts > D13 owned disposable identity contract > persists owned avatar and portfolio media and shares only approved public fields
+GoTrueClient@sb-127-auth-token:40 (2.108.1) 2026-10-23T05:31:02.776Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-identity-contract.test.ts > D13 owned disposable identity contract > persists owned avatar and portfolio media and shares only approved public fields
+GoTrueClient@sb-127-auth-token:41 (2.108.1) 2026-10-23T05:31:02.821Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-identity-contract.test.ts > D13 owned disposable identity contract > persists owned avatar and portfolio media and shares only approved public fields
+GoTrueClient@sb-127-auth-token:42 (2.108.1) 2026-10-23T05:31:02.830Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-identity-contract.test.ts > D13 owned disposable identity contract > persists owned avatar and portfolio media and shares only approved public fields
+GoTrueClient@sb-127-auth-token:43 (2.108.1) 2026-10-23T05:31:02.874Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-identity-contract.test.ts > D13 owned disposable identity contract > persists owned avatar and portfolio media and shares only approved public fields
+GoTrueClient@sb-127-auth-token:44 (2.108.1) 2026-10-23T05:31:02.893Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-identity-contract.test.ts > D13 owned disposable identity contract > persists owned avatar and portfolio media and shares only approved public fields
+GoTrueClient@sb-127-auth-token:45 (2.108.1) 2026-10-23T05:31:02.935Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-identity-contract.test.ts > D13 owned disposable identity contract > persists owned avatar and portfolio media and shares only approved public fields
+GoTrueClient@sb-127-auth-token:46 (2.108.1) 2026-10-23T05:31:02.942Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-identity-contract.test.ts > D13 owned disposable identity contract > persists owned avatar and portfolio media and shares only approved public fields
+GoTrueClient@sb-127-auth-token:47 (2.108.1) 2026-10-23T05:31:02.978Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-identity-contract.test.ts > D13 owned disposable identity contract > persists owned avatar and portfolio media and shares only approved public fields
+GoTrueClient@sb-127-auth-token:48 (2.108.1) 2026-10-23T05:31:03.023Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-identity-contract.test.ts > D13 owned disposable identity contract > persists owned avatar and portfolio media and shares only approved public fields
+GoTrueClient@sb-127-auth-token:49 (2.108.1) 2026-10-23T05:31:03.034Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-identity-contract.test.ts > D13 owned disposable identity contract > persists owned avatar and portfolio media and shares only approved public fields
+GoTrueClient@sb-127-auth-token:50 (2.108.1) 2026-10-23T05:31:03.081Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-identity-contract.test.ts > D13 owned disposable identity contract > persists owned avatar and portfolio media and shares only approved public fields
+GoTrueClient@sb-127-auth-token:51 (2.108.1) 2026-10-23T05:31:03.087Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+ ✓ server/test/audit-identity-contract.test.ts (8 tests) 5284ms
+   ✓ D13 owned disposable identity contract > persists resumable onboarding and awards exactly one existing welcome bonus under replay 391ms
+   ✓ D13 owned disposable identity contract > consumes generated magic links once and rejects an expired owned recovery link 394ms
+   ✓ D13 owned disposable identity contract > resets a password with a real local recovery session without sending mail 704ms
+   ✓ D13 owned disposable identity contract > persists owned avatar and portfolio media and shares only approved public fields 506ms
+
+ Test Files  1 passed (1)
+      Tests  8 passed (8)
+   Start at  13:30:56
+   Duration  6.22s (transform 486ms, setup 142ms, collect 43ms, tests 5.28s, environment 476ms, prepare 80ms)
+
+[WebServer] (node:36236) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[WebServer] Warning: Route file "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/_site.smoke.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+[WebServer] 
+[WebServer] If this file is not intended to be a route, you can exclude it using one of these options:
+[WebServer]   1. Rename the file to "C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\src\routes\-_site.smoke.test.tsx" (prefix with "-")
+[WebServer]   2. Use 'routeFileIgnorePattern' in your config to match this file
+[WebServer] 
+[WebServer] Current configuration:
+[WebServer]   routeFileIgnorePrefix: "-"
+[WebServer]   routeFileIgnorePattern: undefined
+
+Running 4 tests using 1 worker
+
+(node:26136) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/4] e2e\creator-identity-profile.spec.ts:26:1 › D13 login keeps one email, hides account existence and recovers an expired return link
+[WebServer] [tanstack-router] These exports from "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/admin.reward-handoffs.tsx" will not be code-split and will increase your bundle size:
+
+[WebServer] - AdminRewardHandoffsRoute
+[WebServer] For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+[WebServer] [tanstack-router] These exports from "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/admin.active-missions.tsx" will not be code-split and will increase your bundle size:
+
+[WebServer] - AdminActiveMissionsLayout
+[WebServer] For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+[WebServer] [tanstack-router] These exports from "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/admin.active-missions.index.tsx" will not be code-split and will increase your bundle size:
+
+[WebServer] - AdminActiveMissionsRoute
+[WebServer] For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+[WebServer] [tanstack-router] These exports from "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/_app.news.index.tsx" will not be code-split and will increase your bundle size:
+[WebServer] - NewsFeed
+[WebServer] For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+
+[WebServer] [tanstack-router] These exports from "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/admin.active-missions.$workflowId.tsx" will not be code-split and will increase your bundle size:
+
+[WebServer] - AdminActiveMissionReviewRoute
+[WebServer] For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+[WebServer] [tanstack-router] These exports from "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/_app.my.$submissionId.tsx" will not be code-split and will increase your bundle size:
+
+[WebServer] - CreatorMissionWorkspace
+[WebServer] For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+[2/4] e2e\creator-identity-profile.spec.ts:50:1 › D13 profile cancel, recoverable save and Passport reload preserve the same sources
+[3/4] e2e\creator-identity-profile.spec.ts:96:1 › D13 onboarding resumes after a reload, skips optional socials and retains a unique welcome
+[4/4] e2e\creator-identity-profile.spec.ts:116:1 › D13 recovery UI validates then updates a real local Auth account (PKCE transport mocked)
+  4 passed (25.8s)

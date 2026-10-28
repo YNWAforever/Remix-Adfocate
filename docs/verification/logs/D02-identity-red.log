@@ -1,0 +1,53 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ × server/test/audit-schema-compatibility.test.ts > integration identity before client creation > does not treat a loopback address as authorization or container identity
+   → expected [Function] to throw an error
+ × server/test/audit-schema-compatibility.test.ts > integration identity before client creation > rejects an identity document pointing through an unverified proxy
+   → expected [Function] to throw an error
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  server/test/audit-schema-compatibility.test.ts > integration identity before client creation > does not treat a loopback address as authorization or container identity
+AssertionError: expected [Function] to throw an error
+
+- Expected: 
+null
+
++ Received: 
+undefined
+
+ ❯ server/test/audit-schema-compatibility.test.ts:13:53
+     11| describe("integration identity before client creation", () => {
+     12|   it("does not treat a loopback address as authorization or container …
+     13|     expect(() => assertIntegrationEnvironment(env)).toThrow(/identity/…
+       |                                                     ^
+     14|   });
+     15|   it("rejects an identity document pointing through an unverified prox…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  server/test/audit-schema-compatibility.test.ts > integration identity before client creation > rejects an identity document pointing through an unverified proxy
+AssertionError: expected [Function] to throw an error
+
+- Expected: 
+null
+
++ Received: 
+undefined
+
+ ❯ server/test/audit-schema-compatibility.test.ts:18:9
+     16|     expect(() => assertIntegrationEnvironment({ ...env,
+     17|       INTEGRATION_TARGET_IDENTITY_JSON: JSON.stringify({ projectId: "t…
+     18|     })).toThrow(/identity/i);
+       |         ^
+     19|   });
+     20| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+ Test Files  1 failed (1)
+      Tests  2 failed (2)
+   Start at  00:58:33
+   Duration  1.56s (transform 55ms, setup 295ms, collect 33ms, tests 10ms, environment 860ms, prepare 153ms)
+

@@ -1,0 +1,7 @@
+{
+  "filesScanned": 41,
+  "jwtCandidates": [],
+  "emailCandidatesByHash": [],
+  "classification": "Only explicit offline fixture test placeholders and prior sealed metadata are allowed. Logs redact bearer strings and URL payloads. No environment/credential values exported.",
+  "manualSourceReview": "No credential literals introduced; mock session/key/email literals are test-only, non-credentials. No raw creator material exists in D20."
+}

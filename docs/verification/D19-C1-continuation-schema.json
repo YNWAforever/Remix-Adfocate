@@ -1,0 +1,33 @@
+{
+  "sourceFingerprint": "e83998d178061043688016056a5a78fc61df58bac28f3d0d0b66d639306037bd",
+  "profileDigest": "741ffaa255017fe377c416ce4ca3214793b0379db45001c15c8952ebd19fc41f",
+  "fullMigrationFiles": 72,
+  "rawHashesMatchApprovedManifest": true,
+  "newMigrationsApplied": 0,
+  "schemaWrites": 0,
+  "catalogSections": 8,
+  "catalogAllEqual": true,
+  "newIdentity": {
+    "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/browser-continuation-live-identity.json",
+    "sha256": "30a8c2e3078642d6bd3107878a3bcf9074cd1a5d3e55b173f5d888ce2cca45a0"
+  },
+  "readOnlyBefore": {
+    "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/browser-continuation-readonly-provenance.json",
+    "sha256": "22c5c07739773cf30adf955b92bc52b901955177bb3f442eacbc2dbc978d58b1"
+  },
+  "readOnlyAfter": {
+    "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/68d510a8-82a8-42bd-b3e8-4561580a7a19/final-readback-after-collection.json",
+    "sha256": "d8293fc21dfad2bfaa7356a7922b0e6b4dfc3e3f9a9df16d495ad4946469e87d"
+  },
+  "referenceCatalog": {
+    "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/application-catalog-after-compatibility.json",
+    "sha256": "0928527242f8fd35e078ee3e3336bf08b435306a56ca143c4a03bde34ab7100c"
+  },
+  "immutableBaseline": {
+    "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/immutable-bootstrap-baseline.json",
+    "sha256": "a9bf132b91086b912eb103fe5b1f29d723bc9e8f884bedd677deeb0cdac3dde2"
+  },
+  "newReceiptBaseline": "Adopted current-namespace copy after fresh read-only comparison; not a bootstrap replay.",
+  "sourceOldMigrationsOrHistoryAltered": false,
+  "productionQueriedOrModified": false
+}

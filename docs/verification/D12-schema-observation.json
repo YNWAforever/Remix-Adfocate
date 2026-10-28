@@ -1,0 +1,130 @@
+{
+  "target": {
+    "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+    "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+    "disposable": true,
+    "projectId": "adfocate-r1-empty-20261023",
+    "proxy": "none",
+    "apiPort": 56421,
+    "apiContainerId": "1b9c41318298d79308db7782f51474541ad5abf0120fa93b96a2a9ea59d043ee",
+    "databaseContainerId": "e7c8efa295cd5544a8b2a100a73b6953cd6ddd486aaf394f231482067523e12d",
+    "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+    "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+    "networkId": "9e5d3069e8255d70b8eef56020c8ea2618fdb2626d92d9a04e51ea2de41a98e0"
+  },
+  "mode": "read-only catalog transaction after identity gate",
+  "catalog": {
+    "rls": [
+      {
+        "table": "mission_deliverable_requirements",
+        "forced": false,
+        "enabled": true
+      },
+      {
+        "table": "mission_deliverable_templates",
+        "forced": false,
+        "enabled": true
+      },
+      {
+        "table": "mission_work_items",
+        "forced": false,
+        "enabled": true
+      },
+      {
+        "table": "mission_workflows",
+        "forced": false,
+        "enabled": true
+      },
+      {
+        "table": "missions",
+        "forced": false,
+        "enabled": true
+      }
+    ],
+    "rpc": [
+      {
+        "acl": [
+          "postgres=X/postgres",
+          "service_role=X/postgres"
+        ],
+        "name": "author_mission_workflow",
+        "arguments": "p_mission_id uuid, p_mission jsonb, p_policy jsonb, p_templates jsonb",
+        "definitionMd5": "84932d13013298cee951ea36debcdab4",
+        "securityDefiner": true
+      }
+    ],
+    "migrationVersions": [
+      "0001",
+      "0002",
+      "0003",
+      "0004",
+      "0005",
+      "0006",
+      "0007",
+      "0008",
+      "0009",
+      "0010",
+      "0011",
+      "0012",
+      "0013",
+      "0014",
+      "0015",
+      "0016",
+      "0017",
+      "0018",
+      "0019",
+      "0020",
+      "0021",
+      "0022",
+      "0023",
+      "0024",
+      "0025",
+      "0026",
+      "0027",
+      "0028",
+      "20260618135028",
+      "20260619013000",
+      "20260715163350",
+      "20260717190420",
+      "20260718134500",
+      "20260718193000",
+      "20260718210000",
+      "20260718213000",
+      "20260719133000",
+      "20260719160000",
+      "20260719200000",
+      "20260719220000",
+      "20260720033542",
+      "20260720175319",
+      "20260720193637",
+      "20260723090000",
+      "20260723170000",
+      "20260725090000",
+      "20260725110000",
+      "20260725130000",
+      "20260725140000",
+      "20260725143000",
+      "20260725150000",
+      "20260727120000",
+      "20260727130000",
+      "20260728135000",
+      "20260729010000",
+      "20260731100000",
+      "20260731110000",
+      "20260731120000",
+      "20260731130000",
+      "20260731140000",
+      "20260731150000",
+      "20260805120000",
+      "20261022170454",
+      "20261022170751",
+      "20261022171111",
+      "20261022171843",
+      "20261022182544"
+    ]
+  },
+  "changes": [],
+  "newMigrations": 0,
+  "productionQueried": false,
+  "manifestDigest": "a1cfcb804a2d369df16a2e7542cde4346429bcfb652a7707efdf929c0e62ff86"
+}

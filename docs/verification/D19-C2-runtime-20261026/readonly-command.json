@@ -1,0 +1,12 @@
+{
+  "startedAt": "2026-10-25T17:53:08.158778+00:00",
+  "command": [
+    "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+    ".codex-tmp/D19-C2-readonly-provenance.mjs"
+  ],
+  "scope": "Full existing identity guard then read-only catalog/history/seed/old-row/root-count/financial snapshots only; no SDK/Auth/migration/fixture/lifecycle",
+  "sourceFingerprint": "e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993",
+  "pid": 2868,
+  "endedAt": "2026-10-25T17:53:10.038980+00:00",
+  "exit": 1
+}

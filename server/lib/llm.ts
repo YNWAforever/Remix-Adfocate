@@ -150,10 +150,11 @@ function gatewayKey(): string {
 }
 
 /** Embed texts via the gateway. Throws on failure (callers decide how to degrade). */
-export async function embedTexts(texts: string[]): Promise<number[][]> {
+export async function embedTexts(texts: string[], signal?: AbortSignal): Promise<number[][]> {
   const model = process.env.AI_GATEWAY_EMBED_MODEL ?? "openai/text-embedding-3-small";
   const res = await fetch(`${GATEWAY}/embeddings`, {
     method: "POST",
+    signal,
     headers: { Authorization: `Bearer ${gatewayKey()}`, "Content-Type": "application/json" },
     body: JSON.stringify({ model, input: texts }),
   });
@@ -164,6 +165,7 @@ export async function embedTexts(texts: string[]): Promise<number[][]> {
 
 /** Non-streaming chat completion with optional tools. Throws on failure. */
 export async function chatComplete(opts: {
+  signal?: AbortSignal;
   messages: ChatMessage[];
   tools?: ToolDef[];
   temperature?: number;
@@ -171,6 +173,7 @@ export async function chatComplete(opts: {
   const model = process.env.AI_GATEWAY_MODEL ?? "deepseek/deepseek-v4-flash";
   const res = await fetch(`${GATEWAY}/chat/completions`, {
     method: "POST",
+    signal: opts.signal,
     headers: { Authorization: `Bearer ${gatewayKey()}`, "Content-Type": "application/json" },
     body: JSON.stringify({
       model,

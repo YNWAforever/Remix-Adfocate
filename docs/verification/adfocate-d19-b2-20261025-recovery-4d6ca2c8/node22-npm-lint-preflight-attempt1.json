@@ -1,0 +1,11 @@
+{
+  "observedAt": "2026-10-25T11:03:29.074174+00:00",
+  "mode": "lint",
+  "nodeVersion": "v22.23.4",
+  "nodeExecutable": "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+  "physicalFreeGiB": 7.5985107421875,
+  "commitHeadroomGiB": 12.282249450683594,
+  "requiredPhysicalAndCommitGiB": 3,
+  "suiteStarted": false,
+  "resourceGatePassed": true
+}

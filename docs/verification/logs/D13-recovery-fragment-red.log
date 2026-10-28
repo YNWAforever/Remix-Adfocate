@@ -1,0 +1,36 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ❯ src/routes/-_app.auth.reset-password.test.tsx (11 tests | 1 failed | 10 skipped) 102ms
+   × Reset password (recovery landing) > classifies an expired recovery error fragment without exchanging a code 101ms
+     → expect(element).toHaveTextContent()
+
+Expected element to have text content:
+  這個登入連結已過期
+Received:
+  這個登入連結並不完整請返回登入頁並索取新連結。返回登入
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/routes/-_app.auth.reset-password.test.tsx > Reset password (recovery landing) > classifies an expired recovery error fragment without exchanging a code
+Error: expect(element).toHaveTextContent()
+
+Expected element to have text content:
+  這個登入連結已過期
+Received:
+  這個登入連結並不完整請返回登入頁並索取新連結。返回登入
+ ❯ src/routes/-_app.auth.reset-password.test.tsx:112:46
+    110|     window.history.replaceState({}, "", "/auth/reset-password#error=ac…
+    111|     renderResetPassword();
+    112|     expect(await screen.findByRole("alert")).toHaveTextContent(dict.zh…
+       |                                              ^
+    113|     expect(supabase.auth.exchangeCodeForSession).not.toHaveBeenCalled(…
+    114|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 10 skipped (11)
+   Start at  13:04:37
+   Duration  4.50s (transform 768ms, setup 612ms, collect 1.80s, tests 102ms, environment 1.58s, prepare 164ms)
+

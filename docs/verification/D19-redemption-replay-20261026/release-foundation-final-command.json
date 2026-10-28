@@ -1,0 +1,33 @@
+{
+  "startedAt": "2026-10-25T20:37:16.136429+00:00",
+  "command": [
+    "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "scripts/release",
+    "--no-file-parallelism",
+    "--reporter=default",
+    "--reporter=json",
+    "--outputFile.json=docs/verification/D19-redemption-replay-20261026/release-foundation-final.json"
+  ],
+  "node": "v22.23.4",
+  "resource": {
+    "at": "2026-10-25T20:37:16.056003+00:00",
+    "freePhysicalGiB": 6.454132080078125,
+    "freeCommitGiB": 5.531562805175781,
+    "minimumGiB": 3,
+    "freeDiskGiB": 21.88581085205078
+  },
+  "credentialsProxiesPreloadsStripped": true,
+  "integrationDisabled": true,
+  "label": "release-foundation-final",
+  "log": "docs/verification/D19-redemption-replay-20261026/release-foundation-final.log",
+  "runtimeTargetCallsRequested": false,
+  "sourceFingerprint": "319a5afd10db7ffc5a60711574a1fbe04894cdaab73eaf83a26df46ca599b37b",
+  "sourceRecords": 793,
+  "npmExecpathProvided": "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+  "pid": 14240,
+  "sourceUnchangedAfter": true,
+  "endedAt": "2026-10-25T20:37:47.356587+00:00",
+  "exit": 1
+}

@@ -1,0 +1,13 @@
+{
+  "payload": {
+    "references": [],
+    "matchedReferenceCount": 0
+  },
+  "observedAt": "2026-10-24T14:14:53.600936+00:00",
+  "transactionReadOnly": "on",
+  "label": "q2-audit-staff",
+  "query": "select jsonb_build_object(\n  'matchedReferenceCount', (select count(*) from public.staff_access_audit where (before_state::text~'937131f9-5417-4ab4-aebd-a5714681f6dd|9e2d04e2-cafb-4ff6-988b-348f0279bba3|d80d80dc-4833-4ab2-9e30-48efaef68d1d'or after_state::text~'937131f9-5417-4ab4-aebd-a5714681f6dd|9e2d04e2-cafb-4ff6-988b-348f0279bba3|d80d80dc-4833-4ab2-9e30-48efaef68d1d')),\n  'references', (\n    select coalesce(jsonb_agg(jsonb_build_object(\n      'auditId', id, 'at', created_at, 'matchedEntityId', matched_entity,\n      'payloadKeys', payload_keys\n    ) order by created_at, id), '[]'::jsonb)\n    from (\n      select id, created_at, null::uuid as matched_entity,\n        (select coalesce(jsonb_agg(key order by key), '[]'::jsonb)\n         from jsonb_object_keys(case when jsonb_typeof(before_state) = 'object'\n           then before_state else '{}'::jsonb end) as key) as payload_keys\n      from public.staff_access_audit\n      where (before_state::text~'937131f9-5417-4ab4-aebd-a5714681f6dd|9e2d04e2-cafb-4ff6-988b-348f0279bba3|d80d80dc-4833-4ab2-9e30-48efaef68d1d'or after_state::text~'937131f9-5417-4ab4-aebd-a5714681f6dd|9e2d04e2-cafb-4ff6-988b-348f0279bba3|d80d80dc-4833-4ab2-9e30-48efaef68d1d')\n      order by created_at, id\n      limit 100\n    ) as limited\n  )\n )",
+  "identityEvidence": "D19-incident-A-identity.json",
+  "identityReverifiedBeforeQuery": true,
+  "authorization": "Explicit user approval of A/Q1-Q3 only; no write/create/delete/RPC/test"
+}

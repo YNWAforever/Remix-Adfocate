@@ -1,0 +1,158 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ❯ server/test/run-integration-tests.test.ts (16 tests | 10 failed) 26ms
+   × new pristine global campaign job identity > accepts the exact newly-created volume, exclusive internal network and owned campaign inventory 7ms
+     → expected false to be true // Object.is equality
+   × new pristine global campaign job identity > rejects old-project evidence before any SQL or client setup 3ms
+     → expected [Function] to throw error matching /pristine/i but got 'integration container/project/network…'
+   × new pristine global campaign job identity > rejects baseline-data evidence before any SQL or client setup 1ms
+     → expected [Function] to throw an error
+   × new pristine global campaign job identity > rejects volume-reused evidence before any SQL or client setup 0ms
+     → expected [Function] to throw an error
+   × new pristine global campaign job identity > rejects network-shared evidence before any SQL or client setup 0ms
+     → expected [Function] to throw an error
+   × new pristine global campaign job identity > rejects external-network evidence before any SQL or client setup 1ms
+     → expected [Function] to throw an error
+   × new pristine global campaign job identity > rejects wrong-volume evidence before any SQL or client setup 0ms
+     → expected [Function] to throw an error
+   × new pristine global campaign job identity > rejects wrong-owner evidence before any SQL or client setup 1ms
+     → expected [Function] to throw an error
+   × new pristine global campaign job identity > rejects a campaign not captured by this run before the global mutation 1ms
+     → expected [Function] to throw an error
+   × new pristine global campaign job identity > refuses nonlocal Docker engine endpoints 1ms
+     → expected [Function] to throw an error
+ ❯ server/test/support-rpc-ownership.test.ts (7 tests | 2 failed) 45ms
+   × permits close_due_campaigns only after the pristine target guard accepts the exact current campaign IDs 8ms
+     → expected 403 to be 200 // Object.is equality
+   × permits snapshot_campaign_leaderboards only after the pristine target guard accepts the exact current campaign IDs 2ms
+     → expected 403 to be 200 // Object.is equality
+JSON report written to C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/.codex-tmp/D19-pristine-rpc-red.private.json
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 12 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  server/test/run-integration-tests.test.ts > new pristine global campaign job identity > accepts the exact newly-created volume, exclusive internal network and owned campaign inventory
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ server/test/run-integration-tests.test.ts:212:66
+    210|   const h=pristineHarness(),id='22222222-2222-4222-8222-222222222222';…
+    211|   expect(runner.verifyIntegrationIdentity(h.env,h.inspect,[id])).toEqu…
+    212|   expect(h.inspect.mock.calls.some(([,args])=>args[0]==='exec')).toBe(…
+       |                                                                  ^
+    213|  });
+    214|  it.each(['old-project','baseline-data','volume-reused','network-share…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/12]⎯
+
+ FAIL  server/test/run-integration-tests.test.ts > new pristine global campaign job identity > rejects old-project evidence before any SQL or client setup
+AssertionError: expected [Function] to throw error matching /pristine/i but got 'integration container/project/network…'
+
+- Expected: 
+/pristine/i
+
++ Received: 
+"integration container/project/network identity mismatch"
+
+ ❯ server/test/run-integration-tests.test.ts:224:68
+    222|   if(kind==='wrong-owner')h.network.labels['adfocate.run']='other-run';
+    223|   h.env.INTEGRATION_PRISTINE_TARGET_JSON=JSON.stringify(h.receipt);
+    224|   expect(()=>runner.verifyIntegrationIdentity(h.env,h.inspect,[])).toT…
+       |                                                                    ^
+    225|   expect(h.inspect.mock.calls.some(([,args])=>args[0]==='exec')).toBe(…
+    226|  });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/12]⎯
+
+ FAIL  server/test/run-integration-tests.test.ts > new pristine global campaign job identity > rejects baseline-data evidence before any SQL or client setup
+ FAIL  server/test/run-integration-tests.test.ts > new pristine global campaign job identity > rejects volume-reused evidence before any SQL or client setup
+ FAIL  server/test/run-integration-tests.test.ts > new pristine global campaign job identity > rejects network-shared evidence before any SQL or client setup
+ FAIL  server/test/run-integration-tests.test.ts > new pristine global campaign job identity > rejects external-network evidence before any SQL or client setup
+ FAIL  server/test/run-integration-tests.test.ts > new pristine global campaign job identity > rejects wrong-volume evidence before any SQL or client setup
+ FAIL  server/test/run-integration-tests.test.ts > new pristine global campaign job identity > rejects wrong-owner evidence before any SQL or client setup
+AssertionError: expected [Function] to throw an error
+
+- Expected: 
+null
+
++ Received: 
+undefined
+
+ ❯ server/test/run-integration-tests.test.ts:224:68
+    222|   if(kind==='wrong-owner')h.network.labels['adfocate.run']='other-run';
+    223|   h.env.INTEGRATION_PRISTINE_TARGET_JSON=JSON.stringify(h.receipt);
+    224|   expect(()=>runner.verifyIntegrationIdentity(h.env,h.inspect,[])).toT…
+       |                                                                    ^
+    225|   expect(h.inspect.mock.calls.some(([,args])=>args[0]==='exec')).toBe(…
+    226|  });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/12]⎯
+
+ FAIL  server/test/run-integration-tests.test.ts > new pristine global campaign job identity > rejects a campaign not captured by this run before the global mutation
+AssertionError: expected [Function] to throw an error
+
+- Expected: 
+null
+
++ Received: 
+undefined
+
+ ❯ server/test/run-integration-tests.test.ts:229:68
+    227|  it('rejects a campaign not captured by this run before the global mut…
+    228|   const h=pristineHarness();h.rows.push('33333333-3333-4333-8333-33333…
+    229|   expect(()=>runner.verifyIntegrationIdentity(h.env,h.inspect,[])).toT…
+       |                                                                    ^
+    230|  });
+    231|  it('refuses nonlocal Docker engine endpoints',()=>{
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/12]⎯
+
+ FAIL  server/test/run-integration-tests.test.ts > new pristine global campaign job identity > refuses nonlocal Docker engine endpoints
+AssertionError: expected [Function] to throw an error
+
+- Expected: 
+null
+
++ Received: 
+undefined
+
+ ❯ server/test/run-integration-tests.test.ts:233:66
+    231|  it('refuses nonlocal Docker engine endpoints',()=>{
+    232|   const h=pristineHarness(),inspect=(c:string,a:string[])=>a[0]==='con…
+    233|   expect(()=>runner.verifyIntegrationIdentity(h.env,inspect,[])).toThr…
+       |                                                                  ^
+    234|  });
+    235| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/12]⎯
+
+ FAIL  server/test/support-rpc-ownership.test.ts > permits close_due_campaigns only after the pristine target guard accepts the exact current campaign IDs
+ FAIL  server/test/support-rpc-ownership.test.ts > permits snapshot_campaign_leaderboards only after the pristine target guard accepts the exact current campaign IDs
+AssertionError: expected 403 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 403
+
+ ❯ server/test/support-rpc-ownership.test.ts:26:26
+     24|  const id='11111111-1111-4111-8111-111111111111';captureFixtureRows('c…
+     25|  const response=await createOwnedFixtureFetch(delegate,authorize)(`htt…
+     26|  expect(response.status).toBe(200);expect(authorize).toHaveBeenCalledW…
+       |                          ^
+     27|  expect(authorize.mock.invocationCallOrder[0]).toBeLessThan(delegate.m…
+     28| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/12]⎯
+
+ Test Files  2 failed (2)
+      Tests  12 failed | 11 passed (23)
+   Start at  16:52:19
+   Duration  16.47s (transform 152ms, setup 3.81s, collect 123ms, tests 71ms, environment 11.17s, prepare 759ms)
+

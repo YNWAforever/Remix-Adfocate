@@ -1,0 +1,219 @@
+{
+  "expectedRedPhases": [
+    {
+      "phase": "D20-red",
+      "passed": 0,
+      "failed": 26,
+      "failures": [
+        {
+          "name": "D20 offline golden cases: authorized read-only assistance N04-01 rules: cited_brief",
+          "message": "AssertionError: expected undefined to be '30000000-0000-4000-8000-000000000001' // Object.is equality\n    at C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023\\server\\lib\\assistant\\contextPolicy.test.ts:75:46\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@vitest/runner/dist/index.js:533:5\n    at runTest (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfoca"
+        },
+        {
+          "name": "D20 offline golden cases: authorized read-only assistance N04-02 rules: frozen_checklist",
+          "message": "AssertionError: expected undefined to be '30000000-0000-4000-8000-000000000001' // Object.is equality\n    at C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023\\server\\lib\\assistant\\contextPolicy.test.ts:75:46\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@vitest/runner/dist/index.js:533:5\n    at runTest (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfoca"
+        },
+        {
+          "name": "D20 offline golden cases: authorized read-only assistance N04-03 rules: no_payment_promise",
+          "message": "AssertionError: expected undefined to be '30000000-0000-4000-8000-000000000001' // Object.is equality\n    at C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023\\server\\lib\\assistant\\contextPolicy.test.ts:75:46\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@vitest/runner/dist/index.js:533:5\n    at runTest (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfoca"
+        },
+        {
+          "name": "D20 offline golden cases: authorized read-only assistance N04-04 rules: zh_HK_sources",
+          "message": "AssertionError: expected undefined to be '30000000-0000-4000-8000-000000000001' // Object.is equality\n    at C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023\\server\\lib\\assistant\\contextPolicy.test.ts:75:46\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@vitest/runner/dist/index.js:533:5\n    at runTest (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfoca"
+        },
+        {
+          "name": "D20 offline golden cases: authorized read-only assistance N05-01 diffs: v1_to_v2",
+          "message": "AssertionError: expected undefined to be '30000000-0000-4000-8000-000000000001' // Object.is equality\n    at C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023\\server\\lib\\assistant\\contextPolicy.test.ts:75:46\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@vitest/runner/dist/index.js:533:5\n    at runTest (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfoca"
+        },
+        {
+          "name": "D20 offline golden cases: authorized read-only assistance N05-02 diffs: changed_checklist",
+          "message": "AssertionError: expected undefined to be '30000000-0000-4000-8000-000000000001' // Object.is equality\n    at C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023\\server\\lib\\assistant\\contextPolicy.test.ts:75:46\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@vitest/runner/dist/index.js:533:5\n    at runTest (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfoca"
+        },
+        {
+          "name": "D20 offline golden cases: authorized read-only assistance N05-03 diffs: url_presence_only",
+          "message": "AssertionError: expected undefined to be '30000000-0000-4000-8000-000000000001' // Object.is equality\n    at C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023\\server\\lib\\assistant\\contextPolicy.test.ts:75:46\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@vitest/runner/dist/index.js:533:5\n    at runTest (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfoca"
+        },
+        {
+          "name": "D20 offline golden cases: authorized read-only assistance N05-04 diffs: human_review_only",
+          "message": "AssertionError: expected undefined to be '30000000-0000-4000-8000-000000000001' // Object.is equality\n    at C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023\\server\\lib\\assistant\\contextPolicy.test.ts:75:46\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@vitest/runner/dist/index.js:533:5\n    at runTest (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfoca"
+        },
+        {
+          "name": "D20 offline golden cases: authorized read-only assistance N06-01 unknowns: unknown_no_generation",
+          "message": "AssertionError: expected undefined to be '30000000-0000-4000-8000-000000000001' // Object.is equality\n    at C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023\\server\\lib\\assistant\\contextPolicy.test.ts:75:46\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@vitest/runner/dist/index.js:533:5\n    at runTest (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfoca"
+        },
+        {
+          "name": "D20 offline golden cases: authorized read-only assistance N06-02 unknowns: stale_basis",
+          "message": "AssertionError: expected undefined to be '30000000-0000-4000-8000-000000000001' // Object.is equality\n    at C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023\\server\\lib\\assistant\\contextPolicy.test.ts:75:46\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@vitest/runner/dist/index.js:533:5\n    at runTest (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfoca"
+        },
+        {
+          "name": "D20 offline golden cases: authorized read-only assistance N06-03 unknowns: unknown_no_date",
+          "message": "AssertionError: expected undefined to be '30000000-0000-4000-8000-000000000001' // Object.is equality\n    at C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023\\server\\lib\\assistant\\contextPolicy.test.ts:75:46\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@vitest/runner/dist/index.js:533:5\n    at runTest (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfoca"
+        },
+        {
+          "name": "D20 offline golden cases: authorized read-only assistance N06-04 unknowns: not_found",
+          "message": "Error: promise resolved \"{ …(2) }\" instead of rejecting\n    at _Assertion.__VITEST_REJECTS__ (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@vitest/expect/dist/index.js:1805:21)\n    at _Assertion.propertyGetter (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/chai/index.js:1557:27)\n    at Reflect.get (<anonymous>)\n    at Object.proxyGetter [as get] (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-202610"
+        },
+        {
+          "name": "D20 offline golden cases: authorized read-only assistance N07-01 scope: not_found",
+          "message": "Error: promise resolved \"{ …(2) }\" instead of rejecting\n    at _Assertion.__VITEST_REJECTS__ (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@vitest/expect/dist/index.js:1805:21)\n    at _Assertion.propertyGetter (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/chai/index.js:1557:27)\n    at Reflect.get (<anonymous>)\n    at Object.proxyGetter [as get] (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-202610"
+        },
+        {
+          "name": "D20 offline golden cases: authorized read-only assistance N07-02 scope: not_found",
+          "message": "Error: promise resolved \"{ …(2) }\" instead of rejecting\n    at _Assertion.__VITEST_REJECTS__ (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@vitest/expect/dist/index.js:1805:21)\n    at _Assertion.propertyGetter (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/chai/index.js:1557:27)\n    at Reflect.get (<anonymous>)\n    at Object.proxyGetter [as get] (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-202610"
+        },
+        {
+          "name": "D20 offline golden cases: authorized read-only assistance N07-03 scope: bad_request",
+          "message": "Error: promise resolved \"{ …(2) }\" instead of rejecting\n    at _Assertion.__VITEST_REJECTS__ (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@vitest/expect/dist/index.js:1805:21)\n    at _Assertion.propertyGetter (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/chai/index.js:1557:27)\n    at Reflect.get (<anonymous>)\n    at Object.proxyGetter [as get] (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-202610"
+        },
+        {
+          "name": "D20 offline golden cases: authorized read-only assistance N07-04 scope: bad_request",
+          "message": "Error: promise resolved \"{ …(2) }\" instead of rejecting\n    at _Assertion.__VITEST_REJECTS__ (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@vitest/expect/dist/index.js:1805:21)\n    at _Assertion.propertyGetter (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/chai/index.js:1557:27)\n    at Reflect.get (<anonymous>)\n    at Object.proxyGetter [as get] (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-202610"
+        },
+        {
+          "name": "D20 offline golden cases: authorized read-only assistance N08-01 injection: tool_denied",
+          "message": "AssertionError: expected undefined to be '30000000-0000-4000-8000-000000000001' // Object.is equality\n    at C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023\\server\\lib\\assistant\\contextPolicy.test.ts:75:46\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@vitest/runner/dist/index.js:533:5\n    at runTest (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfoca"
+        },
+        {
+          "name": "D20 offline golden cases: authorized read-only assistance N08-02 injection: tool_denied",
+          "message": "AssertionError: expected undefined to be '30000000-0000-4000-8000-000000000001' // Object.is equality\n    at C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023\\server\\lib\\assistant\\contextPolicy.test.ts:75:46\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@vitest/runner/dist/index.js:533:5\n    at runTest (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfoca"
+        },
+        {
+          "name": "D20 offline golden cases: authorized read-only assistance N08-03 injection: tool_denied",
+          "message": "AssertionError: expected undefined to be '30000000-0000-4000-8000-000000000001' // Object.is equality\n    at C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023\\server\\lib\\assistant\\contextPolicy.test.ts:75:46\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@vitest/runner/dist/index.js:533:5\n    at runTest (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfoca"
+        },
+        {
+          "name": "D20 offline golden cases: authorized read-only assistance N08-04 injection: tool_denied",
+          "message": "AssertionError: expected undefined to be '30000000-0000-4000-8000-000000000001' // Object.is equality\n    at C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023\\server\\lib\\assistant\\contextPolicy.test.ts:75:46\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@vitest/runner/dist/index.js:533:5\n    at runTest (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfoca"
+        },
+        {
+          "name": "D20 offline golden cases: authorized read-only assistance N09-01 failures: outcome_unknown",
+          "message": "AssertionError: expected Error: timeout to match object { code: 'provider_outcome_unknown' }\n    at _Assertion.<anonymous> (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@vitest/expect/dist/index.js:1134:13)\n    at _Assertion.<anonymous> (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@vitest/expect/dist/index.js:972:17)\n    at _Assertion.methodWrapper (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-2"
+        },
+        {
+          "name": "D20 offline golden cases: authorized read-only assistance N09-02 failures: outcome_unknown",
+          "message": "AssertionError: expected Error: rate to match object { code: 'provider_outcome_unknown' }\n    at _Assertion.<anonymous> (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@vitest/expect/dist/index.js:1134:13)\n    at _Assertion.<anonymous> (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@vitest/expect/dist/index.js:972:17)\n    at _Assertion.methodWrapper (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-2026"
+        },
+        {
+          "name": "D20 offline golden cases: authorized read-only assistance N09-03 failures: context_unavailable",
+          "message": "Error: promise resolved \"{ …(2) }\" instead of rejecting\n    at _Assertion.__VITEST_REJECTS__ (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@vitest/expect/dist/index.js:1805:21)\n    at _Assertion.propertyGetter (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/chai/index.js:1557:27)\n    at Reflect.get (<anonymous>)\n    at Object.proxyGetter [as get] (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-202610"
+        },
+        {
+          "name": "D20 offline golden cases: authorized read-only assistance N09-04 failures: invalid_provider_result",
+          "message": "AssertionError: expected undefined to be '30000000-0000-4000-8000-000000000001' // Object.is equality\n    at C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023\\server\\lib\\assistant\\contextPolicy.test.ts:75:46\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@vitest/runner/dist/index.js:533:5\n    at runTest (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfoca"
+        },
+        {
+          "name": "D20 offline golden cases: authorized read-only assistance keeps the real provider disabled before any context or network access",
+          "message": "AssertionError: expected Error: AI_GATEWAY_API_KEY is not set to match object { code: 'assist_disabled' }\n    at _Assertion.<anonymous> (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@vitest/expect/dist/index.js:1134:13)\n    at _Assertion.<anonymous> (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@vitest/expect/dist/index.js:972:17)\n    at _Assertion.methodWrapper (file:///C:/Users/laich/Documents/Adfocate/worktrees/"
+        },
+        {
+          "name": "D20 opens deterministic brief help on demand and keeps the real provider disabled",
+          "message": "TestingLibraryElementError: Unable to find an accessible element with the role \"button\" and name `/brief help|任務解說/i`\n\nHere are the accessible roles:\n\n  region:\n\n  Name \"Reel\":\n  <section\n    aria-labelledby=\"_r_3_\"\n    class=\"space-y-5 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 sm:p-6\"\n  />\n\n  --------------------------------------------------\n  paragraph:\n\n  Name \"\":\n  <p\n    class=\"font-mono text-xs uppercase tracking-wider text-[var(--color-soft-ink)]\"\n  />\n\n  Na"
+        }
+      ]
+    },
+    {
+      "phase": "D20-route-red",
+      "passed": 0,
+      "failed": 1,
+      "failures": [
+        {
+          "name": "D20 disabled HTTP boundary ignores environment/request attempts to enable a real provider before constructing a client",
+          "message": "AssertionError: expected 404 to be 503 // Object.is equality\n    at C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023\\server\\test\\mission-assist.test.ts:17:29\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@vitest/runner/dist/index.js:533:5\n    at runTest (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@vitest/runner/dist/i"
+        }
+      ]
+    },
+    {
+      "phase": "D20-live-guard-red",
+      "passed": 25,
+      "failed": 1,
+      "failures": [
+        {
+          "name": "D20 offline golden cases: authorized read-only assistance rejects an accidentally injected live provider before any billable work",
+          "message": "Error: promise resolved \"{ …(4) }\" instead of rejecting\n    at _Assertion.__VITEST_REJECTS__ (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@vitest/expect/dist/index.js:1805:21)\n    at _Assertion.propertyGetter (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/chai/index.js:1557:27)\n    at Object.proxyGetter [as get] (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/chai/index.js:164"
+        }
+      ]
+    },
+    {
+      "phase": "D20-recovery-red",
+      "passed": 43,
+      "failed": 1,
+      "failures": [
+        {
+          "name": "retains the question on HTTP 409 without automatic retry",
+          "message": "Error: expect(element).toBeDisabled()\n\nReceived element is not disabled:\n  <button\n  class=\"min-h-11 rounded-full border-2 border-[var(--color-ink)] px-4 py-2 font-bold disabled:opacity-50\"\n  type=\"submit\"\n/>\n    at Proxy.expectWrapper (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@vitest/expect/dist/index.js:1996:19)\n    at Proxy.<anonymous> (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@vitest/expect/dist/index.j"
+        }
+      ]
+    },
+    {
+      "phase": "D20-input-red",
+      "passed": 10,
+      "failed": 3,
+      "failures": [
+        {
+          "name": "D20 disabled HTTP boundary rejects malformed embedded input as a recoverable 400 before client creation",
+          "message": "AssertionError: expected 503 to be 400 // Object.is equality\n    at C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023\\server\\test\\mission-assist.test.ts:36:29\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@vitest/runner/dist/index.js:533:5\n    at runTest (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@vitest/runner/dist/i"
+        },
+        {
+          "name": "D20 disabled HTTP boundary rejects malformed embedded input as a recoverable 400 before client creation",
+          "message": "AssertionError: expected 503 to be 400 // Object.is equality\n    at C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023\\server\\test\\mission-assist.test.ts:36:29\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@vitest/runner/dist/index.js:533:5\n    at runTest (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@vitest/runner/dist/i"
+        },
+        {
+          "name": "D20 disabled HTTP boundary rejects malformed embedded input as a recoverable 400 before client creation",
+          "message": "AssertionError: expected 503 to be 400 // Object.is equality\n    at C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023\\server\\test\\mission-assist.test.ts:36:29\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@vitest/runner/dist/index.js:533:5\n    at runTest (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@vitest/runner/dist/i"
+        }
+      ]
+    },
+    {
+      "phase": "D20-envelope-red",
+      "passed": 52,
+      "failed": 2,
+      "failures": [
+        {
+          "name": "D20 selector and projection boundaries degrades a malformed transport envelope without a tool side effect",
+          "message": "TypeError: Cannot read properties of undefined (reading 'length')\n    at Module.runAssistant (C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023\\server\\lib\\assistant\\chat.ts:57:25)\n    at runNextTicks (node:internal/process/task_queues:64:5)\n    at processTimers (node:internal/timers:518:9)\n    at C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023\\server\\lib\\assistant\\contextPolicy.test.ts:164:20\n    at file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-2"
+        },
+        {
+          "name": "D20 selector and projection boundaries degrades a malformed transport envelope without a tool side effect",
+          "message": "TypeError: Cannot read properties of null (reading 'length')\n    at Module.runAssistant (C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023\\server\\lib\\assistant\\chat.ts:57:25)\n    at runNextTicks (node:internal/process/task_queues:64:5)\n    at processTimers (node:internal/timers:518:9)\n    at C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023\\server\\lib\\assistant\\contextPolicy.test.ts:164:20\n    at file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-202610"
+        }
+      ]
+    },
+    {
+      "phase": "D20-approved-anchor-red",
+      "passed": 35,
+      "failed": 4,
+      "failures": [
+        {
+          "name": "D20 offline golden cases: authorized read-only assistance N05-01 diffs: v1_to_v2",
+          "message": "AssertionError: expected undefined to be true // Object.is equality\n    at C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023\\server\\lib\\assistant\\contextPolicy.test.ts:110:64\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@vitest/runner/dist/index.js:533:5\n    at runTest (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@vite"
+        },
+        {
+          "name": "D20 offline golden cases: authorized read-only assistance N05-02 diffs: changed_checklist",
+          "message": "AssertionError: expected undefined to be true // Object.is equality\n    at C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023\\server\\lib\\assistant\\contextPolicy.test.ts:110:64\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@vitest/runner/dist/index.js:533:5\n    at runTest (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@vite"
+        },
+        {
+          "name": "D20 offline golden cases: authorized read-only assistance N05-03 diffs: url_presence_only",
+          "message": "AssertionError: expected undefined to be true // Object.is equality\n    at C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023\\server\\lib\\assistant\\contextPolicy.test.ts:110:64\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@vitest/runner/dist/index.js:533:5\n    at runTest (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@vite"
+        },
+        {
+          "name": "D20 offline golden cases: authorized read-only assistance N05-04 diffs: human_review_only",
+          "message": "AssertionError: expected undefined to be true // Object.is equality\n    at C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023\\server\\lib\\assistant\\contextPolicy.test.ts:110:64\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@vitest/runner/dist/index.js:533:5\n    at runTest (file:///C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/node_modules/@vite"
+        }
+      ]
+    },
+    {
+      "phase": "D20-approved-ui-red",
+      "passed": 8,
+      "failed": 1,
+      "failures": [
+        {
+          "name": "distinguishes the current approved comparison snapshot from the selected draft",
+          "message": "Error: Unable to find an element with the text: Previous comparison version: current approved snapshot.. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.\n\nIgnored nodes: comments, script, style, option\n<body>\n  <div>\n    <section\n      aria-labelledby=\"_r_9_\"\n      class=\"min-w-0 space-y-4 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-paper)] p-4\"\n    >"
+        }
+      ]
+    }
+  ],
+  "finalTargetedPassed": 88,
+  "finalFullPassed": 1931,
+  "runnerFailures": "Initial Node JSON import/alias setup failures and interrupted pre-approval full attempt are not counted as acceptance results."
+}

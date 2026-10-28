@@ -1,0 +1,13 @@
+{
+  "at": "2026-10-24T14:12:16.130045+00:00",
+  "query": "q1-recovery-metadata",
+  "status": "BLOCKED_PERMISSION_DENIED_SERVER_FILE_METADATA",
+  "error": "permission denied for function pg_stat_file",
+  "businessWrites": false,
+  "readOnlyTransactionAborted": true,
+  "sameCapabilityRetried": false,
+  "roleOrGrantsChanged": false,
+  "osFilesystemBypassUsed": false,
+  "backupsOrWalContentsConclusion": "UNKNOWN",
+  "independentWorkContinues": "catalog views, exact-ID audit and dependency queries only"
+}

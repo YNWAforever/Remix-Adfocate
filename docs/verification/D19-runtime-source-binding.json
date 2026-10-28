@@ -1,0 +1,9 @@
+{
+  "sameRuntimeDependencies": true,
+  "postRuntimeChanges": [
+    "server/test/fixture-ownership.test.ts",
+    "server/test/pilot-fixture-ownership.test.ts"
+  ],
+  "reason": "Original D02 offline test restored byte-for-byte; new D19 mocked test moved with identical bytes. All app, SQL, API/browser test and runner/fixture dependencies unchanged. Offline full/type/lint/build renewed on final fingerprint.",
+  "restoration": "D19-test-restoration.json"
+}

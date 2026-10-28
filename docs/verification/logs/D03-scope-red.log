@@ -1,0 +1,98 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ × server/test/audit-admin-scope.test.ts > staff workspace API boundary > authenticated staff without membership cannot read the legacy queue
+   → expected 200 to be 403 // Object.is equality
+ × server/test/audit-admin-scope.test.ts > staff workspace API boundary > All workspaces contains only the active membership scope
+   → expected [ 'workspace-a', 'workspace-b' ] to deeply equal [ 'workspace-a' ]
+ × server/test/audit-admin-scope.test.ts > staff workspace API boundary > does not accept another workspace as a query filter
+   → expected 200 to be 404 // Object.is equality
+ × server/test/audit-admin-scope.test.ts > staff workspace API boundary > membership storage failure is unavailable, independently of authentication
+   → expected 200 to be 503 // Object.is equality
+ ✓ server/test/audit-admin-scope.test.ts > staff workspace API boundary > a disabled staff member is denied
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  server/test/audit-admin-scope.test.ts > staff workspace API boundary > authenticated staff without membership cannot read the legacy queue
+AssertionError: expected 200 to be 403 // Object.is equality
+
+- Expected
++ Received
+
+- 403
++ 200
+
+ ❯ server/test/audit-admin-scope.test.ts:44:56
+     42|   beforeEach(() => { h.member = false; h.active = true; h.memberError …
+     43|   it("authenticated staff without membership cannot read the legacy qu…
+     44|     expect((await request("/creators/review")).status).toBe(403);
+       |                                                        ^
+     45|   });
+     46|   it("All workspaces contains only the active membership scope", async…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  server/test/audit-admin-scope.test.ts > staff workspace API boundary > All workspaces contains only the active membership scope
+AssertionError: expected [ 'workspace-a', 'workspace-b' ] to deeply equal [ 'workspace-a' ]
+
+- Expected
++ Received
+
+  Array [
+    "workspace-a",
++   "workspace-b",
+  ]
+
+ ❯ server/test/audit-admin-scope.test.ts:50:81
+     48|     const response = await request("/workspaces");
+     49|     expect(response.status).toBe(200);
+     50|     expect((await response.json()).workspaces.map((w: { id: string }) …
+       |                                                                                 ^
+     51|   });
+     52|   it("does not accept another workspace as a query filter", async () =…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  server/test/audit-admin-scope.test.ts > staff workspace API boundary > does not accept another workspace as a query filter
+AssertionError: expected 200 to be 404 // Object.is equality
+
+- Expected
++ Received
+
+- 404
++ 200
+
+ ❯ server/test/audit-admin-scope.test.ts:54:78
+     52|   it("does not accept another workspace as a query filter", async () =…
+     53|     h.member = true;
+     54|     expect((await request("/creators/review?workspace=workspace-b")).s…
+       |                                                                              ^
+     55|   });
+     56|   it("membership storage failure is unavailable, independently of auth…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  server/test/audit-admin-scope.test.ts > staff workspace API boundary > membership storage failure is unavailable, independently of authentication
+AssertionError: expected 200 to be 503 // Object.is equality
+
+- Expected
++ Received
+
+- 503
++ 200
+
+ ❯ server/test/audit-admin-scope.test.ts:58:56
+     56|   it("membership storage failure is unavailable, independently of auth…
+     57|     h.member = true; h.memberError = true;
+     58|     expect((await request("/creators/review")).status).toBe(503);
+       |                                                        ^
+     59|   });
+     60|   it("a disabled staff member is denied", async () => {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+ Test Files  1 failed (1)
+      Tests  4 failed | 1 passed (5)
+   Start at  00:59:51
+   Duration  1.84s (transform 283ms, setup 235ms, collect 437ms, tests 23ms, environment 763ms, prepare 124ms)
+

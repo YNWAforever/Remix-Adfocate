@@ -1,0 +1,283 @@
+{
+  "target": {
+    "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+    "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+    "disposable": true,
+    "projectId": "adfocate-r1-empty-20261023",
+    "proxy": "none",
+    "apiPort": 56421,
+    "apiContainerId": "1b9c41318298d79308db7782f51474541ad5abf0120fa93b96a2a9ea59d043ee",
+    "databaseContainerId": "e7c8efa295cd5544a8b2a100a73b6953cd6ddd486aaf394f231482067523e12d",
+    "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+    "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+    "networkId": "9e5d3069e8255d70b8eef56020c8ea2618fdb2626d92d9a04e51ea2de41a98e0"
+  },
+  "migrations": [
+    {
+      "file": "0001_init.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "0002_harden_rls.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "0003_onboarding.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "0004_grants.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "0005_mission_submissions.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "0006_redemption.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "0007_earnings.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "0008_leveling.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "0009_passport_scores.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "0010_applications.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "0011_mission_brief.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "0012_trust_profile_bundle.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "0013_operator_creator_selection_crm.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "0014_operator_crm_workspace_guard.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "0015_creator_profile_media.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "0016_assistant.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "0017_social_verification.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "0018_mission_authoring.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "0019_mission_brief_rich.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "0020_staff_auth.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "0021_content_hub.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "0022_notifications.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "0023_brand_access.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "0024_brand_budget.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "0025_campaigns.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "0026_campaigns_s2.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "0027_brand_resources.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "0028_academy_content.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "20260618135028_profile_media_private_grants.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "20260619013000_profile_media_url_validation.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "20260715163350_active_mission_workspace.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "20260717190420_receive_mission_fulfillment.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "20260718134500_active_mission_operator_lifecycle.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "20260718193000_harden_active_mission_operator_lifecycle.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "20260718210000_author_active_mission_workflow_policies.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "20260718213000_guard_mission_authoring_snapshot_race.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "20260719133000_submit_active_mission_draft.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "20260719160000_abandon_active_mission_asset.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "20260719200000_active_mission_workflow_notifications.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "20260719220000_migrate_pristine_joined_active_mission.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "20260720033542_final_review_active_mission_contracts.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "20260720175319_grant_service_role_budget_read.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "20260720193637_resolve_mission_submission_relationships.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "20260723090000_publication_proof_validation.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "20260723170000_publication_proof_rollout.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "20260725090000_publication_proof_rollout_compat.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "20260725110000_publication_proof_asset_policy.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "20260725130000_publication_proof_asset_mutation_guards.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "20260725140000_publication_proof_asset_guards.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "20260725143000_publication_proof_public_guards.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "20260725150000_publication_proof_public_rpc_final.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "20260727120000_publication_proof_instrumentation.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "20260727130000_publication_proof_existing_setup.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "20260728135000_fix_publication_proof_asset_path_regex.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "20260729010000_align_publication_proof_asset_mime_contract.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "20260731100000_reward_handoff_schema.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "20260731110000_reward_contract_capture.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "20260731120000_reward_handoff_transitions.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "20260731130000_reward_handoff_notifications.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "20260731140000_reward_handoff_release_hardening.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "20260731150000_enable_pilot_if_empty.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "20260805120000_review_hardening.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "20261022170454_audit_legacy_evidence.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "20261022170751_audit_crm_commands.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "20261022171111_audit_creator_queue.sql",
+      "status": "applied-transactionally"
+    },
+    {
+      "file": "20261022171843_audit_assistant_requests.sql",
+      "status": "applied-transactionally"
+    }
+  ],
+  "replayPolicy": "history_noop; no SQL reapplied",
+  "pendingOnSecondPass": []
+}

@@ -20,8 +20,11 @@ import {
 import { deriveCreatorActivation } from "@/lib/creatorActivation";
 import { trackActivationEvent } from "@/lib/activationAnalytics";
 import { useI18n } from "@/lib/i18n";
+import { safeCreatorReturn } from "@/lib/authFeedback";
 
-export const Route = createFileRoute("/_app/onboarding")({ component: Wizard });
+export const Route = createFileRoute("/_app/onboarding")({ component: Wizard,
+  validateSearch: (search: Record<string, unknown>): { next?: string } => ({ next: typeof search.next === "string" ? search.next : undefined }),
+});
 
 type Step = 1 | 2 | 3 | 4 | 5;
 type Handles = Record<string, string>;
@@ -114,6 +117,8 @@ function Wizard() {
     () => deriveCreatorActivation({ me: me.data, onboarding: effectiveOnboarding }),
     [effectiveOnboarding, me.data],
   );
+  const returnTo = safeCreatorReturn(new URLSearchParams(window.location.search).get("next"));
+  const completedReward = reward ?? (status.data?.onboarding_completed ? { referral_code: me.data?.referral_code ?? "—" } : null);
   const remainingImprovements = activation.milestones
     .filter(({ countsTowardReadiness, state }) => countsTowardReadiness && state !== "complete")
     .map(({ labelKey }) => t(labelKey));
@@ -304,6 +309,7 @@ function Wizard() {
       onDiscardAndBack={discardAndBack}
       onCancelDiscard={() => undefined}
     >
+      <fieldset disabled={saveState === "saving"} className="min-w-0 space-y-3">
       {error ? <p id="onboarding-save-error" role="alert" className="text-sm text-[var(--color-magenta)]">{error}</p> : null}
 
       {step === 1 ? <OnboardingValueStep onContinue={() => void primerNext()} saving={saveState === "saving"} /> : null}
@@ -328,6 +334,7 @@ function Wizard() {
       ) : null}
       {step === 4 ? (
         <OnboardingRecommendationsStep
+          creator={me.data}
           missions={recommended.data ?? []}
           loading={recommended.isLoading}
           error={recommended.error instanceof Error ? recommended.error : null}
@@ -339,14 +346,15 @@ function Wizard() {
       ) : null}
       {step === 5 ? (
         <OnboardingCompletionStep
-          reward={reward}
+          reward={completedReward}
           readinessPercent={activation.readinessPercent}
           remainingImprovements={remainingImprovements}
-          nextAction={{ to: activation.nextAction.to, label: t(activation.nextAction.ctaKey) }}
+          nextAction={{ to: returnTo ?? activation.nextAction.to, label: returnTo ? t("app.onboarding.continueRequested") : t(activation.nextAction.ctaKey) }}
           onComplete={() => void claimReward()}
           completing={saveState === "saving"}
         />
       ) : null}
+      </fieldset>
     </OnboardingShell>
   );
 }

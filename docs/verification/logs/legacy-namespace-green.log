@@ -1,0 +1,352 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+stderr | server/test/campaigns.test.ts > campaigns — operator routes (adminCampaignRoutes) > create draft → 201
+GoTrueClient@sb-127-auth-token:1 (2.108.1) 2026-10-22T19:10:56.857Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/campaigns.test.ts > campaigns — operator routes (adminCampaignRoutes) > create draft → 201
+GoTrueClient@sb-127-auth-token:2 (2.108.1) 2026-10-22T19:10:56.877Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/campaigns.test.ts > campaigns — operator routes (adminCampaignRoutes) > create draft → 201
+GoTrueClient@sb-127-auth-token:3 (2.108.1) 2026-10-22T19:10:56.900Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/campaigns.test.ts > campaigns — operator routes (adminCampaignRoutes) > attach mission already active in another campaign → 409
+GoTrueClient@sb-127-auth-token:4 (2.108.1) 2026-10-22T19:10:57.072Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/campaigns.test.ts > campaigns — operator routes (adminCampaignRoutes) > attach mission already active in another campaign → 409
+GoTrueClient@sb-127-auth-token:5 (2.108.1) 2026-10-22T19:10:57.150Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/campaigns.test.ts > campaigns — operator routes (adminCampaignRoutes) > attach mission already active in another campaign → 409
+GoTrueClient@sb-127-auth-token:6 (2.108.1) 2026-10-22T19:10:57.169Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/campaigns.test.ts > campaigns — operator routes (adminCampaignRoutes) > attach mission already active in another campaign → 409
+GoTrueClient@sb-127-auth-token:7 (2.108.1) 2026-10-22T19:10:57.194Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/campaigns.test.ts > campaigns — operator routes (adminCampaignRoutes) > attach mission already active in another campaign → 409
+GoTrueClient@sb-127-auth-token:8 (2.108.1) 2026-10-22T19:10:57.293Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/campaigns.test.ts > campaigns — operator routes (adminCampaignRoutes) > attach mission already active in another campaign → 409
+GoTrueClient@sb-127-auth-token:9 (2.108.1) 2026-10-22T19:10:57.363Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/campaigns.test.ts > campaigns — operator routes (adminCampaignRoutes) > attach mission already active in another campaign → 409
+GoTrueClient@sb-127-auth-token:10 (2.108.1) 2026-10-22T19:10:57.382Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/campaigns.test.ts > campaigns — operator routes (adminCampaignRoutes) > attach mission already active in another campaign → 409
+GoTrueClient@sb-127-auth-token:11 (2.108.1) 2026-10-22T19:10:57.432Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/campaigns.test.ts > campaigns — operator routes (adminCampaignRoutes) > publish a draft missing window/goal/reward → 422
+GoTrueClient@sb-127-auth-token:12 (2.108.1) 2026-10-22T19:10:57.536Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/campaigns.test.ts > campaigns — operator routes (adminCampaignRoutes) > publish a draft missing window/goal/reward → 422
+GoTrueClient@sb-127-auth-token:13 (2.108.1) 2026-10-22T19:10:57.602Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/campaigns.test.ts > campaigns — operator routes (adminCampaignRoutes) > publish a draft missing window/goal/reward → 422
+GoTrueClient@sb-127-auth-token:14 (2.108.1) 2026-10-22T19:10:57.620Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/campaigns.test.ts > campaigns — operator routes (adminCampaignRoutes) > publish a draft missing window/goal/reward → 422
+GoTrueClient@sb-127-auth-token:15 (2.108.1) 2026-10-22T19:10:57.645Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/campaigns.test.ts > campaigns — operator routes (adminCampaignRoutes) > publish a draft missing window/goal/reward → 422
+GoTrueClient@sb-127-auth-token:16 (2.108.1) 2026-10-22T19:10:57.750Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/campaigns.test.ts > campaigns — operator routes (adminCampaignRoutes) > publish a draft missing window/goal/reward → 422
+GoTrueClient@sb-127-auth-token:17 (2.108.1) 2026-10-22T19:10:57.863Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/campaigns.test.ts > campaigns — operator routes (adminCampaignRoutes) > publish a draft missing window/goal/reward → 422
+GoTrueClient@sb-127-auth-token:18 (2.108.1) 2026-10-22T19:10:57.878Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/campaigns.test.ts > campaigns — operator routes (adminCampaignRoutes) > publish a draft missing window/goal/reward → 422
+GoTrueClient@sb-127-auth-token:19 (2.108.1) 2026-10-22T19:10:57.913Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/campaigns.test.ts > campaigns — operator routes (adminCampaignRoutes) > settle on an enforced-but-unfunded campaign with a cash prize winner → 402
+GoTrueClient@sb-127-auth-token:20 (2.108.1) 2026-10-22T19:10:58.186Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/campaigns.test.ts > campaigns — operator routes (adminCampaignRoutes) > settle on an enforced-but-unfunded campaign with a cash prize winner → 402
+GoTrueClient@sb-127-auth-token:21 (2.108.1) 2026-10-22T19:10:58.259Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/campaigns.test.ts > campaigns — operator routes (adminCampaignRoutes) > settle on an enforced-but-unfunded campaign with a cash prize winner → 402
+GoTrueClient@sb-127-auth-token:22 (2.108.1) 2026-10-22T19:10:58.271Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/campaigns.test.ts > campaigns — operator routes (adminCampaignRoutes) > close an active campaign twice → second close returns 409
+GoTrueClient@sb-127-auth-token:23 (2.108.1) 2026-10-22T19:10:58.414Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/campaigns.test.ts > campaigns — operator routes (adminCampaignRoutes) > close an active campaign twice → second close returns 409
+GoTrueClient@sb-127-auth-token:24 (2.108.1) 2026-10-22T19:10:58.488Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/campaigns.test.ts > campaigns — operator routes (adminCampaignRoutes) > close an active campaign twice → second close returns 409
+GoTrueClient@sb-127-auth-token:25 (2.108.1) 2026-10-22T19:10:58.499Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/campaigns.test.ts > campaigns — operator routes (adminCampaignRoutes) > close an active campaign twice → second close returns 409
+GoTrueClient@sb-127-auth-token:26 (2.108.1) 2026-10-22T19:10:58.529Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/campaigns.test.ts > campaigns — operator routes (adminCampaignRoutes) > close an active campaign twice → second close returns 409
+GoTrueClient@sb-127-auth-token:27 (2.108.1) 2026-10-22T19:10:58.629Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/campaigns.test.ts > campaigns — operator routes (adminCampaignRoutes) > close an active campaign twice → second close returns 409
+GoTrueClient@sb-127-auth-token:28 (2.108.1) 2026-10-22T19:10:58.706Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/campaigns.test.ts > campaigns — operator routes (adminCampaignRoutes) > close an active campaign twice → second close returns 409
+GoTrueClient@sb-127-auth-token:29 (2.108.1) 2026-10-22T19:10:58.718Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/campaigns.test.ts > campaigns — operator routes (adminCampaignRoutes) > close an active campaign twice → second close returns 409
+GoTrueClient@sb-127-auth-token:30 (2.108.1) 2026-10-22T19:10:58.746Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/campaigns.test.ts > campaigns — creator read routes > GET /campaigns → 200, active campaign in creator's workspace appears in list
+GoTrueClient@sb-127-auth-token:31 (2.108.1) 2026-10-22T19:11:00.011Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/campaigns.test.ts > campaigns — creator read routes > GET /campaigns → 200, active campaign in creator's workspace appears in list
+GoTrueClient@sb-127-auth-token:32 (2.108.1) 2026-10-22T19:11:00.237Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/campaigns.test.ts > campaigns — creator read routes > GET /campaigns/:slug → 200 with my_progress object after seeding approved sub
+GoTrueClient@sb-127-auth-token:33 (2.108.1) 2026-10-22T19:11:00.454Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/campaigns.test.ts > campaigns — creator read routes > GET /campaigns/:slug → 200 with my_progress object after seeding approved sub
+GoTrueClient@sb-127-auth-token:34 (2.108.1) 2026-10-22T19:11:00.647Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/campaigns.test.ts > campaigns — creator read routes > GET /campaigns/:slug/leaderboard → 200 with leaderboard array
+GoTrueClient@sb-127-auth-token:35 (2.108.1) 2026-10-22T19:11:01.011Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/campaigns.test.ts > campaigns — creator read routes > GET /campaigns/:slug/leaderboard → 200 with leaderboard array
+GoTrueClient@sb-127-auth-token:36 (2.108.1) 2026-10-22T19:11:01.162Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/campaigns.test.ts > campaigns — creator read routes > GET /campaigns/:slug for a draft campaign → 404
+GoTrueClient@sb-127-auth-token:37 (2.108.1) 2026-10-22T19:11:01.376Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/campaigns.test.ts > campaigns — creator read routes > GET /campaigns/:slug for a draft campaign → 404
+GoTrueClient@sb-127-auth-token:38 (2.108.1) 2026-10-22T19:11:01.519Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/campaigns.test.ts > campaigns — cross-workspace isolation (creator route) > a creator cannot see / read a campaign in another workspace
+GoTrueClient@sb-127-auth-token:39 (2.108.1) 2026-10-22T19:11:02.623Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/campaigns.test.ts > campaigns — cross-workspace isolation (creator route) > a creator cannot see / read a campaign in another workspace
+GoTrueClient@sb-127-auth-token:40 (2.108.1) 2026-10-22T19:11:02.718Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/campaigns.test.ts > campaigns — cross-workspace isolation (creator route) > a creator cannot see / read a campaign in another workspace
+GoTrueClient@sb-127-auth-token:41 (2.108.1) 2026-10-22T19:11:02.737Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/campaigns.test.ts > campaigns — cross-workspace isolation (creator route) > a creator cannot see / read a campaign in another workspace
+GoTrueClient@sb-127-auth-token:42 (2.108.1) 2026-10-22T19:11:02.808Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/campaigns.test.ts > campaigns — cross-workspace isolation (creator route) > a creator cannot see / read a campaign in another workspace
+GoTrueClient@sb-127-auth-token:43 (2.108.1) 2026-10-22T19:11:02.819Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/campaigns.test.ts > campaigns — cross-workspace isolation (creator route) > a creator cannot see / read a campaign in another workspace
+GoTrueClient@sb-127-auth-token:44 (2.108.1) 2026-10-22T19:11:02.904Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/campaigns.test.ts > campaigns — cross-workspace isolation (creator route) > a creator cannot see / read a campaign in another workspace
+GoTrueClient@sb-127-auth-token:45 (2.108.1) 2026-10-22T19:11:02.919Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/campaigns.test.ts > campaigns — cross-workspace isolation (creator route) > a creator cannot see / read a campaign in another workspace
+GoTrueClient@sb-127-auth-token:46 (2.108.1) 2026-10-22T19:11:03.000Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+ ❯ server/test/campaigns.test.ts (20 tests | 1 failed) 14450ms
+   ✓ campaigns — completion bonus > auto-enrolls, counts, and pays the bonus exactly once on goal crossing 305ms
+   ✓ campaigns — settlement > ranks, pays the top tier in cash, and is idempotent on re-settle 414ms
+   ✓ campaigns — operator routes (adminCampaignRoutes) > create draft → 201 614ms
+   ✓ campaigns — operator routes (adminCampaignRoutes) > attach mission already active in another campaign → 409 540ms
+   ✓ campaigns — operator routes (adminCampaignRoutes) > publish a draft missing window/goal/reward → 422 467ms
+   × campaigns — operator routes (adminCampaignRoutes) > settle on an enforced-but-unfunded campaign with a cash prize winner → 402 396ms
+     → expected 404 to be 200 // Object.is equality
+   ✓ campaigns — operator routes (adminCampaignRoutes) > close an active campaign twice → second close returns 409 430ms
+   ✓ campaigns — creator read routes > GET /campaigns/:slug → 200 with my_progress object after seeding approved sub 550ms
+   ✓ campaigns — creator read routes > GET /campaigns/:slug/leaderboard → 200 with leaderboard array 522ms
+   ✓ campaigns — cross-workspace isolation (creator route) > a creator cannot see / read a campaign in another workspace 474ms
+stderr | server/test/missions.test.ts > mission join > joins an open mission: row created, status joined, +10 XP
+GoTrueClient@sb-127-auth-token:1 (2.108.1) 2026-10-22T19:11:05.902Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/missions.test.ts > mission join > joins an open mission: row created, status joined, +10 XP
+GoTrueClient@sb-127-auth-token:2 (2.108.1) 2026-10-22T19:11:05.933Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/missions.test.ts > mission join > joins an open mission: row created, status joined, +10 XP
+GoTrueClient@sb-127-auth-token:3 (2.108.1) 2026-10-22T19:11:05.998Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/missions.test.ts > mission join > rejects a second join with already_joined
+GoTrueClient@sb-127-auth-token:4 (2.108.1) 2026-10-22T19:11:06.014Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/missions.test.ts > mission join > rejects a second join with already_joined
+GoTrueClient@sb-127-auth-token:5 (2.108.1) 2026-10-22T19:11:06.081Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/missions.test.ts > mission join > rejects join when the mission is full
+GoTrueClient@sb-127-auth-token:6 (2.108.1) 2026-10-22T19:11:06.133Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/missions.test.ts > mission join > rejects join when the mission is full
+GoTrueClient@sb-127-auth-token:7 (2.108.1) 2026-10-22T19:11:06.195Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/missions.test.ts > mission join > rejects join on a non-open (application) mission
+GoTrueClient@sb-127-auth-token:8 (2.108.1) 2026-10-22T19:11:06.229Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/missions.test.ts > mission join > rejects join on a non-open (application) mission
+GoTrueClient@sb-127-auth-token:9 (2.108.1) 2026-10-22T19:11:06.296Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/missions.test.ts > mission join > rejects join on a closed mission with 404 (status guard fires before RPC)
+GoTrueClient@sb-127-auth-token:10 (2.108.1) 2026-10-22T19:11:06.349Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/missions.test.ts > mission join > rejects join on a closed mission with 404 (status guard fires before RPC)
+GoTrueClient@sb-127-auth-token:11 (2.108.1) 2026-10-22T19:11:06.414Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/missions.test.ts > mission join > 404s an unknown mission slug
+GoTrueClient@sb-127-auth-token:12 (2.108.1) 2026-10-22T19:11:06.420Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/missions.test.ts > mission join > 404s an unknown mission slug
+GoTrueClient@sb-127-auth-token:13 (2.108.1) 2026-10-22T19:11:06.479Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/missions.test.ts > mission join > creates one workflow for an active-workspace direct join
+GoTrueClient@sb-127-auth-token:14 (2.108.1) 2026-10-22T19:11:06.832Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/missions.test.ts > mission join > creates one workflow for an active-workspace direct join
+GoTrueClient@sb-127-auth-token:15 (2.108.1) 2026-10-22T19:11:06.889Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/missions.test.ts > mission join > creates one workflow for an active-workspace direct join
+GoTrueClient@sb-127-auth-token:16 (2.108.1) 2026-10-22T19:11:06.961Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/missions.test.ts > mission join > creates one workflow for an active-workspace direct join
+GoTrueClient@sb-127-auth-token:17 (2.108.1) 2026-10-22T19:11:07.029Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/missions.test.ts > mission submit
+GoTrueClient@sb-127-auth-token:18 (2.108.1) 2026-10-22T19:11:07.506Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/missions.test.ts > mission submit
+GoTrueClient@sb-127-auth-token:19 (2.108.1) 2026-10-22T19:11:07.577Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/missions.test.ts > mission submit > submits content: status submitted, +25 XP (total 35)
+GoTrueClient@sb-127-auth-token:20 (2.108.1) 2026-10-22T19:11:07.614Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/missions.test.ts > mission submit > submits content: status submitted, +25 XP (total 35)
+GoTrueClient@sb-127-auth-token:21 (2.108.1) 2026-10-22T19:11:07.674Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/missions.test.ts > mission submit > rejects an empty content_urls array
+GoTrueClient@sb-127-auth-token:22 (2.108.1) 2026-10-22T19:11:07.710Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/missions.test.ts > mission submit > rejects an empty content_urls array
+GoTrueClient@sb-127-auth-token:23 (2.108.1) 2026-10-22T19:11:07.764Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/missions.test.ts > mission submit > rejects an empty content_urls array
+GoTrueClient@sb-127-auth-token:24 (2.108.1) 2026-10-22T19:11:07.793Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/missions.test.ts > mission submit > rejects an empty content_urls array
+GoTrueClient@sb-127-auth-token:25 (2.108.1) 2026-10-22T19:11:07.862Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/missions.test.ts > mission submit > rejects submit before join (wrong_state)
+GoTrueClient@sb-127-auth-token:26 (2.108.1) 2026-10-22T19:11:07.893Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/missions.test.ts > mission submit > rejects submit before join (wrong_state)
+GoTrueClient@sb-127-auth-token:27 (2.108.1) 2026-10-22T19:11:07.946Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/missions.test.ts > mission submit > rejects legacy submit for active-workspace missions without mutating rewards
+GoTrueClient@sb-127-auth-token:28 (2.108.1) 2026-10-22T19:11:08.274Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/missions.test.ts > mission submit > rejects legacy submit for active-workspace missions without mutating rewards
+GoTrueClient@sb-127-auth-token:29 (2.108.1) 2026-10-22T19:11:08.354Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/missions.test.ts > mission list + my + apply
+GoTrueClient@sb-127-auth-token:30 (2.108.1) 2026-10-22T19:11:08.729Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/missions.test.ts > mission list + my + apply
+GoTrueClient@sb-127-auth-token:31 (2.108.1) 2026-10-22T19:11:08.802Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/missions.test.ts > mission list + my + apply > GET / annotates joined missions with my_status
+GoTrueClient@sb-127-auth-token:32 (2.108.1) 2026-10-22T19:11:08.822Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/missions.test.ts > mission list + my + apply > GET / annotates joined missions with my_status
+GoTrueClient@sb-127-auth-token:33 (2.108.1) 2026-10-22T19:11:08.880Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/missions.test.ts > mission list + my + apply > GET /my returns the caller's submissions
+GoTrueClient@sb-127-auth-token:34 (2.108.1) 2026-10-22T19:11:08.912Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/missions.test.ts > mission list + my + apply > GET /my returns the caller's submissions
+GoTrueClient@sb-127-auth-token:35 (2.108.1) 2026-10-22T19:11:09.045Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/missions.test.ts > mission list + my + apply > GET /my?status=approved filters to none here
+GoTrueClient@sb-127-auth-token:36 (2.108.1) 2026-10-22T19:11:09.186Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/missions.test.ts > mission list + my + apply > GET /my?status=approved filters to none here
+GoTrueClient@sb-127-auth-token:37 (2.108.1) 2026-10-22T19:11:09.246Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/missions.test.ts > mission list + my + apply > POST /:slug/apply applies to an application mission (→ applied)
+GoTrueClient@sb-127-auth-token:38 (2.108.1) 2026-10-22T19:11:09.266Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/missions.test.ts > mission list + my + apply > POST /:slug/apply applies to an application mission (→ applied)
+GoTrueClient@sb-127-auth-token:39 (2.108.1) 2026-10-22T19:11:09.347Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/missions.test.ts > mission list + my + apply > GET /:slug returns the brief fields + brand
+GoTrueClient@sb-127-auth-token:40 (2.108.1) 2026-10-22T19:11:09.398Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/missions.test.ts > mission list + my + apply > GET /:slug returns the brief fields + brand
+GoTrueClient@sb-127-auth-token:41 (2.108.1) 2026-10-22T19:11:09.478Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/missions.test.ts > mission list + my + apply > does not leak another creator's submissions via /my (RLS isolation)
+GoTrueClient@sb-127-auth-token:42 (2.108.1) 2026-10-22T19:11:09.795Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/missions.test.ts > mission list + my + apply > does not leak another creator's submissions via /my (RLS isolation)
+GoTrueClient@sb-127-auth-token:43 (2.108.1) 2026-10-22T19:11:09.899Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+ ✓ server/test/missions.test.ts (26 tests) 4933ms
+   ✓ mission join > creates one workflow for an active-workspace direct join 646ms
+   ✓ mission submit > rejects legacy submit for active-workspace missions without mutating rewards 418ms
+   ✓ mission list + my + apply > does not leak another creator's submissions via /my (RLS isolation) 417ms
+stderr | server/test/campaigns-s2.test.ts > notifyCampaignStarted policy > does NOT notify a matching creator in a DIFFERENT workspace (isolation)
+GoTrueClient@sb-127-auth-token:1 (2.108.1) 2026-10-22T19:11:16.133Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+ ✓ server/test/campaigns-s2.test.ts (5 tests) 5526ms
+   ✓ close_due_campaigns > closes past-deadline active only, idempotent 568ms
+   ✓ snapshot_campaign_leaderboards > captures active-campaign ranks 1134ms
+   ✓ broadcast_campaign_started > inserts once, idempotent 530ms
+   ✓ notifyCampaignStarted policy > notifies a matched creator but not an unmatched one 830ms
+   ✓ notifyCampaignStarted policy > does NOT notify a matching creator in a DIFFERENT workspace (isolation) 438ms
+stderr | server/test/bootstrap.test.ts > bootstrap (first login) > creates an email creator and returns created:true, then false on repeat
+GoTrueClient@sb-127-auth-token:1 (2.108.1) 2026-10-22T19:11:18.466Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/bootstrap.test.ts > bootstrap (first login) > creates an email creator and returns created:true, then false on repeat
+GoTrueClient@sb-127-auth-token:2 (2.108.1) 2026-10-22T19:11:18.532Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/bootstrap.test.ts > bootstrap (first login) > creates an email creator and returns created:true, then false on repeat
+GoTrueClient@sb-127-auth-token:3 (2.108.1) 2026-10-22T19:11:18.568Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/bootstrap.test.ts > bootstrap (first login) > creates an email creator and returns created:true, then false on repeat
+GoTrueClient@sb-127-auth-token:4 (2.108.1) 2026-10-22T19:11:18.656Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/bootstrap.test.ts > bootstrap (first login) > creates an email creator and returns created:true, then false on repeat
+GoTrueClient@sb-127-auth-token:5 (2.108.1) 2026-10-22T19:11:18.715Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/bootstrap.test.ts > bootstrap (first login) > creates a PHONE-primary creator with no email (display_name = E.164)
+GoTrueClient@sb-127-auth-token:6 (2.108.1) 2026-10-22T19:11:18.884Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/bootstrap.test.ts > bootstrap (first login) > creates a PHONE-primary creator with no email (display_name = E.164)
+GoTrueClient@sb-127-auth-token:7 (2.108.1) 2026-10-22T19:11:18.930Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/bootstrap.test.ts > bootstrap (first login) > creates a PHONE-primary creator with no email (display_name = E.164)
+GoTrueClient@sb-127-auth-token:8 (2.108.1) 2026-10-22T19:11:18.990Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/bootstrap.test.ts > bootstrap (first login) > creates a PHONE-primary creator with no email (display_name = E.164)
+GoTrueClient@sb-127-auth-token:9 (2.108.1) 2026-10-22T19:11:19.050Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+ ✓ server/test/bootstrap.test.ts (2 tests) 1577ms
+   ✓ bootstrap (first login) > creates an email creator and returns created:true, then false on repeat 789ms
+   ✓ bootstrap (first login) > creates a PHONE-primary creator with no email (display_name = E.164) 336ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  server/test/campaigns.test.ts > campaigns — operator routes (adminCampaignRoutes) > settle on an enforced-but-unfunded campaign with a cash prize winner → 402
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ server/test/campaigns.test.ts:482:29
+    480|     // Close via route.
+    481|     const closeRes = await adminreq(`/admin/campaigns/${campaignId}/cl…
+    482|     expect(closeRes.status).toBe(200);
+       |                             ^
+    483| 
+    484|     // Settle via route → 402 (insufficient_budget).
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+ Test Files  1 failed | 3 passed (4)
+      Tests  1 failed | 52 passed (53)
+   Start at  03:10:46
+   Duration  33.29s (transform 645ms, setup 721ms, collect 1.46s, tests 26.48s, environment 3.09s, prepare 532ms)
+

@@ -1,0 +1,1298 @@
+{
+  "cases": [
+    {
+      "caseId": "UC-P01",
+      "originalAuditResult": "pass",
+      "priorNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-P02",
+      "originalAuditResult": "fail",
+      "priorNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-P03",
+      "originalAuditResult": "fail",
+      "priorNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-C01",
+      "originalAuditResult": "fail",
+      "priorNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-C02",
+      "originalAuditResult": "pass",
+      "priorNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-C03",
+      "originalAuditResult": "fail",
+      "priorNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-C04",
+      "originalAuditResult": "fail",
+      "priorNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-C05",
+      "originalAuditResult": "fail",
+      "priorNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-C06",
+      "originalAuditResult": "fail",
+      "priorNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-C07",
+      "originalAuditResult": "fail",
+      "priorNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-C08",
+      "originalAuditResult": "fail",
+      "priorNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-C09",
+      "originalAuditResult": "fail",
+      "priorNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-C10",
+      "originalAuditResult": "pass",
+      "priorNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-C11",
+      "originalAuditResult": "fail",
+      "priorNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-C12",
+      "originalAuditResult": "pass",
+      "priorNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-C13",
+      "originalAuditResult": "pass",
+      "priorNewResult": "PASS_FRESH_OWNED_SUPPORT_API_DB",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "SELECTED_SUPPORT_REFRESHED_GLOBAL_SCOPE_EXCEPTIONS_EXPLICIT"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-C14",
+      "originalAuditResult": "pass",
+      "priorNewResult": "PASS_FRESH_OWNED_SUPPORT_API_DB",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "SELECTED_SUPPORT_REFRESHED_GLOBAL_SCOPE_EXCEPTIONS_EXPLICIT"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-C15",
+      "originalAuditResult": "pass",
+      "priorNewResult": "PASS_SELECTED_LOCAL_UI; explicit mocks labelled",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-C16",
+      "originalAuditResult": "pass",
+      "priorNewResult": "PASS_SELECTED_LOCAL_UI; explicit mocks labelled",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-C17",
+      "originalAuditResult": "pass",
+      "priorNewResult": "PASS_SELECTED_LOCAL_UI; explicit mocks labelled",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-C18",
+      "originalAuditResult": "fail",
+      "priorNewResult": "BLOCKED_CONTENT_NOT_PROVIDED; original-4-real-lessons-acceptance-open",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "BLOCKED_CONTENT_NOT_PROVIDED"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-C19",
+      "originalAuditResult": "pass",
+      "priorNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-A01",
+      "originalAuditResult": "pass",
+      "priorNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-A02",
+      "originalAuditResult": "pass",
+      "priorNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-A03",
+      "originalAuditResult": "pass",
+      "priorNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-A04",
+      "originalAuditResult": "fail",
+      "priorNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-A05",
+      "originalAuditResult": "fail",
+      "priorNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-A06",
+      "originalAuditResult": "fail",
+      "priorNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-R01",
+      "originalAuditResult": "fail",
+      "priorNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-R02",
+      "originalAuditResult": "pass",
+      "priorNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-C20",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-C21",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-C22",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-C23",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-C24",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-C25",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-C26",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-C27",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-C28",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-C29",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-C30",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-C31",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-C32",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-C33",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "PASS_FRESH_OWNED_SUPPORT_API_DB",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "SELECTED_SUPPORT_REFRESHED_GLOBAL_SCOPE_EXCEPTIONS_EXPLICIT"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-C34",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-C35",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-C36",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "PASS_FRESH_OWNED_SUPPORT_API_DB",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "SELECTED_SUPPORT_REFRESHED_GLOBAL_SCOPE_EXCEPTIONS_EXPLICIT"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-A07",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-A08",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-A09",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "PASS_FRESH_OWNED_SUPPORT_API_DB",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "SELECTED_SUPPORT_REFRESHED_GLOBAL_SCOPE_EXCEPTIONS_EXPLICIT"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-A10",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-A11",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-A12",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-A13",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-A14",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-A15",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-A16",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-A17",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-A18",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "PASS_FRESH_OWNED_SUPPORT_API_DB",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "SELECTED_SUPPORT_REFRESHED_GLOBAL_SCOPE_EXCEPTIONS_EXPLICIT"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-A19",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "PASS_FRESH_OWNED_SUPPORT_API_DB",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "SELECTED_SUPPORT_REFRESHED_GLOBAL_SCOPE_EXCEPTIONS_EXPLICIT"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-A20",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-A21",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-A22",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-A23",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-A24",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-S01",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-S02",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-S03",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "PASS_FRESH_OWNED_SUPPORT_API_DB",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "SELECTED_SUPPORT_REFRESHED_GLOBAL_SCOPE_EXCEPTIONS_EXPLICIT"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-S04",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "PASS_FRESH_OWNED_SUPPORT_API_DB",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "BLOCKED_GLOBAL_RPC_CASES_REQUIRE_PRISTINE_TARGET"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-Q01",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "PASS_SELECTED_LOCAL_QUALITY; named_owner_device_hosted_BLOCKED",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "D17_LOCAL_RETAINED_OWNER_DEVICE_HOSTED_BLOCKED"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-Q02",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "PASS_SELECTED_LOCAL_QUALITY; named_owner_device_hosted_BLOCKED",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "D17_LOCAL_RETAINED_OWNER_DEVICE_HOSTED_BLOCKED"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-Q03",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "PASS_SELECTED_LOCAL_QUALITY; named_owner_device_hosted_BLOCKED",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "D17_LOCAL_RETAINED_OWNER_DEVICE_HOSTED_BLOCKED"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-Q04",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-Q05",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-R03",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "blocked-production",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "BLOCKED_PRODUCTION_RELEASE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-R04",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-A25",
+      "originalAuditResult": "fail",
+      "priorNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-A26",
+      "originalAuditResult": "fail",
+      "priorNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-A27",
+      "originalAuditResult": "fail",
+      "priorNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-A28",
+      "originalAuditResult": "fail",
+      "priorNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-A29",
+      "originalAuditResult": "fail",
+      "priorNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-A30",
+      "originalAuditResult": "fail",
+      "priorNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-A31",
+      "originalAuditResult": "fail",
+      "priorNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-A32",
+      "originalAuditResult": "fail",
+      "priorNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-A33",
+      "originalAuditResult": "not-tested",
+      "priorNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-A34",
+      "originalAuditResult": "pass",
+      "priorNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-A35",
+      "originalAuditResult": "pass",
+      "priorNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-A36",
+      "originalAuditResult": "pass",
+      "priorNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-A37",
+      "originalAuditResult": "pass",
+      "priorNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-A38",
+      "originalAuditResult": "pass",
+      "priorNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-A39",
+      "originalAuditResult": "pass",
+      "priorNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-A40",
+      "originalAuditResult": "pass",
+      "priorNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-A41",
+      "originalAuditResult": "fail",
+      "priorNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-A42",
+      "originalAuditResult": "fail",
+      "priorNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-A43",
+      "originalAuditResult": "fail",
+      "priorNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-A44",
+      "originalAuditResult": "fail",
+      "priorNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-A45",
+      "originalAuditResult": "pass",
+      "priorNewResult": "PASS_SELECTED_LOCAL_UI; explicit mocks labelled",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-A46",
+      "originalAuditResult": "pass",
+      "priorNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-A47",
+      "originalAuditResult": "fail",
+      "priorNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-A48",
+      "originalAuditResult": "pass",
+      "priorNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-A49",
+      "originalAuditResult": "pass",
+      "priorNewResult": "PASS_SELECTED_LOCAL_UI; explicit mocks labelled",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-A50",
+      "originalAuditResult": "pass",
+      "priorNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-A51",
+      "originalAuditResult": "fail",
+      "priorNewResult": "BLOCKED_CONTENT_NOT_PROVIDED; original-4-real-lessons-acceptance-open",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "BLOCKED_CONTENT_NOT_PROVIDED"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-A52",
+      "originalAuditResult": "fail",
+      "priorNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-A53",
+      "originalAuditResult": "fail",
+      "priorNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-A54",
+      "originalAuditResult": "fail",
+      "priorNewResult": "PASS_FRESH_OWNED_CORE_OR_ROLE",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    },
+    {
+      "caseId": "UC-A55",
+      "originalAuditResult": "fail",
+      "priorNewResult": "PASS_FRESH_LOCAL_CONTRACT; prior runtime retained",
+      "newResult": {
+        "code": "No product/SQL change; fixture/tooling only",
+        "test": "full1967/363 plus selected439+proof3; original assertions retained",
+        "deployment": "not-deployed",
+        "runtime": "PRIOR_RUNTIME_RETAINED_FRESH_CONTRACT_GATE"
+      },
+      "scope": "Not107 browser passes; source binding, two global blocks and initial isolated incident remain explicit"
+    }
+  ],
+  "auditCases": 107,
+  "findings": 28,
+  "tasks": 20,
+  "newProductCases": 12,
+  "canonicalAuditCsvChanged": true,
+  "canonicalChangedCases": [
+    "UC-S04"
+  ],
+  "initialIncidentOpen": true,
+  "wholeCurrentR1Verified": false
+}

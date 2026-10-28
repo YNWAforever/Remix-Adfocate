@@ -1,0 +1,12 @@
+{
+  "recordedAt": "2026-10-25T11:35:05.117095+00:00",
+  "command": [
+    "python",
+    "docs/verification/D19-C1-continuation-check-records.py"
+  ],
+  "exitCode": 1,
+  "failure": "Current coverage must distinguish carried/revalidated API facets from unrun full-case acceptance",
+  "scope": "File-only regression assertion against stale current labels after runtime completed. No runtime/DB/Auth action.",
+  "beforeLabelsRetainedInCurrentCoverage": true,
+  "priorRuntimeFailuresUnchanged": true
+}

@@ -1,7 +1,9 @@
+import { grantStaffFixture } from "./helpers";
+import { fixtureName } from "./helpers";
 // server/test/insights.test.ts
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { createApp } from "../app";
-import { makeStaff, makeCreator, seedSubmission, cleanup, hasSupabaseEnv } from "./helpers";
+import { DEMO_WS, makeStaff, makeCreator, seedSubmission, cleanup, hasSupabaseEnv, serviceForTests } from "./helpers";
 
 const { app } = createApp();
 const suite = hasSupabaseEnv ? describe : describe.skip;
@@ -16,10 +18,15 @@ suite("admin insights", () => {
 
   beforeAll(async () => {
     await cleanup();
-    staff = await makeStaff("insights-staff@test.local");
-    creator = await makeCreator("insights-koc@test.local", 0);
-    await seedSubmission(creator.userId, "joined", "test-insights-joined");
-    await seedSubmission(creator.userId, "submitted", "test-insights-submitted");
+    staff = await makeStaff(fixtureName("insights-staff@test.local"), DEMO_WS);
+    await grantStaffFixture(staff.userId,DEMO_WS,"operator");
+    creator = await makeCreator(fixtureName("insights-koc@test.local"), 0);
+    await seedSubmission(creator.userId, "joined", fixtureName("test-insights-joined"));
+    await seedSubmission(creator.userId, "submitted", fixtureName("test-insights-submitted"));
+    // D17 reports completed Hong Kong days; keep seeded activity inside that window.
+    const previousDay = new Date(Date.now() - 86_400_000).toISOString();
+    const dated = await serviceForTests().from("mission_submissions").update({ created_at: previousDay, submitted_at: previousDay }).eq("creator_id", creator.userId);
+    if (dated.error) throw dated.error;
   });
   afterAll(cleanup);
 
@@ -48,11 +55,9 @@ suite("admin insights", () => {
     expect(insights.trend.length).toBe(30);
   });
 
-  it("accepts a workspace filter without crashing", async () => {
+  it("rejects an inaccessible workspace without leaking data", async () => {
     const res = await adminReq("/admin/insights?window=30&workspace=00000000-0000-0000-0000-0000000000ff", staff.jwt);
-    expect(res.status).toBe(200);
-    const { insights } = await res.json();
-    expect(insights.window.days).toBe(30);
-    expect(insights.levels).toHaveLength(7);
+    expect(res.status).toBe(404);
+    expect((await res.json()).insights).toBeUndefined();
   });
 });

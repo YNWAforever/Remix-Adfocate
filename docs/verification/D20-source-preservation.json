@@ -1,0 +1,146 @@
+{
+  "beforeImageFiles": 1557,
+  "changedFiles": [
+    {
+      "path": "e2e/fixtures/mission-assist.html",
+      "beforeSha256": null,
+      "afterSha256": "1de3e594309e43a5efeec58ea22a72b173914539e4d21ece5b15a3e426308563",
+      "createdInD20": true
+    },
+    {
+      "path": "e2e/fixtures/mission-assist.tsx",
+      "beforeSha256": null,
+      "afterSha256": "dbc605b28e7e017519cccc168e354df05c27b86e409df5e8f82f6ad6de67c447",
+      "createdInD20": true
+    },
+    {
+      "path": "e2e/mission-assist.spec.ts",
+      "beforeSha256": null,
+      "afterSha256": "f21cdd8436259f8cf998850653fd93a03ef62823e1a1f69bafc003add0e1720e",
+      "createdInD20": true
+    },
+    {
+      "path": "playwright.assistant.config.ts",
+      "beforeSha256": null,
+      "afterSha256": "9aeb6947653b3f6d35068e783485a8bfa9ac5ff633abca9f1464abc70fed5d90",
+      "createdInD20": true
+    },
+    {
+      "path": "scripts/audit/serve-assistant.ts",
+      "beforeSha256": null,
+      "afterSha256": "dcf9fa3df2d2775692475e28062cd3ec055d01891971b9aad511d240153b4631",
+      "createdInD20": true
+    },
+    {
+      "path": "server/lib/assistant/chat.ts",
+      "beforeSha256": "bbddd7b5ab961a015d2763b91d3704325a3ef57c1775963a9ef329e8faeae85e",
+      "afterSha256": "7cd73f2163fe7d9b7b413b732b5bc011e4c3665f5fdfdc86af1a20cdf7b97687",
+      "createdInD20": false
+    },
+    {
+      "path": "server/lib/assistant/contextPolicy.test.ts",
+      "beforeSha256": null,
+      "afterSha256": "2cea5a8b516330975b2d86fcb211bd6e3e88646b981e1e83074f720fd78758b6",
+      "createdInD20": true
+    },
+    {
+      "path": "server/lib/assistant/contextPolicy.ts",
+      "beforeSha256": null,
+      "afterSha256": "64f702f7c7958b9be01c14a3d14759a1920c2f4d522c576724b6196a9b7739d6",
+      "createdInD20": true
+    },
+    {
+      "path": "server/lib/assistant/prompt.ts",
+      "beforeSha256": "a6532da70ac33ac5413034ab33d1065f7b767e747a55b79a724d1c7b6227d818",
+      "afterSha256": "fa7f2fbce4ced847bd386c298e97ed304a4948b210d6a52aefa7a4d1e587b431",
+      "createdInD20": false
+    },
+    {
+      "path": "server/lib/assistant/retrieve.ts",
+      "beforeSha256": "b20801f25265a8ea4bdbb78e02b59d73e79165f602201053d6d642501fcd53b8",
+      "afterSha256": "2d92841993ec6023b63ef70ce05bfef8cc7ed48437e3620a63e88d4120c85c12",
+      "createdInD20": false
+    },
+    {
+      "path": "server/lib/staffCapabilities.ts",
+      "beforeSha256": "a73c9023cfc7962df618ba680453912c3c5ba65e5fc4dcb53e60ceaa283c5534",
+      "afterSha256": "259cfd74c181d821312faadcb5d5deaf83701bc20baedce85a91fa8b708f33f8",
+      "createdInD20": false
+    },
+    {
+      "path": "server/routes/admin.ts",
+      "beforeSha256": "1c358e2f7df5f2ab6a4ecc038f918003f5286adbc34d71c1b64902ed416b5d79",
+      "afterSha256": "d420b11f2fe089276003a03f5d8f4606b1e24ccadc0e2b9fb87aa2a65fdb3552",
+      "createdInD20": false
+    },
+    {
+      "path": "server/routes/assistant.ts",
+      "beforeSha256": "2c58070627ba32d94fa78e630b71c2f4bab5b79510b0d038cb76acd4211b0e1a",
+      "afterSha256": "1ee19a3ecc8aff8bda034333eb042178f8a4ac1fb68269224c7b4ec4bc4c402a",
+      "createdInD20": false
+    },
+    {
+      "path": "server/test/mission-assist.test.ts",
+      "beforeSha256": null,
+      "afterSha256": "8af9b88bb9927c47d4dfa36a9e1118072339c5a8d546ae99100b38592b9d62bf",
+      "createdInD20": true
+    },
+    {
+      "path": "src/components/active-mission/DraftEditor.tsx",
+      "beforeSha256": "1f64e6066a489f23bc75d8f30d4c26477815961a750cd19485a74f216a82feef",
+      "afterSha256": "69b3f3e0cad5372a1000e87a0816158769edbc675508fc442cf6f4a8389a9266",
+      "createdInD20": false
+    },
+    {
+      "path": "src/components/admin/ActiveMissionReview.tsx",
+      "beforeSha256": "686984c68606958533a4fd148c8fd7a5c6c25d748146d8b31402ae4368ba9f94",
+      "afterSha256": "0c4ea8b6b7c09466adb5e2bdc7303edc5652f8662805772fc12a911032b1dd3a",
+      "createdInD20": false
+    },
+    {
+      "path": "src/components/assistant/MissionAssistLauncher.tsx",
+      "beforeSha256": null,
+      "afterSha256": "f023e62b8faabf099734b3f19a307d72a3bfd0e535b1b1fb03f4b1ea9ef14ea3",
+      "createdInD20": true
+    },
+    {
+      "path": "src/components/assistant/MissionAssistPanel.test.tsx",
+      "beforeSha256": null,
+      "afterSha256": "3fa3cca13b8114519b938d6e32e911afff0c61220befb4af06a345c2ff0faac2",
+      "createdInD20": true
+    },
+    {
+      "path": "src/components/assistant/MissionAssistPanel.tsx",
+      "beforeSha256": null,
+      "afterSha256": "e376cbffc0ddd85778ff0859f8dfffceecbdf39dbea61bfc6887597f4e4d1c67",
+      "createdInD20": true
+    },
+    {
+      "path": "src/lib/missionAssist.ts",
+      "beforeSha256": null,
+      "afterSha256": "cd5c3a49aae160e751fb52436782e2d367e754b59896f460b60d3f82a122378c",
+      "createdInD20": true
+    },
+    {
+      "path": "src/routes/_app.my.$submissionId.tsx",
+      "beforeSha256": "444118718a2bf1d4387e8ebbe093848de10c26f88e0e6e2b26e81624b126b0ce",
+      "afterSha256": "fd233224e4b6e05b827e1edc67f5994b53b4ab62d7c33f5796587526ceb9a599",
+      "createdInD20": false
+    },
+    {
+      "path": "src/routes/admin.active-missions.$workflowId.tsx",
+      "beforeSha256": "ae84cf20d6b8a11b2dc7bd6a9c6f6b347db6d3f0bd122ff1197bd75c4f459865",
+      "afterSha256": "66d8559a16828e174ecbd12b1124b02cb3e87c35282ec33382397afe91a03f3a",
+      "createdInD20": false
+    },
+    {
+      "path": "tests/fixtures/assistant-workflow-eval.json",
+      "beforeSha256": null,
+      "afterSha256": "9e993f0b45a49736f585ce77c44d389af4fc17406fe3b1d20debcd223b42942f",
+      "createdInD20": true
+    }
+  ],
+  "priorSourceFiles": 311,
+  "original16And194Untouched": true,
+  "D02FixtureOwnershipTestUntouched": true
+}

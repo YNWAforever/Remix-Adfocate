@@ -1,0 +1,4 @@
+{
+  "file": "supabase/migrations/20261025194402_redemption_intents.sql",
+  "generator": "Installed supabase2.110.0 migration new; telemetry disabled and project-local CLI home; no DB operation"
+}

@@ -1,0 +1,78 @@
+{
+  "sourceFingerprint": "d13fe2b7e8b9838972b8d93881dc17e8ccfc2795bc133b01cdc4f1a35426f893",
+  "runtimePreflight": "PASS identity/cache/absence/ports/proxy",
+  "resourcePrestart": "PASS five captured stopped resource identities/mounts/ports/config digests",
+  "dbStartAttempt1": {
+    "exit": 2,
+    "reason": "Required image admin role absent; initialized cluster with wrong first user",
+    "evidence": "adfocate-d19-b2-20261025-b0db3134/db-start-failure.log"
+  },
+  "forwardImageInitAttempt": {
+    "exit": 3,
+    "reason": "Bootstrap superuser cannot be demoted; partial image initialization retained",
+    "evidence": "adfocate-d19-b2-20261025-b0db3134/pinned-image-infrastructure-migrate.log"
+  },
+  "liveReadonlyReadback": "adfocate-d19-b2-20261025-b0db3134/final-infrastructure-readback.json",
+  "guardTests": {
+    "command": "python docs/verification/D19-B2-recovery-db-bootstrap-guard-test.py",
+    "passed": 6,
+    "failed": 0,
+    "log": "logs/D19-B2-runtime-B2-recovery-guard-public-input-green-final.log",
+    "correctPostinitIsMock": true
+  },
+  "cliFailClosed": {
+    "command": "node .codex-tmp/B2-runtime-refusal-probes.mjs",
+    "passed": 2,
+    "evidence": "D19-B2-runtime-cli-refusals.json",
+    "subprocessesOrKeysOrHttpTouched": 0
+  },
+  "currentConfigurationRefusal": {
+    "command": "python docs/verification/D19-B2-recovery-db-bootstrap-guard.py --manifest docs/verification/D19-B2-runtime-manifest-neutrality-guard.json --observation docs/verification/D19-B2-runtime-bootstrap-config-observation.json --stage postinit",
+    "expectedExit": 1,
+    "reason": "B2_BOOTSTRAP_INITIAL_USER_MISMATCH",
+    "actualStateFixed": false
+  },
+  "recoverySpecificationOffline": "D19-B2-recovery-offline-check.json",
+  "retainedUnchangedSourceFullSuite": {
+    "fullPass": 2047,
+    "fullFail": 0,
+    "gatedSkip": 363,
+    "files": 288,
+    "audit16": 16,
+    "protected194": 194,
+    "evidence": "D19-B2-neutrality-guard-full-results.json",
+    "rerunThisRuntimeTurn": false
+  },
+  "actualApplicationSuites": {
+    "role": "NOT_RUN",
+    "core": "NOT_RUN",
+    "browser": "NOT_RUN"
+  },
+  "testAttemptHistory": "Guard RED6 missing function, GREEN6; exported test first had wrong root path, fixed only path and reran6/0. Logs preserved.",
+  "ruling": "No Node/application-source change. Do not rerun unchanged-source full suite just for documentation or a Python-only observer; retained full result remains fingerprint-bound. Runtime acceptance is blocked, never substituted by these local checks.",
+  "preparationAttemptHistory": [
+    {
+      "step": "Docker image metadata preflight",
+      "initialResult": "Optional Config.Volumes missing in Docker template; no resources created",
+      "resolution": "Use optional index lookup and repeat same read-only preflight",
+      "rawFailureLog": "Tool response only; no standalone raw log captured"
+    },
+    {
+      "step": "Initial network create",
+      "initialResult": "Daemon default address pools exhausted; exact absence reconciled read-only",
+      "resolution": "Explicit nonoverlapping10.251.219.0/28; never remove/change existing networks",
+      "evidence": "adfocate-d19-b2-20261025-b0db3134/network-capacity-resolution.json"
+    },
+    {
+      "step": "Private configuration rendering",
+      "initialResult": "Literal masking marker in environment-key name found before resource creation",
+      "resolution": "Construct correct environment key, verify actual created DB config matched fresh local value before first start",
+      "businessOrClientImpact": false
+    },
+    {
+      "step": "Generated evidence references",
+      "initialResult": "Windows path separator produced duplicate docs/verification in checker lookup",
+      "resolution": "Correct only generated relative references; check records rerun passed"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "startedAt": "2026-10-25T09:12:20.745350+00:00",
+  "finishedAt": "2026-10-25T09:12:20.958277+00:00",
+  "command": [
+    "node",
+    "scripts/audit/adopt-browser-fixture.mjs",
+    "docs/verification/D19-C1-browser-continuation-runtime-manifest.json",
+    "--offline-check"
+  ],
+  "exit": 0,
+  "sourceFingerprint": "e83998d178061043688016056a5a78fc61df58bac28f3d0d0b66d639306037bd",
+  "integrationCredentialsAvailable": false,
+  "actualC1TargetUsed": false,
+  "log": "continuation-final-offline.log",
+  "layer": "LOCAL_OFFLINE_MOCK_AND_OWNED_LOOPBACK_UNIT_TRANSPORT"
+}

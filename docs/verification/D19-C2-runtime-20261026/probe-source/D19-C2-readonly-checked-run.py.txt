@@ -1,0 +1,21 @@
+from pathlib import Path
+import datetime,hashlib,json,os,subprocess
+R=Path.cwd();P=R/'docs/verification/D19-C2-runtime-20261026'
+assert not(P/'readonly-checked-command.json').exists(),'Never overwrite diagnostic receipt'
+manifest=json.loads((R/'docs/verification/D19-C2-application-runtime-manifest.json').read_text(encoding='utf-8'))
+source=json.loads((R/'docs/verification/code-fingerprint.json').read_text(encoding='utf-8'))
+for row in source['files']:assert hashlib.sha256((R/row['path']).read_text(encoding='utf-8').replace('\r\n','\n').encode()).hexdigest()==row['sha256']
+node=Path('C:/Users/laich/AppData/Local/npm-cache/_npx/52027bd8fc0022aa/node_modules/node/bin/node.exe')
+command=[str(node),'.codex-tmp/D19-C2-readonly-provenance.mjs']
+env={k:v for k,v in os.environ.items()if not k.upper().startswith('PG')and not any(t in k.upper()for t in ['SUPABASE','DATABASE','INTEGRATION','ADFOCATE_B2','OPENAI','OPENROUTER','ANTHROPIC','GATEWAY','PROVIDER','API_KEY','TOKEN','SECRET',('PASS'+'WORD')])}
+for name in ['NODE_OPTIONS','HTTP_PROXY','HTTPS_PROXY','ALL_PROXY','GLOBAL_AGENT_HTTP_PROXY','NODE_USE_ENV_PROXY','DOCKER_HOST']:env.pop(name,None)
+env.update(manifest['execution']['environment']);env['ADFOCATE_B2_TARGET_RECEIPT_PATH']=str(R/'.codex-tmp'/manifest['target']['projectId']/manifest['execution']['artifactNamespace']/'role/supplement-target-receipt.private.json')
+env['PATH']=str(node.parent)+os.pathsep+env.get('PATH','');env['NO_PROXY']='127.0.0.1,localhost'
+record={'startedAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),'command':command,'scope':'Full existing identity guard then read-only catalog/history/seed/old-row/root-count/financial snapshots only; no SDK/Auth/migration/fixture/lifecycle','sourceFingerprint':source['fingerprint']}
+with(P/'readonly-checked.log').open('w',encoding='utf-8')as log:
+ child=subprocess.Popen(command,cwd=R,env=env,stdout=log,stderr=subprocess.STDOUT);record['pid']=child.pid
+ print(json.dumps({'pid':child.pid,'stage':'READONLY_PROVENANCE','dataWritesAllowed':False}),flush=True);code=child.wait()
+record.update(endedAt=datetime.datetime.now(datetime.timezone.utc).isoformat(),exit=code)
+(P/'readonly-checked-command.json').write_text(json.dumps(record,ensure_ascii=True,indent=2)+'\n',encoding='utf-8',newline='\n')
+print(json.dumps({'exit':code,'mode':'READONLY_ONLY'}),flush=True)
+raise SystemExit(code)

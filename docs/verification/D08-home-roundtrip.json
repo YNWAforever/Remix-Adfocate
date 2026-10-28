@@ -1,0 +1,32 @@
+{
+  "runId": "75f15f46-88a3-4a39-a9c4-3af61b24ec88",
+  "submissionId": "393be669-d8ae-4abf-a05f-1316d1d7537d",
+  "workflowId": "a536ca82-22a9-40b8-87c5-ac829618c2ea",
+  "homeChecks": [
+    {
+      "state": "in_review",
+      "action": "View submitted version",
+      "clicks": 1,
+      "revision": 0
+    },
+    {
+      "state": "revision_requested",
+      "action": "Revise draft",
+      "clicks": 1,
+      "revision": 0
+    },
+    {
+      "state": "reward_pending",
+      "action": "View reward review",
+      "clicks": 1,
+      "revision": 1
+    }
+  ],
+  "creatorViewport": {
+    "width": 360,
+    "height": 800
+  },
+  "minimumPrimaryTarget44px": true,
+  "noHomeHorizontalOverflow": true,
+  "persistedAfterNavigationAndReload": true
+}

@@ -19,7 +19,7 @@ function AcademyList() {
           {t("app.admin.academy.new")}
         </Link>
       </div>
-      <select value={kind} onChange={(e) => setKind(e.target.value)} className="rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 py-1 text-sm">
+      <select aria-label="Content kind" value={kind} onChange={(e) => setKind(e.target.value)} className="rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 py-1 text-sm">
         <option value="">All</option><option value="guide_doc">Guide docs</option><option value="track">Tracks</option><option value="playbook">Playbooks</option><option value="resource">Resources</option>
       </select>
       {isLoading ? <p className="text-sm text-[var(--color-soft-ink)]">…</p>

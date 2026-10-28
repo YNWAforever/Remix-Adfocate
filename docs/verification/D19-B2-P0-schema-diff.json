@@ -1,0 +1,89 @@
+{
+  "sourceFingerprint": "7943636116d39d489e0f0d1623784627ab0388650fb2e680c12c90eb1a2d1ac6",
+  "schemaSourceChange": "NONE",
+  "fullMigrationFiles": 72,
+  "fullMigrationChecksumsUnchanged": true,
+  "protectedManifestEntries": 42,
+  "protectedManifestDigest": "3e6809f9a51b1ac7ebb9f770160aab27f02523ebf69fc47f8fe38f44d05f6363",
+  "manifestSourceUnchanged": true,
+  "bootstrapProfile": "D19-B2-bootstrap-profile.json",
+  "bootstrapProfileDigest": "2e2d415541d5f3fdea30963570ba003120d28b8eb070a95683e826ecb30bb03e",
+  "compatibilityStatements": 9,
+  "seedInventory": [
+    {
+      "table": "public.earnings_balances",
+      "valueRowCount": 0,
+      "sources": [
+        {
+          "path": "supabase/migrations/0007_earnings.sql",
+          "statementSha256": "1f63e168dd739450aca4582556986abe9ce5a77a43c71f0359290fddc9bd4f0b"
+        }
+      ],
+      "insertSelect": true
+    },
+    {
+      "table": "storage.buckets",
+      "valueRowCount": 5,
+      "sources": [
+        {
+          "path": "supabase/migrations/0015_creator_profile_media.sql",
+          "statementSha256": "e9e7cdfee5e729594f15cad3fc5c54647811116f8a3df4a146373ee2cc5dc980"
+        },
+        {
+          "path": "supabase/migrations/0021_content_hub.sql",
+          "statementSha256": "c4b6b666e84aaba2810268482eac81294ba8f64df4b34a7e135a0390fdbf8949"
+        },
+        {
+          "path": "supabase/migrations/20260715163350_active_mission_workspace.sql",
+          "statementSha256": "90e8da76f2fe2c577af96c488e7f22f3ed7bf2b4a96f1e7e6325dec4f2368534"
+        },
+        {
+          "path": "supabase/migrations/20260723090000_publication_proof_validation.sql",
+          "statementSha256": "78febba239269b6ed52883cad4eb04442401ad579d9509e83448ae99ef0326c2"
+        },
+        {
+          "path": "supabase/migrations/20260729010000_align_publication_proof_asset_mime_contract.sql",
+          "statementSha256": "82fc5406e350b338bb3ad16ef6f7bf47fc586c8820213e35e474b4bdc5ea028d"
+        }
+      ],
+      "insertSelect": false
+    },
+    {
+      "table": "public.content_categories",
+      "valueRowCount": 2,
+      "sources": [
+        {
+          "path": "supabase/migrations/0021_content_hub.sql",
+          "statementSha256": "afea25f1d449b6c47e10f8b669033c563c339ea6fb3da746d559b0f4aced52aa"
+        }
+      ],
+      "insertSelect": false
+    },
+    {
+      "table": "public.academy_content",
+      "valueRowCount": 31,
+      "sources": [
+        {
+          "path": "supabase/migrations/0028_academy_content.sql",
+          "statementSha256": "446ed30811ac6f12f088512541d59dd0ef3174ff0e391f620f1a75b121885cd5"
+        },
+        {
+          "path": "supabase/migrations/0028_academy_content.sql",
+          "statementSha256": "ab38c2c2e51f0db60b9431cf51a626cce7cc84dd30bac8434ee992cb5dfca8d7"
+        },
+        {
+          "path": "supabase/migrations/0028_academy_content.sql",
+          "statementSha256": "5b8294b52faf3b646594a92967c1ec1bed19a1dd1b50d40268c3a04828f475d3"
+        },
+        {
+          "path": "supabase/migrations/0028_academy_content.sql",
+          "statementSha256": "ecea078ad0921b85fb142c658e980d968fd6e15d3d7334629c214174ff0cf9c1"
+        }
+      ],
+      "insertSelect": false
+    }
+  ],
+  "runtimeCatalogDiff": "NOT_RUN: new target not created; no old target queried",
+  "originalMigrationHistoryChanged": false,
+  "SQLExecutedOnServiceTarget": false
+}

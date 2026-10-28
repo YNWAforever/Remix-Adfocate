@@ -1,0 +1,18 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ✓ scripts/release/staff-access.test.ts (1 test) 36ms
+ ✓ scripts/release/manifest.test.ts (17 tests) 4111ms
+   ✓ release migration manifest > rejects empty, truncated, and interior-incomplete reviewed ranges 363ms
+   ✓ release migration manifest > runs write as a direct vite-node CLI and prints its digest 546ms
+   ✓ release migration manifest > returns a nonzero usage error for a missing direct CLI command 475ms
+   ✓ release migration manifest > returns a nonzero usage error for a unsupported direct CLI command 467ms
+   ✓ release migration manifest > detects an edited, deleted, or newly added baseline migration 373ms
+   ✓ release migration manifest > rejects migrations the timestamp filter used to drop 381ms
+
+ Test Files  2 passed (2)
+      Tests  18 passed (18)
+   Start at  04:32:53
+   Duration  5.51s (transform 124ms, setup 375ms, collect 193ms, tests 4.15s, environment 1.48s, prepare 204ms)
+
+JSON report written to C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/docs/verification/D19-redemption-replay-20261026/release-green.json

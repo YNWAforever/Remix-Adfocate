@@ -1,0 +1,241 @@
+{
+  "at": "2026-10-25T21:35:04.215393+00:00",
+  "status": "BLOCKED_AUDIT_PASSED_GOAL_TRANSITION_NOT_YET_CALLED",
+  "fullObjectiveAchieved": false,
+  "sourceFingerprint": "4f2c3faa22bf835911a55dc7bb099910e4308fc1b7a5570d58f32386708934b9",
+  "conditionKey": "CURRENT_4F_CB_C2_RUNTIME_AUTHORIZATION_NOT_GRANTED",
+  "sameConditionConsecutiveTurns": 3,
+  "threshold": 3,
+  "witnesses": [
+    {
+      "turn": 1,
+      "kind": "C33 finalization and current-source C2 approval request",
+      "evidence": {
+        "path": "docs/verification/D19-redemption-replay-20261026/delivery.json",
+        "sha256": "1e66247cb7b3eb56165b29f320bd84e6a04032ae403888ca57cb398614b45dbd"
+      },
+      "observed": "runtimeApproved=false, final source4f/current manifestcb; actual local progress21/full gates"
+    },
+    {
+      "turn": 2,
+      "kind": "automatic goal continuation, asset supplement",
+      "evidence": {
+        "path": "docs/verification/D19-asset-offline-20261026/delivery.json",
+        "sha256": "1be847743e8f6def108e194986fdc0242c9c7821d1e24018ec45eab86f706163"
+      },
+      "observed": "same candidate/manifest pending; independent asset11 completed without changing source"
+    },
+    {
+      "turn": 3,
+      "kind": "this automatic goal continuation",
+      "evidence": {
+        "path": "docs/verification/D19-blocked-audit-20261026/revalidation.json",
+        "sha256": "1d1337e2557466399fcbed9e536ede03319f4fb1cc57550d63b7e014cedf4279"
+      },
+      "observed": "same current source-bound authorization still false; no new human decision; original e8 approval still true"
+    }
+  ],
+  "previousGoalTurnClassification": "PROGRESS",
+  "requirements": [
+    {
+      "id": "MODEL",
+      "status": "RETAINED_PRIOR_CURRENT_THREAD_INTERFACE_OBSERVATION",
+      "evidence": {
+        "path": "docs/verification/D19-R1-facet-review-20261025/model-ui-observation.json",
+        "sha256": "1be4f89e70855e1b63d9c0d9a27788e497be70b3ff25f50bc55710849acce29f"
+      },
+      "limits": "No new UI observation or provider-route claim; no model switch or inferred model ID."
+    },
+    {
+      "id": "REPOSITORY",
+      "status": "CURRENT_MATCH",
+      "remote": "https://github.com/YNWAforever/Remix-Adfocate.git",
+      "branch": "codex/adfocate-r1-pilot-20261023",
+      "head": "7cfa3dc84c821719a4dff754229a591c81786c53",
+      "sourceFingerprint": "4f2c3faa22bf835911a55dc7bb099910e4308fc1b7a5570d58f32386708934b9",
+      "sourceRecords": 793,
+      "staged": [],
+      "limits": "Dirty checkout preserved; baseline is a comparison SHA, no reset/commit."
+    },
+    {
+      "id": "LOCAL_GATES",
+      "status": "PASS_SOURCE_BOUND",
+      "evidence": {
+        "path": "docs/verification/D19-redemption-replay-20261026/gates.json",
+        "sha256": "7dfd725d889fd09d287fc2bba76f3da897a0e01b7c8a3cf3564a472b63104c3b"
+      },
+      "full": {
+        "passed": 2155,
+        "failed": 0,
+        "skipped": 363,
+        "files": 295
+      },
+      "audit16": 16,
+      "protected194": 194,
+      "limits": "Required integration skips are not acceptance. No rerun without code change or unresolved concern."
+    },
+    {
+      "id": "ASSET_SUPPLEMENT",
+      "status": "PASS_OFFLINE11_ONLY",
+      "evidence": {
+        "path": "docs/verification/D19-asset-offline-20261026/gates.json",
+        "sha256": "129c2e1639bec28538a15b9299c56aa2bf4a7f5683c295273fa763839ef0942c"
+      },
+      "limits": "Scripted Auth/repository/RPC/Storage; no physical RLS, SQL cleanup, private bytes, review attempt isolation or browser acceptance."
+    },
+    {
+      "id": "CURRENT_LEGACY_ACTIVE_PROOF_PENDING",
+      "status": "NOT_VERIFIED_CURRENT_COMPLETE_SCOPE",
+      "evidence": {
+        "path": "docs/verification/D19-asset-offline-20261026/remaining-acceptance.json",
+        "sha256": "4353dcf3c44de8bfbf04630d875f6094374ac65a15fa2504615a0e84b5a1130f"
+      },
+      "limits": "Completed696e role8/core9/composite browser5+2 obligations remain at e839 and are not replayed or relabelled current; source/target dependencies must be revalidated before carry-forward."
+    },
+    {
+      "id": "CURRENT_FINANCIAL_NEUTRALITY",
+      "status": "NOT_MEASURED_CURRENT_BUSINESS_WINDOW",
+      "allEqual": null,
+      "retainedScope": "Approved696e pending/history neutrality at its own source only; current C2 read-only preservation is not business neutrality. No new ledger/payment capability."
+    },
+    {
+      "id": "SCHEMA",
+      "status": "LOCAL74_SOURCE_ONLY_CURRENT_TARGET_NOT_READ",
+      "evidence": {
+        "path": "docs/verification/D19-redemption-replay-20261026/schema-manifest-final.json",
+        "sha256": "2c681ccbcb180c8cffe894f7c275fe19456e7e4a08166cff4641180816b3620b"
+      },
+      "limits": "Original73 source hashes unchanged. No forward73/74 application by this candidate. Last target72 observation is historical; current target state UNKNOWN until approved identity/provenance checks. No checksum rewrite/reset/db push."
+    },
+    {
+      "id": "C2_APPLICATIONS",
+      "status": "BLOCKED_EXPLICIT_CURRENT_SOURCE_RUNTIME_APPROVAL",
+      "evidence": {
+        "path": "docs/verification/D19-C2-current-source-runtime-manifest.json",
+        "sha256": "cb93361481d8d6a42785077809c4e5338745ffcb2c3e41ffc62ed72631f59a65"
+      },
+      "missing": "Forward73/nonempty preservation; real application Auth/RLS/API race/rollback/replay/attribution and3 Edge scenarios with9-family financial equality.",
+      "preconditions": "Existing pending exact source/digest decision, then full identity/provenance before claim/client/setup. Original e8 approval remains true; it does not bind the changed4f source."
+    },
+    {
+      "id": "OTHER_ORIGINAL_R1_FACETS",
+      "status": "REAL_ACCEPTANCE_INCOMPLETE",
+      "missing": [
+        "UC-C29/A14 actual owned Storage limits/cleanup/private bytes/current attempt review",
+        "UC-S01 actual signed-in same-workspace cross-Creator read/write/draft/proof denial with unchanged A/B rows",
+        "UC-A11 actual complete-trigger/score/operator/API/concurrency/reload legacy replay",
+        "UC-C33 forward74/PostgREST/Auth/RLS/independent-session replay/browser and exact financial deltas",
+        "GATE14 current applicability/support producer/cron/settlement expectations; no automatic waiver"
+      ],
+      "limits": "Current C2 is applications-only and excludes these additional writes. Future concrete scopes must use actual predecessor outcomes and require their own necessary authority; no completed696e/pristine replay."
+    },
+    {
+      "id": "ORIGINAL_AUDIT",
+      "status": "ARCHIVE_ABSENT_ORIGINAL107_FIELDS_PRESERVED",
+      "evidence": {
+        "path": "docs/verification/audit_case_coverage.csv",
+        "sha256": "85f2e2dfd775488ad6c07095525e0d6c094c8b22c71e796944272330c3aa205d"
+      },
+      "limits": "Fresh exact archive SHA/content verification unavailable; no fabricated archive or rewritten original audit outcomes."
+    },
+    {
+      "id": "D15",
+      "phase": "R3",
+      "status": "BLOCKED_APPROVED_CONTENT_NOT_PROVIDED",
+      "cases": [
+        "UC-C18",
+        "UC-A51"
+      ],
+      "limits": "Owner confirmed no real lessons. Preserve original four-unit semantics; no invented curriculum. This is separate from direct core R1 runtime blockers."
+    },
+    {
+      "id": "QUALITY_AND_FORMAL_HANDOFF",
+      "phase": "R2/operational",
+      "status": "EXTERNAL_OWNER_DEVICE_HOSTED_FORMAL_STAFF_EVIDENCE_REQUIRED",
+      "limits": "Named advisor/device/manual AT/hosted and formal owner-led single-workspace staff scope remain open. Active brand_users membership0 is a scope issue; no new login or formal membership/role writes."
+    },
+    {
+      "id": "D20",
+      "phase": "R3",
+      "status": "OFFLINE_IMPLEMENTED_MOCK_VERIFIED_PROVIDER_DISABLED",
+      "limits": "Real provider disabled as requested; paid/live AI evaluation is outside current scope and is not made an additional core R1 runtime requirement."
+    },
+    {
+      "id": "DELIVERY",
+      "status": "LOCAL_REVIEWABLE_NOT_DEPLOYED",
+      "evidence": {
+        "path": "docs/verification/D19-asset-offline-20261026/delivery.json",
+        "sha256": "1be847743e8f6def108e194986fdc0242c9c7821d1e24018ec45eab86f706163"
+      },
+      "limits": "Commands/counts/logs, source deltas, schema, case coverage, remaining role/browser checks and rollback available. No commit/push/merge/deploy or pilot activation."
+    }
+  ],
+  "currentRequiredDecision": {
+    "manifest": {
+      "path": "docs/verification/D19-C2-current-source-runtime-manifest.json",
+      "sha256": "cb93361481d8d6a42785077809c4e5338745ffcb2c3e41ffc62ed72631f59a65"
+    },
+    "sourceFingerprint": "4f2c3faa22bf835911a55dc7bb099910e4308fc1b7a5570d58f32386708934b9",
+    "approvalQuestionAlreadyPending": true,
+    "newQuestionSent": false,
+    "oldE8Approved": true,
+    "currentApproved": false
+  },
+  "independentLocalWorkAudit": {
+    "knownLocalRepairsAndGates": "Completed and verified; current source unchanged, no new independent defect identified.",
+    "latestSupplement": "Asset11/lint/type complete; prior resource stops resolved, not a current blocker.",
+    "remainingProofType": "Real target/Auth/RLS/complete SQL/concurrency/role-browser/funded financial or actual owner/content/device/hosted evidence. More narrow mock passes cannot satisfy those requirements.",
+    "nextSafeAction": "Await the existing exact C2 decision; do not enter client/setup or invent future target/fixture results. Bound any further scopes to actual predecessor outcomes.",
+    "noLiveJobWait": true
+  },
+  "sourceReferences": [
+    {
+      "path": "docs/superpowers/specs/2026-10-23-adfocate-product-design.md",
+      "sha256": "7f07e7367c65fca37985f8166b4569199a220888511b1004e40a4078d70067ec"
+    },
+    {
+      "path": "docs/superpowers/plans/2026-10-23-adfocate-implementation-plan.md",
+      "sha256": "f1a0fd16e3bf7998f47c49b72c59d0050ff93da0368bf5eaf8cb6ab6ca2c9c7f"
+    },
+    {
+      "path": "docs/verification/implementation_backlog.csv",
+      "sha256": "ab38560e4d4cac8fad7b5a5297c738fa5d7611913a34f5e74c5ded224fc7e48b"
+    },
+    {
+      "path": "docs/verification/finding_traceability.csv",
+      "sha256": "21880878a5c76e00d964c858131d07f22ccd96dd2c194d74d0338040bea1c7f4"
+    },
+    {
+      "path": "docs/verification/audit_case_coverage.csv",
+      "sha256": "85f2e2dfd775488ad6c07095525e0d6c094c8b22c71e796944272330c3aa205d"
+    },
+    {
+      "path": "docs/verification/fixture_contract.json",
+      "sha256": "92b56e079afbad6d930afc5ce8d10e98ce766316c068e72e30889c096815b2d7"
+    },
+    {
+      "path": "docs/operations/production-release-foundation.md",
+      "sha256": "cac2496cf8f5692f552d993bda62eb1c46aac041527be7776b7e8b4194888d56"
+    },
+    {
+      "path": "docs/operations/reward-handoff.md",
+      "sha256": "08d949742298cbc2118bd90175f49fd4f83d1c754957589e5ab380ea66668bc0"
+    }
+  ],
+  "constraints": {
+    "originalIncident": "OPEN_UNRESTORED",
+    "oldShaped": "FORENSIC_ONLY",
+    "releaseHold": true,
+    "providerEnabled": false,
+    "actualTargetCallsThisTurn": 0,
+    "productionWrites": 0,
+    "membershipRoleWrites": 0,
+    "resourceLifecycleActions": 0,
+    "commit": null,
+    "push": false,
+    "merge": false,
+    "deploy": false
+  },
+  "requestedGoalTransition": "blocked",
+  "actualTransitionReceipt": "goal-transition.json"
+}

@@ -1,0 +1,87 @@
+{
+  "at": "2026-10-25T15:21:31.477638+00:00",
+  "status": "LOCAL_R1_FACET_REVIEW_COMPLETED_ACCEPTANCE_GAPS_EXPLICIT",
+  "sourceFingerprint": "e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993",
+  "sourceFilesUnchanged": 788,
+  "applicationCodeChanges": 0,
+  "newApplicationTestRuns": 0,
+  "retainedCurrentFull": {
+    "passed": 2129,
+    "failed": 0,
+    "skipped": 363,
+    "files": 292,
+    "reference": {
+      "path": "docs/verification/D19-application-runtime-preparation-20261025/supplement-full-final.json",
+      "sha256": "21f201bc34e65a56b7d4e59b90ccf14492ef68e4ce2cf02c86378cfe92c96df3"
+    }
+  },
+  "correctedNewResultCases": [
+    "UC-A09",
+    "UC-A11",
+    "UC-A14",
+    "UC-A18",
+    "UC-A19",
+    "UC-A45",
+    "UC-A46",
+    "UC-A49",
+    "UC-C13",
+    "UC-C14",
+    "UC-C15",
+    "UC-C16",
+    "UC-C17",
+    "UC-C29",
+    "UC-C33",
+    "UC-C36",
+    "UC-S01",
+    "UC-S04"
+  ],
+  "original107Preserved": true,
+  "r1CasesReviewed": [
+    "UC-C29",
+    "UC-A14",
+    "UC-S01",
+    "UC-A11"
+  ],
+  "r1WholeCaseVerified": 0,
+  "gate14ExpectationsRetained": 14,
+  "waiversApproved": 0,
+  "review": {
+    "path": "docs/verification/D19-R1-facet-review-20261025/review.json",
+    "sha256": "df24f7b29e5e667434e1b67a9cf0aff3a570d36dc38134a2fffb4451420a4514"
+  },
+  "caseCoverage": {
+    "path": "docs/verification/D19-R1-facet-review-20261025/case-coverage.json",
+    "sha256": "41be41860c0c8ea408f1665a3cb53aa83931379d4c702ab3925f4459c234e051"
+  },
+  "remaining": {
+    "path": "docs/verification/D19-R1-facet-review-20261025/remaining-acceptance.json",
+    "sha256": "49688986034e4fffafa93c36397aa3fe638bd575bdb55b1beeaa148de9dab263"
+  },
+  "rollback": {
+    "path": "docs/verification/D19-R1-facet-review-20261025/rollback.json",
+    "sha256": "c3c09e6fe61dfe6717c61cae05140cfa2d2f87ff8491492d4321d9c9fe7b5910"
+  },
+  "c2Manifest": {
+    "path": "docs/verification/D19-C2-application-runtime-manifest.json",
+    "sha256": "eb5ca8f03a85c5589cc6cbf27ec0ca5524e8600fd2914ad1d4d73f17eec5009a"
+  },
+  "c2ApprovalPending": true,
+  "c2ManifestOrSourceChanged": false,
+  "actualTargetCalls": 0,
+  "productionWrites": 0,
+  "membershipOrRoleWrites": 0,
+  "commit": null,
+  "push": false,
+  "merge": false,
+  "deployment": "NOT_DEPLOYED",
+  "incidentOpen": true,
+  "restored": false,
+  "releaseHold": true,
+  "providerEnabled": false,
+  "wholeR1Verified": false,
+  "nextTask": "D19: C2 applications-only runtime awaits the existing pending exact-manifest approval. The original4 R1 missing facets and14 applicable expectations remain explicit. Do not alter/reapprove C2, rerun696e/pristine, or start asset/legacy fixture actions without their own bounded scope. Independent local evidence/behavior work can continue.",
+  "modelInterfaceObservation": {
+    "path": "docs/verification/D19-R1-facet-review-20261025/model-ui-observation.json",
+    "sha256": "1be4f89e70855e1b63d9c0d9a27788e497be70b3ff25f50bc55710849acce29f"
+  }
+}

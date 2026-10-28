@@ -1,0 +1,34 @@
+{
+  "kind": "EXECUTION_INTERFACE_MODEL_OBSERVATION",
+  "recordedAt": "2026-10-25T15:39:28.021788+00:00",
+  "threadId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+  "taskTitle": "\u57f7\u884c Adfocate \u7522\u54c1\u958b\u767c\u8a08\u5283",
+  "appWindowTitle": "ChatGPT",
+  "requestedDisplayName": "GPT-6.1 Sol",
+  "observedSelectedDisplayName": "GPT-6.1 Sol",
+  "observedReasoningDisplayName": "Max",
+  "observedAccessibilityExcerpt": "\u529f\u80fd\u8868 \u9078\u64c7\u6a21\u578b; \u6587\u5b57 GPT-6.1 Sol Max\uff0c\u7b2c 5 \u9805\uff0c\u5171 6 \u9805\u3002",
+  "selectedInterfaceVerified": true,
+  "providerModelId": null,
+  "modelIdInferred": false,
+  "modelOptionChanges": 0,
+  "reasoningOptionChanges": 0,
+  "finalModelMenuOpen": false,
+  "methods": [
+    "Codex navigate_to_codex_page returned navigated:true for this exact thread",
+    "Cua native returned window132906 selected; raised exact window to expose current task",
+    "Read-only model popover screenshot and accessibility excerpt",
+    "Closed popover with trigger; current task remains visible; no model/effort item selected"
+  ],
+  "bootstrapFailure": "Sky node_repl initialization failed to write kernel assets (os error3); native cua_repl fallback succeeded.",
+  "observationCorrections": [
+    "Windows getApp needed an exact returned windowId, not a name.",
+    "One attempted input was refused because concurrent user input was detected; refreshed before another action. No approval option or send control was touched.",
+    "One Escape action did not close the popover; trigger click subsequently read back closed."
+  ],
+  "scope": "Current execution-interface selection only. Does not independently prove underlying provider routing or the model used in earlier turns. No paid inference/provider call performed by this verification.",
+  "uiEvidenceRetention": "Direct screenshot/AX tool outputs remain in conversation. Only the minimal model excerpt is transcribed here; whole-window screenshots and unrelated app/browser content are not copied to the repo.",
+  "officialNameReference": "https://developers.openai.com/api/docs/models/gpt-6.1-sol",
+  "officialDocumentationLimit": "Official page was searched and opened for name guidance only, not used as proof of current selected runtime.",
+  "applicationRuntimeTargetCalls": 0
+}

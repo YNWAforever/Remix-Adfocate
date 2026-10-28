@@ -1,0 +1,35 @@
+{
+  "at": "2026-10-25T12:36:30.366647+00:00",
+  "status": "REQUIREMENTS_ONLY_NOT_AN_APPROVAL_OR_EXECUTABLE_RUNTIME_MANIFEST",
+  "authorizedNow": "Local code, tests and verification documents only. Completed696e authority is not reused.",
+  "cases": [
+    "UC-C25",
+    "UC-A06",
+    "UC-A10"
+  ],
+  "requiredBeforeAnyClientOrSetup": [
+    "Prepare final source-bound fixture/target/runtime manifest and execution harness for owner review.",
+    "Fresh full physical target identity and source/schema/catalog/seed/ownership provenance before Auth/client/setup.",
+    "Record a clean, separately approved bounded fixture namespace and exact IDs/caps. No broad delete/reset or original seed reuse."
+  ],
+  "requiredRuntime": [
+    "Apply exactly the reviewed new forward function on an explicitly approved isolated schema path; preserve all72 old checksums/history and original owned records.",
+    "Real Creator apply and duplicate retry; applied status, notification recipient and unread/deep-link state agree.",
+    "Two real authorized operators race accept versus decline; only one legal terminal decision, winning actor/time, one receipt/audit, no duplicate quota/XP/workflow.",
+    "Creator reads the same saved decline reason after reload; operator input survives network/409 and explicit refresh shows the winning decision.",
+    "Exact same request replay and changed-payload conflict; direct authenticated RPC denied; missing membership/capability and foreign target denied.",
+    "Force an owned audit or workflow failure, then verify full rollback and successful same-request recovery with actual existing workflow engine."
+  ],
+  "financialBoundary": "Application acceptance retains the original one-time +10 join XP and filled increment in a separately declared window; pending reward still must cause no ledger/budget/withdrawable/points/XP/inventory change. No legacy issuance/replay or payment is authorized by these requirements.",
+  "untouched": [
+    "original3-campaign incident OPEN/unrestored",
+    "retired shaped target forensic-only",
+    "passed pristine RPC evidence, no rerun",
+    "release HOLD",
+    "provider disabled",
+    "D15 content and advisor owner/device/hosted/formal staff/model interface blockers"
+  ],
+  "runtimeActionsExecutedThisTurn": 0,
+  "physicalResourcesCreated": 0,
+  "ownerDecisionNowRequested": false
+}

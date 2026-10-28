@@ -1,0 +1,21 @@
+{
+  "startedAt": "2026-10-25T11:03:29.075614+00:00",
+  "finishedAt": "2026-10-25T11:04:07.513575+00:00",
+  "command": [
+    "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+    "node_modules/eslint/bin/eslint.js",
+    "."
+  ],
+  "exit": 0,
+  "nodeVersion": "v22.23.4",
+  "nodeExecutable": "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+  "childPathPrefersSameNode22": true,
+  "sourceFingerprint": "e83998d178061043688016056a5a78fc61df58bac28f3d0d0b66d639306037bd",
+  "integrationCredentialsAvailable": false,
+  "actualC1TargetUsed": false,
+  "packageDownloadOrInstall": false,
+  "npmCli": "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+  "npmExecpathProvided": true,
+  "log": "node22-npm-lint.log",
+  "layer": "LOCAL_OFFLINE_MOCK_AND_OWNED_LOOPBACK_UNIT_TRANSPORT"
+}

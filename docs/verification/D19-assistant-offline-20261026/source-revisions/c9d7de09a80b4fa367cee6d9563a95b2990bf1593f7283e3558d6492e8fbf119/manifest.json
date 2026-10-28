@@ -1,0 +1,15 @@
+{
+  "artifactFingerprint": "c9d7de09a80b4fa367cee6d9563a95b2990bf1593f7283e3558d6492e8fbf119",
+  "files": [
+    {
+      "path": "docs/verification/D19-assistant-offline-20261026/assistant-boundary.test.tsx",
+      "sha256": "830c9be7bb1b9ce315f10f730de51208920be2a663ea6c854280e7afaa52a32c"
+    },
+    {
+      "path": "docs/verification/D19-assistant-offline-20261026/vitest.offline.mjs",
+      "sha256": "1633634a8064a664ec6ac4fdc68cd8afce3b324f4e136b6da6f7d548b9e88208"
+    }
+  ],
+  "applicationFingerprint": "e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993",
+  "includedInNativeFullOrC2Runtime": false
+}

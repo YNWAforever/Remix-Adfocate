@@ -1,0 +1,988 @@
+{
+  "at": "2026-10-24T09:17:48.719200+00:00",
+  "identity": {
+    "runId": "5e2fa581-8d94-4c39-847d-e455b2540187",
+    "ownerAuthorization": "2026-10-24 user explicitly authorizes a newly-created one-time pristine isolated target for the two global campaign RPCs only",
+    "disposable": true,
+    "projectId": "adfocate-d19-pristine-20261024-5e2fa581",
+    "proxy": "none",
+    "apiPort": 56631,
+    "apiContainerId": "091455be05d4a6728d59775411dd075ea615ff5f2e0710b4f9918d82566a272d",
+    "databaseContainerId": "2dddb46db112301b0195f17ad44827110c589039f2b5a1b7ecb6427fac47e00a",
+    "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+    "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+    "networkId": "0746102a8514b8478cf318962c1af645e83a0383dcf38939030433b020e80c88"
+  },
+  "cause": "Direct vendor container bootstrap retained auto-expose defaults; original CLI profile explicitly pins auto_expose_new_tables=false. Failed migration transaction rolled back; no test or assertion weakened.",
+  "failedMigration": "20260715163350_active_mission_workspace.sql",
+  "originalError": "authenticated_grant_drift:mission_deliverable_templates",
+  "priorHistoryPreserved": [
+    "0001",
+    "0002",
+    "0003",
+    "0004",
+    "0005",
+    "0006",
+    "0007",
+    "0008",
+    "0009",
+    "0010",
+    "0011",
+    "0012",
+    "0013",
+    "0014",
+    "0015",
+    "0016",
+    "0017",
+    "0018",
+    "0019",
+    "0020",
+    "0021",
+    "0022",
+    "0023",
+    "0024",
+    "0025",
+    "0026",
+    "0027",
+    "0028",
+    "20260618135028",
+    "20260619013000"
+  ],
+  "zeroBusinessAndAuthRowsBeforeResume": {
+    "authUsers": 0,
+    "campaigns": 0
+  },
+  "defaultPrivilegesBefore": [
+    {
+      "acl": "{postgres=rwU/postgres,anon=rwU/postgres,authenticated=rwU/postgres,service_role=rwU/postgres}",
+      "role": "postgres",
+      "type": "S",
+      "schema": "public"
+    },
+    {
+      "acl": "{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "role": "postgres",
+      "type": "f",
+      "schema": "public"
+    },
+    {
+      "acl": "{postgres=arwdDxtm/postgres,anon=arwdDxtm/postgres,authenticated=arwdDxtm/postgres,service_role=arwdDxtm/postgres}",
+      "role": "postgres",
+      "type": "r",
+      "schema": "public"
+    },
+    {
+      "acl": "{postgres=rwU/postgres,anon=rwU/postgres,authenticated=rwU/postgres,service_role=rwU/postgres}",
+      "role": "postgres",
+      "type": "S",
+      "schema": "storage"
+    },
+    {
+      "acl": "{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "role": "postgres",
+      "type": "f",
+      "schema": "storage"
+    },
+    {
+      "acl": "{postgres=arwdDxtm/postgres,anon=arwdDxtm/postgres,authenticated=arwdDxtm/postgres,service_role=arwdDxtm/postgres}",
+      "role": "postgres",
+      "type": "r",
+      "schema": "storage"
+    },
+    {
+      "acl": "{postgres=r*w*U*/supabase_admin}",
+      "role": "supabase_admin",
+      "type": "S",
+      "schema": "extensions"
+    },
+    {
+      "acl": "{postgres=X*/supabase_admin}",
+      "role": "supabase_admin",
+      "type": "f",
+      "schema": "extensions"
+    },
+    {
+      "acl": "{postgres=a*r*w*d*D*x*t*m*/supabase_admin}",
+      "role": "supabase_admin",
+      "type": "r",
+      "schema": "extensions"
+    },
+    {
+      "acl": "{postgres=rwU/supabase_admin,anon=rwU/supabase_admin,authenticated=rwU/supabase_admin,service_role=rwU/supabase_admin}",
+      "role": "supabase_admin",
+      "type": "S",
+      "schema": "graphql"
+    },
+    {
+      "acl": "{postgres=X/supabase_admin,anon=X/supabase_admin,authenticated=X/supabase_admin,service_role=X/supabase_admin}",
+      "role": "supabase_admin",
+      "type": "f",
+      "schema": "graphql"
+    },
+    {
+      "acl": "{postgres=arwdDxtm/supabase_admin,anon=arwdDxtm/supabase_admin,authenticated=arwdDxtm/supabase_admin,service_role=arwdDxtm/supabase_admin}",
+      "role": "supabase_admin",
+      "type": "r",
+      "schema": "graphql"
+    },
+    {
+      "acl": "{postgres=rwU/supabase_admin,anon=rwU/supabase_admin,authenticated=rwU/supabase_admin,service_role=rwU/supabase_admin}",
+      "role": "supabase_admin",
+      "type": "S",
+      "schema": "graphql_public"
+    },
+    {
+      "acl": "{postgres=X/supabase_admin,anon=X/supabase_admin,authenticated=X/supabase_admin,service_role=X/supabase_admin}",
+      "role": "supabase_admin",
+      "type": "f",
+      "schema": "graphql_public"
+    },
+    {
+      "acl": "{postgres=arwdDxtm/supabase_admin,anon=arwdDxtm/supabase_admin,authenticated=arwdDxtm/supabase_admin,service_role=arwdDxtm/supabase_admin}",
+      "role": "supabase_admin",
+      "type": "r",
+      "schema": "graphql_public"
+    },
+    {
+      "acl": "{postgres=rwU/supabase_admin,anon=rwU/supabase_admin,authenticated=rwU/supabase_admin,service_role=rwU/supabase_admin}",
+      "role": "supabase_admin",
+      "type": "S",
+      "schema": "public"
+    },
+    {
+      "acl": "{postgres=X/supabase_admin,anon=X/supabase_admin,authenticated=X/supabase_admin,service_role=X/supabase_admin}",
+      "role": "supabase_admin",
+      "type": "f",
+      "schema": "public"
+    },
+    {
+      "acl": "{postgres=arwdDxtm/supabase_admin,anon=arwdDxtm/supabase_admin,authenticated=arwdDxtm/supabase_admin,service_role=arwdDxtm/supabase_admin}",
+      "role": "supabase_admin",
+      "type": "r",
+      "schema": "public"
+    },
+    {
+      "acl": "{postgres=rwU/supabase_admin,dashboard_user=rwU/supabase_admin}",
+      "role": "supabase_admin",
+      "type": "S",
+      "schema": "realtime"
+    },
+    {
+      "acl": "{postgres=X/supabase_admin,dashboard_user=X/supabase_admin}",
+      "role": "supabase_admin",
+      "type": "f",
+      "schema": "realtime"
+    },
+    {
+      "acl": "{postgres=arwdDxtm/supabase_admin,dashboard_user=arwdDxtm/supabase_admin}",
+      "role": "supabase_admin",
+      "type": "r",
+      "schema": "realtime"
+    },
+    {
+      "acl": "{postgres=rwU/supabase_admin,anon=rwU/supabase_admin,authenticated=rwU/supabase_admin,service_role=rwU/supabase_admin}",
+      "role": "supabase_admin",
+      "type": "S",
+      "schema": "supabase_functions"
+    },
+    {
+      "acl": "{postgres=X/supabase_admin,anon=X/supabase_admin,authenticated=X/supabase_admin,service_role=X/supabase_admin}",
+      "role": "supabase_admin",
+      "type": "f",
+      "schema": "supabase_functions"
+    },
+    {
+      "acl": "{postgres=arwdDxtm/supabase_admin,anon=arwdDxtm/supabase_admin,authenticated=arwdDxtm/supabase_admin,service_role=arwdDxtm/supabase_admin}",
+      "role": "supabase_admin",
+      "type": "r",
+      "schema": "supabase_functions"
+    },
+    {
+      "acl": "{postgres=rwU/supabase_auth_admin,dashboard_user=rwU/supabase_auth_admin}",
+      "role": "supabase_auth_admin",
+      "type": "S",
+      "schema": "auth"
+    },
+    {
+      "acl": "{postgres=X/supabase_auth_admin,dashboard_user=X/supabase_auth_admin}",
+      "role": "supabase_auth_admin",
+      "type": "f",
+      "schema": "auth"
+    },
+    {
+      "acl": "{postgres=arwdDxtm/supabase_auth_admin,dashboard_user=arwdDxtm/supabase_auth_admin}",
+      "role": "supabase_auth_admin",
+      "type": "r",
+      "schema": "auth"
+    }
+  ],
+  "defaultPrivilegesAfter": [
+    {
+      "acl": "{postgres=rwU/postgres,anon=w/postgres,authenticated=w/postgres,service_role=w/postgres}",
+      "role": "postgres",
+      "type": "S",
+      "schema": "public"
+    },
+    {
+      "acl": "{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "role": "postgres",
+      "type": "f",
+      "schema": "public"
+    },
+    {
+      "acl": "{postgres=arwdDxtm/postgres,anon=Dxtm/postgres,authenticated=Dxtm/postgres,service_role=Dxtm/postgres}",
+      "role": "postgres",
+      "type": "r",
+      "schema": "public"
+    },
+    {
+      "acl": "{postgres=rwU/postgres,anon=rwU/postgres,authenticated=rwU/postgres,service_role=rwU/postgres}",
+      "role": "postgres",
+      "type": "S",
+      "schema": "storage"
+    },
+    {
+      "acl": "{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "role": "postgres",
+      "type": "f",
+      "schema": "storage"
+    },
+    {
+      "acl": "{postgres=arwdDxtm/postgres,anon=arwdDxtm/postgres,authenticated=arwdDxtm/postgres,service_role=arwdDxtm/postgres}",
+      "role": "postgres",
+      "type": "r",
+      "schema": "storage"
+    },
+    {
+      "acl": "{postgres=r*w*U*/supabase_admin}",
+      "role": "supabase_admin",
+      "type": "S",
+      "schema": "extensions"
+    },
+    {
+      "acl": "{postgres=X*/supabase_admin}",
+      "role": "supabase_admin",
+      "type": "f",
+      "schema": "extensions"
+    },
+    {
+      "acl": "{postgres=a*r*w*d*D*x*t*m*/supabase_admin}",
+      "role": "supabase_admin",
+      "type": "r",
+      "schema": "extensions"
+    },
+    {
+      "acl": "{postgres=rwU/supabase_admin,anon=rwU/supabase_admin,authenticated=rwU/supabase_admin,service_role=rwU/supabase_admin}",
+      "role": "supabase_admin",
+      "type": "S",
+      "schema": "graphql"
+    },
+    {
+      "acl": "{postgres=X/supabase_admin,anon=X/supabase_admin,authenticated=X/supabase_admin,service_role=X/supabase_admin}",
+      "role": "supabase_admin",
+      "type": "f",
+      "schema": "graphql"
+    },
+    {
+      "acl": "{postgres=arwdDxtm/supabase_admin,anon=arwdDxtm/supabase_admin,authenticated=arwdDxtm/supabase_admin,service_role=arwdDxtm/supabase_admin}",
+      "role": "supabase_admin",
+      "type": "r",
+      "schema": "graphql"
+    },
+    {
+      "acl": "{postgres=rwU/supabase_admin,anon=rwU/supabase_admin,authenticated=rwU/supabase_admin,service_role=rwU/supabase_admin}",
+      "role": "supabase_admin",
+      "type": "S",
+      "schema": "graphql_public"
+    },
+    {
+      "acl": "{postgres=X/supabase_admin,anon=X/supabase_admin,authenticated=X/supabase_admin,service_role=X/supabase_admin}",
+      "role": "supabase_admin",
+      "type": "f",
+      "schema": "graphql_public"
+    },
+    {
+      "acl": "{postgres=arwdDxtm/supabase_admin,anon=arwdDxtm/supabase_admin,authenticated=arwdDxtm/supabase_admin,service_role=arwdDxtm/supabase_admin}",
+      "role": "supabase_admin",
+      "type": "r",
+      "schema": "graphql_public"
+    },
+    {
+      "acl": "{postgres=rwU/supabase_admin,anon=rwU/supabase_admin,authenticated=rwU/supabase_admin,service_role=rwU/supabase_admin}",
+      "role": "supabase_admin",
+      "type": "S",
+      "schema": "public"
+    },
+    {
+      "acl": "{postgres=X/supabase_admin,anon=X/supabase_admin,authenticated=X/supabase_admin,service_role=X/supabase_admin}",
+      "role": "supabase_admin",
+      "type": "f",
+      "schema": "public"
+    },
+    {
+      "acl": "{postgres=arwdDxtm/supabase_admin,anon=arwdDxtm/supabase_admin,authenticated=arwdDxtm/supabase_admin,service_role=arwdDxtm/supabase_admin}",
+      "role": "supabase_admin",
+      "type": "r",
+      "schema": "public"
+    },
+    {
+      "acl": "{postgres=rwU/supabase_admin,dashboard_user=rwU/supabase_admin}",
+      "role": "supabase_admin",
+      "type": "S",
+      "schema": "realtime"
+    },
+    {
+      "acl": "{postgres=X/supabase_admin,dashboard_user=X/supabase_admin}",
+      "role": "supabase_admin",
+      "type": "f",
+      "schema": "realtime"
+    },
+    {
+      "acl": "{postgres=arwdDxtm/supabase_admin,dashboard_user=arwdDxtm/supabase_admin}",
+      "role": "supabase_admin",
+      "type": "r",
+      "schema": "realtime"
+    },
+    {
+      "acl": "{postgres=rwU/supabase_admin,anon=rwU/supabase_admin,authenticated=rwU/supabase_admin,service_role=rwU/supabase_admin}",
+      "role": "supabase_admin",
+      "type": "S",
+      "schema": "supabase_functions"
+    },
+    {
+      "acl": "{postgres=X/supabase_admin,anon=X/supabase_admin,authenticated=X/supabase_admin,service_role=X/supabase_admin}",
+      "role": "supabase_admin",
+      "type": "f",
+      "schema": "supabase_functions"
+    },
+    {
+      "acl": "{postgres=arwdDxtm/supabase_admin,anon=arwdDxtm/supabase_admin,authenticated=arwdDxtm/supabase_admin,service_role=arwdDxtm/supabase_admin}",
+      "role": "supabase_admin",
+      "type": "r",
+      "schema": "supabase_functions"
+    },
+    {
+      "acl": "{postgres=rwU/supabase_auth_admin,dashboard_user=rwU/supabase_auth_admin}",
+      "role": "supabase_auth_admin",
+      "type": "S",
+      "schema": "auth"
+    },
+    {
+      "acl": "{postgres=X/supabase_auth_admin,dashboard_user=X/supabase_auth_admin}",
+      "role": "supabase_auth_admin",
+      "type": "f",
+      "schema": "auth"
+    },
+    {
+      "acl": "{postgres=arwdDxtm/supabase_auth_admin,dashboard_user=arwdDxtm/supabase_auth_admin}",
+      "role": "supabase_auth_admin",
+      "type": "r",
+      "schema": "auth"
+    }
+  ],
+  "providerConfigurationSql": "alter default privileges in schema public revoke select,insert,update,delete on tables from anon,authenticated,service_role;alter default privileges in schema public revoke usage,select on sequences from anon,authenticated,service_role;",
+  "existingLegacyTableAclDiff": [
+    {
+      "table": "academy_content",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "academy_content",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "rDxtm"
+    },
+    {
+      "table": "assistant_conversations",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "assistant_messages",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "brand_invites",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "brand_invites",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "brand_users",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "brand_users",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "rDxtm"
+    },
+    {
+      "table": "campaign_missions",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "campaign_participants",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "campaign_participants",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "rDxtm"
+    },
+    {
+      "table": "campaign_rank_snapshots",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "campaign_rank_snapshots",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "campaigns",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "campaigns",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "ardDxtm"
+    },
+    {
+      "table": "content_categories",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "content_categories",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "rDxtm"
+    },
+    {
+      "table": "content_item_tags",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "content_item_tags",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "rDxtm"
+    },
+    {
+      "table": "content_items",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "content_items",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "rDxtm"
+    },
+    {
+      "table": "content_tags",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "content_tags",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "rDxtm"
+    },
+    {
+      "table": "creator_portfolio_links",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "creator_public_passports",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": ""
+    },
+    {
+      "table": "creator_public_passports",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "rd"
+    },
+    {
+      "table": "creator_public_profile_snapshots",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "creator_public_profile_snapshots",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "rDxtm"
+    },
+    {
+      "table": "creator_review_notes",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": ""
+    },
+    {
+      "table": "creator_review_notes",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": ""
+    },
+    {
+      "table": "creator_review_statuses",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": ""
+    },
+    {
+      "table": "creator_review_statuses",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": ""
+    },
+    {
+      "table": "creator_social_accounts",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": ""
+    },
+    {
+      "table": "creator_social_accounts",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "rd"
+    },
+    {
+      "table": "creator_social_scan_snapshots",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": ""
+    },
+    {
+      "table": "creator_social_scan_snapshots",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "r"
+    },
+    {
+      "table": "creators",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "creators",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "rDxtm"
+    },
+    {
+      "table": "earnings_balances",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "earnings_balances",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "rDxtm"
+    },
+    {
+      "table": "earnings_transactions",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "earnings_transactions",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "rDxtm"
+    },
+    {
+      "table": "kb_chunks",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "kb_chunks",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "rDxtm"
+    },
+    {
+      "table": "kb_documents",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "kb_documents",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "rDxtm"
+    },
+    {
+      "table": "mission_shortlists",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": ""
+    },
+    {
+      "table": "mission_shortlists",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": ""
+    },
+    {
+      "table": "mission_submissions",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "mission_submissions",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "rDxtm"
+    },
+    {
+      "table": "missions",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "missions",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "ardDxtm"
+    },
+    {
+      "table": "notifications",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "notifications",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "rDxtm"
+    },
+    {
+      "table": "operator_audit_events",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": ""
+    },
+    {
+      "table": "operator_audit_events",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": ""
+    },
+    {
+      "table": "point_balances",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "point_balances",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "rDxtm"
+    },
+    {
+      "table": "point_transactions",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "point_transactions",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "rDxtm"
+    },
+    {
+      "table": "redemption_codes",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "redemption_codes",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "redemption_gifts",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "redemption_gifts",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "rDxtm"
+    },
+    {
+      "table": "redemptions",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "redemptions",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "rDxtm"
+    },
+    {
+      "table": "staff_users",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "staff_users",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "workspace_budget_transactions",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "workspace_budget_transactions",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "rDxtm"
+    },
+    {
+      "table": "workspace_budget_transactions",
+      "role": "service_role",
+      "before": "arwdDxtm",
+      "expected": "rDxtm"
+    },
+    {
+      "table": "workspace_budgets",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "workspace_budgets",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "rDxtm"
+    },
+    {
+      "table": "workspace_budgets",
+      "role": "service_role",
+      "before": "arwdDxtm",
+      "expected": "rDxtm"
+    },
+    {
+      "table": "workspaces",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "workspaces",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "rDxtm"
+    }
+  ],
+  "existingLegacyTableAclAlignmentSql": [
+    "revoke all on public.\"academy_content\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"academy_content\" to anon;",
+    "revoke all on public.\"academy_content\" from authenticated;",
+    "grant select,truncate,references,trigger,maintain on public.\"academy_content\" to authenticated;",
+    "revoke all on public.\"assistant_conversations\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"assistant_conversations\" to anon;",
+    "revoke all on public.\"assistant_messages\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"assistant_messages\" to anon;",
+    "revoke all on public.\"brand_invites\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"brand_invites\" to anon;",
+    "revoke all on public.\"brand_invites\" from authenticated;",
+    "grant truncate,references,trigger,maintain on public.\"brand_invites\" to authenticated;",
+    "revoke all on public.\"brand_users\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"brand_users\" to anon;",
+    "revoke all on public.\"brand_users\" from authenticated;",
+    "grant select,truncate,references,trigger,maintain on public.\"brand_users\" to authenticated;",
+    "revoke all on public.\"campaign_missions\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"campaign_missions\" to anon;",
+    "revoke all on public.\"campaign_participants\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"campaign_participants\" to anon;",
+    "revoke all on public.\"campaign_participants\" from authenticated;",
+    "grant select,truncate,references,trigger,maintain on public.\"campaign_participants\" to authenticated;",
+    "revoke all on public.\"campaign_rank_snapshots\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"campaign_rank_snapshots\" to anon;",
+    "revoke all on public.\"campaign_rank_snapshots\" from authenticated;",
+    "grant truncate,references,trigger,maintain on public.\"campaign_rank_snapshots\" to authenticated;",
+    "revoke all on public.\"campaigns\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"campaigns\" to anon;",
+    "revoke all on public.\"campaigns\" from authenticated;",
+    "grant insert,select,delete,truncate,references,trigger,maintain on public.\"campaigns\" to authenticated;",
+    "revoke all on public.\"content_categories\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"content_categories\" to anon;",
+    "revoke all on public.\"content_categories\" from authenticated;",
+    "grant select,truncate,references,trigger,maintain on public.\"content_categories\" to authenticated;",
+    "revoke all on public.\"content_item_tags\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"content_item_tags\" to anon;",
+    "revoke all on public.\"content_item_tags\" from authenticated;",
+    "grant select,truncate,references,trigger,maintain on public.\"content_item_tags\" to authenticated;",
+    "revoke all on public.\"content_items\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"content_items\" to anon;",
+    "revoke all on public.\"content_items\" from authenticated;",
+    "grant select,truncate,references,trigger,maintain on public.\"content_items\" to authenticated;",
+    "revoke all on public.\"content_tags\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"content_tags\" to anon;",
+    "revoke all on public.\"content_tags\" from authenticated;",
+    "grant select,truncate,references,trigger,maintain on public.\"content_tags\" to authenticated;",
+    "revoke all on public.\"creator_portfolio_links\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"creator_portfolio_links\" to anon;",
+    "revoke all on public.\"creator_public_passports\" from anon;",
+    "revoke all on public.\"creator_public_passports\" from authenticated;",
+    "grant select,delete on public.\"creator_public_passports\" to authenticated;",
+    "revoke all on public.\"creator_public_profile_snapshots\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"creator_public_profile_snapshots\" to anon;",
+    "revoke all on public.\"creator_public_profile_snapshots\" from authenticated;",
+    "grant select,truncate,references,trigger,maintain on public.\"creator_public_profile_snapshots\" to authenticated;",
+    "revoke all on public.\"creator_review_notes\" from anon;",
+    "revoke all on public.\"creator_review_notes\" from authenticated;",
+    "revoke all on public.\"creator_review_statuses\" from anon;",
+    "revoke all on public.\"creator_review_statuses\" from authenticated;",
+    "revoke all on public.\"creator_social_accounts\" from anon;",
+    "revoke all on public.\"creator_social_accounts\" from authenticated;",
+    "grant select,delete on public.\"creator_social_accounts\" to authenticated;",
+    "revoke all on public.\"creator_social_scan_snapshots\" from anon;",
+    "revoke all on public.\"creator_social_scan_snapshots\" from authenticated;",
+    "grant select on public.\"creator_social_scan_snapshots\" to authenticated;",
+    "revoke all on public.\"creators\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"creators\" to anon;",
+    "revoke all on public.\"creators\" from authenticated;",
+    "grant select,truncate,references,trigger,maintain on public.\"creators\" to authenticated;",
+    "revoke all on public.\"earnings_balances\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"earnings_balances\" to anon;",
+    "revoke all on public.\"earnings_balances\" from authenticated;",
+    "grant select,truncate,references,trigger,maintain on public.\"earnings_balances\" to authenticated;",
+    "revoke all on public.\"earnings_transactions\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"earnings_transactions\" to anon;",
+    "revoke all on public.\"earnings_transactions\" from authenticated;",
+    "grant select,truncate,references,trigger,maintain on public.\"earnings_transactions\" to authenticated;",
+    "revoke all on public.\"kb_chunks\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"kb_chunks\" to anon;",
+    "revoke all on public.\"kb_chunks\" from authenticated;",
+    "grant select,truncate,references,trigger,maintain on public.\"kb_chunks\" to authenticated;",
+    "revoke all on public.\"kb_documents\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"kb_documents\" to anon;",
+    "revoke all on public.\"kb_documents\" from authenticated;",
+    "grant select,truncate,references,trigger,maintain on public.\"kb_documents\" to authenticated;",
+    "revoke all on public.\"mission_shortlists\" from anon;",
+    "revoke all on public.\"mission_shortlists\" from authenticated;",
+    "revoke all on public.\"mission_submissions\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"mission_submissions\" to anon;",
+    "revoke all on public.\"mission_submissions\" from authenticated;",
+    "grant select,truncate,references,trigger,maintain on public.\"mission_submissions\" to authenticated;",
+    "revoke all on public.\"missions\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"missions\" to anon;",
+    "revoke all on public.\"missions\" from authenticated;",
+    "grant insert,select,delete,truncate,references,trigger,maintain on public.\"missions\" to authenticated;",
+    "revoke all on public.\"notifications\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"notifications\" to anon;",
+    "revoke all on public.\"notifications\" from authenticated;",
+    "grant select,truncate,references,trigger,maintain on public.\"notifications\" to authenticated;",
+    "revoke all on public.\"operator_audit_events\" from anon;",
+    "revoke all on public.\"operator_audit_events\" from authenticated;",
+    "revoke all on public.\"point_balances\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"point_balances\" to anon;",
+    "revoke all on public.\"point_balances\" from authenticated;",
+    "grant select,truncate,references,trigger,maintain on public.\"point_balances\" to authenticated;",
+    "revoke all on public.\"point_transactions\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"point_transactions\" to anon;",
+    "revoke all on public.\"point_transactions\" from authenticated;",
+    "grant select,truncate,references,trigger,maintain on public.\"point_transactions\" to authenticated;",
+    "revoke all on public.\"redemption_codes\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"redemption_codes\" to anon;",
+    "revoke all on public.\"redemption_codes\" from authenticated;",
+    "grant truncate,references,trigger,maintain on public.\"redemption_codes\" to authenticated;",
+    "revoke all on public.\"redemption_gifts\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"redemption_gifts\" to anon;",
+    "revoke all on public.\"redemption_gifts\" from authenticated;",
+    "grant select,truncate,references,trigger,maintain on public.\"redemption_gifts\" to authenticated;",
+    "revoke all on public.\"redemptions\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"redemptions\" to anon;",
+    "revoke all on public.\"redemptions\" from authenticated;",
+    "grant select,truncate,references,trigger,maintain on public.\"redemptions\" to authenticated;",
+    "revoke all on public.\"staff_users\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"staff_users\" to anon;",
+    "revoke all on public.\"staff_users\" from authenticated;",
+    "grant truncate,references,trigger,maintain on public.\"staff_users\" to authenticated;",
+    "revoke all on public.\"workspace_budget_transactions\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"workspace_budget_transactions\" to anon;",
+    "revoke all on public.\"workspace_budget_transactions\" from authenticated;",
+    "grant select,truncate,references,trigger,maintain on public.\"workspace_budget_transactions\" to authenticated;",
+    "revoke all on public.\"workspace_budget_transactions\" from service_role;",
+    "grant select,truncate,references,trigger,maintain on public.\"workspace_budget_transactions\" to service_role;",
+    "revoke all on public.\"workspace_budgets\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"workspace_budgets\" to anon;",
+    "revoke all on public.\"workspace_budgets\" from authenticated;",
+    "grant select,truncate,references,trigger,maintain on public.\"workspace_budgets\" to authenticated;",
+    "revoke all on public.\"workspace_budgets\" from service_role;",
+    "grant select,truncate,references,trigger,maintain on public.\"workspace_budgets\" to service_role;",
+    "revoke all on public.\"workspaces\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"workspaces\" to anon;",
+    "revoke all on public.\"workspaces\" from authenticated;",
+    "grant select,truncate,references,trigger,maintain on public.\"workspaces\" to authenticated;"
+  ],
+  "comparisonSource": "D19-support-current-schema-before.json targets.empty.observed.tables; locally captured candidate catalog, not production reads",
+  "oldTargetQueriedOrChanged": false,
+  "migrationSourceChanged": false
+}

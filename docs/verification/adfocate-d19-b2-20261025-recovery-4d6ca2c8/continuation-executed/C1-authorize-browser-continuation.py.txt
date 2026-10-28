@@ -1,0 +1,23 @@
+from pathlib import Path
+import json,hashlib,datetime
+R=Path(__file__).resolve().parents[1];V=R/'docs/verification';project='adfocate-d19-b2-20261025-recovery-4d6ca2c8';P=R/'.codex-tmp'/project;C=V/project
+def read(p):return json.loads(p.read_text(encoding='utf-8'))
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def put(p,d):p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\n',encoding='utf-8',newline='\n')
+path=V/'D19-C1-browser-continuation-runtime-manifest.json';m=read(path);digest=sha(path);fp=read(V/'code-fingerprint.json')
+assert digest=='696e94c29e62a27e820d7d12f5aa74c0d1e7b62f97f3b57db787074512a2626d'and m['candidate']['fingerprint']==fp['fingerprint']
+authorization=R/m['execution']['environment']['ADFOCATE_B2_AUTHORIZATION_PATH'];receipt=R/m['execution']['environment']['ADFOCATE_B2_TARGET_RECEIPT_PATH'];assert not authorization.exists()and not receipt.exists()
+B=C/'continuation-before';assert not B.exists();B.mkdir()
+copies=[]
+for p in [V/n for n in ['adfocate-delivery.json','code-fingerprint.json','audit_case_coverage.csv','implementation_backlog.csv','finding_traceability.csv','adfocate-task-ledger.md','D19-C1-delivery.json','D19-C1-delivery.md','D19-C1-gates.json','D19-C1-case-coverage.json','D19-C1-remaining-acceptance.json','D19-C1-rollback.json','D19-C1-integrity.json','D19-C1-runtime-verification-summary.json','D19-C1-R1-applicability-reconciliation.json','D19-C1-R1-applicability-verification.json','evidence-integrity.json']]+[R/'docs/superpowers/plans/2026-10-23-adfocate-implementation-plan.md']:
+ target=B/p.name;target.write_bytes(p.read_bytes());copies.append({'path':p.relative_to(R).as_posix(),'copy':target.relative_to(R).as_posix(),'sha256':sha(target)})
+put(B/'snapshots.json',{'scope':'Exact current1648-file checkpoint before approved696e continuation; original source/data/receipt evidence retained.','files':copies})
+now=datetime.datetime.now(datetime.timezone.utc);owner='2026-10-25 direct human reply call_4715f74b8ded413ea520b4491078088f: approved same existing C1 fixture continuation; manifest '+digest+'; zero additional physical resources/subjects/domain setup fixtures; no legacy replay; bounded six existing actor sessions plus one Creator UI login; retain incidentOPEN/releaseHOLD/providerdisabled.'
+a={'kind':'B2_RUNTIME_AUTHORIZATION','approved':True,'manifestSha256':digest,'sourceFingerprint':fp['fingerprint'],'ownerReference':owner,'approvedAt':now.isoformat(),'recordedAtHongKong':now.astimezone(datetime.timezone(datetime.timedelta(hours=8))).isoformat(),'additionalResources':0,'resourceLifecycleAllowed':False,'existingDataAdoptionApproved':True,'apiCaseCarryoverApprovedAfterReadOnlyRevalidation':17,'apiCasesRerun':0,'existingActorSessionRenewals':6,'additionalCreatorUiLogin':1,'newAuthSubjects':0,'newDomainSetupFixtures':0,'legacyIssuanceReplayAllowed':False}
+put(authorization,a)
+prior=P/'source-revision-target-receipt.private.json';original=prior.read_bytes();r=read(prior);assert r['bootstrap']['verified']and r['identity']['projectId']==project
+r.update(manifestSha256=digest,sourceFingerprint=fp['fingerprint'],originVerifiedReceipt={'path':prior.relative_to(R).as_posix(),'sha256':sha(prior)},allocationFactsInheritedNotRecreated=True,additionalPhysicalResources=0)
+r['identity']['ownerAuthorization']=owner;put(receipt,r);assert prior.read_bytes()==original
+put(C/'browser-continuation-authorization.json',a)
+put(C/'browser-continuation-receipt-before-live-identity.json',r)
+print(json.dumps({'status':'ACTUAL_HUMAN696E_AUTHORITY_RECORDED_NOT_RUNTIME_SUCCESS','manifestSha256':digest,'sourceFingerprint':fp['fingerprint'],'additionalPhysicalResources':0,'existingAllocationAndOriginalReceiptsPreserved':True,'applicationAuthSqlCalls':0}))

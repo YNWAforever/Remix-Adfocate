@@ -4,16 +4,18 @@ import { formatCreatorCurrency, formatCreatorDate } from "@/lib/creatorFormattin
 import { useI18n } from "@/lib/i18n";
 import {
   effortLabelKey,
-  eligibility,
+  missionEligibility,
   missionTypeLabelKey,
   platformLabelKey,
   spotsLeft,
   type EffortLevel,
 } from "@/lib/missionMeta";
+import { categoryLabelKey } from "@/lib/labels";
+import type { Me, Mission } from "@/lib/queries/kocmax";
 
 type MissionCardProps = {
   title: string;
-  category?: string;
+  category?: string | null;
   points: number;
   deadline?: string | null;
   imageUrl?: string;
@@ -22,8 +24,8 @@ type MissionCardProps = {
   missionType?: string;
   accessType?: string;
   platform?: string;
-  platforms?: string[];
-  deliverables?: string[];
+  platforms?: string[] | null;
+  deliverables?: string[] | null;
   effort?: string | null;
   quota?: number;
   filled?: number;
@@ -36,6 +38,14 @@ type MissionCardProps = {
 };
 
 type CardFact = { label: string; value: string };
+
+/** All existing mission DTO consumers use the same decision-fact adaptation. */
+export function missionCardDecisionProps(mission: Partial<Mission>, creator?: Pick<Me, "level" | "is_trusted">) {
+  return { brand: mission.brand, missionType: mission.mission_type, accessType: mission.access_type,
+    platforms: mission.platforms, deliverables: mission.deliverables, effort: mission.effort,
+    quota: mission.quota, filled: mission.filled, requiredLevel: mission.required_level,
+    creatorLevel: creator?.level, isTrusted: creator?.is_trusted };
+}
 
 function isEffortLevel(value: string): value is EffortLevel {
   return value === "low" || value === "medium" || value === "high";
@@ -59,7 +69,7 @@ export function MissionCard({
   filled,
   requiredLevel,
   creatorLevel,
-  isTrusted = true,
+  isTrusted,
   matchRationale,
   matchScore,
   status,
@@ -88,23 +98,22 @@ export function MissionCard({
     : isFull
       ? t("app.mission.cardUnavailable")
       : t("app.mission.spotsLeft", { n: remainingSpots });
-  const creatorEligibility = requiredLevel && creatorLevel != null
-    ? eligibility(requiredLevel, creatorLevel, isTrusted)
-    : null;
+  const creatorEligibility = missionEligibility(requiredLevel, creatorLevel, isTrusted);
   const visibleEligibility = creatorEligibility && (!isFull || !creatorEligibility.qualified)
     ? creatorEligibility
     : null;
 
   const facts: Array<CardFact | null> = [
-    cashReward == null ? null : { label: t("app.mission.cardCashReward"), value: formatCreatorCurrency(cashReward, lang) },
-    brand ? { label: t("app.mission.cardBrand"), value: brand } : null,
+    { label: t("app.mission.cardCashReward"), value: cashReward == null ? t("app.mission.notProvided") : formatCreatorCurrency(cashReward, lang) },
+    { label: t("app.mission.cardBrand"), value: brand || t("app.mission.notProvided") },
     translatedMissionType ? { label: t("app.mission.cardMissionType"), value: translatedMissionType } : null,
     translatedAccessType ? { label: t("app.mission.cardAccessType"), value: translatedAccessType } : null,
-    translatedPlatforms.length ? { label: t("app.mission.cardPlatform"), value: translatedPlatforms.join(lang === "zh" ? "、" : ", ") } : null,
-    deliverables?.length ? { label: t("app.mission.cardDeliverables"), value: deliverables.join(lang === "zh" ? "、" : ", ") } : null,
-    translatedEffort ? { label: t("app.mission.cardEffort"), value: translatedEffort } : null,
-    availability ? { label: t("app.mission.cardAvailability"), value: availability } : null,
-    requiredLevel ? { label: t("app.mission.cardRequiredLevel"), value: requiredLevel } : null,
+    { label: t("app.mission.cardPlatform"), value: translatedPlatforms.join(lang === "zh" ? "、" : ", ") || t("app.mission.notProvided") },
+    { label: t("app.mission.cardDeliverables"), value: deliverables?.join(lang === "zh" ? "、" : ", ") || t("app.mission.notProvided") },
+    { label: t("app.mission.cardEffort"), value: translatedEffort || t("app.mission.notProvided") },
+    { label: t("app.mission.cardAvailability"), value: availability || t("app.mission.notProvided") },
+    { label: t("app.mission.cardRequiredLevel"), value: requiredLevel || t("app.mission.notProvided") },
+    formattedDeadline ? null : { label: t("app.mission.factDeadline"), value: t("app.mission.notProvided") },
     visibleEligibility ? { label: t("app.mission.factEligibility"), value: t(visibleEligibility.labelKey, visibleEligibility.params) } : null,
     matchRationale ? { label: t("app.mission.cardMatchRationale"), value: matchRationale } : null,
     matchScore == null ? null : { label: t("app.mission.cardMatchScore"), value: `${Math.round(matchScore <= 1 ? matchScore * 100 : matchScore)}%` },
@@ -118,7 +127,7 @@ export function MissionCard({
         {imageUrl ? <img src={imageUrl} alt="" className="h-full w-full object-cover" /> : null}
       </div>
       <div className="min-w-0 flex-1">
-        {category ? <BadgePill>{category}</BadgePill> : null}
+        {category ? <BadgePill>{t(categoryLabelKey(category))}</BadgePill> : null}
         <h3 className="mt-1 line-clamp-2 font-heading font-semibold">{title}</h3>
         <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-[var(--color-soft-ink)]">
           <span className="flex items-center gap-1">
@@ -137,7 +146,7 @@ export function MissionCard({
             {visibleFacts.map((fact) => (
               <div key={fact.label} className="grid grid-cols-[auto_1fr] gap-2">
                 <dt className="font-semibold text-[var(--color-soft-ink)]">{fact.label}</dt>
-                <dd className="min-w-0">{fact.value}</dd>
+                <dd className="min-w-0 break-words">{fact.value}</dd>
               </div>
             ))}
           </dl>

@@ -1,0 +1,27 @@
+{
+  "startedAt": "2026-10-25T18:23:49.367191+00:00",
+  "command": [
+    "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "server/test/audit-docker-output-capture.test.ts",
+    "--no-file-parallelism",
+    "--reporter=default",
+    "--reporter=json",
+    "--outputFile.json=docs/verification/D19-C2-runtime-20261026/transport-red-results.json"
+  ],
+  "node": "v22.23.4",
+  "resource": {
+    "at": "2026-10-25T18:23:49.365532+00:00",
+    "freePhysicalGiB": 5.049354553222656,
+    "freeCommitGiB": 6.999073028564453,
+    "minimumGiB": 3,
+    "freeDiskGiB": 22.033370971679688
+  },
+  "credentialsProxiesPreloadsStripped": true,
+  "integrationDisabled": true,
+  "label": "transport-red",
+  "log": "docs/verification/D19-C2-runtime-20261026/transport-red.log",
+  "runtimeTargetCallsRequested": false,
+  "pid": 41640
+}

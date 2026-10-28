@@ -1,0 +1,384 @@
+{
+  "at": "2026-10-24T08:07:15.403029+00:00",
+  "readOnly": true,
+  "anchors": [
+    {
+      "target": "empty",
+      "id": "1b9c41318298d79308db7782f51474541ad5abf0120fa93b96a2a9ea59d043ee",
+      "image": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+      "running": false,
+      "project": "adfocate-r1-empty-20261023",
+      "staticIdentitySame": true
+    },
+    {
+      "target": "empty",
+      "id": "e7c8efa295cd5544a8b2a100a73b6953cd6ddd486aaf394f231482067523e12d",
+      "image": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+      "running": false,
+      "project": "adfocate-r1-empty-20261023",
+      "staticIdentitySame": true
+    },
+    {
+      "target": "shaped",
+      "id": "c96d960e276cb7c84ae5bf52fdf77e854865516d89d95ca2148a55b6137fa7e9",
+      "image": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+      "running": false,
+      "project": "adfocate-r1-shaped-20261023",
+      "staticIdentitySame": true
+    },
+    {
+      "target": "shaped",
+      "id": "34bd00cda4f4c91650795b83d4d48d5e46ecb90b310a3e409b31c02f99cec176",
+      "image": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+      "running": false,
+      "project": "adfocate-r1-shaped-20261023",
+      "staticIdentitySame": true
+    }
+  ],
+  "containers": [
+    {
+      "target": "empty",
+      "id": "72fa7c5a46e2ee165441cd15ad9ed5fbd172c9ef6273bc0860f577cab3249be6",
+      "name": "/supabase_auth_adfocate-r1-empty-20261023",
+      "image": "sha256:ac6d4b1e961ae5a1a24d283967485f8195b767a8476e1044959d7a250c2da3f0",
+      "running": true,
+      "project": "adfocate-r1-empty-20261023",
+      "networks": {
+        "adfocate-r1-empty-20261023": {
+          "Aliases": [
+            "auth"
+          ],
+          "DNSNames": [
+            "supabase_auth_adfocate-r1-empty-20261023",
+            "auth",
+            "72fa7c5a46e2",
+            "541d3aa43ba4"
+          ],
+          "DriverOpts": null,
+          "EndpointID": "",
+          "Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "GwPriority": 0,
+          "IPAMConfig": null,
+          "IPAddress": "",
+          "IPPrefixLen": 0,
+          "IPv6Gateway": "",
+          "Links": null,
+          "MacAddress": "",
+          "NetworkID": "9e5d3069e8255d70b8eef56020c8ea2618fdb2626d92d9a04e51ea2de41a98e0"
+        }
+      }
+    },
+    {
+      "target": "empty",
+      "id": "1b9c41318298d79308db7782f51474541ad5abf0120fa93b96a2a9ea59d043ee",
+      "name": "/supabase_kong_adfocate-r1-empty-20261023",
+      "image": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+      "running": false,
+      "project": "adfocate-r1-empty-20261023",
+      "networks": {
+        "adfocate-r1-empty-20261023": {
+          "Aliases": [
+            "kong",
+            "api.supabase.internal"
+          ],
+          "DNSNames": [
+            "supabase_kong_adfocate-r1-empty-20261023",
+            "kong",
+            "api.supabase.internal",
+            "1b9c41318298",
+            "5136eeedbe5b"
+          ],
+          "DriverOpts": null,
+          "EndpointID": "",
+          "Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "GwPriority": 0,
+          "IPAMConfig": null,
+          "IPAddress": "",
+          "IPPrefixLen": 0,
+          "IPv6Gateway": "",
+          "Links": null,
+          "MacAddress": "",
+          "NetworkID": "9e5d3069e8255d70b8eef56020c8ea2618fdb2626d92d9a04e51ea2de41a98e0"
+        }
+      }
+    },
+    {
+      "target": "empty",
+      "id": "e7c8efa295cd5544a8b2a100a73b6953cd6ddd486aaf394f231482067523e12d",
+      "name": "/supabase_db_adfocate-r1-empty-20261023",
+      "image": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+      "running": false,
+      "project": "adfocate-r1-empty-20261023",
+      "networks": {
+        "adfocate-r1-empty-20261023": {
+          "Aliases": [
+            "db",
+            "db.supabase.internal"
+          ],
+          "DNSNames": [
+            "supabase_db_adfocate-r1-empty-20261023",
+            "db",
+            "db.supabase.internal",
+            "e7c8efa295cd",
+            "8edb9a1c2464"
+          ],
+          "DriverOpts": null,
+          "EndpointID": "",
+          "Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "GwPriority": 0,
+          "IPAMConfig": null,
+          "IPAddress": "",
+          "IPPrefixLen": 0,
+          "IPv6Gateway": "",
+          "Links": null,
+          "MacAddress": "",
+          "NetworkID": "9e5d3069e8255d70b8eef56020c8ea2618fdb2626d92d9a04e51ea2de41a98e0"
+        }
+      }
+    },
+    {
+      "target": "empty",
+      "id": "4b697783870c4429af0b4c6c8db55816e5c96950b01fc5574af791828ac91847",
+      "name": "/supabase_storage_adfocate-r1-empty-20261023",
+      "image": "sha256:ead6d49b9873d65a030c6c44b46676f4276b234becd6d7819c254351b5400d95",
+      "running": true,
+      "project": "adfocate-r1-empty-20261023",
+      "networks": {
+        "adfocate-r1-empty-20261023": {
+          "Aliases": [
+            "storage"
+          ],
+          "DNSNames": [
+            "supabase_storage_adfocate-r1-empty-20261023",
+            "storage",
+            "4b697783870c"
+          ],
+          "DriverOpts": null,
+          "EndpointID": "",
+          "Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "GwPriority": 0,
+          "IPAMConfig": null,
+          "IPAddress": "",
+          "IPPrefixLen": 0,
+          "IPv6Gateway": "",
+          "Links": null,
+          "MacAddress": "",
+          "NetworkID": "9e5d3069e8255d70b8eef56020c8ea2618fdb2626d92d9a04e51ea2de41a98e0"
+        }
+      }
+    },
+    {
+      "target": "empty",
+      "id": "b88c2d7c159ea241c28f56fa4bb231bbf2c942ccec94b255db8a345e9dba4b28",
+      "name": "/supabase_rest_adfocate-r1-empty-20261023",
+      "image": "sha256:2f8e7b656f09db697a8875177694b417b35cb76c21370de07fc54e711e902326",
+      "running": true,
+      "project": "adfocate-r1-empty-20261023",
+      "networks": {
+        "adfocate-r1-empty-20261023": {
+          "Aliases": [
+            "rest"
+          ],
+          "DNSNames": [
+            "supabase_rest_adfocate-r1-empty-20261023",
+            "rest",
+            "b88c2d7c159e"
+          ],
+          "DriverOpts": null,
+          "EndpointID": "ecf653e26ed7e38890330e2674e347c013986c93d056ee0b2320b03258ca024e",
+          "Gateway": "10.250.251.1",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "GwPriority": 0,
+          "IPAMConfig": null,
+          "IPAddress": "10.250.251.2",
+          "IPPrefixLen": 24,
+          "IPv6Gateway": "",
+          "Links": null,
+          "MacAddress": "a2:d6:b8:41:07:51",
+          "NetworkID": "9e5d3069e8255d70b8eef56020c8ea2618fdb2626d92d9a04e51ea2de41a98e0"
+        }
+      }
+    },
+    {
+      "target": "shaped",
+      "id": "7ee5fac7cf8f54055948f591da8b94a69ed3facd75417b13501e4fddd9a31dec",
+      "name": "/supabase_auth_adfocate-r1-shaped-20261023",
+      "image": "sha256:ac6d4b1e961ae5a1a24d283967485f8195b767a8476e1044959d7a250c2da3f0",
+      "running": true,
+      "project": "adfocate-r1-shaped-20261023",
+      "networks": {
+        "adfocate-r1-shaped-20261023": {
+          "Aliases": [
+            "auth"
+          ],
+          "DNSNames": [
+            "supabase_auth_adfocate-r1-shaped-20261023",
+            "auth",
+            "7ee5fac7cf8f",
+            "18e547abe4b9"
+          ],
+          "DriverOpts": null,
+          "EndpointID": "",
+          "Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "GwPriority": 0,
+          "IPAMConfig": null,
+          "IPAddress": "",
+          "IPPrefixLen": 0,
+          "IPv6Gateway": "",
+          "Links": null,
+          "MacAddress": "",
+          "NetworkID": "fbf71b13e7f584b230b293383cccbd2157814168cbae1d9169b377d8f886f69d"
+        }
+      }
+    },
+    {
+      "target": "shaped",
+      "id": "c96d960e276cb7c84ae5bf52fdf77e854865516d89d95ca2148a55b6137fa7e9",
+      "name": "/supabase_kong_adfocate-r1-shaped-20261023",
+      "image": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+      "running": false,
+      "project": "adfocate-r1-shaped-20261023",
+      "networks": {
+        "adfocate-r1-shaped-20261023": {
+          "Aliases": [
+            "kong",
+            "api.supabase.internal"
+          ],
+          "DNSNames": [
+            "supabase_kong_adfocate-r1-shaped-20261023",
+            "kong",
+            "api.supabase.internal",
+            "c96d960e276c",
+            "6d3318b3a76f"
+          ],
+          "DriverOpts": null,
+          "EndpointID": "",
+          "Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "GwPriority": 0,
+          "IPAMConfig": null,
+          "IPAddress": "",
+          "IPPrefixLen": 0,
+          "IPv6Gateway": "",
+          "Links": null,
+          "MacAddress": "",
+          "NetworkID": "fbf71b13e7f584b230b293383cccbd2157814168cbae1d9169b377d8f886f69d"
+        }
+      }
+    },
+    {
+      "target": "shaped",
+      "id": "34bd00cda4f4c91650795b83d4d48d5e46ecb90b310a3e409b31c02f99cec176",
+      "name": "/supabase_db_adfocate-r1-shaped-20261023",
+      "image": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+      "running": false,
+      "project": "adfocate-r1-shaped-20261023",
+      "networks": {
+        "adfocate-r1-shaped-20261023": {
+          "Aliases": [
+            "db",
+            "db.supabase.internal"
+          ],
+          "DNSNames": [
+            "supabase_db_adfocate-r1-shaped-20261023",
+            "db",
+            "db.supabase.internal",
+            "34bd00cda4f4",
+            "5aa3c16820c7"
+          ],
+          "DriverOpts": null,
+          "EndpointID": "",
+          "Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "GwPriority": 0,
+          "IPAMConfig": null,
+          "IPAddress": "",
+          "IPPrefixLen": 0,
+          "IPv6Gateway": "",
+          "Links": null,
+          "MacAddress": "",
+          "NetworkID": "fbf71b13e7f584b230b293383cccbd2157814168cbae1d9169b377d8f886f69d"
+        }
+      }
+    },
+    {
+      "target": "shaped",
+      "id": "9992cf577e0d6519f9a65f2a30a2b928539ecf44f15548863dd0daaaacb29a97",
+      "name": "/supabase_storage_adfocate-r1-shaped-20261023",
+      "image": "sha256:ead6d49b9873d65a030c6c44b46676f4276b234becd6d7819c254351b5400d95",
+      "running": true,
+      "project": "adfocate-r1-shaped-20261023",
+      "networks": {
+        "adfocate-r1-shaped-20261023": {
+          "Aliases": [
+            "storage"
+          ],
+          "DNSNames": [
+            "supabase_storage_adfocate-r1-shaped-20261023",
+            "storage",
+            "9992cf577e0d"
+          ],
+          "DriverOpts": null,
+          "EndpointID": "",
+          "Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "GwPriority": 0,
+          "IPAMConfig": null,
+          "IPAddress": "",
+          "IPPrefixLen": 0,
+          "IPv6Gateway": "",
+          "Links": null,
+          "MacAddress": "",
+          "NetworkID": "fbf71b13e7f584b230b293383cccbd2157814168cbae1d9169b377d8f886f69d"
+        }
+      }
+    },
+    {
+      "target": "shaped",
+      "id": "ca14b98fa96df5ca32887257169b274477fc9fada88df440991cdb44372bdddf",
+      "name": "/supabase_rest_adfocate-r1-shaped-20261023",
+      "image": "sha256:2f8e7b656f09db697a8875177694b417b35cb76c21370de07fc54e711e902326",
+      "running": true,
+      "project": "adfocate-r1-shaped-20261023",
+      "networks": {
+        "adfocate-r1-shaped-20261023": {
+          "Aliases": [
+            "rest"
+          ],
+          "DNSNames": [
+            "supabase_rest_adfocate-r1-shaped-20261023",
+            "rest",
+            "ca14b98fa96d"
+          ],
+          "DriverOpts": null,
+          "EndpointID": "675a8e10c1eaa151d013330726a288a83e6a7d54c9b1e68752b53bd4c246cdc3",
+          "Gateway": "10.250.252.1",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "GwPriority": 0,
+          "IPAMConfig": null,
+          "IPAddress": "10.250.252.3",
+          "IPPrefixLen": 24,
+          "IPv6Gateway": "",
+          "Links": null,
+          "MacAddress": "3a:f1:e2:73:49:5e",
+          "NetworkID": "fbf71b13e7f584b230b293383cccbd2157814168cbae1d9169b377d8f886f69d"
+        }
+      }
+    }
+  ]
+}

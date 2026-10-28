@@ -1,0 +1,287 @@
+{
+  "at": "2026-10-25T17:22:07.710618+00:00",
+  "codeFingerprint": "e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993",
+  "method": "Raw hashes of current standalone assistant verification and changed metadata; exclude this subset/root seal. Prior2196 records retained via exact before images.",
+  "files": [
+    {
+      "path": "docs/verification/adfocate-delivery.json",
+      "sha256": "29ebfb4fe5222742da4aa5a48ff332ac47a478783094caeffe806116bdee295f",
+      "bytes": 691748
+    },
+    {
+      "path": "docs/verification/adfocate-task-ledger.md",
+      "sha256": "2136775a741b7ed150f4c5f8388b237353271578dbf6b22fb1360dcfccc11a93",
+      "bytes": 36211
+    },
+    {
+      "path": "docs/verification/audit_case_coverage.csv",
+      "sha256": "42e5fef332c30e39d03e3f7652d1c9d7d31e405ec4907c6cb86044cb0aee2f55",
+      "bytes": 182832
+    },
+    {
+      "path": "docs/verification/D19-assistant-offline-20261026/assistant-boundary.test.tsx",
+      "sha256": "830c9be7bb1b9ce315f10f730de51208920be2a663ea6c854280e7afaa52a32c",
+      "bytes": 17893
+    },
+    {
+      "path": "docs/verification/D19-assistant-offline-20261026/before/docs/verification/adfocate-delivery.json",
+      "sha256": "75f568eed1c4547ded09fd675025c3862bcb4c197a99632a442f5d11f0660ad8",
+      "bytes": 683410
+    },
+    {
+      "path": "docs/verification/D19-assistant-offline-20261026/before/docs/verification/adfocate-task-ledger.md",
+      "sha256": "6b442ff742071acf9388716180a08e76583009e05be5c589da4f05862cdefc4a",
+      "bytes": 35542
+    },
+    {
+      "path": "docs/verification/D19-assistant-offline-20261026/before/docs/verification/audit_case_coverage.csv",
+      "sha256": "bb73a1e0a525ecf9be65c272ab98c31a6badc193dcc7d5cabc3973c8c3ced0eb",
+      "bytes": 180453
+    },
+    {
+      "path": "docs/verification/D19-assistant-offline-20261026/before/docs/verification/code-fingerprint.json",
+      "sha256": "0a9accc29ddb559a26fbcbcee2d9d4828fa8bdf63374b0a8d781d3f86885399d",
+      "bytes": 123041
+    },
+    {
+      "path": "docs/verification/D19-assistant-offline-20261026/before/docs/verification/D19-application-runtime-preparation-20261025/runtime-authorization.json",
+      "sha256": "d5ca3dcd9ad8c4e14f0707e2b29c3bb25a1f6dd955e908fb591620281c76d019",
+      "bytes": 386
+    },
+    {
+      "path": "docs/verification/D19-assistant-offline-20261026/before/docs/verification/D19-C2-application-runtime-manifest.json",
+      "sha256": "eb5ca8f03a85c5589cc6cbf27ec0ca5524e8600fd2914ad1d4d73f17eec5009a",
+      "bytes": 34646
+    },
+    {
+      "path": "docs/verification/D19-assistant-offline-20261026/before/docs/verification/evidence-integrity.json",
+      "sha256": "68774d0f8bb49c732cd040c0e9d1d1b5b543ad27a2e9ccd84f29abfb1048f6ce",
+      "bytes": 438135
+    },
+    {
+      "path": "docs/verification/D19-assistant-offline-20261026/before/docs/verification/implementation_backlog.csv",
+      "sha256": "a7ed9d3d711ee93826eb6f631989aab8212b05e782448a0a8ac404c7ee845413",
+      "bytes": 20358
+    },
+    {
+      "path": "docs/verification/D19-assistant-offline-20261026/boundary-initial-command.json",
+      "sha256": "1c5fa121309729bf296d4cec76189de959d94cdc4f76d61299f1494a9b3b4b58",
+      "bytes": 1936
+    },
+    {
+      "path": "docs/verification/D19-assistant-offline-20261026/boundary-initial-native.json",
+      "sha256": "3d0112afb8b8f1d575d1ec079a4b3cc485c06a9e2371e229febacbf0b7eb0f61",
+      "bytes": 4394
+    },
+    {
+      "path": "docs/verification/D19-assistant-offline-20261026/boundary-initial-resource.json",
+      "sha256": "1677473d4b5169ce1885a40ed4646045097b68fdeee33d7a1ad14a10a464e334",
+      "bytes": 145
+    },
+    {
+      "path": "docs/verification/D19-assistant-offline-20261026/boundary-initial-started.json",
+      "sha256": "4c834158a6a6311d9235637c581fb1a6a1d867d6b2c750910106f40b4ecd30ac",
+      "bytes": 1750
+    },
+    {
+      "path": "docs/verification/D19-assistant-offline-20261026/boundary-initial.log",
+      "sha256": "0cfae8f4f3139b4cd163171a98efccd3d502265f10227f3ee0640efb6e2d0625",
+      "bytes": 1050
+    },
+    {
+      "path": "docs/verification/D19-assistant-offline-20261026/boundary-lint-command.json",
+      "sha256": "bdc65ce7a7c30ecf97416a99d244fc610cda9f22eb7a9a85e7d189d0ce02d1d6",
+      "bytes": 1723
+    },
+    {
+      "path": "docs/verification/D19-assistant-offline-20261026/boundary-lint-resource.json",
+      "sha256": "07b450a9c4f340dc3dbe742d337ada5fd23b2f94ba6fe9d8ca03bafcdbba67f2",
+      "bytes": 143
+    },
+    {
+      "path": "docs/verification/D19-assistant-offline-20261026/boundary-lint-started.json",
+      "sha256": "16deddbd10a0a55a5f4712233f238473f71fd7e3511b05d6ba4e45b015081da0",
+      "bytes": 1661
+    },
+    {
+      "path": "docs/verification/D19-assistant-offline-20261026/boundary-lint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/verification/D19-assistant-offline-20261026/boundary-path-fixed-command.json",
+      "sha256": "704b1ed1e1b4d3c4c6d23c37e70853834bbb873c52732fead603d07fdb33c7cd",
+      "bytes": 1939
+    },
+    {
+      "path": "docs/verification/D19-assistant-offline-20261026/boundary-path-fixed-native.json",
+      "sha256": "40a098352882e7e85eef24b4d2c75d82e9bd1bb25319c6b9f70a5cf25f977d31",
+      "bytes": 4274
+    },
+    {
+      "path": "docs/verification/D19-assistant-offline-20261026/boundary-path-fixed-readback.json",
+      "sha256": "73e91a48794ffa7aa763dbfb43048f09a2c61743581c149e0f28426a062b4962",
+      "bytes": 12556
+    },
+    {
+      "path": "docs/verification/D19-assistant-offline-20261026/boundary-path-fixed-resource.json",
+      "sha256": "787d7d9f5f4e5ed11e10dbd9beb234e0729ce8b4ae759b19ee2ba421d838b21f",
+      "bytes": 145
+    },
+    {
+      "path": "docs/verification/D19-assistant-offline-20261026/boundary-path-fixed-started.json",
+      "sha256": "4def77cb0879ca7bd71b1b47c377686cb11acd328ba7bdcc7556c0e39d641fb2",
+      "bytes": 1753
+    },
+    {
+      "path": "docs/verification/D19-assistant-offline-20261026/boundary-path-fixed.log",
+      "sha256": "ebb312762e4d105ffec425031acfbf4435b209e8c76836ffba11b67d7f5bf498",
+      "bytes": 535
+    },
+    {
+      "path": "docs/verification/D19-assistant-offline-20261026/boundary-type-command.json",
+      "sha256": "223d66a3899c5e90ad6bcf9411b4886766072f64023f6c40219ba875c4ff1ad6",
+      "bytes": 1803
+    },
+    {
+      "path": "docs/verification/D19-assistant-offline-20261026/boundary-type-resource.json",
+      "sha256": "19b4dffec2eb16fb907e42005478f4358bd64a147be43c7ad77341c24139583b",
+      "bytes": 145
+    },
+    {
+      "path": "docs/verification/D19-assistant-offline-20261026/boundary-type-started.json",
+      "sha256": "33c934cb2c0128ed938932c7ec50c37e6cc396b475b8ec121f99ff5fb0cf88c7",
+      "bytes": 1741
+    },
+    {
+      "path": "docs/verification/D19-assistant-offline-20261026/boundary-type.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/verification/D19-assistant-offline-20261026/case-coverage.json",
+      "sha256": "f0b09ecb3092609609c6534a43fd6144d36829d24ee9df95ca6c89e7683d8ea7",
+      "bytes": 243337
+    },
+    {
+      "path": "docs/verification/D19-assistant-offline-20261026/checkpoint.json",
+      "sha256": "d2138e9f61dd8344faab982df0420eb8ad33e23cb897d563c00670cfc284431e",
+      "bytes": 2637
+    },
+    {
+      "path": "docs/verification/D19-assistant-offline-20261026/delivery.json",
+      "sha256": "ad3696575b7c3cf01712c23450372eed85dbf93cf78b98fa3dc4f1026b143baf",
+      "bytes": 3918
+    },
+    {
+      "path": "docs/verification/D19-assistant-offline-20261026/delivery.md",
+      "sha256": "c41557e974433428236eecbe2bb73ad883cfd8375da5a14e6888b9fdab8268a6",
+      "bytes": 4166
+    },
+    {
+      "path": "docs/verification/D19-assistant-offline-20261026/diff-check.log",
+      "sha256": "b2b9a2329fcfac6c7823fc943c0bafbb7f378002d4ae960db766754f957376b9",
+      "bytes": 7875
+    },
+    {
+      "path": "docs/verification/D19-assistant-offline-20261026/finalize-verification.py",
+      "sha256": "30d89047a2bb1608fc617719d9a2082f646543989c6260ea8f191cbb5ba01171",
+      "bytes": 1609
+    },
+    {
+      "path": "docs/verification/D19-assistant-offline-20261026/gates.json",
+      "sha256": "c7677fa8bde022a9ef53fd94ca22c3f99130371dec9970a49df3a725942fc605",
+      "bytes": 6841
+    },
+    {
+      "path": "docs/verification/D19-assistant-offline-20261026/git-final.json",
+      "sha256": "d377ac6a543beff1c02e921ec23f08f62ed69fa57ddf8bf57c49094fbd4c4ba9",
+      "bytes": 63639
+    },
+    {
+      "path": "docs/verification/D19-assistant-offline-20261026/offline-readback.json",
+      "sha256": "73e91a48794ffa7aa763dbfb43048f09a2c61743581c149e0f28426a062b4962",
+      "bytes": 12556
+    },
+    {
+      "path": "docs/verification/D19-assistant-offline-20261026/prepare-delivery.py",
+      "sha256": "db62b347b19c6e36171c418f6e7f8fc9a9cf6396253335ca9f3bdfa15925e7b2",
+      "bytes": 22306
+    },
+    {
+      "path": "docs/verification/D19-assistant-offline-20261026/readback-summary.json",
+      "sha256": "609f1208d85158579d0240988347e3ab03c2991e0a9dba369e8cf596dda721ec",
+      "bytes": 9589
+    },
+    {
+      "path": "docs/verification/D19-assistant-offline-20261026/remaining-acceptance.json",
+      "sha256": "25a738992b666ab8494e93f5ed4764f71667ec824d7f41286b114f5ea890ac4f",
+      "bytes": 17391
+    },
+    {
+      "path": "docs/verification/D19-assistant-offline-20261026/rollback.json",
+      "sha256": "dfc84d297c33916d672f58aae387e2d10b07e28dadc7a95365ce9f8f7703b33b",
+      "bytes": 3244
+    },
+    {
+      "path": "docs/verification/D19-assistant-offline-20261026/run-offline-verification.py",
+      "sha256": "7e4e623d0ae7f17183eaa72867e201790296526b39a2caa369b243a2f46a3858",
+      "bytes": 5433
+    },
+    {
+      "path": "docs/verification/D19-assistant-offline-20261026/source-revisions/bb5b141cea68cc2970730d4c291bd57eee7e80bf8f5d43d131c99aeac3897d45/assistant-boundary.test.tsx",
+      "sha256": "af0231fffa2ee8ddd75b046cbd544616562291ab1fcde61f3f6d2eccf7134986",
+      "bytes": 17661
+    },
+    {
+      "path": "docs/verification/D19-assistant-offline-20261026/source-revisions/bb5b141cea68cc2970730d4c291bd57eee7e80bf8f5d43d131c99aeac3897d45/manifest.json",
+      "sha256": "7ee63c82e6644ee3eb706b036a1f98976db82cd2f0f10bf274bf79927b7e2a23",
+      "bytes": 624
+    },
+    {
+      "path": "docs/verification/D19-assistant-offline-20261026/source-revisions/bb5b141cea68cc2970730d4c291bd57eee7e80bf8f5d43d131c99aeac3897d45/vitest.offline.mjs",
+      "sha256": "1633634a8064a664ec6ac4fdc68cd8afce3b324f4e136b6da6f7d548b9e88208",
+      "bytes": 691
+    },
+    {
+      "path": "docs/verification/D19-assistant-offline-20261026/source-revisions/c9d7de09a80b4fa367cee6d9563a95b2990bf1593f7283e3558d6492e8fbf119/assistant-boundary.test.tsx",
+      "sha256": "830c9be7bb1b9ce315f10f730de51208920be2a663ea6c854280e7afaa52a32c",
+      "bytes": 17893
+    },
+    {
+      "path": "docs/verification/D19-assistant-offline-20261026/source-revisions/c9d7de09a80b4fa367cee6d9563a95b2990bf1593f7283e3558d6492e8fbf119/manifest.json",
+      "sha256": "37cbd03e0c9c3508d7ffc9576ea6202a24376dcade686f27fdc9de3d6baadb5e",
+      "bytes": 624
+    },
+    {
+      "path": "docs/verification/D19-assistant-offline-20261026/source-revisions/c9d7de09a80b4fa367cee6d9563a95b2990bf1593f7283e3558d6492e8fbf119/vitest.offline.mjs",
+      "sha256": "1633634a8064a664ec6ac4fdc68cd8afce3b324f4e136b6da6f7d548b9e88208",
+      "bytes": 691
+    },
+    {
+      "path": "docs/verification/D19-assistant-offline-20261026/tsconfig.offline.json",
+      "sha256": "6f467eb03b1274851b1d5886b4e4b23851394725c7bb54a6dd9783b231bd4e8d",
+      "bytes": 88
+    },
+    {
+      "path": "docs/verification/D19-assistant-offline-20261026/verification-summary.json",
+      "sha256": "f06f0b70e9d83d125955f5031a71cd9cc2c493a6df99414e9a28a1d060a18a87",
+      "bytes": 5198
+    },
+    {
+      "path": "docs/verification/D19-assistant-offline-20261026/verify-assistant.py",
+      "sha256": "8cbf3244ffb50aaf1cb4fc7d196d7bc7661e8e0f143145f07a6e0d361d811be7",
+      "bytes": 12490
+    },
+    {
+      "path": "docs/verification/D19-assistant-offline-20261026/vitest.offline.mjs",
+      "sha256": "1633634a8064a664ec6ac4fdc68cd8afce3b324f4e136b6da6f7d548b9e88208",
+      "bytes": 691
+    },
+    {
+      "path": "docs/verification/implementation_backlog.csv",
+      "sha256": "de3c8ec476ba7e7df2dfbcf1b1029c2f8504d5f03843260fab7f195ecbeefdb6",
+      "bytes": 21174
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "status": "PASS_LOCAL_SPECIFICATION_CONTRACT_NOT_RUNTIME_ACCEPTANCE",
+  "sourceFingerprint": "d13fe2b7e8b9838972b8d93881dc17e8ccfc2795bc133b01cdc4f1a35426f893",
+  "manifestSha256": "257d43f4f8030cab8c84974653d1ce06af14db6a7932bc2f591791aab119cb07",
+  "profileDigest": "741ffaa255017fe377c416ce4ca3214793b0379db45001c15c8952ebd19fc41f",
+  "guardCases": 6,
+  "cliRefusalCases": 2,
+  "newResourceOperations": 0,
+  "protectedMigrationSourceUnchanged": true,
+  "futureRuntimeApproved": false,
+  "newNamespaceAndHistoricalSubmissionIntentVerified": true
+}

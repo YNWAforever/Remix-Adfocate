@@ -1,0 +1,57 @@
+{
+  "status": "DECISION_READY_AFTER_OPTION_A_NO_WRITE_AUTHORITY",
+  "AExecuted": true,
+  "B1Approved": false,
+  "B2Approved": false,
+  "CApproved": false,
+  "CEligible": false,
+  "recommendedIfExactRestorationIsPriority": {
+    "id": "SUPPLY_EXISTING_BEFORE_IMAGE_SOURCE",
+    "decision": "Provide an already-readable, target-bound pre-incident snapshot/full-old-tuple export or a concrete backup reference; no new grants/role-switch/clone implied",
+    "minimumSourcePackage": [
+      "Project/data-volume lineage tied to original shaped target",
+      "Capture/transaction time before the incident and all3 original campaign IDs present",
+      "Original status/closed_at/updated_at including explicit NULL-versus-missing semantics",
+      "Full original row digest using the recorded PostgreSQL JSONB serialization, provenance/digest and one-to-one mapping to the3 missing original hashes",
+      "Existing owner/authority/source reference; credentials stay local and unrelated authored/creator/Auth contents redacted"
+    ],
+    "notAutomatic": "If an existing authorized owner must supply a projection, request only these3 rows. If extraction needs a recovery clone or added server-file privileges, return its exact separate scope for approval; do not grant or create anything now."
+  },
+  "alternative": {
+    "id": "B1_FORENSICS_ONLY_ACCEPTANCE_EXCLUSION",
+    "approvalText": "批准 B1：舊 shaped target只保留鑑證用途，禁止後續驗收重用；不還原、不刪除、不停止容器、不關閉事故。B2新target／fixture／E2E仍另批。",
+    "meaning": "Containment, not restoration. No inference that the live network is isolated, that all dependencies are absent, or that R1/release gates are cleared."
+  },
+  "exactRestorationC": {
+    "eligible": false,
+    "reason": "Original timestamps and full keyed before images remain UNKNOWN. Current AFTER hashes cannot substitute for original values.",
+    "futureApprovalRequires": "A complete exact3-ID/original-value/current-fingerprint manifest with trusted provenance and verification/transaction rollback plan, then separate explicit approval"
+  },
+  "remainingAcceptance": "D19-incident-A-r1-checklist.json",
+  "R1ChecklistDelta": [
+    {
+      "id": "R1-01",
+      "now": "Authorized A read-only scope performed with explicit access limits; incident remedy decision and verification remain pending."
+    },
+    {
+      "id": "R1-02",
+      "now": "Original target identity verified for investigation; target not certified clean for future role/E2E acceptance. B1/B2 unapproved."
+    },
+    {
+      "id": "R1-04/05/06",
+      "now": "Role 8, core 9, Edge 5 and funded pending reward journeys remain historical and source-bound; none renewed this turn."
+    },
+    {
+      "id": "R1-07",
+      "now": "Pristine global two-case evidence preserved byte-for-byte; not rerun."
+    }
+  ],
+  "unchangedBlockers": [
+    "D15 approved real course content",
+    "Named advisor owner, device and hosted evidence",
+    "Formal staff membership/role handoff",
+    "Whole-current R1 verdict and HOLD; no automatic closure or release"
+  ],
+  "realProviderEnabled": false,
+  "historicalRemainingAcceptance": "D19-incident-decision-r1-checklist.json"
+}

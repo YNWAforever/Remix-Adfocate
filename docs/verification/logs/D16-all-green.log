@@ -1,0 +1,13 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ✓ server/test/audit-assistant-persistence.test.ts (4 tests) 13ms
+ ✓ src/components/assistant/AssistantPanel.test.tsx (4 tests) 99ms
+ ✓ server/lib/assistant/chat.test.ts (2 tests) 4ms
+ ✓ server/lib/assistant/requestPolicy.test.ts (6 tests) 6ms
+
+ Test Files  4 passed (4)
+      Tests  16 passed (16)
+   Start at  01:24:06
+   Duration  4.08s (transform 210ms, setup 929ms, collect 493ms, tests 122ms, environment 3.24s, prepare 445ms)
+

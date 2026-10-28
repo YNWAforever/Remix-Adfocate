@@ -1,0 +1,11 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ✓ server/test/audit-schema-compatibility.test.ts (2 tests) 2ms
+ ✓ server/test/run-integration-tests.test.ts (6 tests) 8ms
+
+ Test Files  2 passed (2)
+      Tests  8 passed (8)
+   Start at  00:59:03
+   Duration  2.18s (transform 93ms, setup 769ms, collect 81ms, tests 10ms, environment 2.64s, prepare 310ms)
+

@@ -66,6 +66,7 @@ const expectedIntegrationFiles = [
   "server/test/academy.test.ts",
   "server/test/adminAcademy.test.ts",
   "server/test/academy-seed.test.ts",
+  "server/test/publication-proof-review-live.test.ts",
 ];
 
 function harness() {
@@ -88,6 +89,7 @@ function harness() {
       SUPABASE_URL: "http://127.0.0.1:54321",
       SUPABASE_SERVICE_KEY: "service-key",
       SUPABASE_ANON_KEY: "anon-key",
+          INTEGRATION_TARGET_IDENTITY_JSON: JSON.stringify({ disposable: true, ownerAuthorization: "synthetic-owner-approval", projectId: "synthetic-project", runId: "synthetic-run", proxy: "none", apiContainerId: "a".repeat(64), databaseContainerId: "b".repeat(64), networkId: "synthetic-network", apiImageId: "sha256:synthetic-api", databaseImageId: "sha256:synthetic-db", apiPort: 54321 }),
     },
     execPath: "C:/node/node.exe",
     exit: vi.fn(),
@@ -110,7 +112,7 @@ describe("integration test launcher", () => {
     h.processRef.env = env as typeof h.processRef.env;
     importMocks.spawnSync.mockClear();
 
-    expect(() => runner.launchIntegrationTests({ processRef: h.processRef, spawnImpl: h.spawnImpl }))
+    expect(() => runner.launchIntegrationTests({ processRef: h.processRef, spawnImpl: h.spawnImpl, verifyIdentityImpl: () => {} }))
       .toThrow(message);
     expect(importMocks.spawnSync).not.toHaveBeenCalled();
     expect(h.spawnImpl).not.toHaveBeenCalled();
@@ -130,7 +132,7 @@ describe("integration test launcher", () => {
 
   it("spawns local Vitest with the exact environment and preserves numeric exit codes", () => {
     const h = harness();
-    runner.launchIntegrationTests({ processRef: h.processRef, spawnImpl: h.spawnImpl });
+    runner.launchIntegrationTests({ processRef: h.processRef, spawnImpl: h.spawnImpl, verifyIdentityImpl: () => {} });
 
     expect(importMocks.spawnSync).toHaveBeenCalledWith(
       "C:/node/node.exe",
@@ -142,6 +144,7 @@ describe("integration test launcher", () => {
           SUPABASE_URL: "http://127.0.0.1:54321",
           SUPABASE_SERVICE_KEY: "service-key",
           SUPABASE_ANON_KEY: "anon-key",
+          INTEGRATION_TARGET_IDENTITY_JSON: JSON.stringify({ disposable: true, ownerAuthorization: "synthetic-owner-approval", projectId: "synthetic-project", runId: "synthetic-run", proxy: "none", apiContainerId: "a".repeat(64), databaseContainerId: "b".repeat(64), networkId: "synthetic-network", apiImageId: "sha256:synthetic-api", databaseImageId: "sha256:synthetic-db", apiPort: 54321 }),
           RUN_INTEGRATION: "1",
           INTEGRATION_RUNNER: "1",
         },
@@ -158,6 +161,7 @@ describe("integration test launcher", () => {
           SUPABASE_URL: "http://127.0.0.1:54321",
           SUPABASE_SERVICE_KEY: "service-key",
           SUPABASE_ANON_KEY: "anon-key",
+          INTEGRATION_TARGET_IDENTITY_JSON: JSON.stringify({ disposable: true, ownerAuthorization: "synthetic-owner-approval", projectId: "synthetic-project", runId: "synthetic-run", proxy: "none", apiContainerId: "a".repeat(64), databaseContainerId: "b".repeat(64), networkId: "synthetic-network", apiImageId: "sha256:synthetic-api", databaseImageId: "sha256:synthetic-db", apiPort: 54321 }),
           RUN_INTEGRATION: "1",
           INTEGRATION_RUNNER: "1",
         },
@@ -170,7 +174,7 @@ describe("integration test launcher", () => {
 
   it.each(["SIGINT", "SIGTERM"])("forwards and re-emits %s without orphaning the child", (signal) => {
     const h = harness();
-    runner.launchIntegrationTests({ processRef: h.processRef, spawnImpl: h.spawnImpl });
+    runner.launchIntegrationTests({ processRef: h.processRef, spawnImpl: h.spawnImpl, verifyIdentityImpl: () => {} });
 
     h.signalHandlers.get(signal)();
     expect(h.child.kill).toHaveBeenCalledWith(signal);
@@ -179,4 +183,67 @@ describe("integration test launcher", () => {
     expect(h.processRef.exit).not.toHaveBeenCalled();
     expect(h.processRef.removeListener).toHaveBeenCalledTimes(2);
   });
+});
+
+function pristineHarness() {
+ const runId='11111111-1111-4111-8111-111111111111', projectId='adfocate-d19-pristine-20261024-unit';
+ const identity={disposable:true,ownerAuthorization:'explicit new disposable target authorization',projectId,runId,proxy:'none',apiContainerId:'a'.repeat(64),databaseContainerId:'b'.repeat(64),networkId:'c'.repeat(64),apiImageId:'sha256:api',databaseImageId:'sha256:db',apiPort:56631};
+ const created='2026-10-24T09:00:00Z',volume=projectId+'-db-data';
+ const receipt={identity,createdThisRun:true,volumeWasAbsent:true,networkWasAbsent:true,databaseCreatedAt:created,volumeName:volume,volumeCreatedAt:created,containerIds:[identity.apiContainerId,identity.databaseContainerId],pristineBaseline:{campaigns:0,authUsers:0},ownerAuthorization:identity.ownerAuthorization};
+ const env={SUPABASE_URL:'http://127.0.0.1:56631',SUPABASE_ANON_KEY:'synthetic-anon',SUPABASE_SERVICE_KEY:'synthetic-service',INTEGRATION_TARGET_IDENTITY_JSON:JSON.stringify(identity),INTEGRATION_PRISTINE_TARGET_JSON:JSON.stringify(receipt)};
+ const network={id:identity.networkId,internal:true,labels:{'adfocate.run':runId,'adfocate.pristine':'true'},containers:[...receipt.containerIds]};
+ const volumeInfo={name:volume,created,labels:{'adfocate.run':runId,'adfocate.pristine':'true'}};
+ const rows:string[]=[];
+ const inspect=vi.fn((_command:string,args:string[])=>{
+  let value:unknown;
+  if(args[0]==='context')return {status:0,stdout:'npipe:////./pipe/dockerDesktopLinuxEngine'};
+  if(args[0]==='network')value=network;
+  else if(args[0]==='volume')value=volumeInfo;
+  else if(args[0]==='exec')return {status:0,stdout:JSON.stringify(rows)};
+  else {const db=args.at(-1)===identity.databaseContainerId;value={id:db?identity.databaseContainerId:identity.apiContainerId,image:db?identity.databaseImageId:identity.apiImageId,running:true,project:projectId,created,mounts:db?[{Type:'volume',Name:volume,Destination:'/var/lib/postgresql/data',RW:true}]:[],ports:db?{}:{'8000/tcp':[{HostIp:'127.0.0.1',HostPort:'56631'}]},networks:{pristine:{NetworkID:identity.networkId}}};}
+  return {status:0,stdout:JSON.stringify(value)};
+ });
+ return {identity,receipt,env,network,volumeInfo,rows,inspect};
+}
+describe('new pristine global campaign job identity',()=>{
+ it('accepts the exact newly-created volume, exclusive internal network and owned campaign inventory',()=>{
+  const h=pristineHarness(),id='22222222-2222-4222-8222-222222222222';h.rows.push(id);
+  expect(runner.verifyIntegrationIdentity(h.env,h.inspect,[id])).toEqual(h.identity);
+  expect(h.inspect.mock.calls.some(([,args])=>args[0]==='exec')).toBe(true);
+ });
+ it.each(['old-project','baseline-data','volume-reused','network-shared','external-network','wrong-volume','wrong-owner'])('rejects %s evidence before any SQL or client setup',kind=>{
+  const h=pristineHarness();
+  if(kind==='old-project'){h.receipt.identity.projectId='adfocate-r1-shaped-20261023';h.env.INTEGRATION_TARGET_IDENTITY_JSON=JSON.stringify(h.receipt.identity);}
+  if(kind==='baseline-data')h.receipt.pristineBaseline.campaigns=1;
+  if(kind==='volume-reused')h.receipt.volumeWasAbsent=false;
+  if(kind==='network-shared')h.network.containers.push('d'.repeat(64));
+  if(kind==='external-network')h.network.internal=false;
+  if(kind==='wrong-volume')h.volumeInfo.name='old-retained-volume';
+  if(kind==='wrong-owner')h.network.labels['adfocate.run']='other-run';
+  h.env.INTEGRATION_PRISTINE_TARGET_JSON=JSON.stringify(h.receipt);
+  expect(()=>runner.verifyIntegrationIdentity(h.env,h.inspect,[])).toThrow(/pristine/i);
+  expect(h.inspect.mock.calls.some(([,args])=>args[0]==='exec')).toBe(false);
+ });
+ it('rejects a campaign not captured by this run before the global mutation',()=>{
+  const h=pristineHarness();h.rows.push('33333333-3333-4333-8333-333333333333');
+  expect(()=>runner.verifyIntegrationIdentity(h.env,h.inspect,[])).toThrow(/campaign.*owned/i);
+ });
+ it('refuses nonlocal Docker engine endpoints',()=>{
+  const h=pristineHarness(),inspect=(c:string,a:string[])=>a[0]==='context'?{status:0,stdout:'tcp://elsewhere:2375'}:h.inspect(c,a);
+  expect(()=>runner.verifyIntegrationIdentity(h.env,inspect,[])).toThrow(/pristine/i);
+ });
+ it('accepts a dedicated loopback bridge with masquerading disabled when Docker cannot publish an internal-network port',()=>{
+  const h=pristineHarness();
+  const receipt={...h.receipt,isolationMode:'dedicated-bridge-no-masquerade'};
+  h.env.INTEGRATION_PRISTINE_TARGET_JSON=JSON.stringify(receipt);
+  const network={...h.network,internal:false,options:{'com.docker.network.bridge.enable_ip_masquerade':'false','com.docker.network.bridge.host_binding_ipv4':'127.0.0.1'}};
+  const inspect=(c:string,a:string[])=>a[0]==='network'?{status:0,stdout:JSON.stringify(network)}:h.inspect(c,a);
+  expect(runner.verifyIntegrationIdentity(h.env,inspect,[])).toEqual(h.identity);
+ });
+ it('rejects a bridge claim whose actual masquerading remains enabled',()=>{
+  const h=pristineHarness();h.env.INTEGRATION_PRISTINE_TARGET_JSON=JSON.stringify({...h.receipt,isolationMode:'dedicated-bridge-no-masquerade'});
+  const network={...h.network,internal:false,options:{'com.docker.network.bridge.enable_ip_masquerade':'true','com.docker.network.bridge.host_binding_ipv4':'127.0.0.1'}};
+  const inspect=(c:string,a:string[])=>a[0]==='network'?{status:0,stdout:JSON.stringify(network)}:h.inspect(c,a);
+  expect(()=>runner.verifyIntegrationIdentity(h.env,inspect,[])).toThrow(/pristine/i);
+ });
 });

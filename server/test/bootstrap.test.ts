@@ -1,3 +1,5 @@
+import { FIXTURE_WORKSPACE_SLUG } from "./helpers";
+import { fixtureName } from "./helpers";
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { createApp } from "../app";
 import { makeUser, cleanup, hasSupabaseEnv } from "./helpers";
@@ -9,12 +11,12 @@ function bootstrap(jwt: string) {
   return app.request("/api/me/bootstrap", {
     method: "POST",
     headers: { Authorization: `Bearer ${jwt}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ slug: "demo" }),
+    body: JSON.stringify({ slug: FIXTURE_WORKSPACE_SLUG }),
   });
 }
 function getMe(jwt: string) {
   return app.request("/api/me", {
-    headers: { Authorization: `Bearer ${jwt}`, "X-Workspace-Slug": "demo" },
+    headers: { Authorization: `Bearer ${jwt}`, "X-Workspace-Slug": FIXTURE_WORKSPACE_SLUG },
   });
 }
 
@@ -23,7 +25,7 @@ suite("bootstrap (first login)", () => {
   afterAll(cleanup);
 
   it("creates an email creator and returns created:true, then false on repeat", async () => {
-    const user = await makeUser({ email: "boot@test.local" });
+    const user = await makeUser({ email: fixtureName("boot@test.local") });
     const first = await bootstrap(user.jwt);
     expect(first.status).toBe(200);
     expect((await first.json()).created).toBe(true);
@@ -34,7 +36,7 @@ suite("bootstrap (first login)", () => {
     const me = await getMe(user.jwt);
     expect(me.status).toBe(200);
     const body = await me.json();
-    expect(body.display_name).toBe("boot@test.local");
+    expect(body.display_name).toBe(fixtureName("boot@test.local"));
     expect(body.onboarding_completed).toBe(false);
     expect(body.referral_code).toMatch(/^[0-9A-F]{8}$/);
   });

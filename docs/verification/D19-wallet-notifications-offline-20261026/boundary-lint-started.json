@@ -1,0 +1,26 @@
+{
+  "startedAt": "2026-10-25T19:10:46.233935+00:00",
+  "command": [
+    "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+    "node_modules/eslint/bin/eslint.js",
+    "docs/verification/D19-wallet-notifications-offline-20261026/wallet-notifications.test.tsx",
+    "docs/verification/D19-wallet-notifications-offline-20261026/vitest.offline.mjs"
+  ],
+  "node": "v22.23.4",
+  "resource": {
+    "at": "2026-10-25T19:10:46.036706+00:00",
+    "freePhysicalGiB": 4.171871185302734,
+    "freeCommitGiB": 4.3142242431640625,
+    "minimumGiB": 3,
+    "freeDiskGiB": 21.94892120361328
+  },
+  "credentialsProxiesPreloadsStripped": true,
+  "integrationDisabled": true,
+  "label": "boundary-lint",
+  "log": "docs/verification/D19-wallet-notifications-offline-20261026/boundary-lint.log",
+  "runtimeTargetCallsRequested": false,
+  "sourceFingerprint": "ead55a808470f90d72290905db90933cb4a6df48eaba519d4587339a4659b71d",
+  "sourceRecords": 789,
+  "npmExecpathProvided": "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+  "pid": 24636
+}

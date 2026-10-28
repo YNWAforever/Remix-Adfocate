@@ -1,0 +1,28 @@
+{
+  "status": "FOR_ACCEPTANCE_RETIRED_NOT_RESTORED",
+  "approvedOption": "B1_ONLY",
+  "authorization": "Latest user explicitly approved local acceptance exclusion; no restore/delete/stop/closure. B2 is not approved.",
+  "projectId": "adfocate-r1-shaped-20261023",
+  "apiContainerId": "c96d960e276cb7c84ae5bf52fdf77e854865516d89d95ca2148a55b6137fa7e9",
+  "databaseContainerId": "34bd00cda4f4c91650795b83d4d48d5e46ecb90b310a3e409b31c02f99cec176",
+  "networkId": "fbf71b13e7f584b230b293383cccbd2157814168cbae1d9169b377d8f886f69d",
+  "dataVolume": "supabase_db_adfocate-r1-shaped-20261023",
+  "identityProvenance": "D19-incident-A-identity.json; saved evidence, not a new live inspection",
+  "policy": "assertAcceptanceTargetAllowed in existing integration runner; no environment bypass",
+  "knownResourceMatching": [
+    "claimed project/container/network IDs before inspection",
+    "observed project/container/network attachments and named volume mounts before SQL/client/setup"
+  ],
+  "sharedHelper": "verifiedTarget rejects shaped before Docker metadata or private key read",
+  "forensics": "Existing exact-target READ ONLY A investigation helper/receipts retained; no general SDK/fixture bypass added or executed",
+  "notClaimed": [
+    "Physical network quarantine",
+    "Firewall/OS ACL enforcement",
+    "Arbitrary external tools or copied data universally blocked"
+  ],
+  "targetOrDataLifecycleActions": 0,
+  "restored": false,
+  "incidentOpen": true,
+  "releaseHold": true,
+  "B2Approved": false
+}

@@ -1,0 +1,259 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract
+GoTrueClient@sb-127-auth-token:1 (2.108.1) 2026-10-23T03:43:28.814Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract
+GoTrueClient@sb-127-auth-token:2 (2.108.1) 2026-10-23T03:43:29.450Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract
+GoTrueClient@sb-127-auth-token:3 (2.108.1) 2026-10-23T03:43:29.965Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract
+GoTrueClient@sb-127-auth-token:4 (2.108.1) 2026-10-23T03:43:30.476Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract
+GoTrueClient@sb-127-auth-token:5 (2.108.1) 2026-10-23T03:43:34.619Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract
+GoTrueClient@sb-127-auth-token:6 (2.108.1) 2026-10-23T03:43:34.740Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract
+GoTrueClient@sb-127-auth-token:7 (2.108.1) 2026-10-23T03:43:34.768Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract
+GoTrueClient@sb-127-auth-token:8 (2.108.1) 2026-10-23T03:43:34.827Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract > creates and reloads a complete required deliverable with unknown policy keys unchanged
+GoTrueClient@sb-127-auth-token:9 (2.108.1) 2026-10-23T03:43:35.014Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract > creates and reloads a complete required deliverable with unknown policy keys unchanged
+GoTrueClient@sb-127-auth-token:10 (2.108.1) 2026-10-23T03:43:35.184Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract > creates and reloads a complete required deliverable with unknown policy keys unchanged
+GoTrueClient@sb-127-auth-token:11 (2.108.1) 2026-10-23T03:43:35.228Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract > creates and reloads a complete required deliverable with unknown policy keys unchanged
+GoTrueClient@sb-127-auth-token:12 (2.108.1) 2026-10-23T03:43:35.339Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract > preserves nested unknown rules during an unrelated edit and readback
+GoTrueClient@sb-127-auth-token:13 (2.108.1) 2026-10-23T03:43:35.469Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract > preserves nested unknown rules during an unrelated edit and readback
+GoTrueClient@sb-127-auth-token:14 (2.108.1) 2026-10-23T03:43:35.612Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract > preserves nested unknown rules during an unrelated edit and readback
+GoTrueClient@sb-127-auth-token:15 (2.108.1) 2026-10-23T03:43:35.645Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract > preserves nested unknown rules during an unrelated edit and readback
+GoTrueClient@sb-127-auth-token:16 (2.108.1) 2026-10-23T03:43:35.702Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract > preserves nested unknown rules during an unrelated edit and readback
+GoTrueClient@sb-127-auth-token:17 (2.108.1) 2026-10-23T03:43:35.815Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract > preserves nested unknown rules during an unrelated edit and readback
+GoTrueClient@sb-127-auth-token:18 (2.108.1) 2026-10-23T03:43:35.882Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract > preserves nested unknown rules during an unrelated edit and readback
+GoTrueClient@sb-127-auth-token:19 (2.108.1) 2026-10-23T03:43:35.922Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract > preserves nested unknown rules during an unrelated edit and readback
+GoTrueClient@sb-127-auth-token:20 (2.108.1) 2026-10-23T03:43:35.983Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract > rejects invalid JSON policy values and negative windows without persisting them
+GoTrueClient@sb-127-auth-token:21 (2.108.1) 2026-10-23T03:43:36.089Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract > rejects invalid JSON policy values and negative windows without persisting them
+GoTrueClient@sb-127-auth-token:22 (2.108.1) 2026-10-23T03:43:36.202Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract > rejects invalid JSON policy values and negative windows without persisting them
+GoTrueClient@sb-127-auth-token:23 (2.108.1) 2026-10-23T03:43:36.221Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract > rejects invalid JSON policy values and negative windows without persisting them
+GoTrueClient@sb-127-auth-token:24 (2.108.1) 2026-10-23T03:43:36.264Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract > rejects invalid JSON policy values and negative windows without persisting them
+GoTrueClient@sb-127-auth-token:25 (2.108.1) 2026-10-23T03:43:36.320Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract > rejects invalid JSON policy values and negative windows without persisting them
+GoTrueClient@sb-127-auth-token:26 (2.108.1) 2026-10-23T03:43:36.413Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract > rejects invalid JSON policy values and negative windows without persisting them
+GoTrueClient@sb-127-auth-token:27 (2.108.1) 2026-10-23T03:43:36.436Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract > rejects invalid JSON policy values and negative windows without persisting them
+GoTrueClient@sb-127-auth-token:28 (2.108.1) 2026-10-23T03:43:36.485Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract > rejects invalid JSON policy values and negative windows without persisting them
+GoTrueClient@sb-127-auth-token:29 (2.108.1) 2026-10-23T03:43:36.562Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract > rejects invalid JSON policy values and negative windows without persisting them
+GoTrueClient@sb-127-auth-token:30 (2.108.1) 2026-10-23T03:43:36.648Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract > rejects invalid JSON policy values and negative windows without persisting them
+GoTrueClient@sb-127-auth-token:31 (2.108.1) 2026-10-23T03:43:36.687Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract > rejects invalid JSON policy values and negative windows without persisting them
+GoTrueClient@sb-127-auth-token:32 (2.108.1) 2026-10-23T03:43:36.712Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract > rejects invalid JSON policy values and negative windows without persisting them
+GoTrueClient@sb-127-auth-token:33 (2.108.1) 2026-10-23T03:43:36.742Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract > rejects invalid JSON policy values and negative windows without persisting them
+GoTrueClient@sb-127-auth-token:34 (2.108.1) 2026-10-23T03:43:36.832Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract > rejects invalid JSON policy values and negative windows without persisting them
+GoTrueClient@sb-127-auth-token:35 (2.108.1) 2026-10-23T03:43:36.845Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract > rejects invalid JSON policy values and negative windows without persisting them
+GoTrueClient@sb-127-auth-token:36 (2.108.1) 2026-10-23T03:43:36.874Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract > rejects invalid JSON policy values and negative windows without persisting them
+GoTrueClient@sb-127-auth-token:37 (2.108.1) 2026-10-23T03:43:36.942Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract > rejects invalid JSON policy values and negative windows without persisting them
+GoTrueClient@sb-127-auth-token:38 (2.108.1) 2026-10-23T03:43:37.004Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract > rejects invalid JSON policy values and negative windows without persisting them
+GoTrueClient@sb-127-auth-token:39 (2.108.1) 2026-10-23T03:43:37.014Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract > rejects invalid JSON policy values and negative windows without persisting them
+GoTrueClient@sb-127-auth-token:40 (2.108.1) 2026-10-23T03:43:37.035Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract > rejects invalid JSON policy values and negative windows without persisting them
+GoTrueClient@sb-127-auth-token:41 (2.108.1) 2026-10-23T03:43:37.066Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract > rejects invalid JSON policy values and negative windows without persisting them
+GoTrueClient@sb-127-auth-token:42 (2.108.1) 2026-10-23T03:43:37.119Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract > rejects invalid JSON policy values and negative windows without persisting them
+GoTrueClient@sb-127-auth-token:43 (2.108.1) 2026-10-23T03:43:37.127Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract > rejects invalid JSON policy values and negative windows without persisting them
+GoTrueClient@sb-127-auth-token:44 (2.108.1) 2026-10-23T03:43:37.142Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract > rejects publishing an existing active-workspace draft that lacks required deliverables
+GoTrueClient@sb-127-auth-token:45 (2.108.1) 2026-10-23T03:43:37.166Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract > rejects publishing an existing active-workspace draft that lacks required deliverables
+GoTrueClient@sb-127-auth-token:46 (2.108.1) 2026-10-23T03:43:37.210Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract > rejects publishing an existing active-workspace draft that lacks required deliverables
+GoTrueClient@sb-127-auth-token:47 (2.108.1) 2026-10-23T03:43:37.217Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract > rejects publishing an existing active-workspace draft that lacks required deliverables
+GoTrueClient@sb-127-auth-token:48 (2.108.1) 2026-10-23T03:43:37.231Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract > rejects publishing an existing active-workspace draft that lacks required deliverables
+GoTrueClient@sb-127-auth-token:49 (2.108.1) 2026-10-23T03:43:37.268Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract > rejects publishing an existing active-workspace draft that lacks required deliverables
+GoTrueClient@sb-127-auth-token:50 (2.108.1) 2026-10-23T03:43:37.311Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract > rejects publishing an existing active-workspace draft that lacks required deliverables
+GoTrueClient@sb-127-auth-token:51 (2.108.1) 2026-10-23T03:43:37.316Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract > rejects publishing an existing active-workspace draft that lacks required deliverables
+GoTrueClient@sb-127-auth-token:52 (2.108.1) 2026-10-23T03:43:37.328Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract > keeps real staff, membership and foreign-workspace boundaries on authoring
+GoTrueClient@sb-127-auth-token:53 (2.108.1) 2026-10-23T03:43:37.344Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract > keeps real staff, membership and foreign-workspace boundaries on authoring
+GoTrueClient@sb-127-auth-token:54 (2.108.1) 2026-10-23T03:43:37.385Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract > keeps real staff, membership and foreign-workspace boundaries on authoring
+GoTrueClient@sb-127-auth-token:55 (2.108.1) 2026-10-23T03:43:37.391Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract > keeps real staff, membership and foreign-workspace boundaries on authoring
+GoTrueClient@sb-127-auth-token:56 (2.108.1) 2026-10-23T03:43:37.397Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract > keeps real staff, membership and foreign-workspace boundaries on authoring
+GoTrueClient@sb-127-auth-token:57 (2.108.1) 2026-10-23T03:43:37.440Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract > keeps real staff, membership and foreign-workspace boundaries on authoring
+GoTrueClient@sb-127-auth-token:58 (2.108.1) 2026-10-23T03:43:37.446Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract > keeps real staff, membership and foreign-workspace boundaries on authoring
+GoTrueClient@sb-127-auth-token:59 (2.108.1) 2026-10-23T03:43:37.488Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-mission-authoring-contract.test.ts > D12 real disposable authoring contract > keeps real staff, membership and foreign-workspace boundaries on authoring
+GoTrueClient@sb-127-auth-token:60 (2.108.1) 2026-10-23T03:43:37.496Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+ ✓ server/test/audit-mission-authoring-contract.test.ts (5 tests) 10568ms
+   ✓ D12 real disposable authoring contract > creates and reloads a complete required deliverable with unknown policy keys unchanged 445ms
+   ✓ D12 real disposable authoring contract > preserves nested unknown rules during an unrelated edit and readback 630ms
+   ✓ D12 real disposable authoring contract > rejects invalid JSON policy values and negative windows without persisting them 1069ms
+
+ Test Files  1 passed (1)
+      Tests  5 passed (5)
+   Start at  11:43:24
+   Duration  12.73s (transform 2.33s, setup 444ms, collect 23ms, tests 10.57s, environment 1.36s, prepare 160ms)
+
+
+[WebServer] (node:11272) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[WebServer] Warning: Route file "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/_site.smoke.test.tsx" does not export a Route. This file will not be included in the route tree.
+[WebServer] 
+[WebServer] If this file is not intended to be a route, you can exclude it using one of these options:
+[WebServer]   1. Rename the file to "C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\src\routes\-_site.smoke.test.tsx" (prefix with "-")
+[WebServer]   2. Use 'routeFileIgnorePattern' in your config to match this file
+[WebServer] 
+[WebServer] Current configuration:
+[WebServer]   routeFileIgnorePrefix: "-"
+[WebServer]   routeFileIgnorePattern: undefined
+
+Running 1 test using 1 worker
+
+
+(node:13816) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1/1] e2e\operator-authoring.spec.ts:6:1 › D12 unsaved navigation keeps the authored input until discard is confirmed
+[WebServer] [tanstack-router] These exports from "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/admin.reward-handoffs.tsx" will not be code-split and will increase your bundle size:
+[WebServer] - AdminRewardHandoffsRoute
+[WebServer] For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+
+
+[WebServer] [tanstack-router] These exports from "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/admin.active-missions.tsx" will not be code-split and will increase your bundle size:
+[WebServer] - AdminActiveMissionsLayout
+[WebServer] For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+[WebServer] [tanstack-router] These exports from "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/admin.active-missions.index.tsx" will not be code-split and will increase your bundle size:
+[WebServer] - AdminActiveMissionsRoute
+[WebServer] For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+
+[WebServer] [tanstack-router] These exports from "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/_app.news.index.tsx" will not be code-split and will increase your bundle size:
+
+[WebServer] - NewsFeed
+[WebServer] For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+
+[WebServer] [tanstack-router] These exports from "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/admin.active-missions.$workflowId.tsx" will not be code-split and will increase your bundle size:
+[WebServer] - AdminActiveMissionReviewRoute
+[WebServer] For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+[WebServer] [tanstack-router] These exports from "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/_app.my.$submissionId.tsx" will not be code-split and will increase your bundle size:
+
+[WebServer] - CreatorMissionWorkspace
+[WebServer] For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+  1) e2e\operator-authoring.spec.ts:6:1 › D12 unsaved navigation keeps the authored input until discard is confirmed 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 1
+    Received: 0
+
+      16 |   page.on("dialog", async dialog => { prompts++; await dialog.dismiss(); });
+      17 |   await page.getByRole("button", { name: "管理", exact: true }).click();
+    > 18 |   expect(prompts).toBe(1);
+         |                   ^
+      19 |   await expect(page.getByLabel("標題", { exact: true })).toHaveValue("未保存的作者輸入");
+      20 |   page.removeAllListeners("dialog");
+      21 |   page.once("dialog", async dialog => { prompts++; await dialog.accept(); });
+        at C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\e2e\operator-authoring.spec.ts:18:19
+
+    Error Context: test-results\operator-authoring-D12-uns-cdda7--until-discard-is-confirmed\error-context.md
+
+
+  1 failed
+    e2e\operator-authoring.spec.ts:6:1 › D12 unsaved navigation keeps the authored input until discard is confirmed 

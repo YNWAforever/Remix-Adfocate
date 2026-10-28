@@ -1,0 +1,307 @@
+{
+  "at": "2026-10-25T16:30:03.250506+00:00",
+  "codeFingerprint": "e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993",
+  "method": "Exact raw-byte hashes of this standalone memory verification and changed local metadata. Exclude this subset and root seal. Preserve all earlier hashes via exact before copies.",
+  "files": [
+    {
+      "path": "docs/verification/adfocate-delivery.json",
+      "sha256": "a4d40eba7bd6146b5b21f4dc022dbae03d93cd8289c46902867bdecdf01204a3",
+      "bytes": 675980
+    },
+    {
+      "path": "docs/verification/adfocate-task-ledger.md",
+      "sha256": "9d0c414b313512f1c85396a2cbcfa4a1c5e6d96887ca522beac2b278e2ed620b",
+      "bytes": 34820
+    },
+    {
+      "path": "docs/verification/audit_case_coverage.csv",
+      "sha256": "c185eaa7f12c904cd43d5e9805365c7903e6ab9e7ef086e22fe90b44def87953",
+      "bytes": 179555
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/before/docs/verification/adfocate-delivery.json",
+      "sha256": "7c3927c0d375630ceb1d54b6236cb0c8bd47e85cf2a7e940f9eaa53fcf351c1c",
+      "bytes": 666824
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/before/docs/verification/adfocate-task-ledger.md",
+      "sha256": "f5e55c5fdedab0df49249a9d1cc5e3d2db28a4544a414596e22b20fd20242fd9",
+      "bytes": 34214
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/before/docs/verification/audit_case_coverage.csv",
+      "sha256": "070cd21967fd698f1a7297255e72f446262edaea5404c92a458550e3836da201",
+      "bytes": 178621
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/before/docs/verification/code-fingerprint.json",
+      "sha256": "0a9accc29ddb559a26fbcbcee2d9d4828fa8bdf63374b0a8d781d3f86885399d",
+      "bytes": 123041
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/before/docs/verification/D19-application-runtime-preparation-20261025/runtime-authorization.json",
+      "sha256": "d5ca3dcd9ad8c4e14f0707e2b29c3bb25a1f6dd955e908fb591620281c76d019",
+      "bytes": 386
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/before/docs/verification/D19-C2-application-runtime-manifest.json",
+      "sha256": "eb5ca8f03a85c5589cc6cbf27ec0ca5524e8600fd2914ad1d4d73f17eec5009a",
+      "bytes": 34646
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/before/docs/verification/evidence-integrity.json",
+      "sha256": "962f3506b20cedac49bb2beff610fd65d58de7e7eee079dc2abacc2e98e5d3a3",
+      "bytes": 420150
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/before/docs/verification/implementation_backlog.csv",
+      "sha256": "1b5c4381b24963fe10c5e23f769cfb390d02b96997221e741cb0e980360cda4d",
+      "bytes": 18990
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/case-coverage.json",
+      "sha256": "abe51a98ec342e0fc478de953f06d7c16d9db22ff92f9957cf7445ef96d2ceec",
+      "bytes": 240192
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/checkpoint.json",
+      "sha256": "ce1d02da347445fca51afa6870f985350a7f330d36d8466a2aad19a29bc85fe7",
+      "bytes": 2979
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/delivery.json",
+      "sha256": "d886599f476a23510a85fe45bcef795e30fa06e6848842a89c092ef09f46ead2",
+      "bytes": 4299
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/delivery.md",
+      "sha256": "42aa4f2c678c3d6b1a6a26ddad28c61e3600800e37917eb47b39023b539880f8",
+      "bytes": 3653
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/diff-check.log",
+      "sha256": "b2b9a2329fcfac6c7823fc943c0bafbb7f378002d4ae960db766754f957376b9",
+      "bytes": 7875
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/engine-result.json",
+      "sha256": "d16f8af4e0d5ad58ac047c7513f2e6adf3d09e7c4b53416e2a19df3421b9d26f",
+      "bytes": 159320
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/finalize-verification.py",
+      "sha256": "43faf7b0d8e87edd0f7ba947ff3fb00af0db3cce7b78f29647fc509736182fb8",
+      "bytes": 2571
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/gates.json",
+      "sha256": "36000fb93ae3808bb33c1144a3ff50e12f99f03dff72ddf062d643124b76c345",
+      "bytes": 4291
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/git-final.json",
+      "sha256": "1338bc1751fb540bfaad79f9b899d0c4ba00b8c5254e60adaa3db7c5b48b0a8f",
+      "bytes": 63626
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/legacy-reward-core.node.mjs",
+      "sha256": "5a70175b076411d985e540f66790541df7c00c49d06b3ab3ff9ffafc7f80b8c4",
+      "bytes": 12838
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/lint-initial-command.json",
+      "sha256": "50f84534a8c6389411b3ec135abff20dd88d41e2ea163c81ac875187adcf4cc6",
+      "bytes": 1675
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/lint-initial-resource.json",
+      "sha256": "e7d24e2447628c24d5bde4a5a642d5f0c1aab078e85883693ed01c06c8242536",
+      "bytes": 145
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/lint-initial-started.json",
+      "sha256": "fe56ea2693021f3d52388addf57ac7d6c060b096da5c428b987e4ab851a49f2d",
+      "bytes": 1613
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/lint-initial.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/lint-readback-final-command.json",
+      "sha256": "6e33a3bbebf0d732de883add8c8a6009c99cceccf0bbc58ab0edb5ee3e612ec9",
+      "bytes": 1675
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/lint-readback-final-resource.json",
+      "sha256": "71cc2460aca4a77e9bc89fed93f0e5fc67e47e4700ec4e70ad98a661fd937d79",
+      "bytes": 145
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/lint-readback-final-started.json",
+      "sha256": "e66d5da208117ef2b1e71a417ab403265ce1ffb2e4c39efcbbc9d5d36b0e1698",
+      "bytes": 1613
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/lint-readback-final.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/memory-initial-command.json",
+      "sha256": "5745868c6124aaca566190add727bea461527eb7bdaf93ba6a349b10a8f09359",
+      "bytes": 1644
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/memory-initial-engine-result.json",
+      "sha256": "6ca2f11c4a9c6410463221ce45fa3f08150eb8cfb9c4cd35e3e802d1e3c18cf7",
+      "bytes": 676
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/memory-initial-resource.json",
+      "sha256": "72d240f98c0ed6207f10377821d3c1f901f5b846b1ae7d4d8797e0967530cd85",
+      "bytes": 145
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/memory-initial-started.json",
+      "sha256": "1ccbbca28835a832c9d31997b0b8380e2c0c2ff2560538049da4e0ab775f5769",
+      "bytes": 1494
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/memory-initial.log",
+      "sha256": "a61ba40764001a1a4924cc59c755478c57f75af9b86907c07414071bf53e6598",
+      "bytes": 1924
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/memory-readback-final-command.json",
+      "sha256": "62aa45147165045007ab119c494bd4d5f0380ef71018cb7367e04b45092d449b",
+      "bytes": 1644
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/memory-readback-final-engine-result.json",
+      "sha256": "d16f8af4e0d5ad58ac047c7513f2e6adf3d09e7c4b53416e2a19df3421b9d26f",
+      "bytes": 159320
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/memory-readback-final-resource.json",
+      "sha256": "44f4d42d02f45fcadb94c15d9aed178f575bf88c730cc993895722a07ab25a19",
+      "bytes": 145
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/memory-readback-final-started.json",
+      "sha256": "189aed3477ab584bdf369e64e5efd494d5bdcfe121985efcbeb828565857b966",
+      "bytes": 1494
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/memory-readback-final.log",
+      "sha256": "efa675a55e99151f76377807fc6c2120420e2737cf253f868865ac2c07df3ce4",
+      "bytes": 1922
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/prepare-delivery.py",
+      "sha256": "cde667dc5a70af4869dc47c2695f54f6fc5db391a9e7e27986b8c27248b6afe9",
+      "bytes": 25996
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/profile-initial-command.json",
+      "sha256": "2e9218030e9fccd8a8703b50e185c290d54fc9c84b6c4839ab0e0be45bb1b936",
+      "bytes": 1899
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/profile-initial-resource.json",
+      "sha256": "bc41b2219122c12407ac50668f64baa4eafa993a38164224737f1713b7c62bcd",
+      "bytes": 146
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/profile-initial-started.json",
+      "sha256": "ef1385a6169931b62bce5ff3970a695960aadf8f527927cd837993832233529a",
+      "bytes": 1837
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/profile-initial.log",
+      "sha256": "22f0a81118c89cf9d4defb5718b7a80a93b6c93a36200d22b594e01b0a5dab53",
+      "bytes": 179
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/readback-summary.json",
+      "sha256": "9e810cd25fd82d9a0a71cea0890f944c7498e052b386ccfd320e2b81241aff62",
+      "bytes": 10351
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/remaining-acceptance.json",
+      "sha256": "e179c929a7c6e1aa63d6e6c7c55e0d0cc3294d903d29e17fa7796e9dbe90f288",
+      "bytes": 15354
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/rollback.json",
+      "sha256": "88db8e025adea4f3e19e8569cd47064aaff7971e8f96ef9cdcfdd51cf2308530",
+      "bytes": 3593
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/run-memory-verification.py",
+      "sha256": "bba06ac4083fb77f7f7bd93643406b473cd86726efaa7e36b37e4ab9fb34a3b5",
+      "bytes": 4818
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/schema-scope.json",
+      "sha256": "be3a89deb30953c69f975c85c1bd8189f3d9323c82dac5e14c589e35f7be79f8",
+      "bytes": 988
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/source-revisions/4e3a7504ab4021888f27f974a24448481ef4a20f7a4659554948bb4d5d03a7f0/legacy-reward-core.node.mjs",
+      "sha256": "464579087e0b75675a63b60083ad621918f41d61a59161855b00b0f8b13d4e26",
+      "bytes": 10609
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/source-revisions/4e3a7504ab4021888f27f974a24448481ef4a20f7a4659554948bb4d5d03a7f0/manifest.json",
+      "sha256": "410f5ac06bdf986ffaa5045fd17ae6061b92ccafbe663146393788dcdb0233e6",
+      "bytes": 365
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/source-revisions/4e3a7504ab4021888f27f974a24448481ef4a20f7a4659554948bb4d5d03a7f0/sql-profile.mjs",
+      "sha256": "4a0ef8bf8533032efe5dd5729eac8d094cc876643d098e737ad7ceaccf8035df",
+      "bytes": 5366
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/source-revisions/a94f1016b43e9da2f39c4c8e1bd315588d784d091d79d89c43e6274ad315d526/legacy-reward-core.node.mjs",
+      "sha256": "5a70175b076411d985e540f66790541df7c00c49d06b3ab3ff9ffafc7f80b8c4",
+      "bytes": 12838
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/source-revisions/a94f1016b43e9da2f39c4c8e1bd315588d784d091d79d89c43e6274ad315d526/manifest.json",
+      "sha256": "696c1409e178dbda58529a51178f1a1932a4926339bbed2223a516c815c5f7a5",
+      "bytes": 621
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/source-revisions/a94f1016b43e9da2f39c4c8e1bd315588d784d091d79d89c43e6274ad315d526/sql-profile.mjs",
+      "sha256": "4a0ef8bf8533032efe5dd5729eac8d094cc876643d098e737ad7ceaccf8035df",
+      "bytes": 5366
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/sql-profile.json",
+      "sha256": "2852e42c75bb13c771fecf19970db57887ec76def336b21c12c5b0e8dc6df2e5",
+      "bytes": 7399
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/sql-profile.mjs",
+      "sha256": "4a0ef8bf8533032efe5dd5729eac8d094cc876643d098e737ad7ceaccf8035df",
+      "bytes": 5366
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/verification-summary.json",
+      "sha256": "c21d5e45f1a831c5bbeecd9a718b56eb9e8fbb4df5b2ca5aa8fdd9644957e7c4",
+      "bytes": 5006
+    },
+    {
+      "path": "docs/verification/D19-legacy-sql-memory-20261026/verify-memory.py",
+      "sha256": "35f6c63f4328fd70b71d8855a3990d53119ad32b8168d29f1df9b073dd933a41",
+      "bytes": 15988
+    },
+    {
+      "path": "docs/verification/implementation_backlog.csv",
+      "sha256": "1d508ca9e1b5ecbc2cc8a0343a59b2186bce89dc59e5d58a298db60d97fb1487",
+      "bytes": 19400
+    }
+  ]
+}

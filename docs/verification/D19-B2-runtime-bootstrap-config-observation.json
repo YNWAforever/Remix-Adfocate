@@ -1,0 +1,82 @@
+{
+  "atUtc": "2026-10-25T05:23:39.356034+00:00",
+  "manifestSha256": "96d3afa5e6b982f9ed537d2c95d45fd9dc3b7dc230f96d9649ef5d6bfffcc417",
+  "sourceFingerprint": "d13fe2b7e8b9838972b8d93881dc17e8ccfc2795bc133b01cdc4f1a35426f893",
+  "projectId": "adfocate-d19-b2-20261025-b0db3134",
+  "containerId": "cc5bebd05d4f77658ee2647b2449a5188e8425d2ae2057864389a6c23c0bbbb1",
+  "imageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+  "configuration": {
+    "POSTGRES_USER": "postgres",
+    "POSTGRES_DB": "postgres",
+    "PGDATA": "/var/lib/postgresql/data"
+  },
+  "catalog": {
+    "authUsers": 0,
+    "publicTables": 0,
+    "bootstrapRole": {
+      "oid": "10",
+      "name": "postgres",
+      "login": true,
+      "superuser": true
+    },
+    "storageTables": 0,
+    "roleMemberships": [
+      {
+        "role": "supabase_admin",
+        "member": "authenticator",
+        "grantor": "postgres"
+      },
+      {
+        "role": "anon",
+        "member": "authenticator",
+        "grantor": "postgres"
+      },
+      {
+        "role": "authenticated",
+        "member": "authenticator",
+        "grantor": "postgres"
+      },
+      {
+        "role": "service_role",
+        "member": "authenticator",
+        "grantor": "postgres"
+      }
+    ],
+    "regularNamedRoles": [
+      {
+        "oid": "16446",
+        "name": "authenticator",
+        "login": true,
+        "superuser": false
+      },
+      {
+        "oid": "10",
+        "name": "postgres",
+        "login": true,
+        "superuser": true
+      },
+      {
+        "oid": "16384",
+        "name": "supabase_admin",
+        "login": true,
+        "superuser": true
+      },
+      {
+        "oid": "16504",
+        "name": "supabase_auth_admin",
+        "login": true,
+        "superuser": false
+      },
+      {
+        "oid": "16506",
+        "name": "supabase_storage_admin",
+        "login": true,
+        "superuser": false
+      }
+    ],
+    "applicationHistory": null,
+    "authSchemaMigrations": 7
+  },
+  "configurationSource": "Live docker inspect on exact current new DB; only three non-secret configuration values retained",
+  "catalogSource": "infrastructure-blocker-readonly.private.json, separately identity-verified read-only query"
+}

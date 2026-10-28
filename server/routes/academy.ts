@@ -48,6 +48,7 @@ function shape(r: Row, lang: string, withBody: boolean) {
     title: pick(r.title_en, r.title_zh, lang),
     excerpt: pick(r.excerpt_en, r.excerpt_zh, lang) || null,
     ...(withBody ? { body: pick(r.body_en, r.body_zh, lang) } : {}),
+    ...(r.kind === "track" ? { contentStatus: pick(r.body_en, r.body_zh, lang).trim() ? "available" : "preparing", ...(withBody ? { learningEnabled: true } : {}) } : {}),
     category: r.category, requiredLevel: r.required_level,
     emoji: r.emoji, color: r.color, sort: r.sort,
     meta: localizeMeta(r.metadata, lang),
@@ -58,7 +59,8 @@ function shape(r: Row, lang: string, withBody: boolean) {
 academyRoutes.get("/", async (c) => {
   const supabase = makeUserClient(c.get("jwt"));
   const lang = c.req.query("lang") === "en" ? "en" : "zh-HK";
-  const { data, error } = await supabase.from("academy_content").select(LIST_COLS)
+  // Read the body to determine availability, but keep full text out of the list DTO.
+  const { data, error } = await supabase.from("academy_content").select(FULL_COLS)
     .eq("status", "published").order("kind").order("sort");
   if (error) return c.json({ docs: [], tracks: [], playbooks: [], resources: [] });
   const rows = (data as unknown as Row[]).map((r) => shape(r, lang, false));
@@ -87,5 +89,7 @@ academyRoutes.get("/track/:slug", async (c) => {
   const { data, error } = await supabase.from("academy_content").select(FULL_COLS)
     .eq("status", "published").eq("kind", "track").eq("slug", c.req.param("slug")).maybeSingle();
   if (error || !data) return c.json({ error: "not found", code: "not_found" }, 404);
-  return c.json({ item: shape(data as unknown as Row, lang, true) });
+  const { data: allowed, error: gateError } = await supabase.rpc("can_read_academy_track", { p_track: (data as unknown as Row).id });
+  if (gateError) return c.json({ code: "learning_unavailable", error: "Learning permissions are temporarily unavailable." }, 503);
+  return c.json({ item: { ...shape(data as unknown as Row, lang, true), ...(!allowed ? { body: "" } : {}) } });
 });

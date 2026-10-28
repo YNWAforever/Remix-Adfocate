@@ -1,0 +1,23 @@
+{
+  "startedAt": "2026-10-25T10:26:16.134947+00:00",
+  "finishedAt": "2026-10-25T10:27:42.524477+00:00",
+  "phase": "browser",
+  "command": [
+    "node",
+    "scripts/audit/run-pilot-browser.mjs",
+    "--resume"
+  ],
+  "exit": 0,
+  "sourceFingerprint": "e83998d178061043688016056a5a78fc61df58bac28f3d0d0b66d639306037bd",
+  "resource": {
+    "observedAt": "2026-10-25T10:26:16.134443+00:00",
+    "physicalFreeGiB": 7.2967529296875,
+    "commitHeadroomGiB": 11.242198944091797,
+    "requiredGiB": 3,
+    "gatePassed": true
+  },
+  "privateLog": ".codex-tmp/adfocate-d19-b2-20261025-recovery-4d6ca2c8/browser-continuation-browser.private.log",
+  "scope": "Approved696e existing C1 continuation only; no setup/bootstrap/new resources/subjects/legacy replay",
+  "paidProviderEnabled": false,
+  "productionTargetUsed": false
+}

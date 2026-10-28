@@ -7,6 +7,7 @@ import {
   ActiveMissionWorkItem,
 } from "@/lib/admin";
 import { useI18n } from "@/lib/i18n";
+import { MissionAssistLauncher } from "../assistant/MissionAssistLauncher";
 
 type StartInput = { workItemId: string; expectedState: string };
 type RevisionInput = StartInput & { versionId: string; deadline?: string | null; items: ActiveMissionRevisionItem[] };
@@ -22,6 +23,7 @@ type Props = {
   onApproveVersion: (input: ApproveInput) => Promise<unknown>;
   onMarkShipped: (input: { note?: string }) => Promise<unknown>;
   onActionError?: (error: unknown) => void;
+  assistWorkspace?: string;
 };
 
 const BUTTON = "rounded-full border-2 border-[var(--color-ink)] px-4 py-2 font-heading text-sm font-bold disabled:cursor-not-allowed disabled:opacity-50";
@@ -74,6 +76,7 @@ export function ActiveMissionReview({
   onApproveVersion,
   onMarkShipped,
   onActionError,
+  assistWorkspace,
 }: Props) {
   const [selectedId, setSelectedId] = useState(() => workItemFor(workflow.workItems, selectedWorkItemId)?.id ?? "");
   const [panel, setPanel] = useState<"revision" | "approval" | "shipping" | null>(null);
@@ -194,6 +197,10 @@ export function ActiveMissionReview({
           </label>
         ) : null}
       </header>
+
+      {assistWorkspace && <MissionAssistLauncher staffWorkspace={assistWorkspace}
+        context={{ missionId: mission.id, workflowId: workflow.workflow.id, workItemId: item.id, versionId: version?.id, mode: version ? "summarize_changes" : "explain_brief" }}
+        checklist={item.requirements_snapshot.map((r, i) => ({ id: r.id ?? String(i), text: r.text ?? "" }))} />}
 
       <div data-testid="review-layout" className="grid gap-4 lg:grid-cols-2">
         <article className="space-y-4 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-paper)] p-4">

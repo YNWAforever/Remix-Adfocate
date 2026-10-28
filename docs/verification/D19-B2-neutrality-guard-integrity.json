@@ -1,0 +1,299 @@
+{
+  "codeFingerprint": "d13fe2b7e8b9838972b8d93881dc17e8ccfc2795bc133b01cdc4f1a35426f893",
+  "excludes": [
+    "docs/verification/D19-B2-neutrality-guard-integrity.json",
+    "docs/verification/evidence-integrity.json"
+  ],
+  "files": [
+    {
+      "path": "docs/verification/D19-B2-neutrality-guard-before/docs/superpowers/plans/2026-10-23-adfocate-implementation-plan.md",
+      "sha256": "22c30582980df9b5a661fe296c363f4853bab0235ec5436313401b47ec5e5a1c",
+      "bytes": 60184
+    },
+    {
+      "path": "docs/verification/D19-B2-neutrality-guard-before/docs/verification/adfocate-delivery.json",
+      "sha256": "21ff899707d58a5e89b395a7db7f22778c3ada4c92e74fa88d75b96aa1762d61",
+      "bytes": 543735
+    },
+    {
+      "path": "docs/verification/D19-B2-neutrality-guard-before/docs/verification/audit_case_coverage.csv",
+      "sha256": "c4a2e036e2998c2f083bc7ad6c2acf8ebf12761790749f559e0fc7dbc8b2ae54",
+      "bytes": 150540
+    },
+    {
+      "path": "docs/verification/D19-B2-neutrality-guard-before/docs/verification/code-fingerprint.json",
+      "sha256": "80a73867e1442d763d3c571c8bd9eb51eee05db9de8ae2d91df7f149bea1f8ab",
+      "bytes": 118164
+    },
+    {
+      "path": "docs/verification/D19-B2-neutrality-guard-before/docs/verification/D19-B2-runtime-authorization-template.json",
+      "sha256": "46779676414ccde9e40d49a13d8984830ccb2bc7d4d08545298a8627ee9eb278",
+      "bytes": 414
+    },
+    {
+      "path": "docs/verification/D19-B2-neutrality-guard-before/docs/verification/D19-B2-runtime-manifest.json",
+      "sha256": "71421cbe72f671a242a8bdc6031654c61b634d7d2aabf7ebd4b85325f95691f1",
+      "bytes": 58141
+    },
+    {
+      "path": "docs/verification/D19-B2-neutrality-guard-before/docs/verification/evidence-integrity.json",
+      "sha256": "546a23811082ce62b41f783e6b177f335fc14fe6e3656d40c14570c30427c31c",
+      "bytes": 243051
+    },
+    {
+      "path": "docs/verification/D19-B2-neutrality-guard-before/docs/verification/implementation_backlog.csv",
+      "sha256": "3b491121ad8bba0b4b273898b7788997e99ede4f6d64bff6d29b10d47895f5c9",
+      "bytes": 17380
+    },
+    {
+      "path": "docs/verification/D19-B2-neutrality-guard-before/e2e/creator-operator-mission.spec.ts",
+      "sha256": "f5d2459af2be32d4068f95c95c5ca76ab9a67b1c434348076ef6d10ac5a741d8",
+      "bytes": 19635
+    },
+    {
+      "path": "docs/verification/D19-B2-neutrality-guard-before/scripts/audit/neutrality-snapshot.mjs",
+      "sha256": "7d4b3938ebff4a9b133ae6ad2ba96a6437b8d9ed2cf7b88dec9983ee7dfee704",
+      "bytes": 1179
+    },
+    {
+      "path": "docs/verification/D19-B2-neutrality-guard-before/scripts/audit/run-pilot-browser.mjs",
+      "sha256": "31feae58528b0104f335823d6db07090c47e3e0c7dcffc1fe717a475fe66d7a9",
+      "bytes": 3700
+    },
+    {
+      "path": "docs/verification/D19-B2-neutrality-guard-before/server/test/audit-staff-capabilities.test.ts",
+      "sha256": "13200da2718a14f62141799514d627d86103137981c001b964c4dbf16e7ce0c1",
+      "bytes": 19275
+    },
+    {
+      "path": "docs/verification/D19-B2-neutrality-guard-before/server/test/auditWorkflowFixture.ts",
+      "sha256": "0450bd6a8c7acf8267c5bb08d3f40be60932fbafa12d5d495ce9ab8424d4ca0c",
+      "bytes": 12764
+    },
+    {
+      "path": "docs/verification/D19-B2-neutrality-guard-before/server/test/b2-runtime-manifest.test.ts",
+      "sha256": "40df57238c89e74461d9252c6e11c22540ad1abbb586e47c4f05b45dd7670ff8",
+      "bytes": 2542
+    },
+    {
+      "path": "docs/verification/D19-B2-neutrality-guard-before-index.json",
+      "sha256": "54ddf73539ac7bcb1a1619241bddbf6c082ac448bb9eaf47277975612d27a594",
+      "bytes": 2309
+    },
+    {
+      "path": "docs/verification/D19-B2-neutrality-guard-case-coverage.json",
+      "sha256": "e68958a94bf738ce6c295964bbe953182a6d2d7b2e45910ce04ff14c6d41a63f",
+      "bytes": 920
+    },
+    {
+      "path": "docs/verification/D19-B2-neutrality-guard-changed-files.json",
+      "sha256": "938a006b2e509e1d312ab436c1674edd562ee29d3ee5743543d290a4865257f5",
+      "bytes": 5227
+    },
+    {
+      "path": "docs/verification/D19-B2-neutrality-guard-changed-source.json",
+      "sha256": "63fcabcd8551e53462a76a9a83dee32f064d8629e22132a57b284b43d6af21b9",
+      "bytes": 3371
+    },
+    {
+      "path": "docs/verification/D19-B2-neutrality-guard-changes.patch",
+      "sha256": "85caa86770ab2de488d782cae792f7615df7adba7d8d0e33c2e5d4bcfc5705fc",
+      "bytes": 30233
+    },
+    {
+      "path": "docs/verification/D19-B2-neutrality-guard-check-records.py",
+      "sha256": "5aecebff2bc56255060b1440b9f48c5a2a69ac03d317ef1b40174570be1d9431",
+      "bytes": 7913
+    },
+    {
+      "path": "docs/verification/D19-B2-neutrality-guard-completion-audit.json",
+      "sha256": "89ff69fbcf8199451ae8bc02c600f19bb3599d7c4e9c17e1a309d92bab021df1",
+      "bytes": 3221
+    },
+    {
+      "path": "docs/verification/D19-B2-neutrality-guard-delivery.json",
+      "sha256": "dc5eaed69fb31d51fbe7f43d2e5af33aba53687425fc4888d400321d79af2ec3",
+      "bytes": 3165
+    },
+    {
+      "path": "docs/verification/D19-B2-neutrality-guard-delivery.md",
+      "sha256": "a14548bd4e1da5ce92f23173353820994727d1cf4a198399b40785c87c2e9daf",
+      "bytes": 4170
+    },
+    {
+      "path": "docs/verification/D19-B2-neutrality-guard-diff-check.json",
+      "sha256": "fb4a633fd17a680ab7f94892a43f726b9651fad5c559f7e2957c2e7dcfee1935",
+      "bytes": 324
+    },
+    {
+      "path": "docs/verification/D19-B2-neutrality-guard-e2e-syntax.json",
+      "sha256": "191a3cfc47dd42bc854aa6f42d5708606709a13a57c0b27188e7544a6f32150f",
+      "bytes": 124
+    },
+    {
+      "path": "docs/verification/D19-B2-neutrality-guard-execution-limitations.json",
+      "sha256": "0655d74642898d0fe407005d63977d720dcb956231c6db7fb333d1d627feb32b",
+      "bytes": 1086
+    },
+    {
+      "path": "docs/verification/D19-B2-neutrality-guard-findings.json",
+      "sha256": "fc15b07c29ce07479ed0708cf9f61d3bf81159f9dfc5e6f63b6ca1e17b9c6fb6",
+      "bytes": 1157
+    },
+    {
+      "path": "docs/verification/D19-B2-neutrality-guard-full-results.json",
+      "sha256": "c2f27281c8cfa9f4e995e667973c22c70cd4e343fec7046811a0b34e5c0921d4",
+      "bytes": 435528
+    },
+    {
+      "path": "docs/verification/D19-B2-neutrality-guard-gate-harness.mjs.txt",
+      "sha256": "309541eafe2539c9985695442b9a86c0a6f3b927313a7189d6e3eb71fbdffe37",
+      "bytes": 2519
+    },
+    {
+      "path": "docs/verification/D19-B2-neutrality-guard-gates.json",
+      "sha256": "c72d6d41cb7058a6e27ca7c397a2d2cddc74ebacb1a3562d69bc22a5c66fb617",
+      "bytes": 4635
+    },
+    {
+      "path": "docs/verification/D19-B2-neutrality-guard-post-full-metadata-check.json",
+      "sha256": "75a2ae65d2d30288889cd48fffe068253449b7af4d353638425e1befd02a4874",
+      "bytes": 715
+    },
+    {
+      "path": "docs/verification/D19-B2-neutrality-guard-preservation.json",
+      "sha256": "1ec3559fc72d669b828a13a64856b07c4e2d71613872df495d2e32b1a41ee3b5",
+      "bytes": 609
+    },
+    {
+      "path": "docs/verification/D19-B2-neutrality-guard-r1-checklist.json",
+      "sha256": "1719629b797f47965affc5771fbdc86c4b4a771901eb5270c29be703f6504914",
+      "bytes": 5311
+    },
+    {
+      "path": "docs/verification/D19-B2-neutrality-guard-rollback.json",
+      "sha256": "f1be4001be2f93dd9c37ab953764e1424e980f6631753273a1fdb5530b9d06a1",
+      "bytes": 4119
+    },
+    {
+      "path": "docs/verification/D19-B2-neutrality-guard-schema-diff.json",
+      "sha256": "1c02de14ff2be68e4424e315b09adbe9139ea82b2067a810ad394e98d291b25b",
+      "bytes": 3645
+    },
+    {
+      "path": "docs/verification/D19-B2-neutrality-guard-task-map.json",
+      "sha256": "65a16e99d1f261a25c626bc16731adafec9a5d4f8819e3fe6a3493e79eece65d",
+      "bytes": 1334
+    },
+    {
+      "path": "docs/verification/D19-B2-neutrality-guard-test-history/B2-neutrality-guard-green-wired.json",
+      "sha256": "b1833427df2044d251e277ba2208f7553e193e874b0523b7dc388f2d0eae0d4e",
+      "bytes": 10469
+    },
+    {
+      "path": "docs/verification/D19-B2-neutrality-guard-test-history/B2-neutrality-guard-green-wired2.json",
+      "sha256": "75d6ca57b89e69a263eb1ef96d23313598743339c31e719b6806a9054eed276f",
+      "bytes": 7417
+    },
+    {
+      "path": "docs/verification/D19-B2-neutrality-guard-test-history/B2-neutrality-guard-green.json",
+      "sha256": "868ffba1b54434e81ee5100042967b6793a992ac42f3a17a4708891e4c1ca8ce",
+      "bytes": 6307
+    },
+    {
+      "path": "docs/verification/D19-B2-neutrality-guard-test-history/B2-neutrality-guard-red-exact-errors.json",
+      "sha256": "616b33a6e91198d382d44712f4c3f3eb00d1ba4e05074adf3d486bbce5dd0105",
+      "bytes": 32808
+    },
+    {
+      "path": "docs/verification/D19-B2-neutrality-guard-test-history/B2-neutrality-guard-red.json",
+      "sha256": "926757e2c2aaf1155c94ae5f00047d8847c4c7ba2760b6e99015f1139643f485",
+      "bytes": 17870
+    },
+    {
+      "path": "docs/verification/D19-B2-neutrality-guard-test-history/B2-neutrality-guard-targeted.json",
+      "sha256": "1e812286944bc5a1992c6974bb7ab2d6b71791a33aeab849bcf0d45906809c5f",
+      "bytes": 9047
+    },
+    {
+      "path": "docs/verification/D19-B2-neutrality-guard-test-history/B2-neutrality-guard-type-attempt1-receipt.json",
+      "sha256": "562c46958b6af34b0c9ed5133feaee90aa1daca4eb0b972680fe6bf40d777c80",
+      "bytes": 571
+    },
+    {
+      "path": "docs/verification/D19-B2-neutrality-guard-test-history/B2-neutrality-guard-type-attempt1.log",
+      "sha256": "859bbd6d9726a83bdb6673917da307e581273740a391fce22a09b41fc471defd",
+      "bytes": 862
+    },
+    {
+      "path": "docs/verification/D19-B2-neutrality-guard-test-history/B2-neutrality-runner-red-behavior.json",
+      "sha256": "3e8f4a19b9c9b4619f34a6826fdefc758bcfc104c2d549918b6139b71a035d47",
+      "bytes": 4565
+    },
+    {
+      "path": "docs/verification/D19-B2-neutrality-guard-test-history/B2-neutrality-runner-red.json",
+      "sha256": "2f99996f1df9a0bdef127c2ade395952d458c81ab2bb32ab521b5fe8ba22f153",
+      "bytes": 4650
+    },
+    {
+      "path": "docs/verification/D19-B2-neutrality-guard-test-history.json",
+      "sha256": "6f52d896921ccc6681a2a37cdf554ca40fef937d838f150300e437fefb8e8d50",
+      "bytes": 3122
+    },
+    {
+      "path": "docs/verification/D19-B2-neutrality-guard-worktree.json",
+      "sha256": "6ca667ec1f9f99162cfb933bcca6a948bb407cd5ef2b0e366a772779ca0ba205",
+      "bytes": 394
+    },
+    {
+      "path": "docs/verification/D19-B2-runtime-authorization-template-neutrality-guard.json",
+      "sha256": "7893e38e3a96e38679bc1a41881ff02da461583f1882a226142004bceee70d7b",
+      "bytes": 414
+    },
+    {
+      "path": "docs/verification/D19-B2-runtime-manifest-neutrality-guard.json",
+      "sha256": "96d3afa5e6b982f9ed537d2c95d45fd9dc3b7dc230f96d9649ef5d6bfffcc417",
+      "bytes": 59236
+    },
+    {
+      "path": "docs/verification/logs/D19-B2-neutrality-guard-build-attempt1.log",
+      "sha256": "1611981c4ed487132f77fba4583088b07845b54f1bd91edaaeef1bfa7ea94165",
+      "bytes": 14333
+    },
+    {
+      "path": "docs/verification/logs/D19-B2-neutrality-guard-check-records.log",
+      "sha256": "9fe9bca59764a0fc35cf99984e63ad9572f91a12d840ab71298f00673486067a",
+      "bytes": 459
+    },
+    {
+      "path": "docs/verification/logs/D19-B2-neutrality-guard-diff-check.log",
+      "sha256": "b2b9a2329fcfac6c7823fc943c0bafbb7f378002d4ae960db766754f957376b9",
+      "bytes": 7875
+    },
+    {
+      "path": "docs/verification/logs/D19-B2-neutrality-guard-full-attempt1.log",
+      "sha256": "faf76ccaae3d90f5a89a08b6f43e3db0d179b9d27c7aa2f3058a51ac23fffbbe",
+      "bytes": 1101
+    },
+    {
+      "path": "docs/verification/logs/D19-B2-neutrality-guard-lint-attempt1.log",
+      "sha256": "e685f068ca0868cf9d7e1a4fef1f8d5baa9c95d04d1dcbd6cd4db81c419658af",
+      "bytes": 1138
+    },
+    {
+      "path": "docs/verification/logs/D19-B2-neutrality-guard-manifest-attempt1.log",
+      "sha256": "c6f9d250de02dbc9b00054d013c36bfb0da02d91d2f97914ab3c73d75cf41050",
+      "bytes": 736
+    },
+    {
+      "path": "docs/verification/logs/D19-B2-neutrality-guard-post-full-metadata.log",
+      "sha256": "ea39ae56bc258eeb329bb74d6ee884c2e936077e126633238b041d5b01ae5f95",
+      "bytes": 137
+    },
+    {
+      "path": "docs/verification/logs/D19-B2-neutrality-guard-type-attempt2.log",
+      "sha256": "f9cd4162a52e3b46a12213ada4e322e4ea5f89cfbd6e52e2936b18bc31bba657",
+      "bytes": 631
+    }
+  ]
+}

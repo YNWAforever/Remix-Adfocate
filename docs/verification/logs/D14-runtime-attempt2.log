@@ -1,0 +1,322 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability
+GoTrueClient@sb-127-auth-token:1 (2.108.1) 2026-10-23T06:45:51.749Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability
+GoTrueClient@sb-127-auth-token:2 (2.108.1) 2026-10-23T06:45:51.998Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability
+GoTrueClient@sb-127-auth-token:3 (2.108.1) 2026-10-23T06:45:52.249Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability
+GoTrueClient@sb-127-auth-token:4 (2.108.1) 2026-10-23T06:45:52.466Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability
+GoTrueClient@sb-127-auth-token:5 (2.108.1) 2026-10-23T06:45:53.544Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability
+GoTrueClient@sb-127-auth-token:6 (2.108.1) 2026-10-23T06:45:53.589Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability
+GoTrueClient@sb-127-auth-token:7 (2.108.1) 2026-10-23T06:45:53.597Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability
+GoTrueClient@sb-127-auth-token:8 (2.108.1) 2026-10-23T06:45:53.610Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability
+GoTrueClient@sb-127-auth-token:9 (2.108.1) 2026-10-23T06:45:53.651Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability
+GoTrueClient@sb-127-auth-token:10 (2.108.1) 2026-10-23T06:45:53.659Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability
+GoTrueClient@sb-127-auth-token:11 (2.108.1) 2026-10-23T06:45:53.667Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability
+GoTrueClient@sb-127-auth-token:12 (2.108.1) 2026-10-23T06:45:53.711Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability
+GoTrueClient@sb-127-auth-token:13 (2.108.1) 2026-10-23T06:45:53.718Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability
+GoTrueClient@sb-127-auth-token:14 (2.108.1) 2026-10-23T06:45:53.726Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability
+GoTrueClient@sb-127-auth-token:15 (2.108.1) 2026-10-23T06:45:53.768Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability
+GoTrueClient@sb-127-auth-token:16 (2.108.1) 2026-10-23T06:45:53.773Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability > creates and reloads a resource with title, excerpt and a real body, while its draft remains private
+GoTrueClient@sb-127-auth-token:17 (2.108.1) 2026-10-23T06:45:53.782Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability > creates and reloads a resource with title, excerpt and a real body, while its draft remains private
+GoTrueClient@sb-127-auth-token:18 (2.108.1) 2026-10-23T06:45:53.818Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability > creates and reloads a resource with title, excerpt and a real body, while its draft remains private
+GoTrueClient@sb-127-auth-token:19 (2.108.1) 2026-10-23T06:45:53.824Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability > creates and reloads a resource with title, excerpt and a real body, while its draft remains private
+GoTrueClient@sb-127-auth-token:20 (2.108.1) 2026-10-23T06:45:53.835Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability > creates and reloads a resource with title, excerpt and a real body, while its draft remains private
+GoTrueClient@sb-127-auth-token:21 (2.108.1) 2026-10-23T06:45:53.894Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability > publishes persisted resource content and retains it on a fresh author read
+GoTrueClient@sb-127-auth-token:22 (2.108.1) 2026-10-23T06:45:53.908Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability > publishes persisted resource content and retains it on a fresh author read
+GoTrueClient@sb-127-auth-token:23 (2.108.1) 2026-10-23T06:45:53.948Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability > publishes persisted resource content and retains it on a fresh author read
+GoTrueClient@sb-127-auth-token:24 (2.108.1) 2026-10-23T06:45:53.953Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability > publishes persisted resource content and retains it on a fresh author read
+GoTrueClient@sb-127-auth-token:25 (2.108.1) 2026-10-23T06:45:53.966Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability > publishes persisted resource content and retains it on a fresh author read
+GoTrueClient@sb-127-auth-token:26 (2.108.1) 2026-10-23T06:45:54.001Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability > publishes persisted resource content and retains it on a fresh author read
+GoTrueClient@sb-127-auth-token:27 (2.108.1) 2026-10-23T06:45:54.005Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability > publishes reading content and derives localized availability without exposing the body in the bundle
+GoTrueClient@sb-127-auth-token:28 (2.108.1) 2026-10-23T06:45:54.012Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability > publishes reading content and derives localized availability without exposing the body in the bundle
+GoTrueClient@sb-127-auth-token:29 (2.108.1) 2026-10-23T06:45:54.051Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability > publishes reading content and derives localized availability without exposing the body in the bundle
+GoTrueClient@sb-127-auth-token:30 (2.108.1) 2026-10-23T06:45:54.056Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability > publishes reading content and derives localized availability without exposing the body in the bundle
+GoTrueClient@sb-127-auth-token:31 (2.108.1) 2026-10-23T06:45:54.069Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability > publishes reading content and derives localized availability without exposing the body in the bundle
+GoTrueClient@sb-127-auth-token:32 (2.108.1) 2026-10-23T06:45:54.110Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability > publishes reading content and derives localized availability without exposing the body in the bundle
+GoTrueClient@sb-127-auth-token:33 (2.108.1) 2026-10-23T06:45:54.119Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability > publishes reading content and derives localized availability without exposing the body in the bundle
+GoTrueClient@sb-127-auth-token:34 (2.108.1) 2026-10-23T06:45:54.161Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability > publishes reading content and derives localized availability without exposing the body in the bundle
+GoTrueClient@sb-127-auth-token:35 (2.108.1) 2026-10-23T06:45:54.170Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability > publishes reading content and derives localized availability without exposing the body in the bundle
+GoTrueClient@sb-127-auth-token:36 (2.108.1) 2026-10-23T06:45:54.211Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability > publishes reading content and derives localized availability without exposing the body in the bundle
+GoTrueClient@sb-127-auth-token:37 (2.108.1) 2026-10-23T06:45:54.223Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability > publishes reading content and derives localized availability without exposing the body in the bundle
+GoTrueClient@sb-127-auth-token:38 (2.108.1) 2026-10-23T06:45:54.265Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability > empty published tracks stay preparing despite a four-lesson duration; no lesson/progress data is invented
+GoTrueClient@sb-127-auth-token:39 (2.108.1) 2026-10-23T06:45:54.272Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability > empty published tracks stay preparing despite a four-lesson duration; no lesson/progress data is invented
+GoTrueClient@sb-127-auth-token:40 (2.108.1) 2026-10-23T06:45:54.311Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability > empty published tracks stay preparing despite a four-lesson duration; no lesson/progress data is invented
+GoTrueClient@sb-127-auth-token:41 (2.108.1) 2026-10-23T06:45:54.316Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability > empty published tracks stay preparing despite a four-lesson duration; no lesson/progress data is invented
+GoTrueClient@sb-127-auth-token:42 (2.108.1) 2026-10-23T06:45:54.326Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability > empty published tracks stay preparing despite a four-lesson duration; no lesson/progress data is invented
+GoTrueClient@sb-127-auth-token:43 (2.108.1) 2026-10-23T06:45:54.364Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability > empty published tracks stay preparing despite a four-lesson duration; no lesson/progress data is invented
+GoTrueClient@sb-127-auth-token:44 (2.108.1) 2026-10-23T06:45:54.368Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability > empty published tracks stay preparing despite a four-lesson duration; no lesson/progress data is invented
+GoTrueClient@sb-127-auth-token:45 (2.108.1) 2026-10-23T06:45:54.378Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability > empty published tracks stay preparing despite a four-lesson duration; no lesson/progress data is invented
+GoTrueClient@sb-127-auth-token:46 (2.108.1) 2026-10-23T06:45:54.420Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability > filters track author rows independently from resources and creator bundle groups
+GoTrueClient@sb-127-auth-token:47 (2.108.1) 2026-10-23T06:45:54.428Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability > filters track author rows independently from resources and creator bundle groups
+GoTrueClient@sb-127-auth-token:48 (2.108.1) 2026-10-23T06:45:54.462Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability > filters track author rows independently from resources and creator bundle groups
+GoTrueClient@sb-127-auth-token:49 (2.108.1) 2026-10-23T06:45:54.468Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability > filters track author rows independently from resources and creator bundle groups
+GoTrueClient@sb-127-auth-token:50 (2.108.1) 2026-10-23T06:45:54.477Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability > filters track author rows independently from resources and creator bundle groups
+GoTrueClient@sb-127-auth-token:51 (2.108.1) 2026-10-23T06:45:54.519Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability > retains author revisions, rejects stale updates and denies creator authoring
+GoTrueClient@sb-127-auth-token:52 (2.108.1) 2026-10-23T06:45:54.527Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability > retains author revisions, rejects stale updates and denies creator authoring
+GoTrueClient@sb-127-auth-token:53 (2.108.1) 2026-10-23T06:45:54.565Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability > retains author revisions, rejects stale updates and denies creator authoring
+GoTrueClient@sb-127-auth-token:54 (2.108.1) 2026-10-23T06:45:54.569Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability > retains author revisions, rejects stale updates and denies creator authoring
+GoTrueClient@sb-127-auth-token:55 (2.108.1) 2026-10-23T06:45:54.575Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability > retains author revisions, rejects stale updates and denies creator authoring
+GoTrueClient@sb-127-auth-token:56 (2.108.1) 2026-10-23T06:45:54.616Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability > retains author revisions, rejects stale updates and denies creator authoring
+GoTrueClient@sb-127-auth-token:57 (2.108.1) 2026-10-23T06:45:54.623Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability > retains author revisions, rejects stale updates and denies creator authoring
+GoTrueClient@sb-127-auth-token:58 (2.108.1) 2026-10-23T06:45:54.635Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability > retains author revisions, rejects stale updates and denies creator authoring
+GoTrueClient@sb-127-auth-token:59 (2.108.1) 2026-10-23T06:45:54.671Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability > retains author revisions, rejects stale updates and denies creator authoring
+GoTrueClient@sb-127-auth-token:60 (2.108.1) 2026-10-23T06:45:54.675Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability > retains author revisions, rejects stale updates and denies creator authoring
+GoTrueClient@sb-127-auth-token:61 (2.108.1) 2026-10-23T06:45:54.680Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability > retains author revisions, rejects stale updates and denies creator authoring
+GoTrueClient@sb-127-auth-token:62 (2.108.1) 2026-10-23T06:45:54.714Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability > retains author revisions, rejects stale updates and denies creator authoring
+GoTrueClient@sb-127-auth-token:63 (2.108.1) 2026-10-23T06:45:54.719Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability > retains author revisions, rejects stale updates and denies creator authoring
+GoTrueClient@sb-127-auth-token:64 (2.108.1) 2026-10-23T06:45:54.724Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+stderr | server/test/audit-public-claims-contract.test.ts > D14 owned Academy authoring and availability > retains author revisions, rejects stale updates and denies creator authoring
+GoTrueClient@sb-127-auth-token:65 (2.108.1) 2026-10-23T06:45:54.767Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.
+
+ ✓ server/test/audit-public-claims-contract.test.ts (6 tests) 4152ms
+
+ Test Files  1 passed (1)
+      Tests  6 passed (6)
+   Start at  14:45:49
+   Duration  5.17s (transform 573ms, setup 170ms, collect 22ms, tests 4.15s, environment 540ms, prepare 98ms)
+
+[WebServer] (node:27656) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[WebServer] Warning: Route file "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/_site.smoke.test.tsx" does not export a Route. This file will not be included in the route tree.
+[WebServer] 
+[WebServer] If this file is not intended to be a route, you can exclude it using one of these options:
+[WebServer]   1. Rename the file to "C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\src\routes\-_site.smoke.test.tsx" (prefix with "-")
+[WebServer]   2. Use 'routeFileIgnorePattern' in your config to match this file
+[WebServer] 
+[WebServer] Current configuration:
+[WebServer]   routeFileIgnorePrefix: "-"
+[WebServer]   routeFileIgnorePattern: undefined
+
+Running 4 tests using 1 worker
+
+(node:36540) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1/4] e2e\public-claims.spec.ts:18:1 › D14 public pages identify illustrative claims and use canonical XP in both languages and viewports
+[WebServer] [tanstack-router] These exports from "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/admin.reward-handoffs.tsx" will not be code-split and will increase your bundle size:
+
+[WebServer] - AdminRewardHandoffsRoute
+[WebServer] For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+
+[WebServer] [tanstack-router] These exports from "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/admin.active-missions.tsx" will not be code-split and will increase your bundle size:
+[WebServer] - AdminActiveMissionsLayout
+[WebServer] For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+
+[WebServer] [tanstack-router] These exports from "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/admin.active-missions.index.tsx" will not be code-split and will increase your bundle size:
+[WebServer] - AdminActiveMissionsRoute
+[WebServer] For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+
+[WebServer] [tanstack-router] These exports from "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/_app.news.index.tsx" will not be code-split and will increase your bundle size:
+[WebServer] - NewsFeed
+[WebServer] For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+
+[WebServer] [tanstack-router] These exports from "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/admin.active-missions.$workflowId.tsx" will not be code-split and will increase your bundle size:
+[WebServer] - AdminActiveMissionReviewRoute
+[WebServer] For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+[WebServer] [tanstack-router] These exports from "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/_app.my.$submissionId.tsx" will not be code-split and will increase your bundle size:
+[WebServer] - CreatorMissionWorkspace
+[WebServer] For the best optimization, these items should either have their export statements removed, or be imported from another location that is not a route file.
+
+[2/4] e2e\public-claims.spec.ts:37:1 › D14 five contact previews retain drafts, send no data and show no receipt after refresh
+  1) e2e\public-claims.spec.ts:37:1 › D14 five contact previews retain drafts, send no data and show no receipt after refresh 
+
+    TimeoutError: locator.click: Timeout 15000ms exceeded.
+    Call log:
+      - waiting for getByRole('button', { name: 'Brand Enquiry', exact: true })
+
+
+      41 |   await page.goto("/contact");
+      42 |   for (const tab of ["Brand Enquiry", "Creator Signup", "Adfoplace Offer", "Capital Waitlist", "Partner Enquiry"]) {
+    > 43 |     await page.getByRole("button", { name: tab, exact: true }).click();
+         |                                                                ^
+      44 |     const form = page.locator("form:visible");
+      45 |     for (const input of await form.locator("input[required]").all()) {
+      46 |       const type = await input.getAttribute("type");
+        at C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\e2e\public-claims.spec.ts:43:64
+
+    Error Context: test-results\public-claims-D14-five-con-3aad8-ow-no-receipt-after-refresh\error-context.md
+
+
+
+(node:24564) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[3/4] e2e\public-claims.spec.ts:67:1 › D14 operator creates a resource body, reloads it, publishes and filters tracks separately
+[4/4] e2e\public-claims.spec.ts:99:1 › D14 Creator reads persisted content, sees preparing and retains the trust gate and read retry
+  2) e2e\public-claims.spec.ts:99:1 › D14 Creator reads persisted content, sees preparing and retains the trust gate and read retry 
+
+    TimeoutError: locator.click: Timeout 15000ms exceeded.
+    Call log:
+      - waiting for getByRole('button', { name: 'Retry', exact: true })
+        - locator resolved to <button class="text-sm underline">Retry</button>
+      - attempting click action
+        2 × waiting for element to be visible, enabled and stable
+          - element is visible, enabled and stable
+          - scrolling into view if needed
+          - done scrolling
+          - <div role="dialog" aria-label="You levelled up!" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">…</div> intercepts pointer events
+        - retrying click action
+        - waiting 20ms
+        2 × waiting for element to be visible, enabled and stable
+          - element is visible, enabled and stable
+          - scrolling into view if needed
+          - done scrolling
+          - <div role="dialog" aria-label="You levelled up!" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">…</div> intercepts pointer events
+        - retrying click action
+          - waiting 100ms
+        29 × waiting for element to be visible, enabled and stable
+           - element is visible, enabled and stable
+           - scrolling into view if needed
+           - done scrolling
+           - <div role="dialog" aria-label="You levelled up!" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">…</div> intercepts pointer events
+         - retrying click action
+           - waiting 500ms
+
+
+      115 |   await expect(page.getByRole("alert")).toContainText("Content could not be loaded");
+      116 |   await page.unroute(pattern);
+    > 117 |   await page.getByRole("button", { name: "Retry", exact: true }).click();
+          |                                                                  ^
+      118 |   await expect(page.getByRole("heading", { name: "合成課程正文", exact: true })).toBeVisible();
+      119 |   await page.screenshot({ path: "docs/verification/D14-creator-reading.png" });
+      120 |   record("creator-ui", { bodyPersistedAfterRefresh: true, introductionSeparated: true, noInventedLessons: true, trustGateRetained: true,
+        at C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\e2e\public-claims.spec.ts:117:66
+
+    Error Context: test-results\public-claims-D14-Creator--9a4e8-e-trust-gate-and-read-retry\error-context.md
+
+
+  2 failed
+    e2e\public-claims.spec.ts:37:1 › D14 five contact previews retain drafts, send no data and show no receipt after refresh 
+    e2e\public-claims.spec.ts:99:1 › D14 Creator reads persisted content, sees preparing and retains the trust gate and read retry 
+  2 passed (1.0m)

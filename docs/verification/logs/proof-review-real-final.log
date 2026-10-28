@@ -1,0 +1,12 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ✓ server/test/publication-proof-review-live.test.ts (2 tests) 2842ms
+   ✓ publication proof operator review live integration > enforces tenant, concurrent claim, ownership, correction deadline, retry, and reward neutrality 1784ms
+   ✓ publication proof operator review live integration > verifies only the exact claimed attempt and completes the required aggregate without rewards 1033ms
+
+ Test Files  1 passed (1)
+      Tests  2 passed (2)
+   Start at  03:28:59
+   Duration  4.11s (transform 102ms, setup 275ms, collect 151ms, tests 2.84s, environment 592ms, prepare 80ms)
+

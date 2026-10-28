@@ -1,0 +1,83 @@
+test_captured_failed_catalog_refused_even_if_config_were_changed (__main__.GuardTests.test_captured_failed_catalog_refused_even_if_config_were_changed) ... FAIL
+test_captured_failed_target_refused_before_first_start (__main__.GuardTests.test_captured_failed_target_refused_before_first_start) ... FAIL
+test_correct_declared_prestart_configuration (__main__.GuardTests.test_correct_declared_prestart_configuration) ... FAIL
+test_existing_application_state_refused (__main__.GuardTests.test_existing_application_state_refused) ... FAIL
+test_expected_postinit_catalog_is_only_mock (__main__.GuardTests.test_expected_postinit_catalog_is_only_mock) ... FAIL
+test_unreviewed_image_refused (__main__.GuardTests.test_unreviewed_image_refused) ... FAIL
+
+======================================================================
+FAIL: test_captured_failed_catalog_refused_even_if_config_were_changed (__main__.GuardTests.test_captured_failed_catalog_refused_even_if_config_were_changed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\.codex-tmp\B2-recovery-guard-tests.py", line 24, in test_captured_failed_catalog_refused_even_if_config_were_changed
+    with self.assertRaisesRegex(ValueError,'B2_BOOTSTRAP_ROLE_IDENTITY_MISMATCH'):verify(x,'postinit')
+                                                                                  ~~~~~~^^^^^^^^^^^^^^
+  File "C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\.codex-tmp\B2-recovery-guard-tests.py", line 11, in verify
+    if not p.is_file():raise AssertionError('Required bootstrap prestart guard not implemented')
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Required bootstrap prestart guard not implemented
+
+======================================================================
+FAIL: test_captured_failed_target_refused_before_first_start (__main__.GuardTests.test_captured_failed_target_refused_before_first_start)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\.codex-tmp\B2-recovery-guard-tests.py", line 20, in test_captured_failed_target_refused_before_first_start
+    with self.assertRaisesRegex(ValueError,'B2_BOOTSTRAP_INITIAL_USER_MISMATCH'):verify(observed)
+                                                                                 ~~~~~~^^^^^^^^^^
+  File "C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\.codex-tmp\B2-recovery-guard-tests.py", line 11, in verify
+    if not p.is_file():raise AssertionError('Required bootstrap prestart guard not implemented')
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Required bootstrap prestart guard not implemented
+
+======================================================================
+FAIL: test_correct_declared_prestart_configuration (__main__.GuardTests.test_correct_declared_prestart_configuration)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\.codex-tmp\B2-recovery-guard-tests.py", line 21, in test_correct_declared_prestart_configuration
+    def test_correct_declared_prestart_configuration(self):self.assertTrue(verify(proposal())['passed'])
+                                                                           ~~~~~~^^^^^^^^^^^^
+  File "C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\.codex-tmp\B2-recovery-guard-tests.py", line 11, in verify
+    if not p.is_file():raise AssertionError('Required bootstrap prestart guard not implemented')
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Required bootstrap prestart guard not implemented
+
+======================================================================
+FAIL: test_existing_application_state_refused (__main__.GuardTests.test_existing_application_state_refused)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\.codex-tmp\B2-recovery-guard-tests.py", line 31, in test_existing_application_state_refused
+    with self.assertRaisesRegex(ValueError,'B2_BOOTSTRAP_APPLICATION_STATE_NOT_EMPTY'):verify(x,'postinit')
+                                                                                       ~~~~~~^^^^^^^^^^^^^^
+  File "C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\.codex-tmp\B2-recovery-guard-tests.py", line 11, in verify
+    if not p.is_file():raise AssertionError('Required bootstrap prestart guard not implemented')
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Required bootstrap prestart guard not implemented
+
+======================================================================
+FAIL: test_expected_postinit_catalog_is_only_mock (__main__.GuardTests.test_expected_postinit_catalog_is_only_mock)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\.codex-tmp\B2-recovery-guard-tests.py", line 25, in test_expected_postinit_catalog_is_only_mock
+    def test_expected_postinit_catalog_is_only_mock(self):self.assertTrue(verify(proposal(),'postinit')['passed'])
+                                                                          ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\.codex-tmp\B2-recovery-guard-tests.py", line 11, in verify
+    if not p.is_file():raise AssertionError('Required bootstrap prestart guard not implemented')
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Required bootstrap prestart guard not implemented
+
+======================================================================
+FAIL: test_unreviewed_image_refused (__main__.GuardTests.test_unreviewed_image_refused)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\.codex-tmp\B2-recovery-guard-tests.py", line 28, in test_unreviewed_image_refused
+    with self.assertRaisesRegex(ValueError,'B2_BOOTSTRAP_IMAGE_MISMATCH'):verify(x)
+                                                                          ~~~~~~^^^
+  File "C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\.codex-tmp\B2-recovery-guard-tests.py", line 11, in verify
+    if not p.is_file():raise AssertionError('Required bootstrap prestart guard not implemented')
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Required bootstrap prestart guard not implemented
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.005s
+
+FAILED (failures=6)

@@ -1,0 +1,21 @@
+{
+  "sourceFingerprint": "4f2c3faa22bf835911a55dc7bb099910e4308fc1b7a5570d58f32386708934b9",
+  "originalCases": 107,
+  "originalFieldsPreserved": true,
+  "currentC33": "partial local21; full original expectation remains required",
+  "walletImpact": "8 standalone, no new whole-case credit",
+  "originalAudit16": 16,
+  "protected194": 194,
+  "full": {
+    "passed": 2155,
+    "failed": 0,
+    "skipped": 363,
+    "files": 295
+  },
+  "runtimeAcceptance": false,
+  "wholeR1Verified": false,
+  "remaining": {
+    "path": "docs/verification/D19-redemption-replay-20261026/remaining-acceptance.json",
+    "sha256": "f11a04e490f75ea967b743d0fe607cb2cad6bca6c71ac591687749ca5f59a50a"
+  }
+}

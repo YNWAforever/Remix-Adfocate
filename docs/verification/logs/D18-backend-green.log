@@ -1,0 +1,13 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ✓ server/test/staff-access-schema.embedded.test.ts (12 tests) 2934ms
+ ✓ server/test/staff-capability-boundary.test.ts (7 tests) 75ms
+ ✓ server/lib/staffCapabilities.test.ts (48 tests) 15ms
+
+ Test Files  3 passed (3)
+      Tests  67 passed (67)
+   Start at  20:50:37
+   Duration  9.13s (transform 832ms, setup 660ms, collect 2.45s, tests 3.02s, environment 1.97s, prepare 354ms)
+
+JSON report written to C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/.codex-tmp/D18-backend-green.json

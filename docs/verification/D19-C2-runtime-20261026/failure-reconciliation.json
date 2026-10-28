@@ -1,0 +1,140 @@
+{
+  "at": "2026-10-25T18:54:25.692708+00:00",
+  "initial": {
+    "path": "docs/verification/D19-C2-runtime-20261026/transport-full-command.json",
+    "sha256": "7f694af7b941c48c1aae3f7b8f6d9ae80f0a71ae8e967fa5b2dd94a98e1faade"
+  },
+  "initialReport": {
+    "path": "docs/verification/D19-C2-runtime-20261026/transport-full-results.json",
+    "sha256": "9675acb4836607b5210f602d4ae0df9c41416798a2ed4f25ddf4bde9d5ccd293"
+  },
+  "initialCounts": {
+    "passed": 2120,
+    "failed": 13,
+    "skipped": 363,
+    "files": 293
+  },
+  "failures": [
+    {
+      "file": "server/devApi.test.ts",
+      "test": "Vite development API middleware routes /api requests to Hono instead of the SPA fallback",
+      "initialStatus": "failed",
+      "classification": "Sandbox denied test-owned loopback connection; dependent stream/abort assertions also failed",
+      "sourceOrAssertionChanged": false,
+      "finalHostStatus": "passed"
+    },
+    {
+      "file": "server/devApi.test.ts",
+      "test": "Vite development API middleware preserves Vite's SPA fallback for non-API requests",
+      "initialStatus": "failed",
+      "classification": "Sandbox denied test-owned loopback connection; dependent stream/abort assertions also failed",
+      "sourceOrAssertionChanged": false,
+      "finalHostStatus": "passed"
+    },
+    {
+      "file": "server/devApi.transport.test.ts",
+      "test": "Vite development API middleware transport contracts intercepts exact /api and nested /api paths without swallowing /apix",
+      "initialStatus": "failed",
+      "classification": "Sandbox denied test-owned loopback connection; dependent stream/abort assertions also failed",
+      "sourceOrAssertionChanged": false,
+      "finalHostStatus": "passed"
+    },
+    {
+      "file": "server/devApi.transport.test.ts",
+      "test": "Vite development API middleware transport contracts forwards method, body, query, authorization, and cookie headers",
+      "initialStatus": "failed",
+      "classification": "Sandbox denied test-owned loopback connection; dependent stream/abort assertions also failed",
+      "sourceOrAssertionChanged": false,
+      "finalHostStatus": "passed"
+    },
+    {
+      "file": "server/devApi.transport.test.ts",
+      "test": "Vite development API middleware transport contracts preserves duplicate Set-Cookie plus status, statusText, and other headers",
+      "initialStatus": "failed",
+      "classification": "Sandbox denied test-owned loopback connection; dependent stream/abort assertions also failed",
+      "sourceOrAssertionChanged": false,
+      "finalHostStatus": "passed"
+    },
+    {
+      "file": "server/devApi.transport.test.ts",
+      "test": "Vite development API middleware transport contracts completes HEAD and null-body responses without writing a body",
+      "initialStatus": "failed",
+      "classification": "Sandbox denied test-owned loopback connection; dependent stream/abort assertions also failed",
+      "sourceOrAssertionChanged": false,
+      "finalHostStatus": "passed"
+    },
+    {
+      "file": "server/devApi.transport.test.ts",
+      "test": "Vite development API middleware transport contracts delivers response chunks incrementally instead of buffering the full body",
+      "initialStatus": "failed",
+      "classification": "Sandbox denied test-owned loopback connection; dependent stream/abort assertions also failed",
+      "sourceOrAssertionChanged": false,
+      "finalHostStatus": "passed"
+    },
+    {
+      "file": "server/devApi.transport.test.ts",
+      "test": "Vite development API middleware transport contracts cancels the Fetch body when the client aborts",
+      "initialStatus": "failed",
+      "classification": "Sandbox denied test-owned loopback connection; dependent stream/abort assertions also failed",
+      "sourceOrAssertionChanged": false,
+      "finalHostStatus": "passed"
+    },
+    {
+      "file": "server/devApi.transport.test.ts",
+      "test": "Vite development API middleware transport contracts completes an app failure as JSON without hanging the Node response",
+      "initialStatus": "failed",
+      "classification": "Sandbox denied test-owned loopback connection; dependent stream/abort assertions also failed",
+      "sourceOrAssertionChanged": false,
+      "finalHostStatus": "passed"
+    },
+    {
+      "file": "scripts/release/cli.test.ts",
+      "test": "release npm entrypoints fails closed when release:execute runs without database configuration",
+      "initialStatus": "failed",
+      "classification": "Runner omitted explicit installed npm path for cached Node22",
+      "sourceOrAssertionChanged": false,
+      "finalHostStatus": "passed"
+    },
+    {
+      "file": "scripts/release/cli.test.ts",
+      "test": "release npm entrypoints fails closed when release:evidence runs without an input file",
+      "initialStatus": "failed",
+      "classification": "Runner omitted explicit installed npm path for cached Node22",
+      "sourceOrAssertionChanged": false,
+      "finalHostStatus": "passed"
+    },
+    {
+      "file": "scripts/release/manifest.test.ts",
+      "test": "release migration manifest does not replace an existing artifact on invalid write and leaves no temp file",
+      "initialStatus": "failed",
+      "classification": "Sandbox atomic rename EPERM",
+      "sourceOrAssertionChanged": false,
+      "finalHostStatus": "passed"
+    },
+    {
+      "file": "scripts/release/manifest.test.ts",
+      "test": "release migration manifest runs write as a direct vite-node CLI and prints its digest",
+      "initialStatus": "failed",
+      "classification": "Sandbox atomic rename EPERM",
+      "sourceOrAssertionChanged": false,
+      "finalHostStatus": "passed"
+    }
+  ],
+  "focusedHost": {
+    "path": "docs/verification/D19-C2-runtime-20261026/transport-host-boundaries-results.json",
+    "sha256": "5b13fb9ae4b47278bbd680f3d0455d9ba3af2911c16c00f4eaac5fbe06067b65"
+  },
+  "focusedHostPassed": 32,
+  "finalHost": {
+    "path": "docs/verification/D19-C2-runtime-20261026/transport-full-host-results.json",
+    "sha256": "3906aaff63508ec126a4974f05fe65fc179e775cddb6d4b97d7fad2018e0edad"
+  },
+  "finalCounts": {
+    "passed": 2133,
+    "failed": 0,
+    "skipped": 363,
+    "files": 293
+  },
+  "fixScope": "Local runner explicit installed npm_execpath; host-local test execution for loopback/temp rename. No product/test assertion change. Original failure retained.",
+  "notAnAutomaticApprovalReviewRejection": true
+}

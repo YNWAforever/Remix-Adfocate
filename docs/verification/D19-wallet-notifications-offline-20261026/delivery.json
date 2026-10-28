@@ -1,0 +1,79 @@
+{
+  "at": "2026-10-25T19:20:21.394827+00:00",
+  "status": "PASS_STANDALONE_WALLET_NOTIFICATION_OFFLINE8_NOT_FULL_R1",
+  "tasks": [
+    "D19"
+  ],
+  "sourceFingerprint": "ead55a808470f90d72290905db90933cb4a6df48eaba519d4587339a4659b71d",
+  "sourceRecordsUnchanged": 789,
+  "code": "Product/SQL/C2 source unchanged; standalone verification only. Actual wallet/redemption controls/notifications engines extended by evidence, no parallel product implementation.",
+  "test": {
+    "standalonePassed": 8,
+    "failed": 0,
+    "skipped": 0,
+    "lintExit": 0,
+    "typeExit": 0,
+    "retainedNative2133NotRerun": true
+  },
+  "runtime": "Actual UI/query/apiFetch/Hono/workspace middleware in process; scripted Auth/DB/Realtime only. No physical target/client/SQL/provider/browser. Notification updates exist only in scripted memory; no real messages.",
+  "gates": {
+    "path": "docs/verification/D19-wallet-notifications-offline-20261026/gates.json",
+    "sha256": "e2f7200725065fc801f13be7fff3a3637815aaecfda4b3f2efef87c4abb7dd1a"
+  },
+  "readbacks": {
+    "path": "docs/verification/D19-wallet-notifications-offline-20261026/readback-summary.json",
+    "sha256": "ae20b5640498775bf9a0a6b0256589486d6ecb1f1a6268352215bb4b0245bf40"
+  },
+  "caseCoverage": {
+    "path": "docs/verification/D19-wallet-notifications-offline-20261026/case-coverage.json",
+    "sha256": "7689626f309e45e4d65f341d89d87ec4f1ef6fb5eeacd0d4f8fc421d7e4e56db"
+  },
+  "remaining": {
+    "path": "docs/verification/D19-wallet-notifications-offline-20261026/remaining-acceptance.json",
+    "sha256": "35b5d7e58c3efab4ed4a1e12d6f7ae975cf12db67b8b41fb5df1832e55bce65b"
+  },
+  "rollback": {
+    "path": "docs/verification/D19-wallet-notifications-offline-20261026/rollback.json",
+    "sha256": "3e71177356e4b316cdc58ccd9def3c5be9cc668aaf6c6a6c846dceaa20980cb5"
+  },
+  "c2Manifest": {
+    "path": "docs/verification/D19-C2-transport-continuation-runtime-manifest.json",
+    "sha256": "f5caccfdc354e7209b320064f08c9a59ce73cc0ae4bdfca4bcde6e255b424ba0"
+  },
+  "c2ProposalUnchangedAndPending": true,
+  "oldC2ApprovalStillTrue": true,
+  "actualTargetCalls": 0,
+  "realSdkClients": 0,
+  "physicalSqlCalls": 0,
+  "authSubjectsCreated": 0,
+  "productionOrFormalStaffWrites": 0,
+  "actualProviderCalls": 0,
+  "pendingRewardNeutralityMeasured": false,
+  "incidentOpen": true,
+  "restored": false,
+  "releaseHold": true,
+  "providerEnabled": false,
+  "wholeR1Verified": false,
+  "deployment": "NOT_DEPLOYED",
+  "commit": null,
+  "push": false,
+  "merge": false,
+  "blockers": [
+    "D15 approved lesson content UC-C18/UC-A51",
+    "Named advisor owners, physical devices/manual AT and hosted candidate evidence",
+    "Formal staff membership/role owner handoff; active membership0 is a scope issue",
+    "Original3-campaign incident OPEN/unrestored; shaped target forensic-only",
+    "Original audit ZIP absent at the exact provided Downloads path; sealed original107 fields retained, no fresh archive hash verification",
+    "Release HOLD; not deployed; real provider disabled"
+  ],
+  "nextTask": "D19: the existing f5caccfd transport-continuation manifest/source approval is still pending; no replacement/reapproval of that unchanged proposal is needed because of this offline packet. Current source/SQL/C2 frozen. Continue authorized independent local facets; actual application/asset/Creator-isolation/legacy/financial/browser fixtures require their own existing or explicit bounded scope. Do not replay696e/pristine.",
+  "changedThisTurn": [
+    "docs/verification/D19-wallet-notifications-offline-20261026/",
+    "docs/verification/D19-wallet-notifications-offline-integrity.json",
+    "docs/verification/adfocate-delivery.json",
+    "docs/verification/audit_case_coverage.csv",
+    "docs/verification/implementation_backlog.csv",
+    "docs/verification/adfocate-task-ledger.md",
+    "docs/verification/evidence-integrity.json"
+  ]
+}

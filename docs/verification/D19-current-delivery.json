@@ -1,0 +1,452 @@
+{
+  "task": "D19-current-revalidation",
+  "at": "2026-10-24T05:24:13.457213+00:00",
+  "acceptanceStatus": "CURRENT_CANDIDATE_CORE_VERIFIED_LOCAL_DISPOSABLE",
+  "headSha": "7cfa3dc84c821719a4dff754229a591c81786c53",
+  "branch": "codex/adfocate-r1-pilot-20261023",
+  "worktree": "C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023",
+  "sourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+  "sourceRecords": 348,
+  "applicationSourceChanged": false,
+  "newResult": {
+    "code": "Current candidate application/tests/SQL/config unchanged; reuse existing D19 engines, fixture factories and acceptance tests; only ignored observation/output-preservation harness and delivery evidence added",
+    "test": "Fresh same-source1954 passed/363 explicitly gated skipped/275 files, original16+194; role8/78HTTP+core9+Edge5 non-skipped;584/584 capabilities on both targets; old support441+proof3 retained, not rerun",
+    "deployment": "not-deployed; no commit/push/merge/deploy; canDeploy/canEnablePilot=false",
+    "runtime": "Fresh exact-owned single-workspace Creator legacy→reviewer→active revision/proof→operator completion→Creator/operator/finance reload, one pending row/15 events; raw funded pending/cancel/reapproval neutrality;84 new Auth IDs in3 fixture runs retained; all pre-existing public/Auth user rows and schema/history unchanged"
+  },
+  "scope": "Current source-bound D19 core/API/Edge and funded neutrality renewed. Full offline1954/363 fresh; historical support441+proof3 and unselected support paths not renewed. Local disposable only; no formal staff, owner/device/hosted/provider acceptance or whole-R1-current blanket claim.",
+  "identity": "D19-current-identity.json",
+  "schema": {
+    "at": "2026-10-24T05:24:13.457213+00:00",
+    "status": "NO_PERSISTENT_SCHEMA_OR_HISTORY_CHANGE",
+    "sourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+    "manifestDigest": "3e6809f9a51b1ac7ebb9f770160aab27f02523ebf69fc47f8fe38f44d05f6363",
+    "manifestEntries": 42,
+    "declaredCapabilities": 587,
+    "observedCapabilitiesPerTarget": 584,
+    "before": "D19-current-schema-before.json",
+    "after": "D19-current-schema-after.json",
+    "historyRows": {
+      "empty": 72,
+      "shaped": 56
+    },
+    "objectsRpcGrantsRlsConstraintsIndexesTriggersCompared": true,
+    "allPreExistingPublicAndAuthUserRowsPreserved": true,
+    "newMigrations": [],
+    "oldHistoryChecksumRewritten": false,
+    "transientFaultInjection": "Existing core test creates/drops only its unique run-ID audit-fault function/trigger; final complete catalog identical",
+    "productionQueried": false,
+    "hostedVerified": false
+  },
+  "gates": [
+    {
+      "name": "full",
+      "sourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "result": "D19-current-full-results.json",
+      "fresh": true
+    },
+    {
+      "name": "manifest",
+      "sourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "result": "D19-current-manifest-results.json",
+      "fresh": true
+    },
+    {
+      "name": "role",
+      "sourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "result": "D19-current-role-results.json",
+      "fresh": true
+    },
+    {
+      "name": "core",
+      "sourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "result": "D19-current-core-results.json",
+      "fresh": true
+    },
+    {
+      "name": "browser",
+      "sourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "result": "D19-current-browser-results.json",
+      "fresh": true
+    },
+    {
+      "name": "capabilities",
+      "sourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+      "result": "D19-current-capabilities-results.json",
+      "fresh": true
+    }
+  ],
+  "freshResults": {
+    "fullPassed": 1954,
+    "gatedSkipped": 363,
+    "fullFailed": 0,
+    "actualFiles": 275,
+    "audit16": 16,
+    "protected194": 194,
+    "roleApi": 8,
+    "roleHttpObservations": 78,
+    "coreApi": 9,
+    "browser": 5,
+    "capabilitiesPerTarget": 584,
+    "fixtureRuns": 3,
+    "retainedAuthIds": 84,
+    "historyEvents": 15
+  },
+  "historicalNotRerun": {
+    "D19SupportPassed": 441,
+    "proofPreflightPassed": 3,
+    "D17StaticGates": "D17-R2-gate-exits.json; same source unchanged",
+    "D17OwnerDeviceHosted": "still blocked",
+    "R2UiPersistence": "retained8 at its own fingerprint"
+  },
+  "evidence": {
+    "browser": "D19-current-runtime/browser/D19-browser-summary.json",
+    "fundedNeutrality": "D19-current-browser-neutrality.json",
+    "apiNeutrality": "D19-current-api-neutrality.json",
+    "retention": "D19-current-fixture-retention.json",
+    "cases": "D19-current-case-coverage.json",
+    "changedFiles": "D19-current-changed-files.json",
+    "integrity": "D19-current-integrity.json"
+  },
+  "financialNeutrality": {
+    "at": "2026-10-24T05:16:49.534Z",
+    "sourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+    "runId": "a6cb60d6-37ca-4f96-9379-4a332469ab81",
+    "target": {
+      "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+      "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+      "disposable": true,
+      "projectId": "adfocate-r1-empty-20261023",
+      "proxy": "none",
+      "apiPort": 56421,
+      "apiContainerId": "1b9c41318298d79308db7782f51474541ad5abf0120fa93b96a2a9ea59d043ee",
+      "databaseContainerId": "e7c8efa295cd5544a8b2a100a73b6953cd6ddd486aaf394f231482067523e12d",
+      "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+      "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+      "networkId": "9e5d3069e8255d70b8eef56020c8ea2618fdb2626d92d9a04e51ea2de41a98e0"
+    },
+    "before": {
+      "xp": 145,
+      "budget": 8875,
+      "points": 550,
+      "cashLedger": 1,
+      "pointLedger": 1,
+      "redemptions": 0,
+      "budgetLedger": 1,
+      "withdrawable": 125,
+      "rewardInventory": [
+        {
+          "id": "6c91d97e-4a80-401a-8eef-21e51165d6f6",
+          "stock_qty": 3,
+          "stock_remaining": 3
+        }
+      ]
+    },
+    "after": {
+      "xp": 145,
+      "budget": 8875,
+      "points": 550,
+      "cashLedger": 1,
+      "pointLedger": 1,
+      "redemptions": 0,
+      "budgetLedger": 1,
+      "withdrawable": 125,
+      "rewardInventory": [
+        {
+          "id": "6c91d97e-4a80-401a-8eef-21e51165d6f6",
+          "stock_qty": 3,
+          "stock_remaining": 3
+        }
+      ]
+    },
+    "allEqual": true,
+    "legacyBefore": [
+      {
+        "id": "8bf1bf1b-2558-4ffa-983a-00f68a822dd1",
+        "status": "approved",
+        "xpAwarded": 135,
+        "pointsAwarded": 500
+      }
+    ],
+    "legacyAfter": [
+      {
+        "id": "8bf1bf1b-2558-4ffa-983a-00f68a822dd1",
+        "status": "approved",
+        "xpAwarded": 135,
+        "pointsAwarded": 500
+      }
+    ],
+    "initialSnapshots": [
+      {
+        "xp": 0,
+        "points": 50,
+        "withdrawable": 0,
+        "budget": 9000,
+        "pointLedger": 0,
+        "cashLedger": 0,
+        "redemptions": 0,
+        "budgetLedger": 0,
+        "rewardInventory": [
+          {
+            "id": "6c91d97e-4a80-401a-8eef-21e51165d6f6",
+            "stock_qty": 3,
+            "stock_remaining": 3
+          }
+        ]
+      },
+      {
+        "xp": 0,
+        "points": 50,
+        "withdrawable": 0,
+        "budget": 9000,
+        "pointLedger": 0,
+        "cashLedger": 0,
+        "redemptions": 0,
+        "budgetLedger": 0,
+        "rewardInventory": [
+          {
+            "id": "6c91d97e-4a80-401a-8eef-21e51165d6f6",
+            "stock_qty": 3,
+            "stock_remaining": 3
+          }
+        ]
+      }
+    ],
+    "checks": {
+      "rawFinancialSnapshotEqual": true,
+      "legacyIssuedAnchorsEqual": true,
+      "oneDurablePending": true,
+      "fundedBudget": true,
+      "inventoryPresent": true,
+      "reloadPersisted": true,
+      "creatorInternalIdHidden": true,
+      "historyPreserved": true
+    },
+    "persisted": {
+      "creatorId": "c9bc89af-41b1-4f37-a525-87eb8c4b13c6",
+      "submissionId": "ef350ef1-ac4a-488d-bb2e-65d9980257a4",
+      "workflowId": "14878891-a9eb-4e26-a5eb-87bcf1c6f3c4",
+      "itemId": "0a83c04b-54f1-4a9d-9ad7-a020c5c95080",
+      "pendingRewardId": "6fdf2c11-c561-438f-b327-5d8abc822dd6",
+      "creatorVisiblePrivateId": null,
+      "financeId": "6fdf2c11-c561-438f-b327-5d8abc822dd6",
+      "historyEvents": 15,
+      "allVisibleFieldsSame": true
+    },
+    "financialMeaning": "Existing legacy approval issued500points/135XP/125cash and debited125 from9000 enforced budget; active join added10XP before the pending baseline. These existing effects are not neutral. Pending completion/reload creates no issuance, ledger, withdrawable, budget or inventory mutation. No external payment or provider.",
+    "fundedFixture": {
+      "initialBudget": 9000,
+      "enforced": true,
+      "initialStock": 3
+    }
+  },
+  "caseCoverage": {
+    "auditCases": 107,
+    "findings": 28,
+    "tasks": 20,
+    "newProductCases": 12,
+    "currentSelectedWitnessCases": 16,
+    "originalFieldsVerified": 1645,
+    "originalAuditResultsPreserved": true,
+    "canonicalAuditCaseCsvChanged": false
+  },
+  "resolvedSinceFinalReview": {
+    "id": "CURRENT_CORE_RUNTIME",
+    "before": "NOT_RENEWED_ON_CURRENT_CANDIDATE",
+    "now": "PASS_SELECTED_CURRENT_CANDIDATE_D19_CORE_LOCAL",
+    "evidence": "D19-current-delivery.json",
+    "scope": "Current source-bound D19 core/API/Edge and funded neutrality renewed. Full offline1954/363 fresh; historical support441+proof3 and unselected support paths not renewed. Local disposable only; no formal staff, owner/device/hosted/provider acceptance or whole-R1-current blanket claim."
+  },
+  "remainingBlockers": [
+    {
+      "id": "D15_CONTENT",
+      "task": "D15",
+      "status": "BLOCKED_CONTENT_NOT_PROVIDED",
+      "missing": "Four real approved lessons for UC-C18/UC-A51; author/reference/content approval absent",
+      "next": "Provide approved repo content/reference, then run author→Creator→persisted progress acceptance; Synthetic units never substitute"
+    },
+    {
+      "id": "ADVISOR_OWNER",
+      "task": "D17",
+      "status": "BLOCKED_NAMED_OWNER_NOT_PROVIDED",
+      "missing": "Named owner, authority and per-notice decisions/attestation for481 historical/current items",
+      "next": "Assign actual human owners and record evidence/decision/acceptedAt for each notice; keep88 not-observed notices open"
+    },
+    {
+      "id": "D17_DEVICE_AT",
+      "task": "D17",
+      "status": "BLOCKED_DEVICE_NATIVE_ZOOM_MANUAL_AT_EVIDENCE",
+      "missing": "Native200% browser zoom, physical device, Safari/WebKit and manual screen-reader evidence",
+      "next": "Use available real devices/native browser/AT and label exact device/browser results; CSS simulation is not a replacement"
+    },
+    {
+      "id": "D17_HOSTED_FIELD",
+      "task": "D17",
+      "status": "BLOCKED_HOSTED_FIELD_EVIDENCE",
+      "missing": "Authorized hosted advisors and field p75/cold/warm/network/device evidence",
+      "next": "Bind authorized hosted project, schema/source/time and capture real evidence; retain local lab limits"
+    },
+    {
+      "id": "FORMAL_STAFF",
+      "task": "D18",
+      "status": "NOT_AUTHORIZED_NOT_RUN",
+      "missing": "Exact existing staff/workspace scope, named owner, least-role mapping/bootstrap and formal cutover authorization",
+      "next": "Retain successful-login/membership0 scope diagnosis; do not relogin or weaken membership; keep user_id single-workspace PK"
+    },
+    {
+      "id": "D14_PUBLIC_COPY_OWNER",
+      "task": "D14",
+      "status": "OWNER_RELEASE_CONFIRMATION_OPEN",
+      "missing": "Release-owner confirmation of bounded public commitments and enabled course scope",
+      "next": "Review truthful copy/disabled unavailable functionality with actual owner; do not imply curriculum or payment capability"
+    },
+    {
+      "id": "D20_LIVE_PROVIDER",
+      "task": "D20",
+      "status": "DISABLED_NOT_RUN",
+      "missing": "Live staff/context-bound durable request safety review and separately authorized provider quality/cost/token/latency evaluation",
+      "next": "Keep provider disabled; review existing D16 reserve/claim/save/unknown scope before any explicitly authorized live trial"
+    },
+    {
+      "id": "HOSTED_RELEASE_UC_R03",
+      "task": "D19",
+      "status": "HELD_NOT_DEPLOYED",
+      "missing": "Candidate commit/deployment SHA, CI, current target-bound schema/history/protected evidence and named release/rollback owners",
+      "next": "Prepare fresh target-bound evidence under required authorization; preserve expiry and formal approval gates; no push/merge/deploy authorized"
+    },
+    {
+      "id": "PILOT_OBSERVER",
+      "task": "D19",
+      "status": "NOT_ENABLED_NOT_RUN",
+      "missing": "Formal pilot enablement and seven-day observer evidence",
+      "next": "Only after release/pilot conditions and explicit authorization; no scheduler or production mutation in this review"
+    },
+    {
+      "id": "EXTERNAL_ACTIONS",
+      "task": "D16/D20",
+      "status": "MOCK_OR_NOT_RUN",
+      "missing": "Real notifications/invitations/publication, paid AI and payment acceptance",
+      "next": "Keep mocks/sandbox and pending reward semantics; do not add financial issuance or external actions"
+    },
+    {
+      "id": "AUDIT_ARCHIVE_BYTES",
+      "task": "D01",
+      "status": "NOT_AVAILABLE_AT_EXACT_PATH",
+      "missing": "Original audit ZIP at supplied exact Downloads path for a fresh byte hash",
+      "next": "Retain expected SHA/imported tests; recheck the exact supplied file when available without broad search or guessing"
+    },
+    {
+      "id": "EARLIER_PATCH_LAYERING",
+      "task": "D12/D13/D14/D15/D17/D18",
+      "status": "DEPENDENCY_HUNK_REVIEW_REQUIRED",
+      "missing": "Six earlier patches do not mechanically reverse on the layered current worktree; hosted compatible rollback SHA remains unbound",
+      "next": "Review dependency/hunk compatibility, preserve fail-closed role/ACL guards and all data/history; no bulk reset/down/reverse"
+    },
+    {
+      "id": "SUPPORT_RUNTIME_NOT_RENEWED_CURRENT",
+      "task": "D19",
+      "status": "HISTORICAL_RETAINED_NOT_RERUN",
+      "missing": "Broader shaped support441+proof3, full ancillary acceptance and1k/10k/manual/device/hosted scenarios are not renewed by this selected core run",
+      "next": "Use a separately reviewed fresh exact-ID fixture setup for any broader support renewal; do not reuse historical seed/delete authority or relabel current core as whole R1 verification"
+    }
+  ],
+  "preflightAttempt": "D19-current-preflight-attempts.json",
+  "historicalD19TaskAndBacklog": {
+    "task": {
+      "task": "D19",
+      "newResult": {
+        "code": "Existing workflow/proof/reward/release foundation reused; one forward legacy ACL repair; only necessary fixture, transport and release validator extensions",
+        "test": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped",
+        "deployment": "not-deployed",
+        "runtime": "Verified owned single-workspace legacy→reviewer→active revision/proof→operator completion→Creator/operator/finance reload; funded pending/cancel/reapproval neutrality; no production or real staff transition"
+      },
+      "detail": "2026-10-24-adfocate-pilot-readiness.md",
+      "evidence": [
+        "D19-delivery.json",
+        "D19-case-coverage.json",
+        "D19-schema-diff.json",
+        "D19-test-results.json",
+        "D19-browser-neutrality.json"
+      ],
+      "followupResults": [
+        {
+          "id": "R2_UI_FOLLOWUP_20261024",
+          "newResult": {
+            "code": "Six existing support routes extended with shared recoverable feedback; parent raw JSON replaced with business fields and metadata three-way rebase. Existing engines/gates retained.",
+            "test": "1950 passed / 363 explicitly gated skipped / 274 files; original16+194; 19 new R2 assertions; 8 real local Edge cases; 5 static gates",
+            "deployment": "not-deployed",
+            "runtime": "8 real local Edge journeys with owned Auth/API/RLS/DB; actual empty scopes and eligibility, metadata persisted across hard reload and real409; explicit empty/fault mocks labelled."
+          },
+          "evidence": "R2-ui-delivery.json",
+          "D15ContentBlocker": "unchanged"
+        }
+      ]
+    },
+    "backlog": {
+      "task_id": "D19",
+      "phase": "GATE",
+      "title": "整合107案例、發布證據與受控pilot交接",
+      "dependencies": "D01 D02 D03 D04 D05 D06 D07 D10 D11 D16",
+      "finding_ids": "",
+      "primary_cases": "UC-C13 UC-C14 UC-C15 UC-C16 UC-C17 UC-C33 UC-C36 UC-A09 UC-A18 UC-A19 UC-A45 UC-A46 UC-A49 UC-S04",
+      "status": "not-started",
+      "size": "L",
+      "completion": "code/test/deployment/runtime四種狀態分開；沒有外部授權停在release-ready且提供具體可核對變更，不稱production完成。",
+      "scope": "proposed implementation; no product changes made",
+      "newResult": "R1_VERIFIED_LOCAL_DISPOSABLE_SINGLE_WORKSPACE; production pilot not enabled; formal staff handoff open; R2 selected UI / parent metadata follow-up verified-local",
+      "codeStatus": "Existing workflow/proof/reward/release foundation reused; one forward legacy ACL repair; only necessary fixture, transport and release validator extensions; Six existing support routes extended with shared recoverable feedback; parent raw JSON replaced with business fields and metadata three-way rebase. Existing engines/gates retained.",
+      "testStatus": "1867 passed / 363 explicitly gated skipped / 269 files; original16+194 green; real support441+proof3, role8+core9 and Edge5 non-skipped; 1950 passed / 363 explicitly gated skipped / 274 files; original16+194; 19 new R2 assertions; 8 real local Edge cases; 5 static gates",
+      "deploymentStatus": "not-deployed",
+      "runtimeStatus": "Verified owned single-workspace legacy→reviewer→active revision/proof→operator completion→Creator/operator/finance reload; funded pending/cancel/reapproval neutrality; no production or real staff transition; 8 real local Edge journeys with owned Auth/API/RLS/DB; actual empty scopes and eligibility, metadata persisted across hard reload and real409; explicit empty/fault mocks labelled.",
+      "evidence": "D19-delivery.json;D19-delivery.md;D19-case-coverage.json;D19-changes.patch;R2-ui-delivery.json"
+    }
+  },
+  "rollback": {
+    "applicationPatch": null,
+    "sourceChanged": false,
+    "documentBeforeImages": "C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023\\.codex-tmp\\D19-current-20261024-before",
+    "priorRollbackChecks": "final-review-D17-rollback.json",
+    "fourMechanicalPassSixHunkReviewStillApplicable": true,
+    "databaseRollbackOrCleanup": "none;84 exact new IDs retained; no reset/down/broad delete; preserve membership, audit, proof, pending/cancelled, finance and migration history",
+    "hostedRollback": "not authorized/not run; compatible SHA and named owner still unbound"
+  },
+  "authorization": {
+    "localDisposableSyntheticFixtures": true,
+    "productionQueried": false,
+    "productionWritten": false,
+    "formalMembershipOrRolesChanged": false,
+    "providerEnabled": false,
+    "paidAiCalled": false,
+    "realExternalNotificationsOrInvites": false,
+    "commit": null,
+    "push": false,
+    "merge": false,
+    "deploy": false,
+    "canDeploy": false,
+    "canEnablePilot": false
+  },
+  "nextTask": {
+    "id": "D17",
+    "status": "BLOCKED_NAMED_OWNER_DEVICE_HOSTED_ACCEPTANCE",
+    "scope": "Obtain actual named owner/authority and per-notice acceptance for481 items, plus native/device/AT/authorized hosted evidence; no further unblocked D-task is implied by this review.",
+    "independentBlockers": [
+      "D15_CONTENT",
+      "FORMAL_STAFF",
+      "D20_LIVE_PROVIDER"
+    ],
+    "beforeAnyRelease": [
+      "HOSTED_RELEASE_UC_R03",
+      "PILOT_OBSERVER",
+      "EARLIER_PATCH_LAYERING"
+    ],
+    "noD21Defined": true,
+    "currentCoreRenewed": "D19-current-delivery.json",
+    "unselectedRuntimeRetained": {
+      "id": "SUPPORT_RUNTIME_NOT_RENEWED_CURRENT",
+      "task": "D19",
+      "status": "HISTORICAL_RETAINED_NOT_RERUN",
+      "missing": "Broader shaped support441+proof3, full ancillary acceptance and1k/10k/manual/device/hosted scenarios are not renewed by this selected core run",
+      "next": "Use a separately reviewed fresh exact-ID fixture setup for any broader support renewal; do not reuse historical seed/delete authority or relabel current core as whole R1 verification"
+    }
+  }
+}

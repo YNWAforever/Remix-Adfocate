@@ -1,0 +1,24 @@
+{
+  "runId": "4050e434-7dbf-4990-a3bc-8038aef35a49",
+  "missionIds": [
+    "7fc59bfa-a605-4f84-b2af-5a3d736e5380",
+    "9f838fcd-c294-4143-b7dd-66088d4ca70d",
+    "7c15763b-c2c6-4704-93c1-015940c43304",
+    "9c95550c-151e-4339-9134-edeb2e16d335"
+  ],
+  "realSerializedListAndDetailEqual": true,
+  "cashZeroAndNullDistinct": true,
+  "petTravelAndUnknownFilter": true,
+  "noDetailRequestBeforeCardOpen": true,
+  "retry503PreservedFilter": true,
+  "lowXpJoinDeniedAndReloaded": true,
+  "unverifiedL3StillLocked": true,
+  "viewports": [
+    360,
+    1280
+  ],
+  "noHorizontalOverflowAt360": true,
+  "unknownCashDetailFullyReadable": true,
+  "publication": "not performed",
+  "paidProviders": "disabled"
+}

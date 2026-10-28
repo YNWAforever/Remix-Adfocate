@@ -1,0 +1,149 @@
+{
+  "sourceFingerprint": "e83998d178061043688016056a5a78fc61df58bac28f3d0d0b66d639306037bd",
+  "full": {
+    "command": [
+      "node",
+      "node_modules/vitest/vitest.mjs",
+      "run",
+      "--no-file-parallelism",
+      "--reporter=json",
+      "--outputFile=docs\\verification\\adfocate-d19-b2-20261025-recovery-4d6ca2c8\\continuation-final-full.json"
+    ],
+    "exit": 0,
+    "passed": 2082,
+    "failed": 0,
+    "gatedSkip": 363,
+    "files": 289,
+    "report": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-final-full.json",
+    "commandReceipt": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-final-full-command.json"
+  },
+  "originalAudit16": {
+    "passed": 16,
+    "failed": 0,
+    "skipped": 0,
+    "total": 16
+  },
+  "protected194": {
+    "passed": 194,
+    "failed": 0,
+    "skipped": 0,
+    "total": 194
+  },
+  "releaseFoundationFromFull": {
+    "passed": 107,
+    "failed": 0,
+    "skipped": 0,
+    "total": 107
+  },
+  "node": "v24.18.0",
+  "Node22": {
+    "executableVerified": true,
+    "version": "v22.23.4",
+    "probe": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/node22-exact-path-probe.json",
+    "fullSuite": "NOT_STARTED_RESOURCE_GATE",
+    "preflight": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/node22-full-preflight-attempt1.json",
+    "physicalFreeGiB": 1.6366615295410156,
+    "commitHeadroomGiB": 0.5110015869140625,
+    "requiredPhysicalAndCommitGiB": 3,
+    "initialFailureTimeObservationPreserved": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/node22-initial-preflight-stop.json",
+    "testResult": null,
+    "packageDownloadedOrInstalled": false
+  },
+  "actualC1TargetUsedForLocalGates": false,
+  "wholeR1Verified": false,
+  "lint": {
+    "exit": 0,
+    "command": [
+      "node",
+      "node_modules/eslint/bin/eslint.js",
+      "."
+    ],
+    "log": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-final-lint.log",
+    "receipt": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-final-lint-command.json",
+    "existingWarnings": 4
+  },
+  "type": {
+    "exit": 0,
+    "command": [
+      "node",
+      "node_modules/typescript/bin/tsc",
+      "--noEmit"
+    ],
+    "log": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-final-type.log",
+    "receipt": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-final-type-command.json"
+  },
+  "build": {
+    "exit": 0,
+    "command": [
+      "npm.cmd",
+      "run",
+      "build"
+    ],
+    "log": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-final-build.log",
+    "receipt": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-final-build-command.json"
+  },
+  "esm": {
+    "exit": 0,
+    "command": [
+      "node",
+      "scripts/check-esm-extensions.mjs"
+    ],
+    "log": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-final-esm.log",
+    "receipt": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-final-esm-command.json"
+  },
+  "manifest": {
+    "exit": 0,
+    "command": [
+      "node",
+      "node_modules/vite-node/vite-node.mjs",
+      "--script",
+      "scripts/release/manifest-cli.ts",
+      "check"
+    ],
+    "log": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-final-manifest.log",
+    "receipt": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-final-manifest-command.json"
+  },
+  "offline": {
+    "exit": 0,
+    "command": [
+      "node",
+      "scripts/audit/adopt-browser-fixture.mjs",
+      "docs/verification/D19-C1-browser-continuation-runtime-manifest.json",
+      "--offline-check"
+    ],
+    "log": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-final-offline.log",
+    "receipt": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-final-offline-command.json"
+  },
+  "targeted": {
+    "passed": 48,
+    "failed": 0,
+    "report": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/recovery-targeted-final.json",
+    "note": "6 editor recovery +28 context namespace +14 pure provenance/source cases; full suite rechecks final source."
+  },
+  "redEvidence": [
+    "autosave-red.json",
+    "autosave-conflict-red.json",
+    "recovery-artifact-scope-red.json",
+    "browser-recovery-guard-red.json",
+    "continuation-lint.log",
+    "continuation-type.log"
+  ],
+  "originSourceRuntime": {
+    "sourceFingerprint": "6285bca02a74bedf3eda7259238366e9023fcc0cae24fe5e7c874ae9dd118d7b",
+    "role": {
+      "passed": 8,
+      "failed": 0
+    },
+    "core": {
+      "passed": 9,
+      "failed": 0
+    },
+    "browser": {
+      "passed": 2,
+      "failed": 1,
+      "notRun": 2,
+      "phaseExit": 1
+    },
+    "newSourceRuntime": "NOT_RUN_NOT_APPROVED"
+  }
+}

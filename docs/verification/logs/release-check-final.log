@@ -1,0 +1,85 @@
+
+> release:check
+> npm run release:manifest:check && npm run test:release-foundation && npm run type-check
+
+
+> release:manifest:check
+> vite-node --script scripts/release/manifest-cli.ts check
+
+Warning: Route file "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/_site.smoke.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\src\routes\-_site.smoke.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+02b4d20a76565ec248e607b8ef45db2c79a173091db754c2e66a3de5e6452ccd
+
+> test:release-foundation
+> vitest run scripts/release --reporter=dot
+
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ✓ scripts/release/pilot.test.ts (6 tests) 19ms
+ ✓ scripts/release/supabase-workflow-contract.test.ts (9 tests) 21ms
+ ✓ scripts/release/deployment.test.ts (8 tests) 26ms
+ ✓ scripts/release/preflight.test.ts (10 tests) 26ms
+ ✓ scripts/release/observer.test.ts (8 tests) 16ms
+ ✓ scripts/release/evidence.test.ts (7 tests) 34ms
+ ✓ scripts/release/target-guard.test.ts (9 tests) 25ms
+ ✓ scripts/release/rehearsal.test.ts (9 tests) 31ms
+ ✓ scripts/release/executor.test.ts (5 tests) 15ms
+ ✓ scripts/release/process.test.ts (1 test) 8ms
+ ✓ scripts/release/ci-workflow-contract.test.ts (1 test) 3ms
+ ✓ scripts/release/release-acceptance.test.ts (4 tests) 2828ms
+   ✓ production release foundation acceptance > fails closed at the package rehearsal entrypoint without disposable targets 2823ms
+ ✓ scripts/release/manifest.test.ts (16 tests) 6732ms
+   ✓ release migration manifest > orders, classifies, hashes, and digests the complete reviewed range 441ms
+   ✓ release migration manifest > normalizes LF, CRLF, and lone CR migration checkouts before hashing 373ms
+   ✓ release migration manifest > rejects unreviewed migrations before, inside, or after the reviewed range 367ms
+   ✓ release migration manifest > rejects empty, truncated, and interior-incomplete reviewed ranges 351ms
+   ✓ release migration manifest > does not alias mutable capability metadata between builds 353ms
+   ✓ release migration manifest > does not replace an existing artifact on invalid write and leaves no temp file 577ms
+   ✓ release migration manifest > runs write as a direct vite-node CLI and prints its digest 1334ms
+   ✓ release migration manifest > returns a nonzero usage error for a missing direct CLI command 630ms
+   ✓ release migration manifest > returns a nonzero usage error for a unsupported direct CLI command 600ms
+   ✓ release migration manifest > detects checksum drift, missing files, duplicates, and bad dependencies 421ms
+   ✓ release migration manifest > detects an edited, deleted, or newly added baseline migration 332ms
+   ✓ release migration manifest > rejects migrations the timestamp filter used to drop 353ms
+Warning: Route file "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/_site.smoke.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\src\routes\-_site.smoke.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+{"status":"failed","error":"RELEASE_PILOT_OBSERVATIONS_PATH is required"}
+ ✓ scripts/release/cli.test.ts (7 tests) 9254ms
+   ✓ release npm entrypoints > fails closed when release:execute runs without database configuration 3022ms
+   ✓ release npm entrypoints > fails closed when release:evidence runs without an input file 2685ms
+   ✓ guarded pilot/observer commands > executes the npm/vite-node evaluate boundary even when VITEST is inherited 1925ms
+   ✓ guarded pilot/observer commands > executes the real npm entrypoint and fails closed with JSON 1609ms
+
+ Test Files  14 passed (14)
+      Tests  100 passed (100)
+   Start at  03:06:10
+   Duration  11.80s (transform 1.19s, setup 4.38s, collect 2.13s, tests 19.04s, environment 18.15s, prepare 2.64s)
+
+
+> type-check
+> tsr generate && tsc --noEmit
+
+Warning: Route file "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/_site.smoke.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\src\routes\-_site.smoke.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined

@@ -1,0 +1,45 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ✓ server/test/admin-reward-handoffs.test.ts (53 tests) 63ms
+ ✓ src/components/admin/ActiveMissionReview.test.tsx (21 tests) 797ms
+ ❯ src/routes/-admin.active-missions.test.tsx (35 tests | 1 failed) 2123ms
+   × ActiveMissionQueue > keeps server order and shows the required review metadata 110ms
+     → expect(element).toHaveTextContent()
+
+Expected element to have text content:
+  Due today
+Received:
+  Instagram reelSummer launch · Amy WongDue 7/20/2026Submitted lateunavailableSLADue soonSubmitted7 hours agoCreator deadline7/21/2026, 2:00:00 AMReview ownerUnassignedSubmitted 7 hours agoReview deliverable
+ ✓ src/components/admin/MissionCompletionReview.test.tsx (17 tests) 489ms
+ ✓ server/test/active-missions-publication-operator.test.ts (11 tests) 29ms
+ ✓ src/routes/-admin.reward-handoffs.test.tsx (12 tests) 463ms
+ ✓ src/components/admin/RewardHandoffQueue.test.tsx (19 tests) 409ms
+ ✓ server/test/staffAuth.test.ts (17 tests) 7ms
+ ✓ src/components/admin/WorkspaceSwitcher.test.tsx (6 tests) 169ms
+ ✓ src/components/admin/StaffAuthGate.test.tsx (3 tests) 48ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/routes/-admin.active-missions.test.tsx > ActiveMissionQueue > keeps server order and shows the required review metadata
+Error: expect(element).toHaveTextContent()
+
+Expected element to have text content:
+  Due today
+Received:
+  Instagram reelSummer launch · Amy WongDue 7/20/2026Submitted lateunavailableSLADue soonSubmitted7 hours agoCreator deadline7/21/2026, 2:00:00 AMReview ownerUnassignedSubmitted 7 hours agoReview deliverable
+ ❯ src/routes/-admin.active-missions.test.tsx:198:22
+    196|     render(<ActiveMissionQueue items={items} now={new Date("2026-07-19…
+    197|     const cards = screen.getAllByTestId("queue-item");
+    198|     expect(cards[0]).toHaveTextContent("Due today");
+       |                      ^
+    199|     expect(cards[0]).toHaveTextContent("Instagram reel");
+    200|     expect(cards[0]).toHaveTextContent("Summer launch");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+ Test Files  1 failed | 9 passed (10)
+      Tests  1 failed | 193 passed (194)
+   Start at  01:16:51
+   Duration  11.72s (transform 777ms, setup 2.57s, collect 2.79s, tests 4.60s, environment 8.64s, prepare 1.23s)
+

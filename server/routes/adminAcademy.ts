@@ -3,12 +3,14 @@
 import { Hono } from "hono";
 import type { AdminEnv } from "../lib/staffAuth.js";
 import { serviceClient } from "../lib/supabase.js";
+import { adminAcademyLessonsRoutes } from "./academyLessons.js";
 import {
   type AcademyInput, type AcademyEditInput, type AcademyStatus,
   validateAcademyInput, validateAcademyEdit,
 } from "../lib/academyAuthoring.js";
 
 export const adminAcademyRoutes = new Hono<AdminEnv>();
+adminAcademyRoutes.route("/", adminAcademyLessonsRoutes);
 
 const COLS =
   "id, kind, slug, status, title_zh, title_en, excerpt_zh, excerpt_en, body_zh, body_en, " +

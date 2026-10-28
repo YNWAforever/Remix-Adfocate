@@ -1,0 +1,13 @@
+{
+  "at": "2026-10-24T01:26:58.402207+00:00",
+  "status": "NO_SCHEMA_CHANGE",
+  "manifestDigestBefore": "3e6809f9a51b1ac7ebb9f770160aab27f02523ebf69fc47f8fe38f44d05f6363",
+  "manifestDigestAfter": "3e6809f9a51b1ac7ebb9f770160aab27f02523ebf69fc47f8fe38f44d05f6363",
+  "manifestEntries": 42,
+  "allPriorSqlFilesUnchanged": 73,
+  "newMigrationFiles": [],
+  "objectsRpcGrantsRlsHistory": "No DDL or migration/history repair; inherited D19 catalog retained. Selected current identity/Auth/API/RLS/DB exercised by R2 browser. No fresh complete catalog query claimed.",
+  "membershipRoleChanges": "Only two explicit owner bootstrap grants for this newly created isolated fixture operator; exact new auth/workspace IDs in R2-ui-fixture.json. No production or pre-existing staff transition.",
+  "productionQueried": false,
+  "productionWrites": false
+}

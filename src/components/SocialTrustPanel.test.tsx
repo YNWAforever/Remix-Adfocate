@@ -108,6 +108,35 @@ describe("SocialTrustPanel", () => {
     await waitFor(() => expect(hoisted.scan).toHaveBeenCalledWith("acc-1"));
   });
 
+  it("retains a handle and offers a readable error when saving fails", async () => {
+    hoisted.add.mockRejectedValueOnce(new Error("internal database details"));
+    renderEn(<SocialTrustPanel />);
+    fireEvent.change(screen.getByLabelText("Threads handle"), { target: { value: "@keepthis" } });
+    fireEvent.click(screen.getByText("Save Threads"));
+    expect(await screen.findByRole("alert")).toHaveTextContent("Your input is kept");
+    expect(screen.getByLabelText("Threads handle")).toHaveValue("@keepthis");
+    expect(screen.queryByText("internal database details")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByText("Save Threads"));
+    await waitFor(() => expect(hoisted.add).toHaveBeenCalledTimes(2));
+  });
+
+  it("keeps every canonical account on a platform visible", () => {
+    hoisted.accounts.push({ ...hoisted.accounts[0], id: "acc-second", handle: "second" });
+    try {
+      renderEn(<SocialTrustPanel />);
+      expect(screen.getByText("@ming")).toBeInTheDocument();
+      expect(screen.getByText("@second")).toBeInTheDocument();
+    } finally { hoisted.accounts.pop(); }
+  });
+
+  it("can add a corrected handle when the platform already has an account", async () => {
+    renderEn(<SocialTrustPanel />);
+    fireEvent.change(screen.getByLabelText("Instagram handle"), { target: { value: "@corrected" } });
+    fireEvent.click(screen.getByText("Save Instagram"));
+    await waitFor(() => expect(hoisted.add).toHaveBeenCalledWith({ platform: "instagram", handle: "@corrected" }));
+    expect(screen.getByText("@ming")).toBeInTheDocument();
+  });
+
   it("uses the scanned avatar only after explicit selection", async () => {
     renderEn(<SocialTrustPanel />);
     fireEvent.click(screen.getByText("Use as Adfocate avatar"));

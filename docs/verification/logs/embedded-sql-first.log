@@ -1,0 +1,23 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  server/test/audit-forward-migrations.embedded.test.ts [ server/test/audit-forward-migrations.embedded.test.ts ]
+ReferenceError: window is not defined
+ ❯ src/test/setup.ts:36:23
+     34| })();
+     35| 
+     36| Object.defineProperty(window, "localStorage", {
+       |                       ^
+     37|   value: localStorageMock,
+     38|   writable: true,
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  01:47:26
+   Duration  798ms (transform 37ms, setup 0ms, collect 0ms, tests 0ms, environment 0ms, prepare 135ms)
+

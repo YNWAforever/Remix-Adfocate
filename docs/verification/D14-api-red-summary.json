@@ -1,0 +1,15 @@
+{
+  "passed": 0,
+  "failed": 2,
+  "skipped": 0,
+  "failures": [
+    {
+      "test": "derives availability from the localized body, never from duration metadata or the excerpt",
+      "message": "AssertionError: expected [ [ 'empty', undefined ], …(1) ] to deeply equal [ [ 'empty', 'preparing' ], …(1) ]"
+    },
+    {
+      "test": "uses the same language fallback for availability and the displayed body",
+      "message": "AssertionError: expected undefined to be 'available' // Object.is equality"
+    }
+  ]
+}

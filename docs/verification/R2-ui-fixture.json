@@ -1,0 +1,33 @@
+{
+  "runId": "08530ddb-c357-4638-8ab8-af5854f42fa3",
+  "target": {
+    "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+    "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+    "disposable": true,
+    "projectId": "adfocate-r1-empty-20261023",
+    "proxy": "none",
+    "apiPort": 56421,
+    "apiContainerId": "1b9c41318298d79308db7782f51474541ad5abf0120fa93b96a2a9ea59d043ee",
+    "databaseContainerId": "e7c8efa295cd5544a8b2a100a73b6953cd6ddd486aaf394f231482067523e12d",
+    "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+    "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+    "networkId": "9e5d3069e8255d70b8eef56020c8ea2618fdb2626d92d9a04e51ea2de41a98e0"
+  },
+  "workspaceIds": [
+    "956d9842-e221-405a-ab30-22def8a4bf7b",
+    "7274c941-4353-4729-9480-b5db15fe59c5"
+  ],
+  "authIds": [
+    "e55a329e-3b74-4401-ae29-c77cf5685a07",
+    "a9efdae5-49c0-4513-a050-6f08b296341f",
+    "7d6f04a7-604b-4cb7-aceb-f6a4c7a7f828",
+    "8430ecbd-3f29-41aa-8ac4-6fc4afea23b1"
+  ],
+  "ownedTrackIds": [
+    "3edb4527-3c0a-4999-a130-1a4f5aeefbf3",
+    "cc539efc-f987-4214-81e0-40b406b64000",
+    "0a2d67b0-ffb1-4c4d-b79a-e841ecc0b9ab"
+  ],
+  "cleanup": "none; exact new IDs retained, including incomplete attempts",
+  "content": "Synthetic parent metadata/eligibility fixtures only; no lesson units or approved curriculum"
+}

@@ -5,6 +5,7 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MissionEditor } from "@/components/admin/MissionEditor";
 import { AdminRequestError } from "@/lib/admin";
 import type { AdminMission } from "@/lib/admin";
+import { dict } from "@/lib/i18n.dict";
 import { I18nProvider } from "@/lib/i18n";
 
 vi.mock("@/lib/missionCategories", () => ({ MISSION_CATEGORIES: ["美容", "餐飲"], ALL_CATEGORY: "全部" }));
@@ -28,7 +29,25 @@ const renderLocalizedEditor = (locale: "en" | "zh", props: EditorProps) => {
   return render(<I18nProvider><MissionEditor {...props} /></I18nProvider>);
 };
 
+function addDeliverable(locale: "en" | "zh" = "zh") {
+  fireEvent.change(screen.getByLabelText(dict[locale]["app.admin.missionEditor.workflow"]), { target: { value: "active_workspace" } });
+  fireEvent.click(screen.getByRole("button", { name: dict[locale]["app.admin.missionEditor.addDeliverable"] }));
+}
+function completeFixture(locale: "en" | "zh") {
+  fireEvent.change(screen.getByLabelText(locale === "en" ? "Deliverable title 1" : "交付標題 1"), { target: { value: "Synthetic deliverable" } });
+  fireEvent.change(screen.getByLabelText(locale === "en" ? "Publication instructions 1" : "發佈指示 1"), { target: { value: "Synthetic publication instructions" } });
+}
+
 describe("MissionEditor", () => {
+  it.each(["travel", "原有未知長中文分類"])("retains the existing %s category visibly and on an unrelated edit", async (category) => {
+    const onSave = vi.fn().mockResolvedValue({});
+    renderEditor({mode:"edit",initial:{...active,status:"draft",category},workspaces:[{id:"w1",name:"W"}],onSave});
+    expect(screen.getByRole("combobox",{name:"分類"})).toHaveValue(category);
+    fireEvent.change(screen.getByLabelText("標題"),{target:{value:"Updated title"}});
+    fireEvent.click(screen.getByRole("button",{name:/儲存/}));
+    await waitFor(() => expect(onSave).toHaveBeenCalled());
+    expect(onSave.mock.calls[0][0].category).toBe(category);
+  });
   beforeEach(() => {
     vi.clearAllMocks();
     window.localStorage.clear();
@@ -44,7 +63,7 @@ describe("MissionEditor", () => {
 
   it("disables slug & mission_type on a published mission, and economic fields when engaged", () => {
     render(<MissionEditor mode="edit" initial={active} engaged onSave={vi.fn()} />);
-    expect(screen.getByLabelText("Slug")).toBeDisabled();
+    expect(screen.getByLabelText("任務網址代號")).toBeDisabled();
     expect(screen.getByLabelText("任務類型")).toBeDisabled();
     expect(screen.getByLabelText("積分獎勵")).toBeDisabled();
     expect(screen.getByLabelText("標題")).not.toBeDisabled(); // brief always editable
@@ -65,7 +84,7 @@ describe("MissionEditor", () => {
     renderEditor({ mode: "create", workspaces: [{ id: "w1", name: "W" }], onSave });
 
     fireEvent.change(screen.getByLabelText(/標題/), { target: { value: "T" } });
-    fireEvent.change(screen.getByLabelText(/^Slug/i), { target: { value: "ugc-1" } });
+    fireEvent.change(screen.getByLabelText("任務網址代號"), { target: { value: "ugc-1" } });
 
     fireEvent.change(screen.getByLabelText(/目標受眾/), { target: { value: "20-30" } });
     const km = screen.getByPlaceholderText(/重點訊息/);
@@ -92,9 +111,8 @@ describe("MissionEditor", () => {
     const onSave = vi.fn().mockResolvedValue({});
     renderEditor({ mode: "create", workspaces: [{ id: "w1", name: "W" }], onSave });
 
-    fireEvent.change(screen.getByLabelText("Creator workflow"), { target: { value: "active_workspace" } });
-    fireEvent.click(screen.getByRole("button", { name: "Add deliverable" }));
-    fireEvent.change(screen.getByLabelText("Deliverable title 1"), { target: { value: "Reel" } });
+    addDeliverable();
+    fireEvent.change(screen.getByLabelText("交付標題 1"), { target: { value: "Reel" } });
     fireEvent.change(screen.getByLabelText("發佈指示 1"), { target: { value: "Publish the approved reel" } });
     fireEvent.change(screen.getByLabelText("發佈時限小時 1"), { target: { value: "48" } });
     fireEvent.change(screen.getByLabelText("必須披露字句 1"), { target: { value: "#ad\nPaid partnership" } });
@@ -123,8 +141,7 @@ describe("MissionEditor", () => {
     });
     await waitFor(() => expect(document.documentElement.lang).toBe(locale === "en" ? "en" : "zh-Hant-HK"));
 
-    fireEvent.change(screen.getByLabelText("Creator workflow"), { target: { value: "active_workspace" } });
-    fireEvent.click(screen.getByRole("button", { name: "Add deliverable" }));
+    addDeliverable(locale);
 
     expect(screen.getByLabelText(instructionsName)).toBeInTheDocument();
     expect(screen.getByLabelText(evidenceName)).toBeInTheDocument();
@@ -139,8 +156,7 @@ describe("MissionEditor", () => {
     });
     await waitFor(() => expect(document.documentElement.lang).toBe("en"));
 
-    fireEvent.change(screen.getByLabelText("Creator workflow"), { target: { value: "active_workspace" } });
-    fireEvent.click(screen.getByRole("button", { name: "Add deliverable" }));
+    addDeliverable("en");
     fireEvent.change(screen.getByLabelText("Proof evidence policy 1"), { target: { value: '{"screenshots":' } });
     fireEvent.click(screen.getByRole("button", { name: "儲存草稿" }));
 
@@ -173,8 +189,8 @@ describe("MissionEditor", () => {
     }));
     renderLocalizedEditor(locale, { mode: "create", workspaces: [{ id: "w1", name: "W" }], onSave });
     await waitFor(() => expect(document.documentElement.lang).toBe(locale === "en" ? "en" : "zh-Hant-HK"));
-    fireEvent.change(screen.getByLabelText("Creator workflow"), { target: { value: "active_workspace" } });
-    fireEvent.click(screen.getByRole("button", { name: "Add deliverable" }));
+    addDeliverable(locale);
+    completeFixture(locale);
     fireEvent.click(screen.getAllByRole("button").at(-1)!);
 
     await waitFor(() => expect(onSave).toHaveBeenCalled());
@@ -188,8 +204,8 @@ describe("MissionEditor", () => {
     }));
     renderLocalizedEditor("zh", { mode: "create", workspaces: [{ id: "w1", name: "W" }], onSave });
     await waitFor(() => expect(document.documentElement.lang).toBe("zh-Hant-HK"));
-    fireEvent.change(screen.getByLabelText("Creator workflow"), { target: { value: "active_workspace" } });
-    fireEvent.click(screen.getByRole("button", { name: "Add deliverable" }));
+    addDeliverable();
+    completeFixture("zh");
     fireEvent.click(screen.getAllByRole("button").at(-1)!);
 
     expect(await screen.findByText("Legacy title detail")).toBeInTheDocument();

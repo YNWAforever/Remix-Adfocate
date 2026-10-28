@@ -1,0 +1,15 @@
+{
+  "passed": 6,
+  "failed": 2,
+  "skipped": 0,
+  "failures": [
+    {
+      "test": "a published edit sends changed fields and revision, without resubmitting the locked slug",
+      "message": "AssertionError: expected \"spy\" to be called with arguments: [ 'a1', { body_zh: '已修正文', …(1) } ]"
+    },
+    {
+      "test": "409 review keeps the draft and rebases only edited fields after explicit acknowledgement",
+      "message": "Error: Unable to find role=\"button\" and name \"Compare latest\""
+    }
+  ]
+}

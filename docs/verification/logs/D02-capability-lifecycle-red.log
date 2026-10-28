@@ -1,0 +1,26 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ❯ scripts/release/preflight.test.ts (11 tests | 1 failed | 10 skipped) 62ms
+   × release preflight > retires obsolete constraint and RPC grant requirements in the CLI's final capability set 61ms
+     → expected [ …(469) ] to not include 'constraint:public.mission_submissions…'
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  scripts/release/preflight.test.ts > release preflight > retires obsolete constraint and RPC grant requirements in the CLI's final capability set
+AssertionError: expected [ …(469) ] to not include 'constraint:public.mission_submissions…'
+ ❯ scripts/release/preflight.test.ts:16:23
+     14|       });
+     15|     const names = report.capabilities.map((capability) => capability.n…
+     16|     expect(names).not.toContain("constraint:public.mission_submissions…
+       |                       ^
+     17|     expect(names).toContain("constraint-removed:public.mission_submiss…
+     18|     expect(names).not.toContain("grant:service_role.public.create_publ…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 10 skipped (11)
+   Start at  03:21:51
+   Duration  1.49s (transform 88ms, setup 221ms, collect 81ms, tests 62ms, environment 717ms, prepare 136ms)
+

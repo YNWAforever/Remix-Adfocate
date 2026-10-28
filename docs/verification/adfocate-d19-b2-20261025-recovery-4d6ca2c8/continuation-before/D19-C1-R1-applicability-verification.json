@@ -1,0 +1,29 @@
+{
+  "status": "PASS_OFFLINE107_FACET_RECONCILIATION_NOT_R1_ACCEPTANCE",
+  "sourceFingerprint": "e83998d178061043688016056a5a78fc61df58bac28f3d0d0b66d639306037bd",
+  "cases": 107,
+  "R0": 2,
+  "R1": 62,
+  "GATE": 14,
+  "R2": 29,
+  "originalAuditAssertions": 16,
+  "protectedContracts": 194,
+  "originC1ApiWitnesses": 17,
+  "originC1PartialCaseFacets": 32,
+  "gapGroups": 10,
+  "newSourceRuntimeCases": 0,
+  "manifestChanged": false,
+  "node22KnownVersion": "v22.23.4",
+  "node22Suite": "NOT_STARTED_RESOURCE_GATE",
+  "modelInterfaceSelection": "UNKNOWN",
+  "incidentOpen": true,
+  "releaseHold": true,
+  "providerEnabled": false,
+  "checkedAt": "2026-10-25T09:54:43.086855+00:00",
+  "command": [
+    "python",
+    "docs/verification/D19-C1-R1-applicability-check.py"
+  ],
+  "exit": 0,
+  "scope": "Local files/reports/source/provenance only; no Docker/SQL/Auth/SDK/window-state calls. No test suite rerun or new runtime acceptance."
+}

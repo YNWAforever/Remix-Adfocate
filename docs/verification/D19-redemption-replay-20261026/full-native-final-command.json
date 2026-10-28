@@ -1,0 +1,31 @@
+{
+  "startedAt": "2026-10-25T20:33:35.690707+00:00",
+  "command": [
+    "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "--reporter=default",
+    "--reporter=json",
+    "--outputFile.json=docs/verification/D19-redemption-replay-20261026/full-native-final.json"
+  ],
+  "node": "v22.23.4",
+  "resource": {
+    "at": "2026-10-25T20:33:35.610825+00:00",
+    "freePhysicalGiB": 6.346809387207031,
+    "freeCommitGiB": 5.391456604003906,
+    "minimumGiB": 3,
+    "freeDiskGiB": 21.883453369140625
+  },
+  "credentialsProxiesPreloadsStripped": true,
+  "integrationDisabled": true,
+  "label": "full-native-final",
+  "log": "docs/verification/D19-redemption-replay-20261026/full-native-final.log",
+  "runtimeTargetCallsRequested": false,
+  "sourceFingerprint": "98d01c1c2c40e900b540f4c474a9725d5b4c8114104ee2524f5afc93be8f06ba",
+  "sourceRecords": 793,
+  "npmExecpathProvided": "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+  "pid": 30172,
+  "sourceUnchangedAfter": true,
+  "endedAt": "2026-10-25T20:35:40.248371+00:00",
+  "exit": 1
+}

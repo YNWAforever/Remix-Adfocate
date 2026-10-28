@@ -1,0 +1,174 @@
+{
+  "identity": {
+    "runId": "5e2fa581-8d94-4c39-847d-e455b2540187",
+    "ownerAuthorization": "2026-10-24 user explicitly authorizes a newly-created one-time pristine isolated target for the two global campaign RPCs only",
+    "disposable": true,
+    "projectId": "adfocate-d19-pristine-20261024-5e2fa581",
+    "proxy": "none",
+    "apiPort": 56631,
+    "apiContainerId": "091455be05d4a6728d59775411dd075ea615ff5f2e0710b4f9918d82566a272d",
+    "databaseContainerId": "2dddb46db112301b0195f17ad44827110c589039f2b5a1b7ecb6427fac47e00a",
+    "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+    "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+    "networkId": "0746102a8514b8478cf318962c1af645e83a0383dcf38939030433b020e80c88"
+  },
+  "migrationCount": 30,
+  "manifestVerifiedCount": 42,
+  "migrations": [
+    {
+      "path": "supabase/migrations/0001_init.sql",
+      "sha256": "d20b6490261b34fcd0e6d6ed6c3c00b30db838ea3399740bb5b2d4f4862fde1a",
+      "status": "applied-in-new-target-only"
+    },
+    {
+      "path": "supabase/migrations/0002_harden_rls.sql",
+      "sha256": "80e2f23b22f85e99878c886dc328b603cb03f3379e9654336c573d3671f53e89",
+      "status": "applied-in-new-target-only"
+    },
+    {
+      "path": "supabase/migrations/0003_onboarding.sql",
+      "sha256": "f0e6af66685f4d1922562374dac76e38e8bcff6b5d0bbdb99676834c9c426e6a",
+      "status": "applied-in-new-target-only"
+    },
+    {
+      "path": "supabase/migrations/0004_grants.sql",
+      "sha256": "6e2ae37c745e0a60d5a3564212376980b11ad3d148acb3a17ab2018f178c8458",
+      "status": "applied-in-new-target-only"
+    },
+    {
+      "path": "supabase/migrations/0005_mission_submissions.sql",
+      "sha256": "212daf37e2a9cd692e82967e615cbeab29194577abf363f8a2d9f45801e9bc78",
+      "status": "applied-in-new-target-only"
+    },
+    {
+      "path": "supabase/migrations/0006_redemption.sql",
+      "sha256": "7ed1a5a1f7029f77493239aab4da5eb0af9924eaf87743eb9d92599434f0f05d",
+      "status": "applied-in-new-target-only"
+    },
+    {
+      "path": "supabase/migrations/0007_earnings.sql",
+      "sha256": "a4ac74095b165a84457ec3a8730e69e61dbf01dc249c5d373eaee0f945ee03dd",
+      "status": "applied-in-new-target-only"
+    },
+    {
+      "path": "supabase/migrations/0008_leveling.sql",
+      "sha256": "7bbcfdb1efd0d40fd16b59b6cb583227984f759a875e4e19139e4e9e0201b550",
+      "status": "applied-in-new-target-only"
+    },
+    {
+      "path": "supabase/migrations/0009_passport_scores.sql",
+      "sha256": "7f65410dc23cd01a8bce9f0d54ef0757a9a81f15328f31cb53ca8a337e5c984f",
+      "status": "applied-in-new-target-only"
+    },
+    {
+      "path": "supabase/migrations/0010_applications.sql",
+      "sha256": "0376482ce7c5f99d42516c28594ea06fa3b4c043eedbbfe2f32e4a16efe98b57",
+      "status": "applied-in-new-target-only"
+    },
+    {
+      "path": "supabase/migrations/0011_mission_brief.sql",
+      "sha256": "7af23f07c0274b3190ac1b952ae80a67f968c1c855eb47d9f0e528fb42546b28",
+      "status": "applied-in-new-target-only"
+    },
+    {
+      "path": "supabase/migrations/0012_trust_profile_bundle.sql",
+      "sha256": "3aff06b6f0ad82bd01183c86d03e694cbdcf190e85e4d2424fd0f65e0ed3108b",
+      "status": "applied-in-new-target-only"
+    },
+    {
+      "path": "supabase/migrations/0013_operator_creator_selection_crm.sql",
+      "sha256": "cb4f1fde0e91dd99ae41ebe99a99b3fc00312447c9fd0b1dbe44bd81d7d75556",
+      "status": "applied-in-new-target-only"
+    },
+    {
+      "path": "supabase/migrations/0014_operator_crm_workspace_guard.sql",
+      "sha256": "26ea349cd128e290ec4cca3da7727dca634a981689adf8f2c50313f6f18c86ea",
+      "status": "applied-in-new-target-only"
+    },
+    {
+      "path": "supabase/migrations/0015_creator_profile_media.sql",
+      "sha256": "d63f3f1c33634165b4e29ec10d934cf0fab6dcc4df7e2f3cd0cf550e470bd4ba",
+      "status": "applied-in-new-target-only"
+    },
+    {
+      "path": "supabase/migrations/0016_assistant.sql",
+      "sha256": "abf39c31f43bf0bed7cbde0699dda4567be6b6011af57a362365ffb5cc94d4df",
+      "status": "applied-in-new-target-only"
+    },
+    {
+      "path": "supabase/migrations/0017_social_verification.sql",
+      "sha256": "3f26ea1d4e5c100794905e6637cb55d00d125752e3f228536985e5421a772da0",
+      "status": "applied-in-new-target-only"
+    },
+    {
+      "path": "supabase/migrations/0018_mission_authoring.sql",
+      "sha256": "34591c7feff3dfe6a7cff51b717bc819fd5660a86de9f310e7749b7325d81279",
+      "status": "applied-in-new-target-only"
+    },
+    {
+      "path": "supabase/migrations/0019_mission_brief_rich.sql",
+      "sha256": "a4fb5c6578f3fdf469d8c1559acb3486a99d296813f260e5cf221d487054d0fd",
+      "status": "applied-in-new-target-only"
+    },
+    {
+      "path": "supabase/migrations/0020_staff_auth.sql",
+      "sha256": "b7fd91202a9caa4acdb7785cf71accdb7272d28b7391e3663edfe3959a058edd",
+      "status": "applied-in-new-target-only"
+    },
+    {
+      "path": "supabase/migrations/0021_content_hub.sql",
+      "sha256": "51310b37bb59c94e3ff6c31ada58a375644624f73c4403021a04ab98daf78443",
+      "status": "applied-in-new-target-only"
+    },
+    {
+      "path": "supabase/migrations/0022_notifications.sql",
+      "sha256": "e2c8653a85069a30b46bb4642fbd631020603d74627683ad0809a90460c33467",
+      "status": "applied-in-new-target-only"
+    },
+    {
+      "path": "supabase/migrations/0023_brand_access.sql",
+      "sha256": "efe11f176a28d2699c187c7c08d8134c2bd898acd5c5c617ecd1ccf120afb283",
+      "status": "applied-in-new-target-only"
+    },
+    {
+      "path": "supabase/migrations/0024_brand_budget.sql",
+      "sha256": "c8cc7e3507b20dccb9606aa23337c86597b009e906440921dc3a32b0993c5bab",
+      "status": "applied-in-new-target-only"
+    },
+    {
+      "path": "supabase/migrations/0025_campaigns.sql",
+      "sha256": "d9a1ceba293a14786524181b1559dee8d17a23e2469af3a64ce66044fa00fcee",
+      "status": "applied-in-new-target-only"
+    },
+    {
+      "path": "supabase/migrations/0026_campaigns_s2.sql",
+      "sha256": "289aab7ed9aa2bf19a0bec701f25b05d9adefcd2cdbe89370a79880b8e9e634f",
+      "status": "applied-in-new-target-only"
+    },
+    {
+      "path": "supabase/migrations/0027_brand_resources.sql",
+      "sha256": "141846857c0fbf6ec72c8277fab0fae04b229c96a52f00ef80d5e7fa10e700f8",
+      "status": "applied-in-new-target-only"
+    },
+    {
+      "path": "supabase/migrations/0028_academy_content.sql",
+      "sha256": "8eb099a555be979ba179ee1a5f01ce944d577c7c2308993b095b35bccf418e1e",
+      "status": "applied-in-new-target-only"
+    },
+    {
+      "path": "supabase/migrations/20260618135028_profile_media_private_grants.sql",
+      "sha256": "29b7db23b5d5ca6570514d009fa83b6646e5be1d58823ea056c16dfb90d78b5d",
+      "status": "applied-in-new-target-only"
+    },
+    {
+      "path": "supabase/migrations/20260619013000_profile_media_url_validation.sql",
+      "sha256": "628d539c1ce556a8f722ab3d0dc72655d49d9852739342b2a82d4789be1b9323",
+      "status": "applied-in-new-target-only"
+    }
+  ],
+  "reset": false,
+  "oldMigrationChecksumChanged": false,
+  "oldTargetSql": false,
+  "seedCommandsRun": false,
+  "finished": false
+}

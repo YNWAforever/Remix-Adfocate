@@ -1,0 +1,89 @@
+{
+  "at": "2026-10-25T17:44:20.131333+00:00",
+  "scope": "Read-only current Docker endpoint + exact approved C1 five container IDs only; no SQL/keys/client/lifecycle/data action",
+  "results": [
+    {
+      "command": [
+        "docker",
+        "context",
+        "inspect",
+        "--format",
+        "{{.Endpoints.docker.Host}}"
+      ],
+      "exit": 0,
+      "stdout": "npipe:////./pipe/dockerDesktopLinuxEngine",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "docker",
+        "version",
+        "--format",
+        "{{.Server.Version}}"
+      ],
+      "exit": 1,
+      "stdout": "",
+      "stderr": "permission denied while trying to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine"
+    },
+    {
+      "command": [
+        "docker",
+        "inspect",
+        "--format",
+        "{\"Id\":{{json .Id}},\"Image\":{{json .Image}},\"Status\":{{json .State.Status}},\"Running\":{{json .State.Running}}}",
+        "a4e387ca84bfd11e815f697e0c407b12b8a610d29691517d8d8ecaef91957956"
+      ],
+      "exit": 1,
+      "stdout": "",
+      "stderr": "permission denied while trying to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine"
+    },
+    {
+      "command": [
+        "docker",
+        "inspect",
+        "--format",
+        "{\"Id\":{{json .Id}},\"Image\":{{json .Image}},\"Status\":{{json .State.Status}},\"Running\":{{json .State.Running}}}",
+        "37d469d0b42d137b01f7df915fed7bd8a8393961cc69ec08f5a9a872ec917489"
+      ],
+      "exit": 1,
+      "stdout": "",
+      "stderr": "permission denied while trying to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine"
+    },
+    {
+      "command": [
+        "docker",
+        "inspect",
+        "--format",
+        "{\"Id\":{{json .Id}},\"Image\":{{json .Image}},\"Status\":{{json .State.Status}},\"Running\":{{json .State.Running}}}",
+        "eeb1c762e84d82cfa9b40beb85c3ccd54cb9e1bc99f47b9564f23b5d4fed0ba2"
+      ],
+      "exit": 1,
+      "stdout": "",
+      "stderr": "permission denied while trying to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine"
+    },
+    {
+      "command": [
+        "docker",
+        "inspect",
+        "--format",
+        "{\"Id\":{{json .Id}},\"Image\":{{json .Image}},\"Status\":{{json .State.Status}},\"Running\":{{json .State.Running}}}",
+        "c68a68b5ea60116a998cf3b61f4cdfbf737101361ae0866a8d8f83d0313ba253"
+      ],
+      "exit": 1,
+      "stdout": "",
+      "stderr": "permission denied while trying to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine"
+    },
+    {
+      "command": [
+        "docker",
+        "inspect",
+        "--format",
+        "{\"Id\":{{json .Id}},\"Image\":{{json .Image}},\"Status\":{{json .State.Status}},\"Running\":{{json .State.Running}}}",
+        "c42f68a7940631a8567994903bd04987da7a15bd01de3599369b80589a6f1387"
+      ],
+      "exit": 1,
+      "stdout": "",
+      "stderr": "permission denied while trying to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine"
+    }
+  ]
+}

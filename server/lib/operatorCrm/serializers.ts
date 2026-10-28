@@ -57,6 +57,7 @@ export function nonEmptyText(value: unknown): string | null {
 }
 
 export function projectReviewStatus(row: {
+  revision?: number;
   status: string;
   risk_level: string;
   summary: string | null;
@@ -67,6 +68,7 @@ export function projectReviewStatus(row: {
   if (!row) return DEFAULT_REVIEW_STATUS;
 
   return {
+    ...(typeof row.revision === "number" ? { revision: row.revision } : {}),
     status: parseReviewStatus(row.status) ?? "needs_review",
     riskLevel: parseRiskLevel(row.risk_level) ?? "unknown",
     summary: row.summary ?? null,

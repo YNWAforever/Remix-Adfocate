@@ -1,0 +1,316 @@
+{
+  "at": "2026-10-25T18:54:25.692708+00:00",
+  "sourceFingerprint": "ead55a808470f90d72290905db90933cb4a6df48eaba519d4587339a4659b71d",
+  "sourceRecords": 789,
+  "full": {
+    "passed": 2133,
+    "failed": 0,
+    "skipped": 363,
+    "files": 293
+  },
+  "originalAudit16": {
+    "passed": 16,
+    "failed": 0,
+    "skipped": 0,
+    "total": 16
+  },
+  "protected194": {
+    "passed": 194,
+    "failed": 0,
+    "skipped": 0,
+    "total": 194
+  },
+  "supplement26": {
+    "passed": 26,
+    "failed": 0,
+    "skipped": 0,
+    "total": 26
+  },
+  "transport4": {
+    "passed": 4,
+    "failed": 0,
+    "skipped": 0,
+    "total": 4
+  },
+  "protectedPaths": [
+    "server/test/active-missions-publication-operator.test.ts",
+    "server/test/admin-reward-handoffs.test.ts",
+    "server/test/staffAuth.test.ts",
+    "src/components/admin/ActiveMissionReview.test.tsx",
+    "src/components/admin/MissionCompletionReview.test.tsx",
+    "src/components/admin/RewardHandoffQueue.test.tsx",
+    "src/components/admin/StaffAuthGate.test.tsx",
+    "src/components/admin/WorkspaceSwitcher.test.tsx",
+    "src/routes/-admin.active-missions.test.tsx",
+    "src/routes/-admin.reward-handoffs.test.tsx"
+  ],
+  "commands": {
+    "transport-green": {
+      "receipt": {
+        "path": "docs/verification/D19-C2-runtime-20261026/transport-green-command.json",
+        "sha256": "46c562e64daed8988e52c3a5d5edb87c0ee17e2c7beeba6cc4e1721b32e7dc36"
+      },
+      "resource": {
+        "path": "docs/verification/D19-C2-runtime-20261026/transport-green-resource.json",
+        "sha256": "bce8d4df58aba043723a59f1901021c1897696a334097a78192a35671f1569c9"
+      },
+      "log": {
+        "path": "docs/verification/D19-C2-runtime-20261026/transport-green.log",
+        "sha256": "d8b2bdaa9b1dec7e1e9237f930404878ae79168b615cb7d6d00f543504cbe06f"
+      },
+      "command": [
+        "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+        "node_modules/vitest/vitest.mjs",
+        "run",
+        "server/test/audit-docker-output-capture.test.ts",
+        "--no-file-parallelism",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile.json=docs/verification/D19-C2-runtime-20261026/transport-green-results.json"
+      ],
+      "node": "v22.23.4",
+      "sourceFingerprint": "ead55a808470f90d72290905db90933cb4a6df48eaba519d4587339a4659b71d",
+      "scope": "Local/offline, integration disabled; no C2 writer, Docker, physical DB or provider requested"
+    },
+    "transport-focused": {
+      "receipt": {
+        "path": "docs/verification/D19-C2-runtime-20261026/transport-focused-command.json",
+        "sha256": "d2db77e6590e705978cc5becf9e1ceb1ad93094801f8b5dd518e5b13e4b82e8d"
+      },
+      "resource": {
+        "path": "docs/verification/D19-C2-runtime-20261026/transport-focused-resource.json",
+        "sha256": "8a843e2190c9a02c3a38d42db2265656762fe34d10674f3629c4eb4dc6e0db55"
+      },
+      "log": {
+        "path": "docs/verification/D19-C2-runtime-20261026/transport-focused.log",
+        "sha256": "63876e21109efb7d8dc7544822c053a5c3c650f44d1f4a0b970c6e535245658a"
+      },
+      "command": [
+        "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+        "node_modules/vitest/vitest.mjs",
+        "run",
+        "server/test/audit-docker-output-capture.test.ts",
+        "server/test/application-supplement.test.ts",
+        "server/test/b2-runtime-manifest.test.ts",
+        "--no-file-parallelism",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile.json=docs/verification/D19-C2-runtime-20261026/transport-focused-results.json"
+      ],
+      "node": "v22.23.4",
+      "sourceFingerprint": "ead55a808470f90d72290905db90933cb4a6df48eaba519d4587339a4659b71d",
+      "scope": "Local/offline, integration disabled; no C2 writer, Docker, physical DB or provider requested"
+    },
+    "transport-lint": {
+      "receipt": {
+        "path": "docs/verification/D19-C2-runtime-20261026/transport-lint-command.json",
+        "sha256": "0bff536e1c66f59fe742873a6bc3395f7209b2305c2155b40c457e7c8b6dd0fa"
+      },
+      "resource": {
+        "path": "docs/verification/D19-C2-runtime-20261026/transport-lint-resource.json",
+        "sha256": "8a889ab3e1f50ef990e127538bcd798c8e139d639604e38e39252eb37ae160cc"
+      },
+      "log": {
+        "path": "docs/verification/D19-C2-runtime-20261026/transport-lint.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "command": [
+        "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+        "node_modules/eslint/bin/eslint.js",
+        "scripts/audit/local-targets.mjs",
+        "server/test/audit-docker-output-capture.test.ts"
+      ],
+      "node": "v22.23.4",
+      "sourceFingerprint": "ead55a808470f90d72290905db90933cb4a6df48eaba519d4587339a4659b71d",
+      "scope": "Local/offline, integration disabled; no C2 writer, Docker, physical DB or provider requested"
+    },
+    "transport-review": {
+      "receipt": {
+        "path": "docs/verification/D19-C2-runtime-20261026/transport-review-command.json",
+        "sha256": "c7256b8eacf2afa138dd18a94bdc8ff8b32ef38113deda7df0dbb33a05d033a9"
+      },
+      "resource": {
+        "path": "docs/verification/D19-C2-runtime-20261026/transport-review-resource.json",
+        "sha256": "05a689560138b8d82133327a3b6e9c1629e28214cedd847eadf388223334e81e"
+      },
+      "log": {
+        "path": "docs/verification/D19-C2-runtime-20261026/transport-review.log",
+        "sha256": "8eaeb4020e706d5a6b6865e62262eba6e7541eafc07568b106b0a43fdc988b09"
+      },
+      "command": [
+        "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+        "node_modules/vite-node/vite-node.mjs",
+        "--script",
+        "scripts/audit/execute-application-supplement.mjs",
+        "docs/verification/D19-C2-transport-continuation-runtime-manifest.json",
+        "--offline-check"
+      ],
+      "node": "v22.23.4",
+      "sourceFingerprint": "ead55a808470f90d72290905db90933cb4a6df48eaba519d4587339a4659b71d",
+      "scope": "Local/offline, integration disabled; no C2 writer, Docker, physical DB or provider requested"
+    },
+    "transport-host-boundaries": {
+      "receipt": {
+        "path": "docs/verification/D19-C2-runtime-20261026/transport-host-boundaries-command.json",
+        "sha256": "4791ea562383e81c28d383bcdeefca33034b5fbd0f997b3ba9b179061861cdd8"
+      },
+      "resource": {
+        "path": "docs/verification/D19-C2-runtime-20261026/transport-host-boundaries-resource.json",
+        "sha256": "304a092fa372f839ac4da3c8a2d00815969bc5dc3d4c8952609c2362a3e10d20"
+      },
+      "log": {
+        "path": "docs/verification/D19-C2-runtime-20261026/transport-host-boundaries.log",
+        "sha256": "be82d7ac382f493b98eec0cef085c8530d989ffa9bbabc742020cf7d7c2b6356"
+      },
+      "command": [
+        "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+        "node_modules/vitest/vitest.mjs",
+        "run",
+        "server/devApi.test.ts",
+        "server/devApi.transport.test.ts",
+        "scripts/release/cli.test.ts",
+        "scripts/release/manifest.test.ts",
+        "--no-file-parallelism",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile.json=docs/verification/D19-C2-runtime-20261026/transport-host-boundaries-results.json"
+      ],
+      "node": "v22.23.4",
+      "sourceFingerprint": "ead55a808470f90d72290905db90933cb4a6df48eaba519d4587339a4659b71d",
+      "scope": "Local/offline, integration disabled; no C2 writer, Docker, physical DB or provider requested"
+    },
+    "transport-full-host": {
+      "receipt": {
+        "path": "docs/verification/D19-C2-runtime-20261026/transport-full-host-command.json",
+        "sha256": "349a983f7bf944dbd63280b2e51d9cb95dd3e1b5498fbf0542c495f0cd1b64a3"
+      },
+      "resource": {
+        "path": "docs/verification/D19-C2-runtime-20261026/transport-full-host-resource.json",
+        "sha256": "99fbfa6d044b4f0112e7c60fe05858d0aff323947bccbc9207a64b1ef425fe3c"
+      },
+      "log": {
+        "path": "docs/verification/D19-C2-runtime-20261026/transport-full-host.log",
+        "sha256": "842da86f4b652b021a5f0e1a77264d42b23b1318317ca1de3462dfe6e4d65adf"
+      },
+      "command": [
+        "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+        "node_modules/vitest/vitest.mjs",
+        "run",
+        "--no-file-parallelism",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile.json=docs/verification/D19-C2-runtime-20261026/transport-full-host-results.json"
+      ],
+      "node": "v22.23.4",
+      "sourceFingerprint": "ead55a808470f90d72290905db90933cb4a6df48eaba519d4587339a4659b71d",
+      "scope": "Local/offline, integration disabled; no C2 writer, Docker, physical DB or provider requested"
+    },
+    "transport-build": {
+      "receipt": {
+        "path": "docs/verification/D19-C2-runtime-20261026/transport-build-command.json",
+        "sha256": "35b2b48513d6f504df96ce250fbe7cd69bca719a1b6adae919ceccd878a4310c"
+      },
+      "resource": {
+        "path": "docs/verification/D19-C2-runtime-20261026/transport-build-resource.json",
+        "sha256": "8cc63748656f4f3c969b9f58e068b5fa7f502cc7a11f878c2b6210006314ca5a"
+      },
+      "log": {
+        "path": "docs/verification/D19-C2-runtime-20261026/transport-build.log",
+        "sha256": "4688662f18f01410394c9da8e861b16042c63d9783c9a1719769b33d7cce6d16"
+      },
+      "command": [
+        "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+        "C:/Program Files/nodejs/node_modules/npm/bin/npm-cli.js",
+        "run",
+        "build"
+      ],
+      "node": "v22.23.4",
+      "sourceFingerprint": "ead55a808470f90d72290905db90933cb4a6df48eaba519d4587339a4659b71d",
+      "scope": "Local/offline, integration disabled; no C2 writer, Docker, physical DB or provider requested"
+    },
+    "transport-lint-full": {
+      "receipt": {
+        "path": "docs/verification/D19-C2-runtime-20261026/transport-lint-full-command.json",
+        "sha256": "0ba0536833e4fa1de98819afa3a4a4ffc746700013d4b1cd014184bf2cf2e56c"
+      },
+      "resource": {
+        "path": "docs/verification/D19-C2-runtime-20261026/transport-lint-full-resource.json",
+        "sha256": "523d50845562c1748b60cfe67ca5f85db5ac61537089f16c7fab725fc3f3d325"
+      },
+      "log": {
+        "path": "docs/verification/D19-C2-runtime-20261026/transport-lint-full.log",
+        "sha256": "e6e016e4fe0cf1d2a8190e99e008bde00ef39764514624f7cc26a2e4170cc27d"
+      },
+      "command": [
+        "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+        "node_modules/eslint/bin/eslint.js",
+        "."
+      ],
+      "node": "v22.23.4",
+      "sourceFingerprint": "ead55a808470f90d72290905db90933cb4a6df48eaba519d4587339a4659b71d",
+      "scope": "Local/offline, integration disabled; no C2 writer, Docker, physical DB or provider requested"
+    },
+    "transport-schema-manifest": {
+      "receipt": {
+        "path": "docs/verification/D19-C2-runtime-20261026/transport-schema-manifest-command.json",
+        "sha256": "437beb1f627d44d449c77f98583c801d3ec1eb81a0b3256614a0f7809d277540"
+      },
+      "resource": {
+        "path": "docs/verification/D19-C2-runtime-20261026/transport-schema-manifest-resource.json",
+        "sha256": "f232817de219e38673b77da2e25d6f3f62499ae94e95eae3b0af8f59025e8a67"
+      },
+      "log": {
+        "path": "docs/verification/D19-C2-runtime-20261026/transport-schema-manifest.log",
+        "sha256": "0c307f70f5aa6f9cb7ac767ef86b9fe5bca27bb11fbb2d9481d5ce1470fab6b9"
+      },
+      "command": [
+        "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+        "node_modules/vite-node/vite-node.mjs",
+        "--script",
+        "scripts/release/manifest-cli.ts",
+        "check"
+      ],
+      "node": "v22.23.4",
+      "sourceFingerprint": "ead55a808470f90d72290905db90933cb4a6df48eaba519d4587339a4659b71d",
+      "scope": "Local/offline, integration disabled; no C2 writer, Docker, physical DB or provider requested"
+    }
+  },
+  "red": {
+    "passed": 2,
+    "failed": 2,
+    "result": {
+      "path": "docs/verification/D19-C2-runtime-20261026/transport-red-results.json",
+      "sha256": "a7194382d6c7d5c9103fe37164f1f9a367613e0236b40e7469fa45ceaabdf3cb"
+    },
+    "command": {
+      "path": "docs/verification/D19-C2-runtime-20261026/transport-red-command.json",
+      "sha256": "c649deed7da9fa473348ff2bbf584b9c5b552b96b014518d8ff680c9fe6406c2"
+    },
+    "reason": "Actual old Docker capture helper loses complete2MiB and multibyte output with ENOBUFS; bounded-overflow and nonzero-child cases already pass."
+  },
+  "green": {
+    "passed": 4,
+    "failed": 0,
+    "result": {
+      "path": "docs/verification/D19-C2-runtime-20261026/transport-green-results.json",
+      "sha256": "0493b2f3387bbbdc670e7c90df3cfbfd7fc7b5ba9a61d9797042525d2d930593"
+    }
+  },
+  "focused": {
+    "passed": 33,
+    "failed": 0,
+    "result": {
+      "path": "docs/verification/D19-C2-runtime-20261026/transport-focused-results.json",
+      "sha256": "1bc0159b9af093678fce7d635f7322dc0878050b2eecc4845c410fbf26f832b5"
+    }
+  },
+  "retainedInitialFull": {
+    "path": "docs/verification/D19-C2-runtime-20261026/failure-reconciliation.json",
+    "sha256": "38041a62d8f6a80daf3861c48fc273cbc7880fbd3a8de1e41eeebf073fb8a25b"
+  },
+  "currentNode24Full": "NOT_RUN",
+  "standaloneEarlierAssistant8AndMemory7": "Retained separately at their recorded source; not added to current native counts or rerun",
+  "integrationSkippedNotPass": 363,
+  "actualApplicationRuntime": "NOT_RUN_NEW_SOURCE_UNAPPROVED",
+  "warnings": "Four existing React hook warnings (0 errors) and the existing _site.smoke.test.tsx no-Route warning remain. Inspect full lint/build/review logs; warnings are not acceptance evidence."
+}

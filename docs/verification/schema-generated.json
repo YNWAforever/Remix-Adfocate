@@ -1,0 +1,14 @@
+{
+  "mode": "read-only-catalog",
+  "query": "select jsonb_agg(jsonb_build_object('schema',n.nspname,'table',c.relname,'column',a.attname,'generated',a.attgenerated,'identity',a.attidentity,'expression',pg_get_expr(d.adbin,d.adrelid))) as generated_columns from pg_attribute a join pg_class c on c.oid=a.attrelid join pg_namespace n on n.oid=c.relnamespace left join pg_attrdef d on d.adrelid=c.oid and d.adnum=a.attnum where n.nspname in ('public','private') and (a.attgenerated<>'' or a.attidentity<>'');",
+  "columns": [
+    {
+      "table": "creator_social_accounts",
+      "column": "handle_normalized",
+      "schema": "public",
+      "identity": "",
+      "generated": "s",
+      "expression": "lower(regexp_replace(handle, '^@+'::text, ''::text))"
+    }
+  ]
+}

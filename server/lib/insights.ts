@@ -4,7 +4,9 @@
 // produces KPIs, an engagement funnel, a level histogram, and a time-series trend.
 // No DB / no async — fully unit-tested. Mirrors engagedRoster.ts / missionActivity.ts.
 
+import { calculatePilotOutcomeMetrics, type PilotOutcomeRow } from "./activeMission/metrics.js";
 export type InsightsWindowDays = 7 | 30 | 90;
+export type InsightsPointRow = { type: string; delta: number; created_at: string };
 
 export type InsightsSubmissionRow = {
   creator_id: string;
@@ -16,6 +18,7 @@ export type InsightsSubmissionRow = {
 };
 
 export type InsightsEarningRow = {
+  type?: string;
   amount: number | string | null; // numeric(10,2) may arrive from PostgREST as a string
   created_at: string;
 };
@@ -27,7 +30,9 @@ export type InsightsMissionRow = { status: string; quota: number | null; filled:
 export type Metric = { value: number; prev: number; deltaPct: number | null };
 
 export type Insights = {
-  window: { days: InsightsWindowDays; from: string; to: string };
+  window: { days: InsightsWindowDays; from: string; to: string; timezone: "Asia/Hong_Kong" };
+  denominators: { joinToSubmit: { numerator: number; denominator: number }; submitToApprove: { numerator: number; denominator: number } };
+  outcomes: ReturnType<typeof calculatePilotOutcomeMetrics>;
   kpis: {
     activeCreators: Metric;
     submitToApprove: Metric;
@@ -48,6 +53,8 @@ export type ShapeInsightsInput = {
   earnings: InsightsEarningRow[];
   creators: InsightsCreatorRow[];
   missions: InsightsMissionRow[];
+  points?: InsightsPointRow[];
+  outcomes?: PilotOutcomeRow[];
 };
 
 const ACTIVE_STATUSES: ReadonlySet<string> = new Set(["joined", "submitted", "under_review"]);
@@ -106,6 +113,7 @@ function funnelCounts(subs: InsightsSubmissionRow[], fromMs: number, toMs: numbe
   let submitted = 0;
   let approved = 0;
   for (const r of subs) {
+    if (["cancelled", "withdrawn", "abandoned"].includes(r.status)) continue;
     if (LOOP_STATUSES.has(r.status) && inRange(r.created_at, fromMs, toMs)) joined += 1;
     // Status-agnostic on purpose: a row that later expired still genuinely reached the
     // submitted stage, so it counts toward funnel.submitted.
@@ -115,10 +123,10 @@ function funnelCounts(subs: InsightsSubmissionRow[], fromMs: number, toMs: numbe
   return { joined, submitted, approved };
 }
 
-function pointsIssued(subs: InsightsSubmissionRow[], fromMs: number, toMs: number): number {
+function pointsIssued(rows: InsightsPointRow[], fromMs: number, toMs: number): number {
   let sum = 0;
-  for (const r of subs) {
-    if (r.status === "approved" && inRange(r.reviewed_at, fromMs, toMs)) sum += r.points_awarded ?? 0;
+  for (const r of rows) {
+    if (["earn", "adjust", "bonus", "referral", "multiplier"].includes(r.type) && inRange(r.created_at, fromMs, toMs)) sum += num(r.delta);
   }
   return sum;
 }
@@ -126,7 +134,7 @@ function pointsIssued(subs: InsightsSubmissionRow[], fromMs: number, toMs: numbe
 function cashPaid(earnings: InsightsEarningRow[], fromMs: number, toMs: number): number {
   let sum = 0;
   for (const e of earnings) {
-    if (inRange(e.created_at, fromMs, toMs)) sum += num(e.amount);
+    if ((!e.type || ["earn", "adjust"].includes(e.type)) && inRange(e.created_at, fromMs, toMs)) sum += num(e.amount);
   }
   return round2(sum);
 }
@@ -144,11 +152,12 @@ function buildTrend(subs: InsightsSubmissionRow[], fromMs: number, toMs: number,
   const buckets: Array<{ bucket: string; start: number; end: number; joined: number; submitted: number; approved: number }> = [];
   for (let start = fromMs; start < toMs; start += stepMs) {
     const end = Math.min(start + stepMs, toMs);
-    buckets.push({ bucket: new Date(start).toISOString().slice(0, 10), start, end, joined: 0, submitted: 0, approved: 0 });
+    buckets.push({ bucket: new Date(start + 8 * 3_600_000).toISOString().slice(0, 10), start, end, joined: 0, submitted: 0, approved: 0 });
   }
   // O(rows × buckets) — fine at MVP scale (hundreds of rows × ≤30 buckets). If submissions
   // ever exceed ~5k, switch to a single pass with a date→bucket-index map.
   for (const r of subs) {
+    if (["cancelled", "withdrawn", "abandoned"].includes(r.status)) continue;
     for (const b of buckets) {
       if (LOOP_STATUSES.has(r.status) && inRange(r.created_at, b.start, b.end)) b.joined += 1;
       if (inRange(r.submitted_at, b.start, b.end)) b.submitted += 1;
@@ -158,17 +167,29 @@ function buildTrend(subs: InsightsSubmissionRow[], fromMs: number, toMs: number,
   return buckets.map((b) => ({ bucket: b.bucket, joined: b.joined, submitted: b.submitted, approved: b.approved }));
 }
 
+export function getInsightsWindow(to: string, days: InsightsWindowDays) {
+  const toMs = Math.floor((Date.parse(to) + 8 * 3_600_000) / DAY_MS) * DAY_MS - 8 * 3_600_000;
+  return { toMs, fromMs: toMs - days * DAY_MS, priorFromMs: toMs - 2 * days * DAY_MS };
+}
+
 export function shapeInsights(input: ShapeInsightsInput): Insights {
   const { to, days, submissions, earnings, creators, missions } = input;
-  const toMs = Date.parse(to);
-  const fromMs = toMs - days * DAY_MS;
-  const priorFromMs = fromMs - days * DAY_MS;
+  // Complete Hong Kong calendar days, [from,to), with an equal previous period.
+  const { toMs, fromMs, priorFromMs } = getInsightsWindow(to, days);
   const priorToMs = fromMs;
 
   const cur = funnelCounts(submissions, fromMs, toMs);
   const prev = funnelCounts(submissions, priorFromMs, priorToMs);
-  const curS2A = pct(cur.approved, cur.submitted);
-  const prevS2A = pct(prev.approved, prev.submitted);
+  const cohorts = (from: number, until: number) => {
+    const eligible = submissions.filter(r => !["cancelled", "withdrawn", "abandoned"].includes(r.status));
+    const joined = eligible.filter(r => LOOP_STATUSES.has(r.status) && inRange(r.created_at, from, until));
+    const submitted = eligible.filter(r => inRange(r.submitted_at, from, until));
+    return { joinToSubmit: { numerator: joined.filter(r => r.submitted_at && Date.parse(r.submitted_at) >= Date.parse(r.created_at) && Date.parse(r.submitted_at) < until).length, denominator: joined.length },
+      submitToApprove: { numerator: submitted.filter(r => r.status === "approved" && r.reviewed_at && Date.parse(r.reviewed_at) >= Date.parse(r.submitted_at!) && Date.parse(r.reviewed_at) < until).length, denominator: submitted.length } };
+  };
+  const denominators = cohorts(fromMs, toMs), previous = cohorts(priorFromMs, priorToMs);
+  const curS2A = pct(denominators.submitToApprove.numerator, denominators.submitToApprove.denominator);
+  const prevS2A = pct(previous.submitToApprove.numerator, previous.submitToApprove.denominator);
 
   let activeQuota = 0;
   let activeFilled = 0;
@@ -186,14 +207,16 @@ export function shapeInsights(input: ShapeInsightsInput): Insights {
   }
 
   return {
-    window: { days, from: new Date(fromMs).toISOString(), to: new Date(toMs).toISOString() },
+    window: { days, from: new Date(fromMs).toISOString(), to: new Date(toMs).toISOString(), timezone: "Asia/Hong_Kong" },
+    denominators,
+    outcomes: calculatePilotOutcomeMetrics((input.outcomes ?? []).filter(r => inRange(r.joinedAt, fromMs, toMs)), new Date(toMs)),
     kpis: {
       activeCreators: metric(
         activeCreatorCount(submissions, fromMs, toMs),
         activeCreatorCount(submissions, priorFromMs, priorToMs),
       ),
       submitToApprove: { value: curS2A, prev: prevS2A, deltaPct: deltaPct(curS2A, prevS2A) },
-      pointsIssued: metric(pointsIssued(submissions, fromMs, toMs), pointsIssued(submissions, priorFromMs, priorToMs)),
+      pointsIssued: metric(pointsIssued(input.points ?? [], fromMs, toMs), pointsIssued(input.points ?? [], priorFromMs, priorToMs)),
       cashPaid: metric(cashPaid(earnings, fromMs, toMs), cashPaid(earnings, priorFromMs, priorToMs)),
       missionFillRate: { value: fillRate, prev: 0, deltaPct: null }, // current snapshot, no prior comparison
       completions: metric(cur.approved, prev.approved),
@@ -202,7 +225,7 @@ export function shapeInsights(input: ShapeInsightsInput): Insights {
       joined: cur.joined,
       submitted: cur.submitted,
       approved: cur.approved,
-      joinToSubmit: pct(cur.submitted, cur.joined),
+      joinToSubmit: pct(denominators.joinToSubmit.numerator, denominators.joinToSubmit.denominator),
       submitToApprove: curS2A,
     },
     levels: LEVELS.map((level) => ({ level, count: levelCounts.get(level) ?? 0 })),

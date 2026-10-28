@@ -35,6 +35,38 @@ function account(partial: Partial<SocialAccountRecord>): SocialAccountRecord {
 }
 
 describe("passport social inputs", () => {
+  it("keeps legacy handles visible without granting ownership or a sync", () => {
+    const result = privateSocialTrustSummary([], [{ platform: "Instagram", handle: "@legacy", verified: true, followers: 999999 }]);
+    expect(result.presentations).toEqual([expect.objectContaining({ platform: "instagram", handle: "@legacy", source: "legacy", ownershipVerified: false, syncStatus: "not_connected", lastSyncedAt: null, accountId: null })]);
+    expect(result.accounts).toEqual([]);
+    expect(result.badges).toEqual([]);
+  });
+
+  it("retains conflicting handles and all pending or failed canonical accounts", () => {
+    const canonical = [account({ id: "first", handle: "first", sync_status: "pending", api_synced_at: null }), account({ id: "second", handle: "second", sync_status: "failed", api_synced_at: null })];
+    const legacy = [{ platform: "Instagram", handle: "@old", verified: true }];
+    const before = JSON.stringify({ canonical, legacy });
+    const result = privateSocialTrustSummary(canonical, legacy);
+    expect(result.presentations).toEqual([
+      expect.objectContaining({ accountId: "first", handle: "first", source: "conflict", legacyHandles: ["@old"], syncStatus: "pending", ownershipVerified: false }),
+      expect.objectContaining({ accountId: "second", handle: "second", source: "conflict", legacyHandles: ["@old"], syncStatus: "failed", ownershipVerified: false }),
+    ]);
+    expect(JSON.stringify({ canonical, legacy })).toBe(before);
+  });
+
+  it("deduplicates a matching legacy handle and never leaks verification secrets", () => {
+    const result = privateSocialTrustSummary([account({ verification_code: "private-code" })], [{ platform: "Instagram", handle: "@MING", verified: true }]);
+    expect(result.presentations).toHaveLength(1);
+    expect(result.presentations[0]).toMatchObject({ source: "canonical", handle: "ming", ownershipVerified: false });
+    expect(JSON.stringify(result)).not.toContain("private-code");
+  });
+
+  it("reports actual verified ownership without a contradictory unverified label", () => {
+    const result = privateSocialTrustSummary([account({ owner_verified: true })]);
+    expect(result.accounts[0].labels).toContain("Ownership verified");
+    expect(result.accounts[0].labels).not.toContain("Ownership not verified");
+  });
+
   it("prefers synced social follower counts over self-reported handles", () => {
     const handles = effectiveSocialHandles({
       syncedAccounts: [account({ follower_count: 12000 })],
@@ -72,6 +104,7 @@ describe("passport social inputs", () => {
     expect(privateSocialTrustSummary([])).toEqual({
       accounts: [],
       badges: [],
+      presentations: [],
     });
   });
 

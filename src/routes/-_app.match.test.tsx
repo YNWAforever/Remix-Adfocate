@@ -14,7 +14,7 @@ vi.mock("@tanstack/react-router", async (importOriginal) => {
 const h = vi.hoisted(() => ({
   match: { data: [] as unknown[] | undefined, isLoading: false, isError: false },
 }));
-vi.mock("@/lib/queries/kocmax", () => ({ useMissionMatch: () => h.match }));
+vi.mock("@/lib/queries/kocmax", () => ({ useMissionMatch: () => h.match, useMe: () => ({data:{level:"L0",is_trusted:false}}) }));
 
 import { Route } from "./_app.match";
 
@@ -62,7 +62,7 @@ describe("Match page", () => {
     expect(screen.getByText("92%")).toBeInTheDocument();
     expect(screen.getByText("啱你嘅美妝範疇")).toBeInTheDocument();
     expect(screen.queryByText("可參加")).not.toBeInTheDocument();
-    expect(screen.queryByText("需 L2 · 你係 L0")).not.toBeInTheDocument();
+    expect(screen.getByText("需 L2 · 你係 L0")).toBeInTheDocument();
   });
 
   it("shows the empty state when there are no matches", () => {

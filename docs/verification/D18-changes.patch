@@ -1,0 +1,1462 @@
+--- /dev/null
++++ b/e2e/staff-access.spec.ts
+@@ -0,0 +1,60 @@
++import {test,expect,type Browser} from "@playwright/test";
++import {readFileSync,writeFileSync} from "node:fs";
++import {isDeepStrictEqual} from "node:util";
++import process from "node:process";
++// @ts-expect-error Native ESM identity verifier has no declaration file.
++import {verifiedTarget} from "../scripts/audit/local-targets.mjs";
++const target=process.env.ADFOCATE_BROWSER_SCOPE==="D18"?verifiedTarget("empty"):null;
++const fx=target?JSON.parse(readFileSync(".codex-tmp/D18-fixture.private.json","utf8")):{};
++if(target&&!isDeepStrictEqual(target.identity,fx.target))throw new Error("D18 browser target drift");
++test.beforeEach(()=>test.skip(!target,"Use the identity-gated D18 runner."));
++const record=(name:string,data:unknown)=>writeFileSync(`docs/verification/D18-${name}.json`,JSON.stringify({runId:fx.runId,data},null,2)+"\n");
++async function context(browser:Browser,actor=fx.roles.finance_viewer,lang="en",width=390){
++ const ctx=await browser.newContext({viewport:{width,height:900}});
++ await ctx.addInitScript(({session,lang})=>{localStorage.setItem("lang",lang);localStorage.setItem("sb-127-auth-token",JSON.stringify(session));},{session:actor.session,lang});
++ await ctx.route("**/*",route=>{const u=new URL(route.request().url());return u.hostname==="127.0.0.1"&&["56400","56421"].includes(u.port)?route.continue():route.abort();});return ctx;
++}
++const headers=(actor:{jwt:string})=>({Authorization:`Bearer ${actor.jwt}`,"X-Workspace-Slug":fx.slug});
++test("D18 finance reloads the same saved handoff with read-only controls and scoped navigation",async({browser})=>{
++ const ctx=await context(browser),page=await ctx.newPage();await page.goto("/admin/reward-handoffs");await expect(page.getByLabel("Staff role")).toContainText("Finance viewer");
++ await expect(page.locator("#reward-handoff-sla-heading")).toBeVisible();await expect(page.locator("#reward-handoff-sla-heading").locator("..").getByRole("button")).toHaveCount(0);
++ await page.locator('button[aria-controls="admin-mobile-nav"]').click();const nav=page.locator("#admin-mobile-nav").getByRole("navigation",{name:"Operator Console"});await expect(nav.getByRole("link",{name:"Reward handoffs",exact:true})).toBeVisible();await expect(nav.getByRole("link",{name:"Creator Review",exact:true})).toHaveCount(0);await expect(nav.getByRole("link",{name:"Academy",exact:true})).toHaveCount(0);
++ const first=await page.request.get("/api/admin/reward-handoffs",{headers:headers(fx.roles.finance_viewer)});expect(first.status()).toBe(200);expect((await first.json()).items.find((r:{id:string})=>r.id===fx.core.pendingRewardId)).toMatchObject({status:"pending"});
++ const denied=await page.request.put("/api/admin/reward-handoffs/settings",{headers:headers(fx.roles.finance_viewer),data:{days:14}});expect(denied.status()).toBe(403);
++ await page.reload();await expect(page.getByLabel("Staff role")).toContainText("Finance viewer");
++ const next=await page.request.get("/api/admin/reward-handoffs",{headers:headers(fx.roles.finance_viewer)});expect((await next.json()).items.find((r:{id:string})=>r.id===fx.core.pendingRewardId)).toMatchObject({status:"pending"});
++ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);record("finance-ui",{pendingRewardId:fx.core.pendingRewardId,reloadSame:true,settingsWrite:403,readOnly:true,viewport:390});await ctx.close();
++});
++test("D18 reviewer retains authored input after a real forbidden mission save",async({browser})=>{
++ const ctx=await context(browser,fx.roles.reviewer,"zh",1280),page=await ctx.newPage();await page.goto("/admin/missions/new");await expect(page.getByLabel("Staff role")).toContainText("Reviewer");await page.waitForLoadState("networkidle");
++ await page.getByLabel("標題",{exact:true}).fill("D18 保留的未授權作者輸入");await page.getByLabel("任務網址代號",{exact:true}).fill(`d18-denied-${fx.runId}`);
++ const response=page.waitForResponse(r=>new URL(r.url()).pathname==="/api/admin/missions"&&r.request().method()==="POST");
++ await page.getByRole("button",{name:"儲存草稿",exact:true}).click();expect((await response).status()).toBe(403);await expect(page.getByLabel("標題",{exact:true})).toHaveValue("D18 保留的未授權作者輸入");
++ await expect(page.getByText("請聯絡 workspace 負責人覆核已指派的角色，再重試。你的輸入已保留。",{exact:true})).toBeVisible();record("reviewer-ui",{directSaveDenied:403,inputPreserved:true});page.on("dialog",dialog=>dialog.accept());await ctx.close();
++});
++test("D18 platform-only content editor recovers access discovery without a workspace or another login",async({browser})=>{
++ const ctx=await context(browser,fx.roles.content_editor),page=await ctx.newPage(),pattern="**/api/admin/access*";
++ await page.route(pattern,route=>route.fulfill({status:503,contentType:"application/json",body:JSON.stringify({code:"STAFF_CAPABILITY_UNAVAILABLE",error:"Explicit access-discovery outage mock"})}));
++ await page.goto("/admin/academy");await expect(page.getByRole("alert").filter({hasText:"Access unavailable"})).toBeVisible();
++ await page.unroute(pattern);await page.getByRole("button",{name:/Retry access/}).click();await expect(page.getByText("Platform content / 平台內容",{exact:true})).toBeVisible();await expect(page.getByLabel("Staff role")).toContainText("Content editor");
++ const item=await page.request.get(`/api/admin/academy/${fx.resource.id}`,{headers:headers(fx.roles.content_editor)});expect(item.status()).toBe(200);expect((await item.json()).item.id).toBe(fx.resource.id);
++ await page.reload();await expect(page.getByText("Platform content / 平台內容",{exact:true})).toBeVisible();record("platform-ui",{scope:"platform",workspaceMembership:false,draftReadback:true,retry503Mock:true,relogin:false});await ctx.close();
++});
++test("D18 Creator and operator refresh agree with finance on one pending reward and history",async({browser})=>{
++ const creator=fx.creators.find((c:{id:string})=>c.id===fx.core.creatorId),ids: string[]=[],projections: Record<string,unknown>[]=[];
++ for(const actor of [creator,fx.roles.operator]){
++  const operator=actor.id===fx.roles.operator.id,ctx=await context(browser,actor,"en",operator?1280:390),page=await ctx.newPage();
++  const path=operator?`/admin/active-missions/${fx.core.workflowId}?workItemId=${fx.core.itemId}`:`/my/${fx.core.submissionId}`;
++  await page.goto(path);await expect(page.getByRole("main")).toBeVisible();
++  for(let i=0;i<2;i++){
++   const response=await page.request.get(operator?`/api/admin/active-missions/${fx.core.workflowId}/completion`:`/api/my-missions/${fx.core.submissionId}/workspace`,{headers:headers(actor)});expect(response.status()).toBe(200);const body=await response.json();if(operator){expect(body.pendingReward.id).toBe(fx.core.pendingRewardId);ids.push(body.pendingReward.id);}else expect(body.pendingReward.id).toBeNull();
++   projections.push(Object.fromEntries(["reward","status","processingWindowDays","targetAt","createdAt","cancelledAt"].map(key=>[key,body.pendingReward[key]])));
++   if(!operator)expect(body.events.length).toBeGreaterThan(8);
++   await page.reload();
++  }
++  await expect(page.getByText(/reward.*pending|pending.*reward/i).first()).toBeVisible();await ctx.close();
++ }
++ expect(projections).toHaveLength(4);for(const projection of projections)expect(projection).toEqual(projections[0]);
++ const live=verifiedTarget("empty");expect(live.identity).toEqual(fx.target);expect(live.sql(`select count(*) from public.mission_pending_rewards where id='${fx.core.pendingRewardId}' and mission_workflow_id='${fx.core.workflowId}' and mission_submission_id='${fx.core.submissionId}';`)).toBe("1");
++ record("handoff-ui",{pendingRewardId:fx.core.pendingRewardId,readbacks:projections.length,operatorReadbacks:ids.length,creatorInternalIdHidden:true,allVisibleFieldsSame:true,oneSavedWorkflowReward:true,historyRetained:true});
++});
+--- /dev/null
++++ b/playwright.staff.config.ts
+@@ -0,0 +1,3 @@
++import { defineConfig } from "@playwright/test";
++import quality from "./playwright.quality.config";
++export default defineConfig({...quality,testMatch:"staff-access.spec.ts",reporter:[["line"],["json",{outputFile:".codex-tmp/D18-browser-results.private.json"}]]});
+--- a/scripts/audit/run-integration.mjs
++++ b/scripts/audit/run-integration.mjs
+@@ -5,8 +5,8 @@
+ import { pathToFileURL } from "node:url";
+ const target=verifiedTarget("empty");
+ const selected=process.argv[2];
+-if(selected && !["mission-list","authoring","identity","public-claims","academy","quality"].includes(selected))throw new Error("unsupported audit integration scope");
+-const file=selected==="quality"?"server/test/audit-quality.test.ts":selected==="mission-list"?"server/test/audit-mission-list-contract.test.ts":selected==="authoring"?"server/test/audit-mission-authoring-contract.test.ts":selected==="identity"?"server/test/audit-identity-contract.test.ts":selected==="public-claims"?"server/test/audit-public-claims-contract.test.ts":selected==="academy"?"server/test/audit-academy-progress.test.ts":"server/test/audit-workflow-roundtrip.test.ts";
++if(selected && !["mission-list","authoring","identity","public-claims","academy","quality","staff"].includes(selected))throw new Error("unsupported audit integration scope");
++const file=selected==="staff"?"server/test/audit-staff-capabilities.test.ts":selected==="quality"?"server/test/audit-quality.test.ts":selected==="mission-list"?"server/test/audit-mission-list-contract.test.ts":selected==="authoring"?"server/test/audit-mission-authoring-contract.test.ts":selected==="identity"?"server/test/audit-identity-contract.test.ts":selected==="public-claims"?"server/test/audit-public-claims-contract.test.ts":selected==="academy"?"server/test/audit-academy-progress.test.ts":"server/test/audit-workflow-roundtrip.test.ts";
+ const result=spawnSync(process.execPath,["node_modules/vitest/vitest.mjs","run","--maxWorkers=1","--minWorkers=1",file],{
+   env:{...process.env,...target.env,RUN_INTEGRATION:"0",RUN_AUDIT_INTEGRATION:"1",OPENAI_API_KEY:"",OPENROUTER_API_KEY:"",ANTHROPIC_API_KEY:"",
+     NODE_OPTIONS:`--import=${pathToFileURL(resolve("scripts/audit/deny-external-fetch.mjs")).href}`},stdio:"inherit"});
+--- /dev/null
++++ b/scripts/audit/run-staff-browser.mjs
+@@ -0,0 +1,21 @@
++import {readFileSync,writeFileSync} from "node:fs";
++import {spawnSync} from "node:child_process";
++import {isDeepStrictEqual} from "node:util";
++import {resolve} from "node:path";
++import {pathToFileURL} from "node:url";
++import process from "node:process";
++import {verifiedTarget} from "./local-targets.mjs";
++import {neutralitySnapshot} from "./neutrality-snapshot.mjs";
++const target=verifiedTarget("empty"),fx=JSON.parse(readFileSync(".codex-tmp/D18-fixture.private.json","utf8"));
++if(!isDeepStrictEqual(target.identity,fx.target)||!fx.core||![fx.workspaceId,...fx.creators.map(c=>c.id)].every(v=>/^[a-f0-9-]{36}$/.test(v)))throw new Error("D18 fixture identity/core mismatch");
++const snapshot=t=>({actors:fx.creators.map(c=>neutralitySnapshot(t,c.id,fx.workspaceId)),settings:t.sql(`select reward_processing_window_days from public.workspaces where id='${fx.workspaceId}';`),auditCount:Number(t.sql(`select count(*) from public.staff_access_audit where workspace_id='${fx.workspaceId}';`))});
++const before=snapshot(target);
++const env={...process.env,...target.env,NODE_ENV:"production",VITE_SUPABASE_URL:target.env.SUPABASE_URL,VITE_SUPABASE_ANON_KEY:target.env.SUPABASE_ANON_KEY,VITE_DEFAULT_WORKSPACE:fx.slug,VITE_ENABLE_WHATSAPP:"false",VITE_ENABLE_GOOGLE:"false",ADFOCATE_BROWSER_SCOPE:"D18",OPENAI_API_KEY:"",OPENROUTER_API_KEY:"",ANTHROPIC_API_KEY:"",NODE_OPTIONS:`--import=${pathToFileURL(resolve("scripts/audit/deny-external-fetch.mjs")).href}`};
++const build=spawnSync(process.execPath,["node_modules/vite/bin/vite.js","build","--mode","production"],{env,stdio:"inherit"});if(build.status!==0)process.exit(build.status??1);
++const run=spawnSync(process.execPath,["node_modules/@playwright/test/cli.js","test","--config=playwright.staff.config.ts"],{env,stdio:"inherit"});
++const after=snapshot(verifiedTarget("empty"));
++writeFileSync("docs/verification/D18-browser-neutrality.json",JSON.stringify({runId:fx.runId,target:target.identity,before,after,allEqual:isDeepStrictEqual(before,after),scope:"Known +10 join XP is in the baseline. No financial, role or settings writes by browser acceptance."},null,2)+"\n");
++const raw=JSON.parse(readFileSync(".codex-tmp/D18-browser-results.private.json","utf8")),tests=[];
++function visit(s){for(const spec of s.specs??[])tests.push({title:spec.title,ok:spec.ok,results:spec.tests.flatMap(t=>t.results.map(r=>({status:r.status,duration:r.duration})))});for(const child of s.suites??[])visit(child);}for(const suite of raw.suites)visit(suite);
++writeFileSync("docs/verification/D18-browser-summary.json",JSON.stringify({runId:fx.runId,target:target.identity,tests,stats:raw.stats,browser:"Installed Edge, local production assets + real owned Auth/API/RLS. Access-discovery 503 is an explicit transport mock. No production, external messages or paid providers.",limits:["Desktop and CSS viewport simulation only; not Safari/physical device/full accessibility certification.","Earlier legacy payout flow is not rerun; this D18 browser verifies role presentation, denial recovery and the saved pending handoff."]},null,2)+"\n");
++process.exit(run.status===0&&isDeepStrictEqual(before,after)?0:1);
+--- a/scripts/release/contracts.ts
++++ b/scripts/release/contracts.ts
+@@ -5,7 +5,8 @@
+   | "legacy_evidence"
+   | "operator_crm"
+   | "assistant_requests"
+-  | "academy_learning";
++  | "academy_learning"
++  | "staff_access";
+ 
+ export interface ReleaseMigration {
+   readonly version: string;
+--- a/scripts/release/manifest.test.ts
++++ b/scripts/release/manifest.test.ts
+@@ -62,6 +62,7 @@
+   "20261023091050_academy_learning.sql",
+   "20261023093445_academy_learning_conflicts.sql",
+   "20261023095521_academy_approval_index.sql",
++  "20261023124149_staff_access_capabilities.sql",
+ ] as const;
+ 
+ // Pinned by checksum in manifest.ts, so the fixture copies the repository's real bytes instead of
+@@ -142,7 +143,7 @@
+     expect(manifest.migrations[0].phase).toBe("active_mission");
+     expect(manifest.migrations[13].phase).toBe("publication_proof");
+     expect(manifest.migrations[25].phase).toBe("reward_handoff");
+-    expect(manifest.migrations.at(-1)?.phase).toBe("academy_learning");
++    expect(manifest.migrations.at(-1)?.phase).toBe("staff_access");
+     expect(manifest.migrations[0].dependsOn).toEqual([]);
+     expect(manifest.migrations[1].dependsOn).toEqual(["20260715163350"]);
+     expect(
+--- a/scripts/release/manifest.ts
++++ b/scripts/release/manifest.ts
+@@ -899,6 +899,46 @@
+     dependsOn: ["20261023093445"], capabilities: ["index:public.academy_lessons.academy_lessons_approved_by"],
+     transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
+   },
++  {
++    "version": "20261023124149",
++    "name": "staff_access_capabilities",
++    "phase": "staff_access",
++    "dependsOn": [
++      "20261023095521"
++    ],
++    "capabilities": [
++      "table:public.staff_workspace_roles",
++      "table:public.staff_platform_roles",
++      "table:public.staff_access_audit",
++      "table:public.staff_access_commands",
++      "rls:public.staff_workspace_roles",
++      "rls:public.staff_platform_roles",
++      "rls:public.staff_access_audit",
++      "rls:public.staff_access_commands",
++      "grant:service_role.public.staff_workspace_roles(select)",
++      "grant:service_role.public.staff_platform_roles(select)",
++      "grant:service_role.public.staff_access_audit(select)",
++      "grant:service_role.public.staff_access_commands(select)",
++      "function:private.apply_staff_access",
++      "function:private.bootstrap_staff_access",
++      "function:public.set_staff_workspace_role",
++      "grant:service_role.public.set_staff_workspace_role(uuid,uuid,uuid,text,boolean,integer,uuid,text)",
++      "constraint:public.staff_workspace_roles.staff_workspace_roles_pkey",
++      "constraint:public.staff_platform_roles.staff_platform_roles_pkey",
++      "constraint:public.staff_access_audit.staff_access_audit_request_id_key",
++      "constraint:public.staff_access_commands.staff_access_commands_request_id_fkey",
++      "column:public.staff_workspace_roles.revision",
++      "column:public.staff_platform_roles.revision",
++      "index:public.staff_workspace_roles.staff_workspace_roles_workspace",
++      "index:public.staff_workspace_roles.staff_workspace_roles_granted_by",
++      "index:public.staff_platform_roles.staff_platform_roles_granted_by",
++      "index:public.staff_access_audit.staff_access_audit_workspace",
++      "index:public.staff_access_audit.staff_access_audit_user",
++      "index:public.staff_access_audit.staff_access_audit_actor"
++    ],
++    "transactionExpectation": "transactional",
++    "replayExpectation": "migration_history_noop"
++  },
+ ] as const satisfies readonly ReviewedMigration[];
+ 
+ const NON_RELEASE_TIMESTAMP_MIGRATIONS = new Set([
+@@ -1074,7 +1114,7 @@
+     if (
+       migration.phase !== "active_mission" &&
+       migration.phase !== "publication_proof" &&
+-      migration.phase !== "reward_handoff" && migration.phase !== "legacy_evidence" && migration.phase !== "operator_crm" && migration.phase !== "assistant_requests" && migration.phase !== "academy_learning"
++      migration.phase !== "reward_handoff" && migration.phase !== "legacy_evidence" && migration.phase !== "operator_crm" && migration.phase !== "assistant_requests" && migration.phase !== "academy_learning" && migration.phase !== "staff_access"
+     ) {
+       invalid(`${path}.phase`, "is invalid");
+     }
+@@ -1246,7 +1286,7 @@
+     "active_mission",
+     "publication_proof",
+     "reward_handoff",
+-    "legacy_evidence", "operator_crm", "assistant_requests", "academy_learning",
++    "legacy_evidence", "operator_crm", "assistant_requests", "academy_learning", "staff_access",
+   ] satisfies ReleasePhase[]) {
+     if (!parsed.migrations.some((migration) => migration.phase === phase)) {
+       pushUnique(errors, `missing release phase: ${phase}`);
+--- a/scripts/release/preflight.test.ts
++++ b/scripts/release/preflight.test.ts
+@@ -38,8 +38,8 @@
+       ...new Set(manifest.migrations.flatMap((migration) => migration.capabilities)),
+     ];
+ 
+-    // Retain all 471 earlier contracts and the 30 distinct D15 learning capabilities.
+-    expect(capabilities).toHaveLength(501);
++    // Retain all 501 earlier contracts and add the 28 D18 staff access capabilities.
++    expect(capabilities).toHaveLength(529);
+     expect(capabilities.filter((capability) => !hasCapabilityValidator(capability))).toEqual([]);
+   });
+ 
+--- /dev/null
++++ b/scripts/release/staff-access.test.ts
+@@ -0,0 +1,11 @@
++import { resolve } from "node:path";
++import { expect,it } from "vitest";
++import { buildManifest,currentReleaseCapabilities } from "./manifest";
++import { hasCapabilityValidator } from "./preflight";
++it("D18 release manifest includes the reviewed forward staff-access contract",async()=>{
++ const manifest=await buildManifest(resolve("."));
++ const migration=manifest.migrations.find(m=>m.version==="20261023124149");
++ expect(migration).toMatchObject({phase:"staff_access",dependsOn:["20261023095521"],transactionExpectation:"transactional",replayExpectation:"migration_history_noop"});
++ expect(migration?.capabilities).toEqual(expect.arrayContaining(["table:public.staff_workspace_roles","table:public.staff_platform_roles","table:public.staff_access_audit","table:public.staff_access_commands","function:public.set_staff_workspace_role","function:private.bootstrap_staff_access"]));
++ const capabilities=currentReleaseCapabilities(manifest);expect(capabilities.length).toBeGreaterThan(501);expect(capabilities.filter(c=>!hasCapabilityValidator(c))).toEqual([]);
++});
+--- /dev/null
++++ b/server/lib/staffCapabilities.test.ts
+@@ -0,0 +1,34 @@
++import type { SupabaseClient } from "@supabase/supabase-js";
++import { expect, it } from "vitest";
++import { requireCapability, readPlatformCapabilities, STAFF_CAPABILITIES, staffRouteRequirement, type StaffWorkspaceRole } from "./staffCapabilities";
++import { adminRoutes } from "../routes/admin";
++const scope={userId:"actor",workspaceId:"owned",workspaceSlug:"owned"};
++function client(role:string|null,active=true,error?:unknown) {
++ const q={select:()=>q,eq:()=>q,maybeSingle:async()=>({data:role?{user_id:"actor",workspace_id:"owned",role,active,revision:1}:null,error})};
++ return {from:()=>q} as unknown as SupabaseClient;
++}
++const expected:Record<StaffWorkspaceRole,string[]>={workspace_admin:[...STAFF_CAPABILITIES],operator:["creator.read","creator.review","application.review","submission.review","proof.review","completion.approve","reward.read"],reviewer:["creator.read","submission.review","proof.review"],finance_viewer:["reward.read"]};
++for(const [role,allowed] of Object.entries(expected))for(const capability of STAFF_CAPABILITIES)it(`D18 ${role} ${allowed.includes(capability)?"can":"cannot"} ${capability}`,async()=>{
++ const work=requireCapability(client(role),scope,capability);
++ if(allowed.includes(capability))expect((await work).role).toBe(role);else await expect(work).rejects.toMatchObject({code:"STAFF_CAPABILITY_REQUIRED",status:403});
++});
++it.each([null,"owner","member","unknown"])("D18 missing or brand-only role %s is never promoted",async role=>{
++ await expect(requireCapability(client(role),scope,"creator.read")).rejects.toMatchObject({status:403});
++});
++it("D18 role lookup errors cannot become empty grants or login errors",async()=>{
++ await expect(requireCapability(client(null,true,{code:"42P01"}),scope,"reward.read")).rejects.toMatchObject({code:"STAFF_CAPABILITY_SCHEMA_REQUIRED",status:503});
++ await expect(requireCapability(client(null,true,{code:"08006"}),scope,"reward.read")).rejects.toMatchObject({code:"STAFF_CAPABILITY_UNAVAILABLE",status:503});
++});
++it("D18 a platform grant requires its own active role and active human staff identity",async()=>{
++ expect(await readPlatformCapabilities(client("workspace_admin"),{userId:"actor",email:"",active:true})).toEqual([]);
++ expect(await readPlatformCapabilities(client("content_editor"),{userId:"actor",email:"",active:true})).toEqual(["content.manage"]);
++ expect(await readPlatformCapabilities(client("content_editor"),{userId:"actor",email:"",active:false})).toEqual([]);
++ expect(await readPlatformCapabilities(client("content_editor",false),{userId:"actor",email:"",active:true})).toEqual([]);
++});
++it("D18 all mounted business routes have a capability requirement",()=>{
++ const routes=adminRoutes.routes.filter(r=>r.method!=="ALL");expect(routes.length).toBeGreaterThan(80);
++ for(const r of routes)expect(staffRouteRequirement(r.method,r.path).kind,`${r.method} ${r.path}`).not.toBe("deny");
++});
++it("D18 unrecognized methods and paths fail closed, including inside known scopes",()=>{
++ for(const [method,path] of [["POST","me"],["GET","me/private"],["POST","academy/unmapped-action"],["POST","reward-handoffs/unmapped-action"],["POST","unmapped"]])expect(staffRouteRequirement(method,path)).toEqual({kind:"deny"});
++});
+--- /dev/null
++++ b/server/lib/staffCapabilities.ts
+@@ -0,0 +1,100 @@
++import type { SupabaseClient } from "@supabase/supabase-js";
++import type { StaffIdentity } from "./staffAuth.js";
++import type { AuthorizedWorkspace } from "./staffWorkspace.js";
++
++export const STAFF_CAPABILITIES = ["creator.read", "creator.review", "application.review", "submission.review", "proof.review", "mission.manage", "completion.approve", "reward.read", "reward.settings", "access.manage"] as const;
++export type StaffCapability = typeof STAFF_CAPABILITIES[number];
++export type StaffWorkspaceRole = "workspace_admin" | "operator" | "reviewer" | "finance_viewer";
++export type PlatformRole = "content_editor";
++export type PlatformCapability = "content.manage";
++export const ROLE_CAPABILITIES: Readonly<Record<StaffWorkspaceRole, readonly StaffCapability[]>> = {
++  workspace_admin: STAFF_CAPABILITIES,
++  operator: ["creator.read", "creator.review", "application.review", "submission.review", "proof.review", "completion.approve", "reward.read"],
++  reviewer: ["creator.read", "submission.review", "proof.review"],
++  finance_viewer: ["reward.read"],
++};
++export type WorkspaceAccess = { role: StaffWorkspaceRole; capabilities: readonly StaffCapability[]; revision: number };
++export type StaffAccessSnapshot = {
++  workspace: { id:string; slug:string; role:StaffWorkspaceRole|null; capabilities:readonly StaffCapability[]; revision:number|null } | null;
++  platformCapabilities: readonly PlatformCapability[];
++  scopeStatus: string|null;
++};
++export class StaffCapabilityError extends Error {
++  constructor(public code: "STAFF_CAPABILITY_REQUIRED" | "STAFF_CAPABILITY_SCHEMA_REQUIRED" | "STAFF_CAPABILITY_UNAVAILABLE" | "STAFF_ROUTE_NOT_ALLOWED", public status: 403 | 503) { super(code); }
++}
++function databaseError(error: unknown): never {
++  const code = error && typeof error === "object" && "code" in error ? String(error.code) : "";
++  throw new StaffCapabilityError(["42P01", "PGRST205", "42883", "PGRST202"].includes(code) ? "STAFF_CAPABILITY_SCHEMA_REQUIRED" : "STAFF_CAPABILITY_UNAVAILABLE", 503);
++}
++/** Scope must come from the live staff and single-workspace membership gates. No JWT role or cache. */
++export async function readWorkspaceAccess(client: SupabaseClient, scope: AuthorizedWorkspace): Promise<WorkspaceAccess | null> {
++  let result;
++  try { result = await client.from("staff_workspace_roles").select("user_id,workspace_id,role,active,revision").eq("user_id", scope.userId).eq("workspace_id", scope.workspaceId).eq("active", true).maybeSingle(); }
++  catch (error) { databaseError(error); }
++  if (result.error) databaseError(result.error);
++  const row = result.data;
++  if (!row || !row.active || row.user_id !== scope.userId || row.workspace_id !== scope.workspaceId || !Object.hasOwn(ROLE_CAPABILITIES, row.role)) return null;
++  return { role: row.role as StaffWorkspaceRole, capabilities: ROLE_CAPABILITIES[row.role as StaffWorkspaceRole], revision: row.revision };
++}
++export async function requireCapability(client: SupabaseClient, scope: AuthorizedWorkspace, capability: StaffCapability | readonly StaffCapability[]): Promise<WorkspaceAccess> {
++  const access = await readWorkspaceAccess(client, scope), wanted = typeof capability === "string" ? [capability] : capability;
++  if (!access || !wanted.some(cap => access.capabilities.includes(cap))) throw new StaffCapabilityError("STAFF_CAPABILITY_REQUIRED", 403);
++  return access;
++}
++export async function readPlatformCapabilities(client: SupabaseClient, staff: StaffIdentity): Promise<PlatformCapability[]> {
++  if (!staff.userId || staff.active === false || staff.viaSecret) return [];
++  let result;
++  try { result = await client.from("staff_platform_roles").select("user_id,role,active").eq("user_id", staff.userId).eq("role", "content_editor").eq("active", true).maybeSingle(); }
++  catch (error) { databaseError(error); }
++  if (result.error) databaseError(result.error);
++  return result.data?.user_id === staff.userId && result.data.active && result.data.role === "content_editor" ? ["content.manage"] : [];
++}
++export async function requirePlatformCapability(client: SupabaseClient, staff: StaffIdentity, capability: PlatformCapability) {
++  if (!(await readPlatformCapabilities(client, staff)).includes(capability)) throw new StaffCapabilityError("STAFF_CAPABILITY_REQUIRED", 403);
++}
++
++type Requirement = { kind: "identity" | "membership" | "platform" | "deny" } | { kind: "workspace"; anyOf: readonly StaffCapability[] };
++/** The mapping is exhaustive for mounted admin routes; new paths default to deny. */
++export function staffRouteRequirement(method: string, path: string): Requirement {
++  const workspace = (...anyOf: StaffCapability[]): Requirement => ({ kind: "workspace", anyOf });
++  const identity: Requirement = { kind: "identity" }, platform: Requirement = { kind: "platform" };
++  const rules: readonly [string, readonly string[], Requirement][] = [
++    ["GET", ["me", "access"], identity],
++    ["GET", ["workspaces"], { kind: "membership" }],
++    ["GET", ["academy", "academy/:id", "academy/:id/lessons", "content", "content/:id", "content-categories", "content-tags"], platform],
++    ["POST", ["academy", "academy/:id/publish", "academy/:id/unpublish", "academy/:id/archive", "academy/:id/lessons", "academy/:id/lessons/:lessonId/publish", "academy/:id/lessons/:lessonId/archive", "content", "content/:id/publish", "content/:id/unpublish", "content/:id/archive", "content/:id/schedule", "content/media"], platform],
++    ["PATCH", ["academy/:id", "academy/:id/lessons/:lessonId", "content/:id"], platform],
++    ["DELETE", ["academy/:id", "content/:id"], platform],
++    ["GET", ["staff-access"], workspace("access.manage")],
++    ["PUT", ["staff-access/:userId"], workspace("access.manage")],
++    ["POST", ["brand-invites"], workspace("access.manage")],
++    ["GET", ["creators/review", "creators/:id", "missions", "missions/:id", "missions/:id/activity", "missions/:id/shortlist", "campaigns", "campaigns/:id", "campaigns/:id/leaderboard", "engaged", "insights", "radar"], workspace("creator.read")],
++    ["POST", ["creators/:id/review", "creators/:id/notes", "missions/:id/shortlist", "social/:id/verify"], workspace("creator.review")],
++    ["PATCH", ["missions/:id/shortlist/:creatorId"], workspace("creator.review")],
++    ["GET", ["applications"], workspace("application.review")],
++    ["POST", ["applications/:id/accept", "applications/:id/decline"], workspace("application.review")],
++    ["GET", ["submissions"], workspace("submission.review")],
++    ["POST", ["submissions/:id/approve", "submissions/:id/reject", "submissions/:id/request-correction"], workspace("submission.review")],
++    ["GET", ["active-missions/queue", "active-missions/:workflowId"], workspace("submission.review", "proof.review", "completion.approve")],
++    ["POST", ["active-missions/:workflowId/work-items/:workItemId/start-review", "active-missions/:workflowId/work-items/:workItemId/request-revision", "active-missions/:workflowId/work-items/:workItemId/grant-revision", "active-missions/:workflowId/work-items/:workItemId/approve-to-publish", "active-missions/:workflowId/work-items/:workItemId/publication-setup"], workspace("submission.review")],
++    ["PUT", ["active-missions/:workflowId/work-items/:workItemId/publication-instructions"], workspace("submission.review")],
++    ["POST", ["active-missions/:workflowId/work-items/:workItemId/proof-review/start", "active-missions/:workflowId/work-items/:workItemId/proof-review/corrections", "active-missions/:workflowId/work-items/:workItemId/proof-review/verify", "active-missions/:workflowId/work-items/:workItemId/proofs/:attemptId/metadata-refresh"], workspace("proof.review")],
++    ["GET", ["active-missions/:workflowId/completion"], workspace("completion.approve")],
++    ["POST", ["active-missions/:workflowId/completion", "active-missions/:workflowId/reward-contract", "active-missions/:workflowId/reward-handoff/cancel", "active-missions/:workflowId/fulfillment/shipped", "reward-handoffs/:id/notifications/retry"], workspace("completion.approve")],
++    ["GET", ["reward-handoffs"], workspace("reward.read")],
++    ["PUT", ["reward-handoffs/settings"], workspace("reward.settings")],
++    ["POST", ["gifts/:id/codes"], workspace("reward.settings")],
++    ["POST", ["missions", "missions/:id/publish", "missions/:id/close", "missions/:id/duplicate", "campaigns", "campaigns/:id/publish", "campaigns/:id/missions", "campaigns/:id/close", "campaigns/:id/settle"], workspace("mission.manage")],
++    ["PATCH", ["missions/:id", "campaigns/:id"], workspace("mission.manage")],
++    ["DELETE", ["missions/:id", "campaigns/:id/missions/:missionId"], workspace("mission.manage")],
++  ];
++  const parts = path.split("/").filter(Boolean), verb = method === "HEAD" ? "GET" : method;
++  for (const [allowedMethod, paths, requirement] of rules) {
++    if (verb !== allowedMethod) continue;
++    for (const pattern of paths) {
++      const segments = pattern.split("/");
++      if (segments.length === parts.length && segments.every((part, i) => part.startsWith(":") || part === parts[i])) return requirement;
++    }
++  }
++  return { kind: "deny" };
++}
+--- a/server/routes/admin.ts
++++ b/server/routes/admin.ts
+@@ -18,6 +18,8 @@
+ import { adminRewardHandoffRoutes } from "./adminRewardHandoffs.js";
+ import { requireStaffWorkspace, assertStaffResource, StaffWorkspaceError } from "../lib/staffWorkspace.js";
+ import { validateSubmissionEvidence } from "../../src/lib/submissionEvidence.js";
++import { requireCapability, requirePlatformCapability, staffRouteRequirement, StaffCapabilityError } from "../lib/staffCapabilities.js";
++import { adminStaffAccessRoutes } from "./adminStaffAccess.js";
+ 
+ /** Operator/brand admin endpoints. B3a: real per-staff Google login (staff_users),
+  *  with the legacy shared secret kept as a one-release break-glass fallback (removed in B3b). */
+@@ -59,13 +61,19 @@
+ });
+ 
+ // Scope legacy resources before service-role reads/writes, including opaque resource IDs.
+-// Academy and editorial content are platform-global and keep the R1 staff gate.
++// Capabilities add to the live staff/membership gates; brand owner/member is not a staff role.
+ adminRoutes.use("*", async (c, next) => {
+   const parts = c.req.path.split("/").filter(Boolean);
+   const relative = parts.slice(parts.indexOf("admin") + 1);
+-  if (["me", "academy", "content"].includes(relative[0])) return next();
+   try {
+     const client = serviceClient();
++    const requirement = staffRouteRequirement(c.req.method, relative.join("/"));
++    if (requirement.kind === "identity") return next();
++    if (requirement.kind === "deny") throw new StaffCapabilityError("STAFF_ROUTE_NOT_ALLOWED", 403);
++    if (requirement.kind === "platform") {
++      await requirePlatformCapability(client, c.get("staff"), "content.manage");
++      return next();
++    }
+     const requested = c.req.query("workspace") || c.req.query("ws") || c.req.header("X-Workspace-Slug") || "";
+     const scope = await requireStaffWorkspace(client, c.get("staff"), requested);
+     // Reject conflicting aliases rather than silently choosing the first one.
+@@ -73,6 +81,7 @@
+       if (value && value !== scope.workspaceId && value !== scope.workspaceSlug) throw new StaffWorkspaceError("NOT_FOUND", 404);
+     }
+     c.set("authorizedWorkspace", scope);
++    if (requirement.kind === "workspace") await requireCapability(client, scope, requirement.anyOf);
+     const tables: Record<string, string> = {
+       creators: "creators", missions: "missions", submissions: "mission_submissions",
+       applications: "mission_submissions", campaigns: "campaigns", gifts: "redemption_gifts", social: "creator_social_accounts",
+@@ -100,6 +109,11 @@
+     });
+     await next();
+   } catch (error) {
++    if (error instanceof StaffCapabilityError) return c.json({
++      error: error.status === 403 ? "This action requires an assigned staff capability. Ask the workspace or platform owner to review access."
++        : error.code === "STAFF_CAPABILITY_SCHEMA_REQUIRED" ? "Staff access schema is not ready. Ask the release owner to review migrations; retry after repair."
++        : "Staff access could not be checked. Please retry; your input is retained.", code: error.code,
++    }, error.status);
+     if (error instanceof StaffWorkspaceError) return c.json({ error: error.code === "WORKSPACE_MEMBERSHIP_REQUIRED"
+       ? "Signed in as staff; ask the workspace owner to assign an active membership."
+       : error.code === "NOT_FOUND" ? "Not found" : "Workspace service unavailable; retry", code: error.code }, error.status);
+@@ -113,6 +127,7 @@
+ });
+ 
+ adminRoutes.route("/", adminOperatorCrmRoutes);
++adminRoutes.route("/", adminStaffAccessRoutes);
+ adminRoutes.route("/", adminMissionRoutes);
+ adminRoutes.route("/", adminContentRoutes);
+ adminRoutes.route("/", adminInsightsRoutes);
+--- /dev/null
++++ b/server/routes/adminStaffAccess.ts
+@@ -0,0 +1,55 @@
++import { Hono } from "hono";
++import { serviceClient } from "../lib/supabase.js";
++import type { AdminEnv } from "../lib/staffAuth.js";
++import { requireStaffWorkspace, StaffWorkspaceError } from "../lib/staffWorkspace.js";
++import { readWorkspaceAccess, readPlatformCapabilities, ROLE_CAPABILITIES, StaffCapabilityError } from "../lib/staffCapabilities.js";
++
++export const adminStaffAccessRoutes = new Hono<AdminEnv>();
++const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
++
++adminStaffAccessRoutes.get("/access", async c => {
++  try {
++    const client=serviceClient(),staff=c.get("staff"),platformCapabilities=await readPlatformCapabilities(client,staff);
++    let workspace=null,scopeStatus:string|null=null;
++    try {
++      const requested=c.req.query("workspace")||c.req.query("ws")||c.req.header("X-Workspace-Slug")||"";
++      const scope=await requireStaffWorkspace(client,staff,requested);
++      for(const value of [c.req.query("workspace"),c.req.query("ws"),c.req.header("X-Workspace-Slug")])if(value&&value!==scope.workspaceId&&value!==scope.workspaceSlug)throw new StaffWorkspaceError("NOT_FOUND",404);
++      const role=await readWorkspaceAccess(client,scope);
++      workspace={id:scope.workspaceId,slug:scope.workspaceSlug,role:role?.role??null,capabilities:role?.capabilities??[],revision:role?.revision??null};
++    } catch(error) {
++      if(error instanceof StaffWorkspaceError&&error.code==="WORKSPACE_MEMBERSHIP_REQUIRED")scopeStatus=error.code;
++      else throw error;
++    }
++    return c.json({access:{workspace,platformCapabilities,scopeStatus}});
++  } catch(error) {
++    if(error instanceof StaffWorkspaceError||error instanceof StaffCapabilityError)return c.json({code:error.code,error:error.status===503?"Staff access is unavailable; retry after the access schema/service is checked.":"The requested workspace is unavailable. Check workspace access; signing in again does not assign a role."},error.status);
++    return c.json({code:"STAFF_CAPABILITY_UNAVAILABLE",error:"Staff access could not be checked. Please retry."},503);
++  }
++});
++
++adminStaffAccessRoutes.get("/staff-access",async c=>{
++  const scope=c.get("authorizedWorkspace"),client=serviceClient();
++  const [grants,audit]=await Promise.all([
++    client.from("staff_workspace_roles").select("user_id,workspace_id,role,active,revision,granted_by,granted_at",{count:"exact"}).eq("workspace_id",scope.workspaceId).order("user_id").limit(1000),
++    client.from("staff_access_audit").select("id,request_id,user_id,actor_id,actor_kind,before_state,after_state,reason,created_at").eq("workspace_id",scope.workspaceId).order("created_at",{ascending:false}).limit(50),
++  ]);
++  if(grants.error||audit.error)return c.json({code:"STAFF_CAPABILITY_UNAVAILABLE",error:"Access records could not be loaded. Please retry."},503);
++  return c.json({grants:grants.data,audit:audit.data,total:grants.count,hasMore:(grants.count??0)>(grants.data?.length??0),auditLimit:50});
++});
++
++adminStaffAccessRoutes.put("/staff-access/:userId",async c=>{
++  const scope=c.get("authorizedWorkspace"),target=c.req.param("userId");
++  const body=await c.req.json<Record<string,unknown>>().catch(()=>({} as Record<string,unknown>));
++  if(!uuid.test(target)||typeof body.role!=="string"||!Object.hasOwn(ROLE_CAPABILITIES,body.role)||typeof body.active!=="boolean"||!Number.isSafeInteger(body.expectedRevision)||(body.expectedRevision as number)<0||typeof body.requestId!=="string"||!uuid.test(body.requestId)||typeof body.reason!=="string"||!body.reason.trim()||body.reason.length>500)return c.json({code:"STAFF_ACCESS_INVALID",error:"Choose an assigned role, active state, request ID, current revision and a reason (1–500 characters)."},422);
++  if(target===scope.userId)return c.json({code:"STAFF_SELF_CHANGE_FORBIDDEN",error:"Self changes require a separate owner review."},403);
++  const result=await serviceClient().rpc("set_staff_workspace_role",{p_workspace:scope.workspaceId,p_actor:scope.userId,p_subject:target,p_role:body.role,p_active:body.active,p_expected_revision:body.expectedRevision,p_request:body.requestId,p_reason:body.reason.trim()});
++  if(result.error){
++    const code=result.error.message;
++    if(["STAFF_ACCESS_STALE","STAFF_ACCESS_IDEMPOTENCY_CONFLICT"].includes(code))return c.json({code,error:"Access changed. Reload, compare your retained input and use the current revision."},409);
++    if(code==="STAFF_TARGET_NOT_ELIGIBLE")return c.json({code,error:"Target is not found or eligible in this workspace."},404);
++    if(["STAFF_ACCESS_FORBIDDEN","STAFF_SELF_CHANGE_FORBIDDEN"].includes(code))return c.json({code,error:"This role change is not permitted. Ask the owner to review access."},403);
++    return c.json({code:"STAFF_ACCESS_UNAVAILABLE",error:"Role change could not be confirmed. Retain the input and retry with the same request ID."},503);
++  }
++  return c.json({grant:result.data});
++});
+--- a/server/test/audit-admin-scope.test.ts
++++ b/server/test/audit-admin-scope.test.ts
+@@ -18,6 +18,7 @@
+     const filters: Record<string, unknown> = {};
+     const row = () => table === "staff_users"
+       ? { user_id: "staff-a", email: "staff@example.test", active: h.active }
++      : table === "staff_workspace_roles" ? { user_id: "staff-a", workspace_id: "workspace-a", role: "operator", active: true, revision: 1 }
+       : table === "brand_users" ? h.member ? {
+         user_id: "staff-a", workspace_id: "workspace-a", active: true,
+         workspaces: { id: "workspace-a", slug: "a", name: "A" },
+--- /dev/null
++++ b/server/test/audit-staff-capabilities.test.ts
+@@ -0,0 +1,160 @@
++// @vitest-environment node
++import { randomUUID } from "node:crypto";
++import { writeFileSync } from "node:fs";
++import { beforeAll,afterAll,describe,it,expect,vi } from "vitest";
++import type { createStaffCapabilityFixture } from "./staffCapabilityFixture";
++import type { ActiveMissionWorkspace, MissionPublicationView } from "../../src/lib/activeMission";
++vi.mock("../lib/activeMission/proofUrl.js",()=>({inspectProofUrl:async({url}:{url:string})=>({normalizedUrl:url,status:"unavailable",metadata:{},errorCategory:"network"})}));
++describe.skipIf(process.env.RUN_AUDIT_INTEGRATION!=="1")("D18 exact-owned staff roles/API/RLS",()=>{
++ let owned:Awaited<ReturnType<typeof createStaffCapabilityFixture>>,fixture:Awaited<ReturnType<typeof createStaffCapabilityFixture>>["base"],roles:Awaited<ReturnType<typeof createStaffCapabilityFixture>>["roles"];
++ let app:ReturnType<(typeof import("../app"))["createApp"]>["app"],initialBefore:unknown,afterJoin:unknown,joinBaseline:unknown;
++ const results:{path:string;method:string;status:number}[]=[];
++ beforeAll(async()=>{owned=await (await import("./staffCapabilityFixture")).createStaffCapabilityFixture();fixture=owned.base;roles=owned.roles;app=(await import("../app")).createApp().app;initialBefore=await Promise.all(fixture.creators.map(c=>fixture.neutrality(c.id)));},90000);
++ async function request<T=Record<string,unknown>>(jwt:string,path:string,method="GET",body?:unknown,key?:string,status=200):Promise<T>{
++  const r=await app.request(`/api${path}`,{method,headers:{Authorization:`Bearer ${jwt}`,"X-Workspace-Slug":fixture.slug,"Content-Type":"application/json",...(key?{"Idempotency-Key":key}:{})},...(body===undefined?{}:{body:JSON.stringify(body)})});
++  const value=await r.json();results.push({path:path.replace(/[0-9a-f]{8}-[0-9a-f-]{27,}/gi,":id"),method,status:r.status});expect(r.status,`${method} ${path}: ${JSON.stringify(value)}`).toBe(status);return value as T;
++ }
++ afterAll(async()=>{
++  if(!fixture)return;const after=await Promise.all(fixture.creators.map(c=>fixture.neutrality(c.id)));const expected=afterJoin??initialBefore;
++  owned.save("api-finished");writeFileSync("docs/verification/D18-api-contract.json",JSON.stringify({runId:fixture.runId,target:fixture.target.identity,results,roles:Object.fromEntries(Object.entries(roles).map(([name,actor])=>[name,{id:actor.id}])),neutrality:{initialBefore,joinBaseline,before:expected,after,allEqual:JSON.stringify(expected)===JSON.stringify(after)},provider:"proof metadata mocked unavailable; no real messages/payments/paid AI",scope:"Only new exact-owned fixture staff/memberships/roles changed; no production data or automatic migration grants"},null,2)+"\n");expect(after).toEqual(expected);
++ });
++ it("requires a separate staff grant despite brand owner membership and preserves no-membership scope errors",async()=>{
++  const access=await request<{access:{workspace:{role:null}}}>(roles.noRole.jwt,"/admin/access");expect(access.access.workspace.role).toBeNull();
++  await request(roles.noRole.jwt,"/admin/creators/review","GET",undefined,undefined,403);
++  const missing=await request<{code:string}>(fixture.noMembership.jwt,"/admin/creators/review","GET",undefined,undefined,403);expect(missing.code).toBe("WORKSPACE_MEMBERSHIP_REQUIRED");
++  await request(fixture.creators[0].jwt,"/admin/reward-handoffs","GET",undefined,undefined,403);
++  const cross=await app.request(`/api/admin/reward-handoffs?workspace=${fixture.otherWorkspaceId}`,{headers:{Authorization:`Bearer ${roles.admin.jwt}`}});expect(cross.status).toBe(404);
++ });
++ it("keeps finance handoff-only, reviewer review-only and operator unable to manage grants/settings",async()=>{
++  await request(roles.finance_viewer.jwt,"/admin/reward-handoffs");
++  for(const name of ["finance_viewer","operator","reviewer"])await request(roles[name].jwt,"/admin/reward-handoffs/settings","PUT",{days:7},undefined,403);
++  await request(roles.admin.jwt,"/admin/reward-handoffs/settings","PUT",{days:7});
++  for(const name of ["finance_viewer","reviewer"])await request(roles[name].jwt,`/admin/creators/${fixture.creators[0].id}/notes`,"POST",{note:"Not authorized",request_id:randomUUID(),expected_revision:0},undefined,403);
++  await request(roles.reviewer.jwt,"/admin/active-missions/queue");
++  for(const name of ["finance_viewer","operator","reviewer"])await request(roles[name].jwt,"/admin/missions","POST",{workspace_id:fixture.workspaceId,slug:`denied-${randomUUID()}`,title:"Denied owned mission",mission_type:"ugc"},undefined,403);
++  await request(roles.operator.jwt,`/admin/creators/${fixture.creators[0].id}/review`,"POST",{status:"approved",risk_level:"low",request_id:randomUUID(),expected_revision:0,note:"Owned role acceptance"});
++ });
++ it("denies direct browser role writes/RPC/self-elevation even with forged user metadata",async()=>{
++  const actor=roles.finance_viewer;fixture.must(await actor.client.auth.updateUser({data:{role:"workspace_admin",capabilities:["access.manage"]}}));
++  await request(actor.jwt,"/admin/staff-access","GET",undefined,undefined,403);
++  const write=await actor.client.from("staff_workspace_roles").update({role:"workspace_admin"}).eq("user_id",actor.id);expect(write.error?.code).toBe("42501");
++  const insert=await actor.client.from("staff_platform_roles").insert({user_id:actor.id,role:"content_editor",granted_by:actor.id});expect(insert.error?.code).toBe("42501");
++  const rpc=await actor.client.rpc("set_staff_workspace_role",{p_workspace:fixture.workspaceId,p_actor:roles.admin.id,p_subject:actor.id,p_role:"workspace_admin",p_active:true,p_expected_revision:1,p_request:randomUUID(),p_reason:"Forbidden browser grant"});expect(rpc.error?.code).toBe("42501");
++ });
++ it("persists a normal grant once with exact replay, audit attribution, stale/conflict denial and no self/cross-workspace grant",async()=>{
++  const requestId=randomUUID(),body={role:"operator",active:true,expectedRevision:0,requestId,reason:"Explicit owned acceptance grant",actorId:roles.foreign.id};
++  const path=`/admin/staff-access/${roles.noRole.id}`;
++  for(const name of ["operator","reviewer","finance_viewer"])await request(roles[name].jwt,path,"PUT",body,undefined,403);
++  const saved=await Promise.all([0,1,2].map(()=>request<{grant:{revision:number}}>(roles.admin.jwt,path,"PUT",body)));expect(saved[0]).toEqual(saved[1]);expect(saved[0]).toEqual(saved[2]);expect(saved[0].grant.revision).toBe(1);
++  const audit=fixture.must(await fixture.service.from("staff_access_audit").select("actor_id,user_id").eq("request_id",requestId));expect(audit).toEqual([{actor_id:roles.admin.id,user_id:roles.noRole.id}]);
++  await request(roles.admin.jwt,path,"PUT",{...body,role:"reviewer"},undefined,409);await request(roles.admin.jwt,path,"PUT",{...body,requestId:randomUUID()},undefined,409);
++  await request(roles.admin.jwt,`/admin/staff-access/${roles.admin.id}`,"PUT",body,undefined,403);
++  await request(roles.admin.jwt,`/admin/staff-access/${roles.foreign.id}`,"PUT",{...body,requestId:randomUUID()},undefined,404);
++  const list=await request<{grants:{user_id:string;role:string;revision:number}[]}>(roles.admin.jwt,"/admin/staff-access");expect(list.grants.find(g=>g.user_id===roles.noRole.id)).toMatchObject({role:"operator",revision:1});
++ });
++ it("revokes active staff, membership or role immediately using the same signed-in session",async()=>{
++  const actor=roles.revocable;
++  for(const table of ["staff_users","brand_users"]){
++   fixture.must(await fixture.service.from(table).update({active:false}).eq("user_id",actor.id));
++   try{await request(actor.jwt,"/admin/creators/review","GET",undefined,undefined,403);}finally{fixture.must(await fixture.service.from(table).update({active:true}).eq("user_id",actor.id));}
++  }
++  const path=`/admin/staff-access/${actor.id}`,body={role:"operator",active:false,expectedRevision:1,requestId:randomUUID(),reason:"Owned live role revocation"};
++  await request(roles.admin.jwt,path,"PUT",body);await request(actor.jwt,"/admin/creators/review","GET",undefined,undefined,403);
++  await request(roles.admin.jwt,path,"PUT",{...body,active:true,expectedRevision:2,requestId:randomUUID(),reason:"Owned fixture role restored"});await request(actor.jwt,"/admin/creators/review");
++ });
++ it("requires platform content editor for global drafts without inventing course content",async()=>{
++  const editor=roles.content_editor,body={kind:"resource",slug:`d18-resource-${fixture.runId}`,title_zh:"合成角色資源",title_en:"Owned role resource",excerpt_zh:"角色權限測試",body_zh:"Synthetic draft body for role acceptance. No course lessons or content approval."};
++  const created=await request<{item:{id:string}}>(editor.jwt,"/admin/academy","POST",body,undefined,201);
++  owned.saveResource({id:created.item.id,slug:body.slug});
++  await request(editor.jwt,`/admin/academy/${created.item.id}`);await request(roles.admin.jwt,`/admin/academy/${created.item.id}`,"GET",undefined,undefined,403);await request(roles.operator.jwt,"/admin/content","GET",undefined,undefined,403);
++  const raw=await fixture.creators[0].client.from("academy_content").select("id").eq("id",created.item.id);expect(raw.error).toBeNull();expect(raw.data).toEqual([]);
++  const access=await request<{access:{workspace:null;platformCapabilities:string[]}}>(editor.jwt,"/admin/access");expect(access.access).toMatchObject({workspace:null,platformCapabilities:["content.manage"]});
++ });
++ it("preserves brand_users user_id primary key and owner-only bootstrap ACL",async()=>{
++  const duplicate=await fixture.service.from("brand_users").insert({user_id:roles.operator.id,workspace_id:fixture.otherWorkspaceId,email:"owned@example.invalid",role:"member",active:true});expect(duplicate.error?.code).toBe("23505");
++  expect(fixture.target.sql("select has_function_privilege('service_role','private.bootstrap_staff_access(uuid,uuid,uuid,text,boolean,integer,uuid,text,text)','execute');")).toBe("f");
++ });
++ // The following role handoff extends the existing D07 journey; the business engine is unchanged.
++  it("hands work through Creator, reviewer, operator and finance with one durable pending reward and neutral balances", async () => {
++    const mission = await fixture.mission("active_workspace", true);
++    const joinBefore=await Promise.all(fixture.creators.map(c=>fixture.neutrality(c.id)));expect(joinBefore).toEqual(initialBefore);
++    const joins = await Promise.all(fixture.creators.map(async (creator) => {
++      const response = await app.request(`/api/missions/${mission.slug}/join`,{ method:"POST",headers:{ Authorization:`Bearer ${creator.jwt}`,"X-Workspace-Slug":fixture.slug }});
++      return {creator,response,result:await response.json()};
++    }));
++    expect(joins.map((join)=>join.response.status).sort()).toEqual([200,409]);
++    const winner = joins.find((join)=>join.response.status===200)!;
++    const submissionId = winner.result.submission.id as string;
++    const creator = winner.creator;
++    afterJoin=await Promise.all(fixture.creators.map(c=>fixture.neutrality(c.id)));
++    expect(afterJoin).toEqual(joinBefore.map((row,i)=>({...row,xp:row.xp+(fixture.creators[i].id===creator.id?10:0)})));
++    joinBaseline={before:joinBefore,after:afterJoin,creatorId:creator.id,existingJoinXpDelta:10,contract:"D18-existing-join-contract.json"};
++    const read = () => request<ActiveMissionWorkspace>(creator.jwt,`/my-missions/${submissionId}/workspace`);
++    let workspace = await read(); const workflowId=workspace.workflow.id; const itemId=workspace.workItems.find((item)=>item.required)!.id;
++    const creatorPath=`/my-missions/${submissionId}/work-items/${itemId}`;
++    const operatorPath=`/admin/active-missions/${workflowId}/work-items/${itemId}`;
++    const before = await fixture.neutrality(creator.id);
++    expect(workspace.workflow.state).toBe("fulfillment_pending");
++    await request(roles.operator.jwt,`/admin/active-missions/${workflowId}/fulfillment/shipped`,"POST",{note:"Synthetic shipment"});
++    await request(creator.jwt,`/my-missions/${submissionId}/fulfillment/received`,"POST");
++    workspace=await read(); let item=workspace.workItems.find((candidate)=>candidate.id===itemId)!;
++    const checklist=Object.fromEntries(item.requirements.map((requirement)=>[String(requirement.id),true]));
++    await request(creator.jwt,`${creatorPath}/draft`,"PATCH",{revision:item.draft!.revision,caption:"First synthetic draft",checklist});
++    workspace=await read(); item=workspace.workItems.find((candidate)=>candidate.id===itemId)!;
++    expect(item.draft?.caption).toBe("First synthetic draft");
++    await request(creator.jwt,`${creatorPath}/draft`,"PATCH",{revision:item.draft!.revision-1,caption:"Stale overwrite"},undefined,409);
++    const submitKey=randomUUID(); const submitBody={expectedRevision:item.draft!.revision};
++    await request(creator.jwt,`${creatorPath}/submit`,"POST",submitBody,submitKey);
++    await request(creator.jwt,`${creatorPath}/submit`,"POST",submitBody,submitKey);
++    workspace=await read(); item=workspace.workItems.find((candidate)=>candidate.id===itemId)!;
++    await request(roles.reviewer.jwt,`${operatorPath}/start-review`,"POST",{expectedState:item.state});
++    await request(roles.reviewer.jwt,`${operatorPath}/request-revision`,"POST",{expectedState:"under_review",versionId:item.currentSubmittedVersionId,
++      deadline:new Date(Date.now()+86400000).toISOString(),items:[{category:"quality",text:"Keep the product visible",required:true}]});
++    workspace=await read(); item=workspace.workItems.find((candidate)=>candidate.id===itemId)!;
++    expect(item.state).toBe("revision_requested");
++    await request(creator.jwt,`${creatorPath}/draft`,"PATCH",{revision:item.draft!.revision,caption:"Revised synthetic draft",checklist});
++    workspace=await read(); item=workspace.workItems.find((candidate)=>candidate.id===itemId)!;
++    await request(creator.jwt,`${creatorPath}/submit`,"POST",{expectedRevision:item.draft!.revision},randomUUID());
++    workspace=await read(); item=workspace.workItems.find((candidate)=>candidate.id===itemId)!;
++    await request(roles.reviewer.jwt,`${operatorPath}/start-review`,"POST",{expectedState:item.state});
++    await request(roles.reviewer.jwt,`${operatorPath}/approve-to-publish`,"POST",{expectedState:"under_review",versionId:item.currentSubmittedVersionId});
++    const publicationPath=`/my-missions/${submissionId}/publication/${itemId}`;
++    const publication=async()=> (await request<{publication:MissionPublicationView}>(creator.jwt,publicationPath)).publication;
++    let proof=await publication();
++    await request(creator.jwt,`${publicationPath}/proofs`,"POST",{expectedState:proof.state,expectedRevision:proof.revision,
++      primaryUrl:`https://www.instagram.com/p/${randomUUID().replaceAll("-","")}/`,additionalUrls:[],evidenceAssetIds:[]},randomUUID());
++    proof=await publication();
++    await request(roles.reviewer.jwt,`${operatorPath}/proof-review/start`,"POST",{expectedState:proof.state,expectedRevision:proof.revision,attemptId:proof.currentAttempt!.id},randomUUID());
++    proof=await publication();
++    const proofChecklist={publicly_accessible:true,platform_matches:true,account_matches:true,content_matches_approved_version:true,timing_acceptable:true,disclosures_present:true};
++    await request(roles.reviewer.jwt,`${operatorPath}/proof-review/corrections`,"POST",{expectedState:proof.state,expectedRevision:proof.revision,
++      attemptId:proof.currentAttempt!.id,checklist:{...proofChecklist,content_matches_approved_version:false},corrections:[{category:"content",text:"Use approved content",position:0}]},randomUUID());
++    proof=await publication(); expect(proof.state).toBe("proof_correction_requested");
++    await request(creator.jwt,`${publicationPath}/proofs`,"POST",{expectedState:proof.state,expectedRevision:proof.revision,
++      primaryUrl:`https://www.instagram.com/p/${randomUUID().replaceAll("-","")}/`,additionalUrls:[],evidenceAssetIds:[]},randomUUID());
++    proof=await publication();
++    await request(roles.reviewer.jwt,`${operatorPath}/proof-review/start`,"POST",{expectedState:proof.state,expectedRevision:proof.revision,attemptId:proof.currentAttempt!.id},randomUUID());
++    proof=await publication();
++    await request(roles.reviewer.jwt,`${operatorPath}/proof-review/verify`,"POST",{expectedState:proof.state,expectedRevision:proof.revision,attemptId:proof.currentAttempt!.id,checklist:proofChecklist},randomUUID());
++    workspace=await read(); expect(workspace.workflow.state).toBe("proof_verified");
++    // Creator projection deliberately hides the private contract. Only the operator can complete.
++    const review=await request<{completionEligibility:{eligible:boolean;blockers:string[]}}>(roles.operator.jwt,`/admin/active-missions/${workflowId}/completion`);
++    expect(review.completionEligibility,JSON.stringify(review.completionEligibility)).toMatchObject({eligible:true,blockers:[]});
++    expect(workspace.workItems.find((candidate)=>!candidate.required)!.state).toBe("drafting");
++    const completionBody={expectedState:"proof_verified",expectedRevision:workspace.workflow.revision}, completionKey=randomUUID();
++    const completion=await request<{pendingReward:{id:string};decision:{id:string}}>(roles.operator.jwt,`/admin/active-missions/${workflowId}/completion`,"POST",completionBody,completionKey);
++    const replay=await request<typeof completion>(roles.operator.jwt,`/admin/active-missions/${workflowId}/completion`,"POST",completionBody,completionKey);
++    expect(replay.pendingReward.id).toBe(completion.pendingReward.id);
++    workspace=await read(); expect(workspace.workflow.state).toBe("reward_pending"); expect(workspace.pendingReward?.status).toBe("pending");
++    const operatorReload=await request<{pendingReward:{id:string}}>(roles.operator.jwt,`/admin/active-missions/${workflowId}/completion`);
++    expect(operatorReload.pendingReward.id).toBe(completion.pendingReward.id);
++    const pendingSnapshot=await fixture.neutrality(creator.id); expect(pendingSnapshot).toEqual(before);
++    const financeReload=await request<{items:{id:string;status:string}[]}>(roles.finance_viewer.jwt,"/admin/reward-handoffs");
++    expect(financeReload.items.find(r=>r.id===completion.pendingReward.id)).toMatchObject({status:"pending"});
++    await request(roles.finance_viewer.jwt,`/admin/active-missions/${workflowId}/reward-handoff/cancel`,"POST",{expectedState:"reward_pending",expectedRevision:workspace.workflow.revision,reasonCategory:"other",reasonNote:"Must be denied"},randomUUID(),403);
++    const after=await fixture.neutrality(creator.id);expect(after).toEqual(before);expect(workspace.events.length).toBeGreaterThan(8);
++    owned.saveCore({workflowId,submissionId,itemId,pendingRewardId:completion.pendingReward.id,creatorId:creator.id});
++    fixture.recordEvidence({caseId:"D18-role-handoff",submissionId,workflowId,pendingRewardId:completion.pendingReward.id,historyEvents:workspace.events.length,beforeSnapshot:before,afterSnapshot:after,reviewer:roles.reviewer.id,operator:roles.operator.id,finance:roles.finance_viewer.id,metadataProvider:"explicit mock unavailable",result:"passed"});
++  },90000);
++
++});
+--- /dev/null
++++ b/server/test/staff-access-schema.embedded.test.ts
+@@ -0,0 +1,76 @@
++// @vitest-environment node
++import { readFile } from "node:fs/promises";
++import { beforeAll, beforeEach, afterAll, afterEach, expect, it } from "vitest";
++import type { PGlite } from "@electric-sql/pglite";
++const target=Object.freeze({storage:"memory://",transport:"in-process-wasm",network:"none"});
++let db:PGlite;
++const A="10000000-0000-4000-8000-000000000001",B="10000000-0000-4000-8000-000000000002";
++const admin="20000000-0000-4000-8000-000000000001",subject="20000000-0000-4000-8000-000000000002",foreign="20000000-0000-4000-8000-000000000003",editor="20000000-0000-4000-8000-000000000004",request="30000000-0000-4000-8000-000000000001";
++async function value<T=unknown>(sql:string,args:unknown[]=[]):Promise<T>{return (await db.query<{value:T}>(sql,args)).rows[0]?.value;}
++async function rejected(sql:string,args:unknown[],message:string){await db.exec("savepoint expected_failure");await expect(db.query(sql,args)).rejects.toThrow(message);await db.exec("rollback to savepoint expected_failure");}
++async function ready(){expect(await value("select to_regprocedure('public.set_staff_workspace_role(uuid,uuid,uuid,text,boolean,integer,uuid,text)') is not null as value")).toBe(true);}
++async function bootstrap(user=admin,workspace:string|null=A,role="workspace_admin"){
++ return value("select private.bootstrap_staff_access($1,$2,$3,$4,true,0,gen_random_uuid(),'Explicit owned fixture setup','synthetic-owner-reference') as value",[admin,workspace,user,role]);
++}
++const command="select public.set_staff_workspace_role($1,$2,$3,$4,$5,$6,$7,$8) as value";
++const args=()=>[A,admin,subject,"reviewer",true,0,request,"Approved owned fixture access"];
++beforeAll(async()=>{
++ expect(target).toEqual({storage:"memory://",transport:"in-process-wasm",network:"none"});
++ const {PGlite:Engine}=await import("@electric-sql/pglite");db=await Engine.create(target.storage);
++ await db.exec(`create role anon;create role authenticated;create role service_role bypassrls;create schema auth;create schema private;grant usage on schema private to service_role;create table auth.users(id uuid primary key);create table public.workspaces(id uuid primary key,slug text);create table public.staff_users(user_id uuid primary key,email text,active boolean);create table public.brand_users(user_id uuid primary key,workspace_id uuid,active boolean);insert into auth.users values('${admin}'),('${subject}'),('${foreign}'),('${editor}');insert into public.workspaces values('${A}','a'),('${B}','b');insert into public.staff_users values('${admin}','a@example.invalid',true),('${subject}','b@example.invalid',true),('${foreign}','c@example.invalid',true),('${editor}','d@example.invalid',true);insert into public.brand_users values('${admin}','${A}',true),('${subject}','${A}',true),('${foreign}','${B}',true);`);
++ await db.exec(await readFile("supabase/migrations/20261023124149_staff_access_capabilities.sql","utf8"));
++},60000);
++beforeEach(async()=>{await db.exec("begin");});afterEach(async()=>{await db.exec("rollback");});afterAll(async()=>{await db?.close();});
++it("D18 migration adds no automatic staff grants and browsers cannot self-assign",async()=>{
++ await ready();expect(await value("select count(*)::integer as value from public.staff_workspace_roles")).toBe(0);
++ await db.exec("set local role authenticated");
++ await rejected("insert into public.staff_workspace_roles(user_id,workspace_id,role,granted_by) values($1,$2,'workspace_admin',$1)",[subject,A],"permission denied");
++ await rejected(command,args(),"permission denied");await db.exec("reset role");
++ expect(await value("select count(*)::integer as value from public.staff_access_audit")).toBe(0);
++});
++it("D18 workspace grant persists actor, revision and audit in one command",async()=>{
++ await ready();await bootstrap();const result=await value(command,args());
++ expect(result).toMatchObject({userId:subject,workspaceId:A,role:"reviewer",active:true,revision:1});
++ expect(await value("select granted_by::text as value from public.staff_workspace_roles where user_id=$1",[subject])).toBe(admin);
++ expect(await value("select actor_id::text as value from public.staff_access_audit where request_id=$1",[request])).toBe(admin);
++});
++it("D18 exact replay returns the same saved result and one audit",async()=>{
++ await ready();await bootstrap();const first=await value(command,args());expect(await value(command,args())).toEqual(first);
++ expect(await value("select count(*)::integer as value from public.staff_access_audit where request_id=$1",[request])).toBe(1);
++});
++it("D18 same request with different content conflicts without another mutation",async()=>{
++ await ready();await bootstrap();await value(command,args());const changed=args();changed[3]="operator";
++ await rejected(command,changed,"STAFF_ACCESS_IDEMPOTENCY_CONFLICT");
++ expect(await value("select role as value from public.staff_workspace_roles where user_id=$1",[subject])).toBe("reviewer");
++});
++it("D18 stale grant revision conflicts",async()=>{
++ await ready();await bootstrap();await value(command,args());const stale=args();stale[6]="30000000-0000-4000-8000-000000000002";
++ await rejected(command,stale,"STAFF_ACCESS_STALE");
++});
++it.each(["staff","membership","role"])("D18 revoked %s denies even an exact successful request replay",async kind=>{
++ await ready();await bootstrap();await value(command,args());
++ await db.query(kind==="staff"?"update public.staff_users set active=false where user_id=$1":kind==="membership"?"update public.brand_users set active=false where user_id=$1":"update public.staff_workspace_roles set active=false where user_id=$1",[admin]);
++ await rejected(command,args(),"STAFF_ACCESS_FORBIDDEN");
++});
++it("D18 normal access.manage cannot self-change or grant to another workspace",async()=>{
++ await ready();await bootstrap();const self=args();self[2]=admin;await rejected(command,self,"STAFF_SELF_CHANGE_FORBIDDEN");
++ const cross=args();cross[2]=foreign;await rejected(command,cross,"STAFF_TARGET_NOT_ELIGIBLE");
++});
++it("D18 audit failure rolls back role and command receipt",async()=>{
++ await ready();await bootstrap();await db.exec("alter table public.staff_access_audit add constraint synthetic_audit_failure check(reason<>'force-audit-failure')");
++ const failed=args();failed[7]="force-audit-failure";await rejected(command,failed,"synthetic_audit_failure");
++ expect(await value("select count(*)::integer as value from public.staff_workspace_roles where user_id=$1",[subject])).toBe(0);
++ expect(await value("select count(*)::integer as value from public.staff_access_commands where request_id=$1",[request])).toBe(0);
++});
++it("D18 an admin can revoke an existing grant after its target loses staff or membership",async()=>{
++ await ready();await bootstrap();await value(command,args());
++ await db.query("update public.staff_users set active=false where user_id=$1",[subject]);await db.query("delete from public.brand_users where user_id=$1",[subject]);
++ const revoke=args();revoke[4]=false;revoke[5]=1;revoke[6]="30000000-0000-4000-8000-000000000003";
++ expect(await value(command,revoke)).toMatchObject({active:false,revision:2});
++});
++it("D18 platform content editor is separate and owner bootstrap is not callable by service or browser roles",async()=>{
++ await ready();await bootstrap(editor,null,"content_editor");
++ expect(await value("select role as value from public.staff_platform_roles where user_id=$1",[editor])).toBe("content_editor");
++ expect(await value("select count(*)::integer as value from public.staff_workspace_roles where user_id=$1",[editor])).toBe(0);
++ await db.exec("set local role service_role");await rejected("select private.bootstrap_staff_access($1,null,$1,'content_editor',true,0,gen_random_uuid(),'attempt','fake-owner')",[subject],"permission denied");
++});
+--- /dev/null
++++ b/server/test/staff-capability-boundary.test.ts
+@@ -0,0 +1,37 @@
++import { beforeEach, expect, it, vi } from "vitest";
++const WS="123e4567-e89b-42d3-a456-426614174000", USER="123e4567-e89b-42d3-a456-426614174001";
++const h=vi.hoisted(()=>({role:"finance_viewer",platform:false,roleActive:true,staffActive:true,memberActive:true,missing:false,writes:[] as string[]}));
++vi.mock("../lib/supabase",()=>({
++ makeUserClient:()=>({auth:{getUser:async()=>({data:{user:{id:USER,email:"owned@example.invalid"}},error:null})}}),
++ serviceClient:()=>({from:(table:string)=>{
++  const filters=new Map<string,unknown>();
++  const row=table==="staff_users"?{user_id:USER,email:"owned@example.invalid",active:h.staffActive}:table==="brand_users"?{user_id:USER,workspace_id:WS,active:h.memberActive,workspaces:{id:WS,slug:"owned"}}:table==="staff_workspace_roles"?{user_id:USER,workspace_id:WS,role:h.role,active:h.roleActive,revision:0}:table==="staff_platform_roles"?(h.platform?{user_id:USER,role:"content_editor",active:true}:null):{id:WS,workspace_id:WS,slug:"owned",reward_processing_days:7};
++  const result=()=>({data:row&&[...filters].every(([key,value])=>!(key in row)||row[key as keyof typeof row]===value)?row:null,error:h.missing&&table.startsWith("staff_")&&table.endsWith("roles")?{code:"42P01",message:"relation missing"}:null});
++  const q={select:()=>q,eq:(key:string,value:unknown)=>{filters.set(key,value);return q;},order:()=>q,maybeSingle:async()=>result(),single:async()=>result(),then:(done:(v:unknown)=>unknown)=>Promise.resolve({...result(),data:[]}).then(done)};return q;
++ },rpc:async(name:string)=>{h.writes.push(name);return {data:{reward_processing_days:7},error:null};}}),
++}));
++import { createApp } from "../app";
++const request=(path:string,method="GET",body?:unknown)=>createApp().app.request("/api/admin"+path,{method,headers:{Authorization:"Bearer explicit-fake-transport","X-Workspace-Slug":"owned","Content-Type":"application/json"},...(body===undefined?{}:{body:JSON.stringify(body)})});
++beforeEach(()=>{Object.assign(h,{role:"finance_viewer",platform:false,roleActive:true,staffActive:true,memberActive:true,missing:false});h.writes=[];});
++it("D18 finance cannot change the reward processing window or reach the settings write",async()=>{
++ const r=await request("/reward-handoffs/settings","PUT",{days:7});expect(r.status).toBe(403);expect(h.writes).toEqual([]);
++});
++it("D18 a reviewer cannot create missions, including through a direct API URL",async()=>{
++ h.role="reviewer";const r=await request("/missions","POST",{workspace_id:WS,slug:"owned-mission",title:"Owned mission",mission_type:"ugc"});expect(r.status).toBe(403);expect(h.writes).toEqual([]);
++});
++it("D18 a workspace admin does not inherit access to global Academy drafts",async()=>{
++ h.role="workspace_admin";const r=await request("/academy");expect(r.status).toBe(403);
++});
++it("D18 inactive role remains denied even with an active staff identity and membership",async()=>{
++ h.role="workspace_admin";h.roleActive=false;const r=await request("/applications");expect(r.status).toBe(403);
++});
++it("D18 missing grant schema is a recoverable schema failure, separate from missing membership",async()=>{
++ h.missing=true;const r=await request("/applications");expect(r.status).toBe(503);expect((await r.json()).code).toBe("STAFF_CAPABILITY_SCHEMA_REQUIRED");
++});
++it("D18 access discovery reports independent workspace and platform capabilities",async()=>{
++ const r=await request("/access");expect(r.status).toBe(200);expect((await r.json()).access).toMatchObject({workspace:{role:"finance_viewer",capabilities:["reward.read"]},platformCapabilities:[]});
++});
++it("D18 a permitted grant endpoint attributes the command to the authenticated actor",async()=>{
++ h.role="workspace_admin";const r=await request("/staff-access/123e4567-e89b-42d3-a456-426614174002","PUT",{role:"reviewer",active:true,expectedRevision:0,requestId:"123e4567-e89b-42d3-a456-426614174009",reason:"Owned fixture grant",actorId:"spoofed"});
++ expect(r.status).toBe(200);expect(h.writes).toEqual(["set_staff_workspace_role"]);
++});
+--- /dev/null
++++ b/server/test/staffCapabilityFixture.ts
+@@ -0,0 +1,44 @@
++import { appendFileSync, writeFileSync } from "node:fs";
++import { randomUUID } from "node:crypto";
++import { isDeepStrictEqual } from "node:util";
++import type { createAuditFixture } from "./auditWorkflowFixture.js";
++export async function createStaffCapabilityFixture(){
++ // @ts-expect-error Native ESM identity verifier has no declaration file.
++ const {verifiedTarget}=await import("../../scripts/audit/local-targets.mjs");
++ const target=verifiedTarget("empty"); // Precedes SDK import, all clients, credentials and setup.
++ const base=await (await import("./auditWorkflowFixture.js")).createAuditFixture();
++ if(!isDeepStrictEqual(target.identity,base.target.identity))throw new Error("D18 target drift");
++ const {createClient}=await import("@supabase/supabase-js");
++ type Actor=Awaited<ReturnType<typeof createAuditFixture>>["operator"];
++ const roles:Record<string,Actor>={admin:base.operator};
++ const ids=[...base.creators.map(c=>c.id),base.operator.id,base.noMembership.id],bootstrapRequests:string[]=[];
++ let extra:Record<string,unknown>={};
++ function save(stage:string){
++  const value={runId:base.runId,target:target.identity,workspaceId:base.workspaceId,otherWorkspaceId:base.otherWorkspaceId,slug:base.slug,creators:base.creators,noMembership:base.noMembership,roles,authIds:ids,bootstrapRequests,...extra};
++  const json=JSON.stringify(value,(k,v)=>k==="client"?undefined:v);
++  writeFileSync(`.codex-tmp/D18-fixture-${base.runId}.private.json`,json);writeFileSync(".codex-tmp/D18-fixture.private.json",json);
++  appendFileSync("docs/verification/D18-fixtures.jsonl",JSON.stringify({runId:base.runId,stage,target:target.identity,workspaceIds:[base.workspaceId,base.otherWorkspaceId],authIds:ids,bootstrapRequests,cleanup:"retained exact owned IDs; no reset/delete"})+"\n");
++ }
++ async function actor(name:string,workspace:string|null=base.workspaceId){
++  const email=`d18-${name}-${base.runId}@example.test`,password=`Owned-${randomUUID()}!`;
++  const created=base.must(await base.service.auth.admin.createUser({email,password,email_confirm:true}));
++  const id=created.user!.id;ids.push(id);save("auth-created");
++  base.must(await base.service.from("staff_users").insert({user_id:id,email,active:true}));
++  if(workspace)base.must(await base.service.from("brand_users").insert({user_id:id,workspace_id:workspace,email,active:true,role:name==="noRole"?"owner":"member"}));
++  const client=createClient(target.env.SUPABASE_URL,target.env.SUPABASE_ANON_KEY,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false,storageKey:`d18-${id}`}});
++  const signed=base.must(await client.auth.signInWithPassword({email,password}));
++  roles[name]={id,email,password,jwt:signed.session!.access_token,session:signed.session!,client};save("actor-signed-in");return roles[name];
++ }
++ function bootstrap(user:string,workspace:string|null,role:string){
++  if(![base.operator.id,user,...(workspace?[workspace]:[])].every(v=>/^[a-f0-9-]{36}$/.test(v))||!["workspace_admin","operator","reviewer","finance_viewer","content_editor"].includes(role))throw new Error("invalid exact bootstrap fixture IDs");
++  const request=randomUUID();bootstrapRequests.push(request);save("bootstrap-planned");
++  target.sql(`select private.bootstrap_staff_access('${base.operator.id}',${workspace?`'${workspace}'`:'null'},'${user}','${role}',true,0,'${request}','Explicit owned D18 fixture setup','synthetic-owned-D18-owner-attestation');`);save("bootstrap-saved");
++ }
++ save("base-created");bootstrap(base.operator.id,base.workspaceId,"workspace_admin");
++ for(const role of ["operator","reviewer","finance_viewer"]){const user=await actor(role);bootstrap(user.id,base.workspaceId,role);}
++ const editor=await actor("content_editor",null);bootstrap(editor.id,null,"content_editor");
++ const revocable=await actor("revocable");bootstrap(revocable.id,base.workspaceId,"operator");
++ await actor("noRole");const foreign=await actor("foreign",base.otherWorkspaceId);bootstrap(foreign.id,base.otherWorkspaceId,"workspace_admin");
++ save("ready");
++ return {base,roles,saveResource:(resource:Record<string,unknown>)=>{extra={...extra,resource};save("resource-saved");},saveCore:(core:Record<string,unknown>)=>{extra={...extra,core};save("core-saved");},save};
++}
+--- a/src/components/admin/AdminShell.tsx
++++ b/src/components/admin/AdminShell.tsx
+@@ -1,11 +1,12 @@
+ import { useState, type ReactNode } from "react";
+ import { AdminSideNav } from "./AdminSideNav";
+ import { AdminTopBar } from "./AdminTopBar";
++import { StaffAccessProvider } from "./StaffAccessContext";
+ export function AdminShell({ children }: { children: ReactNode }) {
+   const [navOpen, setNavOpen] = useState(false);
+-  return <><AdminSideNav /><div className="min-h-screen lg:pl-60">
++  return <StaffAccessProvider><AdminSideNav /><div className="min-h-screen lg:pl-60">
+     <AdminTopBar onMenu={() => setNavOpen((value) => !value)} navOpen={navOpen} />
+     {navOpen && <div id="admin-mobile-nav" className="p-4 lg:hidden"><AdminSideNav mobile onNavigate={() => setNavOpen(false)} /></div>}
+     <main className="mx-auto max-w-6xl space-y-4 p-4">{children}</main>
+-  </div></>;
++  </div></StaffAccessProvider>;
+ }
+--- a/src/components/admin/AdminSideNav.tsx
++++ b/src/components/admin/AdminSideNav.tsx
+@@ -3,6 +3,7 @@
+ import { useI18n } from "@/lib/i18n";
+ import { ADMIN_NAV_GROUPS, type AdminNavItem } from "./adminNavItems";
+ import { useAdminQueueCounts } from "./useAdminQueueCounts";
++import { useStaffAccess, canOpenStaffPage } from "./StaffAccessContext";
+ 
+ const ITEM =
+   "flex items-center gap-3 rounded-[var(--radius)] border-2 border-transparent px-3 py-2 font-heading text-sm font-semibold text-[var(--color-soft-ink)]";
+@@ -19,6 +20,9 @@
+ export function AdminSideNav({ mobile = false, onNavigate }: { mobile?: boolean; onNavigate?: () => void }) {
+   const { t } = useI18n();
+   const counts = useAdminQueueCounts();
++  const access=useStaffAccess();
++  const groups=ADMIN_NAV_GROUPS.map(g=>({...g,items:g.items.filter(item=>canOpenStaffPage(access,item.to))})).filter(g=>g.items.length);
++  const home=groups.flatMap(g=>g.items).find(item=>!item.locked)?.to;
+ 
+   function badge(item: AdminNavItem) {
+     if (!item.countKey) return null;
+@@ -29,10 +33,10 @@
+ 
+   return (
+     <nav aria-label={t("app.admin.title")} className={mobile ? MOBILE : DESKTOP}>
+-      <Link to="/admin/insights" className="mb-2 px-3 font-display text-xl font-bold" onClick={onNavigate}>
++      {home?<Link to={home} className="mb-2 px-3 font-display text-xl font-bold" onClick={onNavigate}>
+         {t("app.admin.brand")}
+-      </Link>
+-      {ADMIN_NAV_GROUPS.map((group) => (
++      </Link>:<span className="mb-2 px-3 font-display text-xl font-bold">{t("app.admin.brand")}</span>}
++      {groups.map((group) => (
+         <div key={group.labelKey} className="mt-3 first:mt-0">
+           <p className="px-3 pb-1 font-mono text-[10px] uppercase tracking-wider text-[var(--color-soft-ink)]">
+             {t(group.labelKey)}
+--- a/src/components/admin/AdminTopBar.tsx
++++ b/src/components/admin/AdminTopBar.tsx
+@@ -6,11 +6,14 @@
+ import { useAdminAuth } from "./AdminAuthContext";
+ import { WorkspaceSwitcher } from "./WorkspaceSwitcher";
+ import { adminPageTitleKey } from "./adminNavItems";
++import { useStaffAccess } from "./StaffAccessContext";
+ 
+ export function AdminTopBar({ onMenu, navOpen }: { onMenu: () => void; navOpen: boolean }) {
+   const { t } = useI18n();
+   const { staff } = useAdminAuth();
+   const { pathname } = useLocation();
++  const access=useStaffAccess();
++  const roles={workspace_admin:"Workspace admin / 工作空間管理員",operator:"Operator / 營運員",reviewer:"Reviewer / 審稿員",finance_viewer:"Finance viewer / 財務檢視員"};
+ 
+   async function handleSignOut() {
+     await supabase.auth.signOut();
+@@ -31,6 +34,8 @@
+       <h1 className="min-w-0 flex-1 truncate font-display text-lg font-bold">{t(adminPageTitleKey(pathname))}</h1>
+       <div className="ml-auto flex min-w-0 basis-full flex-wrap items-center gap-3 sm:basis-auto lg:flex-nowrap">
+         <WorkspaceSwitcher />
++        {access?.loading&&<span role="status" className="text-xs">Checking access / 核實職責中…</span>}
++        {access?.error?<div role="alert" className="max-w-sm text-sm"><p>Access unavailable / 暫時無法核實職責</p><button type="button" className="min-h-11 underline" onClick={()=>void access.refresh()}>Retry access / 重試職責</button></div>:access?.access&&<span aria-label="Staff role" className="max-w-xs text-xs [overflow-wrap:anywhere]">{access.access.workspace?.role?roles[access.access.workspace.role]:"No assigned workspace role / 未獲派營運職責"}{access.can("content.manage")?" · Content editor / 內容編輯":""}</span>}
+         {staff?.email ? (
+           <span className="hidden max-w-xs truncate text-xs text-[var(--color-soft-ink)] lg:inline">{staff.email}</span>
+         ) : null}
+--- /dev/null
++++ b/src/components/admin/MissionEditor.permissions.test.tsx
+@@ -0,0 +1,12 @@
++import {render,screen,fireEvent,waitFor} from "@testing-library/react";
++import {it,expect,vi} from "vitest";
++import {MissionEditor} from "./MissionEditor";
++import {AdminRequestError} from "@/lib/admin";
++import {I18nProvider} from "@/lib/i18n";
++it.each([["en","Ask the workspace owner to review your assigned role before retrying. Your input is kept."],["zh","請聯絡 workspace 負責人覆核已指派的角色，再重試。你的輸入已保留。"]] as const)("D18 announces a recoverable permission denial in %s without losing authored input",async(lang,help)=>{
++ localStorage.setItem("lang",lang);const save=vi.fn().mockRejectedValue(new AdminRequestError("assigned staff capability","STAFF_CAPABILITY_REQUIRED",undefined,403));
++ render(<I18nProvider><MissionEditor mode="create" workspaces={[{id:"w",name:"Owned"}]} onSave={save}/></I18nProvider>);
++ await waitFor(()=>expect(document.documentElement.lang).toBe(lang==="en"?"en":"zh-Hant-HK"));
++ fireEvent.change(screen.getByLabelText("標題"),{target:{value:"Unsent authored title"}});fireEvent.click(screen.getByRole("button",{name:"儲存草稿"}));
++ await waitFor(()=>expect(save).toHaveBeenCalledOnce());expect(await screen.findByText(help)).toBeVisible();expect(screen.getByLabelText("標題")).toHaveValue("Unsent authored title");expect(screen.getByRole("button",{name:"儲存草稿"})).toBeEnabled();
++});
+--- a/src/components/admin/MissionEditor.tsx
++++ b/src/components/admin/MissionEditor.tsx
+@@ -238,6 +238,7 @@
+     <fieldset ref={editorRef} tabIndex={-1} disabled={saving || savePending} className="min-w-0 space-y-5">
+       {saveError || Object.keys(errors).length ? <div ref={errorSummaryRef} role="alert" tabIndex={-1} className="space-y-2 rounded-[var(--radius)] border-2 border-red-700 bg-white p-3 text-sm">
+         <p className="font-bold">{t(saveError ? "app.admin.missionEditor.saveFailed" : "app.admin.missionEditor.fixFields")}</p>
++        {saveError instanceof AdminRequestError && saveError.status === 403 ? <p>{t("app.admin.missionEditor.permissionHelp")}</p> : null}
+         {saveError instanceof AdminRequestError && saveError.status === 409 ? <p>{t("app.admin.missionEditor.conflictHelp")}</p> : null}
+         <ul>{Object.entries(errors).map(([key, value]) => {
+           const index = /^deliverable_templates\.(\d+)/.exec(key)?.[1];
+--- a/src/components/admin/RewardHandoffQueue.tsx
++++ b/src/components/admin/RewardHandoffQueue.tsx
+@@ -5,6 +5,7 @@
+   RewardHandoffQueueItem,
+ } from "@/lib/adminRewardHandoff";
+ import { useI18n } from "@/lib/i18n";
++import { useStaffAccess } from "./StaffAccessContext";
+ 
+ export type RewardHandoffUiFilters = Pick<
+   RewardHandoffListFilters,
+@@ -92,6 +93,8 @@
+   onLoadMore,
+ }: Props) {
+   const { lang, localeReady, t } = useI18n();
++  const access=useStaffAccess(),canEditSettings=!access||access.can("reward.settings");
++  const canOpenTimeline=!access||["submission.review","proof.review","completion.approve"].some(cap=>access.can(cap as "submission.review"|"proof.review"|"completion.approve"));
+   const locale = lang === "zh" ? "zh-HK" : "en-US";
+   const [draftFilters, setDraftFilters] = useState<RewardHandoffUiFilters>(
+     normalizedFilters(filters),
+@@ -219,7 +222,7 @@
+         <p className="text-sm text-[var(--color-soft-ink)]">
+           {t("app.admin.rewardHandoff.sla.help")}
+         </p>
+-        <div className="mt-3 flex min-w-0 flex-col gap-2 sm:flex-row sm:items-end">
++        {canEditSettings?<div className="mt-3 flex min-w-0 flex-col gap-2 sm:flex-row sm:items-end">
+           <label className="grid min-w-0 flex-1 gap-1 text-sm font-bold">
+             {t("app.admin.rewardHandoff.sla.label")}
+             <input
+@@ -247,8 +250,8 @@
+               ? t("app.admin.rewardHandoff.sla.saving")
+               : t("app.admin.rewardHandoff.sla.save")}
+           </button>
+-        </div>
+-        {saveState.kind === "error" ? (
++        </div>:<p className="mt-3 text-sm">Read only / 只供檢視 · {processingWindowDays===null?"No assigned window / 未設定時限":`${processingWindowDays} days / 日`}</p>}
++        {canEditSettings && saveState.kind === "error" ? (
+           <p role="alert" className="mt-2 text-sm font-bold text-red-700">
+             {windowDraft.trim() !== ""
+               && (!Number.isFinite(Number(windowDraft))
+@@ -357,14 +360,14 @@
+                       <div><dt className="font-bold">{t("app.admin.rewardHandoff.decision")}</dt><dd>{decision(item)}</dd></div>
+                       <div><dt className="font-bold">{t("app.admin.rewardHandoff.evidence")}</dt><dd>{evidence(item)}</dd></div>
+                     </dl>
+-                    <Link
++                    {canOpenTimeline ? <Link
+                       to="/admin/active-missions/$workflowId"
+                       params={{ workflowId: item.workflowId }}
+                       search={{ workItemId: undefined }}
+                       className="mt-3 inline-flex rounded-full border-2 border-[var(--color-ink)] bg-white px-4 py-2 font-heading text-sm font-bold hover:bg-[var(--color-paper)]"
+                     >
+                       {t("app.admin.rewardHandoff.timeline")}
+-                    </Link>
++                    </Link> : null}
+                   </article>
+                 ))}
+               </div>
+@@ -390,14 +393,14 @@
+                         <td className="border-b p-2">{evidence(item)}</td>
+                         <td className="border-b p-2">{status(item)}</td>
+                         <td className="border-b p-2">
+-                          <Link
++                          {canOpenTimeline ? <Link
+                             to="/admin/active-missions/$workflowId"
+                             params={{ workflowId: item.workflowId }}
+                             search={{ workItemId: undefined }}
+                             className="font-bold underline hover:text-[var(--color-soft-ink)]"
+                           >
+                             {t("app.admin.rewardHandoff.timeline")}
+-                          </Link>
++                          </Link> : null}
+                         </td>
+                       </tr>
+                     ))}
+@@ -422,4 +425,4 @@
+       ) : null}
+     </section>
+   );
+-}
+\ No newline at end of file
++}
+--- /dev/null
++++ b/src/components/admin/StaffAccessContext.tsx
+@@ -0,0 +1,35 @@
++import { createContext, useContext, useEffect, useMemo, useRef, type ReactNode } from "react";
++import { useQuery, useQueryClient } from "@tanstack/react-query";
++import { fetchStaffAccess, type StaffAccessSnapshot, type StaffCapability } from "@/lib/admin";
++import { useAdminAuth } from "./AdminAuthContext";
++import { useAdminWorkspace } from "./AdminWorkspaceContext";
++
++type AccessContext = {access:StaffAccessSnapshot|undefined;loading:boolean;error:unknown;refresh:()=>Promise<unknown>;can:(capability:StaffCapability|"content.manage")=>boolean};
++const Context=createContext<AccessContext|undefined>(undefined);
++export function useStaffAccess(){return useContext(Context);}
++export function StaffAccessProvider({children}:{children:ReactNode}){
++ const {authed,staff}=useAdminAuth(),{workspace}=useAdminWorkspace(),client=useQueryClient();
++ const query=useQuery({queryKey:["admin-access",staff?.userId,workspace],queryFn:()=>fetchStaffAccess(workspace),enabled:authed,retry:false,staleTime:0,refetchOnWindowFocus:"always"});
++ const {refetch}=query;
++ const access=query.isError?undefined:query.data?.access;
++ const previous=useRef<string|undefined>(undefined),fingerprint=JSON.stringify(access);
++ useEffect(()=>{
++  if(previous.current!==undefined&&previous.current!==fingerprint)void client.invalidateQueries({predicate:q=>q.queryKey[0]!=="admin-access"&&/^(admin|operator)/.test(String(q.queryKey[0]))});
++  previous.current=fingerprint;
++ },[fingerprint,client]);
++ useEffect(()=>{const refresh=()=>{void refetch();};window.addEventListener("adfocate:staff-access-denied",refresh);return()=>window.removeEventListener("adfocate:staff-access-denied",refresh);},[refetch]);
++ const value=useMemo<AccessContext>(()=>({access,loading:query.isPending,error:query.error,refresh:query.refetch,can:cap=>cap==="content.manage"?Boolean(access?.platformCapabilities.includes(cap)):Boolean(access?.workspace?.capabilities.includes(cap))}),[access,query.isPending,query.error,query.refetch]);
++ return <Context.Provider value={value}>{children}</Context.Provider>;
++}
++/** Presentation derives from server-issued capabilities, never from brand/JWT role claims. */
++export function canOpenStaffPage(access:AccessContext|undefined,path:string){
++ if(!access)return true; // Leaf previews outside the shell; API authorization is always enforced.
++ if(path.startsWith("/admin/academy")||path.startsWith("/admin/content"))return access.can("content.manage");
++ if(path.startsWith("/admin/reward-handoffs"))return access.can("reward.read");
++ if(path.startsWith("/admin/staff-access"))return access.can("access.manage");
++ if(path.startsWith("/admin/active-missions"))return ["submission.review","proof.review","completion.approve"].some(c=>access.can(c as StaffCapability));
++ if(path.startsWith("/admin/applications"))return access.can("application.review");
++ if(path.startsWith("/admin/submissions"))return access.can("submission.review");
++ if(path.startsWith("/admin/missions")||path.startsWith("/admin/campaigns"))return access.can("mission.manage");
++ return access.can("creator.read");
++}
+--- /dev/null
++++ b/src/components/admin/StaffAccessShell.test.tsx
+@@ -0,0 +1,45 @@
++import { fireEvent, render, screen, waitFor } from "@testing-library/react";
++import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
++import { beforeEach, expect, it, vi } from "vitest";
++import type { ReactNode } from "react";
++const h=vi.hoisted(()=>({access:vi.fn(),apps:vi.fn(),subs:vi.fn(),workspaces:vi.fn()}));
++vi.mock("@/lib/admin",async original=>({...await original<object>(),fetchStaffAccess:h.access,fetchApplications:h.apps,fetchSubmissions:h.subs,fetchWorkspaces:h.workspaces}));
++vi.mock("@/lib/supabase",()=>({supabase:{auth:{signOut:vi.fn(),getSession:async()=>({data:{session:null}})}}}));
++vi.mock("@/lib/i18n",()=>({useI18n:()=>({t:(key:string)=>key,lang:"en",localeReady:true})}));
++vi.mock("@tanstack/react-router",()=>({useLocation:()=>({pathname:"/admin/reward-handoffs"}),Link:({to,children,onClick}:{to:string;children:ReactNode;onClick?:()=>void})=><a href={to} onClick={onClick}>{children}</a>}));
++vi.mock("./AdminWorkspaceContext",()=>({useAdminWorkspace:()=>({workspace:"owned",workspaceSlug:"owned",setWorkspace:vi.fn()})}));
++import {AdminShell} from "./AdminShell";
++import {AdminAuthContext} from "./AdminAuthContext";
++import {RewardHandoffQueue} from "./RewardHandoffQueue";
++import {ReviewActionPanel} from "../operator/ReviewActionPanel";
++const finance={workspace:{id:"owned",slug:"owned",role:"finance_viewer",capabilities:["reward.read"],revision:1},platformCapabilities:[],scopeStatus:null};
++function show(children:ReactNode=<input aria-label="Retained draft" defaultValue="Draft text" />){const client=new QueryClient({defaultOptions:{queries:{retry:false}}});return render(<QueryClientProvider client={client}><AdminAuthContext.Provider value={{authed:true,staff:{userId:"staff",email:"owned@example.invalid"},reportAuthError:vi.fn()}}><AdminShell>{children}</AdminShell></AdminAuthContext.Provider></QueryClientProvider>);}
++beforeEach(()=>{vi.clearAllMocks();h.access.mockResolvedValue({access:finance});h.apps.mockResolvedValue({applications:[]});h.subs.mockResolvedValue({submissions:[]});h.workspaces.mockResolvedValue({workspaces:[{id:"owned",slug:"owned",name:"Owned workspace"}]});});
++it("D18 finance navigation exposes handoffs and does not prefetch review queues",async()=>{
++ show();await screen.findByLabelText("Staff role");expect(screen.getByRole("link",{name:"app.admin.tabRewardHandoffs"})).toBeVisible();
++ expect(screen.queryByRole("link",{name:"app.admin.tabAcademy"})).not.toBeInTheDocument();expect(screen.queryByRole("link",{name:"app.admin.tabMissions"})).not.toBeInTheDocument();
++ expect(h.apps).not.toHaveBeenCalled();expect(h.subs).not.toHaveBeenCalled();
++});
++it("D18 platform-only editor has editorial navigation without a workspace request or re-login prompt",async()=>{
++ h.access.mockResolvedValue({access:{workspace:null,platformCapabilities:["content.manage"],scopeStatus:"WORKSPACE_MEMBERSHIP_REQUIRED"}});show();
++ await screen.findByText(/Platform content/);expect(screen.getByRole("link",{name:"app.admin.tabAcademy"})).toBeVisible();expect(screen.queryByRole("link",{name:"app.admin.tabRewardHandoffs"})).not.toBeInTheDocument();expect(h.workspaces).not.toHaveBeenCalled();
++});
++it("D18 failed access discovery is announced and retry keeps an existing draft",async()=>{
++ h.access.mockRejectedValueOnce(new Error("Access service unavailable"));show();fireEvent.change(screen.getByLabelText("Retained draft"),{target:{value:"Unsent draft remains"}});
++ await screen.findByRole("alert");fireEvent.click(screen.getByRole("button",{name:/Retry access/}));await waitFor(()=>expect(h.access).toHaveBeenCalledTimes(2));await screen.findByLabelText("Staff role");expect(screen.getByLabelText("Retained draft")).toHaveValue("Unsent draft remains");
++});
++it("D18 finance handoff view does not offer a processing-window mutation",async()=>{
++ show(<RewardHandoffQueue workspaceKey="owned" items={[]} filters={{status:"pending"}} processingWindowDays={7} onFiltersChange={vi.fn()} onSaveProcessingWindow={vi.fn()}/>);
++ await screen.findByLabelText("Staff role");expect(screen.queryByRole("button",{name:"app.admin.rewardHandoff.sla.save"})).not.toBeInTheDocument();
++});
++it("D18 a reviewer can read a Creator without an approve or note editor",async()=>{
++ h.access.mockResolvedValue({access:{...finance,workspace:{...finance.workspace,role:"reviewer",capabilities:["creator.read","submission.review","proof.review"]}}});
++ show(<ReviewActionPanel creator={{id:"creator",displayName:"Owned creator",review:{status:"needs_review",riskLevel:"unknown",summary:null,reviewedBy:null,lastReviewedAt:null,updatedAt:null}}}/>);
++ await screen.findByLabelText("Staff role");expect(screen.queryByRole("button",{name:"Approve Owned creator"})).not.toBeInTheDocument();expect(screen.queryByRole("button",{name:"Flag Owned creator"})).not.toBeInTheDocument();
++});
++
++it("D18 finance handoff keeps saved decision information without offering a forbidden workflow link",async()=>{
++ const item={id:"reward",workflowId:"workflow",submissionId:"submission",creatorId:"creator",missionId:"mission",rewardContractId:"contract",completionDecisionId:"decision",cancellationDecisionId:null,reward:{pointsAmount:10,cashAmount:0,currency:"HKD",xpAmount:0},status:"pending" as const,processingWindowDays:7,targetAt:null,createdAt:"2026-10-23T10:00:00Z",cancelledAt:null,decision:null,creatorDisplayName:"Owned creator",missionTitle:"Owned mission",completionDecision:{id:"decision",kind:"approved" as const,decidedAt:"2026-10-23T10:00:00Z",requiredItemCount:1,verifiedRequiredItemCount:1,evidenceAvailable:true}};
++ show(<RewardHandoffQueue workspaceKey="owned" items={[item]} filters={{status:"pending"}} processingWindowDays={7} onFiltersChange={vi.fn()} onSaveProcessingWindow={vi.fn()}/>);
++ await screen.findByLabelText("Staff role");expect(screen.getAllByText("Owned mission").length).toBeGreaterThan(0);expect(screen.queryAllByRole("link",{name:"app.admin.rewardHandoff.timeline"})).toHaveLength(0);
++});
+--- a/src/components/admin/WorkspaceSwitcher.tsx
++++ b/src/components/admin/WorkspaceSwitcher.tsx
+@@ -3,14 +3,16 @@
+ import { fetchWorkspaces, adminMissionKeys, AdminAuthError } from "@/lib/admin";
+ import { useAdminAuth } from "./AdminAuthContext";
+ import { useAdminWorkspace } from "./AdminWorkspaceContext";
++import { useStaffAccess } from "./StaffAccessContext";
+ 
+ export function WorkspaceSwitcher() {
+   const { authed, reportAuthError } = useAdminAuth();
+   const { workspace, workspaceSlug, setWorkspace } = useAdminWorkspace();
++  const access=useStaffAccess();
+   const ws = useQuery({
+     queryKey: adminMissionKeys.workspaces,
+     queryFn: fetchWorkspaces,
+-    enabled: authed,
++    enabled: authed && (!access || Boolean(access.access?.workspace)),
+     retry: false,
+   });
+   useEffect(() => {
+@@ -30,6 +32,8 @@
+     if (selected.slug !== workspaceSlug) setWorkspace(workspace, selected.slug);
+   }, [setWorkspace, workspace, workspaceSlug, ws.data]);
+ 
++  if(access?.access?.workspace===null)return <span className="text-sm">{access.can("content.manage")?"Platform content / 平台內容":"No workspace membership / 未有工作空間membership；請聯絡owner"}</span>;
++  if(access&&!access.access)return null;
+   if (ws.isError) return <div role="alert" className="space-y-2 text-sm">
+     <p>無法載入工作空間。若已登入但未獲分配，請聯絡 workspace owner。 / Workspace access could not be loaded. Ask the owner to check membership.</p>
+     <button type="button" onClick={() => void ws.refetch()}>重試 / Retry</button>
+--- a/src/components/admin/useAdminQueueCounts.ts
++++ b/src/components/admin/useAdminQueueCounts.ts
+@@ -3,6 +3,7 @@
+ import { adminKeys, fetchApplications, fetchSubmissions } from "@/lib/admin";
+ import { useAdminAuth } from "./AdminAuthContext";
+ import { useAdminWorkspace } from "./AdminWorkspaceContext";
++import { useStaffAccess } from "./StaffAccessContext";
+ 
+ /**
+  * Live counts for the Applications/Submissions sidebar badges. Uses the same query
+@@ -12,16 +13,17 @@
+ export function useAdminQueueCounts(): { applications?: number; submissions?: number } {
+   const { authed } = useAdminAuth();
+   const { workspace } = useAdminWorkspace();
++  const access=useStaffAccess();
+   const apps = useQuery({
+     queryKey: adminKeys.applications(workspace),
+     queryFn: () => fetchApplications(workspace),
+-    enabled: authed,
++    enabled: authed && (!access || access.can("application.review")),
+     retry: false,
+   });
+   const subs = useQuery({
+     queryKey: adminKeys.submissions("submitted", workspace),
+     queryFn: () => fetchSubmissions("submitted", workspace),
+-    enabled: authed,
++    enabled: authed && (!access || access.can("submission.review")),
+     retry: false,
+   });
+   return { applications: apps.data?.applications.length, submissions: subs.data?.submissions.length };
+--- a/src/components/operator/CreatorReviewRow.tsx
++++ b/src/components/operator/CreatorReviewRow.tsx
+@@ -2,6 +2,7 @@
+ import { useMutation, useQueryClient } from "@tanstack/react-query";
+ import { Link } from "@tanstack/react-router";
+ import { Flag, UserRound } from "lucide-react";
++import { useStaffAccess } from "@/components/admin/StaffAccessContext";
+ import { ReviewActionPanel } from "@/components/operator/ReviewActionPanel";
+ import {
+   RiskBadge,
+@@ -54,6 +55,7 @@
+ }
+ 
+ export function CreatorReviewRow({ creator, missionId, onShortlistSuccess }: CreatorReviewRowProps) {
++  const access=useStaffAccess(),canReview=!access||access.can("creator.review");
+   const queryClient = useQueryClient();
+   const [showShortlistNote, setShowShortlistNote] = useState(false);
+   const [shortlistNote, setShortlistNote] = useState("");
+@@ -135,7 +137,7 @@
+ 
+       <div className="space-y-2">
+         <div className="flex flex-wrap items-center justify-end gap-2">
+-          {missionId ? (
++          {missionId && canReview ? (
+             <button
+               type="button"
+               aria-label={`Shortlist ${creator.displayName}`}
+@@ -157,7 +159,7 @@
+           <ReviewActionPanel creator={creator} />
+         </div>
+ 
+-        {missionId && showShortlistNote ? (
++        {missionId && showShortlistNote && canReview ? (
+           <div className="space-y-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-sky)] p-2">
+             <label className="block space-y-1 text-xs font-bold text-[var(--color-soft-ink)]">
+               <span>Shortlist note</span>
+--- a/src/components/operator/ReviewActionPanel.tsx
++++ b/src/components/operator/ReviewActionPanel.tsx
+@@ -2,6 +2,7 @@
+ import { RequestFeedback } from "@/components/RequestFeedback";
+ import { useMutation, useQueryClient } from "@tanstack/react-query";
+ import { Check, Flag } from "lucide-react";
++import { useStaffAccess } from "@/components/admin/StaffAccessContext";
+ import {
+   postCreatorReview,
+   type AdminRiskLevel,
+@@ -20,6 +21,7 @@
+ };
+ 
+ export function ReviewActionPanel({ creator, variant = "compact", onSuccess }: ReviewActionPanelProps) {
++  const access=useStaffAccess();
+   const queryClient = useQueryClient();
+   const [status, setStatus] = useState<AdminReviewStatus>(creator.review.status);
+   const [riskLevel, setRiskLevel] = useState<AdminRiskLevel>(creator.review.riskLevel);
+@@ -70,6 +72,7 @@
+     const latest = detail?.review ?? queue?.review;
+     if (latest) { revision.current = latest.revision ?? 0; requestId.current = null; mutation.reset(); setValidationError("已載入最新紀錄；請比較保留的輸入後再儲存。 / Latest record loaded. Compare your retained input before saving."); }
+   };
++  if(access&&!access.can("creator.review"))return <p className="text-xs">Read only / 只供檢視；如有未儲存輸入會保留至職責恢復。</p>;
+   if (variant === "full" || flagging) {
+     return (
+       <div className="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3">
+--- a/src/lib/admin.ts
++++ b/src/lib/admin.ts
+@@ -180,6 +180,7 @@
+   }
+   if (!res.ok) {
+     const body = await res.json().catch(() => ({}));
++      if (res.status === 403 && ["STAFF_CAPABILITY_REQUIRED", "WORKSPACE_MEMBERSHIP_REQUIRED", "STAFF_ACCESS_FORBIDDEN"].includes(body.code) && typeof window !== "undefined") window.dispatchEvent(new Event("adfocate:staff-access-denied"));
+     if (res.status === 403 && body.code === "not_staff") throw new AdminAuthError("not_staff", 403);
+     throw new AdminRequestError(body.error ?? res.statusText, body.code, body.fields, res.status);
+   }
+@@ -1137,3 +1138,8 @@
+ export function fetchCampaignLeaderboard(id: string) {
+   return adminFetch<{ leaderboard: unknown[] }>(`/admin/campaigns/${id}/leaderboard`);
+ }
++
++export type { StaffAccessSnapshot, StaffCapability, StaffWorkspaceRole } from "../../server/lib/staffCapabilities";
++export function fetchStaffAccess(workspace="") {
++  return adminFetch<{access:import("../../server/lib/staffCapabilities").StaffAccessSnapshot}>(`/admin/access${workspace?`?workspace=${encodeURIComponent(workspace)}`:""}`);
++}
+--- a/src/lib/i18n.dict.ts
++++ b/src/lib/i18n.dict.ts
+@@ -979,6 +979,7 @@
+     "app.admin.missionEditor.rootFields": "Mission fields",
+     "app.admin.missionEditor.fixFields": "Review the highlighted fields.",
+     "app.admin.missionEditor.conflictHelp": "The mission has changed or a deliverable is already in use. Compare the saved mission before trying again; your input is retained.",
++    "app.admin.missionEditor.permissionHelp": "Ask the workspace owner to review your assigned role before retrying. Your input is kept.",
+     "app.admin.missionEditor.deliverableTitleRequired": "Enter a deliverable title.",
+     "app.admin.missionEditor.requirementTextRequired": "Enter a checklist requirement.",
+     "app.admin.missionEditor.positiveInteger": "Enter a positive whole number.",
+@@ -2478,6 +2479,7 @@
+     "app.admin.missionEditor.rootFields": "基本欄位",
+     "app.admin.missionEditor.fixFields": "請核對以下欄位。",
+     "app.admin.missionEditor.conflictHelp": "任務資料已變更，或交付項目已被使用。請先核對已儲存任務再重試；目前輸入已保留。",
++    "app.admin.missionEditor.permissionHelp": "請聯絡 workspace 負責人覆核已指派的角色，再重試。你的輸入已保留。",
+     "app.admin.missionEditor.deliverableTitleRequired": "請輸入交付標題。",
+     "app.admin.missionEditor.requirementTextRequired": "請輸入檢查要求。",
+     "app.admin.missionEditor.positiveInteger": "請輸入正整數。",
+--- /dev/null
++++ b/supabase/migrations/20261023124149_staff_access_capabilities.sql
+@@ -0,0 +1,153 @@
++begin;
++
++-- Additive only. No existing staff or brand membership is promoted or rewritten.
++create table public.staff_workspace_roles (
++  user_id uuid not null references auth.users(id),
++  workspace_id uuid not null references public.workspaces(id),
++  role text not null check (role in ('workspace_admin','operator','reviewer','finance_viewer')),
++  active boolean not null default true,
++  granted_by uuid not null references auth.users(id),
++  granted_at timestamptz not null default clock_timestamp(),
++  revision integer not null default 1 check (revision > 0),
++  primary key (user_id,workspace_id)
++);
++create index staff_workspace_roles_workspace on public.staff_workspace_roles(workspace_id,active,user_id);
++create index staff_workspace_roles_granted_by on public.staff_workspace_roles(granted_by);
++create table public.staff_platform_roles (
++  user_id uuid not null references auth.users(id),
++  role text not null check (role='content_editor'),
++  active boolean not null default true,
++  granted_by uuid not null references auth.users(id),
++  granted_at timestamptz not null default clock_timestamp(),
++  revision integer not null default 1 check (revision > 0),
++  primary key (user_id,role)
++);
++create index staff_platform_roles_granted_by on public.staff_platform_roles(granted_by);
++create table public.staff_access_audit (
++  id uuid primary key default gen_random_uuid(),
++  request_id uuid not null unique,
++  workspace_id uuid references public.workspaces(id),
++  user_id uuid not null references auth.users(id),
++  actor_id uuid not null references auth.users(id),
++  actor_kind text not null check (actor_kind in ('workspace_admin','db_owner_bootstrap')),
++  db_session_user text not null,
++  before_state jsonb,
++  after_state jsonb not null,
++  reason text not null check (length(btrim(reason)) between 1 and 500),
++  approval_ref text,
++  created_at timestamptz not null default clock_timestamp()
++);
++create index staff_access_audit_workspace on public.staff_access_audit(workspace_id,created_at);
++create index staff_access_audit_user on public.staff_access_audit(user_id,created_at);
++create index staff_access_audit_actor on public.staff_access_audit(actor_id,created_at);
++create table public.staff_access_commands (
++  request_id uuid primary key references public.staff_access_audit(request_id),
++  payload jsonb not null,
++  result jsonb not null
++);
++alter table public.staff_workspace_roles enable row level security;
++alter table public.staff_platform_roles enable row level security;
++alter table public.staff_access_audit enable row level security;
++alter table public.staff_access_commands enable row level security;
++revoke all on public.staff_workspace_roles,public.staff_platform_roles,public.staff_access_audit,public.staff_access_commands from public,anon,authenticated,service_role;
++grant select on public.staff_workspace_roles,public.staff_platform_roles,public.staff_access_audit,public.staff_access_commands to service_role;
++
++-- One write engine: authorization, optimistic revision, receipt and audit share a transaction.
++-- Only owner-executed wrappers can call it; application callers cannot select bootstrap mode.
++create function private.apply_staff_access(
++  p_actor uuid,p_workspace uuid,p_subject uuid,p_role text,p_active boolean,
++  p_expected_revision integer,p_request uuid,p_reason text,p_approval_ref text,p_owner_bootstrap boolean
++) returns jsonb language plpgsql security definer set search_path='' as $$
++declare v_before jsonb; v_after jsonb; v_result jsonb; v_payload jsonb; v_saved public.staff_access_commands%rowtype; v_revision integer;
++begin
++  if p_actor is null or p_subject is null or p_request is null or p_active is null or p_owner_bootstrap is null
++    or p_expected_revision is null or p_expected_revision<0 or nullif(btrim(p_reason),'') is null or length(p_reason)>500 then
++    raise exception using errcode='22023',message='STAFF_ACCESS_INVALID';
++  end if;
++  if (p_workspace is null and p_role is distinct from 'content_editor')
++    or (p_workspace is not null and (p_role is null or p_role not in ('workspace_admin','operator','reviewer','finance_viewer'))) then
++    raise exception using errcode='22023',message='STAFF_ACCESS_INVALID';
++  end if;
++  -- Serialize role changes within a workspace before locking actor and target grants.
++  perform pg_catalog.pg_advisory_xact_lock(pg_catalog.hashtextextended(coalesce(p_workspace::text,'platform')||':staff-access',0));
++  perform 1 from public.staff_users where user_id=p_actor and active for share;
++  if not found then raise exception using errcode='42501',message='STAFF_ACCESS_FORBIDDEN'; end if;
++  if p_owner_bootstrap then
++    if nullif(btrim(p_approval_ref),'') is null or length(p_approval_ref)>500 then
++      raise exception using errcode='22023',message='STAFF_OWNER_APPROVAL_REQUIRED';
++    end if;
++  else
++    if p_workspace is null or p_actor=p_subject then
++      raise exception using errcode='42501',message='STAFF_SELF_CHANGE_FORBIDDEN';
++    end if;
++    perform 1 from public.brand_users b join public.staff_workspace_roles r on r.user_id=b.user_id and r.workspace_id=b.workspace_id
++      where b.user_id=p_actor and b.workspace_id=p_workspace and b.active and r.active and r.role='workspace_admin' for share of b,r;
++    if not found then raise exception using errcode='42501',message='STAFF_ACCESS_FORBIDDEN'; end if;
++  end if;
++  if p_active then
++    perform 1 from public.staff_users where user_id=p_subject and active for share;
++    if not found then raise exception using errcode='42501',message='STAFF_TARGET_NOT_ELIGIBLE'; end if;
++    if p_workspace is not null then
++      perform 1 from public.brand_users where user_id=p_subject and workspace_id=p_workspace and active for share;
++      if not found then raise exception using errcode='42501',message='STAFF_TARGET_NOT_ELIGIBLE'; end if;
++    end if;
++  elsif not ((p_workspace is not null and exists(select 1 from public.staff_workspace_roles where user_id=p_subject and workspace_id=p_workspace))
++    or (p_workspace is null and exists(select 1 from public.staff_platform_roles where user_id=p_subject and role=p_role))) then
++    -- Revoking a known scoped grant remains possible after staff/membership removal.
++    raise exception using errcode='42501',message='STAFF_TARGET_NOT_ELIGIBLE';
++  end if;
++  -- Authorization is checked even for exact replay, so revocation takes effect immediately.
++  perform pg_catalog.pg_advisory_xact_lock(pg_catalog.hashtextextended(p_request::text,1));
++  v_payload:=jsonb_build_object('actor',p_actor,'workspace',p_workspace,'subject',p_subject,'role',p_role,'active',p_active,
++    'expectedRevision',p_expected_revision,'reason',p_reason,'approvalRef',p_approval_ref,'ownerBootstrap',p_owner_bootstrap);
++  select * into v_saved from public.staff_access_commands where request_id=p_request;
++  if found then
++    if v_saved.payload<>v_payload then raise exception using errcode='PT409',message='STAFF_ACCESS_IDEMPOTENCY_CONFLICT'; end if;
++    return v_saved.result;
++  end if;
++  if p_workspace is null then
++    select to_jsonb(r) into v_before from public.staff_platform_roles r where user_id=p_subject and role=p_role for update;
++  else
++    select to_jsonb(r) into v_before from public.staff_workspace_roles r where user_id=p_subject and workspace_id=p_workspace for update;
++  end if;
++  v_revision:=coalesce((v_before->>'revision')::integer,0);
++  if v_revision<>p_expected_revision then raise exception using errcode='PT409',message='STAFF_ACCESS_STALE'; end if;
++  if p_workspace is null then
++    insert into public.staff_platform_roles as r(user_id,role,active,granted_by,revision)
++      values(p_subject,p_role,p_active,p_actor,v_revision+1)
++      on conflict(user_id,role) do update set active=excluded.active,granted_by=excluded.granted_by,granted_at=clock_timestamp(),revision=excluded.revision
++      returning to_jsonb(r) into v_after;
++  else
++    insert into public.staff_workspace_roles as r(user_id,workspace_id,role,active,granted_by,revision)
++      values(p_subject,p_workspace,p_role,p_active,p_actor,v_revision+1)
++      on conflict(user_id,workspace_id) do update set role=excluded.role,active=excluded.active,granted_by=excluded.granted_by,granted_at=clock_timestamp(),revision=excluded.revision
++      returning to_jsonb(r) into v_after;
++  end if;
++  v_result:=jsonb_build_object('userId',p_subject,'workspaceId',p_workspace,'role',p_role,'active',p_active,
++    'revision',v_revision+1,'grantedBy',p_actor,'grantedAt',v_after->'granted_at');
++  insert into public.staff_access_audit(request_id,workspace_id,user_id,actor_id,actor_kind,db_session_user,before_state,after_state,reason,approval_ref)
++    values(p_request,p_workspace,p_subject,p_actor,case when p_owner_bootstrap then 'db_owner_bootstrap' else 'workspace_admin' end,
++      session_user,v_before,v_after,p_reason,p_approval_ref);
++  insert into public.staff_access_commands(request_id,payload,result) values(p_request,v_payload,v_result);
++  return v_result;
++end;
++$$;
++revoke all on function private.apply_staff_access(uuid,uuid,uuid,text,boolean,integer,uuid,text,text,boolean) from public,anon,authenticated,service_role;
++
++create function public.set_staff_workspace_role(p_workspace uuid,p_actor uuid,p_subject uuid,p_role text,p_active boolean,p_expected_revision integer,p_request uuid,p_reason text)
++returns jsonb language sql security definer set search_path='' as $$
++  select private.apply_staff_access(p_actor,p_workspace,p_subject,p_role,p_active,p_expected_revision,p_request,p_reason,null,false);
++$$;
++revoke all on function public.set_staff_workspace_role(uuid,uuid,uuid,text,boolean,integer,uuid,text) from public,anon,authenticated,service_role;
++grant execute on function public.set_staff_workspace_role(uuid,uuid,uuid,text,boolean,integer,uuid,text) to service_role;
++
++-- Explicit protected DB-owner step, never exposed by an API or granted to service_role.
++-- The reference is an owner's attestation; it is not independently verified approval.
++create function private.bootstrap_staff_access(p_actor uuid,p_workspace uuid,p_subject uuid,p_role text,p_active boolean,p_expected_revision integer,p_request uuid,p_reason text,p_approval_ref text)
++returns jsonb language sql security invoker set search_path='' as $$
++  select private.apply_staff_access(p_actor,p_workspace,p_subject,p_role,p_active,p_expected_revision,p_request,p_reason,p_approval_ref,true);
++$$;
++revoke all on function private.bootstrap_staff_access(uuid,uuid,uuid,text,boolean,integer,uuid,text,text) from public,anon,authenticated,service_role;
++
++notify pgrst,'reload schema';
++commit;
+--- a/supabase/release-manifest.json
++++ b/supabase/release-manifest.json
+@@ -1121,6 +1121,48 @@
+       ],
+       "transactionExpectation": "transactional",
+       "replayExpectation": "migration_history_noop"
++    },
++    {
++      "version": "20261023124149",
++      "name": "staff_access_capabilities",
++      "path": "supabase/migrations/20261023124149_staff_access_capabilities.sql",
++      "sha256": "e4fbff31e7ee64a814cc8f545d268f4413e439f8de6aa985fbad1c588553919a",
++      "phase": "staff_access",
++      "dependsOn": [
++        "20261023095521"
++      ],
++      "capabilities": [
++        "table:public.staff_workspace_roles",
++        "table:public.staff_platform_roles",
++        "table:public.staff_access_audit",
++        "table:public.staff_access_commands",
++        "rls:public.staff_workspace_roles",
++        "rls:public.staff_platform_roles",
++        "rls:public.staff_access_audit",
++        "rls:public.staff_access_commands",
++        "grant:service_role.public.staff_workspace_roles(select)",
++        "grant:service_role.public.staff_platform_roles(select)",
++        "grant:service_role.public.staff_access_audit(select)",
++        "grant:service_role.public.staff_access_commands(select)",
++        "function:private.apply_staff_access",
++        "function:private.bootstrap_staff_access",
++        "function:public.set_staff_workspace_role",
++        "grant:service_role.public.set_staff_workspace_role(uuid,uuid,uuid,text,boolean,integer,uuid,text)",
++        "constraint:public.staff_workspace_roles.staff_workspace_roles_pkey",
++        "constraint:public.staff_platform_roles.staff_platform_roles_pkey",
++        "constraint:public.staff_access_audit.staff_access_audit_request_id_key",
++        "constraint:public.staff_access_commands.staff_access_commands_request_id_fkey",
++        "column:public.staff_workspace_roles.revision",
++        "column:public.staff_platform_roles.revision",
++        "index:public.staff_workspace_roles.staff_workspace_roles_workspace",
++        "index:public.staff_workspace_roles.staff_workspace_roles_granted_by",
++        "index:public.staff_platform_roles.staff_platform_roles_granted_by",
++        "index:public.staff_access_audit.staff_access_audit_workspace",
++        "index:public.staff_access_audit.staff_access_audit_user",
++        "index:public.staff_access_audit.staff_access_audit_actor"
++      ],
++      "transactionExpectation": "transactional",
++      "replayExpectation": "migration_history_noop"
+     }
+   ]
+ }

@@ -1,0 +1,27 @@
+{
+  "originalApiSource": "6285bca02a74bedf3eda7259238366e9023fcc0cae24fe5e7c874ae9dd118d7b",
+  "originalApiManifest": "a0f09af0a7bce75e6842a1d42042ac4471e757c184574d7e5dcf9a23fdc57989",
+  "originalCorePhase": {
+    "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/core/phase-result.json",
+    "sha256": "d9ae5743d1c78b874c2ffddd56a5d3721daf29e1cd789354e08d3cfdf9b88d72"
+  },
+  "lastApprovedContinuationSource": "e83998d178061043688016056a5a78fc61df58bac28f3d0d0b66d639306037bd",
+  "lastApprovedContinuationManifest": "696e94c29e62a27e820d7d12f5aa74c0d1e7b62f97f3b57db787074512a2626d",
+  "lastApprovedContinuation": {
+    "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/68d510a8-82a8-42bd-b3e8-4561580a7a19/final-readback-after-collection.json",
+    "sha256": "d8293fc21dfad2bfaa7356a7922b0e6b4dfc3e3f9a9df16d495ad4946469e87d"
+  },
+  "coverage": {
+    "path": "docs/verification/D19-C1-continuation-case-coverage.json",
+    "sha256": "9a87aed8b7a28a5fd2fc6f2b63fbfd80c8f00c3f03ff0621bbf9e82597e6ca2b"
+  },
+  "allPhaseBinaryProofAssetsAndStorageObjects": 0,
+  "originalApiRerunsThisReview": 0,
+  "newTargetCalls": 0,
+  "notProofOf": [
+    "Stored binary object access denial",
+    "Existing older attempt refused and both attempts unchanged",
+    "Same legacy approval replay/concurrency",
+    "Same-workspace cross-Creator draft/proof writes with both rows unchanged"
+  ]
+}

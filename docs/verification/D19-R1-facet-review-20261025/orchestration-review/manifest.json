@@ -1,0 +1,15 @@
+{
+  "kind": "Local evidence/metadata orchestration source only; not runtime authority",
+  "files": [
+    {
+      "path": "docs/verification/D19-R1-facet-review-20261025/orchestration-review/D19-r1-facet-review.py",
+      "sha256": "089b7c0076a6e14b927fe421c73ad64e10771023e206818b79ababb036a4d0d1",
+      "bytes": 29149
+    },
+    {
+      "path": "docs/verification/D19-R1-facet-review-20261025/orchestration-review/D19-r1-facet-seal.py",
+      "sha256": "945bc247c18a228c9432e1a0fd3bd884b409b85ea1b4fc6f798cf41570537608",
+      "bytes": 3787
+    }
+  ]
+}

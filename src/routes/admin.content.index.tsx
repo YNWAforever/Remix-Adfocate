@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { listAdminContent, contentKeys, type ContentStatus } from "@/lib/content";
+import { RequestFeedback, useCanShowPreviousData } from "@/components/RequestFeedback";
 import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/admin/content/")({ component: ContentList });
@@ -14,7 +15,8 @@ function ContentList() {
   const { t } = useI18n();
   const [status, setStatus] = useState("");
   const filters: Record<string, string> = status ? { status } : {};
-  const { data, isLoading } = useQuery({ queryKey: contentKeys.adminList(filters), queryFn: () => listAdminContent(filters) });
+  const q = useQuery({ queryKey: contentKeys.adminList(filters), queryFn: () => listAdminContent(filters), retry: false });
+  const data = useCanShowPreviousData(q, contentKeys.adminList(filters)) ? q.data : undefined;
 
   return (
     <div className="space-y-3">
@@ -24,15 +26,16 @@ function ContentList() {
           {t("app.admin.content.new")}
         </Link>
       </div>
-      <select value={status} onChange={(e) => setStatus(e.target.value)} className="rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 py-1 text-sm">
+      <select aria-label="Content status / 內容狀態" value={status} onChange={(e) => setStatus(e.target.value)} className="rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 py-1 text-sm">
         <option value="">All</option><option value="draft">Draft</option><option value="scheduled">Scheduled</option>
         <option value="published">Published</option><option value="archived">Archived</option>
       </select>
-      {isLoading ? (
+      <RequestFeedback error={q.error} stale={Boolean(data)} retry={() => void q.refetch()} />
+      {q.isLoading ? (
         <p className="text-sm text-[var(--color-soft-ink)]">…</p>
-      ) : !data?.items.length ? (
+      ) : !q.isError && data?.items.length === 0 ? (
         <p className="text-sm text-[var(--color-soft-ink)]">{t("app.admin.content.empty")}</p>
-      ) : (
+      ) : data?.items.length ? (
         <table className="w-full border-collapse text-sm">
           <thead><tr className="border-b-2 border-[var(--color-ink)] text-left text-xs uppercase">
             <th className="p-2">Title</th><th className="p-2">Kind</th><th className="p-2">Status</th><th className="p-2">Views</th><th />
@@ -49,7 +52,7 @@ function ContentList() {
             ))}
           </tbody>
         </table>
-      )}
+      ) : null}
     </div>
   );
 }

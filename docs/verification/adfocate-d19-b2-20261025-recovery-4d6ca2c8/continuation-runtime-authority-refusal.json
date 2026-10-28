@@ -1,0 +1,7 @@
+{
+  "status": "PASS_UNAPPROVED_NEW_SOURCE_RUNTIME_REFUSED_BEFORE_DOCKER_KEYS_SQL_CLIENT",
+  "sourceFingerprint": "e83998d178061043688016056a5a78fc61df58bac28f3d0d0b66d639306037bd",
+  "usedReviewTemplateOnly": true,
+  "dockerSqlOrClientCalls": 0,
+  "applicationKeysRead": false
+}

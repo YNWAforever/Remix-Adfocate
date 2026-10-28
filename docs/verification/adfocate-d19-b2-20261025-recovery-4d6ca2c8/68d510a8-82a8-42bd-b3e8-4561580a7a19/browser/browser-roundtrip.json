@@ -1,0 +1,33 @@
+{
+  "lineage": {
+    "projectId": "adfocate-d19-b2-20261025-recovery-4d6ca2c8",
+    "ownerRunId": "4d6ca2c8-b9c2-4457-bda8-7c03ac533f61",
+    "sourceFingerprint": "e83998d178061043688016056a5a78fc61df58bac28f3d0d0b66d639306037bd",
+    "manifestSha256": "696e94c29e62a27e820d7d12f5aa74c0d1e7b62f97f3b57db787074512a2626d",
+    "phase": "browser",
+    "namespace": "ebf1f615-be72-4072-ad97-ee98b150a796",
+    "executionNamespace": "68d510a8-82a8-42bd-b3e8-4561580a7a19"
+  },
+  "runId": "ebf1f615-be72-4072-ad97-ee98b150a796",
+  "submissionId": "36ab9494-b1ce-4d49-925b-3f51368e913c",
+  "workflowId": "acc556fa-af8e-45fc-b324-13b111dc2125",
+  "pendingRewardId": "00fdedff-d39c-4a51-b434-e2842aaac808",
+  "creatorReward": {
+    "pointsAmount": 500,
+    "cashAmount": 125,
+    "currency": "HKD",
+    "xpAmount": 0
+  },
+  "operatorReward": {
+    "pointsAmount": 500,
+    "cashAmount": 125,
+    "currency": "HKD",
+    "xpAmount": 0
+  },
+  "historyEvents": 15,
+  "persistedAfterReload": true,
+  "creatorPrivateIdRedacted": true,
+  "reviewTransitions": "reviewer UI; read-only API assertions",
+  "completion": "operator UI",
+  "proofMetadata": "external HTTP blocked"
+}

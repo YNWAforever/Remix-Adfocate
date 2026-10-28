@@ -1,17 +1,21 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiFetch } from "@/lib/api";
+import { useRef } from "react";
+import { apiFetch, ApiError, getWorkspaceSlug } from "@/lib/api";
+import { supabase } from "@/lib/supabase";
+import { acknowledgeRedemptionIntent, getRedemptionIntent, type RedemptionIntent } from "@/lib/redemptionIntent";
 import type { NotificationRow } from "@/lib/notifications";
+import type { SocialAccountPresentation } from "@/lib/socialAccountPresentation";
 
 export type SubmissionStatus = "applied" | "joined" | "submitted" | "under_review" | "approved" | "rejected" | "declined" | "expired";
 export type Mission = {
   id: string; slug: string; title: string; description?: string;
-  category?: string; mission_type: string; access_type?: string; points_reward: number;
-  cash_reward?: number | null; required_level?: string;
-  deliverables?: string[]; requirements?: string[]; platforms?: string[];
+  category?: string | null; mission_type: string; access_type?: string; points_reward: number;
+  cash_reward?: number | null; required_level?: string | null;
+  deliverables?: string[] | null; requirements?: string[]; platforms?: string[] | null;
   effort?: "low" | "medium" | "high" | null; brand?: string | null;
   target_audience?: string | null;
   dos?: string[]; donts?: string[]; key_messages?: string[]; reference_links?: string[];
-  deadline?: string; quota: number; filled: number; status: string;
+  deadline?: string | null; quota: number; filled: number; status: string;
   my_status?: SubmissionStatus | null;
   creator_workflow_mode?: "legacy" | "active_workspace";
 };
@@ -32,6 +36,7 @@ export type Me = {
   phone?: string | null;
   categories?: string[];
   social_handles?: SocialHandle[];
+  social_accounts?: SocialAccountPresentation[];
   onboarding_step: number;
   onboarding_completed: boolean;
   referral_code?: string;
@@ -63,6 +68,7 @@ export type SocialAccount = {
   last_error_message?: string | null;
 };
 export type SocialTrust = {
+  presentations?: SocialAccountPresentation[];
   accounts: Array<{
     id: string;
     platform: SocialPlatform;
@@ -136,7 +142,7 @@ export type PublicPassport = {
   };
 };
 export type OnboardingStatus = { onboarding_step: number; onboarding_completed: boolean; completion_pct: number };
-export type RecommendedMission = { id: string; slug: string; title: string; category?: string; points_reward: number; deadline?: string };
+export type RecommendedMission = Pick<Mission, "id" | "slug" | "title" | "points_reward"> & Partial<Mission>;
 export type CompleteResult = { referral_code: string; onboarding_completed: boolean; onboarding_step: number };
 
 export function useMissions(category?: string) {
@@ -149,7 +155,7 @@ export function useMissions(category?: string) {
 export function useMission(slug: string) {
   return useQuery({ queryKey: ["mission", slug], queryFn: () => apiFetch<Mission>(`/missions/${slug}`) });
 }
-export type MissionMatch = {
+export type MissionMatch = Partial<Mission> & {
   id: string; slug: string; title: string;
   category?: string | null; mission_type: string;
   required_level: string;
@@ -197,7 +203,7 @@ export function useUpdateProfile() {
   return useMutation({
     mutationFn: (body: { display_name?: string; categories?: string[]; social_handles?: SocialHandle[] }) =>
       apiFetch<Me>("/me/profile", { method: "PUT", body: JSON.stringify(body) }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["me"] }),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["me"] }); qc.invalidateQueries({ queryKey: ["passport"] }); },
   });
 }
 
@@ -225,7 +231,7 @@ export function useAddSocialAccount() {
   return useMutation({
     mutationFn: (body: { platform: SocialPlatform; handle: string }) =>
       apiFetch<SocialAccount>("/social/accounts", { method: "POST", body: JSON.stringify(body) }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["social-accounts"] }),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["social-accounts"] }); qc.invalidateQueries({ queryKey: ["me"] }); qc.invalidateQueries({ queryKey: ["passport"] }); },
   });
 }
 
@@ -237,6 +243,7 @@ export function useScanSocialAccount() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["social-accounts"] });
       qc.invalidateQueries({ queryKey: ["passport"] });
+      qc.invalidateQueries({ queryKey: ["me"] });
     },
   });
 }
@@ -256,6 +263,7 @@ export function useConfirmVerification() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["social-accounts"] });
       qc.invalidateQueries({ queryKey: ["me"] });
+      qc.invalidateQueries({ queryKey: ["passport"] });
     },
   });
 }
@@ -398,6 +406,7 @@ export function useCompleteOnboarding() {
 }
 
 export type MyMission = {
+  review_notes?: string | null;
   id: string;
   status: SubmissionStatus;
   content_urls: string[];
@@ -478,9 +487,23 @@ export type RedemptionHistoryItem = {
 
 export function useRedeemGift() {
   const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (giftId: string) =>
-      apiFetch<RedeemResult>("/redemption/redeem", { method: "POST", body: JSON.stringify({ gift_id: giftId }) }),
+  const intent = useRef<RedemptionIntent | null>(null);
+  const mutation = useMutation({
+    mutationFn: async (giftId: string) => {
+      const workspace = getWorkspaceSlug();
+      const { data, error } = await supabase.auth.getSession();
+      const session = data.session, owner = session?.user?.id;
+      if (error || !session || !owner || !session.access_token) throw new ApiError(401, "no_auth", "Sign in to redeem");
+      intent.current = getRedemptionIntent(owner, workspace, giftId);
+      const result = await apiFetch<RedeemResult>("/redemption/redeem", { method: "POST",
+        headers: { Authorization: `Bearer ${session.access_token}`, "X-Workspace-Slug": workspace },
+        body: JSON.stringify({ gift_id: giftId, client_request_id: intent.current.requestId }) });
+      const current = await supabase.auth.getSession();
+      if (current.error || current.data.session?.user?.id !== owner || getWorkspaceSlug() !== workspace) {
+        throw new ApiError(409, "redemption_session_changed", "Account or workspace changed; original intent retained");
+      }
+      return result;
+    },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["gifts"] });
       qc.invalidateQueries({ queryKey: ["balance"] });
@@ -488,6 +511,10 @@ export function useRedeemGift() {
       qc.invalidateQueries({ queryKey: ["history"] }); // points ledger gains a 'redeem' row
     },
   });
+  return { ...mutation, acknowledge: () => {
+    if (intent.current) acknowledgeRedemptionIntent(intent.current);
+    intent.current = null;
+  } };
 }
 
 export function useRedemptions() {
@@ -518,11 +545,11 @@ export function useEarningsHistory() {
 }
 
 export type AssistantCitation = { title: string; sourceType: string; sourceRef: string };
-export type AssistantReply = { conversation_id: string; answer: string; citations: AssistantCitation[] };
+export type AssistantReply = { conversation_id?: string | null; request_id: string; answer?: string; citations?: AssistantCitation[]; persistence: "saved" | "failed" | "unknown" };
 
 export function useAssistantChat() {
   return useMutation({
-    mutationFn: (body: { message: string; conversation_id?: string; locale?: string }) =>
+    mutationFn: (body: { message: string; conversation_id?: string; locale?: string; client_request_id?: string }) =>
       apiFetch<AssistantReply>("/assistant/chat", { method: "POST", body: JSON.stringify(body) }),
   });
 }

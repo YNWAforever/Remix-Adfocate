@@ -1,7 +1,7 @@
 import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { execFileSync } from "node:child_process";
 import { tmpdir } from "node:os";
-import { join, resolve } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { executePilotCli } from "./pilot";
 import { executeObserverCli } from "./observer";
@@ -55,7 +55,8 @@ function observation(day: number, completed = 0, pending = 0) {
 
 function runNpmScript(script: string, args: readonly string[], env: NodeJS.ProcessEnv) {
   try {
-    const stdout = execFileSync("npm", ["run", script, "--", ...args], {
+    const npmCli = process.env.npm_execpath ?? join(dirname(process.execPath), "node_modules/npm/bin/npm-cli.js");
+    const stdout = execFileSync(process.execPath, [npmCli, "run", script, "--", ...args], {
       cwd: process.cwd(),
       env: { ...process.env, ...env },
       encoding: "utf8",

@@ -1,0 +1,1994 @@
+--- /dev/null
++++ b/e2e/operator-authoring.spec.ts
+@@ -0,0 +1,197 @@
++import { expect, test } from "@playwright/test";
++import { appendFileSync, readFileSync, writeFileSync } from "node:fs";
++import process from "node:process";
++import { randomUUID } from "node:crypto";
++import type { ActiveMissionWorkspace, MissionPublicationView } from "../src/lib/activeMission";
++const fixture = JSON.parse(readFileSync(".codex-tmp/D12-fixture.private.json", "utf8"));
++
++test("D12 unsaved navigation keeps the authored input until discard is confirmed", async ({ browser }) => {
++  test.skip(process.env.ADFOCATE_BROWSER_SCOPE !== "D12", "Use the identity-guarded authoring runner.");
++  const context = await browser.newContext();
++  await context.addInitScript((session) => { localStorage.setItem("lang", "zh"); localStorage.setItem("sb-127-auth-token", JSON.stringify(session)); }, fixture.operator.session);
++  await context.route("**/*", route => new URL(route.request().url()).hostname === "127.0.0.1" ? route.continue() : route.abort());
++  const page = await context.newPage();
++  const path = `/admin/missions/${fixture.navMission.id}`;
++  await page.goto(path);
++  await page.getByLabel("標題", { exact: true }).fill("未保存的作者輸入");
++  let prompts = 0;
++  const dialogTypes: string[] = [];
++  page.on("dialog", async dialog => { prompts++; dialogTypes.push(dialog.type()); await dialog.dismiss(); });
++  await page.getByRole("button", { name: "管理", exact: true }).click();
++  expect(prompts).toBe(1);
++  await expect(page.getByLabel("標題", { exact: true })).toHaveValue("未保存的作者輸入");
++  await page.getByRole("navigation").getByRole("link", { name: "任務", exact: true }).click();
++  await expect.poll(() => prompts).toBe(2);
++  await expect(page).toHaveURL(new RegExp(`${path}(?:\\?|$)`));
++  expect(new URL(page.url()).searchParams.get("ws")).toBe(fixture.workspaceId);
++  await expect(page.getByLabel("標題", { exact: true })).toHaveValue("未保存的作者輸入");
++  await page.close({ runBeforeUnload: true });
++  await expect.poll(() => prompts).toBe(3);
++  expect(dialogTypes[2]).toBe("beforeunload");
++  expect(page.isClosed()).toBe(false);
++  await expect(page.getByLabel("標題", { exact: true })).toHaveValue("未保存的作者輸入");
++  page.removeAllListeners("dialog");
++  page.once("dialog", async dialog => { prompts++; await dialog.accept(); });
++  await page.getByRole("button", { name: "管理", exact: true }).click();
++  await expect(page).toHaveURL(/tab=manage/);
++  await expect(page.getByLabel("標題", { exact: true })).toHaveCount(0);
++  writeFileSync("docs/verification/D12-navigation.json", JSON.stringify({ runId: fixture.runId,
++    dismissKeepsInput: true, spaLeaveCancelled: true, beforeUnloadCancelled: true, confirmedTabLeave: true, prompts, dialogTypes, externalActions: "none" }, null, 2) + "\n");
++  await context.close();
++});
++
++test("D12 readable authoring preview saves, reloads and reaches the same Creator publication guidance", async ({ browser, request }) => {
++  test.skip(process.env.ADFOCATE_BROWSER_SCOPE !== "D12", "Use the identity-guarded authoring runner.");
++  const context = await browser.newContext();
++  await context.addInitScript((session) => { localStorage.setItem("lang", "zh"); localStorage.setItem("sb-127-auth-token", JSON.stringify(session)); }, fixture.operator.session);
++  let failSave = true, createRequests = 0, unexpectedDialogs = 0;
++  await context.route("**/*", route => {
++    const url = new URL(route.request().url());
++    if (url.hostname !== "127.0.0.1") return route.abort();
++    if (url.pathname === "/api/admin/missions" && route.request().method() === "POST") {
++      createRequests++;
++      if (failSave) return route.fulfill({ status: 503, contentType: "application/json", body: JSON.stringify({ code: "db_error", error: "Synthetic save outage" }) });
++    }
++    return route.continue();
++  });
++  const page = await context.newPage();
++  page.on("dialog", async dialog => { unexpectedDialogs++; await dialog.dismiss(); });
++  await page.goto("/admin/missions/new");
++  await page.getByLabel("標題", { exact: true }).fill("D12 合成作者任務");
++  const slug = `d12-ui-${fixture.runId}`;
++  await page.getByLabel("任務網址代號", { exact: true }).fill(slug);
++  await page.getByLabel("分類", { exact: true }).selectOption("寵物");
++  await page.getByLabel("積分獎勵", { exact: true }).fill("500");
++  await page.getByLabel("現金獎勵", { exact: true }).fill("125");
++  await page.getByLabel("截止日期", { exact: true }).fill(fixture.navMission.deadline);
++  await page.getByLabel("任務簡介", { exact: true }).fill("Synthetic authoring acceptance, no external publication");
++  await page.getByRole("button", { name: "instagram", exact: true }).click();
++  await page.getByLabel("交付流程", { exact: true }).selectOption("active_workspace");
++  await page.getByRole("button", { name: "新增交付項目", exact: true }).click();
++  await page.getByLabel("交付標題 1", { exact: true }).fill("合成短片交付");
++  await page.getByLabel("交付平台 1", { exact: true }).fill("instagram");
++  await page.getByLabel("交稿時限 1", { exact: true }).fill("24");
++  await page.getByLabel("發佈指示 1", { exact: true }).fill("發布已批准的短片及清楚披露合作");
++  await page.getByLabel("發佈時限小時 1", { exact: true }).fill("48");
++  await page.getByLabel("必須披露字句 1", { exact: true }).fill("#廣告\n品牌合作");
++  await page.getByLabel("預期帳戶 1", { exact: true }).fill("@synthetic_creator");
++  await page.getByRole("checkbox", { name: "需要佐證檔案 1", exact: true }).check();
++  await page.getByRole("button", { name: "新增交付 1 檢查要求", exact: true }).click();
++  await page.getByLabel("交付 1 檢查 1 要求類別", { exact: true }).selectOption("compliance");
++  await page.getByLabel("交付 1 檢查 1 要求內容", { exact: true }).fill("短片須清楚披露合作");
++  await expect(page.getByLabel("發佈證明要求 1", { exact: true })).not.toBeVisible();
++  await page.getByRole("button", { name: "預覽", exact: true }).click();
++  const preview = page.getByRole("region", { name: "Creator 預覽", exact: true });
++  for (const text of ["合成短片交付", "短片須清楚披露合作", "發布已批准的短片及清楚披露合作", "#廣告", "品牌合作", "@synthetic_creator", "批准後 48 小時內", "需要至少一份佐證檔案"]) await expect(preview).toContainText(text);
++  expect(createRequests).toBe(0);
++  await preview.screenshot({ path: "docs/verification/D12-authoring-preview.png" });
++  await page.getByRole("button", { name: "儲存草稿", exact: true }).click();
++  await expect(page.getByRole("alert")).toContainText("儲存失敗");
++  await expect(page.getByRole("alert")).toBeFocused();
++  await expect(page.getByLabel("標題", { exact: true })).toHaveValue("D12 合成作者任務");
++  await expect(page.getByRole("checkbox", { name: "需要佐證檔案 1", exact: true })).toBeChecked();
++  failSave = false;
++  const saved = page.waitForResponse(response => new URL(response.url()).pathname === "/api/admin/missions" && response.request().method() === "POST" && response.status() === 201);
++  await page.getByRole("button", { name: "儲存草稿", exact: true }).click();
++  const authored = (await (await saved).json()).mission;
++  appendFileSync(".codex-tmp/D12-ui-fixtures.private.jsonl", JSON.stringify({ runId: fixture.runId, workspaceId: fixture.workspaceId, missionId: authored.id,
++    templateIds: authored.deliverable_templates.map((item: { id: string }) => item.id), slug }) + "\n");
++  await expect(page).toHaveURL(/\/admin\/missions(?:\?|$)/);
++  await expect(page.getByRole("button", { name: "編輯", exact: true }).first()).toBeVisible();
++  expect(unexpectedDialogs).toBe(0);
++  expect(createRequests).toBe(2);
++  const headers = (jwt: string) => ({ Authorization: `Bearer ${jwt}`, "X-Workspace-Slug": fixture.slug, "Idempotency-Key": randomUUID() });
++  async function api<T>(jwt: string, path: string, method = "GET", body?: unknown): Promise<T> {
++    const response = await request.fetch(`/api${path}`, { method, headers: headers(jwt), ...(body === undefined ? {} : { data: body }) });
++    expect(response.status(), `${method} ${path}: ${await response.text()}`).toBe(200);
++    return response.json();
++  }
++  await page.goto(`/admin/missions/${authored.id}`);
++  await page.reload();
++  await expect(page.getByLabel("交付標題 1", { exact: true })).toHaveValue("合成短片交付");
++  await expect(page.getByLabel("發佈時限小時 1", { exact: true })).toHaveValue("48");
++  await expect(page.getByRole("checkbox", { name: "需要佐證檔案 1", exact: true })).toBeChecked();
++  const reloaded = (await api<{ mission: typeof authored }>(fixture.operator.jwt, `/admin/missions/${authored.id}`)).mission;
++  expect(reloaded.deliverable_templates).toEqual(authored.deliverable_templates);
++  await page.getByRole("navigation").getByRole("link", { name: "任務", exact: true }).click();
++  const row = page.getByText("D12 合成作者任務", { exact: true }).locator("xpath=../../..");
++  const published = page.waitForResponse(response => response.url().includes(`/missions/${authored.id}/publish`) && response.request().method() === "POST");
++  await row.getByRole("button", { name: "發佈", exact: true }).click();
++  expect((await published).status()).toBe(200);
++  // Only this disposable mission changes to active. No external content is published.
++  const creatorContext = await browser.newContext({ viewport: { width: 390, height: 844 } });
++  await creatorContext.addInitScript(() => localStorage.setItem("lang", "en"));
++  await creatorContext.route("**/*", route => new URL(route.request().url()).hostname === "127.0.0.1" ? route.continue() : route.abort());
++  const creator = await creatorContext.newPage();
++  await creator.goto("/login");
++  await creator.locator('input[type="email"]').first().fill(fixture.creator.email);
++  await creator.locator('input[type="password"]').fill(fixture.creator.password);
++  await creator.getByRole("button", { name: "Sign in", exact: true }).click();
++  await expect(creator).toHaveURL(/\/home$/);
++  await expect(creator.getByRole("heading", { name: /Welcome back/ })).toBeVisible();
++  await creator.getByRole("navigation", { name: "Main navigation", exact: true }).getByRole("link", { name: "Find missions", exact: true }).click();
++  await expect(creator).toHaveURL(/\/mission(?:\?|$)/);
++  await expect(creator.getByRole("heading", { name: "Missions", exact: true })).toBeVisible();
++  await creator.locator(`a[href="/mission/${slug}"]`).click();
++  const joined = creator.waitForResponse(response => response.url().endsWith(`/${slug}/join`) && response.request().method() === "POST");
++  await creator.getByRole("button", { name: "Join Mission", exact: true }).click();
++  const join = await joined; expect(join.status()).toBe(200);
++  const submissionId = (await join.json()).submission.id;
++  const read = () => api<ActiveMissionWorkspace>(fixture.creator.jwt, `/my-missions/${submissionId}/workspace`);
++  const workspace = await read(), item = workspace.workItems.find(value => value.required)!;
++  expect(item.title).toBe("合成短片交付");
++  // @ts-expect-error Native ESM local identity utility has no declaration file.
++  const { verifiedTarget } = await import("../scripts/audit/local-targets.mjs");
++  // @ts-expect-error Native ESM local SQL utility has no declaration file.
++  const { neutralitySnapshot } = await import("../scripts/audit/neutrality-snapshot.mjs");
++  const target = verifiedTarget("empty"), before = neutralitySnapshot(target, fixture.creator.id, fixture.workspaceId);
++  await creator.goto(`/my/${submissionId}?item=${item.id}`);
++  await creator.getByRole("textbox", { name: "Caption or copy", exact: true }).fill("Synthetic authored draft");
++  await creator.getByRole("checkbox", { name: /短片須清楚披露合作/ }).check();
++  await expect.poll(async () => (await read()).workItems.find(value => value.id === item.id)!.draft?.caption).toBe("Synthetic authored draft");
++  await creator.getByRole("button", { name: "Submit version", exact: true }).click();
++  await expect.poll(async () => (await read()).workItems.find(value => value.id === item.id)!.state).toBe("submitted");
++  const submittedItem = (await read()).workItems.find(value => value.id === item.id)!;
++  const operatorPath = `/admin/active-missions/${workspace.workflow.id}/work-items/${item.id}`;
++  await api(fixture.operator.jwt, `${operatorPath}/start-review`, "POST", { expectedState: "submitted" });
++  await api(fixture.operator.jwt, `${operatorPath}/approve-to-publish`, "POST", { expectedState: "under_review", versionId: submittedItem.currentSubmittedVersionId });
++  const publication = (await api<{ publication: MissionPublicationView }>(fixture.creator.jwt, `/my-missions/${submissionId}/publication/${item.id}`)).publication;
++  expect(publication.instructions).toMatchObject({ publicationInstructions: "發布已批准的短片及清楚披露合作",
++    requiredDisclosures: ["#廣告", "品牌合作"], expectedAccount: "@synthetic_creator", proofEvidencePolicy: { required: true } });
++  await creator.reload();
++  const guidance = creator.getByRole("region", { name: "Publication instructions", exact: true });
++  for (const text of ["發布已批准的短片及清楚披露合作", "#廣告", "品牌合作", "@synthetic_creator", "Evidence is required"]) await expect(guidance).toContainText(text);
++  await guidance.screenshot({ path: "docs/verification/D12-creator-guidance.png" });
++  expect(await creator.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
++  writeFileSync("docs/verification/D12-browser-before.json", JSON.stringify({ runId: fixture.runId, snapshot: before }, null, 2) + "\n");
++  writeFileSync("docs/verification/D12-authoring-roundtrip.json", JSON.stringify({ runId: fixture.runId, missionId: authored.id,
++    submissionId, workflowId: workspace.workflow.id, workItemId: item.id, templateIds: reloaded.deliverable_templates.map((value: { id: string }) => value.id),
++    noJsonRequired: true, previewDidNotSave: true, save503RetainedInput: true, savedAndReloaded: true,
++    creatorWorkspaceAndPublicationGuidanceMatch: true, publicationInstructions: publication.instructions,
++    creatorViewport: { width: 390, height: 844 }, noHorizontalOverflow: true, unexpectedSaveDialogs: unexpectedDialogs,
++    isolatedMissionStatus: "active", externalSocialPublication: "not performed", review: "existing real operator API; not a new proof/completion handoff" }, null, 2) + "\n");
++  await creatorContext.close(); await context.close();
++});
++
++test("D12 unknown advanced rules survive a readable edit and hard reload", async ({ browser }) => {
++  test.skip(process.env.ADFOCATE_BROWSER_SCOPE !== "D12", "Use the identity-guarded authoring runner.");
++  const context = await browser.newContext();
++  await context.addInitScript((session) => { localStorage.setItem("lang", "zh"); localStorage.setItem("sb-127-auth-token", JSON.stringify(session)); }, fixture.operator.session);
++  await context.route("**/*", route => new URL(route.request().url()).hostname === "127.0.0.1" ? route.continue() : route.abort());
++  const page = await context.newPage(), path = `/admin/missions/${fixture.navMission.id}`;
++  await page.goto(path);
++  await page.getByLabel("標題", { exact: true }).fill("N02 可讀編輯保留舊規則");
++  const saved = page.waitForResponse(response => new URL(response.url()).pathname === `/api${path}` && response.request().method() === "PATCH");
++  await page.getByRole("button", { name: "儲存變更", exact: true }).click();
++  expect((await saved).status()).toBe(200);
++  await expect(page.getByRole("button", { name: "編輯", exact: true }).first()).toBeVisible();
++  await page.goto(path); await page.reload();
++  await expect(page.getByText(/已有進階設定會原樣保留/)).toBeVisible();
++  await expect(page.getByRole("checkbox", { name: "需要佐證檔案 1", exact: true })).toBeDisabled();
++  await page.getByText("進階設定（JSON）", { exact: true }).click();
++  const policy = JSON.parse(await page.getByLabel("發佈證明要求 1", { exact: true }).inputValue());
++  expect(policy).toEqual({ screenshots: 1, legacy_review: { manual: true, modes: ["owner", 2] } });
++  writeFileSync("docs/verification/D12-unknown-policy-roundtrip.json", JSON.stringify({ runId: fixture.runId,
++    missionId: fixture.navMission.id, unknownPolicy: policy, savedAndReloaded: true, noRuleDeleted: true }, null, 2) + "\n");
++  await context.close();
++});
+--- /dev/null
++++ b/scripts/audit/run-authoring.mjs
+@@ -0,0 +1,41 @@
++import process from "node:process";
++import { spawnSync } from "node:child_process";
++import { readFileSync, writeFileSync } from "node:fs";
++import { resolve } from "node:path";
++import { pathToFileURL } from "node:url";
++import { isDeepStrictEqual } from "node:util";
++import { verifiedTarget } from "./local-targets.mjs";
++import { neutralitySnapshot } from "./neutrality-snapshot.mjs";
++const target = verifiedTarget("empty");
++const navigation = process.argv[2] === "navigation";
++if (process.argv[2] && !navigation) throw new Error("unsupported authoring scope");
++const env = { ...process.env, ...target.env, RUN_INTEGRATION: "0", RUN_AUDIT_INTEGRATION: "0",
++  OPENAI_API_KEY: "", OPENROUTER_API_KEY: "", ANTHROPIC_API_KEY: "",
++  NODE_OPTIONS: `--import=${pathToFileURL(resolve("scripts/audit/deny-external-fetch.mjs")).href}` };
++const integration = spawnSync(process.execPath, ["scripts/audit/run-integration.mjs", "authoring"], { env, stdio: "inherit" });
++if (integration.status !== 0) process.exit(integration.status ?? 1);
++const fixture = JSON.parse(readFileSync(".codex-tmp/D12-fixture.private.json", "utf8"));
++if (!isDeepStrictEqual(fixture.target, target.identity)) throw new Error("D12 target identity drift");
++Object.assign(env, { VITE_SUPABASE_URL: target.env.SUPABASE_URL, VITE_SUPABASE_ANON_KEY: target.env.SUPABASE_ANON_KEY,
++  VITE_DEFAULT_WORKSPACE: fixture.slug, VITE_ENABLE_WHATSAPP: "false", VITE_ENABLE_GOOGLE: "false", ADFOCATE_BROWSER_SCOPE: "D12" });
++const args = ["node_modules/@playwright/test/cli.js", "test", "e2e/operator-authoring.spec.ts", ...(navigation ? ["--grep", "unsaved navigation"] : [])];
++const result = spawnSync(process.execPath, args, { env, stdio: "inherit" });
++const raw = JSON.parse(readFileSync(".codex-tmp/browser-results.private.json", "utf8"));
++const tests = [];
++function visit(suites) { for (const suite of suites ?? []) { for (const spec of suite.specs ?? []) tests.push({ title: spec.title, ok: spec.ok,
++  results: spec.tests.flatMap(test => test.results.map(run => ({ status: run.status, duration: run.duration }))) }); visit(suite.suites); } }
++visit(raw.suites);
++let neutral = false;
++if (result.status === 0 && !navigation) {
++  const checked = verifiedTarget("empty");
++  const before = JSON.parse(readFileSync("docs/verification/D12-browser-before.json", "utf8"));
++  if (before.runId !== fixture.runId || ![fixture.creator.id, fixture.workspaceId].every(value => /^[a-f0-9-]{36}$/.test(value))) throw new Error("stale/invalid authoring neutrality baseline");
++  const after = neutralitySnapshot(checked, fixture.creator.id, fixture.workspaceId);
++  neutral = isDeepStrictEqual(before.snapshot, after);
++  writeFileSync("docs/verification/D12-browser-neutrality.json", JSON.stringify({ runId: fixture.runId,
++    before: before.snapshot, after, allEqual: neutral, note: "Measured after the existing successful join; raw setup XP remains visible. No completion or payment performed." }, null, 2) + "\n");
++}
++writeFileSync("docs/verification/D12-browser-summary.json", JSON.stringify({ runId: fixture.runId, target: target.identity,
++  tests, stats: raw.stats, browser: "installed Edge; desktop/emulated viewport only", auth: "real local Auth sessions",
++  providers: "external HTTP blocked; paid providers disabled; no real social publication", navigationOnly: navigation, neutrality: neutral }, null, 2) + "\n");
++process.exit(result.status === 0 && (navigation || neutral) ? 0 : result.status || 1);
+--- a/scripts/audit/run-integration.mjs
++++ b/scripts/audit/run-integration.mjs
+@@ -5,8 +5,8 @@
+ import { pathToFileURL } from "node:url";
+ const target=verifiedTarget("empty");
+ const selected=process.argv[2];
+-if(selected && selected!=="mission-list")throw new Error("unsupported audit integration scope");
+-const file=selected==="mission-list"?"server/test/audit-mission-list-contract.test.ts":"server/test/audit-workflow-roundtrip.test.ts";
++if(selected && !["mission-list","authoring"].includes(selected))throw new Error("unsupported audit integration scope");
++const file=selected==="mission-list"?"server/test/audit-mission-list-contract.test.ts":selected==="authoring"?"server/test/audit-mission-authoring-contract.test.ts":"server/test/audit-workflow-roundtrip.test.ts";
+ const result=spawnSync(process.execPath,["node_modules/vitest/vitest.mjs","run","--maxWorkers=1","--minWorkers=1",file],{
+   env:{...process.env,...target.env,RUN_INTEGRATION:"0",RUN_AUDIT_INTEGRATION:"1",OPENAI_API_KEY:"",OPENROUTER_API_KEY:"",ANTHROPIC_API_KEY:"",
+     NODE_OPTIONS:`--import=${pathToFileURL(resolve("scripts/audit/deny-external-fetch.mjs")).href}`},stdio:"inherit"});
+--- a/server/routes/adminMissions.ts
++++ b/server/routes/adminMissions.ts
+@@ -10,57 +10,14 @@
+ import { shapeMissionActivity, type MissionActivityRow } from "../lib/missionActivity.js";
+ import type { AdminEnv } from "../lib/staffAuth.js";
+ 
+-/** Secret-gated mission authoring (Slice B1). Mounted under the /admin shared-secret gate;
+- *  uses serviceClient (bypasses RLS). Real per-workspace role auth lands with the Brand
+- *  Dashboard (B3). All relative imports carry the .js ESM extension. */
++/** Mission authoring mounted under the existing staff and workspace authorization gate.
++ * serviceClient inherits that request scope. Relative imports carry .js ESM extensions. */
+ export const adminMissionRoutes = new Hono<AdminEnv>();
+ 
+-export type MissionWorkflowPolicyInput = {
+-  creator_workflow_mode: "legacy" | "active_workspace";
+-  fulfillment_required: boolean;
+-  revision_limit: number;
+-  review_sla_hours: number;
+-  revision_response_hours: number;
+-};
+-
+-export type MissionDeliverableTemplateInput = {
+-  id?: string;
+-  title: string;
+-  platform: string | null;
+-  position: number;
+-  required: boolean;
+-  draft_due_offset_hours: number;
+-  publication_instructions: string;
+-  publication_window_hours: number;
+-  required_disclosures: string[];
+-  expected_account: string | null;
+-  proof_evidence_policy: Record<string, unknown>;
+-  requirements: {
+-    id?: string;
+-    category: "format" | "key_message" | "compliance" | "quality" | "other";
+-    text: string;
+-    required: boolean;
+-    position: number;
+-  }[];
+-};
+-
+-export type MissionWorkflowAuthoringInput = Partial<MissionWorkflowPolicyInput> & {
+-  deliverable_templates?: MissionDeliverableTemplateInput[];
+-};
+-
++import { DEFAULT_MISSION_WORKFLOW_POLICY, validateMissionWorkflowAuthoring, type MissionWorkflowPolicyInput, type MissionDeliverableTemplateInput, type MissionWorkflowAuthoringInput } from "../../src/lib/missionWorkflowAuthoring.js";
++export { DEFAULT_MISSION_WORKFLOW_POLICY, validateMissionWorkflowAuthoring };
++export type { MissionWorkflowPolicyInput, MissionDeliverableTemplateInput, MissionWorkflowAuthoringInput };
+ type MissionAuthoringRequest = MissionInput & MissionWorkflowAuthoringInput;
+-
+-export const DEFAULT_MISSION_WORKFLOW_POLICY: MissionWorkflowPolicyInput = {
+-  creator_workflow_mode: "legacy",
+-  fulfillment_required: false,
+-  revision_limit: 2,
+-  review_sla_hours: 48,
+-  revision_response_hours: 48,
+-};
+-
+-const REQUIREMENT_CATEGORIES = new Set(["format", "key_message", "compliance", "quality", "other"]);
+-const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+-
+ function isRecord(value: unknown): value is Record<string, unknown> {
+   return typeof value === "object" && value !== null && !Array.isArray(value);
+ }
+@@ -75,122 +32,6 @@
+       revision_response_hours: input.revision_response_hours ?? DEFAULT_MISSION_WORKFLOW_POLICY.revision_response_hours,
+     } satisfies MissionWorkflowPolicyInput,
+     templates: input.deliverable_templates ?? [],
+-  };
+-}
+-
+-export function validateMissionWorkflowAuthoring(input: unknown) {
+-  const errors: Record<string, string> = {};
+-  const raw = isRecord(input) ? input : {};
+-  if (!isRecord(input)) errors.root = "Must be an object";
+-
+-  const policy = {
+-    creator_workflow_mode: raw.creator_workflow_mode === undefined
+-      ? DEFAULT_MISSION_WORKFLOW_POLICY.creator_workflow_mode
+-      : raw.creator_workflow_mode,
+-    fulfillment_required: raw.fulfillment_required === undefined
+-      ? DEFAULT_MISSION_WORKFLOW_POLICY.fulfillment_required
+-      : raw.fulfillment_required,
+-    revision_limit: raw.revision_limit === undefined
+-      ? DEFAULT_MISSION_WORKFLOW_POLICY.revision_limit
+-      : raw.revision_limit,
+-    review_sla_hours: raw.review_sla_hours === undefined
+-      ? DEFAULT_MISSION_WORKFLOW_POLICY.review_sla_hours
+-      : raw.review_sla_hours,
+-    revision_response_hours: raw.revision_response_hours === undefined
+-      ? DEFAULT_MISSION_WORKFLOW_POLICY.revision_response_hours
+-      : raw.revision_response_hours,
+-  };
+-
+-  if (!(policy.creator_workflow_mode === "legacy" || policy.creator_workflow_mode === "active_workspace")) {
+-    errors.creator_workflow_mode = "Invalid creator workflow";
+-  }
+-  if (typeof policy.fulfillment_required !== "boolean") errors.fulfillment_required = "Must be a boolean";
+-  if (typeof policy.revision_limit !== "number" || !Number.isInteger(policy.revision_limit) || policy.revision_limit < 0) {
+-    errors.revision_limit = "Must be a non-negative integer";
+-  }
+-  if (typeof policy.review_sla_hours !== "number" || !Number.isInteger(policy.review_sla_hours) || policy.review_sla_hours <= 0) errors.review_sla_hours = "Must be a positive integer";
+-  if (typeof policy.revision_response_hours !== "number" || !Number.isInteger(policy.revision_response_hours) || policy.revision_response_hours <= 0) errors.revision_response_hours = "Must be a positive integer";
+-
+-  let templates: unknown[] = [];
+-  if (raw.deliverable_templates !== undefined) {
+-    if (Array.isArray(raw.deliverable_templates)) templates = raw.deliverable_templates;
+-    else errors.deliverable_templates = "Must be an array";
+-  }
+-  if (policy.creator_workflow_mode === "active_workspace" && !templates.some((template) => isRecord(template) && template.required === true)) {
+-    errors.deliverable_templates = "Add at least one required deliverable";
+-  }
+-  const positions = new Set<number>();
+-  templates.forEach((template, templateIndex) => {
+-    const key = `deliverable_templates.${templateIndex}`;
+-    if (!isRecord(template)) {
+-      errors[key] = "Must be an object";
+-      return;
+-    }
+-    if (template.id !== undefined && (typeof template.id !== "string" || !UUID_PATTERN.test(template.id))) {
+-      errors[`${key}.id`] = "Must be a UUID";
+-    }
+-    if (typeof template.title !== "string" || !template.title.trim()) errors[`${key}.title`] = "Title is required";
+-    if (!(template.platform === null || (typeof template.platform === "string" && template.platform.trim()))) {
+-      errors[`${key}.platform`] = "Platform must be null or a non-empty string";
+-    }
+-    if (typeof template.position !== "number" || !Number.isInteger(template.position) || template.position < 0) errors[`${key}.position`] = "Must be a non-negative integer";
+-    else if (positions.has(template.position as number)) errors[`${key}.position`] = "Deliverable positions must be unique";
+-    else positions.add(template.position as number);
+-    if (typeof template.required !== "boolean") errors[`${key}.required`] = "Must be a boolean";
+-    if (typeof template.draft_due_offset_hours !== "number" || !Number.isInteger(template.draft_due_offset_hours) || template.draft_due_offset_hours < 0) {
+-      errors[`${key}.draft_due_offset_hours`] = "Must be a non-negative integer";
+-    }
+-    if (policy.creator_workflow_mode === "active_workspace") {
+-      if (typeof template.publication_instructions !== "string" || !template.publication_instructions.trim()) {
+-        errors[`${key}.publication_instructions`] = "PUBLICATION_INSTRUCTIONS_REQUIRED";
+-      }
+-      if (typeof template.publication_window_hours !== "number" || !Number.isInteger(template.publication_window_hours) || template.publication_window_hours <= 0) {
+-        errors[`${key}.publication_window_hours`] = "PUBLICATION_WINDOW_HOURS_INVALID";
+-      }
+-      if (!Array.isArray(template.required_disclosures)) {
+-        errors[`${key}.required_disclosures`] = "REQUIRED_DISCLOSURES_INVALID";
+-      } else {
+-        template.required_disclosures.forEach((disclosure, disclosureIndex) => {
+-          if (typeof disclosure !== "string" || !disclosure.trim()) errors[`${key}.required_disclosures.${disclosureIndex}`] = "REQUIRED_DISCLOSURE_REQUIRED";
+-        });
+-      }
+-      if (!(template.expected_account === null || template.expected_account === undefined
+-        || (typeof template.expected_account === "string" && template.expected_account.trim()))) {
+-        errors[`${key}.expected_account`] = "EXPECTED_ACCOUNT_INVALID";
+-      }
+-      if (!isRecord(template.proof_evidence_policy)) errors[`${key}.proof_evidence_policy`] = "PROOF_EVIDENCE_POLICY_INVALID";
+-    }
+-
+-    if (!Array.isArray(template.requirements)) {
+-      errors[`${key}.requirements`] = "Must be an array";
+-      return;
+-    }
+-    const requirementPositions = new Set<number>();
+-    template.requirements.forEach((requirement, requirementIndex) => {
+-      const requirementKey = `${key}.requirements.${requirementIndex}`;
+-      if (!isRecord(requirement)) {
+-        errors[requirementKey] = "Must be an object";
+-        return;
+-      }
+-      if (requirement.id !== undefined && (typeof requirement.id !== "string" || !UUID_PATTERN.test(requirement.id))) {
+-        errors[`${requirementKey}.id`] = "Must be a UUID";
+-      }
+-      if (typeof requirement.text !== "string" || !requirement.text.trim()) {
+-        errors[`${requirementKey}.text`] = "Requirement text is required";
+-      }
+-      if (typeof requirement.category !== "string" || !REQUIREMENT_CATEGORIES.has(requirement.category)) errors[`${requirementKey}.category`] = "Invalid requirement category";
+-      if (typeof requirement.position !== "number" || !Number.isInteger(requirement.position) || requirement.position < 0) errors[`${requirementKey}.position`] = "Must be a non-negative integer";
+-      else if (requirementPositions.has(requirement.position as number)) errors[`${requirementKey}.position`] = "Requirement positions must be unique";
+-      else requirementPositions.add(requirement.position as number);
+-      if (typeof requirement.required !== "boolean") errors[`${requirementKey}.required`] = "Must be a boolean";
+-    });
+-  });
+-
+-  return {
+-    ok: Object.keys(errors).length === 0,
+-    errors,
+-    policy: policy as MissionWorkflowPolicyInput,
+-    templates: templates as MissionDeliverableTemplateInput[],
+   };
+ }
+ 
+@@ -420,6 +261,9 @@
+   const { ok, errors } = validateMission(m as unknown as MissionInput, "publish", hkToday());
+   if (!ok) return c.json({ error: "發佈前請完成必填欄位", code: "validation", fields: errors }, 422);
+ 
++  const workflow = validateMissionWorkflowAuthoring(m);
++  if (!workflow.ok) return c.json({ error: "validation_failed", code: "validation", fields: workflow.errors }, 422);
++
+   const now = new Date().toISOString();
+   const { data, error: uErr } = await svc.from("missions")
+     .update({ status: "active", published_at: now, updated_at: now }).eq("id", id).select(MISSION_COLS).single();
+--- /dev/null
++++ b/server/test/audit-mission-authoring-contract.test.ts
+@@ -0,0 +1,94 @@
++import { randomUUID } from "node:crypto";
++import { writeFileSync } from "node:fs";
++import { afterAll, beforeAll, describe, expect, it } from "vitest";
++import type { createAuditFixture } from "./auditWorkflowFixture";
++
++describe.skipIf(process.env.RUN_AUDIT_INTEGRATION !== "1")("D12 real disposable authoring contract", () => {
++  let fx: Awaited<ReturnType<typeof createAuditFixture>>;
++  let app: ReturnType<(typeof import("../app"))["createApp"]>["app"];
++  let draft: Record<string, unknown>, foreignId: string;
++  let before: Awaited<ReturnType<Awaited<ReturnType<typeof createAuditFixture>>["neutrality"]>>;
++  const ownedIds: string[] = [];
++  const policy = { screenshots: 1, legacy_review: { manual: true, modes: ["owner", 2] } };
++  const template = { title: "合成作者交付", platform: "instagram", position: 0, required: true, draft_due_offset_hours: 24,
++    publication_instructions: "發布已批准的短片及清楚披露合作", publication_window_hours: 48,
++    required_disclosures: ["#廣告", "品牌合作"], expected_account: "@synthetic_creator", proof_evidence_policy: policy,
++    requirements: [{ category: "compliance", text: "短片須清楚披露合作", required: true, position: 0 }] };
++  const body = () => ({ workspace_id: fx.workspaceId, slug: `authoring-${randomUUID()}`, title: "合成作者任務", mission_type: "ugc",
++    description: "Synthetic authoring acceptance", category: "寵物", access_type: "open", required_level: "L0", points_reward: 500,
++    cash_reward: 125, quota: 10, deadline: new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10), platforms: ["instagram"],
++    creator_workflow_mode: "active_workspace", fulfillment_required: false, revision_limit: 2, review_sla_hours: 48, revision_response_hours: 48,
++    deliverable_templates: [template], deliverables: ["合成作者交付"] });
++  async function request(path: string, method = "GET", data?: unknown, status = 200, actor?: { jwt: string }) {
++    const response = await app.request(`/api${path}`, { method,
++      headers: { Authorization: `Bearer ${(actor ?? fx.operator).jwt}`, "X-Workspace-Slug": fx.slug, "Content-Type": "application/json" },
++      ...(data === undefined ? {} : { body: JSON.stringify(data) }) });
++    expect(response.status, `${method} ${path}: ${await response.clone().text()}`).toBe(status);
++    return response.json();
++  }
++  beforeAll(async () => {
++    fx = await (await import("./auditWorkflowFixture")).createAuditFixture();
++    app = (await import("../app")).createApp().app;
++    before = await fx.neutrality(fx.creators[0].id);
++    draft = (await request("/admin/missions", "POST", body(), 201)).mission;
++    ownedIds.push(draft.id as string);
++    foreignId = randomUUID(); ownedIds.push(foreignId);
++    fx.must(await fx.service.from("missions").insert({ id: foreignId, workspace_id: fx.otherWorkspaceId, slug: `foreign-${foreignId}`,
++      title: "Foreign synthetic authoring", mission_type: "ugc", required_level: "L0", points_reward: 50, quota: 10, status: "draft" }));
++  }, 60000);
++  afterAll(async () => {
++    if (!fx) return;
++    const after = await fx.neutrality(fx.creators[0].id);
++    expect(after).toEqual(before);
++    writeFileSync(".codex-tmp/D12-fixture.private.json", JSON.stringify({ runId: fx.runId, target: fx.target.identity,
++      workspaceId: fx.workspaceId, slug: fx.slug, creator: fx.creators[0], operator: fx.operator,
++      navMission: draft, ownedMissionIds: ownedIds }, (key, value) => key === "client" ? undefined : value));
++    writeFileSync("docs/verification/D12-api-contract.json", JSON.stringify({ runId: fx.runId, target: fx.target.identity,
++      ownedMissionIds: ownedIds, navMissionId: draft.id, unknownPolicy: policy,
++      neutrality: { before, after, allEqual: JSON.stringify(before) === JSON.stringify(after) },
++      cleanup: "retained exact IDs; no reset or delete", providers: "external HTTP blocked; no paid provider or real publication" }, null, 2) + "\n");
++    fx.recordEvidence({ caseId: "D12-authoring", ownedMissionIds: ownedIds, before, after });
++  });
++  it("creates and reloads a complete required deliverable with unknown policy keys unchanged", async () => {
++    const loaded = (await request(`/admin/missions/${draft.id}`)).mission;
++    expect(loaded.deliverable_templates).toHaveLength(1);
++    expect(loaded.deliverable_templates[0]).toMatchObject(template);
++  });
++  it("preserves nested unknown rules during an unrelated edit and readback", async () => {
++    await request(`/admin/missions/${draft.id}`, "PATCH", { title: "合成作者任務已更新" });
++    const loaded = (await request(`/admin/missions/${draft.id}`)).mission;
++    expect(loaded.title).toBe("合成作者任務已更新");
++    expect(loaded.deliverable_templates[0].proof_evidence_policy).toEqual(policy);
++  });
++  it("rejects invalid JSON policy values and negative windows without persisting them", async () => {
++    for (const patch of [{ proof_evidence_policy: "invalid object" }, { publication_window_hours: -1 }]) {
++      const loaded = (await request(`/admin/missions/${draft.id}`)).mission;
++      await request(`/admin/missions/${draft.id}`, "PATCH", { deliverable_templates: [{ ...loaded.deliverable_templates[0], ...patch }] }, 422);
++      const after = (await request(`/admin/missions/${draft.id}`)).mission;
++      expect(after.deliverable_templates).toEqual(loaded.deliverable_templates);
++    }
++  });
++  it("rejects publishing an existing active-workspace draft that lacks required deliverables", async () => {
++    const id = randomUUID(); ownedIds.push(id);
++    const input = body();
++    const { deliverable_templates: ignored, ...bare } = input; void ignored;
++    fx.must(await fx.service.from("missions").insert({ ...bare, id, status: "draft" }));
++    const result = await request(`/admin/missions/${id}/publish`, "POST", {}, 422);
++    expect(result.fields).toHaveProperty("deliverable_templates");
++    expect((await request(`/admin/missions/${id}`)).mission.status).toBe("draft");
++  });
++  it("keeps real staff, membership and foreign-workspace boundaries on authoring", async () => {
++    await request(`/admin/missions/${draft.id}`, "PATCH", { title: "forbidden" }, 403, fx.noMembership);
++    await request(`/admin/missions/${draft.id}`, "PATCH", { title: "forbidden" }, 403, fx.creators[0]);
++    // Existing resource-scoped authoring hides foreign records with 404.
++    await request(`/admin/missions/${foreignId}`, "PATCH", { title: "forbidden" }, 404);
++    const untouched = fx.must(await fx.service.from("missions").select("title").eq("id", foreignId).eq("workspace_id", fx.otherWorkspaceId).single());
++    expect(untouched?.title).toBe("Foreign synthetic authoring");
++  });
++  it("retains the existing legacy publish path without active-template requirements", async () => {
++    const created = (await request("/admin/missions", "POST", { ...body(), creator_workflow_mode: "legacy", deliverable_templates: [] }, 201)).mission;
++    ownedIds.push(created.id);
++    await request(`/admin/missions/${created.id}/publish`, "POST", {});
++    expect((await request(`/admin/missions/${created.id}`)).mission.status).toBe("active");
++  });
++});
+--- /dev/null
++++ b/server/test/audit-mission-authoring.test.ts
+@@ -0,0 +1,53 @@
++import { Hono } from "hono";
++import { beforeEach, describe, expect, it, vi } from "vitest";
++const state = vi.hoisted(() => ({ row: {} as Record<string, unknown>, writes: 0, rpcError: null as null | { code: string; message: string }, rpcArgs: null as null | Record<string, unknown> }));
++vi.mock("../lib/supabase", () => ({ serviceClient: () => ({
++  from() {
++    const query = {
++      select() { return query; }, eq() { return query; }, in() { return query; },
++      update(patch: Record<string, unknown>) { state.writes++; Object.assign(state.row, patch); return query; },
++      async maybeSingle() { return { data: state.row, error: null }; },
++      async single() { return { data: state.row, error: null }; },
++      then(resolve: (value: unknown) => unknown) { return Promise.resolve({ data: [], count: 0, error: null }).then(resolve); },
++    }; return query;
++  },
++  async rpc(_name: string, args: Record<string, unknown>) { state.rpcArgs = args; return { data: state.rpcError ? null : state.row, error: state.rpcError }; },
++}) }));
++import { adminMissionRoutes, validateMissionWorkflowAuthoring } from "../routes/adminMissions";
++const app = new Hono().route("/admin", adminMissionRoutes);
++const template = { title: "合成交付", platform: "instagram", position: 0, required: true, draft_due_offset_hours: 24,
++  publication_instructions: "發布已批准的短片", publication_window_hours: 48, required_disclosures: ["#廣告"], expected_account: null,
++  proof_evidence_policy: { legacy_review: { manual: true } }, requirements: [{ category: "compliance", text: "披露品牌合作", required: true, position: 0 }] };
++const mission = { id: "mission", workspace_id: "workspace", slug: "synthetic-authoring", title: "合成任務", mission_type: "ugc",
++  description: "合成介紹", category: "寵物", access_type: "open", required_level: "L0", points_reward: 100, cash_reward: 25, quota: 10,
++  filled: 0, status: "draft", deadline: "2030-11-30", creator_workflow_mode: "active_workspace", fulfillment_required: false,
++  revision_limit: 2, review_sla_hours: 48, revision_response_hours: 48, deliverable_templates: [template] };
++describe("D12 authoring server boundary (unit transport; auth covered separately)", () => {
++  beforeEach(() => { state.row = structuredClone(mission); state.writes = 0; state.rpcArgs = null; state.rpcError = null; });
++  it("preserves unknown nested evidence policy values through the existing validator", () => {
++    const result = validateMissionWorkflowAuthoring(mission);
++    expect(result.ok).toBe(true);
++    expect(result.templates[0].proof_evidence_policy).toEqual({ legacy_review: { manual: true } });
++  });
++  it("rejects publishing a legacy-stored invalid active template before changing status", async () => {
++    state.row.deliverable_templates = [{ ...template, publication_window_hours: -1 }];
++    const response = await app.request("/admin/missions/mission/publish", { method: "POST" });
++    expect(response.status).toBe(422);
++    expect(await response.json()).toMatchObject({ fields: { "deliverable_templates.0.publication_window_hours": "PUBLICATION_WINDOW_HOURS_INVALID" } });
++    expect(state.writes).toBe(0);
++    expect(state.row.status).toBe("draft");
++  });
++  it("does not publish an active mission that has no required deliverable", async () => {
++    state.row.deliverable_templates = [];
++    const response = await app.request("/admin/missions/mission/publish", { method: "POST" });
++    expect(response.status).toBe(422);
++    expect(state.writes).toBe(0);
++  });
++  it("does not claim a saved draft when the existing authoring RPC is unavailable", async () => {
++    state.rpcError = { code: "PGRST202", message: "Synthetic unavailable schema capability" };
++    const response = await app.request("/admin/missions", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(mission) });
++    expect(response.status).toBe(500);
++    expect(await response.json()).toMatchObject({ code: "db_error" });
++    expect(state.writes).toBe(0);
++  });
++});
+--- a/src/components/active-mission/PublicationInstructions.tsx
++++ b/src/components/active-mission/PublicationInstructions.tsx
+@@ -1,8 +1,15 @@
+ import { useId } from "react";
+-import { publicationEvidenceRequired, type MissionPublicationView } from "@/lib/activeMission";
++import { publicationEvidenceRequired, type MissionPublicationView, type MissionPublicationInstructionsView } from "@/lib/activeMission";
++import { useI18n } from "@/lib/i18n";
++import { platformLabelKey } from "@/lib/missionMeta";
+ 
+ type Props = {
+   publication: MissionPublicationView;
++  preview?: false;
++} | {
++  publication: { platform: string; instructions: Pick<MissionPublicationInstructionsView, "publicationInstructions" | "requiredDisclosures" | "expectedAccount" | "proofEvidencePolicy"> };
++  preview: true;
++  publicationWindowHours: number;
+ };
+ 
+ function displayPlatform(value: string): string {
+@@ -15,34 +22,39 @@
+   return match ? `Approved version ${match[1]}` : "Approved version";
+ }
+ 
+-export function PublicationInstructions({ publication }: Props) {
++export function PublicationInstructions(props: Props) {
++  const { publication } = props;
++  const { t } = useI18n();
++  const copy = (key: string, existing: string) => props.preview ? t(key) : existing;
+   const headingId = useId();
+   const { instructions } = publication;
+   return (
+     <section aria-labelledby={headingId} className="rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-5 shadow-[var(--shadow-sm)]">
+       <div className="flex flex-wrap items-start justify-between gap-3">
+         <div>
+-          <p className="font-heading text-xs font-bold uppercase tracking-[0.16em] text-[var(--color-soft-ink)]">Frozen guidance</p>
+-          <h2 id={headingId} className="mt-1 font-heading text-xl font-bold">Publication instructions</h2>
++          <p className="font-heading text-xs font-bold uppercase tracking-[0.16em] text-[var(--color-soft-ink)]">{copy("app.admin.missionEditor.previewGuidance", "Frozen guidance")}</p>
++          <h2 id={headingId} className="mt-1 font-heading text-xl font-bold">{copy("app.admin.missionEditor.publicationInstructions", "Publication instructions")}</h2>
+         </div>
+-        <span className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 text-xs font-bold">
+-          {approvedVersionLabel(publication.approvedVersionId)}
+-        </span>
++        {!props.preview ? <span className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 text-xs font-bold">
++          {approvedVersionLabel(props.publication.approvedVersionId)}
++        </span> : null}
+       </div>
+ 
+       <dl className="mt-5 grid gap-4 sm:grid-cols-2">
+         <div>
+-          <dt className="text-xs font-bold uppercase tracking-wide text-[var(--color-soft-ink)]">Platform</dt>
+-          <dd className="mt-1 font-semibold">{displayPlatform(publication.platform)}</dd>
++          <dt className="text-xs font-bold uppercase tracking-wide text-[var(--color-soft-ink)]">{copy("app.mission.cardPlatform", "Platform")}</dt>
++          <dd className="mt-1 font-semibold">{props.preview ? publication.platform ? t(platformLabelKey(publication.platform)) : t("app.mission.notProvided") : displayPlatform(publication.platform)}</dd>
+         </div>
+         <div>
+-          <dt className="text-xs font-bold uppercase tracking-wide text-[var(--color-soft-ink)]">Expected account</dt>
+-          <dd className="mt-1 font-semibold">{instructions.expectedAccount ?? "Use your approved account"}</dd>
++          <dt className="text-xs font-bold uppercase tracking-wide text-[var(--color-soft-ink)]">{copy("app.admin.missionEditor.expectedAccount", "Expected account")}</dt>
++          <dd className="mt-1 font-semibold">{instructions.expectedAccount ?? copy("app.mission.notProvided", "Use your approved account")}</dd>
+         </div>
+         <div className="sm:col-span-2">
+-          <dt className="text-xs font-bold uppercase tracking-wide text-[var(--color-soft-ink)]">Publication deadline</dt>
++          <dt className="text-xs font-bold uppercase tracking-wide text-[var(--color-soft-ink)]">{copy("app.admin.missionEditor.previewDeadline", "Publication deadline")}</dt>
+           <dd className="mt-1">
+-            <time dateTime={instructions.publishDueAt}>{new Date(instructions.publishDueAt).toLocaleString()}</time>
++            {props.preview ? Number.isInteger(props.publicationWindowHours) && props.publicationWindowHours > 0
++              ? t("app.admin.missionEditor.afterApprovalHours", { hours: props.publicationWindowHours }) : t("app.mission.notProvided")
++              : <time dateTime={props.publication.instructions.publishDueAt}>{new Date(props.publication.instructions.publishDueAt).toLocaleString()}</time>}
+           </dd>
+         </div>
+       </dl>
+@@ -53,7 +65,7 @@
+ 
+       {instructions.requiredDisclosures.length > 0 ? (
+         <div className="mt-5">
+-          <h3 className="font-heading text-sm font-bold">Required disclosures</h3>
++          <h3 className="font-heading text-sm font-bold">{copy("app.admin.missionEditor.requiredDisclosures", "Required disclosures")}</h3>
+           <ul className="mt-2 list-disc space-y-1 pl-5 text-sm">
+             {instructions.requiredDisclosures.map((disclosure) => <li key={disclosure}>{disclosure}</li>)}
+           </ul>
+@@ -61,7 +73,7 @@
+       ) : null}
+ 
+       <p className="mt-5 rounded-xl border border-[var(--color-ink)] px-3 py-2 text-sm font-semibold">
+-        {publicationEvidenceRequired(instructions.proofEvidencePolicy) ? "Evidence is required" : "Evidence is optional"}
++        {publicationEvidenceRequired(instructions.proofEvidencePolicy) ? copy("app.admin.missionEditor.evidenceRequired", "Evidence is required") : copy("app.admin.missionEditor.evidenceOptional", "Evidence is optional")}
+       </p>
+     </section>
+   );
+--- a/src/components/admin/MissionEditor.tsx
++++ b/src/components/admin/MissionEditor.tsx
+@@ -1,5 +1,5 @@
+ // src/components/admin/MissionEditor.tsx
+-import { useState } from "react";
++import { useEffect, useRef, useState } from "react";
+ import { MISSION_CATEGORIES } from "@/lib/missionCategories";
+ import { AdminRequestError, type AdminMission, type MissionDeliverableTemplateInput, type MissionDraftInput } from "@/lib/admin";
+ import { ArrayInput } from "./ArrayInput";
+@@ -8,6 +8,9 @@
+ import { MissionFacts } from "@/components/MissionFacts";
+ import type { Mission } from "@/lib/queries/kocmax";
+ import { useI18n } from "@/lib/i18n";
++import { validateMissionWorkflowAuthoring } from "@/lib/missionWorkflowAuthoring";
++import { ProofPolicyFields, parseProofPolicy as parsedEvidencePolicy } from "./ProofPolicyFields";
++import { PublicationInstructions } from "@/components/active-mission/PublicationInstructions";
+ 
+ const MISSION_TYPES = ["koc_trial", "ugc", "clipping", "affiliate", "performance_cpm", "live_commerce", "brand_ambassador"] as const;
+ const REQUIREMENT_CATEGORIES = ["format", "key_message", "compliance", "quality", "other"] as const;
+@@ -22,6 +25,7 @@
+   engaged?: boolean;
+   onSave: (body: MissionDraftInput) => Promise<unknown>;
+   saving?: boolean;
++  onDirtyChange?: (dirty: boolean) => void;
+ };
+ 
+ const numOrNull = (s: string) => (s.trim() === "" ? null : Number(s));
+@@ -52,15 +56,6 @@
+     proofEvidencePolicyText: JSON.stringify(template.proof_evidence_policy),
+     requirements: template.requirements.map((requirement) => ({ ...requirement, editorKey: nextEditorKey() })),
+   }));
+-}
+-
+-function parsedEvidencePolicy(value: string): Record<string, unknown> | null {
+-  try {
+-    const parsed: unknown = JSON.parse(value);
+-    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed as Record<string, unknown> : null;
+-  } catch {
+-    return null;
+-  }
+ }
+ 
+ function toTemplatePayload(templates: EditableTemplate[]): MissionDeliverableTemplateInput[] {
+@@ -79,7 +74,7 @@
+   });
+ }
+ 
+-export function MissionEditor({ mode, initial, workspaces = [], engaged = false, onSave, saving }: Props) {
++export function MissionEditor({ mode, initial, workspaces = [], engaged = false, onSave, saving, onDirtyChange }: Props) {
+   const { t } = useI18n();
+   const published = mode === "edit" && initial?.status !== "draft";
+   const [f, setF] = useState({
+@@ -115,15 +110,37 @@
+   });
+   const [preview, setPreview] = useState(false);
+   const [errors, setErrors] = useState<Record<string, string>>({});
++  const [saveError, setSaveError] = useState<Error | null>(null);
++  const [savedForm, setSavedForm] = useState(() => JSON.stringify(f));
++  const [savePending, setSavePending] = useState(false);
++  const inFlight = useRef(false);
++  const editorRef = useRef<HTMLFieldSetElement>(null);
++  const errorSummaryRef = useRef<HTMLDivElement>(null);
++  const dirty = JSON.stringify(f) !== savedForm;
++  useEffect(() => { onDirtyChange?.(dirty); }, [dirty, onDirtyChange]);
++  useEffect(() => () => onDirtyChange?.(false), [onDirtyChange]);
++  const focusError = (key: string) => {
++    const index = /^deliverable_templates\.(\d+)/.exec(key)?.[1];
++    if (index !== undefined) (document.getElementById(`deliverable-${f.deliverable_templates[Number(index)]?.editorKey}`) ?? errorSummaryRef.current)?.focus();
++    else editorRef.current?.focus();
++  };
++  useEffect(() => {
++    const key = Object.keys(errors)[0];
++    if (saveError) { errorSummaryRef.current?.focus(); return; }
++    if (!key) return;
++    const index = /^deliverable_templates\.(\d+)/.exec(key)?.[1];
++    if (index !== undefined) (document.getElementById(`deliverable-${f.deliverable_templates[Number(index)]?.editorKey}`) ?? errorSummaryRef.current)?.focus();
++    else editorRef.current?.focus();
++  }, [errors, saveError, f.deliverable_templates]);
+   const set = (k: keyof typeof f) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
+     setF((p) => ({ ...p, [k]: e.target.value }));
+   const isCpm = f.mission_type === "performance_cpm";
+ 
+   const submit = async () => {
++    if (saving || inFlight.current) return;
+     setErrors({});
+-    const invalidEvidencePolicyIndex = f.creator_workflow_mode === "active_workspace"
+-      ? f.deliverable_templates.findIndex((template) => parsedEvidencePolicy(template.proofEvidencePolicyText) === null)
+-      : -1;
++    setSaveError(null);
++    const invalidEvidencePolicyIndex = f.deliverable_templates.findIndex((template) => parsedEvidencePolicy(template.proofEvidencePolicyText) === null);
+     if (invalidEvidencePolicyIndex >= 0) {
+       setErrors({
+         [`deliverable_templates.${invalidEvidencePolicyIndex}.proof_evidence_policy`]: "PROOF_EVIDENCE_POLICY_INVALID",
+@@ -151,21 +168,41 @@
+       target_audience: f.target_audience.trim() || null,
+       dos: f.dos, donts: f.donts, key_messages: f.key_messages, reference_links: f.reference_links,
+     };
++    const validation = validateMissionWorkflowAuthoring(body);
++    if (!validation.ok) { setErrors(validation.errors); return; }
++    inFlight.current = true;
++    setSavePending(true);
+     try {
+       await onSave(body);
++      setSavedForm(JSON.stringify(f));
++      onDirtyChange?.(false);
+     } catch (e) {
+       if (e instanceof AdminRequestError && e.fields) setErrors(e.fields);
+-      else window.alert(e instanceof Error ? e.message : "儲存失敗");
++      else setSaveError(e instanceof Error ? e : new Error("save_failed"));
++    } finally {
++      inFlight.current = false;
++      setSavePending(false);
+     }
+   };
+ 
++  const messageFor = (raw: string) => {
++    const key = PUBLICATION_POLICY_ERROR_MESSAGE_KEYS[raw] ?? ({
++      "Title is required": "app.admin.missionEditor.deliverableTitleRequired",
++      "Requirement text is required": "app.admin.missionEditor.requirementTextRequired",
++      "Must be a positive integer": "app.admin.missionEditor.positiveInteger",
++      "Must be a non-negative integer": "app.admin.missionEditor.nonNegativeInteger",
++      "Add at least one required deliverable": "app.admin.missionEditor.requiredDeliverableMissing",
++      "Invalid requirement category": "app.admin.missionEditor.invalidRequirementCategory",
++      "Platform must be null or a non-empty string": "app.admin.missionEditor.invalidPlatform",
++    } as Record<string, string>)[raw];
++    return key ? t(key) : raw;
++  };
+   const Err = ({ k, nested = false }: { k: string; nested?: boolean }) => {
+     const raw = errors[k] ?? (nested
+       ? Object.entries(errors).find(([field]) => field.startsWith(`${k}.`))?.[1]
+       : undefined);
+     if (!raw) return null;
+-    const messageKey = PUBLICATION_POLICY_ERROR_MESSAGE_KEYS[raw];
+-    return <p className="text-xs font-bold text-red-600">{messageKey ? t(messageKey) : raw}</p>;
++    return <p className="text-xs font-bold text-red-600">{messageFor(raw)}</p>;
+   };
+   const input = "h-9 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm disabled:opacity-50";
+   const area = "w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm";
+@@ -179,8 +216,8 @@
+     category: f.category || undefined,
+     mission_type: f.mission_type,
+     access_type: f.access_type,
+-    points_reward: Number(f.points_reward || 0),
+-    cash_reward: numOrNull(f.cash_reward),
++    points_reward: isCpm ? 0 : Number(f.points_reward || 0),
++    cash_reward: isCpm ? null : numOrNull(f.cash_reward),
+     required_level: f.required_level,
+     deliverables: f.deliverables,
+     requirements: f.requirements,
+@@ -198,7 +235,17 @@
+   };
+ 
+   return (
+-    <div className="space-y-5">
++    <fieldset ref={editorRef} tabIndex={-1} disabled={saving || savePending} className="min-w-0 space-y-5">
++      {saveError || Object.keys(errors).length ? <div ref={errorSummaryRef} role="alert" tabIndex={-1} className="space-y-2 rounded-[var(--radius)] border-2 border-red-700 bg-white p-3 text-sm">
++        <p className="font-bold">{t(saveError ? "app.admin.missionEditor.saveFailed" : "app.admin.missionEditor.fixFields")}</p>
++        {saveError instanceof AdminRequestError && saveError.status === 409 ? <p>{t("app.admin.missionEditor.conflictHelp")}</p> : null}
++        <ul>{Object.entries(errors).map(([key, value]) => {
++          const index = /^deliverable_templates\.(\d+)/.exec(key)?.[1];
++          return <li key={key}><button type="button" className="py-1 text-left underline" onClick={() => focusError(key)}>
++            {index !== undefined ? t("app.admin.missionEditor.deliverable", { position: Number(index) + 1 }) : t("app.admin.missionEditor.rootFields")} · {messageFor(value)}
++          </button></li>;
++        })}</ul>
++      </div> : null}
+       <section className="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3">
+         <h2 className="font-heading font-bold">基本</h2>
+         <label className="block text-sm">品牌
+@@ -209,8 +256,8 @@
+         <label className="block text-sm">標題 (zh-HK)
+           <input aria-label="標題" className={input} value={f.title} onChange={set("title")} /><Err k="title" />
+         </label>
+-        <label className="block text-sm">Slug (english){published ? lockNote("已發佈：不可更改") : null}
+-          <input aria-label="Slug" className={input} value={f.slug} disabled={published} onChange={set("slug")} /><Err k="slug" />
++        <label className="block text-sm">任務網址代號（英數字及連字號）{published ? lockNote("已發佈：不可更改") : null}
++          <input aria-label="任務網址代號" className={input} value={f.slug} disabled={published} onChange={set("slug")} /><Err k="slug" />
+         </label>
+         <label className="block text-sm">分類
+           <select aria-label="分類" className={input} value={f.category} onChange={set("category")}>
+@@ -225,8 +272,8 @@
+         </label>
+         <label className="block text-sm">參與方式{engaged ? lockNote("已鎖定") : null}
+           <select aria-label="參與方式" className={input} value={f.access_type} disabled={engaged} onChange={set("access_type")}>
+-            <option value="open">公開 (open)</option>
+-            <option value="application">申請制 (application)</option>
++            <option value="open">公開</option>
++            <option value="application">申請制</option>
+           </select><Err k="access_type" />
+         </label>
+         <label className="block text-sm">等級要求{engaged ? lockNote("已鎖定") : null}
+@@ -274,10 +321,10 @@
+         <label className="block text-sm">任務簡介
+           <textarea aria-label="任務簡介" rows={4} className={area} value={f.description} onChange={set("description")} /><Err k="description" />
+         </label>
+-        <label className="block text-sm">Creator workflow
+-          <select aria-label="Creator workflow" className={input} value={f.creator_workflow_mode} onChange={set("creator_workflow_mode")}>
+-            <option value="legacy">Legacy submission</option>
+-            <option value="active_workspace">Active mission workspace</option>
++        <label className="block text-sm">{t("app.admin.missionEditor.workflow")}
++          <select aria-label={t("app.admin.missionEditor.workflow")} className={input} value={f.creator_workflow_mode} onChange={set("creator_workflow_mode")}>
++            <option value="legacy">{t("app.admin.missionEditor.legacyWorkflow")}</option>
++            <option value="active_workspace">{t("app.admin.missionEditor.activeWorkflow")}</option>
+           </select><Err k="creator_workflow_mode" />
+         </label>
+ 
+@@ -285,22 +332,23 @@
+           <div className="space-y-3 rounded-[var(--radius)] border border-[var(--color-ink)] p-3">
+             <label className="flex items-center gap-2 text-sm">
+               <input
+-                aria-label="Fulfillment required"
++                aria-label={t("app.admin.missionEditor.fulfillment")}
+                 type="checkbox"
+                 checked={f.fulfillment_required}
+                 onChange={(event) => setF((previous) => ({ ...previous, fulfillment_required: event.target.checked }))}
+               />
+-              Fulfillment required
+-            </label>
+-            <label className="block text-sm">Revision limit
+-              <input aria-label="Revision limit" className={input} type="number" min={0} value={f.revision_limit} onChange={set("revision_limit")} />
+-            </label>
+-            <label className="block text-sm">Review SLA hours
+-              <input aria-label="Review SLA hours" className={input} type="number" min={1} value={f.review_sla_hours} onChange={set("review_sla_hours")} />
+-            </label>
+-            <label className="block text-sm">Revision response hours
+-              <input aria-label="Revision response hours" className={input} type="number" min={1} value={f.revision_response_hours} onChange={set("revision_response_hours")} />
+-            </label>
++              {t("app.admin.missionEditor.fulfillment")}
++            </label>
++            <label className="block text-sm">{t("app.admin.missionEditor.revisionLimit")}
++              <input aria-label={t("app.admin.missionEditor.revisionLimit")} className={input} type="number" min={0} value={f.revision_limit} onChange={set("revision_limit")} /><Err k="revision_limit" />
++            </label>
++            <label className="block text-sm">{t("app.admin.missionEditor.reviewHours")}
++              <input aria-label={t("app.admin.missionEditor.reviewHours")} className={input} type="number" min={1} value={f.review_sla_hours} onChange={set("review_sla_hours")} /><Err k="review_sla_hours" />
++            </label>
++            <label className="block text-sm">{t("app.admin.missionEditor.revisionHours")}
++              <input aria-label={t("app.admin.missionEditor.revisionHours")} className={input} type="number" min={1} value={f.revision_response_hours} onChange={set("revision_response_hours")} /><Err k="revision_response_hours" />
++            </label>
++            <p className="text-xs text-[var(--color-soft-ink)]">{t("app.admin.missionEditor.deadlineHelp")}</p>
+             <button
+               type="button"
+               onClick={() => setF((previous) => ({
+@@ -323,14 +371,14 @@
+               }))}
+               className="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-sm font-bold"
+             >
+-              Add deliverable
++              {t("app.admin.missionEditor.addDeliverable")}
+             </button>
+             {f.deliverable_templates.map((template, templateIndex) => (
+-              <fieldset key={template.editorKey} className="space-y-3 rounded-[var(--radius)] border border-[var(--color-ink)] p-3">
+-                <legend className="px-1 text-sm font-bold">Deliverable {templateIndex + 1}</legend>
+-                <label className="block text-sm">Title
++              <fieldset id={`deliverable-${template.editorKey}`} tabIndex={-1} key={template.editorKey} className="min-w-0 space-y-3 rounded-[var(--radius)] border border-[var(--color-ink)] p-3">
++                <legend className="px-1 text-sm font-bold">{t("app.admin.missionEditor.deliverable", { position: templateIndex + 1 })}</legend>
++                <label className="block text-sm">{t("app.admin.missionEditor.deliverableTitle")}
+                   <input
+-                    aria-label={`Deliverable title ${templateIndex + 1}`}
++                    aria-label={t("app.admin.missionEditor.deliverableTitleAria", { position: templateIndex + 1 })}
+                     className={input}
+                     value={template.title}
+                     onChange={(event) => setF((previous) => ({
+@@ -341,9 +389,10 @@
+                     }))}
+                   />
+                 </label>
+-                <label className="block text-sm">Platform (optional)
++                <Err k={`deliverable_templates.${templateIndex}.title`} />
++                <label className="block text-sm">{t("app.admin.missionEditor.deliverablePlatform")}
+                   <input
+-                    aria-label={`Deliverable platform ${templateIndex + 1}`}
++                    aria-label={t("app.admin.missionEditor.deliverablePlatformAria", { position: templateIndex + 1 })}
+                     className={input}
+                     value={template.platform ?? ""}
+                     onChange={(event) => setF((previous) => ({
+@@ -354,9 +403,10 @@
+                     }))}
+                   />
+                 </label>
++                <Err k={`deliverable_templates.${templateIndex}.platform`} />
+                 <label className="flex items-center gap-2 text-sm">
+                   <input
+-                    aria-label={`Deliverable required ${templateIndex + 1}`}
++                    aria-label={t("app.admin.missionEditor.requiredDeliverableAria", { position: templateIndex + 1 })}
+                     type="checkbox"
+                     checked={template.required}
+                     onChange={(event) => setF((previous) => ({
+@@ -366,11 +416,12 @@
+                       )),
+                     }))}
+                   />
+-                  Required deliverable
+-                </label>
+-                <label className="block text-sm">Draft due offset (hours)
++                  {t("app.admin.missionEditor.requiredDeliverable")}
++                </label>
++                <Err k={`deliverable_templates.${templateIndex}.required`} />
++                <label className="block text-sm">{t("app.admin.missionEditor.draftHours")}
+                   <input
+-                    aria-label={`Draft due offset ${templateIndex + 1}`}
++                    aria-label={t("app.admin.missionEditor.draftHoursAria", { position: templateIndex + 1 })}
+                     className={input}
+                     type="number"
+                     min={0}
+@@ -383,6 +434,7 @@
+                     }))}
+                   />
+                 </label>
++                <Err k={`deliverable_templates.${templateIndex}.draft_due_offset_hours`} />
+                 <label className="block text-sm">{t("app.admin.missionEditor.publicationInstructions")}
+                   <textarea
+                     aria-label={t("app.admin.missionEditor.publicationInstructionsAria", { position: templateIndex + 1 })}
+@@ -446,24 +498,15 @@
+                   />
+                 </label>
+                   <Err k={`deliverable_templates.${templateIndex}.expected_account`} />
+-                <label className="block text-sm">{t("app.admin.missionEditor.proofEvidencePolicy")}
+-                  <textarea
+-                    aria-label={t("app.admin.missionEditor.proofEvidencePolicyAria", { position: templateIndex + 1 })}
+-                    rows={2}
+-                    className={area}
+-                    value={template.proofEvidencePolicyText}
+-                    onChange={(event) => setF((previous) => ({
+-                      ...previous,
+-                      deliverable_templates: previous.deliverable_templates.map((item, index) => (
+-                        index === templateIndex ? { ...item, proofEvidencePolicyText: event.target.value } : item
+-                      )),
+-                    }))}
+-                  />
+-                  <Err k={`deliverable_templates.${templateIndex}.proof_evidence_policy`} />
+-                </label>
++                <ProofPolicyFields position={templateIndex + 1} policy={template.proof_evidence_policy} rawValue={template.proofEvidencePolicyText}
++                  onChange={(policy) => setF((previous) => ({ ...previous, deliverable_templates: previous.deliverable_templates.map((item, index) =>
++                    index === templateIndex ? { ...item, proof_evidence_policy: policy, proofEvidencePolicyText: JSON.stringify(policy) } : item) }))}
++                  onRawChange={(value) => setF((previous) => ({ ...previous, deliverable_templates: previous.deliverable_templates.map((item, index) =>
++                    index === templateIndex ? { ...item, proofEvidencePolicyText: value } : item) }))} />
++                <Err k={`deliverable_templates.${templateIndex}.proof_evidence_policy`} />
+                 <button
+                   type="button"
+-                  aria-label={`Remove deliverable ${templateIndex + 1}`}
++                  aria-label={t("app.admin.missionEditor.removeDeliverableAria", { position: templateIndex + 1 })}
+                   className="rounded-full border border-[var(--color-ink)] px-3 py-1 text-sm"
+                   onClick={() => setF((previous) => ({
+                     ...previous,
+@@ -472,17 +515,17 @@
+                       .map((item, position) => ({ ...item, position })),
+                   }))}
+                 >
+-                  Remove deliverable
++                  {t("app.admin.missionEditor.removeDeliverable")}
+                 </button>
+ 
+                 <div className="space-y-3 border-l-2 border-[var(--color-ink)] pl-3">
+-                  <p className="text-sm font-bold">Checklist</p>
++                  <p className="text-sm font-bold">{t("app.admin.missionEditor.checklist")}</p>
+                   {template.requirements.map((requirement, requirementIndex) => (
+                     <fieldset key={requirement.editorKey} className="space-y-2">
+-                      <legend className="text-xs font-bold">Checklist item {requirementIndex + 1}</legend>
+-                      <label className="block text-sm">Category
++                      <legend className="text-xs font-bold">{t("app.admin.missionEditor.checklistItem", { position: requirementIndex + 1 })}</legend>
++                      <label className="block text-sm">{t("app.admin.missionEditor.checklistCategory")}
+                         <select
+-                          aria-label={`Checklist category ${requirementIndex + 1} for deliverable ${templateIndex + 1}`}
++                          aria-label={t("app.admin.missionEditor.checklistCategoryAria", { item: requirementIndex + 1, position: templateIndex + 1 })}
+                           className={input}
+                           value={requirement.category}
+                           onChange={(event) => setF((previous) => ({
+@@ -494,12 +537,13 @@
+                               : item),
+                           }))}
+                         >
+-                          {REQUIREMENT_CATEGORIES.map((category) => <option key={category} value={category}>{category}</option>)}
++                          {REQUIREMENT_CATEGORIES.map((category) => <option key={category} value={category}>{t(`app.admin.missionEditor.category.${category}`)}</option>)}
+                         </select>
+                       </label>
+-                      <label className="block text-sm">Requirement
++                      <Err k={`deliverable_templates.${templateIndex}.requirements.${requirementIndex}.category`} />
++                      <label className="block text-sm">{t("app.admin.missionEditor.checklistText")}
+                         <input
+-                          aria-label={`Checklist text ${requirementIndex + 1} for deliverable ${templateIndex + 1}`}
++                          aria-label={t("app.admin.missionEditor.checklistTextAria", { item: requirementIndex + 1, position: templateIndex + 1 })}
+                           className={input}
+                           value={requirement.text}
+                           onChange={(event) => setF((previous) => ({
+@@ -512,9 +556,10 @@
+                           }))}
+                         />
+                       </label>
++                      <Err k={`deliverable_templates.${templateIndex}.requirements.${requirementIndex}.text`} />
+                       <label className="flex items-center gap-2 text-sm">
+                         <input
+-                          aria-label={`Checklist required ${requirementIndex + 1} for deliverable ${templateIndex + 1}`}
++                          aria-label={t("app.admin.missionEditor.checklistRequiredAria", { item: requirementIndex + 1, position: templateIndex + 1 })}
+                           type="checkbox"
+                           checked={requirement.required}
+                           onChange={(event) => setF((previous) => ({
+@@ -526,11 +571,12 @@
+                               : item),
+                           }))}
+                         />
+-                        Required checklist item
++                        {t("app.admin.missionEditor.requiredChecklist")}
+                       </label>
++                      <Err k={`deliverable_templates.${templateIndex}.requirements.${requirementIndex}.required`} />
+                       <button
+                         type="button"
+-                        aria-label={`Remove checklist item ${requirementIndex + 1} from deliverable ${templateIndex + 1}`}
++                        aria-label={t("app.admin.missionEditor.removeChecklistAria", { item: requirementIndex + 1, position: templateIndex + 1 })}
+                         className="rounded-full border border-[var(--color-ink)] px-3 py-1 text-sm"
+                         onClick={() => setF((previous) => ({
+                           ...previous,
+@@ -541,13 +587,13 @@
+                             : item),
+                         }))}
+                       >
+-                        Remove checklist item
++                        {t("app.admin.missionEditor.removeChecklist")}
+                       </button>
+                     </fieldset>
+                   ))}
+                   <button
+                     type="button"
+-                    aria-label={`Add checklist item to deliverable ${templateIndex + 1}`}
++                    aria-label={t("app.admin.missionEditor.addChecklistAria", { position: templateIndex + 1 })}
+                     className="rounded-full border border-[var(--color-ink)] px-3 py-1 text-sm font-bold"
+                     onClick={() => setF((previous) => ({
+                       ...previous,
+@@ -558,7 +604,7 @@
+                         : item),
+                     }))}
+                   >
+-                    Add checklist item
++                    {t("app.admin.missionEditor.addChecklist")}
+                   </button>
+                 </div>
+               </fieldset>
+@@ -616,16 +662,26 @@
+           {preview ? "隱藏預覽" : "預覽"}
+         </button>
+         {preview && (
+-          <div className="space-y-3 rounded-[var(--radius)] border-2 border-dashed border-[var(--color-ink)] p-3">
++          <section aria-label={t("app.admin.missionEditor.creatorPreview")} className="space-y-3 rounded-[var(--radius)] border-2 border-dashed border-[var(--color-ink)] p-3">
+             <MissionFacts mission={previewMission} />
+             <MissionBrief mission={previewMission} />
+-          </div>
++            {f.creator_workflow_mode === "active_workspace" ? f.deliverable_templates.map((template, index) => <article key={template.editorKey} className="space-y-3">
++              <h3 className="font-heading font-bold">{template.title || t("app.admin.missionEditor.deliverable", { position: index + 1 })}</h3>
++              <p>{t(template.required ? "app.admin.missionEditor.requiredDeliverable" : "app.admin.missionEditor.optionalDeliverable")} · {t("app.admin.missionEditor.draftAfterHours", { hours: template.draft_due_offset_hours })}</p>
++              <ul className="list-inside list-disc text-sm">{template.requirements.map((requirement) => <li key={requirement.editorKey}>{requirement.text} {requirement.required ? `(${t("app.admin.missionEditor.requiredChecklist")})` : ""}</li>)}</ul>
++              {parsedEvidencePolicy(template.proofEvidencePolicyText) ? <PublicationInstructions preview publicationWindowHours={template.publication_window_hours}
++                publication={{ platform: template.platform ?? "", instructions: { publicationInstructions: template.publication_instructions,
++                  requiredDisclosures: template.required_disclosures, expectedAccount: template.expected_account,
++                  proofEvidencePolicy: parsedEvidencePolicy(template.proofEvidencePolicyText)! } }} />
++                : <p role="alert">{t("app.admin.missionEditor.proofEvidencePolicyInvalid")}</p>}
++            </article>) : null}
++          </section>
+         )}
+       </div>
+ 
+-      <button onClick={submit} disabled={saving} className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-4 py-2 font-heading font-bold">
++      <button onClick={submit} disabled={saving || savePending} aria-busy={saving || savePending} className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-4 py-2 font-heading font-bold">
+         {mode === "create" ? "儲存草稿" : "儲存變更"}
+       </button>
+-    </div>
++    </fieldset>
+   );
+ }
+--- /dev/null
++++ b/src/components/admin/ProofPolicyFields.test.tsx
+@@ -0,0 +1,178 @@
++import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
++import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
++import { MissionEditor } from "./MissionEditor";
++import { AdminRequestError, type AdminMission } from "@/lib/admin";
++
++const template = {
++  title: "寵物短片交付", platform: "instagram", position: 0, required: true,
++  draft_due_offset_hours: 24, publication_instructions: "發布已批准的短片及清楚披露合作",
++  publication_window_hours: 48, required_disclosures: ["#廣告", "品牌合作"], expected_account: "@synthetic_creator",
++  proof_evidence_policy: {}, requirements: [{ category: "compliance" as const, text: "短片須清楚披露合作", required: true, position: 0 }],
++};
++const mission: AdminMission = {
++  id: "mission", workspace_id: "workspace", slug: "synthetic-authoring", title: "合成作者任務", description: "測試交付要求",
++  category: "寵物", mission_type: "ugc", access_type: "open", required_level: "L0", points_reward: 500, cash_reward: 125,
++  cpm_rate: null, cpm_budget_pool: null, deadline: "2030-11-30", quota: 10, filled: 0, status: "draft",
++  deliverables: [], requirements: [], platforms: ["instagram"], effort: "medium", target_audience: null,
++  dos: [], donts: [], key_messages: [], reference_links: [], updated_at: "", published_at: null, closed_at: null,
++  creator_workflow_mode: "active_workspace", fulfillment_required: false, revision_limit: 2, review_sla_hours: 48,
++  revision_response_hours: 48, deliverable_templates: [template],
++};
++const props = { mode: "edit" as const, initial: mission, workspaces: [{ id: "workspace", name: "合成品牌" }] };
++const save = () => fireEvent.click(screen.getByRole("button", { name: "儲存變更" }));
++
++describe("D12 policy fields through the real authoring form", () => {
++  beforeEach(() => window.localStorage.clear());
++  afterEach(() => vi.restoreAllMocks());
++
++  it("authors required evidence without opening JSON and submits the actual required deliverable", async () => {
++    const onSave = vi.fn().mockResolvedValue({});
++    render(<MissionEditor {...props} onSave={onSave} />);
++    fireEvent.click(screen.getByRole("checkbox", { name: "需要佐證檔案 1" }));
++    save();
++    await waitFor(() => expect(onSave).toHaveBeenCalledTimes(1));
++    expect(onSave.mock.calls[0][0].deliverable_templates[0]).toMatchObject({
++      title: "寵物短片交付", required: true, proof_evidence_policy: { required: true },
++      required_disclosures: ["#廣告", "品牌合作"], expected_account: "@synthetic_creator", publication_window_hours: 48,
++      requirements: [{ text: "短片須清楚披露合作", required: true }],
++    });
++  });
++
++  it("preserves nested unknown policy keys and makes their evidence requirement explicit", async () => {
++    const onSave = vi.fn().mockResolvedValue({});
++    const policy = { legacy_review: { owner: "synthetic", modes: ["manual", 2] }, screenshots: 1 };
++    render(<MissionEditor {...props} initial={{ ...mission, deliverable_templates: [{ ...template, proof_evidence_policy: policy }] }} onSave={onSave} />);
++    expect(screen.getByText(/已有進階設定會原樣保留/)).toBeInTheDocument();
++    expect(screen.getByRole("checkbox", { name: "需要佐證檔案 1" })).toBeChecked();
++    expect(screen.getByRole("checkbox", { name: "需要佐證檔案 1" })).toBeDisabled();
++    fireEvent.change(screen.getByLabelText("標題"), { target: { value: "保留舊規則" } });
++    save();
++    await waitFor(() => expect(onSave).toHaveBeenCalled());
++    expect(onSave.mock.calls[0][0].deliverable_templates[0].proof_evidence_policy).toEqual(policy);
++  });
++
++  it("previews the actual deliverable, checklist and publication guidance without inventing an approval date", () => {
++    render(<MissionEditor {...props} onSave={vi.fn()} />);
++    fireEvent.click(screen.getByRole("button", { name: "預覽" }));
++    const preview = screen.getByRole("region", { name: "Creator 預覽" });
++    expect(preview).toHaveTextContent("寵物短片交付");
++    expect(preview).toHaveTextContent("短片須清楚披露合作");
++    expect(preview).toHaveTextContent("發布已批准的短片及清楚披露合作");
++    expect(preview).toHaveTextContent("#廣告");
++    expect(preview).toHaveTextContent("@synthetic_creator");
++    expect(preview).toHaveTextContent("批准後 48 小時內");
++    expect(preview).not.toHaveTextContent("Approved version");
++    expect(within(preview).queryByRole("time")).toBeNull();
++  });
++
++  it("blocks a negative deadline locally and locates the second deliverable without discarding input", async () => {
++    const onSave = vi.fn().mockResolvedValue({});
++    render(<MissionEditor {...props} initial={{ ...mission, deliverable_templates: [template, { ...template, position: 1, title: "第二項交付", publication_window_hours: -3 }] }} onSave={onSave} />);
++    save();
++    const alert = await screen.findByRole("alert");
++    expect(alert).toHaveTextContent("交付項目 2");
++    expect(alert).toHaveTextContent("發佈時限必須是正整數");
++    const group = screen.getByRole("group", { name: "交付項目 2" });
++    expect(group).toHaveTextContent("發佈時限必須是正整數");
++    await waitFor(() => expect(document.activeElement).toBe(group));
++    expect(onSave).not.toHaveBeenCalled();
++    expect(screen.getByDisplayValue("第二項交付")).toBeInTheDocument();
++  });
++
++  it("keeps malformed advanced JSON after another edit and refuses to save its last valid value", async () => {
++    const onSave = vi.fn().mockResolvedValue({});
++    render(<MissionEditor {...props} onSave={onSave} />);
++    fireEvent.change(screen.getByLabelText("發佈證明要求 1"), { target: { value: '{"legacy":' } });
++    fireEvent.change(screen.getByLabelText("標題"), { target: { value: "不能偷存舊 JSON" } });
++    save();
++    expect(await screen.findByText("發佈證明要求必須是有效的 JSON 物件。")).toBeInTheDocument();
++    expect(screen.getByLabelText("發佈證明要求 1")).toHaveValue('{"legacy":');
++    expect(onSave).not.toHaveBeenCalled();
++  });
++
++  it("reports malformed retained policy after switching to legacy and preserves it for repair", async () => {
++    const onSave = vi.fn().mockResolvedValue({});
++    render(<MissionEditor {...props} onSave={onSave} />);
++    fireEvent.change(screen.getByLabelText("發佈證明要求 1"), { target: { value: '{"legacy":' } });
++    fireEvent.change(screen.getByLabelText("交付流程"), { target: { value: "legacy" } });
++    save();
++    const alert = await screen.findByRole("alert");
++    expect(alert).toHaveTextContent("發佈證明要求必須是有效的 JSON 物件");
++    await waitFor(() => expect(alert).toHaveFocus());
++    expect(onSave).not.toHaveBeenCalled();
++    fireEvent.change(screen.getByLabelText("交付流程"), { target: { value: "active_workspace" } });
++    expect(screen.getByLabelText("發佈證明要求 1")).toHaveValue('{"legacy":');
++    fireEvent.change(screen.getByLabelText("發佈證明要求 1"), { target: { value: '{"legacy":{"keep":true}}' } });
++    fireEvent.change(screen.getByLabelText("交付流程"), { target: { value: "legacy" } });
++    save();
++    await waitFor(() => expect(onSave).toHaveBeenCalledTimes(1));
++    expect(onSave.mock.calls[0][0]).toMatchObject({ creator_workflow_mode: "legacy", deliverable_templates: [{ proof_evidence_policy: { legacy: { keep: true } } }] });
++  });
++
++  it("shows a recoverable save failure inline and keeps all entered values", async () => {
++    vi.spyOn(window, "alert").mockImplementation(() => {});
++    const onSave = vi.fn().mockRejectedValue(new Error("Synthetic save outage"));
++    render(<MissionEditor {...props} onSave={onSave} />);
++    fireEvent.change(screen.getByLabelText("標題"), { target: { value: "失敗後保留的標題" } });
++    save();
++    const alert = await screen.findByRole("alert");
++    expect(alert).toHaveTextContent("儲存失敗");
++    await waitFor(() => expect(alert).toHaveFocus());
++    expect(screen.getByLabelText("標題")).toHaveValue("失敗後保留的標題");
++    expect(screen.getByRole("button", { name: "儲存變更" })).toBeEnabled();
++  });
++
++  it("keeps server validation authoritative and places checklist errors on the matching deliverable", async () => {
++    const onSave = vi.fn().mockRejectedValue(new AdminRequestError("validation", "validation", {
++      "deliverable_templates.1.requirements.0.text": "Requirement text is required",
++    }));
++    render(<MissionEditor {...props} initial={{ ...mission, deliverable_templates: [template, { ...template, position: 1, title: "第二項交付" }] }} onSave={onSave} />);
++    save();
++    expect(await screen.findByRole("alert")).toHaveTextContent("交付項目 2");
++    expect(screen.getByRole("group", { name: "交付項目 2" })).toHaveTextContent("請輸入檢查要求");
++  });
++
++  it("tracks unsaved changes through a failed save and clears them only after successful persistence", async () => {
++    const onDirtyChange = vi.fn();
++    const onSave = vi.fn().mockRejectedValueOnce(new Error("Synthetic save outage")).mockResolvedValue({});
++    vi.spyOn(window, "alert").mockImplementation(() => {});
++    render(<MissionEditor {...props} onSave={onSave} onDirtyChange={onDirtyChange} />);
++    fireEvent.change(screen.getByLabelText("標題"), { target: { value: "未保存變更" } });
++    await waitFor(() => expect(onDirtyChange).toHaveBeenLastCalledWith(true));
++    save();
++    await screen.findByRole("alert");
++    expect(onDirtyChange).toHaveBeenLastCalledWith(true);
++    save();
++    await waitFor(() => expect(onDirtyChange).toHaveBeenLastCalledWith(false));
++  });
++
++  it("retains edited values on a 409 conflict and can retry without clearing the draft", async () => {
++    const onSave = vi.fn().mockRejectedValueOnce(new AdminRequestError("Synthetic conflict", "MISSION_TEMPLATE_SNAPSHOTTED", undefined, 409)).mockResolvedValue({});
++    render(<MissionEditor {...props} onSave={onSave} />);
++    fireEvent.change(screen.getByLabelText("標題"), { target: { value: "衝突後仍保留的標題" } });
++    save();
++    expect(await screen.findByRole("alert")).toHaveTextContent("請先核對已儲存任務再重試");
++    expect(screen.getByLabelText("標題")).toHaveValue("衝突後仍保留的標題");
++    save();
++    await waitFor(() => expect(onSave).toHaveBeenCalledTimes(2));
++    expect(onSave.mock.calls[1][0].title).toBe("衝突後仍保留的標題");
++    expect(onSave.mock.calls[1][0].deliverable_templates[0].requirements[0].text).toBe("短片須清楚披露合作");
++  });
++
++  it("prevents duplicate saves while persistence is pending", async () => {
++    let finish!: () => void;
++    const onSave = vi.fn(() => new Promise<void>((resolve) => { finish = resolve; }));
++    render(<MissionEditor {...props} onSave={onSave} />);
++    save(); save();
++    expect(onSave).toHaveBeenCalledTimes(1);
++    expect(screen.getByLabelText("標題")).toBeDisabled();
++    finish();
++    await waitFor(() => expect(screen.getByRole("button", { name: "儲存變更" })).toBeEnabled());
++  });
++
++  it("does not preview stale fixed rewards after switching to CPM", () => {
++    render(<MissionEditor {...props} initial={{ ...mission, mission_type: "performance_cpm", cpm_rate: 10, cpm_budget_pool: 100 }} onSave={vi.fn()} />);
++    fireEvent.click(screen.getByRole("button", { name: "預覽" }));
++    expect(screen.queryByText(/HK\$125/)).not.toBeInTheDocument();
++  });
++});
+--- /dev/null
++++ b/src/components/admin/ProofPolicyFields.tsx
+@@ -0,0 +1,48 @@
++import { useState } from "react";
++import { publicationEvidenceRequired } from "@/lib/activeMission";
++import { useI18n } from "@/lib/i18n";
++
++export function parseProofPolicy(value: string): Record<string, unknown> | null {
++  try {
++    const parsed: unknown = JSON.parse(value);
++    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed as Record<string, unknown> : null;
++  } catch { return null; }
++}
++
++type Props = {
++  policy: Record<string, unknown>;
++  rawValue: string;
++  position: number;
++  onChange: (nextPolicy: Record<string, unknown>) => void;
++  onRawChange: (value: string) => void;
++};
++
++/** Adapts the existing non-empty-policy evidence gate; advanced rules stay intact. */
++export function ProofPolicyFields({ policy, rawValue, position, onChange, onRawChange }: Props) {
++  const { t } = useI18n();
++  const [advancedOpen, setAdvancedOpen] = useState(false);
++  const parsed = parseProofPolicy(rawValue);
++  const current = parsed ?? policy;
++  const hasAdvanced = Object.keys(current).some((key) => key !== "required" || current[key] !== true);
++  return (
++    <div className="space-y-2">
++      <label className="flex min-h-11 items-center gap-2 text-sm">
++        <input type="checkbox" aria-label={t("app.admin.missionEditor.evidenceRequiredAria", { position })}
++          checked={publicationEvidenceRequired(current)} disabled={hasAdvanced || !parsed}
++          onChange={(event) => onChange(event.target.checked ? { required: true } : {})} />
++        {t("app.admin.missionEditor.evidenceRequired")}
++      </label>
++      <p className="text-xs text-[var(--color-soft-ink)]">{t("app.admin.missionEditor.evidenceHelp")}</p>
++      {hasAdvanced ? <p className="text-sm font-semibold">{t("app.admin.missionEditor.advancedPreserved")}</p> : null}
++      <details open={advancedOpen || !parsed} onToggle={(event) => setAdvancedOpen(event.currentTarget.open)}>
++        <summary className="cursor-pointer py-2 text-sm font-bold">{t("app.admin.missionEditor.advancedPolicy")}</summary>
++        <p className="mb-2 text-xs text-[var(--color-soft-ink)]">{t("app.admin.missionEditor.advancedHelp")}</p>
++        <label className="block text-sm">{t("app.admin.missionEditor.proofEvidencePolicy")}
++          <textarea aria-label={t("app.admin.missionEditor.proofEvidencePolicyAria", { position })}
++            className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 font-mono text-sm"
++            rows={4} value={rawValue} aria-invalid={!parsed} onChange={(event) => onRawChange(event.target.value)} />
++        </label>
++      </details>
++    </div>
++  );
++}
+--- /dev/null
++++ b/src/components/admin/useMissionEditorNavigation.ts
+@@ -0,0 +1,18 @@
++import { useCallback, useRef } from "react";
++import { useBlocker } from "@tanstack/react-router";
++import { useI18n } from "@/lib/i18n";
++
++export function useMissionEditorNavigation() {
++  const dirty = useRef(false);
++  const { t } = useI18n();
++  const confirmDiscard = useCallback(() => {
++    if (!dirty.current) return true;
++    if (!window.confirm(t("app.admin.missionEditor.unsavedLeave"))) return false;
++    dirty.current = false;
++    return true;
++  }, [t]);
++  useBlocker({ shouldBlockFn: () => !confirmDiscard(), enableBeforeUnload: () => dirty.current });
++  const changed = useCallback((value: boolean) => { dirty.current = value; }, []);
++  const saved = useCallback(() => { dirty.current = false; }, []);
++  return { changed, saved, confirmDiscard };
++}
+--- a/src/lib/i18n.dict.ts
++++ b/src/lib/i18n.dict.ts
+@@ -896,6 +896,68 @@
+     "app.admin.activeMission.metrics.medianReviewTime": "Median proof review time",
+     "app.admin.activeMission.metrics.metadataFailure": "Metadata failure rate",
+     "app.admin.activeMission.metrics.staleRecovery": "Stale recovery rate",
++    "app.admin.missionEditor.workflow": "Delivery workflow",
++    "app.admin.missionEditor.legacyWorkflow": "Link submission",
++    "app.admin.missionEditor.activeWorkflow": "Deliverables and publication proof",
++    "app.admin.missionEditor.fulfillment": "Confirm receipt before drafting",
++    "app.admin.missionEditor.revisionLimit": "Maximum revision rounds",
++    "app.admin.missionEditor.reviewHours": "Review window (hours)",
++    "app.admin.missionEditor.revisionHours": "Revision response window (hours)",
++    "app.admin.missionEditor.addDeliverable": "Add deliverable",
++    "app.admin.missionEditor.deliverable": "Deliverable {position}",
++    "app.admin.missionEditor.deliverableTitle": "Deliverable title",
++    "app.admin.missionEditor.deliverableTitleAria": "Deliverable title {position}",
++    "app.admin.missionEditor.deliverablePlatform": "Platform (optional)",
++    "app.admin.missionEditor.deliverablePlatformAria": "Deliverable platform {position}",
++    "app.admin.missionEditor.requiredDeliverable": "Required deliverable",
++    "app.admin.missionEditor.optionalDeliverable": "Optional deliverable",
++    "app.admin.missionEditor.requiredDeliverableAria": "Required deliverable {position}",
++    "app.admin.missionEditor.draftHours": "Draft window after joining (hours)",
++    "app.admin.missionEditor.draftHoursAria": "Draft window {position}",
++    "app.admin.missionEditor.removeDeliverable": "Remove deliverable",
++    "app.admin.missionEditor.removeDeliverableAria": "Remove deliverable {position}",
++    "app.admin.missionEditor.checklist": "Delivery checklist",
++    "app.admin.missionEditor.checklistItem": "Checklist item {position}",
++    "app.admin.missionEditor.checklistCategory": "Requirement type",
++    "app.admin.missionEditor.checklistCategoryAria": "Requirement type {item} for deliverable {position}",
++    "app.admin.missionEditor.checklistText": "What the Creator must do",
++    "app.admin.missionEditor.checklistTextAria": "Requirement {item} for deliverable {position}",
++    "app.admin.missionEditor.checklistRequiredAria": "Required checklist item {item} for deliverable {position}",
++    "app.admin.missionEditor.requiredChecklist": "Required",
++    "app.admin.missionEditor.removeChecklist": "Remove requirement",
++    "app.admin.missionEditor.removeChecklistAria": "Remove requirement {item} from deliverable {position}",
++    "app.admin.missionEditor.addChecklist": "Add requirement",
++    "app.admin.missionEditor.addChecklistAria": "Add requirement to deliverable {position}",
++    "app.admin.missionEditor.category.format": "Format",
++    "app.admin.missionEditor.category.key_message": "Key message",
++    "app.admin.missionEditor.category.compliance": "Disclosure and compliance",
++    "app.admin.missionEditor.category.quality": "Quality",
++    "app.admin.missionEditor.category.other": "Other",
++    "app.admin.missionEditor.evidenceRequired": "At least one evidence file is required",
++    "app.admin.missionEditor.evidenceRequiredAria": "Evidence file required {position}",
++    "app.admin.missionEditor.evidenceOptional": "Evidence files are optional",
++    "app.admin.missionEditor.evidenceHelp": "The Creator must upload at least one file when submitting publication proof if enabled.",
++    "app.admin.missionEditor.advancedPreserved": "Existing advanced settings are preserved. Review them in advanced settings before making evidence optional.",
++    "app.admin.missionEditor.advancedPolicy": "Advanced settings (JSON)",
++    "app.admin.missionEditor.advancedHelp": "For authorized operators. Any non-empty policy requires evidence. Additional legacy keys are retained without changing their meaning.",
++    "app.admin.missionEditor.creatorPreview": "Creator preview",
++    "app.admin.missionEditor.previewGuidance": "Preview of publication guidance",
++    "app.admin.missionEditor.previewDeadline": "Publication window",
++    "app.admin.missionEditor.afterApprovalHours": "Within {hours} hours after approval",
++    "app.admin.missionEditor.draftAfterHours": "Draft within {hours} hours after joining",
++    "app.admin.missionEditor.deadlineHelp": "Draft deadlines start at joining; 0 means immediately due. The publication window starts after approval. Review and revision windows must be positive whole hours.",
++    "app.admin.missionEditor.saveFailed": "Unable to save. Your input is retained; correct the issue or try again.",
++    "app.admin.missionEditor.rootFields": "Mission fields",
++    "app.admin.missionEditor.fixFields": "Review the highlighted fields.",
++    "app.admin.missionEditor.conflictHelp": "The mission has changed or a deliverable is already in use. Compare the saved mission before trying again; your input is retained.",
++    "app.admin.missionEditor.deliverableTitleRequired": "Enter a deliverable title.",
++    "app.admin.missionEditor.requirementTextRequired": "Enter a checklist requirement.",
++    "app.admin.missionEditor.positiveInteger": "Enter a positive whole number.",
++    "app.admin.missionEditor.nonNegativeInteger": "Enter zero or a positive whole number.",
++    "app.admin.missionEditor.requiredDeliverableMissing": "Add at least one required deliverable.",
++    "app.admin.missionEditor.invalidRequirementCategory": "Choose a requirement type.",
++    "app.admin.missionEditor.invalidPlatform": "Enter a platform or leave blank.",
++    "app.admin.missionEditor.unsavedLeave": "You have unsaved changes. Leave and discard them?",
+     "app.admin.missionEditor.publicationInstructions": "Publication instructions",
+     "app.admin.missionEditor.publicationInstructionsAria": "Publication instructions {position}",
+     "app.admin.missionEditor.publicationWindow": "Publication window (hours)",
+@@ -2298,6 +2360,68 @@
+     "app.admin.activeMission.metrics.medianReviewTime": "發佈證明審批時間中位數",
+     "app.admin.activeMission.metrics.metadataFailure": "帖文資料擷取失敗率",
+     "app.admin.activeMission.metrics.staleRecovery": "過期狀態恢復率",
++    "app.admin.missionEditor.workflow": "交付流程",
++    "app.admin.missionEditor.legacyWorkflow": "作品網址交付",
++    "app.admin.missionEditor.activeWorkflow": "交付項目及發布證明",
++    "app.admin.missionEditor.fulfillment": "交稿前須確認收貨",
++    "app.admin.missionEditor.revisionLimit": "修稿次數上限",
++    "app.admin.missionEditor.reviewHours": "審稿時限（小時）",
++    "app.admin.missionEditor.revisionHours": "修稿回覆時限（小時）",
++    "app.admin.missionEditor.addDeliverable": "新增交付項目",
++    "app.admin.missionEditor.deliverable": "交付項目 {position}",
++    "app.admin.missionEditor.deliverableTitle": "交付標題",
++    "app.admin.missionEditor.deliverableTitleAria": "交付標題 {position}",
++    "app.admin.missionEditor.deliverablePlatform": "交付平台（選填）",
++    "app.admin.missionEditor.deliverablePlatformAria": "交付平台 {position}",
++    "app.admin.missionEditor.requiredDeliverable": "必需交付項目",
++    "app.admin.missionEditor.optionalDeliverable": "選填交付項目",
++    "app.admin.missionEditor.requiredDeliverableAria": "必需交付項目 {position}",
++    "app.admin.missionEditor.draftHours": "加入後交稿時限（小時）",
++    "app.admin.missionEditor.draftHoursAria": "交稿時限 {position}",
++    "app.admin.missionEditor.removeDeliverable": "移除交付項目",
++    "app.admin.missionEditor.removeDeliverableAria": "移除交付項目 {position}",
++    "app.admin.missionEditor.checklist": "交付檢查清單",
++    "app.admin.missionEditor.checklistItem": "檢查項目 {position}",
++    "app.admin.missionEditor.checklistCategory": "要求類別",
++    "app.admin.missionEditor.checklistCategoryAria": "交付 {position} 檢查 {item} 要求類別",
++    "app.admin.missionEditor.checklistText": "Creator 須完成的要求",
++    "app.admin.missionEditor.checklistTextAria": "交付 {position} 檢查 {item} 要求內容",
++    "app.admin.missionEditor.checklistRequiredAria": "交付 {position} 檢查 {item} 必填",
++    "app.admin.missionEditor.requiredChecklist": "必填",
++    "app.admin.missionEditor.removeChecklist": "移除檢查要求",
++    "app.admin.missionEditor.removeChecklistAria": "移除交付 {position} 檢查 {item}",
++    "app.admin.missionEditor.addChecklist": "新增檢查要求",
++    "app.admin.missionEditor.addChecklistAria": "新增交付 {position} 檢查要求",
++    "app.admin.missionEditor.category.format": "格式",
++    "app.admin.missionEditor.category.key_message": "重點訊息",
++    "app.admin.missionEditor.category.compliance": "披露及合規",
++    "app.admin.missionEditor.category.quality": "品質",
++    "app.admin.missionEditor.category.other": "其他",
++    "app.admin.missionEditor.evidenceRequired": "需要至少一份佐證檔案",
++    "app.admin.missionEditor.evidenceRequiredAria": "需要佐證檔案 {position}",
++    "app.admin.missionEditor.evidenceOptional": "佐證檔案選填",
++    "app.admin.missionEditor.evidenceHelp": "啟用後，Creator 提交發布證明時須上載至少一份佐證檔案。",
++    "app.admin.missionEditor.advancedPreserved": "已有進階設定會原樣保留。如需取消佐證要求，請先核對進階設定。",
++    "app.admin.missionEditor.advancedPolicy": "進階設定（JSON）",
++    "app.admin.missionEditor.advancedHelp": "供已獲授權的營運調整。任何非空設定均要求佐證，舊有附加設定會原樣保留。",
++    "app.admin.missionEditor.creatorPreview": "Creator 預覽",
++    "app.admin.missionEditor.previewGuidance": "發布要求預覽",
++    "app.admin.missionEditor.previewDeadline": "發布期限",
++    "app.admin.missionEditor.afterApprovalHours": "批准後 {hours} 小時內",
++    "app.admin.missionEditor.draftAfterHours": "加入後 {hours} 小時內交稿",
++    "app.admin.missionEditor.deadlineHelp": "交稿時限由加入任務起計；0 表示即時到期。發布時限由批准起計。審稿及修稿回覆時限須為正整數小時。",
++    "app.admin.missionEditor.saveFailed": "儲存失敗，已保留輸入。請修正問題或重試。",
++    "app.admin.missionEditor.rootFields": "基本欄位",
++    "app.admin.missionEditor.fixFields": "請核對以下欄位。",
++    "app.admin.missionEditor.conflictHelp": "任務資料已變更，或交付項目已被使用。請先核對已儲存任務再重試；目前輸入已保留。",
++    "app.admin.missionEditor.deliverableTitleRequired": "請輸入交付標題。",
++    "app.admin.missionEditor.requirementTextRequired": "請輸入檢查要求。",
++    "app.admin.missionEditor.positiveInteger": "請輸入正整數。",
++    "app.admin.missionEditor.nonNegativeInteger": "請輸入 0 或正整數。",
++    "app.admin.missionEditor.requiredDeliverableMissing": "請新增至少一個必需交付項目。",
++    "app.admin.missionEditor.invalidRequirementCategory": "請選擇要求類別。",
++    "app.admin.missionEditor.invalidPlatform": "請輸入平台或留空。",
++    "app.admin.missionEditor.unsavedLeave": "你有未儲存的變更。確定離開並捨棄這些變更？",
+     "app.admin.missionEditor.publicationInstructions": "發佈指示",
+     "app.admin.missionEditor.publicationInstructionsAria": "發佈指示 {position}",
+     "app.admin.missionEditor.publicationWindow": "發佈時限（小時）",
+--- /dev/null
++++ b/src/lib/missionWorkflowAuthoring.ts
+@@ -0,0 +1,165 @@
++/** Existing deterministic authoring rules shared by form and server. No I/O. */
++export type MissionWorkflowPolicyInput = {
++  creator_workflow_mode: "legacy" | "active_workspace";
++  fulfillment_required: boolean;
++  revision_limit: number;
++  review_sla_hours: number;
++  revision_response_hours: number;
++};
++
++export type MissionDeliverableTemplateInput = {
++  id?: string;
++  title: string;
++  platform: string | null;
++  position: number;
++  required: boolean;
++  draft_due_offset_hours: number;
++  publication_instructions: string;
++  publication_window_hours: number;
++  required_disclosures: string[];
++  expected_account: string | null;
++  proof_evidence_policy: Record<string, unknown>;
++  requirements: {
++    id?: string;
++    category: "format" | "key_message" | "compliance" | "quality" | "other";
++    text: string;
++    required: boolean;
++    position: number;
++  }[];
++};
++
++export type MissionWorkflowAuthoringInput = Partial<MissionWorkflowPolicyInput> & {
++  deliverable_templates?: MissionDeliverableTemplateInput[];
++};
++
++export const DEFAULT_MISSION_WORKFLOW_POLICY: MissionWorkflowPolicyInput = {
++  creator_workflow_mode: "legacy",
++  fulfillment_required: false,
++  revision_limit: 2,
++  review_sla_hours: 48,
++  revision_response_hours: 48,
++};
++
++const REQUIREMENT_CATEGORIES = new Set(["format", "key_message", "compliance", "quality", "other"]);
++const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
++
++function isRecord(value: unknown): value is Record<string, unknown> {
++  return typeof value === "object" && value !== null && !Array.isArray(value);
++}
++
++export function validateMissionWorkflowAuthoring(input: unknown) {
++  const errors: Record<string, string> = {};
++  const raw = isRecord(input) ? input : {};
++  if (!isRecord(input)) errors.root = "Must be an object";
++
++  const policy = {
++    creator_workflow_mode: raw.creator_workflow_mode === undefined
++      ? DEFAULT_MISSION_WORKFLOW_POLICY.creator_workflow_mode
++      : raw.creator_workflow_mode,
++    fulfillment_required: raw.fulfillment_required === undefined
++      ? DEFAULT_MISSION_WORKFLOW_POLICY.fulfillment_required
++      : raw.fulfillment_required,
++    revision_limit: raw.revision_limit === undefined
++      ? DEFAULT_MISSION_WORKFLOW_POLICY.revision_limit
++      : raw.revision_limit,
++    review_sla_hours: raw.review_sla_hours === undefined
++      ? DEFAULT_MISSION_WORKFLOW_POLICY.review_sla_hours
++      : raw.review_sla_hours,
++    revision_response_hours: raw.revision_response_hours === undefined
++      ? DEFAULT_MISSION_WORKFLOW_POLICY.revision_response_hours
++      : raw.revision_response_hours,
++  };
++
++  if (!(policy.creator_workflow_mode === "legacy" || policy.creator_workflow_mode === "active_workspace")) {
++    errors.creator_workflow_mode = "Invalid creator workflow";
++  }
++  if (typeof policy.fulfillment_required !== "boolean") errors.fulfillment_required = "Must be a boolean";
++  if (typeof policy.revision_limit !== "number" || !Number.isInteger(policy.revision_limit) || policy.revision_limit < 0) {
++    errors.revision_limit = "Must be a non-negative integer";
++  }
++  if (typeof policy.review_sla_hours !== "number" || !Number.isInteger(policy.review_sla_hours) || policy.review_sla_hours <= 0) errors.review_sla_hours = "Must be a positive integer";
++  if (typeof policy.revision_response_hours !== "number" || !Number.isInteger(policy.revision_response_hours) || policy.revision_response_hours <= 0) errors.revision_response_hours = "Must be a positive integer";
++
++  let templates: unknown[] = [];
++  if (raw.deliverable_templates !== undefined) {
++    if (Array.isArray(raw.deliverable_templates)) templates = raw.deliverable_templates;
++    else errors.deliverable_templates = "Must be an array";
++  }
++  if (policy.creator_workflow_mode === "active_workspace" && !templates.some((template) => isRecord(template) && template.required === true)) {
++    errors.deliverable_templates = "Add at least one required deliverable";
++  }
++  const positions = new Set<number>();
++  templates.forEach((template, templateIndex) => {
++    const key = `deliverable_templates.${templateIndex}`;
++    if (!isRecord(template)) {
++      errors[key] = "Must be an object";
++      return;
++    }
++    if (template.id !== undefined && (typeof template.id !== "string" || !UUID_PATTERN.test(template.id))) {
++      errors[`${key}.id`] = "Must be a UUID";
++    }
++    if (typeof template.title !== "string" || !template.title.trim()) errors[`${key}.title`] = "Title is required";
++    if (!(template.platform === null || (typeof template.platform === "string" && template.platform.trim()))) {
++      errors[`${key}.platform`] = "Platform must be null or a non-empty string";
++    }
++    if (typeof template.position !== "number" || !Number.isInteger(template.position) || template.position < 0) errors[`${key}.position`] = "Must be a non-negative integer";
++    else if (positions.has(template.position as number)) errors[`${key}.position`] = "Deliverable positions must be unique";
++    else positions.add(template.position as number);
++    if (typeof template.required !== "boolean") errors[`${key}.required`] = "Must be a boolean";
++    if (typeof template.draft_due_offset_hours !== "number" || !Number.isInteger(template.draft_due_offset_hours) || template.draft_due_offset_hours < 0) {
++      errors[`${key}.draft_due_offset_hours`] = "Must be a non-negative integer";
++    }
++    if (policy.creator_workflow_mode === "active_workspace") {
++      if (typeof template.publication_instructions !== "string" || !template.publication_instructions.trim()) {
++        errors[`${key}.publication_instructions`] = "PUBLICATION_INSTRUCTIONS_REQUIRED";
++      }
++      if (typeof template.publication_window_hours !== "number" || !Number.isInteger(template.publication_window_hours) || template.publication_window_hours <= 0) {
++        errors[`${key}.publication_window_hours`] = "PUBLICATION_WINDOW_HOURS_INVALID";
++      }
++      if (!Array.isArray(template.required_disclosures)) {
++        errors[`${key}.required_disclosures`] = "REQUIRED_DISCLOSURES_INVALID";
++      } else {
++        template.required_disclosures.forEach((disclosure, disclosureIndex) => {
++          if (typeof disclosure !== "string" || !disclosure.trim()) errors[`${key}.required_disclosures.${disclosureIndex}`] = "REQUIRED_DISCLOSURE_REQUIRED";
++        });
++      }
++      if (!(template.expected_account === null || template.expected_account === undefined
++        || (typeof template.expected_account === "string" && template.expected_account.trim()))) {
++        errors[`${key}.expected_account`] = "EXPECTED_ACCOUNT_INVALID";
++      }
++      if (!isRecord(template.proof_evidence_policy)) errors[`${key}.proof_evidence_policy`] = "PROOF_EVIDENCE_POLICY_INVALID";
++    }
++
++    if (!Array.isArray(template.requirements)) {
++      errors[`${key}.requirements`] = "Must be an array";
++      return;
++    }
++    const requirementPositions = new Set<number>();
++    template.requirements.forEach((requirement, requirementIndex) => {
++      const requirementKey = `${key}.requirements.${requirementIndex}`;
++      if (!isRecord(requirement)) {
++        errors[requirementKey] = "Must be an object";
++        return;
++      }
++      if (requirement.id !== undefined && (typeof requirement.id !== "string" || !UUID_PATTERN.test(requirement.id))) {
++        errors[`${requirementKey}.id`] = "Must be a UUID";
++      }
++      if (typeof requirement.text !== "string" || !requirement.text.trim()) {
++        errors[`${requirementKey}.text`] = "Requirement text is required";
++      }
++      if (typeof requirement.category !== "string" || !REQUIREMENT_CATEGORIES.has(requirement.category)) errors[`${requirementKey}.category`] = "Invalid requirement category";
++      if (typeof requirement.position !== "number" || !Number.isInteger(requirement.position) || requirement.position < 0) errors[`${requirementKey}.position`] = "Must be a non-negative integer";
++      else if (requirementPositions.has(requirement.position as number)) errors[`${requirementKey}.position`] = "Requirement positions must be unique";
++      else requirementPositions.add(requirement.position as number);
++      if (typeof requirement.required !== "boolean") errors[`${requirementKey}.required`] = "Must be a boolean";
++    });
++  });
++
++  return {
++    ok: Object.keys(errors).length === 0,
++    errors,
++    policy: policy as MissionWorkflowPolicyInput,
++    templates: templates as MissionDeliverableTemplateInput[],
++  };
++}
++
+--- a/src/routes/-admin.missions.editor.test.tsx
++++ b/src/routes/-admin.missions.editor.test.tsx
+@@ -5,6 +5,7 @@
+ import { MissionEditor } from "@/components/admin/MissionEditor";
+ import { AdminRequestError } from "@/lib/admin";
+ import type { AdminMission } from "@/lib/admin";
++import { dict } from "@/lib/i18n.dict";
+ import { I18nProvider } from "@/lib/i18n";
+ 
+ vi.mock("@/lib/missionCategories", () => ({ MISSION_CATEGORIES: ["美容", "餐飲"], ALL_CATEGORY: "全部" }));
+@@ -28,6 +29,15 @@
+   return render(<I18nProvider><MissionEditor {...props} /></I18nProvider>);
+ };
+ 
++function addDeliverable(locale: "en" | "zh" = "zh") {
++  fireEvent.change(screen.getByLabelText(dict[locale]["app.admin.missionEditor.workflow"]), { target: { value: "active_workspace" } });
++  fireEvent.click(screen.getByRole("button", { name: dict[locale]["app.admin.missionEditor.addDeliverable"] }));
++}
++function completeFixture(locale: "en" | "zh") {
++  fireEvent.change(screen.getByLabelText(locale === "en" ? "Deliverable title 1" : "交付標題 1"), { target: { value: "Synthetic deliverable" } });
++  fireEvent.change(screen.getByLabelText(locale === "en" ? "Publication instructions 1" : "發佈指示 1"), { target: { value: "Synthetic publication instructions" } });
++}
++
+ describe("MissionEditor", () => {
+   it.each(["travel", "原有未知長中文分類"])("retains the existing %s category visibly and on an unrelated edit", async (category) => {
+     const onSave = vi.fn().mockResolvedValue({});
+@@ -53,7 +63,7 @@
+ 
+   it("disables slug & mission_type on a published mission, and economic fields when engaged", () => {
+     render(<MissionEditor mode="edit" initial={active} engaged onSave={vi.fn()} />);
+-    expect(screen.getByLabelText("Slug")).toBeDisabled();
++    expect(screen.getByLabelText("任務網址代號")).toBeDisabled();
+     expect(screen.getByLabelText("任務類型")).toBeDisabled();
+     expect(screen.getByLabelText("積分獎勵")).toBeDisabled();
+     expect(screen.getByLabelText("標題")).not.toBeDisabled(); // brief always editable
+@@ -74,7 +84,7 @@
+     renderEditor({ mode: "create", workspaces: [{ id: "w1", name: "W" }], onSave });
+ 
+     fireEvent.change(screen.getByLabelText(/標題/), { target: { value: "T" } });
+-    fireEvent.change(screen.getByLabelText(/^Slug/i), { target: { value: "ugc-1" } });
++    fireEvent.change(screen.getByLabelText("任務網址代號"), { target: { value: "ugc-1" } });
+ 
+     fireEvent.change(screen.getByLabelText(/目標受眾/), { target: { value: "20-30" } });
+     const km = screen.getByPlaceholderText(/重點訊息/);
+@@ -101,9 +111,8 @@
+     const onSave = vi.fn().mockResolvedValue({});
+     renderEditor({ mode: "create", workspaces: [{ id: "w1", name: "W" }], onSave });
+ 
+-    fireEvent.change(screen.getByLabelText("Creator workflow"), { target: { value: "active_workspace" } });
+-    fireEvent.click(screen.getByRole("button", { name: "Add deliverable" }));
+-    fireEvent.change(screen.getByLabelText("Deliverable title 1"), { target: { value: "Reel" } });
++    addDeliverable();
++    fireEvent.change(screen.getByLabelText("交付標題 1"), { target: { value: "Reel" } });
+     fireEvent.change(screen.getByLabelText("發佈指示 1"), { target: { value: "Publish the approved reel" } });
+     fireEvent.change(screen.getByLabelText("發佈時限小時 1"), { target: { value: "48" } });
+     fireEvent.change(screen.getByLabelText("必須披露字句 1"), { target: { value: "#ad\nPaid partnership" } });
+@@ -132,8 +141,7 @@
+     });
+     await waitFor(() => expect(document.documentElement.lang).toBe(locale === "en" ? "en" : "zh-Hant-HK"));
+ 
+-    fireEvent.change(screen.getByLabelText("Creator workflow"), { target: { value: "active_workspace" } });
+-    fireEvent.click(screen.getByRole("button", { name: "Add deliverable" }));
++    addDeliverable(locale);
+ 
+     expect(screen.getByLabelText(instructionsName)).toBeInTheDocument();
+     expect(screen.getByLabelText(evidenceName)).toBeInTheDocument();
+@@ -148,8 +156,7 @@
+     });
+     await waitFor(() => expect(document.documentElement.lang).toBe("en"));
+ 
+-    fireEvent.change(screen.getByLabelText("Creator workflow"), { target: { value: "active_workspace" } });
+-    fireEvent.click(screen.getByRole("button", { name: "Add deliverable" }));
++    addDeliverable("en");
+     fireEvent.change(screen.getByLabelText("Proof evidence policy 1"), { target: { value: '{"screenshots":' } });
+     fireEvent.click(screen.getByRole("button", { name: "儲存草稿" }));
+ 
+@@ -182,8 +189,8 @@
+     }));
+     renderLocalizedEditor(locale, { mode: "create", workspaces: [{ id: "w1", name: "W" }], onSave });
+     await waitFor(() => expect(document.documentElement.lang).toBe(locale === "en" ? "en" : "zh-Hant-HK"));
+-    fireEvent.change(screen.getByLabelText("Creator workflow"), { target: { value: "active_workspace" } });
+-    fireEvent.click(screen.getByRole("button", { name: "Add deliverable" }));
++    addDeliverable(locale);
++    completeFixture(locale);
+     fireEvent.click(screen.getAllByRole("button").at(-1)!);
+ 
+     await waitFor(() => expect(onSave).toHaveBeenCalled());
+@@ -197,8 +204,8 @@
+     }));
+     renderLocalizedEditor("zh", { mode: "create", workspaces: [{ id: "w1", name: "W" }], onSave });
+     await waitFor(() => expect(document.documentElement.lang).toBe("zh-Hant-HK"));
+-    fireEvent.change(screen.getByLabelText("Creator workflow"), { target: { value: "active_workspace" } });
+-    fireEvent.click(screen.getByRole("button", { name: "Add deliverable" }));
++    addDeliverable();
++    completeFixture("zh");
+     fireEvent.click(screen.getAllByRole("button").at(-1)!);
+ 
+     expect(await screen.findByText("Legacy title detail")).toBeInTheDocument();
+--- a/src/routes/-admin.missions.manage.test.tsx
++++ b/src/routes/-admin.missions.manage.test.tsx
+@@ -70,17 +70,17 @@
+       />,
+     );
+ 
+-    const workflow = screen.getByLabelText("Creator workflow");
++    const workflow = screen.getByLabelText("交付流程");
+     expect(workflow).toHaveValue("legacy");
+-    expect(screen.queryByRole("button", { name: "Add deliverable" })).not.toBeInTheDocument();
++    expect(screen.queryByRole("button", { name: "新增交付項目" })).not.toBeInTheDocument();
+ 
+     fireEvent.change(workflow, { target: { value: "active_workspace" } });
+ 
+-    expect(screen.getByRole("button", { name: "Add deliverable" })).toBeEnabled();
+-    expect(screen.getByLabelText("Fulfillment required")).toBeInTheDocument();
+-    expect(screen.getByLabelText("Revision limit")).toBeInTheDocument();
+-    expect(screen.getByLabelText("Review SLA hours")).toBeInTheDocument();
+-    expect(screen.getByLabelText("Revision response hours")).toBeInTheDocument();
++    expect(screen.getByRole("button", { name: "新增交付項目" })).toBeEnabled();
++    expect(screen.getByLabelText("交稿前須確認收貨")).toBeInTheDocument();
++    expect(screen.getByLabelText("修稿次數上限")).toBeInTheDocument();
++    expect(screen.getByLabelText("審稿時限（小時）")).toBeInTheDocument();
++    expect(screen.getByLabelText("修稿回覆時限（小時）")).toBeInTheDocument();
+   });
+ 
+   it("adds, edits, and removes deliverables and checklist items in the exact save payload", async () => {
+@@ -93,37 +93,37 @@
+       />,
+     );
+ 
+-    fireEvent.change(screen.getByLabelText("Creator workflow"), { target: { value: "active_workspace" } });
+-    fireEvent.click(screen.getByLabelText("Fulfillment required"));
+-    fireEvent.change(screen.getByLabelText("Revision limit"), { target: { value: "3" } });
+-    fireEvent.change(screen.getByLabelText("Review SLA hours"), { target: { value: "36" } });
+-    fireEvent.change(screen.getByLabelText("Revision response hours"), { target: { value: "18" } });
+-
+-    fireEvent.click(screen.getByRole("button", { name: "Add deliverable" }));
+-    fireEvent.change(screen.getByLabelText("Deliverable title 1"), { target: { value: "Reel" } });
+-    fireEvent.change(screen.getByLabelText("Deliverable platform 1"), { target: { value: "instagram" } });
+-    fireEvent.click(screen.getByRole("button", { name: "Add checklist item to deliverable 1" }));
+-    fireEvent.change(screen.getByLabelText("Checklist text 1 for deliverable 1"), { target: { value: "Use #ad" } });
+-
+-    fireEvent.click(screen.getByRole("button", { name: "Add deliverable" }));
+-    fireEvent.change(screen.getByLabelText("Deliverable title 2"), { target: { value: "Story" } });
+-    fireEvent.click(screen.getByRole("button", { name: "Remove deliverable 1" }));
++    fireEvent.change(screen.getByLabelText("交付流程"), { target: { value: "active_workspace" } });
++    fireEvent.click(screen.getByLabelText("交稿前須確認收貨"));
++    fireEvent.change(screen.getByLabelText("修稿次數上限"), { target: { value: "3" } });
++    fireEvent.change(screen.getByLabelText("審稿時限（小時）"), { target: { value: "36" } });
++    fireEvent.change(screen.getByLabelText("修稿回覆時限（小時）"), { target: { value: "18" } });
++
++    fireEvent.click(screen.getByRole("button", { name: "新增交付項目" }));
++    fireEvent.change(screen.getByLabelText("交付標題 1"), { target: { value: "Reel" } });
++    fireEvent.change(screen.getByLabelText("交付平台 1"), { target: { value: "instagram" } });
++    fireEvent.click(screen.getByRole("button", { name: "新增交付 1 檢查要求" }));
++    fireEvent.change(screen.getByLabelText("交付 1 檢查 1 要求內容"), { target: { value: "Use #ad" } });
++
++    fireEvent.click(screen.getByRole("button", { name: "新增交付項目" }));
++    fireEvent.change(screen.getByLabelText("交付標題 2"), { target: { value: "Story" } });
++    fireEvent.click(screen.getByRole("button", { name: "移除交付項目 1" }));
+ 
+     expect(screen.queryByDisplayValue("Reel")).not.toBeInTheDocument();
+-    fireEvent.change(screen.getByLabelText("Deliverable title 1"), { target: { value: "Story post" } });
+-    fireEvent.change(screen.getByLabelText("Deliverable platform 1"), { target: { value: "instagram" } });
++    fireEvent.change(screen.getByLabelText("交付標題 1"), { target: { value: "Story post" } });
++    fireEvent.change(screen.getByLabelText("交付平台 1"), { target: { value: "instagram" } });
+     fireEvent.change(screen.getByLabelText("發佈指示 1"), { target: { value: "Publish the approved story" } });
+     fireEvent.change(screen.getByLabelText("發佈時限小時 1"), { target: { value: "24" } });
+     fireEvent.change(screen.getByLabelText("必須披露字句 1"), { target: { value: "#ad" } });
+     fireEvent.change(screen.getByLabelText("預期帳戶 1"), { target: { value: "@creator" } });
+     fireEvent.change(screen.getByLabelText("發佈證明要求 1"), { target: { value: '{"screenshots":1}' } });
+-    fireEvent.click(screen.getByRole("button", { name: "Add checklist item to deliverable 1" }));
+-    fireEvent.change(screen.getByLabelText("Checklist text 1 for deliverable 1"), { target: { value: "Use #ad" } });
+-    fireEvent.change(screen.getByLabelText("Checklist category 1 for deliverable 1"), { target: { value: "compliance" } });
+-    fireEvent.click(screen.getByRole("button", { name: "Add checklist item to deliverable 1" }));
+-    fireEvent.change(screen.getByLabelText("Checklist text 2 for deliverable 1"), { target: { value: "Show product" } });
+-    fireEvent.change(screen.getByLabelText("Checklist category 2 for deliverable 1"), { target: { value: "quality" } });
+-    fireEvent.click(screen.getByRole("button", { name: "Remove checklist item 1 from deliverable 1" }));
++    fireEvent.click(screen.getByRole("button", { name: "新增交付 1 檢查要求" }));
++    fireEvent.change(screen.getByLabelText("交付 1 檢查 1 要求內容"), { target: { value: "Use #ad" } });
++    fireEvent.change(screen.getByLabelText("交付 1 檢查 1 要求類別"), { target: { value: "compliance" } });
++    fireEvent.click(screen.getByRole("button", { name: "新增交付 1 檢查要求" }));
++    fireEvent.change(screen.getByLabelText("交付 1 檢查 2 要求內容"), { target: { value: "Show product" } });
++    fireEvent.change(screen.getByLabelText("交付 1 檢查 2 要求類別"), { target: { value: "quality" } });
++    fireEvent.click(screen.getByRole("button", { name: "移除交付 1 檢查 1" }));
+ 
+     fireEvent.click(screen.getByRole("button", { name: "儲存草稿" }));
+ 
+@@ -201,7 +201,7 @@
+       />,
+     );
+ 
+-    expect(screen.queryByRole("button", { name: "Add deliverable" })).not.toBeInTheDocument();
++    expect(screen.queryByRole("button", { name: "新增交付項目" })).not.toBeInTheDocument();
+     fireEvent.click(screen.getByRole("button", { name: "儲存變更" }));
+ 
+     await waitFor(() => expect(onSave).toHaveBeenCalledTimes(1));
+--- a/src/routes/admin.missions.$missionId.tsx
++++ b/src/routes/admin.missions.$missionId.tsx
+@@ -6,6 +6,7 @@
+ import { useAdminAuth } from "@/components/admin/AdminAuthContext";
+ import { MissionEditor } from "@/components/admin/MissionEditor";
+ import { MissionManage } from "@/components/admin/MissionManage";
++import { useMissionEditorNavigation } from "@/components/admin/useMissionEditorNavigation";
+ 
+ export const Route = createFileRoute("/admin/missions/$missionId")({ component: EditMission });
+ 
+@@ -13,6 +14,7 @@
+   const { missionId } = useParams({ from: "/admin/missions/$missionId" });
+   const { authed, reportAuthError } = useAdminAuth();
+   const navigate = useNavigate();
++  const editorNavigation = useMissionEditorNavigation();
+   const q = useQuery({
+     queryKey: adminMissionKeys.detail(missionId),
+     queryFn: () => fetchAdminMission(missionId),
+@@ -21,12 +23,13 @@
+   useEffect(() => { if (q.error instanceof AdminAuthError) reportAuthError(q.error); }, [q.error, reportAuthError]);
+   const update = useMutation({
+     mutationFn: (body: MissionDraftInput) => updateMission(missionId, body),
+-    onSuccess: () => navigate({ to: "/admin/missions" }),
++    onSuccess: () => { editorNavigation.saved(); return navigate({ to: "/admin/missions" }); },
+   });
+   const [tab, setTab] = useState<"edit" | "manage">(
+     typeof window !== "undefined" && new URLSearchParams(window.location.search).get("tab") === "manage" ? "manage" : "edit",
+   );
+   const selectTab = (next: "edit" | "manage") => {
++    if (next === tab || !editorNavigation.confirmDiscard()) return;
+     setTab(next);
+     if (typeof window === "undefined") return;
+     const url = new URL(window.location.href);
+@@ -48,7 +51,7 @@
+         <button type="button" className={`${tabBtn} ${tab === "manage" ? "bg-[var(--color-acid)]" : "bg-white"}`} onClick={() => selectTab("manage")}>管理</button>
+       </div>
+       {tab === "edit" ? (
+-        <MissionEditor mode="edit" initial={m} engaged={engaged} saving={update.isPending}
++        <MissionEditor key={m.id} mode="edit" initial={m} engaged={engaged} saving={update.isPending} onDirtyChange={editorNavigation.changed}
+           onSave={(body) => update.mutateAsync(body)} />
+       ) : (
+         <MissionManage missionId={missionId} />
+--- a/src/routes/admin.missions.new.tsx
++++ b/src/routes/admin.missions.new.tsx
+@@ -5,17 +5,19 @@
+ import { AdminAuthError, adminMissionKeys, createMission, fetchWorkspaces, type MissionDraftInput } from "@/lib/admin";
+ import { useAdminAuth } from "@/components/admin/AdminAuthContext";
+ import { MissionEditor } from "@/components/admin/MissionEditor";
++import { useMissionEditorNavigation } from "@/components/admin/useMissionEditorNavigation";
+ 
+ export const Route = createFileRoute("/admin/missions/new")({ component: NewMission });
+ 
+ function NewMission() {
+   const { authed, reportAuthError } = useAdminAuth();
+   const navigate = useNavigate();
++  const editorNavigation = useMissionEditorNavigation();
+   const ws = useQuery({ queryKey: adminMissionKeys.workspaces, queryFn: fetchWorkspaces, enabled: authed, retry: false });
+   useEffect(() => { if (ws.error instanceof AdminAuthError) reportAuthError(ws.error); }, [ws.error, reportAuthError]);
+   const create = useMutation({
+     mutationFn: (body: MissionDraftInput) => createMission(body),
+-    onSuccess: () => navigate({ to: "/admin/missions" }),
++    onSuccess: () => { editorNavigation.saved(); return navigate({ to: "/admin/missions" }); },
+   });
+   return (
+     <div className="space-y-4">
+@@ -23,7 +25,7 @@
+       {/* Mount the editor only once workspaces are fetched — its initial workspace_id is
+           captured at mount, so rendering before the query resolves leaves it empty. */}
+       {ws.data ? (
+-        <MissionEditor mode="create" workspaces={ws.data.workspaces ?? []} saving={create.isPending}
++        <MissionEditor mode="create" workspaces={ws.data.workspaces ?? []} saving={create.isPending} onDirtyChange={editorNavigation.changed}
+           onSave={(body) => create.mutateAsync(body)} />
+       ) : (
+         <p className="text-sm text-[var(--color-soft-ink)]">載入中…</p>

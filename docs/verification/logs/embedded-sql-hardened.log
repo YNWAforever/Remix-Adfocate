@@ -1,0 +1,11 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ✓ server/test/audit-forward-migrations.embedded.test.ts (11 tests) 2180ms
+ ✓ server/test/audit-assistant-persistence.test.ts (4 tests) 21ms
+
+ Test Files  2 passed (2)
+      Tests  15 passed (15)
+   Start at  01:51:16
+   Duration  5.76s (transform 147ms, setup 671ms, collect 193ms, tests 2.20s, environment 1.61s, prepare 308ms)
+

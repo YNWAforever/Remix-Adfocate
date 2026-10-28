@@ -1,0 +1,25 @@
+{
+  "lineage": {
+    "projectId": "adfocate-d19-b2-20261025-recovery-4d6ca2c8",
+    "ownerRunId": "4d6ca2c8-b9c2-4457-bda8-7c03ac533f61",
+    "sourceFingerprint": "e83998d178061043688016056a5a78fc61df58bac28f3d0d0b66d639306037bd",
+    "manifestSha256": "696e94c29e62a27e820d7d12f5aa74c0d1e7b62f97f3b57db787074512a2626d",
+    "phase": "browser",
+    "namespace": "ebf1f615-be72-4072-ad97-ee98b150a796",
+    "executionNamespace": "68d510a8-82a8-42bd-b3e8-4561580a7a19"
+  },
+  "origin": {
+    "projectId": "adfocate-d19-b2-20261025-recovery-4d6ca2c8",
+    "ownerRunId": "4d6ca2c8-b9c2-4457-bda8-7c03ac533f61",
+    "sourceFingerprint": "6285bca02a74bedf3eda7259238366e9023fcc0cae24fe5e7c874ae9dd118d7b",
+    "manifestSha256": "a0f09af0a7bce75e6842a1d42042ac4471e757c184574d7e5dcf9a23fdc57989"
+  },
+  "legacy": {
+    "submissionId": "b4f961da-62e3-4d6e-b091-23a72d813535",
+    "creatorId": "8de7a4c1-90e4-49da-a1f4-8a5737304390",
+    "missionId": "615d857a-78fc-4e32-8468-0288201e2ead"
+  },
+  "priorUiActionsReused": true,
+  "currentApprovedReadback": true,
+  "newLegacyIssuance": false
+}

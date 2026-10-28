@@ -1,0 +1,483 @@
+{
+  "preparedAt": "2026-10-24T10:38:37.903441+00:00",
+  "status": "DECISION_READY_EXACT_RESTORE_UNSUPPORTED_BY_REVIEWED_EVIDENCE",
+  "recommendation": "A: approve onlytarget-boundQ1-Q3read-only preimage investigation first. Do notapproveCnow orcloseincident. B1 isacontainmentalternative, notrestoration.",
+  "sourceFingerprint": "9812cc7755dd6443f8fa4b39bc92e6c26536b54e15ba1c0cbc494815375dd5e1",
+  "headSha": "7cfa3dc84c821719a4dff754229a591c81786c53",
+  "branch": "codex/adfocate-r1-pilot-20261023",
+  "incidentStatus": "OPEN",
+  "restored": false,
+  "canReliablyRestoreFromReviewedEvidence": false,
+  "noBackupAnywhereClaimed": false,
+  "affectedCandidates": [
+    {
+      "campaignId": "937131f9-5417-4ab4-aebd-a5714681f6dd",
+      "environment": {
+        "kind": "local-disposable-production-shaped",
+        "projectId": "adfocate-r1-shaped-20261023",
+        "databaseContainerId": "34bd00cda4f4c91650795b83d4d48d5e46ecb90b310a3e409b31c02f99cec176",
+        "apiContainerId": "c96d960e276cb7c84ae5bf52fdf77e854865516d89d95ca2148a55b6137fa7e9",
+        "networkId": "fbf71b13e7f584b230b293383cccbd2157814168cbae1d9169b377d8f886f69d",
+        "host": "127.0.0.1",
+        "apiPort": 56521,
+        "databasePort": 56522,
+        "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+        "identityEvidence": "E01",
+        "currentIdentityStatus": "NOT_QUERIED_THIS_TURN"
+      },
+      "idAttribution": "STRONGLY_CORROBORATED_CANDIDATE_NOT_KEYED_PREIMAGE_PROVEN",
+      "directEvidence": [
+        {
+          "fact": "ID created before incident and retained by prior fixture run",
+          "source": [
+            "E08",
+            "E09"
+          ]
+        },
+        {
+          "fact": "After projection status=closed, closed_at=updated_at recorded time; settled_at=null",
+          "source": [
+            "E07"
+          ]
+        }
+      ],
+      "changedFieldAssessment": {
+        "status": {
+          "before": "UNKNOWN",
+          "beforeClassification": "UNKNOWN_DIRECT_VALUE; INFERRED_ACTIVE_IF_THIS_RPC_ATTRIBUTION_CORRECT",
+          "after": "closed",
+          "afterClassification": "DIRECT_SAVED_AFTER_OBSERVATION",
+          "beforeValueKnown": false,
+          "beforeHypothesis": {
+            "value": "active",
+            "classification": "INFERRED_FROM_RPC_FILTER_NOT_A_RESTORATION_VALUE"
+          }
+        },
+        "closed_at": {
+          "before": "UNKNOWN",
+          "beforeClassification": "UNKNOWN",
+          "after": "2026-10-24T07:12:04.875188+00:00",
+          "afterClassification": "DIRECT_SAVED_AFTER_OBSERVATION",
+          "beforeValueKnown": false
+        },
+        "updated_at": {
+          "before": "UNKNOWN",
+          "beforeClassification": "UNKNOWN",
+          "after": "2026-10-24T07:12:04.875188+00:00",
+          "afterClassification": "DIRECT_SAVED_AFTER_OBSERVATION",
+          "beforeValueKnown": false
+        }
+      },
+      "operationTime": {
+        "savedAfterColumnsUTC": "2026-10-24T07:12:04.875188+00:00",
+        "savedAfterColumnsHKT": "2026-10-24T15:12:04.875188+08:00",
+        "timestampClassification": "DIRECT_AFTER_VALUE; ATTRIBUTION_TO_FIRST_GLOBAL_RPC_INFERRED",
+        "requestStartAndCommitTimes": "UNKNOWN",
+        "source": [
+          "E07",
+          "E10"
+        ]
+      },
+      "createdAtUTC": "2026-10-23T19:31:11.416523+00:00",
+      "settledAtAfter": null,
+      "beforeEvidence": [
+        "E02",
+        "E03",
+        "E04",
+        "E08",
+        "E09"
+      ],
+      "afterEvidence": [
+        "E05",
+        "E06",
+        "E07"
+      ],
+      "exactMissingHashForThisId": null,
+      "exactMissingHashMappingClassification": "UNKNOWN; never assign the3 missing hashes to IDs by order",
+      "impact": {
+        "direct": "Persisted after-state closed; old full-row hash preservation failed at3-row set level",
+        "inferred": "If caused by close_due_campaigns, counting stops and grace-window handling may differ; source22-36 updates3 fields",
+        "notObserved": "No changed old financial row hashes; saved old-parent snapshot insertion query0",
+        "unknown": [
+          "Exact original timestamps/full row",
+          "Current row state or intervening writes after saved observations",
+          "Current exact child/dependency scope",
+          "External backup/audit/PITR coverage",
+          "Per-ID before-hash mapping"
+        ]
+      },
+      "exactRestoreSupportedNow": false
+    },
+    {
+      "campaignId": "9e2d04e2-cafb-4ff6-988b-348f0279bba3",
+      "environment": {
+        "kind": "local-disposable-production-shaped",
+        "projectId": "adfocate-r1-shaped-20261023",
+        "databaseContainerId": "34bd00cda4f4c91650795b83d4d48d5e46ecb90b310a3e409b31c02f99cec176",
+        "apiContainerId": "c96d960e276cb7c84ae5bf52fdf77e854865516d89d95ca2148a55b6137fa7e9",
+        "networkId": "fbf71b13e7f584b230b293383cccbd2157814168cbae1d9169b377d8f886f69d",
+        "host": "127.0.0.1",
+        "apiPort": 56521,
+        "databasePort": 56522,
+        "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+        "identityEvidence": "E01",
+        "currentIdentityStatus": "NOT_QUERIED_THIS_TURN"
+      },
+      "idAttribution": "STRONGLY_CORROBORATED_CANDIDATE_NOT_KEYED_PREIMAGE_PROVEN",
+      "directEvidence": [
+        {
+          "fact": "ID created before incident and retained by prior fixture run",
+          "source": [
+            "E08",
+            "E09"
+          ]
+        },
+        {
+          "fact": "After projection status=closed, closed_at=updated_at recorded time; settled_at=null",
+          "source": [
+            "E07"
+          ]
+        }
+      ],
+      "changedFieldAssessment": {
+        "status": {
+          "before": "UNKNOWN",
+          "beforeClassification": "UNKNOWN_DIRECT_VALUE; INFERRED_ACTIVE_IF_THIS_RPC_ATTRIBUTION_CORRECT",
+          "after": "closed",
+          "afterClassification": "DIRECT_SAVED_AFTER_OBSERVATION",
+          "beforeValueKnown": false,
+          "beforeHypothesis": {
+            "value": "active",
+            "classification": "INFERRED_FROM_RPC_FILTER_NOT_A_RESTORATION_VALUE"
+          }
+        },
+        "closed_at": {
+          "before": "UNKNOWN",
+          "beforeClassification": "UNKNOWN",
+          "after": "2026-10-24T07:12:04.875188+00:00",
+          "afterClassification": "DIRECT_SAVED_AFTER_OBSERVATION",
+          "beforeValueKnown": false
+        },
+        "updated_at": {
+          "before": "UNKNOWN",
+          "beforeClassification": "UNKNOWN",
+          "after": "2026-10-24T07:12:04.875188+00:00",
+          "afterClassification": "DIRECT_SAVED_AFTER_OBSERVATION",
+          "beforeValueKnown": false
+        }
+      },
+      "operationTime": {
+        "savedAfterColumnsUTC": "2026-10-24T07:12:04.875188+00:00",
+        "savedAfterColumnsHKT": "2026-10-24T15:12:04.875188+08:00",
+        "timestampClassification": "DIRECT_AFTER_VALUE; ATTRIBUTION_TO_FIRST_GLOBAL_RPC_INFERRED",
+        "requestStartAndCommitTimes": "UNKNOWN",
+        "source": [
+          "E07",
+          "E10"
+        ]
+      },
+      "createdAtUTC": "2026-10-23T19:31:12.02423+00:00",
+      "settledAtAfter": null,
+      "beforeEvidence": [
+        "E02",
+        "E03",
+        "E04",
+        "E08",
+        "E09"
+      ],
+      "afterEvidence": [
+        "E05",
+        "E06",
+        "E07"
+      ],
+      "exactMissingHashForThisId": null,
+      "exactMissingHashMappingClassification": "UNKNOWN; never assign the3 missing hashes to IDs by order",
+      "impact": {
+        "direct": "Persisted after-state closed; old full-row hash preservation failed at3-row set level",
+        "inferred": "If caused by close_due_campaigns, counting stops and grace-window handling may differ; source22-36 updates3 fields",
+        "notObserved": "No changed old financial row hashes; saved old-parent snapshot insertion query0",
+        "unknown": [
+          "Exact original timestamps/full row",
+          "Current row state or intervening writes after saved observations",
+          "Current exact child/dependency scope",
+          "External backup/audit/PITR coverage",
+          "Per-ID before-hash mapping"
+        ]
+      },
+      "exactRestoreSupportedNow": false
+    },
+    {
+      "campaignId": "d80d80dc-4833-4ab2-9e30-48efaef68d1d",
+      "environment": {
+        "kind": "local-disposable-production-shaped",
+        "projectId": "adfocate-r1-shaped-20261023",
+        "databaseContainerId": "34bd00cda4f4c91650795b83d4d48d5e46ecb90b310a3e409b31c02f99cec176",
+        "apiContainerId": "c96d960e276cb7c84ae5bf52fdf77e854865516d89d95ca2148a55b6137fa7e9",
+        "networkId": "fbf71b13e7f584b230b293383cccbd2157814168cbae1d9169b377d8f886f69d",
+        "host": "127.0.0.1",
+        "apiPort": 56521,
+        "databasePort": 56522,
+        "workspaceId": "00000000-0000-0000-0000-0000000000aa",
+        "identityEvidence": "E01",
+        "currentIdentityStatus": "NOT_QUERIED_THIS_TURN"
+      },
+      "idAttribution": "STRONGLY_CORROBORATED_CANDIDATE_NOT_KEYED_PREIMAGE_PROVEN",
+      "directEvidence": [
+        {
+          "fact": "ID created before incident and retained by prior fixture run",
+          "source": [
+            "E08",
+            "E09"
+          ]
+        },
+        {
+          "fact": "After projection status=closed, closed_at=updated_at recorded time; settled_at=null",
+          "source": [
+            "E07"
+          ]
+        }
+      ],
+      "changedFieldAssessment": {
+        "status": {
+          "before": "UNKNOWN",
+          "beforeClassification": "UNKNOWN_DIRECT_VALUE; INFERRED_ACTIVE_IF_THIS_RPC_ATTRIBUTION_CORRECT",
+          "after": "closed",
+          "afterClassification": "DIRECT_SAVED_AFTER_OBSERVATION",
+          "beforeValueKnown": false,
+          "beforeHypothesis": {
+            "value": "active",
+            "classification": "INFERRED_FROM_RPC_FILTER_NOT_A_RESTORATION_VALUE"
+          }
+        },
+        "closed_at": {
+          "before": "UNKNOWN",
+          "beforeClassification": "UNKNOWN",
+          "after": "2026-10-24T07:12:04.875188+00:00",
+          "afterClassification": "DIRECT_SAVED_AFTER_OBSERVATION",
+          "beforeValueKnown": false
+        },
+        "updated_at": {
+          "before": "UNKNOWN",
+          "beforeClassification": "UNKNOWN",
+          "after": "2026-10-24T07:12:04.875188+00:00",
+          "afterClassification": "DIRECT_SAVED_AFTER_OBSERVATION",
+          "beforeValueKnown": false
+        }
+      },
+      "operationTime": {
+        "savedAfterColumnsUTC": "2026-10-24T07:12:04.875188+00:00",
+        "savedAfterColumnsHKT": "2026-10-24T15:12:04.875188+08:00",
+        "timestampClassification": "DIRECT_AFTER_VALUE; ATTRIBUTION_TO_FIRST_GLOBAL_RPC_INFERRED",
+        "requestStartAndCommitTimes": "UNKNOWN",
+        "source": [
+          "E07",
+          "E10"
+        ]
+      },
+      "createdAtUTC": "2026-10-23T19:31:11.562767+00:00",
+      "settledAtAfter": null,
+      "beforeEvidence": [
+        "E02",
+        "E03",
+        "E04",
+        "E08",
+        "E09"
+      ],
+      "afterEvidence": [
+        "E05",
+        "E06",
+        "E07"
+      ],
+      "exactMissingHashForThisId": null,
+      "exactMissingHashMappingClassification": "UNKNOWN; never assign the3 missing hashes to IDs by order",
+      "impact": {
+        "direct": "Persisted after-state closed; old full-row hash preservation failed at3-row set level",
+        "inferred": "If caused by close_due_campaigns, counting stops and grace-window handling may differ; source22-36 updates3 fields",
+        "notObserved": "No changed old financial row hashes; saved old-parent snapshot insertion query0",
+        "unknown": [
+          "Exact original timestamps/full row",
+          "Current row state or intervening writes after saved observations",
+          "Current exact child/dependency scope",
+          "External backup/audit/PITR coverage",
+          "Per-ID before-hash mapping"
+        ]
+      },
+      "exactRestoreSupportedNow": false
+    }
+  ],
+  "missingMd5SetNotMappedToIds": [
+    "2c992a43374bebf71fc3e5237348342e",
+    "32ae750fb714d21fd20f96d7217dbd13",
+    "d04eb0463aebbcf453f566f8af902682"
+  ],
+  "proposedAdditionalReadonlyChecks": [
+    {
+      "id": "Q1",
+      "purpose": "Verify which exact resource and before-image sources exist",
+      "scope": "Read-only metadata for project adfocate-r1-shaped-20261023, recorded exact API/DB/network/volume mapping; then only its existing backup/snapshot/archive/audit catalog metadata, if accessible",
+      "minimumOutput": "Target IDs, volume lineage, backup/log reference, creation/source interval, integrity digest, whether full keyed old row tuples exist",
+      "timeBound": "For all3 rows: after2026-10-23T19:31:12.024230Z and strictly before2026-10-24T07:12:04.875188Z; prefer a point bound to07:03:47.529Z baseline",
+      "notAllowed": "Create backup, enable audit/CDC/archive, mount/restore a clone, scan unrelated disks/projects or production; no start/stop/restart of Docker daemon or containers; unavailable identity/read path stays UNKNOWN",
+      "dependency": "Explicit approval ofA, then fresh read-only identity gate before any client/query"
+    },
+    {
+      "id": "Q2",
+      "purpose": "Determine recoverable values from an existing trustworthy before image",
+      "scope": "Only the3 listed IDs in an already-readable target-bound snapshot/export/full-old-tuple log; capture full row to establish keyed baseline hash, disclose only changed fields and digests",
+      "minimumOutput": "Per-ID original status/closed_at/updated_at plus full-row digest and provenance/time; one-to-one match to3 missing baseline MD5s using the original serialization",
+      "notAllowed": "Infer nulls/defaults from seed code or new fixtures; fabricate old updated_at; treat statement-only logs or a migration as an old-value backup",
+      "dependency": "Q1 identifies credible before-image source; if extraction needs a new recovery clone, STOP and submit its exact creation scope for separate approval"
+    },
+    {
+      "id": "Q3",
+      "purpose": "Bound current drift/dependencies before presenting any exact-write request",
+      "scope": "Read-only current3 campaign rows, their column/trigger definition, and aggregate FK/child counts only for those exact IDs; no unrelated creator/Auth contents",
+      "minimumOutput": "Current row fingerprints and projected3 fields, relevant trigger/constraint definition, exact child-family counts, any intervening-change conflict; credentials and unrelated authored content remain local/redacted",
+      "notAllowed": "Any UPDATE/DELETE/INSERT, business RPC including close/snapshot/settle, auth login/admin action, grant/membership change or acceptance rerun",
+      "dependency": "Fresh identity and read-only transaction; report UNKNOWN if credentials, identity or audit authority missing"
+    }
+  ],
+  "options": [
+    {
+      "id": "A",
+      "label": "Evidence-first read-only investigation",
+      "recommended": true,
+      "eligibleForSeparateApprovalNow": true,
+      "purpose": "Find out whether exact restoration is possible before choosing a data remedy",
+      "prerequisites": [
+        "Explicit next user approval ofQ1-Q3",
+        "Target-bound authority and identity; credentials remain local",
+        "Only existing readable history/backup sources; no creation hidden withinread-only"
+      ],
+      "writes": [],
+      "deletes": [],
+      "creates": [],
+      "reads": [
+        "Q1",
+        "Q2",
+        "Q3"
+      ],
+      "impact": "No business state changed. May establish a trustworthy keyed before image; may end with documented unavailable/UNKNOWN evidence. Original incident staysOPEN and HOLD stayson.",
+      "verification": "Per-ID provenance and original row digest match, or a bounded unavailable/UNKNOWN report; ifno full old values, exactRestoreSupported remainsfalse",
+      "ownerDecision": "Approve A: Q1-Q3 read-only only; no restore/delete/new target/test rerun. No obligation to approve restoration afterward.",
+      "approvalText": "批准 A：只限本包 Q1–Q3 唯讀查證；不得還原、刪除、新建、重跑驗收或關閉事故。",
+      "automaticNextAction": null
+    },
+    {
+      "id": "B",
+      "label": "Preserve incident and isolate polluted fixture; clean data separately",
+      "recommended": false,
+      "eligibleForSeparateApprovalNow": true,
+      "prerequisites": [
+        "Explicit approval selecting non-restoration containment, not a claim ofrestoration",
+        "Accept old shaped target asforensics-only; prevent future acceptance reuse before client/setup",
+        "SeparateB2 approval and fixture manifest ifnew target/data or E2E iswanted"
+      ],
+      "writes": [
+        "B1: local target-retirement/denylist and documentation only, with regression-before-minimal-tooling-change; no business row edit",
+        "B2 onlyifseparatelyapproved: one new disposable project/volume and bounded synthetic fixture families via existing factories"
+      ],
+      "deletes": [],
+      "creates": {
+        "B1": [],
+        "B2ProposedMaximums": {
+          "projects": 1,
+          "newDataVolumes": 1,
+          "maxPinnedServiceContainers": 5,
+          "authSubjects": 84,
+          "workspaces": 6,
+          "missions": 6,
+          "workflows": 4,
+          "platformRoleRows": 3,
+          "workspaceRoleRows": 19
+        },
+        "B2ManifestRule": "3 existing phase namespaces(role/core/browser); each hasone primary workspace andone denial-only workspace; exact IDs captured on successful creation, no multi-brand PK change; child writes only within these owned parents. Any larger/new family needs an approved manifest delta."
+      },
+      "impact": "Existing3 row corruption remains; original evidence cannot be used to certify the old target aspristine. Other fixtures inthat shaped project are conservatively excluded from future acceptance; no row is silently relabelled or moved. Pristine RPC evidence target remains untouched.",
+      "verification": "B1 target is refused before SDK/setup; B2 identity/fresh baseline and manifest gates, then approved role/core/browser persistence/neutrality with original unaffected rows preserved. Existing two global cases are retained, notrerun.",
+      "ownerDecision": "B1 approve retirement fromacceptance only, no stop/delete/reset; B2 separately approve listed new-resource/fixture bounds and testmanifest. Coldstop orforensic export requiresitsown exact-ID approval. Neither approval closesincident orliftsHOLD.",
+      "approvalText": "批准 B1：舊 shaped target 只保留鑑證用途、禁止後續驗收重用；不還原、不刪除、不停止容器、不關閉事故。B2 新 target／資料／E2E 仍另批。",
+      "futureDataState": "CONTAINED_NOT_RESTORED; original incident remainsOPEN",
+      "automaticNextAction": null
+    },
+    {
+      "id": "C",
+      "label": "Evidence-bound exact3-row restoration",
+      "recommended": false,
+      "eligibleForSeparateApprovalNow": false,
+      "purpose": "Restore onlyexact proven original values, when actuallyavailable",
+      "prerequisites": [
+        "A finds complete target/ID/time-bound before images for3 IDs",
+        "Resolve one-to-one ID↔missing-MD5 mapping and prove original status/closed_at/updated_at; no guesses",
+        "Q3 fresh current fingerprints, dependency/trigger check and absence ofunapproved intervening changes",
+        "Owner approves exact per-ID field/value manifest, expected current fingerprints, rollback image and transaction evidence digest"
+      ],
+      "writes": [
+        "Only exact3 listed IDs: status, closed_at, updated_at toproven before values, inone transaction with current-state compare-and-swap. No source migration/checksum/guard/RLS change."
+      ],
+      "deletes": [],
+      "creates": [],
+      "notApprovedSideEffects": [
+        "No campaign settle/close/snapshot RPC",
+        "No ledger/balance/withdrawable/budget/reward/membership writes",
+        "No trigger disabling or broad rollback; stopifexact preservation cannot use approved existing mechanism"
+      ],
+      "impact": "Could recover the3 rows ifevery original value isknown. It does not erase the event, reverse other effects byassumption or certifyR1 alone.",
+      "verification": "Exactly3 rows match their proven pre-incident full-row hashes, all other pre-existing rows/finance unchanged, partial/conflict -> transactionrollback; incident restoration receipt and owner review remain separate fromclosure/HOLD release",
+      "ownerDecision": "NOT_APPROVABLE asan exact restore now. Present a new complete Cmanifest afterQ2/Q3; require explicit approval scopedtoexact3 IDs andvalues.",
+      "approvalText": null,
+      "ineligibleReason": "No complete keyed before images or original timestamp values inreviewed records",
+      "automaticNextAction": null
+    },
+    {
+      "id": "D",
+      "label": "Keep unresolved hold without more investigation",
+      "recommended": false,
+      "eligibleForSeparateApprovalNow": true,
+      "prerequisites": [
+        "User chooses no further actions"
+      ],
+      "writes": [],
+      "deletes": [],
+      "creates": [],
+      "impact": "No state change; UNKNOWNs remain. It does not resolve the incident or certifyR1.",
+      "verification": "Only documentation integrity; no acceptance status promotion",
+      "ownerDecision": "Explicitly keep OPEN/HOLD; no assumed acceptance ofdata drift",
+      "approvalText": "選 D：暫不新增查證或處置，保留 UNKNOWN、事故 OPEN 及 release HOLD。",
+      "automaticNextAction": null
+    }
+  ],
+  "ownerSelection": null,
+  "ownerApprovalReference": null,
+  "ownerApprovalAccepted": false,
+  "anyActionApprovedByThisPacket": false,
+  "newResult": {
+    "code": "Documentation/evidence decision pack only; no application/test/SQL/config change",
+    "test": "Local artifact hash/classification/immutability checks only; no application/full/integration/browser/RPC test rerun",
+    "deployment": "not-deployed; no commit/push/merge/deploy",
+    "runtime": "No Docker/DB/API/backup-system query, SDK/client/setup, restore/delete/create, incidentclosure orreleasegate change"
+  },
+  "constraints": {
+    "restorationExecuted": false,
+    "deletedData": false,
+    "createdDataOrTargets": false,
+    "incidentClosed": false,
+    "releaseHold": true,
+    "wholeCurrentR1Verified": false,
+    "canDeploy": false,
+    "canEnablePilot": false,
+    "realProviderEnabled": false,
+    "formalMembershipOrRolesChanged": false,
+    "productionAccessed": false,
+    "pristineRpcRerun": false,
+    "D15ContentBlocked": true,
+    "advisorOwnerDeviceHostedBlocked": true,
+    "formalStaffBlocked": true
+  },
+  "evidenceReview": "D19-incident-decision-evidence-review.json",
+  "remainingAcceptance": "D19-incident-decision-r1-checklist.json",
+  "report": "D19-incident-decision-pack.md",
+  "integrity": "D19-incident-decision-integrity.json",
+  "rollback": "Docs-only: exact shared before-images retained; no data rollback performed orrecommended withoutseparateapproval. Source rollback isnotdatarestoration.",
+  "unknownEncoding": "UNKNOWN is an unavailable before-value, never a SQL NULL or seed/default value. settledAtAfter:null is a directly saved after-observation; ownerSelection:null means no choice."
+}

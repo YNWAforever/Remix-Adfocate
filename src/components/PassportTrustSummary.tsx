@@ -1,4 +1,6 @@
 import type { SocialTrust } from "@/lib/queries/kocmax";
+import { SocialAccountSummary } from "./SocialAccountSummary";
+import { useI18n } from "@/lib/i18n";
 
 function formatNumber(value: number | null) {
   return value == null ? "—" : new Intl.NumberFormat("en-US").format(value);
@@ -9,6 +11,22 @@ function formatPercent(value: number | null) {
 }
 
 export function PassportTrustSummary({ socialTrust }: { socialTrust?: SocialTrust }) {
+  const { t } = useI18n();
+  if (socialTrust?.presentations) return <section className="space-y-3">
+    <h2 className="font-heading font-bold">{t("app.profile.socialAccounts")}</h2>
+    {socialTrust.presentations.length ? socialTrust.presentations.map(row => {
+      const metrics = socialTrust.accounts.find(account => account.id === row.accountId);
+      return <div key={row.accountId ?? `${row.platform}:${row.handle}`} className="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4">
+        <SocialAccountSummary account={row} />
+        {metrics ? <div className="grid grid-cols-2 gap-2 text-sm">
+          <span>{formatNumber(metrics.followerCount)} {t("app.social.followers")}</span>
+          <span>{formatPercent(metrics.engagementRate)} {t("app.social.engagement")}</span>
+          <span>{formatNumber(metrics.avgLikes)} {t("app.social.avgLikes")}</span>
+          <span>{formatNumber(metrics.avgComments)} {t("app.social.avgComments")}</span>
+        </div> : null}
+      </div>;
+    }) : <p>{t("app.social.optionalHelp")}</p>}
+  </section>;
   if (!socialTrust?.accounts.length) {
     return (
       <section className="space-y-2">

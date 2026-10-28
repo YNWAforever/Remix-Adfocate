@@ -1,0 +1,419 @@
+{
+  "task": "D12",
+  "updatedAt": "2026-10-23T04:33:08.576274+00:00",
+  "executionModel": {
+    "verifiedFrom": "execution interface turn_context",
+    "model": "gpt-6.1-sol",
+    "switched": false
+  },
+  "headSha": "7cfa3dc84c821719a4dff754229a591c81786c53",
+  "branch": "codex/adfocate-r1-pilot-20261023",
+  "commit": null,
+  "newResult": {
+    "code": "implemented; existing authoring/RPC/validation/publication components extended",
+    "test": "verified local full suite and real disposable API/UI",
+    "deployment": "not-deployed",
+    "runtime": "verified disposable Edge only"
+  },
+  "priorCodeFingerprint": "23176b626e0d34ec86ab433c4e3d97df4c616f75932c1ecc7dfda2dd5c1f4dbd",
+  "codeFingerprint": "879169bdea26e901bb3151971d2ad9b1ede7603d8ee71a535db31388cc1ad412",
+  "changedFiles": [
+    "e2e/operator-authoring.spec.ts",
+    "scripts/audit/run-authoring.mjs",
+    "scripts/audit/run-integration.mjs",
+    "server/routes/adminMissions.ts",
+    "server/test/audit-mission-authoring-contract.test.ts",
+    "server/test/audit-mission-authoring.test.ts",
+    "src/components/active-mission/PublicationInstructions.tsx",
+    "src/components/admin/MissionEditor.tsx",
+    "src/components/admin/ProofPolicyFields.test.tsx",
+    "src/components/admin/ProofPolicyFields.tsx",
+    "src/components/admin/useMissionEditorNavigation.ts",
+    "src/lib/i18n.dict.ts",
+    "src/lib/missionWorkflowAuthoring.ts",
+    "src/routes/-admin.missions.editor.test.tsx",
+    "src/routes/-admin.missions.manage.test.tsx",
+    "src/routes/admin.missions.$missionId.tsx",
+    "src/routes/admin.missions.new.tsx"
+  ],
+  "taskOnlyPatch": "D12-changes.patch",
+  "gates": [
+    {
+      "gate": "D12-targeted",
+      "command": "node node_modules/vitest/vitest.mjs run src/components/admin/ProofPolicyFields.test.tsx src/routes/-admin.missions.editor.test.tsx src/routes/-admin.missions.manage.test.tsx src/components/active-mission/active-mission.test.tsx src/lib/i18n.test.ts server/test/audit-mission-authoring.test.ts server/lib/missionAuthoring.test.ts server/test/admin.test.ts --maxWorkers=1 --minWorkers=1",
+      "passed": 106,
+      "skipped": 16,
+      "files": 8,
+      "log": "logs/D12-authoring-final.log"
+    },
+    {
+      "gate": "D12-manage-consumer",
+      "command": "node node_modules/vitest/vitest.mjs run src/routes/-admin.missions.manage.test.tsx --maxWorkers=1 --minWorkers=1",
+      "passed": 5,
+      "files": 1,
+      "log": "logs/D12-manage-consumer-green.log"
+    },
+    {
+      "gate": "D12-real-api-and-browser",
+      "command": "node scripts/audit/run-authoring.mjs",
+      "apiPassed": 6,
+      "browserPassed": 3,
+      "log": "logs/D12-browser-final.log"
+    },
+    {
+      "gate": "D12-full-suite",
+      "command": "npm exec --offline --yes --package=node@22 -- node node_modules/vitest/vitest.mjs run --maxWorkers=1 --minWorkers=1 --reporter=default --reporter=json --outputFile=.codex-tmp/D12-full-suite.json",
+      "node": "22.23.4",
+      "passed": 1702,
+      "skipped": 324,
+      "failed": 0,
+      "testFiles": 246,
+      "audit16Passed": 16,
+      "original194Passed": 194,
+      "log": "logs/D12-full-suite.log"
+    },
+    {
+      "gate": "D12-typecheck",
+      "command": "npm run type-check",
+      "exit": 0,
+      "log": "logs/D12-typecheck.log"
+    },
+    {
+      "gate": "D12-lint",
+      "command": "npm run lint",
+      "exit": 0,
+      "preExistingWarnings": 4,
+      "log": "logs/D12-lint.log"
+    },
+    {
+      "gate": "D12-build",
+      "command": "npm exec --offline --yes --package=node@22 -- npm run build",
+      "exit": 0,
+      "log": "logs/D12-build-node22.log"
+    },
+    {
+      "gate": "D12-native-esm",
+      "command": "tsc src/lib/missionWorkflowAuthoring.ts --outDir .codex-tmp/D12-native-esm --rootDir . --target es2022 --module esnext --moduleResolution bundler --skipLibCheck --types node; cached Node22 native import of emitted validator",
+      "exit": 0,
+      "log": "logs/D12-native-esm-node22.log"
+    },
+    {
+      "gate": "D12-manifest",
+      "command": "npm run release:manifest:check",
+      "exit": 0,
+      "log": "logs/D12-manifest-check.log"
+    },
+    {
+      "gate": "D12-diff",
+      "command": "git diff --check",
+      "exit": 0,
+      "log": "logs/D12-diff-check.log"
+    }
+  ],
+  "api": {
+    "runId": "5ba41678-aa1a-42c8-8fa1-beee1b972542",
+    "target": {
+      "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+      "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+      "disposable": true,
+      "projectId": "adfocate-r1-empty-20261023",
+      "proxy": "none",
+      "apiPort": 56421,
+      "apiContainerId": "1b9c41318298d79308db7782f51474541ad5abf0120fa93b96a2a9ea59d043ee",
+      "databaseContainerId": "e7c8efa295cd5544a8b2a100a73b6953cd6ddd486aaf394f231482067523e12d",
+      "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+      "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+      "networkId": "9e5d3069e8255d70b8eef56020c8ea2618fdb2626d92d9a04e51ea2de41a98e0"
+    },
+    "ownedMissionIds": [
+      "b10cdfe0-6712-4637-b5d6-237d9b26fd83",
+      "8e1ba7f5-2a00-4aa9-8906-aec3f30cfb84",
+      "d6f6a4fd-a826-445b-ae82-09b42335af15",
+      "d06f4518-6339-4c9b-9e4f-130e8f54ce88"
+    ],
+    "navMissionId": "b10cdfe0-6712-4637-b5d6-237d9b26fd83",
+    "unknownPolicy": {
+      "screenshots": 1,
+      "legacy_review": {
+        "manual": true,
+        "modes": [
+          "owner",
+          2
+        ]
+      }
+    },
+    "neutrality": {
+      "before": {
+        "xp": 0,
+        "points": 50,
+        "withdrawable": 0,
+        "budget": null,
+        "pointLedger": 0,
+        "cashLedger": 0,
+        "redemptions": 0,
+        "budgetLedger": 0,
+        "rewardInventory": []
+      },
+      "after": {
+        "xp": 0,
+        "points": 50,
+        "withdrawable": 0,
+        "budget": null,
+        "pointLedger": 0,
+        "cashLedger": 0,
+        "redemptions": 0,
+        "budgetLedger": 0,
+        "rewardInventory": []
+      },
+      "allEqual": true
+    },
+    "cleanup": "retained exact IDs; no reset or delete",
+    "providers": "external HTTP blocked; no paid provider or real publication"
+  },
+  "browser": {
+    "runId": "5ba41678-aa1a-42c8-8fa1-beee1b972542",
+    "target": {
+      "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+      "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+      "disposable": true,
+      "projectId": "adfocate-r1-empty-20261023",
+      "proxy": "none",
+      "apiPort": 56421,
+      "apiContainerId": "1b9c41318298d79308db7782f51474541ad5abf0120fa93b96a2a9ea59d043ee",
+      "databaseContainerId": "e7c8efa295cd5544a8b2a100a73b6953cd6ddd486aaf394f231482067523e12d",
+      "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+      "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+      "networkId": "9e5d3069e8255d70b8eef56020c8ea2618fdb2626d92d9a04e51ea2de41a98e0"
+    },
+    "tests": [
+      {
+        "title": "D12 unsaved navigation keeps the authored input until discard is confirmed",
+        "ok": true,
+        "results": [
+          {
+            "status": "passed",
+            "duration": 5565
+          }
+        ]
+      },
+      {
+        "title": "D12 readable authoring preview saves, reloads and reaches the same Creator publication guidance",
+        "ok": true,
+        "results": [
+          {
+            "status": "passed",
+            "duration": 13737
+          }
+        ]
+      },
+      {
+        "title": "D12 unknown advanced rules survive a readable edit and hard reload",
+        "ok": true,
+        "results": [
+          {
+            "status": "passed",
+            "duration": 2597
+          }
+        ]
+      }
+    ],
+    "stats": {
+      "startTime": "2026-10-23T04:23:29.940Z",
+      "duration": 25328.613999999998,
+      "expected": 3,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "browser": "installed Edge; desktop/emulated viewport only",
+    "auth": "real local Auth sessions",
+    "providers": "external HTTP blocked; paid providers disabled; no real social publication",
+    "navigationOnly": false,
+    "neutrality": true
+  },
+  "roundtrip": {
+    "runId": "5ba41678-aa1a-42c8-8fa1-beee1b972542",
+    "missionId": "c079f289-4519-4631-bb75-fd13dd44f451",
+    "submissionId": "66a17b28-b070-4fce-aea5-938272468f3f",
+    "workflowId": "97997eef-d395-4b89-bac7-20402cefe1f1",
+    "workItemId": "873dda8c-e1d9-48c1-b227-3393f1f9b42c",
+    "templateIds": [
+      "76548c02-286c-40a4-9c8e-224b13e6e4a7"
+    ],
+    "noJsonRequired": true,
+    "previewDidNotSave": true,
+    "save503RetainedInput": true,
+    "savedAndReloaded": true,
+    "creatorWorkspaceAndPublicationGuidanceMatch": true,
+    "publicationInstructions": {
+      "publicationInstructions": "發布已批准的短片及清楚披露合作",
+      "requiredDisclosures": [
+        "#廣告",
+        "品牌合作"
+      ],
+      "expectedAccount": "@synthetic_creator",
+      "proofEvidencePolicy": {
+        "required": true
+      },
+      "publishDueAt": "2026-10-25T04:23:50.698864+00:00",
+      "frozenAt": "2026-10-23T04:23:50.698864+00:00"
+    },
+    "creatorViewport": {
+      "width": 390,
+      "height": 844
+    },
+    "noHorizontalOverflow": true,
+    "unexpectedSaveDialogs": 0,
+    "isolatedMissionStatus": "active",
+    "externalSocialPublication": "not performed",
+    "review": "existing real operator API; not a new proof/completion handoff"
+  },
+  "unknownPolicyRoundtrip": {
+    "runId": "5ba41678-aa1a-42c8-8fa1-beee1b972542",
+    "missionId": "b10cdfe0-6712-4637-b5d6-237d9b26fd83",
+    "unknownPolicy": {
+      "screenshots": 1,
+      "legacy_review": {
+        "modes": [
+          "owner",
+          2
+        ],
+        "manual": true
+      }
+    },
+    "savedAndReloaded": true,
+    "noRuleDeleted": true
+  },
+  "navigation": {
+    "runId": "5ba41678-aa1a-42c8-8fa1-beee1b972542",
+    "dismissKeepsInput": true,
+    "spaLeaveCancelled": true,
+    "beforeUnloadCancelled": true,
+    "confirmedTabLeave": true,
+    "prompts": 4,
+    "dialogTypes": [
+      "confirm",
+      "confirm",
+      "beforeunload"
+    ],
+    "externalActions": "none"
+  },
+  "financialNeutrality": {
+    "runId": "5ba41678-aa1a-42c8-8fa1-beee1b972542",
+    "before": {
+      "xp": 10,
+      "budget": null,
+      "points": 50,
+      "cashLedger": 0,
+      "pointLedger": 0,
+      "redemptions": 0,
+      "budgetLedger": 0,
+      "withdrawable": 0,
+      "rewardInventory": []
+    },
+    "after": {
+      "xp": 10,
+      "budget": null,
+      "points": 50,
+      "cashLedger": 0,
+      "pointLedger": 0,
+      "redemptions": 0,
+      "budgetLedger": 0,
+      "withdrawable": 0,
+      "rewardInventory": []
+    },
+    "allEqual": true,
+    "note": "Measured after the existing successful join; raw setup XP remains visible. No completion or payment performed."
+  },
+  "schema": {
+    "changed": false,
+    "newMigrations": 0,
+    "manifestDigest": "a1cfcb804a2d369df16a2e7542cde4346429bcfb652a7707efdf929c0e62ff86",
+    "diff": "schema-diff.json",
+    "observation": "D12-schema-observation.json",
+    "historyClarification": "67 current rows include the pre-existing R1 final forward migration documented in pending-forward-replay.json; no D12 history mutation",
+    "productionQueried": false
+  },
+  "rulings": [
+    "Any non-empty proof policy already requires evidence; the basic required:true adapter follows the existing gate. Unknown keys remain advanced and unchanged; no screenshot-count enforcement was invented.",
+    "Existing pure workflow validator/types were moved to a shared I/O-free module and re-exported from the server route. Publish now checks it; author_mission_workflow atomic persistence and SQL remain unchanged.",
+    "D12 is the mission-authoring slice of F27/UC-A55; D15 other forms and broader operations copy remain open.",
+    "Original 16 audit and 194 contracts were neither edited nor relaxed. Existing editor selector tests follow translated labels, and server-error fixtures now pass client validation before testing authoritative server errors.",
+    "Sequential author self-review only; no independent agents were authorized. Retained malformed JSON is validated in both workflow modes, and hidden-template/save errors focus the summary."
+  ],
+  "attempts": [
+    {
+      "log": "logs/D12-authoring-red.log",
+      "classification": "11 product failures / 3 existing passes before code changes"
+    },
+    {
+      "log": "logs/D12-retained-policy-red.log",
+      "classification": "self-review RED: switching to legacy with malformed retained policy threw before error handling; validate retained templates in both workflows"
+    },
+    {
+      "log": "logs/D12-error-focus-red.log",
+      "classification": "two self-review RED cases: hidden retained-policy and recoverable-save errors were not focused; focus summary fallback added"
+    },
+    {
+      "log": "logs/D12-existing-consumers-attempt.log",
+      "classification": "nine old translated-control selectors and one duplicate error-summary message; original payload semantics retained, root summary label disambiguated"
+    },
+    {
+      "log": "logs/D12-typecheck-attempt.log",
+      "classification": "new test nullable assertion typing; optional chain retains failure when no persisted record exists"
+    },
+    {
+      "log": "logs/D12-startup-blocked.log",
+      "classification": "Docker daemon stopped; gate rejected before client/setup; exact owned DB/API resumed after metadata checks"
+    },
+    {
+      "log": "logs/D12-api-initial.log",
+      "classification": "4 API passes / 1 test expectation error: foreign resource correctly returns existing privacy-preserving 404, not 403"
+    },
+    {
+      "log": "logs/D12-navigation-red.log",
+      "classification": "5 API passes / actual browser RED: unsaved input could leave without confirmation"
+    },
+    {
+      "log": "logs/D12-navigation-workspace-query.log",
+      "classification": "input retained; test URL assertion incorrectly omitted the existing ws query"
+    },
+    {
+      "log": "logs/D12-browser-attempt1.log",
+      "classification": "2 browser pass / 1 harness race: homepage still rendered during mission-list navigation; ambiguous link"
+    },
+    {
+      "log": "logs/D12-browser-attempt2.log",
+      "classification": "same pending-page race despite URL wait; corrected by waiting for the observed Missions heading"
+    },
+    {
+      "log": "logs/D12-full-suite-initial.log",
+      "classification": "two old MissionEditor control selectors still used English names; assertions/payload semantics retained and targeted rerun passed"
+    },
+    {
+      "log": "logs/D12-full-suite-pre-review.log",
+      "classification": "interim suite started before the final self-review edits; retained as history, not final-candidate verification"
+    },
+    {
+      "log": "logs/D12-browser-pre-review.log",
+      "classification": "six API and three browser passed before the final retained-policy/focus edits; superseded by fresh final run"
+    },
+    {
+      "log": "logs/D12-browser-final.log",
+      "classification": "6 API and 3 browser pass; all persistence/neutrality assertions retained"
+    }
+  ],
+  "limitations": [
+    "No deployment, CI, production query or real membership change.",
+    "Skipped integration tests are not passes; six D12 real API contracts and three real browser cases were run. Earlier R1/D08/D09 runtime evidence remains historical, not all rerun.",
+    "Creator publication guidance is verified after existing operator API approval; no proof submission, completion, payment or external social publication was performed in D12.",
+    "No Safari/WebKit, physical-device, whole-site accessibility, 200% zoom, load/performance or concurrent authoring certification.",
+    "Four existing lint warnings, route-export warnings and the large-bundle warning remain. Earlier D08 dialog/D09 document-navigation observations remain recorded without claiming they were fixed.",
+    "D15 general forms/content editing remains open. Existing authorization/membership rules and one-workspace model are unchanged."
+  ],
+  "rollback": "D12-delivery.md#rollback",
+  "nextTask": "D13",
+  "push": false,
+  "merge": false,
+  "deploy": false
+}

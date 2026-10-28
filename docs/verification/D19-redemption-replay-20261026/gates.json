@@ -1,0 +1,186 @@
+{
+  "at": "2026-10-25T20:49:23.418086+00:00",
+  "sourceFingerprint": "4f2c3faa22bf835911a55dc7bb099910e4308fc1b7a5570d58f32386708934b9",
+  "sourceRecords": 793,
+  "fullNative": {
+    "passed": 2155,
+    "failed": 0,
+    "skipped": 363,
+    "files": 295
+  },
+  "originalAudit16": 16,
+  "protected194": 194,
+  "applicationSupplement26": 26,
+  "redemptionNative21": {
+    "memory": 10,
+    "client": 11,
+    "includedInFullNative": true
+  },
+  "releaseFoundation": {
+    "passed": 108,
+    "failed": 0,
+    "includedInFullNative": true
+  },
+  "walletImpact": {
+    "passed": 8,
+    "failed": 0,
+    "skipped": 0,
+    "separateStandaloneNotAddedToFull": true
+  },
+  "checks": {
+    "release-foundation-green": {
+      "receipt": {
+        "path": "docs/verification/D19-redemption-replay-20261026/release-foundation-green-command.json",
+        "sha256": "d76b2507779ace0a91e3ef794d2eecb7332bd6ac9144229d130a32aa16f3431d"
+      },
+      "log": {
+        "path": "docs/verification/D19-redemption-replay-20261026/release-foundation-green.log",
+        "sha256": "6b0c5954ec04a0c8c09fdef7a506018c27374317bab9baaf8bec58ade4761a84"
+      },
+      "resource": {
+        "path": "docs/verification/D19-redemption-replay-20261026/release-foundation-green-resource.json",
+        "sha256": "25b439db19223b2b3b3a299ec5bb3e05d7beba682a15f8418056689a7813eb06"
+      },
+      "exit": 0
+    },
+    "full-native-verified": {
+      "receipt": {
+        "path": "docs/verification/D19-redemption-replay-20261026/full-native-verified-command.json",
+        "sha256": "6edfaf99ab32e5d6b5cc68d59b36e46d58f4593bd1361c79cc4e0d46963673fa"
+      },
+      "log": {
+        "path": "docs/verification/D19-redemption-replay-20261026/full-native-verified.log",
+        "sha256": "b6e7a26be02e17cbcfe832e52e14b53a4835b8500bd133e6e5d87f31972d3307"
+      },
+      "resource": {
+        "path": "docs/verification/D19-redemption-replay-20261026/full-native-verified-resource.json",
+        "sha256": "3beaea70da6f3382527faac1b111dab7beb8643e34b3a7d5e6e084fbcb0fdcc0"
+      },
+      "exit": 0
+    },
+    "memory-final": {
+      "receipt": {
+        "path": "docs/verification/D19-redemption-replay-20261026/memory-final-command.json",
+        "sha256": "e30beffcc53c230bf8446a14c68d2270db2eae9470f5401c1711edba03379cfa"
+      },
+      "log": {
+        "path": "docs/verification/D19-redemption-replay-20261026/memory-final.log",
+        "sha256": "1aa87d4e7f497191e8964d7670b0fd407c5734ba5dea180a624077ba78262a82"
+      },
+      "resource": {
+        "path": "docs/verification/D19-redemption-replay-20261026/memory-final-resource.json",
+        "sha256": "e832f7555c2623deddc83ce2e911d8d50389fa574d6359bb64ab0c84a9dd4beb"
+      },
+      "exit": 0
+    },
+    "client-final": {
+      "receipt": {
+        "path": "docs/verification/D19-redemption-replay-20261026/client-final-command.json",
+        "sha256": "c570f4871999fb8d92f56173491911ef1569b2d8b3bad480fc924b26e0cff3c9"
+      },
+      "log": {
+        "path": "docs/verification/D19-redemption-replay-20261026/client-final.log",
+        "sha256": "3058669a57309095fcb97e2ead40d0c8e206fdfcf0e554e2ce90ee132cfdfb63"
+      },
+      "resource": {
+        "path": "docs/verification/D19-redemption-replay-20261026/client-final-resource.json",
+        "sha256": "5a37c573ac2363a5538b36368eaf393a00f1d00e1d965dc95e03126c116b0400"
+      },
+      "exit": 0
+    },
+    "lint-complete": {
+      "receipt": {
+        "path": "docs/verification/D19-redemption-replay-20261026/lint-complete-command.json",
+        "sha256": "c1963ac568e46c6640e8be10cecfb2e49cc040c98f6d5673ce08028f6a25e840"
+      },
+      "log": {
+        "path": "docs/verification/D19-redemption-replay-20261026/lint-complete.log",
+        "sha256": "e6e016e4fe0cf1d2a8190e99e008bde00ef39764514624f7cc26a2e4170cc27d"
+      },
+      "resource": {
+        "path": "docs/verification/D19-redemption-replay-20261026/lint-complete-resource.json",
+        "sha256": "25cb2507ee629955642acba91d1ac39a1a44166bc54a7d965d8df1656626216a"
+      },
+      "exit": 0
+    },
+    "type-complete": {
+      "receipt": {
+        "path": "docs/verification/D19-redemption-replay-20261026/type-complete-command.json",
+        "sha256": "ad23194ddd6f1af045f4d43548cc61e263bfc6a399aae8da9aff81cce41056a2"
+      },
+      "log": {
+        "path": "docs/verification/D19-redemption-replay-20261026/type-complete.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "resource": {
+        "path": "docs/verification/D19-redemption-replay-20261026/type-complete-resource.json",
+        "sha256": "c7384ba89ee9626f16a8fd3ed4567a8bd6542ce62269081b0018cf72ea7d9294"
+      },
+      "exit": 0
+    },
+    "build-complete": {
+      "receipt": {
+        "path": "docs/verification/D19-redemption-replay-20261026/build-complete-command.json",
+        "sha256": "1ffb21dae959d3fd1fe3b3cfad915909410f5944773e4b0d355a9b93efc2c570"
+      },
+      "log": {
+        "path": "docs/verification/D19-redemption-replay-20261026/build-complete.log",
+        "sha256": "fbf6f0ae9cf2d9bde35094c884643846de200ae935ee097dc0c0caae0ccce424"
+      },
+      "resource": {
+        "path": "docs/verification/D19-redemption-replay-20261026/build-complete-resource.json",
+        "sha256": "54588a6264b7d6ad66f31009ddbf6a9f86cf34045c426cf661b126c4525dd80a"
+      },
+      "exit": 0
+    },
+    "schema-check": {
+      "receipt": {
+        "path": "docs/verification/D19-redemption-replay-20261026/schema-check-command.json",
+        "sha256": "2b03ec15ea0bd1c2205ad49f3cd3cbe5ce20f1bdd447decb7dfc3b2d7a945c0b"
+      },
+      "log": {
+        "path": "docs/verification/D19-redemption-replay-20261026/schema-check.log",
+        "sha256": "5b04523647cda85f9232d6306653fdf187e051e52a59e0aadecc1b980f214925"
+      },
+      "resource": {
+        "path": "docs/verification/D19-redemption-replay-20261026/schema-check-resource.json",
+        "sha256": "6f90d4588bced74a43a9ff105d352c09e0b88243757183585905e085e8aec1e4"
+      },
+      "exit": 0
+    },
+    "manifest-review": {
+      "receipt": {
+        "path": "docs/verification/D19-redemption-replay-20261026/manifest-review-command.json",
+        "sha256": "e0c7e143ddf173cdc0ad12949f2b74549c7b7fab838e88259733806d7a4d11df"
+      },
+      "log": {
+        "path": "docs/verification/D19-redemption-replay-20261026/manifest-review.log",
+        "sha256": "386685ec58613f50ea9ca40a06539e06bb5e516ada88ce30070c9b3bad22678e"
+      },
+      "resource": {
+        "path": "docs/verification/D19-redemption-replay-20261026/manifest-review-resource.json",
+        "sha256": "cf48a07606be45fba9a45318b4ac393d06d9e64338bc8dfc0b0e5f7409365eaa"
+      },
+      "exit": 0
+    },
+    "wallet-impact": {
+      "receipt": {
+        "path": "docs/verification/D19-wallet-notifications-offline-20261026/after-c33-impact-command.json",
+        "sha256": "81666ee5aa07b43938978c2627d7abafb4239e5bd7f2603e4dd9d00675b2ab4c"
+      },
+      "log": {
+        "path": "docs/verification/D19-wallet-notifications-offline-20261026/after-c33-impact.log",
+        "sha256": "539c07c5f36db7ce252c7691bb1dc9b99cd96ce169174b83e6698e7f0e3a1ff2"
+      },
+      "resource": {
+        "path": "docs/verification/D19-wallet-notifications-offline-20261026/after-c33-impact-resource.json",
+        "sha256": "b95fbd6b185dee2e7576c6a880d241375e3f4f794d63e1fafecbea2bcfe9945e"
+      },
+      "exit": 0
+    }
+  },
+  "physicalIntegration": "NOT_RUN",
+  "actualBrowser": "NOT_RUN",
+  "actualTargetCalls": 0,
+  "wholeR1Verified": false
+}

@@ -1,0 +1,25 @@
+{
+  "sourceFingerprint": "ead55a808470f90d72290905db90933cb4a6df48eaba519d4587339a4659b71d",
+  "files": [
+    {
+      "path": "server/routes/redemption.ts",
+      "sha256": "8e9c5800e3cc3edb82be44b4bde410c0f0172ae4b7c9101e7ee0ce034b46bcf3",
+      "before": "docs/verification/D19-redemption-replay-20261026/before-source/server/routes/redemption.ts"
+    },
+    {
+      "path": "src/lib/queries/kocmax.ts",
+      "sha256": "abe4e9f1a86e5ff453a51c2c3b5ad6d19aa71adc4990f86c370dbcfec5920b7d",
+      "before": "docs/verification/D19-redemption-replay-20261026/before-source/src/lib/queries/kocmax.ts"
+    },
+    {
+      "path": "src/components/RedeemGiftCard.tsx",
+      "sha256": "e46d91fbc2ce5c471021bd356c6940bbee0c3e5e9fbeba4f723222716e5f78ea",
+      "before": "docs/verification/D19-redemption-replay-20261026/before-source/src/components/RedeemGiftCard.tsx"
+    },
+    {
+      "path": "src/lib/i18n.dict.ts",
+      "sha256": "c9cd4f014b7b3df83ba934d6bed759c0e8a9fc02f95bf59f0a9e3c188624f75b",
+      "before": "docs/verification/D19-redemption-replay-20261026/before-source/src/lib/i18n.dict.ts"
+    }
+  ]
+}

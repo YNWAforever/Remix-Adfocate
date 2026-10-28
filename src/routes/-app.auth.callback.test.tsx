@@ -66,4 +66,10 @@ describe("auth callback", () => {
     await waitFor(() => expect(hoisted.finishAuth).toHaveBeenCalled());
     expect(hoisted.navigate).not.toHaveBeenCalledWith({ to: "/adminfoo" });
   });
+
+  it("does not let a traversing staff return bypass Creator bootstrap", async () => {
+    renderCallback("?next=" + encodeURIComponent("/admin/../../mission") + "&code=abc");
+    await waitFor(() => expect(hoisted.finishAuth).toHaveBeenCalled());
+    expect(hoisted.navigate).not.toHaveBeenCalled();
+  });
 });

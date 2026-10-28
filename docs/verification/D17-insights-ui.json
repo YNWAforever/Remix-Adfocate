@@ -1,0 +1,9 @@
+{
+  "runId": "fd0d229b-39c3-451a-95f2-6fdb1174770f",
+  "data": {
+    "retry": true,
+    "currency": "HKD",
+    "cashCredits": 112.5,
+    "payoutClaim": false
+  }
+}

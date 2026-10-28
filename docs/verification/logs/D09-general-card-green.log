@@ -1,0 +1,11 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ✓ src/components/components.test.tsx (10 tests) 180ms
+ ✓ src/components/MissionCard.contract.test.tsx (9 tests) 243ms
+
+ Test Files  2 passed (2)
+      Tests  19 passed (19)
+   Start at  05:41:10
+   Duration  3.19s (transform 297ms, setup 762ms, collect 834ms, tests 423ms, environment 3.29s, prepare 414ms)
+

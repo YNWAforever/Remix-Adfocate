@@ -1,0 +1,1 @@
+✓ ESM extension check passed: all relative imports in server/ + api/ carry a runtime extension.

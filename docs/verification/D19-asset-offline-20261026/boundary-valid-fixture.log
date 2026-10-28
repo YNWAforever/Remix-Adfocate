@@ -1,0 +1,11 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ✓ docs/verification/D19-asset-offline-20261026/assets.test.tsx (11 tests) 647ms
+
+ Test Files  1 passed (1)
+      Tests  11 passed (11)
+   Start at  05:10:08
+   Duration  3.06s (transform 449ms, setup 221ms, collect 1.16s, tests 647ms, environment 764ms, prepare 92ms)
+
+JSON report written to C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/docs/verification/D19-asset-offline-20261026/boundary-valid-fixture-native.json

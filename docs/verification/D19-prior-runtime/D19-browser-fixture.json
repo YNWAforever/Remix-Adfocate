@@ -1,0 +1,63 @@
+{
+  "runId": "d1e64852-4467-4658-816c-47489c3e3de2",
+  "target": {
+    "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+    "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+    "disposable": true,
+    "projectId": "adfocate-r1-empty-20261023",
+    "proxy": "none",
+    "apiPort": 56421,
+    "apiContainerId": "1b9c41318298d79308db7782f51474541ad5abf0120fa93b96a2a9ea59d043ee",
+    "databaseContainerId": "e7c8efa295cd5544a8b2a100a73b6953cd6ddd486aaf394f231482067523e12d",
+    "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+    "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+    "networkId": "9e5d3069e8255d70b8eef56020c8ea2618fdb2626d92d9a04e51ea2de41a98e0"
+  },
+  "workspaceIds": [
+    "e0af66db-2fa7-4d14-8dca-712d5c2f3c7e",
+    "547c595d-d449-47a2-9f7d-3e6513fed360"
+  ],
+  "missionIds": [
+    "ad9e8814-6a9f-4ce6-b4fe-be7508425753",
+    "09a50979-4c91-4074-978c-38ba0cfc3139"
+  ],
+  "authIds": [
+    "fe2b1225-5627-41e1-abf2-4d77096853e8",
+    "cb15b658-0861-4236-a76f-7a566821bc24",
+    "702e56c5-3198-4896-b8d1-88ce5d4d68a2",
+    "debc73f9-6e78-47e7-8832-4983b55b36c3",
+    "0e9744ab-900e-4d76-b68a-c0e8347a9d98",
+    "0605fb69-e3c7-4e61-8d62-ea77bb01301d",
+    "fadc86ef-db3f-4096-8c1a-e77769b15f4a",
+    "263a0c39-0c93-4bd6-8512-f50550852d48",
+    "52bc16e6-8d7d-4c52-8096-5fd9f6be537d",
+    "726a39e3-6289-4701-9f3c-4c887921ff8d",
+    "528b0796-12b6-4934-8721-22d024b9661b"
+  ],
+  "initialSnapshots": [
+    {
+      "xp": 0,
+      "points": 50,
+      "withdrawable": 0,
+      "budget": null,
+      "pointLedger": 0,
+      "cashLedger": 0,
+      "redemptions": 0,
+      "budgetLedger": 0,
+      "rewardInventory": []
+    },
+    {
+      "xp": 0,
+      "points": 50,
+      "withdrawable": 0,
+      "budget": null,
+      "pointLedger": 0,
+      "cashLedger": 0,
+      "redemptions": 0,
+      "budgetLedger": 0,
+      "rewardInventory": []
+    }
+  ],
+  "platformEditorFixtureRunId": "282a722d-7fce-4d15-a5ac-e6ce12bde8f0",
+  "cleanup": "none; exact owned IDs retained"
+}

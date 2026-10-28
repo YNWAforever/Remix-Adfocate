@@ -1,0 +1,21 @@
+{
+  "startedAt": "2026-10-25T13:19:20.580142+00:00",
+  "command": [
+    "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+    "scripts/check-esm-extensions.mjs"
+  ],
+  "nodeVersion": "v22.23.4",
+  "npmExecpathProvided": true,
+  "childPathPrefersSameNode22": true,
+  "offlineOnly": true,
+  "actualTargetUsed": false,
+  "packageDownloadOrInstall": false,
+  "resource": {
+    "freePhysicalGiB": 5.121589660644531,
+    "freeCommitGiB": 9.642494201660156,
+    "minimumGiB": 3
+  },
+  "sourceFingerprint": "6a1e33a4c3413ef57b43eea47542c499c26904bc738dae3285225d0710194e19",
+  "sourceRecords": 785,
+  "pid": 21568
+}

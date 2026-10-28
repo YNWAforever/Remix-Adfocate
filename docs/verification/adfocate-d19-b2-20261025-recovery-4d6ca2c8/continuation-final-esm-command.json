@@ -1,0 +1,14 @@
+{
+  "startedAt": "2026-10-25T09:12:17.962526+00:00",
+  "finishedAt": "2026-10-25T09:12:18.078908+00:00",
+  "command": [
+    "node",
+    "scripts/check-esm-extensions.mjs"
+  ],
+  "exit": 0,
+  "sourceFingerprint": "e83998d178061043688016056a5a78fc61df58bac28f3d0d0b66d639306037bd",
+  "integrationCredentialsAvailable": false,
+  "actualC1TargetUsed": false,
+  "log": "continuation-final-esm.log",
+  "layer": "LOCAL_OFFLINE_MOCK_AND_OWNED_LOOPBACK_UNIT_TRANSPORT"
+}

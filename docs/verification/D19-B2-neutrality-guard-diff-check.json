@@ -1,0 +1,8 @@
+{
+  "command": "git diff --check",
+  "exit": 0,
+  "publicLog": "logs/D19-B2-neutrality-guard-diff-check.log",
+  "logSha256": "b2b9a2329fcfac6c7823fc943c0bafbb7f378002d4ae960db766754f957376b9",
+  "outputMeaning": "Existing Git line-ending conversion warnings; exit0, no diff check errors.",
+  "serviceTargetTouched": false
+}

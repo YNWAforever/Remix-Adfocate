@@ -1,0 +1,231 @@
+{
+  "observedAt": "2026-10-25T06:33:45.956742+00:00",
+  "layer": "REAL_READ_ONLY_DOCKER_METADATA_NOT_FULL_CANDIDATE_GATE",
+  "projectId": "adfocate-d19-b2-20261025-recovery-4d6ca2c8",
+  "approvedOriginalManifestSha256": "257d43f4f8030cab8c84974653d1ce06af14db6a7932bc2f591791aab119cb07",
+  "approvedOriginalSourceFingerprint": "d13fe2b7e8b9838972b8d93881dc17e8ccfc2795bc133b01cdc4f1a35426f893",
+  "actualSourceGateChanged": true,
+  "allFiveMetadataChecksPassed": true,
+  "containers": {
+    "db": {
+      "id": "a4e387ca84bfd11e815f697e0c407b12b8a610d29691517d8d8ecaef91957956",
+      "image": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+      "running": true,
+      "project": "adfocate-d19-b2-20261025-recovery-4d6ca2c8",
+      "ports": {
+        "5432/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "56922"
+          }
+        ]
+      },
+      "networks": {
+        "adfocate-d19-b2-20261025-recovery-4d6ca2c8-net": {
+          "Aliases": [
+            "db"
+          ],
+          "DNSNames": [
+            "supabase_db_adfocate-d19-b2-20261025-recovery-4d6ca2c8",
+            "db",
+            "a4e387ca84bf"
+          ],
+          "DriverOpts": null,
+          "EndpointID": "c47ebd1340c2330be79b31508cef270a70cd45283837e9fba0f61bbb48f2e06f",
+          "Gateway": "10.251.220.1",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "GwPriority": 0,
+          "IPAMConfig": null,
+          "IPAddress": "10.251.220.2",
+          "IPPrefixLen": 28,
+          "IPv6Gateway": "",
+          "Links": null,
+          "MacAddress": "3e:d5:6a:65:b0:e1",
+          "NetworkID": "bcc7bcc4cd4a519135d4e54d904024cbebb77786707dcecb6c994694b322e65c"
+        }
+      },
+      "mounts": [
+        {
+          "Destination": "/var/lib/postgresql/data",
+          "Driver": "local",
+          "Mode": "z",
+          "Name": "adfocate-d19-b2-20261025-recovery-4d6ca2c8-db-data",
+          "Propagation": "",
+          "RW": true,
+          "Source": "/var/lib/docker/volumes/adfocate-d19-b2-20261025-recovery-4d6ca2c8-db-data/_data",
+          "Type": "volume"
+        }
+      ],
+      "tmpfs": null,
+      "created": "2026-10-25T06:02:04.446021199Z"
+    },
+    "auth": {
+      "id": "37d469d0b42d137b01f7df915fed7bd8a8393961cc69ec08f5a9a872ec917489",
+      "image": "sha256:ac6d4b1e961ae5a1a24d283967485f8195b767a8476e1044959d7a250c2da3f0",
+      "running": true,
+      "project": "adfocate-d19-b2-20261025-recovery-4d6ca2c8",
+      "ports": {},
+      "networks": {
+        "adfocate-d19-b2-20261025-recovery-4d6ca2c8-net": {
+          "Aliases": [
+            "auth"
+          ],
+          "DNSNames": [
+            "supabase_auth_adfocate-d19-b2-20261025-recovery-4d6ca2c8",
+            "auth",
+            "37d469d0b42d"
+          ],
+          "DriverOpts": null,
+          "EndpointID": "a3503eba6ec33dd3f39fe8b87c305be57aeb4d881c4655391d532a487243e537",
+          "Gateway": "10.251.220.1",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "GwPriority": 0,
+          "IPAMConfig": null,
+          "IPAddress": "10.251.220.3",
+          "IPPrefixLen": 28,
+          "IPv6Gateway": "",
+          "Links": null,
+          "MacAddress": "be:11:a3:6e:4b:5c",
+          "NetworkID": "bcc7bcc4cd4a519135d4e54d904024cbebb77786707dcecb6c994694b322e65c"
+        }
+      },
+      "mounts": [],
+      "tmpfs": null,
+      "created": "2026-10-25T06:02:04.909900758Z"
+    },
+    "rest": {
+      "id": "eeb1c762e84d82cfa9b40beb85c3ccd54cb9e1bc99f47b9564f23b5d4fed0ba2",
+      "image": "sha256:2f8e7b656f09db697a8875177694b417b35cb76c21370de07fc54e711e902326",
+      "running": true,
+      "project": "adfocate-d19-b2-20261025-recovery-4d6ca2c8",
+      "ports": {
+        "3000/tcp": null
+      },
+      "networks": {
+        "adfocate-d19-b2-20261025-recovery-4d6ca2c8-net": {
+          "Aliases": [
+            "rest"
+          ],
+          "DNSNames": [
+            "supabase_rest_adfocate-d19-b2-20261025-recovery-4d6ca2c8",
+            "rest",
+            "eeb1c762e84d"
+          ],
+          "DriverOpts": null,
+          "EndpointID": "1e76b9dcaddbd0d4938858a364368b1355b89876782a9e8337c56981a392cccd",
+          "Gateway": "10.251.220.1",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "GwPriority": 0,
+          "IPAMConfig": null,
+          "IPAddress": "10.251.220.4",
+          "IPPrefixLen": 28,
+          "IPv6Gateway": "",
+          "Links": null,
+          "MacAddress": "0a:18:16:29:7f:cc",
+          "NetworkID": "bcc7bcc4cd4a519135d4e54d904024cbebb77786707dcecb6c994694b322e65c"
+        }
+      },
+      "mounts": [],
+      "tmpfs": null,
+      "created": "2026-10-25T06:02:05.622768011Z"
+    },
+    "kong": {
+      "id": "c68a68b5ea60116a998cf3b61f4cdfbf737101361ae0866a8d8f83d0313ba253",
+      "image": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+      "running": true,
+      "project": "adfocate-d19-b2-20261025-recovery-4d6ca2c8",
+      "ports": {
+        "8000/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "56921"
+          }
+        ]
+      },
+      "networks": {
+        "adfocate-d19-b2-20261025-recovery-4d6ca2c8-net": {
+          "Aliases": [
+            "kong"
+          ],
+          "DNSNames": [
+            "supabase_kong_adfocate-d19-b2-20261025-recovery-4d6ca2c8",
+            "kong",
+            "c68a68b5ea60"
+          ],
+          "DriverOpts": null,
+          "EndpointID": "3a9a04e669928541617f42be67f99639cb1b6b4ddbab2161b320f2ef6d8d27bc",
+          "Gateway": "10.251.220.1",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "GwPriority": 0,
+          "IPAMConfig": null,
+          "IPAddress": "10.251.220.6",
+          "IPPrefixLen": 28,
+          "IPv6Gateway": "",
+          "Links": null,
+          "MacAddress": "7a:91:a0:5b:5a:81",
+          "NetworkID": "bcc7bcc4cd4a519135d4e54d904024cbebb77786707dcecb6c994694b322e65c"
+        }
+      },
+      "mounts": [],
+      "tmpfs": null,
+      "created": "2026-10-25T06:02:06.14687574Z"
+    },
+    "storage": {
+      "id": "c42f68a7940631a8567994903bd04987da7a15bd01de3599369b80589a6f1387",
+      "image": "sha256:ead6d49b9873d65a030c6c44b46676f4276b234becd6d7819c254351b5400d95",
+      "running": true,
+      "project": "adfocate-d19-b2-20261025-recovery-4d6ca2c8",
+      "ports": {
+        "5000/tcp": null
+      },
+      "networks": {
+        "adfocate-d19-b2-20261025-recovery-4d6ca2c8-net": {
+          "Aliases": [
+            "storage"
+          ],
+          "DNSNames": [
+            "supabase_storage_adfocate-d19-b2-20261025-recovery-4d6ca2c8",
+            "storage",
+            "c42f68a79406"
+          ],
+          "DriverOpts": null,
+          "EndpointID": "1851c15c47a48bf8650b0fb51637b997813fb9a8d376b4b0d9aa752c705d995a",
+          "Gateway": "10.251.220.1",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "GwPriority": 0,
+          "IPAMConfig": null,
+          "IPAddress": "10.251.220.5",
+          "IPPrefixLen": 28,
+          "IPv6Gateway": "",
+          "Links": null,
+          "MacAddress": "0e:68:e0:74:d0:d1",
+          "NetworkID": "bcc7bcc4cd4a519135d4e54d904024cbebb77786707dcecb6c994694b322e65c"
+        }
+      },
+      "mounts": [],
+      "tmpfs": {
+        "/var/lib/storage": "rw,size=268435456"
+      },
+      "created": "2026-10-25T06:02:06.877988869Z"
+    }
+  },
+  "networkId": "bcc7bcc4cd4a519135d4e54d904024cbebb77786707dcecb6c994694b322e65c",
+  "networkExclusiveFiveMembers": true,
+  "volumeName": "adfocate-d19-b2-20261025-recovery-4d6ca2c8-db-data",
+  "volumeCreatedAt": "2026-10-25T06:02:04Z",
+  "kernelStorageMount": "2191 2179 0:337 / /var/lib/storage rw,nosuid,nodev,noexec,relatime - tmpfs tmpfs rw,size=262144k",
+  "storageBytes": 268435456,
+  "applicationKeysRead": false,
+  "applicationClientCreated": false,
+  "applicationSqlOrFixtureWrite": false,
+  "fullCandidateGate": "NOT_RUN_SOURCE_REVISION_REQUIRES_REBINDING",
+  "oldTargetsTouched": false,
+  "incidentOpen": true,
+  "releaseHold": true,
+  "providerEnabled": false
+}

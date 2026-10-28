@@ -1,0 +1,64 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ❯ server/test/audit-workflow-roundtrip.test.ts (3 tests | 2 failed) 5703ms
+   × D07 exact-ID disposable workflow roundtrip > persists race/join, receipt, revision, proof correction, one pending reward and cancellation without financial effects 1480ms
+     → /admin/active-missions/0cedf921-7596-4b0f-ba45-573179c6454b/work-items/6966e99a-f167-419a-971a-32331e373edf/request-revision: expected { status: 400, result: { …(2) } } to match object { status: 200 }
+(3 matching properties omitted from actual)
+   × D07 exact-ID disposable workflow roundtrip > retains the legacy join/submit/review journey with evidence validation 183ms
+     → /missions/audit-mission-1755396d-f0a7-4cc7-848f-1c93a520a2a8/submit: expected { status: 400, result: { …(2) } } to match object { status: 409 }
+(3 matching properties omitted from actual)
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  server/test/audit-workflow-roundtrip.test.ts > D07 exact-ID disposable workflow roundtrip > persists race/join, receipt, revision, proof correction, one pending reward and cancellation without financial effects
+AssertionError: /admin/active-missions/0cedf921-7596-4b0f-ba45-573179c6454b/work-items/6966e99a-f167-419a-971a-32331e373edf/request-revision: expected { status: 400, result: { …(2) } } to match object { status: 200 }
+(3 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  Object {
+-   "status": 200,
++   "status": 400,
+  }
+
+ ❯ request server/test/audit-workflow-roundtrip.test.ts:21:88
+     19|       "X-Workspace-Slug":fixture.slug, "Content-Type":"application/jso…
+     20|       ...(body === undefined ? {} : {body:JSON.stringify(body)}) });
+     21|     const result = await response.json(); expect({status:response.stat…
+       |                                                                                        ^
+     22|   }
+     23|   it("persists race/join, receipt, revision, proof correction, one pen…
+ ❯ server/test/audit-workflow-roundtrip.test.ts:52:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  server/test/audit-workflow-roundtrip.test.ts > D07 exact-ID disposable workflow roundtrip > retains the legacy join/submit/review journey with evidence validation
+AssertionError: /missions/audit-mission-1755396d-f0a7-4cc7-848f-1c93a520a2a8/submit: expected { status: 400, result: { …(2) } } to match object { status: 409 }
+(3 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  Object {
+-   "status": 409,
++   "status": 400,
+  }
+
+ ❯ request server/test/audit-workflow-roundtrip.test.ts:21:88
+     19|       "X-Workspace-Slug":fixture.slug, "Content-Type":"application/jso…
+     20|       ...(body === undefined ? {} : {body:JSON.stringify(body)}) });
+     21|     const result = await response.json(); expect({status:response.stat…
+       |                                                                                        ^
+     22|   }
+     23|   it("persists race/join, receipt, revision, proof correction, one pen…
+ ❯ server/test/audit-workflow-roundtrip.test.ts:107:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 1 passed (3)
+   Start at  02:13:06
+   Duration  9.66s (transform 582ms, setup 2.98s, collect 32ms, tests 5.70s, environment 0ms, prepare 630ms)
+

@@ -1,0 +1,55 @@
+{
+  "runId": "fd0d229b-39c3-451a-95f2-6fdb1174770f",
+  "target": {
+    "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+    "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+    "disposable": true,
+    "projectId": "adfocate-r1-empty-20261023",
+    "proxy": "none",
+    "apiPort": 56421,
+    "apiContainerId": "1b9c41318298d79308db7782f51474541ad5abf0120fa93b96a2a9ea59d043ee",
+    "databaseContainerId": "e7c8efa295cd5544a8b2a100a73b6953cd6ddd486aaf394f231482067523e12d",
+    "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+    "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+    "networkId": "9e5d3069e8255d70b8eef56020c8ea2618fdb2626d92d9a04e51ea2de41a98e0"
+  },
+  "workspaceIds": [
+    "0781b568-56bd-4389-b943-af2ec9b13d63",
+    "d4c17846-9c9e-4720-b430-d65f144cce4a"
+  ],
+  "baseAuthIds": [
+    "09173b4a-94ac-4b8d-9c5b-06d802b1fe6c",
+    "009407a2-3e27-40b8-8b5a-74afdc975b2a",
+    "8eb6b8eb-c2bb-4961-b9bc-da6e613c6cb7",
+    "5908ae5b-33a8-49ad-b12e-e1ffca8a2854"
+  ],
+  "missionIds": [
+    "19a8b7b9-0011-4632-8949-0708d8893843"
+  ],
+  "pointLedgerIds": [
+    "51c511e5-ab8f-445c-a93f-8d7f8240eeef",
+    "91a1a154-2070-4975-8376-0ad0570a546f",
+    "1ca70019-a3f4-4c37-bd90-8018dc503cf1"
+  ],
+  "cashLedgerIds": [
+    "da153709-0881-4c71-84e1-0b8efcde837f",
+    "b2fc4b17-b8e5-4ff3-a0c6-b0f72f04bbbb"
+  ],
+  "scaleIdEvidence": "D17-scale-ids.json",
+  "newScaleAuthIds": 9998,
+  "observed": {
+    "workItemIds": [
+      "bb1ee5be-1815-4d29-8d1a-5473cc5b5f50",
+      "f79b8aea-3bd2-4ea3-bf22-2316373e5223"
+    ],
+    "workflowIds": [
+      "160a98ac-81b2-4f18-92dd-256fde5ab618"
+    ],
+    "creatorCount": 10000,
+    "reviewRoundIds": [],
+    "draftVersionIds": [],
+    "pendingRewardIds": []
+  },
+  "cleanup": "All exact owned IDs retained, including failed attempts; no delete, reset or trigger disabling.",
+  "financialSetup": "Explicit historical synthetic ledger rows seeded before the measured baseline; no real payment or cash grant."
+}

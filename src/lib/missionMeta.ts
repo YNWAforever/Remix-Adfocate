@@ -1,4 +1,4 @@
-import { levelIndex } from "./levels";
+import { LEVELS, levelIndex } from "./levels.js";
 
 // Maps hold translation keys, not display strings.
 // Consumers call t(missionTypeLabelKey(type)) to get the translated label.
@@ -68,6 +68,17 @@ export type Eligibility = {
   /** @deprecated use labelKey+params with t(); kept for test compatibility only */
   label?: string;
 };
+
+/** Mission facts must not interpret absent/unknown rules or trust as an L0 promise.
+ * Delegate known inputs to the existing level/verification decision. */
+export function missionEligibility(requiredLevel: string | undefined | null, creatorLevel: string | undefined | null, isTrusted?: boolean): Eligibility {
+  const known = (value: string | undefined | null) => LEVELS.some(({ id }) => id === value);
+  if (!known(requiredLevel) || (requiredLevel !== "L0" && (!known(creatorLevel)
+    || (levelIndex(requiredLevel) >= 2 && levelIndex(creatorLevel) >= levelIndex(requiredLevel) && isTrusted === undefined)))) {
+    return { qualified: false, labelKey: "app.eligibility.unknown" };
+  }
+  return eligibility(requiredLevel, creatorLevel, isTrusted);
+}
 
 /** Display-only. The real gate is server-side (join/apply return `level_locked` 409).
  *  Returns a key + params for t() interpolation.

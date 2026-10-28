@@ -1,0 +1,15 @@
+{
+  "protected": [
+    {
+      "privatePath": ".codex-tmp/adfocate-d19-b2-20261025-recovery-4d6ca2c8/runtime-authorization.private.json",
+      "sha256": "2cc12bab1963bba43c50d6775901571357ee944001c5a8ac729019862f8a5164",
+      "contentStatus": "original C1 approved binding retained; do not overwrite for new source"
+    },
+    {
+      "privatePath": ".codex-tmp/adfocate-d19-b2-20261025-recovery-4d6ca2c8/target-receipt.private.json",
+      "sha256": "e0a51e3502740d684cc7c8ae96e3f4144c730553d10a636d0a92ecb3f6b607ee",
+      "contentStatus": "original C1 approved binding retained; do not overwrite for new source"
+    }
+  ],
+  "applicationKeysNotCopiedToPublicEvidence": true
+}

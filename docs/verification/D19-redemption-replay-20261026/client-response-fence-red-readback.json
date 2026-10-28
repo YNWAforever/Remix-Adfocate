@@ -1,0 +1,25 @@
+{
+  "scope": "Actual component/hook/apiFetch with scripted sessions/HTTP/sessionStorage; no SDK/SQL/target/provider/browser",
+  "observations": [
+    {
+      "test": "UC-C33 actual redemption component/hook preserves a single unacknowledged intent > pins the authorized owner and workspace snapshot despite a subsequent session/navigation change",
+      "requests": [
+        {
+          "body": {
+            "gift_id": "00000000-0000-4000-8000-000000000010",
+            "client_request_id": "55c7492e-246d-47be-a943-1d3cd705f787"
+          },
+          "authorization": "Bearer offline-creator-b",
+          "workspace": "other-workspace"
+        }
+      ],
+      "storedIntents": [
+        [
+          "adfocate:redemption-intent:v1:[\"creator-a\",\"other-workspace\",\"00000000-0000-4000-8000-000000000010\"]",
+          "{\"requestId\":\"55c7492e-246d-47be-a943-1d3cd705f787\"}"
+        ]
+      ],
+      "realSdkClients": 0
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "startedAt": "2026-10-25T20:02:44.273134+00:00",
+  "command": [
+    "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "--config",
+    "docs/verification/D19-redemption-replay-20261026/vitest.client.mjs",
+    "--reporter=default",
+    "--reporter=json",
+    "--outputFile.json=docs/verification/D19-redemption-replay-20261026/client-expanded-green-native.json"
+  ],
+  "node": "v22.23.4",
+  "resource": {
+    "at": "2026-10-25T20:02:44.148396+00:00",
+    "freePhysicalGiB": 6.030963897705078,
+    "freeCommitGiB": 5.461311340332031,
+    "minimumGiB": 3,
+    "freeDiskGiB": 21.912338256835938
+  },
+  "credentialsProxiesPreloadsStripped": true,
+  "integrationDisabled": true,
+  "label": "client-expanded-green",
+  "log": "docs/verification/D19-redemption-replay-20261026/client-expanded-green.log",
+  "runtimeTargetCallsRequested": false,
+  "sourceFingerprint": "ef25e7f7125e1383506680fb43bc1f5e667ef332c430fa63fc39de1ccbf877d8",
+  "sourceRecords": 793,
+  "npmExecpathProvided": "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+  "pid": 30460
+}

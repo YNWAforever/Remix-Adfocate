@@ -1,0 +1,20 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ✓ server/lib/missionMatch.test.ts (22 tests) 10ms
+ ✓ src/routes/-admin.missions.editor.test.tsx (14 tests) 1316ms
+ ✓ src/routes/-_app.mission.index.test.tsx (8 tests) 737ms
+   ✓ mission discovery > keeps pet, travel aliases and unknown long categories separately filterable 321ms
+ ✓ server/test/audit-mission-list-projection.test.ts (8 tests) 30ms
+ ✓ src/components/MissionCard.contract.test.tsx (9 tests) 707ms
+ ✓ src/routes/-_app.match.test.tsx (6 tests) 280ms
+ ✓ src/lib/-missionMeta.test.ts (10 tests) 5ms
+ ✓ src/components/MissionCommitmentSummary.test.tsx (3 tests) 98ms
+ ✓ src/components/-MissionFacts.test.tsx (5 tests) 66ms
+ ✓ src/lib/missionCategories.test.ts (5 tests) 2ms
+
+ Test Files  10 passed (10)
+      Tests  90 passed (90)
+   Start at  05:08:05
+   Duration  18.11s (transform 1.11s, setup 3.94s, collect 3.40s, tests 3.25s, environment 16.40s, prepare 2.30s)
+

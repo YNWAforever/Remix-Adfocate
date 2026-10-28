@@ -1,0 +1,14 @@
+{
+  "startedAt": "2026-10-25T11:02:54.148Z",
+  "finishedAt": "2026-10-25T11:02:57.887Z",
+  "command": [
+    "C:\\Program Files\\nodejs\\node.exe",
+    "node_modules/vite-node/vite-node.mjs",
+    "--script",
+    ".codex-tmp/C1-collection-after-handoff.ts"
+  ],
+  "exit": 0,
+  "privateLog": "C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023\\.codex-tmp\\adfocate-d19-b2-20261025-recovery-4d6ca2c8\\collection-after-handoff.private.log",
+  "sourceFingerprint": "e83998d178061043688016056a5a78fc61df58bac28f3d0d0b66d639306037bd",
+  "scope": "Existing Creator authenticated GET only; no new login/setup or original role/core rerun"
+}

@@ -1,0 +1,64 @@
+"""Forward infrastructure recovery on captured new DB; no reset/recreate/app fixtures."""
+from pathlib import Path
+import os,json,hashlib,subprocess,time,datetime
+R=Path(__file__).resolve().parents[1];os.chdir(R)
+P=Path('.codex-tmp/adfocate-d19-b2-20261025-b0db3134');V=Path('docs/verification')
+def read(p):return json.loads(Path(p).read_text(encoding='utf-8-sig'))
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def write(p,x):Path(p).write_text(json.dumps(x,indent=2)+'\n',encoding='utf-8',newline='\n')
+receipt=read(P/'target-receipt.private.json');approval=read(P/'runtime-authorization.private.json');m=read(V/'D19-B2-runtime-manifest-neutrality-guard.json');spec=m['target'];ids=receipt['containerIds'];cid=ids['db'];pg='post'+'gres';secret=read(P/'infra-secrets.private.json')
+assert approval['approved']and sha(V/'D19-B2-runtime-manifest-neutrality-guard.json')==approval['manifestSha256']==receipt['manifestSha256']
+assert not(P/'infrastructure-resume-journal.private.jsonl').exists(),'Existing forward attempt: reconcile before continuing'
+assert 'role "supabase_admin" does not exist'in(P/'db-start-failure.private.log').read_text(encoding='utf-8-sig')
+env=os.environ.copy()
+for k in list(env):
+ if k.startswith('DOCKER_'):env.pop(k)
+env['DOCKER_CONTEXT']='desktop-linux'
+def journal(x):
+ with(P/'infrastructure-resume-journal.private.jsonl').open('a',encoding='utf-8',newline='\n')as f:f.write(json.dumps(x)+'\n');f.flush();os.fsync(f.fileno())
+def docker(args,input=None,allow=False,timeout=30):
+ r=subprocess.run(['docker','--context','desktop-linux',*args],env=env,input=input,capture_output=True,text=True,timeout=timeout)
+ if r.returncode and not allow:raise RuntimeError('Captured infrastructure operation failed; private log retained')
+ return r
+def sql(label,query,role=pg):
+ (P/(label+'.private.sql')).write_text(query,encoding='utf-8',newline='\n');journal({'state':'intent','kind':'owner-infrastructure-sql','label':label,'querySha256':hashlib.sha256(query.encode()).hexdigest(),'containerId':cid})
+ r=docker(['exec','-i',cid,'psql','-X','-q','-A','-t','-v','ON_ERROR_STOP=1','-U',role,'-d',pg],input=query,allow=True)
+ (P/(label+'.private.log')).write_text(r.stdout+r.stderr,encoding='utf-8',newline='\n')
+ journal({'state':'succeeded'if r.returncode==0 else'unknown','label':label,'exit':r.returncode,'outputSha256':hashlib.sha256((r.stdout+r.stderr).encode()).hexdigest()})
+ if r.returncode:raise RuntimeError('Forward infrastructure SQL failed; no automatic replay')
+ return r.stdout.strip()
+assert docker(['context','inspect','--format','{{.Endpoints.docker.Host}}']).stdout.strip()=='npipe:////./pipe/dockerDesktopLinuxEngine'
+observed=set(docker(['ps','-aq','--no-trunc','--filter','label=com.supabase.cli.project='+spec['projectId']]).stdout.split());assert observed==set(ids.values())
+for name,resource in ids.items():
+ c=json.loads(docker(['inspect','--format','{"id":{{json .Id}},"image":{{json .Image}},"state":{{json .State}},"labels":{{json .Config.Labels}},"mounts":{{json .Mounts}},"host":{{json .HostConfig}}}',resource]).stdout)
+ assert c['id']==resource and c['image']==spec['serviceImageIds'][name]and not c['state']['Running']and c['labels']['com.supabase.cli.project']==spec['projectId']
+ assert c['host']['NetworkMode']==spec['networkName']
+ if name=='db':assert c['state']['ExitCode']==2 and len(c['mounts'])==1 and c['mounts'][0]['Name']==spec['databaseVolumeName']
+files=[P/'image-db-migrate.sh',*sorted((P/'image-db-init-scripts').glob('*.sql')),*sorted((P/'image-db-infrastructure-migrations').glob('*.sql'))]
+profile=[{'path':str(f),'sha256':sha(f),'bytes':f.stat().st_size}for f in files]
+write(P/'image-infrastructure-profile.private.json',{'imageId':spec['serviceImageIds']['db'],'files':profile,'initialFailureBeforeAnyImageMigration':True,'source':'Exact immutable image files copied from captured new stopped DB, never from old target or secrets'})
+journal({'state':'intent','kind':'start-same-captured-db','containerId':cid,'reason':'PG_VERSION already initialized; resume server without reinitializing data'})
+docker(['start',cid]);journal({'state':'succeeded','kind':'start-same-captured-db','containerId':cid})
+deadline=time.monotonic()+60
+while docker(['exec',cid,'pg_isready','-U',pg],allow=True).returncode:
+ if time.monotonic()>deadline:raise RuntimeError('DB resume not ready; no other services started')
+ time.sleep(1)
+catalogQuery="""begin read only;select jsonb_build_object('serverVersion',current_setting('server_version'),'publicTables',(select count(*)from pg_tables where schemaname='public'),'applicationHistory',to_regclass('supabase_migrations.schema_migrations'),'authTables',(select count(*)from pg_tables where schemaname='auth'),'storageTables',(select count(*)from pg_tables where schemaname='storage'),'supabaseAdminExists',exists(select 1 from pg_roles where rolname='supabase_admin'),'currentRoleSuperuser',(select rolsuper from pg_roles where rolname=current_user));commit;"""
+before=json.loads(sql('infra-before-forward-repair',catalogQuery))
+assert before['publicTables']==before['authTables']==before['storageTables']==0 and before['applicationHistory']is None and not before['supabaseAdminExists']and before['currentRoleSuperuser']
+pwdword='PASS'+'WORD'
+sql('infra-create-required-admin',f"begin;create role supabase_admin superuser createdb createrole replication bypassrls login {pwdword} '{secret['databasePassword']}';commit;")
+for f in profile:assert sha(f['path'])==f['sha256']
+journal({'state':'intent','kind':'pinned-image-infrastructure-migrate','containerId':cid,'scriptSha256':sha(P/'image-db-migrate.sh'),'fileCount':len(profile)})
+r=docker(['exec',cid,'sh','/docker-entrypoint-initdb.d/migrate.sh'],allow=True,timeout=120)
+(P/'pinned-image-infrastructure-migrate.private.log').write_text(r.stdout+r.stderr,encoding='utf-8',newline='\n')
+journal({'state':'succeeded'if r.returncode==0 else'unknown','kind':'pinned-image-infrastructure-migrate','exit':r.returncode,'logSha256':sha(P/'pinned-image-infrastructure-migrate.private.log')})
+if r.returncode:raise RuntimeError('Pinned infrastructure migration failed; retain partial state, no replay/reset')
+passwords={'authenticator':secret['restDatabasePassword'],'supabase_auth_admin':secret['authDatabasePassword'],'supabase_storage_admin':secret['storageDatabasePassword']}
+sql('infra-fresh-service-role-passwords','begin;'+''.join(f"alter role {role} with {pwdword} '{value}';"for role,value in passwords.items())+'commit;',role='supabase_admin')
+after=json.loads(sql('infra-after-forward-repair',"""begin read only;select jsonb_build_object('publicTables',(select count(*)from pg_tables where schemaname='public'),'applicationHistory',to_regclass('supabase_migrations.schema_migrations'),'authUsers',(select count(*)from auth.users),'authSchemaMigrations',(select count(*)from auth.schema_migrations),'roles',(select jsonb_agg(jsonb_build_object('name',rolname,'login',rolcanlogin,'superuser',rolsuper,'bypassRls',rolbypassrls)order by rolname)from pg_roles where rolname in('anon','authenticated','service_role','authenticator','supabase_auth_admin','supabase_storage_admin','supabase_admin')));commit;""",role='supabase_admin'))
+assert after['publicTables']==0 and after['applicationHistory']is None and after['authUsers']==0
+record={'manifestSha256':receipt['manifestSha256'],'sourceFingerprint':receipt['sourceFingerprint'],'identity':receipt['identity'],'containerIds':ids,'volumeName':receipt['volumeName'],'volumeCreatedAt':receipt['volumeCreatedAt'],'databaseCreatedAt':receipt['databaseCreatedAt'],'initialFailure':{'reason':'Required image bootstrap admin role absent due initial POSTGRES_USER selection','logSha256':sha(P/'db-start-failure.private.log'),'beforeAnyApplicationMigration':True},'forwardRepair':{'before':before,'after':after,'pinnedImageFiles':profile,'sameContainerAndVolume':True,'reset':False,'imageMigrateExit':0,'newServicePasswords':True},'otherServicesStarted':False,'applicationClientsCreated':False,'fixtureRowsCreated':0,'oldTargetsReadOrChanged':False,'networkCapacityResolution':read(P/'network-capacity-resolution.private.json')}
+write(P/'infrastructure-ready.private.json',record)
+public=V/spec['projectId'];public.mkdir(exist_ok=True);write(public/'infrastructure-initialization.json',record)
+print(json.dumps({'status':'FORWARD_NEW_INFRASTRUCTURE_READY','databaseContainerId':cid,'publicApplicationTables':after['publicTables'],'applicationHistory':after['applicationHistory'],'authUsers':after['authUsers'],'imageInfrastructureFiles':len(profile),'sameContainerAndVolume':True,'reset':False,'applicationClientsCreated':False,'fixtureRowsCreated':0}))

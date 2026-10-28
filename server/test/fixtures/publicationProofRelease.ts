@@ -3,15 +3,20 @@ import {
   activeMissionIntegrationSkipReason,
   creatorRewardSnapshot,
   DEMO_WS,
+  FIXTURE_WORKSPACE_SLUG,
   makeStaff,
   seedActiveMission,
   serviceForTests,
   userForJwt,
 } from "../helpers";
 
-const CREATOR_EMAIL = "publication-proof-release-creator@test.local";
-const OPERATOR_EMAIL = "publication-proof-release-operator@test.local";
-const MISSION_SLUG = "test-publication-proof-release";
+// Integration launches get a fresh namespace; historical proof rows remain append-only.
+const namespace = process.env.INTEGRATION_FIXTURE_NAMESPACE ?? "";
+if (namespace && !/^[0-9a-f-]{36}$/.test(namespace)) throw new Error("invalid fixture namespace");
+const suffix = namespace ? `-${namespace}` : "";
+const CREATOR_EMAIL = `publication-proof-release-creator${suffix}@test.local`;
+const OPERATOR_EMAIL = `publication-proof-release-operator${suffix}@test.local`;
+const MISSION_SLUG = `test-publication-proof-release${suffix}`;
 
 const ITEM_TITLES = {
   requiredMetadataSuccess: "Required evidence — metadata success",
@@ -195,7 +200,7 @@ export function assertPublicationProofReleaseInvariant(
   } = snapshot;
   if (
     workspace?.id !== DEMO_WS
-    || workspace.slug !== "demo"
+    || workspace.slug !== FIXTURE_WORKSPACE_SLUG
     || mission?.workspaceId !== DEMO_WS
     || mission.slug !== MISSION_SLUG
     || !nonBlank(mission.id)

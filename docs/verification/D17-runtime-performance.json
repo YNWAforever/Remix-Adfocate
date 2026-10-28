@@ -1,0 +1,1371 @@
+{
+  "runId": "fd0d229b-39c3-451a-95f2-6fdb1174770f",
+  "data": {
+    "browser": "155.0.4283.62",
+    "viewport": "1280x900",
+    "network": "loopback, no throttling, external requests aborted; fonts use local fallback",
+    "cache": "HTTP cache disabled due network routing; DB and server warmed, not reset",
+    "pages": [
+      {
+        "path": "/admin/creators",
+        "cache": "HTTP cache disabled by request routing; first navigation",
+        "vitals": {
+          "lcp": [
+            168,
+            288,
+            520
+          ],
+          "shifts": [
+            {
+              "at": 340.70000000298023,
+              "value": 0.001108882819281684
+            },
+            {
+              "at": 506.5,
+              "value": 0.0022181121826171874
+            }
+          ],
+          "events": []
+        },
+        "resources": [
+          {
+            "name": "/assets/index-BrAeORCk.js",
+            "transferBytes": 111762,
+            "encodedBytes": 111462
+          },
+          {
+            "name": "/assets/vendor-react-qcAInfL-.js",
+            "transferBytes": 60837,
+            "encodedBytes": 60537
+          },
+          {
+            "name": "/assets/vendor-router-BvkK89KP.js",
+            "transferBytes": 39554,
+            "encodedBytes": 39254
+          },
+          {
+            "name": "/assets/index-Bu5arl5B.css",
+            "transferBytes": 17068,
+            "encodedBytes": 16768
+          },
+          {
+            "name": "/assets/vendor-supabase-11GpYcmB.js",
+            "transferBytes": 54491,
+            "encodedBytes": 54191
+          },
+          {
+            "name": "/assets/admin-Droei4w1.js",
+            "transferBytes": 826,
+            "encodedBytes": 526
+          },
+          {
+            "name": "/assets/StaffAuthGate-CqS99VEW.js",
+            "transferBytes": 4613,
+            "encodedBytes": 4313
+          },
+          {
+            "name": "/assets/chart-column-4KwTHvHy.js",
+            "transferBytes": 502,
+            "encodedBytes": 202
+          },
+          {
+            "name": "/assets/createLucideIcon-CBho2xym.js",
+            "transferBytes": 1082,
+            "encodedBytes": 782
+          },
+          {
+            "name": "/assets/users-BZDofVX3.js",
+            "transferBytes": 533,
+            "encodedBytes": 233
+          },
+          {
+            "name": "/assets/user-check-Cws2rzoa.js",
+            "transferBytes": 514,
+            "encodedBytes": 214
+          },
+          {
+            "name": "/assets/target-H9J6chXf.js",
+            "transferBytes": 469,
+            "encodedBytes": 169
+          },
+          {
+            "name": "/assets/trophy-GhQJTel8.js",
+            "transferBytes": 584,
+            "encodedBytes": 284
+          },
+          {
+            "name": "/assets/file-text-gwZ72UKa.js",
+            "transferBytes": 560,
+            "encodedBytes": 260
+          },
+          {
+            "name": "/assets/graduation-cap-CpaZjUgb.js",
+            "transferBytes": 556,
+            "encodedBytes": 256
+          },
+          {
+            "name": "/assets/menu-z7murLlz.js",
+            "transferBytes": 464,
+            "encodedBytes": 164
+          },
+          {
+            "name": "/assets/admin.creators-DWjo-5Mb.js",
+            "transferBytes": 2591,
+            "encodedBytes": 2291
+          },
+          {
+            "name": "/assets/CreatorReviewRow-B7L-Y3xy.js",
+            "transferBytes": 2167,
+            "encodedBytes": 1867
+          },
+          {
+            "name": "/assets/ReviewActionPanel-D7eTm6uG.js",
+            "transferBytes": 2266,
+            "encodedBytes": 1966
+          },
+          {
+            "name": "/assets/RequestFeedback-CkKpk4Ck.js",
+            "transferBytes": 1089,
+            "encodedBytes": 789
+          },
+          {
+            "name": "/assets/check-BR5yPA8h.js",
+            "transferBytes": 446,
+            "encodedBytes": 146
+          },
+          {
+            "name": "/assets/OperatorBadges-dbQDHp0S.js",
+            "transferBytes": 662,
+            "encodedBytes": 362
+          },
+          {
+            "name": "/assets/user-round-Cxtj5bFU.js",
+            "transferBytes": 480,
+            "encodedBytes": 180
+          }
+        ]
+      },
+      {
+        "path": "/admin/insights",
+        "cache": "HTTP cache disabled by request routing; first navigation",
+        "vitals": {
+          "lcp": [
+            140,
+            204,
+            504
+          ],
+          "shifts": [
+            {
+              "at": 320.19999999552965,
+              "value": 0.001108882819281684
+            }
+          ],
+          "events": []
+        },
+        "resources": [
+          {
+            "name": "/assets/index-BrAeORCk.js",
+            "transferBytes": 111762,
+            "encodedBytes": 111462
+          },
+          {
+            "name": "/assets/vendor-react-qcAInfL-.js",
+            "transferBytes": 60837,
+            "encodedBytes": 60537
+          },
+          {
+            "name": "/assets/vendor-router-BvkK89KP.js",
+            "transferBytes": 39554,
+            "encodedBytes": 39254
+          },
+          {
+            "name": "/assets/index-Bu5arl5B.css",
+            "transferBytes": 17068,
+            "encodedBytes": 16768
+          },
+          {
+            "name": "/assets/vendor-supabase-11GpYcmB.js",
+            "transferBytes": 54491,
+            "encodedBytes": 54191
+          },
+          {
+            "name": "/assets/admin-Droei4w1.js",
+            "transferBytes": 826,
+            "encodedBytes": 526
+          },
+          {
+            "name": "/assets/StaffAuthGate-CqS99VEW.js",
+            "transferBytes": 4613,
+            "encodedBytes": 4313
+          },
+          {
+            "name": "/assets/chart-column-4KwTHvHy.js",
+            "transferBytes": 502,
+            "encodedBytes": 202
+          },
+          {
+            "name": "/assets/createLucideIcon-CBho2xym.js",
+            "transferBytes": 1082,
+            "encodedBytes": 782
+          },
+          {
+            "name": "/assets/users-BZDofVX3.js",
+            "transferBytes": 533,
+            "encodedBytes": 233
+          },
+          {
+            "name": "/assets/user-check-Cws2rzoa.js",
+            "transferBytes": 514,
+            "encodedBytes": 214
+          },
+          {
+            "name": "/assets/target-H9J6chXf.js",
+            "transferBytes": 469,
+            "encodedBytes": 169
+          },
+          {
+            "name": "/assets/trophy-GhQJTel8.js",
+            "transferBytes": 584,
+            "encodedBytes": 284
+          },
+          {
+            "name": "/assets/file-text-gwZ72UKa.js",
+            "transferBytes": 560,
+            "encodedBytes": 260
+          },
+          {
+            "name": "/assets/graduation-cap-CpaZjUgb.js",
+            "transferBytes": 556,
+            "encodedBytes": 256
+          },
+          {
+            "name": "/assets/menu-z7murLlz.js",
+            "transferBytes": 464,
+            "encodedBytes": 164
+          },
+          {
+            "name": "/assets/admin.insights-BTIdCN4s.js",
+            "transferBytes": 3558,
+            "encodedBytes": 3258
+          },
+          {
+            "name": "/assets/RequestFeedback-CkKpk4Ck.js",
+            "transferBytes": 1089,
+            "encodedBytes": 789
+          }
+        ]
+      }
+    ],
+    "requests": [
+      {
+        "ms": 126.77569999999832,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 118.07819999999992,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 102.8172999999988,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 128.99159999999756,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 225.03369999999995,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 161.5626000000011,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 129.50599999999758,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 114.10350000000108,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 113.69690000000264,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 117.9419999999991,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 118.11889999999767,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 113.06580000000031,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 108.15149999999994,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 121.0170999999973,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 130.01480000000083,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 113.59239999999772,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 102.62749999999869,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 103.90469999999914,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 101.95179999999891,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 117.20650000000023,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 100.14500000000044,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 102.27990000000136,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 101.87810000000172,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 100.47270000000208,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 99.0576000000001,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 108.42540000000008,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 106.08450000000084,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 115.85559999999896,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 96.172300000002,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 100.1971999999987,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 103.20179999999891,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 127.2023999999983,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 109.75640000000203,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 115.5560000000005,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 105.60940000000119,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 113.05029999999897,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 134.11609999999928,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 163.85640000000058,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 132.3176999999996,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 155.21000000000276,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 168.5675999999985,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 108.4510999999984,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 105.93399999999747,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 104.96140000000014,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 117.23919999999998,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 108.47499999999854,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 113.02449999999953,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 115.42090000000462,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 121.12649999999849,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 127.95089999999618,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 135.16979999999603,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 110.16730000000098,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 115.43029999999999,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 120.22039999999834,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 124.00530000000435,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 125.32340000000113,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 136.0835999999981,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 112.27929999999469,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 115.1675000000032,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 130.52649999999994,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 123.43280000000232,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 119.24409999999625,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 124.630799999999,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 123.62709999999788,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 124.51640000000043,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 124.88869999999588,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 125.79760000000533,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 111.83610000000044,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 108.65439999999944,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 113.88680000000022,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 106.14190000000235,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 104.59799999999814,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 101.94759999999951,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 106.2702999999965,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 118.35659999999916,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 119.97090000000026,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 139.98600000000442,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 165.7690999999977,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 162.72630000000208,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 195.433100000002,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 167.38590000000113,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 125.42050000000017,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 118.82719999999972,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 114.14040000000386,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 112.76859999999579,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 114.4059999999954,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 117.68670000000566,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 126.21059999999852,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 111.14329999999609,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 108.75819999999658,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 107.94090000000142,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 109.46050000000105,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 107.36670000000595,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 106.12709999999788,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 130.65430000000197,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 118.77019999999902,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 135.3391999999949,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 120.505799999999,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 131.2303000000029,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      },
+      {
+        "ms": 131.52900000000227,
+        "status": 200,
+        "total": 10000,
+        "rows": 25
+      }
+    ],
+    "httpApi": {
+      "samples": 100,
+      "p50": 115.85559999999896,
+      "p95": 163.85640000000058,
+      "max": 225.03369999999995
+    },
+    "interactions": [
+      {
+        "action": "next",
+        "page": 2,
+        "toReadyMs": 181.89389999999548
+      },
+      {
+        "action": "next",
+        "page": 3,
+        "toReadyMs": 170.91440000000148
+      },
+      {
+        "action": "next",
+        "page": 4,
+        "toReadyMs": 169.03220000000147
+      },
+      {
+        "action": "next",
+        "page": 5,
+        "toReadyMs": 169.8133999999991
+      },
+      {
+        "action": "next",
+        "page": 6,
+        "toReadyMs": 186.74779999999737
+      },
+      {
+        "action": "next",
+        "page": 7,
+        "toReadyMs": 186.4530999999988
+      },
+      {
+        "action": "next",
+        "page": 8,
+        "toReadyMs": 189.81960000000254
+      },
+      {
+        "action": "next",
+        "page": 9,
+        "toReadyMs": 225.4580999999962
+      },
+      {
+        "action": "next",
+        "page": 10,
+        "toReadyMs": 231.89340000000084
+      },
+      {
+        "action": "next",
+        "page": 11,
+        "toReadyMs": 266.9973000000027
+      },
+      {
+        "action": "next",
+        "page": 12,
+        "toReadyMs": 174.52330000000075
+      },
+      {
+        "action": "next",
+        "page": 13,
+        "toReadyMs": 154.17630000000645
+      },
+      {
+        "action": "next",
+        "page": 14,
+        "toReadyMs": 170.59870000000228
+      },
+      {
+        "action": "next",
+        "page": 15,
+        "toReadyMs": 173.08269999999902
+      },
+      {
+        "action": "next",
+        "page": 16,
+        "toReadyMs": 172.64310000000114
+      },
+      {
+        "action": "next",
+        "page": 17,
+        "toReadyMs": 161.33980000000156
+      },
+      {
+        "action": "next",
+        "page": 18,
+        "toReadyMs": 152.52680000000692
+      },
+      {
+        "action": "next",
+        "page": 19,
+        "toReadyMs": 149.61160000000382
+      },
+      {
+        "action": "next",
+        "page": 20,
+        "toReadyMs": 147.58979999999428
+      },
+      {
+        "action": "next",
+        "page": 21,
+        "toReadyMs": 150.49409999999625
+      },
+      {
+        "action": "next",
+        "page": 22,
+        "toReadyMs": 145.37490000000253
+      },
+      {
+        "action": "next",
+        "page": 23,
+        "toReadyMs": 165.2612999999983
+      },
+      {
+        "action": "next",
+        "page": 24,
+        "toReadyMs": 149.70439999999508
+      },
+      {
+        "action": "next",
+        "page": 25,
+        "toReadyMs": 174.00540000000183
+      }
+    ],
+    "uiToReady": {
+      "samples": 24,
+      "p50": 170.59870000000228,
+      "p95": 231.89340000000084,
+      "max": 266.9973000000027
+    },
+    "eventTiming": [
+      {
+        "id": 6172,
+        "duration": 32,
+        "at": 898.4000000059605
+      },
+      {
+        "id": 6172,
+        "duration": 32,
+        "at": 898.5
+      },
+      {
+        "id": 6172,
+        "duration": 32,
+        "at": 898.5
+      },
+      {
+        "id": 6179,
+        "duration": 32,
+        "at": 1080.7000000029802
+      },
+      {
+        "id": 6179,
+        "duration": 32,
+        "at": 1080.8000000044703
+      },
+      {
+        "id": 6179,
+        "duration": 32,
+        "at": 1080.8000000044703
+      },
+      {
+        "id": 6186,
+        "duration": 32,
+        "at": 1247.5
+      },
+      {
+        "id": 6186,
+        "duration": 32,
+        "at": 1247.6000000014901
+      },
+      {
+        "id": 6186,
+        "duration": 32,
+        "at": 1247.6000000014901
+      },
+      {
+        "id": 6193,
+        "duration": 32,
+        "at": 1414.1000000014901
+      },
+      {
+        "id": 6193,
+        "duration": 32,
+        "at": 1414.1000000014901
+      },
+      {
+        "id": 6193,
+        "duration": 32,
+        "at": 1414.1000000014901
+      },
+      {
+        "id": 6200,
+        "duration": 32,
+        "at": 1581.5
+      },
+      {
+        "id": 6200,
+        "duration": 32,
+        "at": 1581.6000000014901
+      },
+      {
+        "id": 6200,
+        "duration": 32,
+        "at": 1581.6000000014901
+      },
+      {
+        "id": 6207,
+        "duration": 32,
+        "at": 1780.8000000044703
+      },
+      {
+        "id": 6207,
+        "duration": 32,
+        "at": 1780.9000000059605
+      },
+      {
+        "id": 6207,
+        "duration": 32,
+        "at": 1780.9000000059605
+      },
+      {
+        "id": 6214,
+        "duration": 32,
+        "at": 1964
+      },
+      {
+        "id": 6214,
+        "duration": 32,
+        "at": 1964.1000000014901
+      },
+      {
+        "id": 6214,
+        "duration": 32,
+        "at": 1964.1000000014901
+      },
+      {
+        "id": 6221,
+        "duration": 32,
+        "at": 2149.10000000149
+      },
+      {
+        "id": 6221,
+        "duration": 32,
+        "at": 2149.3000000044703
+      },
+      {
+        "id": 6221,
+        "duration": 32,
+        "at": 2149.3000000044703
+      },
+      {
+        "id": 6228,
+        "duration": 32,
+        "at": 2382
+      },
+      {
+        "id": 6228,
+        "duration": 32,
+        "at": 2382
+      },
+      {
+        "id": 6228,
+        "duration": 32,
+        "at": 2382
+      },
+      {
+        "id": 6235,
+        "duration": 24,
+        "at": 2618.7000000029802
+      },
+      {
+        "id": 6235,
+        "duration": 24,
+        "at": 2618.8000000044703
+      },
+      {
+        "id": 6235,
+        "duration": 24,
+        "at": 2618.8000000044703
+      },
+      {
+        "id": 6242,
+        "duration": 32,
+        "at": 2880.3000000044703
+      },
+      {
+        "id": 6242,
+        "duration": 32,
+        "at": 2880.4000000059605
+      },
+      {
+        "id": 6242,
+        "duration": 32,
+        "at": 2880.4000000059605
+      },
+      {
+        "id": 6249,
+        "duration": 32,
+        "at": 3046.8000000044703
+      },
+      {
+        "id": 6249,
+        "duration": 32,
+        "at": 3046.8000000044703
+      },
+      {
+        "id": 6249,
+        "duration": 32,
+        "at": 3046.8000000044703
+      },
+      {
+        "id": 6256,
+        "duration": 32,
+        "at": 3214.5
+      },
+      {
+        "id": 6256,
+        "duration": 32,
+        "at": 3214.5
+      },
+      {
+        "id": 6256,
+        "duration": 32,
+        "at": 3214.5
+      },
+      {
+        "id": 6263,
+        "duration": 32,
+        "at": 3380.3000000044703
+      },
+      {
+        "id": 6263,
+        "duration": 32,
+        "at": 3380.3000000044703
+      },
+      {
+        "id": 6263,
+        "duration": 32,
+        "at": 3380.3000000044703
+      },
+      {
+        "id": 6270,
+        "duration": 32,
+        "at": 3547.10000000149
+      },
+      {
+        "id": 6270,
+        "duration": 32,
+        "at": 3547.2000000029802
+      },
+      {
+        "id": 6270,
+        "duration": 32,
+        "at": 3547.2000000029802
+      },
+      {
+        "id": 6277,
+        "duration": 32,
+        "at": 3713.60000000149
+      },
+      {
+        "id": 6277,
+        "duration": 32,
+        "at": 3713.7000000029802
+      },
+      {
+        "id": 6277,
+        "duration": 32,
+        "at": 3713.7000000029802
+      },
+      {
+        "id": 6284,
+        "duration": 32,
+        "at": 3881
+      },
+      {
+        "id": 6284,
+        "duration": 32,
+        "at": 3881.10000000149
+      },
+      {
+        "id": 6284,
+        "duration": 32,
+        "at": 3881.10000000149
+      },
+      {
+        "id": 6291,
+        "duration": 32,
+        "at": 4031
+      },
+      {
+        "id": 6291,
+        "duration": 32,
+        "at": 4031.10000000149
+      },
+      {
+        "id": 6291,
+        "duration": 32,
+        "at": 4031.10000000149
+      },
+      {
+        "id": 6298,
+        "duration": 32,
+        "at": 4179.9000000059605
+      },
+      {
+        "id": 6298,
+        "duration": 32,
+        "at": 4179.9000000059605
+      },
+      {
+        "id": 6298,
+        "duration": 32,
+        "at": 4179.9000000059605
+      },
+      {
+        "id": 6305,
+        "duration": 32,
+        "at": 4330.5
+      },
+      {
+        "id": 6305,
+        "duration": 32,
+        "at": 4330.5
+      },
+      {
+        "id": 6305,
+        "duration": 32,
+        "at": 4330.5
+      },
+      {
+        "id": 6312,
+        "duration": 32,
+        "at": 4480.70000000298
+      },
+      {
+        "id": 6312,
+        "duration": 32,
+        "at": 4480.80000000447
+      },
+      {
+        "id": 6312,
+        "duration": 32,
+        "at": 4480.80000000447
+      },
+      {
+        "id": 6319,
+        "duration": 32,
+        "at": 4630.4000000059605
+      },
+      {
+        "id": 6319,
+        "duration": 32,
+        "at": 4630.4000000059605
+      },
+      {
+        "id": 6319,
+        "duration": 32,
+        "at": 4630.4000000059605
+      },
+      {
+        "id": 6326,
+        "duration": 32,
+        "at": 4797.10000000149
+      },
+      {
+        "id": 6326,
+        "duration": 32,
+        "at": 4797.20000000298
+      },
+      {
+        "id": 6326,
+        "duration": 32,
+        "at": 4797.20000000298
+      },
+      {
+        "id": 6333,
+        "duration": 32,
+        "at": 4963.60000000149
+      },
+      {
+        "id": 6333,
+        "duration": 32,
+        "at": 4963.60000000149
+      },
+      {
+        "id": 6333,
+        "duration": 32,
+        "at": 4963.60000000149
+      }
+    ],
+    "observedInteractions": 24,
+    "labInpCandidateMs": 32,
+    "cls": 0.0033269950018988714,
+    "thresholds": {
+      "apiP95": 800,
+      "lcpMs": 2500,
+      "inpMs": 200,
+      "cls": 0.1
+    },
+    "limitations": [
+      "Lab visit INP candidate, not field p75 across real users.",
+      "Browser warm-cache, physical mobile, CPU-throttled network and production not measured."
+    ]
+  }
+}

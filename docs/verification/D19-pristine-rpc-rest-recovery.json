@@ -1,0 +1,31 @@
+{
+  "at": "2026-10-24T09:28:25.474301+00:00",
+  "status": "TARGET_CONFIGURATION_REPAIRED_BEFORE_ANY_GLOBAL_RPC",
+  "failedTests": 2,
+  "skippedTests": 3,
+  "globalRpcCalls": 0,
+  "cause": "Copied PostgREST JWK set did not match freshly generated HS256 credentials",
+  "resolution": "Same pinned PostgREST image, correct fresh local JWT secret, metadata reverified before any next test",
+  "oldRestExactId": "a705ab958489220a0ae006095b55d02a1db79f64120192ec458994691012501d",
+  "newRestExactId": "ab042a953dd869cdf21a87ec67126731aad2b1eda569fbf40980ee31f16c70ee",
+  "removedAuthFixtureExactIds": [
+    "d6989fac-5c32-425c-8ea7-af1ea83ca46b"
+  ],
+  "cleanupAuthority": "Successful Auth create captured in this attempt owned-ID journal; all Auth IDs equal this exact set; no creators/workflows/submissions/rank snapshots exist",
+  "before": {
+    "creators": 0,
+    "authUsers": [
+      "d6989fac-5c32-425c-8ea7-af1ea83ca46b"
+    ],
+    "campaigns": 0,
+    "snapshots": 0,
+    "submissions": 0
+  },
+  "after": {
+    "authUsers": 0,
+    "campaigns": 0,
+    "snapshots": 0,
+    "submissions": 0
+  },
+  "originalIncident": "OPEN; no old target reads/writes/restoration"
+}

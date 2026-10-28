@@ -1,0 +1,10 @@
+{
+  "kind": "B2_RUNTIME_AUTHORIZATION",
+  "approved": false,
+  "manifestSha256": "696e94c29e62a27e820d7d12f5aa74c0d1e7b62f97f3b57db787074512a2626d",
+  "sourceFingerprint": "e83998d178061043688016056a5a78fc61df58bac28f3d0d0b66d639306037bd",
+  "ownerReference": null,
+  "additionalResources": 0,
+  "resourceLifecycleAllowed": false,
+  "warning": "REVIEW TEMPLATE ONLY. Does not authorize execution. Human approval must bind this manifest/source and explicit existing-data/composite evidence adoption. Original approval is preserved separately."
+}

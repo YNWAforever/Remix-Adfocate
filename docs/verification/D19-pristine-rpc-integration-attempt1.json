@@ -1,0 +1,16 @@
+{
+  "at": "2026-10-24T09:25:09.264858+00:00",
+  "passed": 0,
+  "failed": 2,
+  "skipped": 3,
+  "cause": "Shared deny-external-fetch preload permits only previous target ports; it refused the new port before network writes",
+  "liveCountsBeforeRetry": {
+    "authUsers": 0,
+    "campaigns": 0,
+    "snapshots": 0,
+    "submissions": 0
+  },
+  "resolution": "Dedicated observer permits only the live-attested new origin; conflicting shared preload removed without changing it or original tests",
+  "oldIncident": "OPEN",
+  "rawReportSha256": "512655cb13694af0b609f028129bfff52a07da7a5433d32ed2e95d70adc5b3e7"
+}

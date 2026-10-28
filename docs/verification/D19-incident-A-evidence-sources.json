@@ -1,0 +1,158 @@
+{
+  "sourceFingerprint": "9812cc7755dd6443f8fa4b39bc92e6c26536b54e15ba1c0cbc494815375dd5e1",
+  "records": [
+    {
+      "path": "docs/verification/D19-incident-A-dependency-recovery-summary.json",
+      "sha256": "bd58ac0d84a50fffe5b33b220490c3310b9ffbd95ac59553c458e4956c2e97e2",
+      "bytes": 1750
+    },
+    {
+      "path": "docs/verification/D19-incident-A-identity-after.json",
+      "sha256": "f5af9a694247c1c387455c79ba0efecb99b71b5536f3b19f346b8a033d0a9d5d",
+      "bytes": 1276
+    },
+    {
+      "path": "docs/verification/D19-incident-A-identity.json",
+      "sha256": "5c9df79d06cff7e517ec6f273c15f68bcf1353ae8480ae8050503e272b5ed1ca",
+      "bytes": 5157
+    },
+    {
+      "path": "docs/verification/D19-incident-A-psql-route-check.json",
+      "sha256": "5567c66974d0a1f4f5267f5066d29975c21a25eba08bee040c581a862cb2619b",
+      "bytes": 415
+    },
+    {
+      "path": "docs/verification/D19-incident-A-q1-catalog.json",
+      "sha256": "8bba57000434ee628069f531e223ca120871e838f32a33cc7f113c5045ceecda",
+      "bytes": 6835
+    },
+    {
+      "path": "docs/verification/D19-incident-A-q1-project-inventory.json",
+      "sha256": "88545430023ce5b930c0e679fbd5f87d8f118dfd18c6403ca583f6a9bbda4184",
+      "bytes": 1379
+    },
+    {
+      "path": "docs/verification/D19-incident-A-q1-recovery-catalog.json",
+      "sha256": "8fe56aa4d099ce19884947ae2defb0d98b3e05b5f2f8d85cd76fad861f517ae9",
+      "bytes": 1326
+    },
+    {
+      "path": "docs/verification/D19-incident-A-q2-api-log-scan.json",
+      "sha256": "cbd42a7a94939757a873cd6faed3fc5a4faa9211fdabc9fcd407fc93f0d12be8",
+      "bytes": 2208
+    },
+    {
+      "path": "docs/verification/D19-incident-A-q2-api-log-structure.json",
+      "sha256": "fc51161725c77fc87e076a0405070948a375c29a27ac6f5d430cabeecd073dee",
+      "bytes": 2261
+    },
+    {
+      "path": "docs/verification/D19-incident-A-q2-audit-operator.json",
+      "sha256": "6c9a28d64881ec8a13b611d2a146ce0970d7da7867e3bee0789888e8252f01a2",
+      "bytes": 1673
+    },
+    {
+      "path": "docs/verification/D19-incident-A-q2-audit-staff.json",
+      "sha256": "fe9753ec7e63b608588f207ba252cb452f61186267248140383d7bd394183f87",
+      "bytes": 1685
+    },
+    {
+      "path": "docs/verification/D19-incident-A-q2-audit-workflow.json",
+      "sha256": "ee782123832287bf02e4fdaa071162d71dc7e9f237fe8a23505579ae7af9b6fc",
+      "bytes": 1677
+    },
+    {
+      "path": "docs/verification/D19-incident-A-q2-database-log-scan.json",
+      "sha256": "daba6ba05ec8aa5e893441fbaff0d07ad83f830079a1e521699014a1d2485986",
+      "bytes": 1162
+    },
+    {
+      "path": "docs/verification/D19-incident-A-q3-after-hash-corroboration.json",
+      "sha256": "e81978f7eb88bf4b4da2120062118ff43860550d6c0b2aa5fdf350d5e663bb06",
+      "bytes": 1206
+    },
+    {
+      "path": "docs/verification/D19-incident-A-q3-campaign-schema.json",
+      "sha256": "3ddc9496ea3610a0ce0651cb3d9d4e2339589c755e7a75f41105ccf31ae81788",
+      "bytes": 7182
+    },
+    {
+      "path": "docs/verification/D19-incident-A-q3-current-rows.json",
+      "sha256": "7f4651f7cf07000829cd49ba1b4b6bcbea8dc5cf9794f14ce7e8b984d4d00722",
+      "bytes": 1694
+    },
+    {
+      "path": "docs/verification/D19-incident-A-q3-dependency-1.json",
+      "sha256": "2f43973a1015c4622856aab0fba7159d60101833b290687b7cebe56cab286ebd",
+      "bytes": 749
+    },
+    {
+      "path": "docs/verification/D19-incident-A-q3-dependency-2.json",
+      "sha256": "d2f324b6a15a7ed72a78b8ff2626a74fce46a3ef8770884ea417f2106f053dd8",
+      "bytes": 753
+    },
+    {
+      "path": "docs/verification/D19-incident-A-q3-dependency-3.json",
+      "sha256": "7de9884b9047f9632061ba90603487cb009c53d61e3bec8e6aac5fbbe2b1b00a",
+      "bytes": 713
+    },
+    {
+      "path": "docs/verification/D19-incident-A-q3-final-rows.json",
+      "sha256": "0526514246b8b67774cfc4740687af11f00fdfc93424544d98f25fd51c0b958f",
+      "bytes": 1692
+    },
+    {
+      "path": "docs/verification/D19-incident-A-q3-notification-references.json",
+      "sha256": "3fa371fdc5aacc3bc82457096f786158cf6501e387c1e3fdd734c450aa642c40",
+      "bytes": 709
+    },
+    {
+      "path": "docs/verification/D19-incident-A-q3-query-visibility.json",
+      "sha256": "2667201cc1f583bc969c238f75a0f81d3249259fcd3a1c6c00d773b906618cbe",
+      "bytes": 2758
+    },
+    {
+      "path": "docs/verification/D19-incident-A-query-guard-refusal.json",
+      "sha256": "aea9bdfae7137c9781199a64593e82ee6259bc2e9f526b3b3ae0efb4626f5e42",
+      "bytes": 466
+    },
+    {
+      "path": "docs/verification/D19-incident-A-read-journal.json",
+      "sha256": "92153232cce5086ba9dbad0a6bcaa18a293a9c49528c86519c42471842589b66",
+      "bytes": 9801
+    },
+    {
+      "path": "docs/verification/D19-incident-A-server-file-denial.json",
+      "sha256": "cae423bd1b80fcf69b8379ca7d1739804e23898c9e5409a5f403130d5a74648c",
+      "bytes": 506
+    },
+    {
+      "path": "docs/verification/D19-incident-A-helper-D19_incident_A_read.py",
+      "sha256": "b855f0523962fe1252c2071419315da94c361a5d1c918e1252472519a85a270b",
+      "bytes": 4255
+    },
+    {
+      "path": "docs/verification/D19-incident-A-helper-D19_incident_A_initial_queries.py",
+      "sha256": "011f0e9ac85176cbc23281b924d018ab16815392cc04dd107898f4afb4c4cc2f",
+      "bytes": 4626
+    },
+    {
+      "path": "docs/verification/D19-incident-A-helper-D19_incident_A_more_queries.py",
+      "sha256": "288c500f16ec8cfe9e09a63717907a4384d7e37d034fbd88aa906e7bb2b699af",
+      "bytes": 4446
+    },
+    {
+      "path": "docs/verification/D19-incident-A-helper-D19_incident_A_inventory_logs.py",
+      "sha256": "49adc4cc713f83625dfbb5a8b4974fecda62fe2426801ccd021155d6efaf1b9b",
+      "bytes": 5405
+    },
+    {
+      "path": "docs/verification/D19-incident-A-helper-D19_incident_A_validate.py",
+      "sha256": "94fd61503b110103aa80af903d8232b206e219fbf415bea0eed22a4901a95b2e",
+      "bytes": 4360
+    }
+  ],
+  "helperNote": "Final read-only helper retained forreview, notnewexecutionpermission. Initial3sessionsuseddefaultlocalUnixsocket, verifiedno PGHOST/PGSERVICE override; lateronesexplicitlypin /var/run/postgresql:5432. Firstserver-filefailureandquery-constructionfailurepreserved; no completedSQLreceiptrepeated.",
+  "rawLogs": "Not retained/displayed: onlysource-streamhashes andexact-ID requeststructurefacts",
+  "sourceCodeAppChanges": 0
+}

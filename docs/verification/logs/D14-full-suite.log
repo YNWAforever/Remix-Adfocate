@@ -1,0 +1,290 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ✓ server/test/active-mission-schema.test.ts (54 tests | 9 skipped) 66ms
+ ✓ server/test/active-missions.test.ts (93 tests | 8 skipped) 118ms
+ ✓ src/routes/-admin.active-missions.test.tsx (35 tests) 2274ms
+   ✓ admin active missions route > binds detail actions and routes auth failures through the admin auth context 324ms
+ ✓ src/routes/-_app.my.$submissionId.test.tsx (25 tests) 974ms
+ ✓ server/test/notifications-triggers.test.ts (31 tests | 11 skipped) 9ms
+ ✓ src/lib/queries/activeMission.test.tsx (28 tests) 520ms
+ ↓ server/test/campaigns.test.ts (20 tests | 20 skipped)
+ ✓ server/test/reward-handoffs.test.ts (16 tests | 13 skipped) 3ms
+ ✓ src/lib/queries/activeMission.race.test.tsx (21 tests) 2851ms
+ ✓ server/test/admin-reward-handoffs.test.ts (53 tests) 63ms
+ ✓ src/components/admin/ActiveMissionReview.test.tsx (21 tests) 921ms
+ ✓ server/test/admin.test.ts (27 tests | 16 skipped) 12ms
+ ✓ server/lib/activeMission/proofUrl.test.ts (67 tests) 54ms
+ ✓ src/components/admin/MissionCompletionReview.test.tsx (17 tests) 559ms
+ ✓ src/components/active-mission/active-mission.test.tsx (16 tests) 395ms
+ ↓ server/test/operator-crm.test.ts (15 tests | 15 skipped)
+ ✓ src/lib/activationAnalytics.test.ts (35 tests) 18ms
+ ✓ scripts/release/manifest.test.ts (16 tests) 4584ms
+   ✓ release migration manifest > orders, classifies, hashes, and digests the complete reviewed range 308ms
+   ✓ release migration manifest > rejects unreviewed migrations before, inside, or after the reviewed range 317ms
+   ✓ release migration manifest > rejects empty, truncated, and interior-incomplete reviewed ranges 397ms
+   ✓ release migration manifest > runs write as a direct vite-node CLI and prints its digest 639ms
+   ✓ release migration manifest > returns a nonzero usage error for a missing direct CLI command 513ms
+   ✓ release migration manifest > returns a nonzero usage error for a unsupported direct CLI command 528ms
+   ✓ release migration manifest > detects an edited, deleted, or newly added baseline migration 330ms
+   ✓ release migration manifest > rejects migrations the timestamp filter used to drop 426ms
+ ✓ server/test/missions.test.ts (26 tests | 17 skipped) 8ms
+ ✓ src/routes/-_app.login.test.tsx (21 tests) 545ms
+ ✓ src/components/active-mission/active-mission.review.test.tsx (15 tests) 311ms
+ ✓ scripts/release/preflight.test.ts (12 tests) 111ms
+ ✓ server/test/active-missions-publication-operator.test.ts (11 tests) 39ms
+ ✓ server/lib/social/service.test.ts (15 tests) 20ms
+ ✓ src/routes/-_app.onboarding.test.tsx (18 tests) 504ms
+ ✓ src/routes/-_app.home.test.tsx (15 tests) 534ms
+ ✓ server/test/fixtures/publicationProofRelease.test.ts (21 tests | 2 skipped) 17ms
+ ✓ src/routes/-admin.reward-handoffs.test.tsx (12 tests) 471ms
+ ✓ server/test/reward-contracts.test.ts (8 tests | 5 skipped) 5ms
+ ✓ src/lib/adminRewardHandoff.test.ts (12 tests) 12ms
+ ✓ src/components/active-mission/active-mission.i18n.test.tsx (13 tests) 300ms
+ ↓ server/test/audit-identity-contract.test.ts (8 tests | 8 skipped)
+ ✓ src/components/admin/RewardHandoffQueue.test.tsx (19 tests) 452ms
+ ↓ server/test/missionAuthoring.test.ts (23 tests | 23 skipped)
+ ✓ scripts/release/observer.test.ts (8 tests) 11ms
+ ✓ src/lib/admin.test.ts (13 tests) 17ms
+ ✓ src/lib/i18n.test.tsx (12 tests) 119ms
+ ↓ server/test/profile-media-schema.test.ts (9 tests | 9 skipped)
+ ✓ src/routes/-_app.mission.$missionSlug.test.tsx (19 tests) 316ms
+ ↓ server/test/publication-proof-review-live.test.ts (2 tests | 2 skipped)
+ ✓ src/routes/-admin.missions.editor.test.tsx (14 tests) 949ms
+ ✓ server/test/review-hardening-schema.test.ts (9 tests) 9ms
+ ✓ server/lib/missionAuthoring.test.ts (32 tests) 9ms
+ ✓ src/components/admin/ProofPolicyFields.test.tsx (12 tests) 961ms
+ ↓ server/test/campaigns-s2.test.ts (5 tests | 5 skipped)
+ ↓ server/test/publication-proof-asset-grant-live.test.ts (3 tests | 3 skipped)
+ ✓ server/test/applications.test.ts (8 tests | 7 skipped) 3ms
+ ✓ src/components/creator-activation.test.tsx (10 tests) 174ms
+ ✓ server/lib/activeMission/state.test.ts (24 tests) 9ms
+ ✓ src/components/CreatorWorkHome.test.tsx (14 tests) 721ms
+ ✓ src/routes/-admin.missions.manage.test.tsx (5 tests) 760ms
+   ✓ MissionEditor active workflow authoring > adds, edits, and removes deliverables and checklist items in the exact save payload 380ms
+ ✓ src/components/CreatorProfileMediaPanel.test.tsx (7 tests) 242ms
+ ✓ src/lib/activeMission.test.ts (17 tests) 6ms
+ ✓ server/lib/activeMission/metrics.test.ts (11 tests) 6ms
+ ✓ server/devApi.transport.test.ts (7 tests) 79ms
+ ↓ server/test/profile-media.test.ts (7 tests | 7 skipped)
+ ✓ src/routes/-public-claims.test.tsx (14 tests) 845ms
+ ↓ server/test/audit-mission-list-contract.test.ts (6 tests | 6 skipped)
+ ↓ server/test/public-passport.test.ts (3 tests | 3 skipped)
+ ✓ src/routes/-_app.auth.reset-password.test.tsx (11 tests) 352ms
+ ↓ server/test/publication-proof-operator-read-live.test.ts (2 tests | 2 skipped)
+ ↓ server/test/passport.test.ts (11 tests | 11 skipped)
+ ✓ server/test/run-integration-tests.test.ts (6 tests) 8ms
+ ✓ scripts/release/pilot.test.ts (6 tests) 13ms
+ ✓ server/lib/missionMatch.test.ts (22 tests) 8ms
+ ✓ server/lib/brandAuth.test.ts (11 tests) 6ms
+ ✓ src/routes/-_app.auth.callback.test.tsx (12 tests) 468ms
+ ✓ src/routes/-operator.creators.$creatorId.test.tsx (3 tests) 390ms
+ ✓ src/routes/-_app.profile.test.tsx (10 tests) 275ms
+ ✓ src/components/admin/AcademyEditor.test.tsx (8 tests) 492ms
+Warning: Route file "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/_site.smoke.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\src\routes\-_site.smoke.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+{"status":"failed","error":"RELEASE_PILOT_OBSERVATIONS_PATH is required"}
+ ✓ scripts/release/cli.test.ts (7 tests) 8538ms
+   ✓ release npm entrypoints > fails closed when release:execute runs without database configuration 2336ms
+   ✓ release npm entrypoints > fails closed when release:evidence runs without an input file 1815ms
+   ✓ guarded pilot/observer commands > executes the npm/vite-node evaluate boundary even when VITEST is inherited 2369ms
+   ✓ guarded pilot/observer commands > executes the real npm entrypoint and fails closed with JSON 1999ms
+ ✓ src/lib/notifications.test.ts (21 tests) 9ms
+ ✓ src/lib/authFeedback.test.ts (18 tests) 6ms
+ ✓ src/components/admin/WorkspaceSwitcher.test.tsx (6 tests) 156ms
+ ✓ src/components/active-mission/RewardPendingCard.review.test.tsx (5 tests) 217ms
+ ✓ src/routes/_site.smoke.test.tsx (14 tests) 883ms
+ ✓ src/lib/creatorActivation.test.ts (12 tests) 6ms
+ ↓ server/test/audit-mission-authoring-contract.test.ts (6 tests | 6 skipped)
+ ✓ scripts/release/supabase-workflow-contract.test.ts (9 tests) 12ms
+ ↓ server/test/operator-crm-schema.test.ts (4 tests | 4 skipped)
+ ↓ server/test/social-schema.test.ts (4 tests | 4 skipped)
+ ↓ server/test/audit-public-claims-contract.test.ts (6 tests | 6 skipped)
+ ✓ server/lib/social/rapidApi.test.ts (8 tests) 18ms
+ ✓ scripts/release/deployment.test.ts (8 tests) 17ms
+ ✓ scripts/release/rehearsal.test.ts (9 tests) 19ms
+ ✓ server/lib/radar.test.ts (10 tests) 5ms
+ ✓ server/test/staffAuth.test.ts (17 tests) 6ms
+ ✓ src/routes/-_app.mission.index.test.tsx (8 tests) 245ms
+ ✓ src/routes/-operator.missions.$missionId.test.tsx (2 tests) 229ms
+ ✓ scripts/release/executor.test.ts (5 tests) 9ms
+ ✓ src/components/active-mission/RewardPendingCard.test.tsx (5 tests) 142ms
+ ✓ server/lib/passport.test.ts (21 tests) 6ms
+ ✓ src/components/SocialTrustPanel.test.tsx (9 tests) 264ms
+ ✓ src/components/active-mission/ProofAttemptHistory.review.test.tsx (3 tests) 157ms
+ ✓ server/lib/insights.test.ts (8 tests) 7ms
+ ✓ src/lib/activeMission.mixed.test.ts (11 tests) 5ms
+ ✓ src/routes/-_app.passport.test.tsx (9 tests) 228ms
+ ✓ server/lib/activeMission/publicationProof.test.ts (8 tests) 10ms
+ ✓ server/test/me.test.ts (7 tests | 5 skipped) 2ms
+ ✓ scripts/release/evidence.test.ts (7 tests) 19ms
+ ↓ server/test/social.test.ts (6 tests | 6 skipped)
+ ✓ server/test/audit-mission-list-projection.test.ts (8 tests) 21ms
+ ✓ src/lib/auth-flow.test.ts (18 tests) 18ms
+ ↓ server/test/redemption.test.ts (8 tests | 8 skipped)
+ ↓ server/test/verificationGate.test.ts (6 tests | 6 skipped)
+ ✓ server/lib/campaignLeaderboard.test.ts (14 tests) 5ms
+ ✓ src/routes/-_app.guide.track.$trackId.test.tsx (5 tests) 152ms
+ ✓ src/components/admin/ContentEditor.test.tsx (5 tests) 259ms
+ ✓ server/test/responseDiagnostics.test.ts (5 tests) 10ms
+ ✓ server/lib/social/passportSocial.test.ts (9 tests) 6ms
+ ✓ src/lib/useCreatorActivation.test.tsx (4 tests) 24ms
+ ✓ server/lib/llm.test.ts (16 tests) 15ms
+ ✓ scripts/release/target-guard.test.ts (9 tests) 13ms
+ ✓ src/routes/-_app.guide.index.test.tsx (9 tests) 227ms
+ ✓ src/components/components.test.tsx (10 tests) 132ms
+ ↓ server/test/fixtures/publicationProofRelease.onboarding.test.ts (2 tests | 2 skipped)
+ ↓ server/test/admin-staff.test.ts (7 tests | 7 skipped)
+ ✓ server/lib/contentAuthoring.test.ts (17 tests) 13ms
+ ✓ server/lib/social/repo.test.ts (2 tests) 4ms
+ ✓ scripts/release/release-acceptance.test.ts (4 tests) 1694ms
+   ✓ production release foundation acceptance > fails closed at the package rehearsal entrypoint without disposable targets 1692ms
+ ✓ src/audit-tests/operator-continuation.audit.test.tsx (5 tests) 164ms
+ ✓ server/lib/campaignAuthoring.test.ts (11 tests) 4ms
+ ✓ server/test/audit-mission-authoring.test.ts (4 tests) 28ms
+ ↓ server/test/wallet.test.ts (4 tests | 4 skipped)
+ ↓ server/test/match.test.ts (3 tests | 3 skipped)
+ ✓ server/test/audit-admin-scope.test.ts (8 tests) 25ms
+ ✓ server/lib/profileMedia/service.test.ts (4 tests) 5ms
+ ✓ src/components/MissionCard.contract.test.tsx (9 tests) 166ms
+ ✓ server/test/audit-assistant-persistence.test.ts (4 tests) 13ms
+ ✓ src/lib/queries/kocmax.test.tsx (6 tests) 409ms
+ ✓ src/routes/-brand.test.tsx (3 tests) 103ms
+ ↓ server/test/content.test.ts (5 tests | 5 skipped)
+ ↓ server/test/onboarding.test.ts (6 tests | 6 skipped)
+ ✓ src/routes/-_app.campaigns.test.tsx (3 tests) 71ms
+ ✓ src/components/AuthFeedback.test.tsx (5 tests) 134ms
+ ✓ src/routes/-_app.match.test.tsx (6 tests) 91ms
+ ✓ src/routes/-admin.insights.test.tsx (3 tests) 153ms
+ ↓ server/test/brand.test.ts (7 tests | 7 skipped)
+ ✓ src/routes/-_app.my.test.tsx (2 tests) 80ms
+ ✓ src/components/onboarding/OnboardingShell.test.tsx (5 tests) 135ms
+ ✓ src/routes/-admin.missions.index.test.tsx (2 tests) 284ms
+ ↓ server/test/adminContent.test.ts (6 tests | 6 skipped)
+ ↓ server/test/assistant.test.ts (2 tests | 2 skipped)
+ ✓ src/routes/-admin.creators-access.test.tsx (3 tests) 251ms
+ ↓ server/test/leveling.test.ts (3 tests | 3 skipped)
+ ✓ server/lib/operatorCrm/serializers.test.ts (6 tests) 13ms
+ ✓ src/lib/-missionMeta.test.ts (10 tests) 4ms
+ ↓ server/test/adminAcademy.test.ts (5 tests | 5 skipped)
+ ✓ src/routes/-admin.campaigns.test.tsx (2 tests) 251ms
+ ✓ src/components/active-mission/ProofAttemptHistory.copy.test.tsx (1 test) 121ms
+ ↓ server/test/brandResources.test.ts (5 tests | 5 skipped)
+ ✓ src/routes/-brand.resources.index.test.tsx (2 tests) 65ms
+ ✓ src/audit-tests/admin-live-followup.audit.test.tsx (2 tests) 122ms
+ ✓ src/components/assistant/AssistantPanel.test.tsx (4 tests) 137ms
+ ✓ src/routes/-app.auth.callback.test.tsx (4 tests) 325ms
+ ✓ src/routes/-admin.radar.test.tsx (4 tests) 155ms
+ ✓ src/audit-tests/crm-atomicity.audit.test.ts (2 tests) 3ms
+ ↓ server/test/notifications-api.test.ts (5 tests | 5 skipped)
+ ✓ scripts/seed-reward-handoff-acceptance.test.ts (5 tests) 4ms
+ ✓ src/components/admin/AdminSideNav.test.tsx (5 tests) 167ms
+ ✓ server/lib/engagedRoster.test.ts (4 tests) 11ms
+ ✓ src/components/LevelUpModal.test.tsx (6 tests) 38ms
+ ✓ server/test/cron-daily.test.ts (4 tests) 14ms
+ ✓ src/components/HookPanel.test.tsx (5 tests) 117ms
+ ✓ src/components/MissionCommitmentSummary.test.tsx (3 tests) 182ms
+ ✓ src/components/-MissionBrief.test.tsx (4 tests) 71ms
+ ✓ server/test/cron-social-refresh.test.ts (4 tests) 15ms
+ ✓ src/routes/-_app.gate.test.tsx (3 tests) 6ms
+ ↓ server/test/copilot.test.ts (4 tests | 4 skipped)
+ ✓ server/test/fixture-ownership.test.ts (1 test) 3ms
+ ✓ src/components/SideNav.test.tsx (3 tests) 334ms
+ ✓ src/components/active-mission/ProofAttemptHistory.reward-locales.test.tsx (2 tests) 88ms
+ ↓ server/test/insights.test.ts (4 tests | 4 skipped)
+ ✓ src/components/PassportTrustSummary.test.tsx (2 tests) 56ms
+ ↓ server/test/radar.test.ts (4 tests | 4 skipped)
+ ✓ src/routes/-_app.news.index.test.tsx (2 tests) 28ms
+ ✓ src/routes/-passport.$token.test.tsx (1 test) 40ms
+ ✓ src/routes/-admin.applications.test.tsx (1 test) 115ms
+ ↓ server/test/academy.test.ts (4 tests | 4 skipped)
+ ✓ src/audit-tests/admin-creators.audit.test.tsx (2 tests) 168ms
+ ✓ server/lib/assistant/chat.test.ts (2 tests) 6ms
+ ✓ src/routes/-brand.resources.$slug.test.tsx (1 test) 57ms
+ ✓ src/lib/levels.test.ts (4 tests) 4ms
+ ✓ server/devApi.test.ts (2 tests) 49ms
+ ✓ src/routes/-admin.submissions-evidence.test.tsx (1 test) 134ms
+ ✓ src/components/AcademyTrackCard.test.tsx (3 tests) 33ms
+ ✓ src/audit-tests/admin-decisions.audit.test.tsx (1 test) 108ms
+ ↓ server/test/bootstrap.test.ts (2 tests | 2 skipped)
+ ✓ src/lib/brand.test.ts (4 tests) 8ms
+ ✓ src/routes/-admin.submissions.test.tsx (1 test) 74ms
+ ✓ src/components/-MissionFacts.test.tsx (5 tests) 75ms
+ ✓ src/components/admin/StaffAuthGate.test.tsx (3 tests) 67ms
+ ✓ server/test/academy-availability.test.ts (2 tests) 10ms
+ ✓ src/routes/-_app.notifications.test.tsx (3 tests) 50ms
+ ✓ src/components/BottomNav.test.tsx (2 tests) 218ms
+ ✓ src/routes/-admin.engaged.test.tsx (1 test) 44ms
+ ✓ src/routes/-admin.test.tsx (1 test) 49ms
+ ✓ src/components/LevelProgress.test.tsx (4 tests) 34ms
+ ✓ server/lib/academyAuthoring.test.ts (7 tests) 4ms
+ ✓ server/lib/missionActivity.test.ts (2 tests) 3ms
+ ✓ src/routes/-admin.creators.test.tsx (1 test) 81ms
+stderr | src/components/marketing/MarketingHeader.test.tsx > MarketingHeader > logged-out: shows Log in / Join linking to /login
+React does not recognize the `activeProps` prop on a DOM element. If you intentionally want it to appear in the DOM as a custom attribute, spell it as lowercase `activeprops` instead. If you accidentally passed it from a parent component, remove it from the DOM element.
+
+ ✓ src/components/marketing/MarketingHeader.test.tsx (2 tests) 109ms
+ ✓ server/lib/assistant/retrieve.test.ts (2 tests) 4ms
+ ✓ src/components/admin/StaffAuthGate.scope.test.tsx (1 test) 108ms
+ ✓ src/audit-tests/my-missions.audit.test.tsx (3 tests) 62ms
+ ✓ server/lib/hookGen.test.ts (4 tests) 3ms
+ ✓ server/lib/assistant/tools.test.ts (3 tests) 9ms
+ ✓ src/lib/queries/redemption-earnings.test.tsx (2 tests) 172ms
+ ✓ src/components/brand/BrandNav.test.tsx (2 tests) 94ms
+ ✓ server/lib/trust.test.ts (7 tests) 4ms
+ ✓ src/components/admin/TrendChart.test.tsx (3 tests) 57ms
+ ✓ server/test/audit-legacy-evidence.test.ts (7 tests) 7ms
+ ✓ src/components/LevelChip.test.tsx (3 tests) 35ms
+ ✓ src/routes/-_app.wallet.test.tsx (1 test) 95ms
+ ↓ server/test/academy-seed.test.ts (3 tests | 3 skipped)
+ ↓ server/test/mission-authoring-schema.test.ts (2 tests | 2 skipped)
+ ✓ src/components/ScoreRing.test.tsx (4 tests) 34ms
+ ✓ server/lib/assistant/requestPolicy.test.ts (6 tests) 6ms
+ ✓ scripts/release/process.test.ts (1 test) 5ms
+ ✓ src/components/RedeemGiftCard.test.tsx (2 tests) 84ms
+ ✓ src/components/AuthFeedback.return.test.tsx (2 tests) 72ms
+ ✓ src/components/admin/ArrayInput.test.tsx (3 tests) 42ms
+ ✓ src/routes/-_app.redemption.history.test.tsx (1 test) 30ms
+ ✓ src/lib/queries/assistant.test.tsx (1 test) 97ms
+ ✓ src/lib/creatorActivation.statuses.test.ts (3 tests) 2ms
+ ✓ src/components/admin/PlatformPicker.test.tsx (3 tests) 81ms
+ ✓ server/lib/llm.assistant.test.ts (2 tests) 6ms
+ ✓ src/lib/creatorFormatting.test.ts (6 tests) 20ms
+ ✓ src/lib/passport.test.ts (4 tests) 4ms
+ ✓ src/lib/creatorQueueSearch.test.ts (13 tests) 7ms
+ ✓ src/main.analytics.test.tsx (1 test) 47ms
+ ✓ src/audit-tests/staff-unavailable.audit.test.tsx (1 test) 62ms
+ ✓ src/components/IdentityHeader.test.tsx (2 tests) 70ms
+ ✓ src/lib/workspaceCalendar.test.ts (6 tests) 18ms
+ ✓ src/routes/-_app.my.layout.test.tsx (1 test) 23ms
+ ✓ server/lib/assistant/chunk.test.ts (3 tests) 3ms
+ ✓ scripts/release/ci-workflow-contract.test.ts (1 test) 2ms
+ ✓ src/components/LangToggle.test.tsx (1 test) 61ms
+ ✓ src/components/Markdown.test.tsx (2 tests) 74ms
+ ✓ server/test/audit-schema-compatibility.test.ts (2 tests) 3ms
+ ✓ src/components/NotificationBadge.test.tsx (3 tests) 30ms
+ ✓ server/test/workspace.test.ts (2 tests) 8ms
+ ✓ src/lib/missionCategories.test.ts (5 tests) 3ms
+ ✓ server/lib/assistant/collect.test.ts (2 tests) 5ms
+ ✓ server/lib/assistant/prompt.test.ts (2 tests) 2ms
+ ✓ src/lib/socialAccountPresentation.test.ts (1 test) 3ms
+ ✓ src/lib/guideProgress.test.ts (2 tests) 3ms
+ ✓ src/lib/useRealtimeBalance.test.tsx (1 test) 2ms
+ ✓ server/test/app.test.ts (1 test) 12ms
+ ✓ src/lib/workspace.test.ts (1 test) 2ms
+ ↓ server/test/audit-workflow-roundtrip.test.ts (8 tests | 8 skipped)
+ ✓ server/test/audit-forward-migrations.embedded.test.ts (11 tests) 2071ms
+
+ Test Files  211 passed | 41 skipped (252)
+      Tests  1756 passed | 338 skipped (2094)
+   Start at  14:57:35
+   Duration  391.46s (transform 4.32s, setup 45.78s, collect 37.75s, tests 47.44s, environment 197.63s, prepare 23.16s)
+
+JSON report written to C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/.codex-tmp/D14-full-suite.json

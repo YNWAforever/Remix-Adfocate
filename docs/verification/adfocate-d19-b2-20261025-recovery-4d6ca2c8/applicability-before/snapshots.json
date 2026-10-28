@@ -1,0 +1,70 @@
+{
+  "purpose": "Exact1622-file current checkpoint metadata before offline applicability/model/Node22 review; not a data or runtime snapshot.",
+  "files": [
+    {
+      "path": "docs/verification/adfocate-delivery.json",
+      "beforeCopy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/applicability-before/adfocate-delivery.json",
+      "beforeSha256": "184269556e3c3f98d27c4f11c3feb5be27f5843cd9a5ea1bff0fd266ffdcdb49"
+    },
+    {
+      "path": "docs/verification/D19-C1-delivery.json",
+      "beforeCopy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/applicability-before/D19-C1-delivery.json",
+      "beforeSha256": "e3b3d8531f3ca0aee8c29e5c92e3919ebb1fd292ed9c3169a8551f59c48849ef"
+    },
+    {
+      "path": "docs/verification/D19-C1-delivery.md",
+      "beforeCopy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/applicability-before/D19-C1-delivery.md",
+      "beforeSha256": "6eb7a7bd4dd962abdf77cebfb6e8eee92033245e02b6e69c7710d8e0e229ad06"
+    },
+    {
+      "path": "docs/verification/D19-C1-gates.json",
+      "beforeCopy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/applicability-before/D19-C1-gates.json",
+      "beforeSha256": "a233cb38df62781ceab16159ca0370067964694024900b8fda83f821a9c066ac"
+    },
+    {
+      "path": "docs/verification/D19-C1-case-coverage.json",
+      "beforeCopy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/applicability-before/D19-C1-case-coverage.json",
+      "beforeSha256": "9d7605d65cde96d3bfab8b31fdd77412f474c1e2ded6c04bec3cdd0cd3be5636"
+    },
+    {
+      "path": "docs/verification/D19-C1-remaining-acceptance.json",
+      "beforeCopy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/applicability-before/D19-C1-remaining-acceptance.json",
+      "beforeSha256": "18fc3c16183bc7cddb8c2a7072e291475f6d5a086b29552579083ea538881f64"
+    },
+    {
+      "path": "docs/verification/D19-C1-rollback.json",
+      "beforeCopy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/applicability-before/D19-C1-rollback.json",
+      "beforeSha256": "793076e132a66f836da15bb6ec44c841b92879e895011423bc2ace81ff53a846"
+    },
+    {
+      "path": "docs/verification/implementation_backlog.csv",
+      "beforeCopy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/applicability-before/implementation_backlog.csv",
+      "beforeSha256": "a2bb68ba1af5e6ad13ffc0ddab5be8ead72c39a7355cf6d53bc872bb58b7e362"
+    },
+    {
+      "path": "docs/verification/adfocate-task-ledger.md",
+      "beforeCopy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/applicability-before/adfocate-task-ledger.md",
+      "beforeSha256": "f3aba88d47fd4ddd4585e90d63e3f5286769f4c65651230c74bbfe4053928006"
+    },
+    {
+      "path": "docs/verification/evidence-integrity.json",
+      "beforeCopy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/applicability-before/evidence-integrity.json",
+      "beforeSha256": "03d3ac9206c698de0997bddd745e3ca1ec02b22b6957e85921766c4c921da8a9"
+    },
+    {
+      "path": "docs/verification/D19-C1-integrity.json",
+      "beforeCopy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/applicability-before/D19-C1-integrity.json",
+      "beforeSha256": "d291fa212fb46b44cb0f1ae47d371926d680a0f61630f5c5303f46ab7eaf5003"
+    },
+    {
+      "path": "docs/verification/D19-C1-runtime-verification-summary.json",
+      "beforeCopy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/applicability-before/D19-C1-runtime-verification-summary.json",
+      "beforeSha256": "96edce5e58622787210df034101b3d1a090374017ec74c652a9f32bd52224c32"
+    },
+    {
+      "path": "docs/superpowers/plans/2026-10-23-adfocate-implementation-plan.md",
+      "beforeCopy": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/applicability-before/2026-10-23-adfocate-implementation-plan.md",
+      "beforeSha256": "c1fd6bca74c7f440a76fc02c485c94c1b2090273005523e0e56dfd8185c7c575"
+    }
+  ]
+}

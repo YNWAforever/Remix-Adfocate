@@ -1,0 +1,87 @@
+{
+  "initialProductRed": {
+    "report": {
+      "path": "docs/verification/D19-application-decisions-20261025/red.json",
+      "sha256": "5a9ab6d7ef6efa72148632e5687a555d1793cec9666d4127f28cc8397de8c289"
+    },
+    "failed": 3,
+    "reason": "Missing durable actor/time, non-recoverable400 conflict and empty decline reason accepted."
+  },
+  "uiRed": {
+    "report": {
+      "path": "docs/verification/D19-application-decisions-20261025/focused-before-ui.json",
+      "sha256": "feeaa7e70023ac3524a18a97056e49cb3bd828ef7515d3467b306414f345f46c"
+    },
+    "failed": 3,
+    "reason": "Two missing labelled reason UI controls; one unsupported test matcher corrected to equivalent count+arguments assertions, without relaxing business behavior."
+  },
+  "emptyDbResultRed": {
+    "path": "docs/verification/D19-application-decisions-20261025/empty-result-red.json",
+    "sha256": "ade0ff426eca52afae9501a600047aae4303c015bc886839ed00f9a1f36b0e35"
+  },
+  "sdkThenableRed": {
+    "path": "docs/verification/D19-application-decisions-20261025/sdk-thenable-red.json",
+    "sha256": "48dbf8a33cf80531d4f4d71c66ce6c4815bd3dae9ea999772d8d1b9b67636f0b"
+  },
+  "creatorReasonRed": {
+    "path": "docs/verification/D19-application-decisions-20261025/creator-reason-red.json",
+    "sha256": "cc3316dca78a83308bf7bfef544aae472447e6ca1ff99a89a257a7f09a7cdc6a"
+  },
+  "legacyNoBodyRed": {
+    "path": "docs/verification/D19-application-decisions-20261025/no-body-compatibility-red.json",
+    "sha256": "c8568abe46f03a4d890a1a546943131db51eee6672422306ad44c44e62885e94"
+  },
+  "initialFull": {
+    "report": {
+      "path": "docs/verification/D19-application-decisions-20261025/full-final.json",
+      "sha256": "bf75fa265d50936a343fbba3a39fbb0e701385f2f90a21c41045f58b496b492f"
+    },
+    "passed": 2088,
+    "failed": 12,
+    "gatedSkip": 363,
+    "classification": "Nine ephemeral-loopback transport failures and two temp-file failures required execution permission; one real unclassified-migration gate required explicit metadata registration."
+  },
+  "manifestFixtureFollowup": {
+    "report": {
+      "path": "docs/verification/D19-application-decisions-20261025/permission-and-manifest-recheck.json",
+      "sha256": "82870a5036e190030c5d7bc6dc577c804a6e7276b4bb0801c994a96759b635e7"
+    },
+    "passed": 16,
+    "failed": 10,
+    "classification": "Loopback contracts now passed. Ten manifest fixtures still omitted the newly reviewed file; list and final-phase assertions were extended, retaining earlier contract checks."
+  },
+  "intermediateFull": {
+    "report": {
+      "path": "docs/verification/D19-application-decisions-20261025/full-current-candidate.json",
+      "sha256": "0aeac3ad7cc3ea8cf013abe54e636e858d958a29e68688ee7c8cf779e32478b8"
+    },
+    "passed": 2100,
+    "failed": 1,
+    "gatedSkip": 363,
+    "classification": "The preflight sentinel still expected587 capabilities after the four new contracts. Updated to591 and retained an explicit587-old-plus4-new assertion and validator coverage."
+  },
+  "passingPermissionRecheck": {
+    "path": "docs/verification/D19-application-decisions-20261025/permission-and-manifest-final.json",
+    "sha256": "90e37001c0b84a56cecdcb2b7dcf6e22d2924217293db3c01be67e1ed93bd8ea"
+  },
+  "passingReleaseAndCompatibility": {
+    "path": "docs/verification/D19-application-decisions-20261025/release-and-compatibility-final.json",
+    "sha256": "cf0a0452d8df19866293fe3ba0127d956e23d1bafc1eb7092d4aad5e952acfad"
+  },
+  "sourceOutputGuard": "Manifest CLI write exited0 and generated the intended local artifact; the first wrapper incorrectly treated this intentional output as forbidden source drift. It stopped afterward. No repeat write, target action or result overwrite; final source and manifest checks are separate.",
+  "earlierFailureReceiptsPreserved": true,
+  "editedRetryRed": {
+    "path": "docs/verification/D19-application-decisions-20261025/edited-retry-red.json",
+    "sha256": "10f46b4efbd684bb3d66576be82ca2b8e25fc3742a323208c0305be342599feb"
+  },
+  "earlierValidatedCandidate": {
+    "sourceFingerprint": "6a1e33a4c3413ef57b43eea47542c499c26904bc738dae3285225d0710194e19",
+    "report": {
+      "path": "docs/verification/D19-application-decisions-20261025/full-release-validated.json",
+      "sha256": "373a1c684a92a84fa7fdcca44303918336056a4fe304b32dcd1221f8787c135e"
+    },
+    "passed": 2102,
+    "failed": 0,
+    "scope": "Retained before the final edited-reason retry correction; not the current full result."
+  }
+}

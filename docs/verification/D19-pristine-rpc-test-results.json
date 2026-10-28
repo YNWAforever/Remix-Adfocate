@@ -1,0 +1,106 @@
+{
+  "sourceFingerprint": "9812cc7755dd6443f8fa4b39bc92e6c26536b54e15ba1c0cbc494815375dd5e1",
+  "integration": {
+    "command": [
+      "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+      "node_modules/vitest/vitest.mjs",
+      "run",
+      "--no-file-parallelism",
+      "--maxWorkers=1",
+      "--minWorkers=1",
+      "--testTimeout=60000",
+      "--hookTimeout=60000",
+      "--reporter=dot",
+      "--reporter=json",
+      "--outputFile=.codex-tmp/D19-pristine-rpc-integration.private.json",
+      "--testNamePattern=^(close_due_campaigns|snapshot_campaign_leaderboards) ",
+      "server/test/campaigns-s2.test.ts"
+    ],
+    "exit": 0,
+    "passed": 2,
+    "failed": 0,
+    "skipped": 3,
+    "files": [
+      {
+        "file": "server/test/campaigns-s2.test.ts",
+        "assertions": [
+          {
+            "title": "close_due_campaigns closes past-deadline active only, idempotent",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "title": "snapshot_campaign_leaderboards captures active-campaign ranks",
+            "status": "passed",
+            "failure": null
+          },
+          {
+            "title": "broadcast_campaign_started inserts once, idempotent",
+            "status": "skipped",
+            "failure": null
+          },
+          {
+            "title": "notifyCampaignStarted policy notifies a matched creator but not an unmatched one",
+            "status": "skipped",
+            "failure": null
+          },
+          {
+            "title": "notifyCampaignStarted policy does NOT notify a matching creator in a DIFFERENT workspace (isolation)",
+            "status": "skipped",
+            "failure": null
+          }
+        ]
+      }
+    ],
+    "rawPrivateReportSha256": "8c88995d5035a48f1d87d071f4336d23221581b3e6e50da5cd4ecd708670a972"
+  },
+  "offlineFull": {
+    "report": "D19-pristine-rpc-full-results.json",
+    "passed": 1982,
+    "skipped": 363,
+    "failed": 0,
+    "files": 277,
+    "originalAudit16": 16,
+    "protected194": 194
+  },
+  "targeted": {
+    "passed": 34,
+    "files": 3,
+    "report": "D19-pristine-rpc-targeted-results.json"
+  },
+  "redGreen": {
+    "red": {
+      "passed": 11,
+      "failed": 12,
+      "skipped": 0,
+      "rawPrivateReportSha256": "bd209e8171d3728bac020c5407ccff325c9a702e0d57a79361802cedb42fb25a"
+    },
+    "green": {
+      "passed": 23,
+      "failed": 0,
+      "skipped": 0,
+      "rawPrivateReportSha256": "c03c839ebe4371034e58cc6077cfcbf6191315ac890706e760a4462b93303c9f"
+    },
+    "bridgeRed": {
+      "passed": 24,
+      "failed": 1,
+      "skipped": 0,
+      "rawPrivateReportSha256": "9c54f95ba15a5011fdd5167bea810655c7a03d3dc41769cd5a17a5de296b994d"
+    },
+    "finalTargeted": {
+      "passed": 34,
+      "failed": 0,
+      "skipped": 0,
+      "rawPrivateReportSha256": "ea24d1a91549a28834c7d0beb2dd1cf5ba463ab18dbdf30b8347db4451d0bdca"
+    }
+  },
+  "static": {
+    "type": "D19-pristine-rpc-type-results.json",
+    "lint": "D19-pristine-rpc-lint-results.json",
+    "manifest": "D19-pristine-rpc-manifest-results.json",
+    "build": "D19-pristine-rpc-build-results.json"
+  },
+  "attempt1": "D19-pristine-rpc-integration-attempt1.json",
+  "attempt2": "D19-pristine-rpc-rest-recovery.json",
+  "sourceUnchangedSinceFinalTests": true
+}

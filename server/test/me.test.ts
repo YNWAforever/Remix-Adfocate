@@ -1,3 +1,5 @@
+import { FIXTURE_WORKSPACE_SLUG } from "./helpers";
+import { fixtureName } from "./helpers";
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { createApp } from "../app";
 import { parseBootstrapSlugs } from "../routes/me";
@@ -11,7 +13,7 @@ function req(path: string, jwt: string, init: RequestInit = {}) {
     ...init,
     headers: {
       Authorization: `Bearer ${jwt}`,
-      "X-Workspace-Slug": "demo",
+      "X-Workspace-Slug": FIXTURE_WORKSPACE_SLUG,
       "Content-Type": "application/json",
       ...(init.headers ?? {}),
     },
@@ -20,7 +22,7 @@ function req(path: string, jwt: string, init: RequestInit = {}) {
 
 /** The workspace bootstrap must refuse — a real row, deliberately off the allowlist. The
  *  "test-brand-ws-" prefix is what cleanup() deletes. */
-const OFF_ALLOWLIST_SLUG = "test-brand-ws-bootstrap-allowlist";
+const OFF_ALLOWLIST_SLUG = fixtureName("test-brand-ws-bootstrap-allowlist");
 
 function bootstrap(slug: string, jwt: string) {
   return app.request("/api/me/bootstrap", {
@@ -49,13 +51,13 @@ suite("me/bootstrap workspace allowlist", () => {
       .from("workspaces")
       .insert({ slug: OFF_ALLOWLIST_SLUG, name: "Bootstrap allowlist test WS" });
     if (error) throw error;
-    user = await makeUser({ email: "bootallowlist@test.local" });
+    user = await makeUser({ email: fixtureName("bootallowlist@test.local") });
   });
   afterAll(cleanup);
 
   it("joins the allow-listed workspace", async () => {
     // Also gives cleanup() a creator row (display_name "%@test.local") to remove afterwards.
-    const res = await bootstrap("demo", user.jwt);
+    const res = await bootstrap(FIXTURE_WORKSPACE_SLUG, user.jwt);
     expect(res.status).toBe(200);
     expect((await res.json()).created).toBe(true);
   });
@@ -83,8 +85,8 @@ suite("me/profile endpoint", () => {
   let c2: { userId: string; jwt: string };
   beforeAll(async () => {
     await cleanup();
-    c1 = await makeCreator("meprofile1@test.local", 0);
-    c2 = await makeCreator("meprofile2@test.local", 0);
+    c1 = await makeCreator(fixtureName("meprofile1@test.local"), 0);
+    c2 = await makeCreator(fixtureName("meprofile2@test.local"), 0);
   });
   afterAll(cleanup);
 
@@ -93,20 +95,20 @@ suite("me/profile endpoint", () => {
     const res = await req("/me/profile", c1.jwt, {
       method: "PUT",
       body: JSON.stringify({
-        display_name: "updated.meprofile1@test.local",
+        display_name: fixtureName("updated.meprofile1@test.local"),
         categories: ["美容", "科技"],
         social_handles: [{ platform: "Instagram", handle: "@me", followers: 1000, verified: false }],
       }),
     });
     expect(res.status).toBe(200);
     const body = await res.json();
-    expect(body.display_name).toBe("updated.meprofile1@test.local");
+    expect(body.display_name).toBe(fixtureName("updated.meprofile1@test.local"));
     expect(body.categories).toEqual(["美容", "科技"]);
     expect(body.social_handles).toHaveLength(1);
     expect(body.social_handles[0]).toMatchObject({ platform: "Instagram", handle: "@me" });
 
     const me = await (await req("/me", c1.jwt)).json();
-    expect(me.display_name).toBe("updated.meprofile1@test.local");
+    expect(me.display_name).toBe(fixtureName("updated.meprofile1@test.local"));
     expect(me.social_handles).toHaveLength(1);
   });
 
@@ -127,11 +129,11 @@ suite("me/profile endpoint", () => {
     // Keep the '@test.local' suffix so cleanup() still matches c2 after the rename.
     await req("/me/profile", c2.jwt, {
       method: "PUT",
-      body: JSON.stringify({ display_name: "selfonly.meprofile2@test.local" }),
+      body: JSON.stringify({ display_name: fixtureName("selfonly.meprofile2@test.local") }),
     });
     const after = await (await req("/me", c1.jwt)).json();
     expect(after.display_name).toBe(before.display_name);
     const me2 = await (await req("/me", c2.jwt)).json();
-    expect(me2.display_name).toBe("selfonly.meprofile2@test.local");
+    expect(me2.display_name).toBe(fixtureName("selfonly.meprofile2@test.local"));
   });
 });

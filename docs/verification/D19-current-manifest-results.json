@@ -1,0 +1,21 @@
+{
+  "sourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+  "gate": "manifest",
+  "command": [
+    "npm.cmd",
+    "exec",
+    "--offline",
+    "--yes",
+    "--package=node@22",
+    "--",
+    "node",
+    "C:/Program Files/nodejs/node_modules/npm/bin/npm-cli.js",
+    "run",
+    "release:manifest:check"
+  ],
+  "startedAt": "2026-10-24T05:24:07.377536+00:00",
+  "finishedAt": "2026-10-24T05:24:10.450543+00:00",
+  "exit": 0,
+  "environment": "Node22 cached offline; RUN_INTEGRATION=0/RUN_AUDIT_INTEGRATION=0, DB/provider env blank; no external provider accepted",
+  "log": "logs/D19-current-manifest.log"
+}

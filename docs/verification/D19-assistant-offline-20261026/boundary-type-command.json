@@ -1,0 +1,43 @@
+{
+  "startedAt": "2026-10-25T17:10:22.482442+00:00",
+  "command": [
+    "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+    "node_modules/typescript/bin/tsc",
+    "--noEmit",
+    "--project",
+    "C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023\\docs\\verification\\D19-assistant-offline-20261026\\tsconfig.offline.json"
+  ],
+  "sourceFingerprint": "e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993",
+  "sourceRecordsUnchanged": 788,
+  "verificationArtifacts": [
+    {
+      "path": "docs/verification/D19-assistant-offline-20261026/assistant-boundary.test.tsx",
+      "sha256": "830c9be7bb1b9ce315f10f730de51208920be2a663ea6c854280e7afaa52a32c"
+    },
+    {
+      "path": "docs/verification/D19-assistant-offline-20261026/vitest.offline.mjs",
+      "sha256": "1633634a8064a664ec6ac4fdc68cd8afce3b324f4e136b6da6f7d548b9e88208"
+    }
+  ],
+  "verificationArtifactFingerprint": "c9d7de09a80b4fa367cee6d9563a95b2990bf1593f7283e3558d6492e8fbf119",
+  "node": "v22.23.4",
+  "resource": {
+    "at": "2026-10-25T17:10:22.480931+00:00",
+    "freePhysicalGiB": 7.066349029541016,
+    "freeCommitGiB": 11.710468292236328,
+    "minimumGiB": 3
+  },
+  "envCredentialsAndPreloadsStripped": true,
+  "configEnvDir": false,
+  "actualTargetCalls": 0,
+  "actualSdkClients": 0,
+  "actualProviderCalls": 0,
+  "scope": "Standalone offline JSDOM/Hono with explicit fake Auth/DB and injected mock provider; no native full or real integration claim",
+  "additionalConfiguration": {
+    "path": "docs/verification/D19-assistant-offline-20261026/tsconfig.offline.json",
+    "sha256": "6f467eb03b1274851b1d5886b4e4b23851394725c7bb54a6dd9783b231bd4e8d"
+  },
+  "pid": 40500,
+  "endedAt": "2026-10-25T17:10:32.650097+00:00",
+  "exit": 0
+}

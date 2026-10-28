@@ -1,0 +1,66 @@
+{
+  "at": "2026-10-25T18:28:46.007582+00:00",
+  "status": "PREPARED_NOT_AUTHORIZED_NOT_EXECUTED",
+  "manifest": {
+    "path": "docs/verification/D19-C2-transport-continuation-runtime-manifest.json",
+    "sha256": "f5caccfdc354e7209b320064f08c9a59ce73cc0ae4bdfca4bcde6e255b424ba0"
+  },
+  "authorizationTemplate": {
+    "path": "docs/verification/D19-C2-transport-preparation-20261026/runtime-authorization.json",
+    "sha256": "8b95af97e36481ce22bf5f06e0293a1be0430bd5855e069b20c36cd574bd3b0d"
+  },
+  "source": {
+    "path": "docs/verification/D19-C2-transport-preparation-20261026/candidate-source.json",
+    "sha256": "912b68ac3a53bf2593b48a04f5fcad28dc9918658d8bd787a73228230dea4b9a"
+  },
+  "originalApprovedManifestUnchanged": {
+    "path": "docs/verification/D19-C2-application-runtime-manifest.json",
+    "sha256": "eb5ca8f03a85c5589cc6cbf27ec0ca5524e8600fd2914ad1d4d73f17eec5009a"
+  },
+  "originalActualApprovalPreserved": {
+    "path": "docs/verification/D19-application-runtime-preparation-20261025/runtime-authorization.json",
+    "sha256": "a909d1c60409db853da5949ee0b6ae29d6f69694fbd2c0bae313c3661557e894"
+  },
+  "sourceDelta": {
+    "path": "docs/verification/D19-C2-runtime-20261026/source-after-transport-fix.json",
+    "sha256": "b334757e961afdf32a1bb03121909a4fc4cadb266bfc79ab584be38527692a19"
+  },
+  "physicalResourceAdds": 0,
+  "localArchivesPlanned": [
+    {
+      "source": {
+        "path": ".codex-tmp/adfocate-d19-b2-20261025-recovery-4d6ca2c8/90ffc505-7abe-4b4c-8041-a6c954509278/role/supplement-target-receipt.private.json",
+        "sha256": "bb05ae09f455158c61058fdfd92d7a0524ab00484c8708576e5e320e91634a79"
+      },
+      "destination": ".codex-tmp/adfocate-d19-b2-20261025-recovery-4d6ca2c8/90ffc505-7abe-4b4c-8041-a6c954509278/role/transport-failure-preserved/supplement-target-receipt.private.json",
+      "operation": "Exact local file move after separate approval; no deletion/overwrite, no target operation",
+      "executed": false
+    },
+    {
+      "source": {
+        "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/90ffc505-7abe-4b4c-8041-a6c954509278/role/identity.json",
+        "sha256": "69e89e771694e20cb76ce11c6bc4d67ee78ffb885acf49cb91bd581c850f37a8"
+      },
+      "destination": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/90ffc505-7abe-4b4c-8041-a6c954509278/role/transport-failure-preserved/identity.json",
+      "operation": "Exact local file move after separate approval; no deletion/overwrite, no target operation",
+      "executed": false
+    },
+    {
+      "source": {
+        "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/90ffc505-7abe-4b4c-8041-a6c954509278/role/result.json",
+        "sha256": "e824aed1fb0abc15cff0204fb73cde86b83e1dc23cff04b061c44c80aa2a2a18"
+      },
+      "destination": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/90ffc505-7abe-4b4c-8041-a6c954509278/role/transport-failure-preserved/result.json",
+      "operation": "Exact local file move after separate approval; no deletion/overwrite, no target operation",
+      "executed": false
+    }
+  ],
+  "localArchivesExecuted": false,
+  "runtimeWriterExecutionsAfterFix": 0,
+  "sqlMigrationAndBusinessWritesAfterFix": 0,
+  "wholeR1Verified": false,
+  "incidentOpen": true,
+  "restored": false,
+  "releaseHold": true,
+  "providerEnabled": false
+}

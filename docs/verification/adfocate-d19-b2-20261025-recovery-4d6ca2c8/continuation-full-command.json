@@ -1,0 +1,18 @@
+{
+  "startedAt": "2026-10-25T09:04:31.989739+00:00",
+  "finishedAt": "2026-10-25T09:10:09.585696+00:00",
+  "command": [
+    "node",
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "--no-file-parallelism",
+    "--reporter=json",
+    "--outputFile=docs\\verification\\adfocate-d19-b2-20261025-recovery-4d6ca2c8\\continuation-full.json"
+  ],
+  "exit": 0,
+  "sourceFingerprint": "bcdca7995d43a33278d887aa9e44032c047194dc04c1dd8252e2c55843bfc4bb",
+  "integrationCredentialsAvailable": false,
+  "actualC1TargetUsed": false,
+  "log": "continuation-full.log",
+  "layer": "LOCAL_OFFLINE_MOCK_AND_OWNED_LOOPBACK_UNIT_TRANSPORT"
+}

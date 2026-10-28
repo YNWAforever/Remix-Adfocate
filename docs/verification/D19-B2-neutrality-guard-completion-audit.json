@@ -1,0 +1,73 @@
+{
+  "sourceFingerprint": "d13fe2b7e8b9838972b8d93881dc17e8ccfc2795bc133b01cdc4f1a35426f893",
+  "basis": [
+    "docs/superpowers/specs/2026-10-23-adfocate-product-design.md",
+    "docs/superpowers/plans/2026-10-23-adfocate-implementation-plan.md",
+    "docs/operations/production-release-foundation.md",
+    "docs/operations/reward-handoff.md"
+  ],
+  "requirements": [
+    {
+      "requirement": "candidate-binding",
+      "status": "VERIFIED_LOCAL",
+      "evidenceOrRemaining": "779 canonical source records; current gates bound before/after; no commit invented"
+    },
+    {
+      "requirement": "audit16-and-protected194",
+      "status": "VERIFIED_LOCAL",
+      "evidenceOrRemaining": "16+194 assertions pass in actual full reporter; protected source checksums unchanged"
+    },
+    {
+      "requirement": "pending-neutrality-refusal",
+      "status": "VERIFIED_MOCK_ONLY",
+      "evidenceOrRemaining": "18 helper tests and 2 actual-runner tests under fakes; UI exit0 plus budget mutation forces phase exit1"
+    },
+    {
+      "requirement": "financial-and-legacy-coverage",
+      "status": "PREPARED_NOT_RUN",
+      "evidenceOrRemaining": "Nine financial row families, all workspace Creator XP, inventory and legacy anchors; full complete snapshots use read-only transactions"
+    },
+    {
+      "requirement": "same-run-target-evidence",
+      "status": "VERIFIED_MOCK_ONLY",
+      "evidenceOrRemaining": "Reject missing/incomplete/different target/workspace/Creator/submission/workflow/lineage frames"
+    },
+    {
+      "requirement": "legacy-issued-vs-active-pending",
+      "status": "PREPARED_NOT_RUN",
+      "evidenceOrRemaining": "Legacy financial+XP issuance windows remain distinct from pending/cancel/reapproval neutrality; explicit join XP+10 preserved"
+    },
+    {
+      "requirement": "creator-to-operator-saved-state",
+      "status": "NOT_RUN_CURRENT_CANDIDATE",
+      "evidenceOrRemaining": "Fresh actual joins/delivery/revision/proof/review/completion and refresh of same handoff/history still required"
+    },
+    {
+      "requirement": "target-identity-before-client",
+      "status": "PREPARED_NOT_RUN",
+      "evidenceOrRemaining": "No actual container/project/proxy/cache/ports/volume/catalog observed or changed in P0"
+    },
+    {
+      "requirement": "original-incident-and-B1",
+      "status": "OPEN_UNRESTORED_HOLD",
+      "evidenceOrRemaining": "Old shaped target remains forensics-only; no current reads/writes/lifecycle and no guessed restoration"
+    },
+    {
+      "requirement": "pristine-global-rpcs",
+      "status": "RETAINED_HISTORICAL_NOT_RERUN",
+      "evidenceOrRemaining": "Original two cases preserved; not rebound as B2 evidence"
+    },
+    {
+      "requirement": "D15-owner-device-hosted-staff",
+      "status": "BLOCKED_RETAINED",
+      "evidenceOrRemaining": "No approved lessons, advisor signoff, physical-device/hosted or formal staff authorization supplied"
+    },
+    {
+      "requirement": "publication-runtime-provider",
+      "status": "NOT_APPROVED_NOT_RUN",
+      "evidenceOrRemaining": "No actual B2, commit, push, merge, deployment, pilot enablement, observation, production or paid provider"
+    }
+  ],
+  "wholeR1Verified": false,
+  "releaseHold": true
+}

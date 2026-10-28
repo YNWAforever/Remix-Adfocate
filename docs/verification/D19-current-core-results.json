@@ -1,0 +1,84 @@
+{
+  "phase": "core",
+  "startedAt": "2026-10-24T05:12:01.282920+00:00",
+  "finishedAt": "2026-10-24T05:12:17.732154+00:00",
+  "sourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+  "command": "npm.cmd exec --offline --yes --package=node@22 -- node .codex-tmp/D19-current-api.mjs core",
+  "exit": 0,
+  "log": "logs/D19-current-core.log",
+  "priorEvidenceRestored": 956,
+  "captured": [
+    {
+      "historicalPath": "docs/verification/D19-fixtures.jsonl",
+      "captured": "docs/verification/D19-current-runtime/core/D19-fixtures.jsonl",
+      "bytes": 47983,
+      "sha256": "22f0c87f94fc2784c8ce5b2bb0253c952c96ebba6168203784af096cd0342b81",
+      "oldBytesRestored": true,
+      "appendOnlyDelta": true
+    },
+    {
+      "historicalPath": "docs/verification/workflow-runtime.jsonl",
+      "captured": "docs/verification/D19-current-runtime/core/workflow-runtime.jsonl",
+      "bytes": 21036,
+      "sha256": "da0dab3514f360aa23cbc15210db9ecb8a665592c5ca39ff4985aedaa5d347bf",
+      "oldBytesRestored": true,
+      "appendOnlyDelta": true
+    }
+  ],
+  "scope": "Existing tests/runner, fresh exact-owned fixtures; no production target, external providers or cleanup; original evidence bytes restored after phase",
+  "passed": 9,
+  "failed": 0,
+  "skipped": 0,
+  "tests": [
+    {
+      "file": "server/test/audit-workflow-roundtrip.test.ts",
+      "assertions": [
+        {
+          "title": "D07 exact-ID disposable workflow roundtrip loads the real creator mission collection before and after joining",
+          "status": "passed",
+          "duration": 59.78439999999955
+        },
+        {
+          "title": "D07 exact-ID disposable workflow roundtrip pages 51 real database creators once with stable ties and a scoped total",
+          "status": "passed",
+          "duration": 463.7389999999996
+        },
+        {
+          "title": "D07 exact-ID disposable workflow roundtrip persists race/join, receipt, revision, proof correction, one pending reward and cancellation without financial effects",
+          "status": "passed",
+          "duration": 2145.5815000000002
+        },
+        {
+          "title": "D07 exact-ID disposable workflow roundtrip rejects real signed-in staff without membership and cross-workspace requests",
+          "status": "passed",
+          "duration": 91.8176999999996
+        },
+        {
+          "title": "D07 exact-ID disposable workflow roundtrip rolls back a real audit fault and serializes concurrent CRM retries",
+          "status": "passed",
+          "duration": 1428.3031999999985
+        },
+        {
+          "title": "D07 exact-ID disposable workflow roundtrip blocks an unknown historical reward contract and preserves the single-workspace membership key",
+          "status": "passed",
+          "duration": 107.29040000000168
+        },
+        {
+          "title": "D07 exact-ID disposable workflow roundtrip persists one assistant turn with real service grants and rejects Creator provider claims",
+          "status": "passed",
+          "duration": 35.546699999998964
+        },
+        {
+          "title": "D07 exact-ID disposable workflow roundtrip retains the legacy join/submit/review journey with evidence validation",
+          "status": "passed",
+          "duration": 246.71339999999873
+        },
+        {
+          "title": "D07 exact-ID disposable workflow roundtrip D19 reapproval preserves an issued legacy anchor and reloads one neutral pending reward through finance",
+          "status": "passed",
+          "duration": 1411.415500000001
+        }
+      ]
+    }
+  ]
+}

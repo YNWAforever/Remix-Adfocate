@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { ActiveMissionQueueItem, ActiveMissionRiskBucket, ActiveMissionReviewState } from "@/lib/admin";
 import { Link } from "@tanstack/react-router";
 import { useI18n } from "@/lib/i18n";
+import { dueLabel as classifyDue, WORKSPACE_TIMEZONE } from "@/lib/workspaceCalendar";
 
 export type ActiveMissionQueueUiFilters = {
   risk?: ActiveMissionRiskBucket;
@@ -25,10 +26,6 @@ type Props = {
 const FIELD = "h-10 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white px-3 text-sm";
 const EMPTY_FILTERS: ActiveMissionQueueUiFilters = {};
 
-function isoDay(value: Date) {
-  return value.toISOString().slice(0, 10);
-}
-
 const RISK_KEYS: Record<ActiveMissionRiskBucket, string> = {
   overdue: "app.admin.activeMission.queue.risk.overdue",
   due_soon: "app.admin.activeMission.queue.risk.dueSoon",
@@ -39,16 +36,15 @@ const RISK_KEYS: Record<ActiveMissionRiskBucket, string> = {
 type Translate = ReturnType<typeof useI18n>["t"];
 
 function dueLabel(value: string | null, now: Date, t: Translate, locale: string) {
-  if (!value) return t("app.admin.activeMission.queue.noSlaDeadline");
-  const due = new Date(value);
-  if (Number.isNaN(due.getTime())) return t("app.admin.activeMission.queue.noSlaDeadline");
-  if (isoDay(due) === isoDay(now)) return t("app.admin.activeMission.queue.dueToday");
-  if (due.getTime() < now.getTime()) return t("app.admin.activeMission.queue.risk.overdue");
-  return t("app.admin.activeMission.queue.dueDate", { date: due.toLocaleDateString(locale) });
+  const label = classifyDue(value, now);
+  if (label === "unknown" || !value) return t("app.admin.activeMission.queue.noSlaDeadline");
+  if (label === "overdue") return t("app.admin.activeMission.queue.risk.overdue");
+  if (label === "today") return t("app.admin.activeMission.queue.dueToday");
+  return t("app.admin.activeMission.queue.dueDate", { date: new Date(value).toLocaleDateString(locale, { timeZone: WORKSPACE_TIMEZONE }) });
 }
 
 function submittedLabel(value: string | null, now: Date, t: Translate) {
-  if (!value) return t("app.admin.activeMission.queue.submissionUnavailable");
+  if (!value || !Number.isFinite(Date.parse(value))) return t("app.admin.activeMission.queue.submissionUnavailable");
   const elapsed = Math.max(0, now.getTime() - new Date(value).getTime());
   const hours = Math.floor(elapsed / 3_600_000);
   if (hours < 1) return t("app.admin.activeMission.queue.submittedLessHour");

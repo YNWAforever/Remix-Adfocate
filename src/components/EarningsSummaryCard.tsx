@@ -87,7 +87,7 @@ export function EarningsSummaryCard({
         </div>
       </dl>
       <a
-        href="/wallet/earnings"
+        href="/wallet"
         className="mt-3 inline-flex min-h-11 items-center px-1 text-sm font-bold underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
       >
         {t("app.activation.earnings.walletLink")}

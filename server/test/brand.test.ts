@@ -1,3 +1,5 @@
+import { FIXTURE_WORKSPACE_SLUG } from "./helpers";
+import { fixtureName } from "./helpers";
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { createApp } from "../app";
 import { makeBrand, seedMission, makeCreator, cleanup, hasSupabaseEnv } from "./helpers";
@@ -7,7 +9,7 @@ const suite = hasSupabaseEnv ? describe : describe.skip;
 const req = (path: string, jwt: string, init: RequestInit = {}) =>
   app.request(`/api${path}`, {
     ...init,
-    headers: { Authorization: `Bearer ${jwt}`, "Content-Type": "application/json", "X-Workspace-Slug": "demo", ...(init.headers ?? {}) },
+    headers: { Authorization: `Bearer ${jwt}`, "Content-Type": "application/json", "X-Workspace-Slug": FIXTURE_WORKSPACE_SLUG, ...(init.headers ?? {}) },
   });
 
 suite("brand portal", () => {
@@ -19,7 +21,7 @@ suite("brand portal", () => {
     await cleanup();
     A = await makeBrand("brandA@test.local", undefined, "owner");
     B = await makeBrand("brandB@test.local", undefined, "owner");
-    missionA = await seedMission(A.workspaceId, { slug: "test-a-mission", title: "A Mission", status: "draft" });
+    missionA = await seedMission(A.workspaceId, { slug: fixtureName("test-a-mission"), title: "A Mission", status: "draft" });
   });
   afterAll(cleanup);
 
@@ -31,10 +33,10 @@ suite("brand portal", () => {
     const res = await req("/brand/missions", A.jwt);
     expect(res.status).toBe(200);
     const { missions } = await res.json();
-    expect(missions.some((m: { slug: string }) => m.slug === "test-a-mission")).toBe(true);
+    expect(missions.some((m: { slug: string }) => m.slug === fixtureName("test-a-mission"))).toBe(true);
     const resB = await req("/brand/missions", B.jwt);
     const bodyB = await resB.json();
-    expect(bodyB.missions.some((m: { slug: string }) => m.slug === "test-a-mission")).toBe(false);
+    expect(bodyB.missions.some((m: { slug: string }) => m.slug === fixtureName("test-a-mission"))).toBe(false);
   });
 
   it("a brand cannot edit another workspace's mission (RLS → 404)", async () => {
@@ -47,16 +49,16 @@ suite("brand portal", () => {
   it("a brand can create a draft in its own workspace, scoped away from others", async () => {
     const res = await req("/brand/missions", A.jwt, {
       method: "POST",
-      body: JSON.stringify({ slug: "test-a-created", title: "Created", mission_type: "ugc" }),
+      body: JSON.stringify({ slug: fixtureName("test-a-created"), title: "Created", mission_type: "ugc" }),
     });
     expect(res.status).toBe(201);
     const resB = await req("/brand/missions", B.jwt);
     const bodyB = await resB.json();
-    expect(bodyB.missions.some((m: { slug: string }) => m.slug === "test-a-created")).toBe(false);
+    expect(bodyB.missions.some((m: { slug: string }) => m.slug === fixtureName("test-a-created"))).toBe(false);
   });
 
   it("accept without an invite returns 403", async () => {
-    const stranger = await makeCreator("stranger@test.local", 0);
+    const stranger = await makeCreator(fixtureName("stranger@test.local"), 0);
     const res = await app.request("/api/brand/accept", {
       method: "POST", headers: { Authorization: `Bearer ${stranger.jwt}` },
     });
@@ -69,7 +71,7 @@ suite("brand portal", () => {
   });
 
   it("creator mission reads still work after adding brand RLS policies", async () => {
-    const koc = await makeCreator("koc@test.local", 0);
+    const koc = await makeCreator(fixtureName("koc@test.local"), 0);
     const res = await req("/missions", koc.jwt);
     expect(res.status).toBe(200);
   });

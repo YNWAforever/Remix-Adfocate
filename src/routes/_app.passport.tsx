@@ -7,6 +7,7 @@ import { ScoreRing } from "@/components/ScoreRing";
 import { useI18n } from "@/lib/i18n";
 import { useCreatePassportShare, useMe, useMyPassport, useRevokePassportShare } from "@/lib/queries/kocmax";
 import { SCORE_META, SCORE_ORDER, BADGES } from "@/lib/passport";
+import { useCanShowPreviousData } from "@/components/RequestFeedback";
 
 export const Route = createFileRoute("/_app/passport")({ component: Passport });
 
@@ -17,9 +18,12 @@ function Passport() {
   const { t } = useI18n();
   const me = useMe();
   const passport = useMyPassport();
+  const showSavedPassport = useCanShowPreviousData(passport, ["passport"]);
   const share = useCreatePassportShare();
   const revoke = useRevokePassportShare();
   const [shareUrl, setShareUrl] = useState<string | null>(null);
+  const [shareError, setShareError] = useState<string | null>(null);
+  const [copyNotice, setCopyNotice] = useState(false);
 
   if (passport.isLoading) {
     return (
@@ -28,10 +32,11 @@ function Passport() {
       </div>
     );
   }
-  if (passport.isError || !passport.data) {
+  if (!passport.data || !showSavedPassport) {
     return (
       <div className="mx-auto max-w-lg p-4">
-        <p className="text-sm text-[var(--color-magenta)]">{t("common.loadFailed")}</p>
+        <p role="alert" className="text-sm text-[var(--color-magenta)]">{t("common.loadFailed")}</p>
+        <button type="button" onClick={() => void passport.refetch()}>{t("common.retry")}</button>
       </div>
     );
   }
@@ -41,6 +46,7 @@ function Passport() {
 
   return (
     <div className="mx-auto w-full max-w-lg space-y-6 p-4 lg:max-w-5xl">
+      {passport.isError ? <div role="alert"><p>{t("app.social.loadError")}</p><button type="button" onClick={() => void passport.refetch()}>{t("common.retry")}</button></div> : null}
       <section className={`${CARD} p-5`}>
         <IdentityHeader name={name} avatarUrl={me.data?.avatar_url}>
           <LevelProgress xp={p.xp} effectiveLevelId={me.data?.effective_level} />
@@ -97,14 +103,21 @@ function Passport() {
           <section className={`space-y-3 ${CARD}`}>
             <h2 className="font-heading font-bold">{t("app.passport.shareTitle")}</h2>
             {shareUrl && <p className="break-all text-sm text-[var(--color-soft-ink)]">{shareUrl}</p>}
+            {shareError ? <p role="alert" className="text-sm">{shareError}</p> : null}
+            {copyNotice ? <p role="status" className="text-sm">{t("app.passport.copyManually")}</p> : null}
             <div className="flex gap-2">
               <button
                 type="button"
                 onClick={async () => {
-                  const result = await share.mutateAsync();
-                  setShareUrl(result.publicUrl);
-                  await globalThis.navigator?.clipboard?.writeText?.(result.publicUrl);
+                  setShareError(null); setCopyNotice(false);
+                  try {
+                    const result = await share.mutateAsync();
+                    setShareUrl(result.publicUrl);
+                    try { await globalThis.navigator?.clipboard?.writeText?.(result.publicUrl); }
+                    catch { setCopyNotice(true); }
+                  } catch { setShareError(t("common.saveError")); }
                 }}
+                disabled={share.isPending || revoke.isPending}
                 className="flex-1 rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-2 text-sm font-bold"
               >
                 {t("app.passport.createLink")}
@@ -112,9 +125,11 @@ function Passport() {
               <button
                 type="button"
                 onClick={async () => {
-                  await revoke.mutateAsync();
-                  setShareUrl(null);
+                  setShareError(null);
+                  try { await revoke.mutateAsync(); setShareUrl(null); setCopyNotice(false); }
+                  catch { setShareError(t("common.saveError")); }
                 }}
+                disabled={share.isPending || revoke.isPending}
                 className="flex-1 rounded-full border-2 border-[var(--color-ink)] bg-white py-2 text-sm font-bold"
               >
                 {t("app.passport.revokeLink")}

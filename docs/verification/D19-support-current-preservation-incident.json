@@ -1,0 +1,41 @@
+{
+  "at": "2026-10-24T07:17:35.658924+00:00",
+  "status": "OPEN_ISOLATED_PREEXISTING_FIXTURE_MUTATION",
+  "target": "adfocate-r1-shaped-20261023",
+  "attemptNamespace": "c1133f56-3d5c-4417-8aa9-133f1dcaab03",
+  "detectedAfterSupport": {
+    "passed": 439,
+    "failed": 2,
+    "skipped": 0
+  },
+  "changedPriorRowHashes": [
+    {
+      "table": "campaigns",
+      "hash": "2c992a43374bebf71fc3e5237348342e"
+    },
+    {
+      "table": "campaigns",
+      "hash": "32ae750fb714d21fd20f96d7217dbd13"
+    },
+    {
+      "table": "campaigns",
+      "hash": "d04eb0463aebbcf453f566f8af902682"
+    }
+  ],
+  "productionQueried": false,
+  "productionWritten": false,
+  "restorationAttempted": false,
+  "beforeEvidence": "D19-support-current-schema-before.json plus ignored row-hash receipt",
+  "dataPreservationClaim": "FAILED for3 pre-existing isolated campaign rows; do not replace the initial baseline or imply restored state",
+  "next": "Read-only exact-ID diagnosis and offline test boundary repair; no further integration writes until guard is verified",
+  "writesStoppedAtDetection": true,
+  "laterControlledWork": {
+    "offlineGuardVerified": true,
+    "safeNewNamespace": "1d64ebf8-cbf6-4179-96ea-c14241d7207c",
+    "initialIncidentStillOpen": true,
+    "originalRowsRestored": false,
+    "globalRpcCasesBlocked": 2,
+    "laterBaseline": "D19-support-current-postrecovery-schema-after.json",
+    "initialBaselineStillHasExactly3Differences": "D19-support-current-schema-after-4.json"
+  }
+}

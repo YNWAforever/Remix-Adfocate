@@ -1,0 +1,181 @@
+{
+  "lineage": {
+    "projectId": "adfocate-d19-b2-20261025-recovery-4d6ca2c8",
+    "ownerRunId": "4d6ca2c8-b9c2-4457-bda8-7c03ac533f61",
+    "sourceFingerprint": "6285bca02a74bedf3eda7259238366e9023fcc0cae24fe5e7c874ae9dd118d7b",
+    "manifestSha256": "a0f09af0a7bce75e6842a1d42042ac4471e757c184574d7e5dcf9a23fdc57989",
+    "phase": "browser",
+    "namespace": "ebf1f615-be72-4072-ad97-ee98b150a796"
+  },
+  "runId": "ebf1f615-be72-4072-ad97-ee98b150a796",
+  "target": {
+    "runId": "4d6ca2c8-b9c2-4457-bda8-7c03ac533f61",
+    "ownerAuthorization": "2026-10-25 direct human reply call_2aaf171f8fd44d8a9eeb263ae8067e30; approved same existing C1 guarded source continuation, manifest a0f09af0a7bce75e6842a1d42042ac4471e757c184574d7e5dcf9a23fdc57989; ZERO additional resources/lifecycle; preserve old targets/OPEN/HOLD/provider disabled",
+    "disposable": true,
+    "projectId": "adfocate-d19-b2-20261025-recovery-4d6ca2c8",
+    "proxy": "none",
+    "apiPort": 56921,
+    "apiContainerId": "c68a68b5ea60116a998cf3b61f4cdfbf737101361ae0866a8d8f83d0313ba253",
+    "databaseContainerId": "a4e387ca84bfd11e815f697e0c407b12b8a610d29691517d8d8ecaef91957956",
+    "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+    "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+    "networkId": "bcc7bcc4cd4a519135d4e54d904024cbebb77786707dcecb6c994694b322e65c"
+  },
+  "workspaceIds": [
+    "44e4cc71-1bc1-4686-9144-89e78396e426",
+    "0f8fa85a-df73-435c-8143-c7cba4489eb3"
+  ],
+  "missionIds": [
+    "615d857a-78fc-4e32-8468-0288201e2ead",
+    "59a54451-7a75-45cc-9439-dc12b67e2cfa"
+  ],
+  "authIds": [
+    "8de7a4c1-90e4-49da-a1f4-8a5737304390",
+    "2f9769c9-49f7-4838-877d-26c7e421f15d",
+    "012afe91-4fdf-4f8a-a914-8ceff72799b1",
+    "a39a30b2-ef35-4423-a068-504247ed60d5",
+    "35897723-efcc-42e3-92da-ff336344a48d",
+    "605f9eee-173d-4368-be17-216584546957",
+    "b5b3c2ec-34d2-4de6-9689-721ba2cac3de",
+    "8ffc0148-d33a-4346-8239-47ad960a7a57",
+    "1a9956bd-b33e-4c6d-9117-b416211bfb12",
+    "30034498-ebb8-472b-96ae-1af75e7d3f1d",
+    "f220de3a-8331-484f-ab2c-993afa01e943"
+  ],
+  "initialSnapshots": [
+    {
+      "xp": 0,
+      "budget": 9000,
+      "points": 50,
+      "cashLedger": 0,
+      "pointLedger": 0,
+      "redemptions": 0,
+      "budgetLedger": 0,
+      "withdrawable": 0,
+      "financialRows": {
+        "creatorsXp": [
+          {
+            "id": "2f9769c9-49f7-4838-877d-26c7e421f15d",
+            "xp": 0
+          },
+          {
+            "id": "8de7a4c1-90e4-49da-a1f4-8a5737304390",
+            "xp": 0
+          }
+        ],
+        "redemptions": [],
+        "point_balances": [
+          {
+            "id": "4d58ee25-f383-407b-81a2-f88330353e45",
+            "hash": "7a228ebc412c4ab58c87933ca2766019"
+          },
+          {
+            "id": "b4904d7e-2ff7-49bc-ab52-715cc94cfeac",
+            "hash": "71f22bf6d23928c10de09a6f06512a2c"
+          }
+        ],
+        "redemption_codes": [],
+        "redemption_gifts": [
+          {
+            "id": "e7aa3cae-2c78-470a-ba0e-3a8143ed2eeb",
+            "hash": "6e21fa1f79863068f5f0fa0ad48e72b8"
+          }
+        ],
+        "earnings_balances": [
+          {
+            "id": "04e47339-c280-418f-8cca-4a78b1fa0c83",
+            "hash": "179ca5fed8b85cea22165ee1bbb66941"
+          },
+          {
+            "id": "527f2517-d1aa-47e3-a1a3-8cf8f0eab7bd",
+            "hash": "8f904c61248b904019f759c9d80a9186"
+          }
+        ],
+        "workspace_budgets": [
+          {
+            "id": "81f29f21-eb9b-4eda-a81c-0237b712bc64",
+            "hash": "7e2f03bbdd45ce4b621dcfce17d4b954"
+          }
+        ],
+        "point_transactions": [],
+        "earnings_transactions": [],
+        "workspace_budget_transactions": []
+      },
+      "rewardInventory": [
+        {
+          "id": "e7aa3cae-2c78-470a-ba0e-3a8143ed2eeb",
+          "stock_qty": 3,
+          "stock_remaining": 3
+        }
+      ]
+    },
+    {
+      "xp": 0,
+      "budget": 9000,
+      "points": 50,
+      "cashLedger": 0,
+      "pointLedger": 0,
+      "redemptions": 0,
+      "budgetLedger": 0,
+      "withdrawable": 0,
+      "financialRows": {
+        "creatorsXp": [
+          {
+            "id": "2f9769c9-49f7-4838-877d-26c7e421f15d",
+            "xp": 0
+          },
+          {
+            "id": "8de7a4c1-90e4-49da-a1f4-8a5737304390",
+            "xp": 0
+          }
+        ],
+        "redemptions": [],
+        "point_balances": [
+          {
+            "id": "4d58ee25-f383-407b-81a2-f88330353e45",
+            "hash": "7a228ebc412c4ab58c87933ca2766019"
+          },
+          {
+            "id": "b4904d7e-2ff7-49bc-ab52-715cc94cfeac",
+            "hash": "71f22bf6d23928c10de09a6f06512a2c"
+          }
+        ],
+        "redemption_codes": [],
+        "redemption_gifts": [
+          {
+            "id": "e7aa3cae-2c78-470a-ba0e-3a8143ed2eeb",
+            "hash": "6e21fa1f79863068f5f0fa0ad48e72b8"
+          }
+        ],
+        "earnings_balances": [
+          {
+            "id": "04e47339-c280-418f-8cca-4a78b1fa0c83",
+            "hash": "179ca5fed8b85cea22165ee1bbb66941"
+          },
+          {
+            "id": "527f2517-d1aa-47e3-a1a3-8cf8f0eab7bd",
+            "hash": "8f904c61248b904019f759c9d80a9186"
+          }
+        ],
+        "workspace_budgets": [
+          {
+            "id": "81f29f21-eb9b-4eda-a81c-0237b712bc64",
+            "hash": "7e2f03bbdd45ce4b621dcfce17d4b954"
+          }
+        ],
+        "point_transactions": [],
+        "earnings_transactions": [],
+        "workspace_budget_transactions": []
+      },
+      "rewardInventory": [
+        {
+          "id": "e7aa3cae-2c78-470a-ba0e-3a8143ed2eeb",
+          "stock_qty": 3,
+          "stock_remaining": 3
+        }
+      ]
+    }
+  ],
+  "platformEditorFixtureRunId": "2ccc8831-7368-47d2-b0fd-f1c71b637bd6",
+  "cleanup": "none; exact owned IDs retained"
+}

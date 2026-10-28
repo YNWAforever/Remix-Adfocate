@@ -1,0 +1,39 @@
+{
+  "sourceFingerprint": "6285bca02a74bedf3eda7259238366e9023fcc0cae24fe5e7c874ae9dd118d7b",
+  "auditCases": 107,
+  "findings": 28,
+  "originalAuditResultOverwritten": false,
+  "full": {
+    "command": [
+      "node",
+      "node_modules/vitest/vitest.mjs",
+      "run",
+      "--no-file-parallelism",
+      "--reporter=json",
+      "--outputFile=docs\\verification\\adfocate-d19-b2-20261025-recovery-4d6ca2c8\\full-suite-final.json"
+    ],
+    "exit": 0,
+    "passed": 2058,
+    "failed": 0,
+    "gatedSkip": 363,
+    "files": 288,
+    "report": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/full-suite-final.json",
+    "commandReceipt": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/full-suite-final-command.json"
+  },
+  "original16Passed": 16,
+  "protected194Passed": 194,
+  "originalRolesExpected": 8,
+  "originalCoreExpected": 9,
+  "originalBrowserExpected": 5,
+  "extraBrowserObligations": 2,
+  "roleExecuted": 0,
+  "coreExecuted": 0,
+  "browserExecuted": 0,
+  "newE2ePersistenceProven": false,
+  "legacyFinanceApprovalsExecuted": 0,
+  "pendingRewardFinancialNeutrality": "NOT_MEASURED_CURRENT_C1",
+  "realReadOnlyInfrastructure": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/metadata-after-fix-readonly.json",
+  "matrix": "D19-C1-source-revision-acceptance-matrix.json",
+  "D15OriginalRowsUnchanged": true,
+  "currentR1Verified": false
+}

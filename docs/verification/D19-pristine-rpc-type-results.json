@@ -1,0 +1,15 @@
+{
+  "sourceFingerprint": "9812cc7755dd6443f8fa4b39bc92e6c26536b54e15ba1c0cbc494815375dd5e1",
+  "gate": "type",
+  "command": [
+    "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+    "C:/Program Files/nodejs/node_modules/npm/bin/npm-cli.js",
+    "run",
+    "type-check"
+  ],
+  "startedAt": "2026-10-24T09:27:04.222771+00:00",
+  "finishedAt": "2026-10-24T09:27:41.914638+00:00",
+  "exit": 0,
+  "environment": "Node22 cached offline; RUN_INTEGRATION=0/RUN_AUDIT_INTEGRATION=0, DB/provider env blank; no external provider accepted",
+  "log": "logs/D19-pristine-rpc-type.log"
+}

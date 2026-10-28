@@ -1,0 +1,7 @@
+{"results":[],"message":"db lint"}
+
+Connecting to remote database...
+Linting schema: public
+Linting schema: private
+
+No schema errors found

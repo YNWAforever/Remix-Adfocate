@@ -1,0 +1,13 @@
+{
+  "at": "2026-10-24T09:05:16.549826+00:00",
+  "oldExactFailedNewContainer": "27f18b243e1bb4cafe2fd11eb2c488135ec5615eef13504fad01b3abe1cfe2d7",
+  "newExactAuthContainer": "f17c40dc58d2743ab0d2d926bd05cbf2cf6cec4cc38c94a3ba30280903c26eda",
+  "samePinnedImage": "sha256:ac6d4b1e961ae5a1a24d283967485f8195b767a8476e1044959d7a250c2da3f0",
+  "cause": "GOTRUE_JWT_KEYS empty string is invalid JSON in v2.193.0",
+  "fix": "omit optional GOTRUE_JWT_KEYS; fresh local HS256 JWT secret retained",
+  "source": "https://raw.githubusercontent.com/supabase/auth/v2.193.0/internal/conf/jwk.go",
+  "oldApplicationData": false,
+  "oldVolumesRemoved": false,
+  "metadataReverifiedBeforeStartingReplacement": true,
+  "oldIncident": "OPEN; unrelated targets untouched"
+}

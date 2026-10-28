@@ -1,0 +1,332 @@
+{
+  "at": "2026-10-25T19:21:23.152493+00:00",
+  "codeFingerprint": "ead55a808470f90d72290905db90933cb4a6df48eaba519d4587339a4659b71d",
+  "method": "Raw hashes of standalone wallet/notification verification and changed metadata; prior2377 records retained through originals/exact before copies.",
+  "files": [
+    {
+      "path": "docs/verification/adfocate-delivery.json",
+      "sha256": "df146655c52095d4cb6c64302ae589a4a0174ccae7cb7d825690dee044a654b3",
+      "bytes": 710238
+    },
+    {
+      "path": "docs/verification/adfocate-task-ledger.md",
+      "sha256": "654ff98e66bb86d662d5c68f098a02e8ada885d1fabd9aead829c5c0ec3038f2",
+      "bytes": 37909
+    },
+    {
+      "path": "docs/verification/audit_case_coverage.csv",
+      "sha256": "ff8f977331972a3ca29136facac65ed73944e70bd30a8c624f3212553014cba5",
+      "bytes": 186658
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/before/docs/verification/adfocate-delivery.json",
+      "sha256": "69ede65e6fa6ce4da06254ed7633634330f76788d48b13b75c1a1b73796b5e51",
+      "bytes": 702049
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/before/docs/verification/adfocate-task-ledger.md",
+      "sha256": "b9401963af001aa2b867f0e0d5e8288f0329755fb5605b7e4cc5798b9f2eab73",
+      "bytes": 37243
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/before/docs/verification/audit_case_coverage.csv",
+      "sha256": "a84f8217f7b9a09a4c5545c84864e421d8a139c630ee8c34867f80ad9df0cf15",
+      "bytes": 184194
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/before/docs/verification/code-fingerprint.json",
+      "sha256": "912b68ac3a53bf2593b48a04f5fcad28dc9918658d8bd787a73228230dea4b9a",
+      "bytes": 120095
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/before/docs/verification/D19-application-runtime-preparation-20261025/runtime-authorization.json",
+      "sha256": "a909d1c60409db853da5949ee0b6ae29d6f69694fbd2c0bae313c3661557e894",
+      "bytes": 654
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/before/docs/verification/D19-C2-transport-continuation-runtime-manifest.json",
+      "sha256": "f5caccfdc354e7209b320064f08c9a59ce73cc0ae4bdfca4bcde6e255b424ba0",
+      "bytes": 40914
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/before/docs/verification/D19-C2-transport-preparation-20261026/runtime-authorization.json",
+      "sha256": "8b95af97e36481ce22bf5f06e0293a1be0430bd5855e069b20c36cd574bd3b0d",
+      "bytes": 495
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/before/docs/verification/evidence-integrity.json",
+      "sha256": "a4e43133b0eb82733ddcb6c60d1157834ac32a1d5d5e61434a33f4800cfb322e",
+      "bytes": 476482
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/before/docs/verification/implementation_backlog.csv",
+      "sha256": "0a8bf4d516ffddbe5dd729a50d32b46783b0814ec8efbe449bf2b94562202d3d",
+      "bytes": 21821
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/boundary-final-command.json",
+      "sha256": "daa94679eaa913eae1abdb1fb8a9c0409b75fd8b324ab274ce92328b10156946",
+      "bytes": 1276
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/boundary-final-native.json",
+      "sha256": "58c949a2af0c77fbc603eb82c550679f522275670e369de12b07de260290f3cf",
+      "bytes": 4266
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/boundary-final-readback.json",
+      "sha256": "20d3c7ee9b7a0cb3291023df0fe4e0967a7f9c2e98b569169e4e435e2da8df56",
+      "bytes": 54151
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/boundary-final-resource.json",
+      "sha256": "7ac1b237b58dd7c770dd3040716d4b5f7284b21eb3ab926e3974d72b72462659",
+      "bytes": 180
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/boundary-final-started.json",
+      "sha256": "de633b8e57602841d2e777375929b3694ff40a9e6b6abf8f8ae0dccca4eea995",
+      "bytes": 1182
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/boundary-final.log",
+      "sha256": "71f14a3c4d16e4710a7647d0d8a3ab7a52b619db4190083fe8a322be5a9b5ac7",
+      "bytes": 10797
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/boundary-initial-command.json",
+      "sha256": "b06dd8b01dca8393c653afd6e31080ff92efe042a308b3332c3bd56cffe94b9e",
+      "bytes": 1283
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/boundary-initial-native.json",
+      "sha256": "47e56c3cc00f5765704d0b12658f6633f589516943bdb7b65dfe2906445ae2d5",
+      "bytes": 4268
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/boundary-initial-readback.json",
+      "sha256": "9a5bb839d11f51ad1deadaab8c4146548758ee69dbd17cd31907216dae44f456",
+      "bytes": 51707
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/boundary-initial-resource.json",
+      "sha256": "064133071894f5c2658e9f85d284fa1f858f8bf3c0cd9fe5f57ac23bbb166f53",
+      "bytes": 181
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/boundary-initial-started.json",
+      "sha256": "82769a24598d811008a97d5161c3c6b7f96655a578b80de591c26063f4d77bb7",
+      "bytes": 1189
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/boundary-initial.log",
+      "sha256": "dd12756e1353ab876545874c2946f3897a9d045ff64483a5b91c5855865b6d40",
+      "bytes": 10799
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/boundary-lint-command.json",
+      "sha256": "b3430a3cbc6161f357788f9e7b1766770c1f0cc29d1dee790b7ab0e41b7e3efc",
+      "bytes": 1187
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/boundary-lint-final-command.json",
+      "sha256": "a434d34d5b10f125ea0476f448c47e3f764d787d7d62299274cdf09895399b83",
+      "bytes": 1199
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/boundary-lint-final-resource.json",
+      "sha256": "d9137e7d18499a9ffb056425f0210295c9a0a9edca772822de8852e68a0e7232",
+      "bytes": 181
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/boundary-lint-final-started.json",
+      "sha256": "6b2c768450b01f0c23915bae8cd1f4613737683d09607e4ee57d9b4f74093875",
+      "bytes": 1105
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/boundary-lint-final.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/boundary-lint-resource.json",
+      "sha256": "12ccdff9935c4f741eb3bd6cb45bfb6da808950b39539067f4ee9c94153dfffe",
+      "bytes": 181
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/boundary-lint-started.json",
+      "sha256": "27b770eb4df0f8627f256473eb4776d4cfaf8c8d8edc02d05cbe4f238b4ef1f8",
+      "bytes": 1093
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/boundary-lint.log",
+      "sha256": "ee11ac90e208a9d4480bd8ba404d0de697c107a89607f6a4921c7982b347df75",
+      "bytes": 459
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/boundary-type-command.json",
+      "sha256": "855ae8b51edb1a6011a049f049069f500b3caa8c29ab1c6591508ef8187af4e5",
+      "bytes": 1118
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/boundary-type-complete-command.json",
+      "sha256": "a5a08c319c66df8f2f3040a118e2109a8ffab25d837ceba44dbcd0675b05a774",
+      "bytes": 1135
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/boundary-type-complete-resource.json",
+      "sha256": "a8e63c46bd79d4fcc552f14a0f7f5dc9d13d10a9d2e65e29951cce1943027301",
+      "bytes": 181
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/boundary-type-complete-started.json",
+      "sha256": "37366c1f5102de2513eeca744147174bf957876f2df9fbe2ea2a2b96afedbd2e",
+      "bytes": 1041
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/boundary-type-complete.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/boundary-type-final-command.json",
+      "sha256": "de0a33ddb62242ced09fdc7aa4c86407f119f581f3517988758bb39bab45f8cb",
+      "bytes": 1130
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/boundary-type-final-resource.json",
+      "sha256": "5f206da4ceaf733680b9cdff0e22252749801d0d2cd66f58220d09bcdd8ff79a",
+      "bytes": 182
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/boundary-type-final-started.json",
+      "sha256": "fa3d91f5b69803ece1739f418f9a0e793ca3d99f1a560708f29b2a391cc6b35a",
+      "bytes": 1036
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/boundary-type-final.log",
+      "sha256": "4b818adbae2b972c85e0dcc51bc7e1dbf51088d592f505be5e7d60aed542e8f2",
+      "bytes": 219
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/boundary-type-resource.json",
+      "sha256": "60dabbe91c4be361156bf708ee8bd2d4162ff9a0a26c009d69354c2710dc2bae",
+      "bytes": 183
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/boundary-type-started.json",
+      "sha256": "80b0bd566b8f636b624453d5633fb6d98dad1ebfa88ed051882638a6bbc1de8f",
+      "bytes": 1024
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/boundary-type.log",
+      "sha256": "721d442988e210c5828896fe340a6757e67289b9a38cc6d142c442d6e2b2252d",
+      "bytes": 435
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/case-coverage.json",
+      "sha256": "7689626f309e45e4d65f341d89d87ec4f1ef6fb5eeacd0d4f8fc421d7e4e56db",
+      "bytes": 247165
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/checkpoint.json",
+      "sha256": "ff9e97718f0b4c37ca9523f845c8f5e54456c024e2aeeac3a05b10c63d1cdd31",
+      "bytes": 3322
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/delivery.json",
+      "sha256": "09a0686cf15f67437031e09712d8b0dbf62e0ced7a1cfa79e344b14a27bea598",
+      "bytes": 3888
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/delivery.md",
+      "sha256": "e8ab0c50f237a18940e1ca85fa225a5291612ff41c4c05eff5d918bbaa5f8b0e",
+      "bytes": 2393
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/finalize-verification.py",
+      "sha256": "c22fa440adf2bf6301b0a4064ebc6305be15ffb218cefc9bd372fe04db31d4a6",
+      "bytes": 1542
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/gates.json",
+      "sha256": "e2f7200725065fc801f13be7fff3a3637815aaecfda4b3f2efef87c4abb7dd1a",
+      "bytes": 10527
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/initial-source/snapshot.json",
+      "sha256": "8310598569567615517fcfa9da6745a9b89fd4809c1bdf38134afb0b56aeca29",
+      "bytes": 770
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/initial-source/tsconfig.offline.json.txt",
+      "sha256": "5cc5694ef8fcfe85b85265dbc9573d1e741d44bab6350b2a676b3805aba3c600",
+      "bytes": 90
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/initial-source/tsconfig.route-tree-only.json.txt",
+      "sha256": "3b0ef00c9283d034a2e713c658c510c7a09664d76c1598f9378185423a9edead",
+      "bytes": 123
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/initial-source/wallet-notifications.test.tsx.txt",
+      "sha256": "bac6cf3eedcf843424a8fa5982c8759b856103c36a75103f43b99f4c3449e2ee",
+      "bytes": 19444
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/prepare-delivery.py",
+      "sha256": "7de84cb7be7b5d8fa6155127c4a3ac3dc59d7b90bb03de6acbeb1a782f817c14",
+      "bytes": 19390
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/readback-summary.json",
+      "sha256": "ae20b5640498775bf9a0a6b0256589486d6ecb1f1a6268352215bb4b0245bf40",
+      "bytes": 40657
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/remaining-acceptance.json",
+      "sha256": "35b5d7e58c3efab4ed4a1e12d6f7ae975cf12db67b8b41fb5df1832e55bce65b",
+      "bytes": 19145
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/rollback.json",
+      "sha256": "3e71177356e4b316cdc58ccd9def3c5be9cc668aaf6c6a6c846dceaa20980cb5",
+      "bytes": 3812
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/run-offline-verification.py",
+      "sha256": "4cc66e772e2ba348b0f53b583f25d8feddad737349b560355458a8f9c598d6a5",
+      "bytes": 4189
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/tsconfig.offline.json",
+      "sha256": "487cc564ce4202e7230fdf8c919342c47f048c93d47cbc0625f34d75dad8b88b",
+      "bytes": 225
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/verification-summary.json",
+      "sha256": "65386db9aaa32baff1437a18809c7c46b2d1fae32e8d7b8d30086d36ba3831ee",
+      "bytes": 2828
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/verify-delivery.py",
+      "sha256": "f5c7b5e5fc58742e1796da287b7ec52cddeacfa2a7b92b57f274a2850d4d6b9b",
+      "bytes": 6327
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/vitest.offline.mjs",
+      "sha256": "8daa258b7c3d535049ce6f0efbb0e16b1851a7b455b2df7a0444e3da91d78631",
+      "bytes": 703
+    },
+    {
+      "path": "docs/verification/D19-wallet-notifications-offline-20261026/wallet-notifications.test.tsx",
+      "sha256": "21755b8f74006718ab685e04154e5f957a0f937ba959720da77268cfa955767a",
+      "bytes": 19780
+    },
+    {
+      "path": "docs/verification/implementation_backlog.csv",
+      "sha256": "97b37060fe125171d5039934a13b93587c7945c10e2d6339ed0d9444d59093fc",
+      "bytes": 22123
+    }
+  ]
+}

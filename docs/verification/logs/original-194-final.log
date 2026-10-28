@@ -1,0 +1,19 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ✓ server/test/admin-reward-handoffs.test.ts (53 tests) 92ms
+ ✓ src/routes/-admin.active-missions.test.tsx (35 tests) 1841ms
+ ✓ src/components/admin/ActiveMissionReview.test.tsx (21 tests) 792ms
+ ✓ server/test/active-missions-publication-operator.test.ts (11 tests) 35ms
+ ✓ src/components/admin/MissionCompletionReview.test.tsx (17 tests) 649ms
+ ✓ src/routes/-admin.reward-handoffs.test.tsx (12 tests) 438ms
+ ✓ src/components/admin/RewardHandoffQueue.test.tsx (19 tests) 448ms
+ ✓ server/test/staffAuth.test.ts (17 tests) 7ms
+ ✓ src/components/admin/WorkspaceSwitcher.test.tsx (6 tests) 159ms
+ ✓ src/components/admin/StaffAuthGate.test.tsx (3 tests) 80ms
+
+ Test Files  10 passed (10)
+      Tests  194 passed (194)
+   Start at  03:26:18
+   Duration  12.24s (transform 744ms, setup 2.68s, collect 2.21s, tests 4.54s, environment 9.82s, prepare 1.46s)
+

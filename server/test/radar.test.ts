@@ -1,7 +1,9 @@
+import { grantStaffFixture } from "./helpers";
+import { fixtureName } from "./helpers";
 // server/test/radar.test.ts
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { createApp } from "../app";
-import { makeStaff, makeCreator, seedSubmission, cleanup, hasSupabaseEnv } from "./helpers";
+import { DEMO_WS, makeStaff, makeCreator, seedSubmission, cleanup, hasSupabaseEnv } from "./helpers";
 
 const { app } = createApp();
 const suite = hasSupabaseEnv ? describe : describe.skip;
@@ -15,10 +17,11 @@ suite("admin radar", () => {
 
   beforeAll(async () => {
     await cleanup();
-    staff = await makeStaff("radar-staff@test.local");
+    staff = await makeStaff(fixtureName("radar-staff@test.local"), DEMO_WS);
+    await grantStaffFixture(staff.userId,DEMO_WS,"operator");
     // Seed a creator with a stale submission (so at-risk queue is non-empty)
-    const creator = await makeCreator("radar-koc@test.local", 0);
-    await seedSubmission(creator.userId, "approved", "test-radar-approved");
+    const creator = await makeCreator(fixtureName("radar-koc@test.local"), 0);
+    await seedSubmission(creator.userId, "approved", fixtureName("test-radar-approved"));
   });
   afterAll(cleanup);
 
@@ -47,13 +50,12 @@ suite("admin radar", () => {
     expect(Array.isArray(radar.newUnactivated.items)).toBe(true);
   });
 
-  it("accepts a workspace filter without crashing", async () => {
+  it("rejects an inaccessible workspace without leaking data", async () => {
     const res = await adminReq(
       "/admin/radar?days=30&workspace=00000000-0000-0000-0000-0000000000ff",
       staff.jwt,
     );
-    expect(res.status).toBe(200);
-    const { radar } = await res.json();
-    expect(radar.window.days).toBe(30);
+    expect(res.status).toBe(404);
+    expect((await res.json()).radar).toBeUndefined();
   });
 });

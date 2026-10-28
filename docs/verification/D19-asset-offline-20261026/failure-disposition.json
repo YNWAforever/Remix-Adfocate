@@ -1,0 +1,34 @@
+{
+  "initial": {
+    "receipt": {
+      "path": "docs/verification/D19-asset-offline-20261026/boundary-initial-command.json",
+      "sha256": "9975c99782603b3a955bb0d7a7bbb64324e41bf803c0d9b888232473ca9eeb6c"
+    },
+    "passed": 8,
+    "failed": 1,
+    "cause": "Mock used stale_revision; actual final proof SQL uses workflow_stale. Corrected mock only; original assertions preserved."
+  },
+  "intermediate": {
+    "receipt": {
+      "path": "docs/verification/D19-asset-offline-20261026/boundary-after-resource-command.json",
+      "sha256": "fca947d89eea8c99e93e3d6e160861ab279f3b26dc6756c80926edaf5a09fc11"
+    },
+    "passed": 6,
+    "failed": 5,
+    "cause": "Vite/jsdom transformed import.meta.url to a non-file URL. Corrected test fixture path to explicit workspace path only."
+  },
+  "otherMockCorrection": "Proof final SQL returns finalized, while draft uses ready. Mock aligned to formal contract; no product/SQL change. Replaced initial8-byte PNG header with a generated valid70-byte1x1 PNG.",
+  "sourceContract": {
+    "path": "docs/verification/D19-asset-offline-20261026/transport-contract.json",
+    "sha256": "5cb660daadb388cb9eb5f2b978f87b9fb8fc550faf39f19ef5031c00a8c72dea"
+  },
+  "resourceStops": {
+    "path": "docs/verification/D19-asset-offline-20261026/resource-stops.json",
+    "sha256": "bebf2297065a040872fb81f02e67ce9d3223119179bc785d8babf0558622fd97"
+  },
+  "final": {
+    "path": "docs/verification/D19-asset-offline-20261026/boundary-valid-fixture-native.json",
+    "sha256": "0ac39a981107e611e5b55679c55445c709dae504ec884eae6c98ceda34848374"
+  },
+  "productOrExpiryChanges": false
+}

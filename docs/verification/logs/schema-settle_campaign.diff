@@ -1,0 +1,20 @@
+--- observed-production/settle_campaign
+
++++ local-candidate/settle_campaign
+
+@@ -86,8 +86,13 @@
+
+             where creator_id = v_row.creator_id and workspace_id = v_home;
+         end if;
+ 
+-        -- POINTS: HOME workspace.
++        -- POINTS: HOME workspace, gated by the CAMPAIGN workspace wallet.
+         if v_points > 0 then
++          select balance, enforced into v_bgt_bal, v_bgt_enf
++            from public.workspace_budgets where workspace_id = v_c.workspace_id for update;
++          if coalesce(v_bgt_enf, false) and coalesce(v_bgt_bal, 0) <= 0 then
++            raise exception 'insufficient_budget';   -- NOT caught here → rolls back the whole settle
++          end if;
+           insert into public.point_balances (creator_id, workspace_id, balance)
+             values (v_row.creator_id, v_home, 0) on conflict (creator_id, workspace_id) do nothing;
+           select balance into v_pbal from public.point_balances

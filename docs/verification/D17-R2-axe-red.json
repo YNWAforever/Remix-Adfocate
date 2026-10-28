@@ -1,0 +1,166 @@
+{
+  "runId": "08530ddb-c357-4638-8ab8-af5854f42fa3",
+  "data": {
+    "version": "4.12.1",
+    "scans": [
+      {
+        "path": "/home",
+        "violations": []
+      },
+      {
+        "path": "/my",
+        "violations": []
+      },
+      {
+        "path": "/wallet",
+        "violations": []
+      },
+      {
+        "path": "/redemption/history",
+        "violations": []
+      },
+      {
+        "path": "/campaigns",
+        "violations": []
+      },
+      {
+        "path": "/guide",
+        "violations": [
+          {
+            "id": "color-contrast",
+            "impact": "serious",
+            "targets": [
+              [
+                ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(1) > .min-w-0.flex-1 > .leading-snug"
+              ],
+              [
+                ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(1) > .min-w-0.flex-1 > .mt-0\\.5"
+              ],
+              [
+                ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(4) > .min-w-0.flex-1 > .leading-snug"
+              ],
+              [
+                ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(4) > .min-w-0.flex-1 > .mt-0\\.5"
+              ],
+              [
+                ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(7) > .min-w-0.flex-1 > .leading-snug"
+              ],
+              [
+                ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(7) > .min-w-0.flex-1 > .mt-0\\.5"
+              ],
+              [
+                ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(11) > .min-w-0.flex-1 > .leading-snug"
+              ],
+              [
+                ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(11) > .min-w-0.flex-1 > .mt-0\\.5"
+              ],
+              [
+                ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(15) > .min-w-0.flex-1 > .leading-snug"
+              ],
+              [
+                ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(15) > .min-w-0.flex-1 > .mt-0\\.5"
+              ],
+              [
+                ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(17) > .min-w-0.flex-1 > .leading-snug"
+              ],
+              [
+                ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(17) > .min-w-0.flex-1 > .mt-0\\.5"
+              ],
+              [
+                ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(21) > .min-w-0.flex-1 > .leading-snug"
+              ],
+              [
+                ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(21) > .min-w-0.flex-1 > .mt-0\\.5"
+              ],
+              [
+                ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(23) > .min-w-0.flex-1 > .leading-snug"
+              ],
+              [
+                ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(23) > .min-w-0.flex-1 > .mt-0\\.5"
+              ],
+              [
+                ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(25) > .min-w-0.flex-1 > .leading-snug"
+              ],
+              [
+                ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(25) > .min-w-0.flex-1 > .mt-0\\.5"
+              ],
+              [
+                ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(26) > .min-w-0.flex-1 > .leading-snug"
+              ],
+              [
+                ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(26) > .min-w-0.flex-1 > .mt-0\\.5"
+              ],
+              [
+                ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(27) > .min-w-0.flex-1 > .leading-snug"
+              ],
+              [
+                ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(27) > .min-w-0.flex-1 > .mt-0\\.5"
+              ],
+              [
+                ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(28) > .min-w-0.flex-1 > .leading-snug"
+              ],
+              [
+                ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(28) > .min-w-0.flex-1 > .mt-0\\.5"
+              ],
+              [
+                ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(29) > .min-w-0.flex-1 > .leading-snug"
+              ],
+              [
+                ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(29) > .min-w-0.flex-1 > .mt-0\\.5"
+              ],
+              [
+                ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(30) > .min-w-0.flex-1 > .leading-snug"
+              ],
+              [
+                ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(30) > .min-w-0.flex-1 > .mt-0\\.5"
+              ],
+              [
+                ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(31) > .min-w-0.flex-1 > .leading-snug"
+              ],
+              [
+                ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(31) > .min-w-0.flex-1 > .mt-0\\.5"
+              ],
+              [
+                ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(32) > .min-w-0.flex-1 > .leading-snug"
+              ],
+              [
+                ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(32) > .min-w-0.flex-1 > .mt-0\\.5"
+              ],
+              [
+                ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(33) > .min-w-0.flex-1 > .leading-snug"
+              ],
+              [
+                ".bg-\\[var\\(--color-muted\\,\\#E4E4E4\\)\\].opacity-60.gap-3:nth-child(33) > .min-w-0.flex-1 > .mt-0\\.5"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "path": "/admin/creators",
+        "violations": []
+      },
+      {
+        "path": "/admin/insights",
+        "violations": []
+      },
+      {
+        "path": "/admin/applications",
+        "violations": []
+      },
+      {
+        "path": "/admin/campaigns",
+        "violations": []
+      },
+      {
+        "path": "/admin/content",
+        "violations": []
+      },
+      {
+        "path": "/admin/academy/3edb4527-3c0a-4999-a130-1a4f5aeefbf3",
+        "violations": []
+      }
+    ],
+    "manualAT": false
+  }
+}

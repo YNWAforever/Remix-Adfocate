@@ -1,0 +1,110 @@
+{
+  "sourceFingerprint": "e83998d178061043688016056a5a78fc61df58bac28f3d0d0b66d639306037bd",
+  "wholeR1Verified": false,
+  "releaseHold": true,
+  "items": [
+    {
+      "id": "B2-IDENTITY-BOOTSTRAP",
+      "status": "PASS_ORIGIN_BOOTSTRAP_AND_CURRENT_IDENTITY_PROVENANCE_REVALIDATION",
+      "dependsOn": "Completed. Current exact five-service identity preceded Auth/client/setup; read-only catalog/history/seeds/caps/root/financial provenance and final readback pass. Bootstrap was not repeated.",
+      "doneWhen": "Correct initial-user/OID baseline on a clean target; full live identity before app/client setup;72 forward files, conditional9, objects/RPC/grants/RLS/history and immutable seeds.",
+      "gateScope": "R1_CURRENT_CANDIDATE",
+      "historicalPreContinuationStatus": "PASS_ORIGIN_C1_REVALIDATE_ONLY"
+    },
+    {
+      "id": "B2-ROLE-CORE",
+      "status": "ORIGIN17_API_PASS_CARRIED_AFTER_CURRENT_LIVE_DEPENDENCY_REVALIDATION",
+      "dependsOn": "Complete under approved696e existing-data adoption; no original API rerun.",
+      "doneWhen": "Scope completed and recorded; original source/receipts kept.",
+      "gateScope": "R1_CURRENT_CANDIDATE"
+    },
+    {
+      "id": "B2-BROWSER",
+      "status": "PASS5_CURRENT_APPROVED_COMPOSITE_BROWSER_PLUS2_OBLIGATIONS",
+      "dependsOn": "Complete. Fresh cold journey remains unrun; original cold steps explicitly retained.",
+      "doneWhen": "Five cases0fail0skip0flaky and real409/retained input, scoped empty/reload and permission503 proof recorded.",
+      "gateScope": "R1_CURRENT_CANDIDATE"
+    },
+    {
+      "id": "B2-NEUTRALITY",
+      "status": "PASS_CORE_ORIGIN_WINDOWS_AND_CURRENT_BROWSER_AND_WHOLE_CONTINUATION",
+      "dependsOn": "Complete within approved owned C1 scope; ledger/budget/points/XP/cash/redemption/inventory rows and legacy anchors unchanged.",
+      "doneWhen": "Nine financial families+all XP and inventory, exact one pending binding, immutable seeds/history/catalog and all70-family caps/journals passed.",
+      "gateScope": "R1_CURRENT_CANDIDATE"
+    },
+    {
+      "id": "R1-APPLICABILITY-RECONCILIATION",
+      "status": "107_CASE_SCOPE_UPDATED_BROWSER_AND_POST_JOIN_FACETS_RESOLVED_8_REVIEW_GROUPS_REMAIN",
+      "dependsOn": "D19-C1-continuation-case-coverage.json; review needed original scopes and trusted retained evidence. Do not relabel retired-target passes or automatically demand unnecessary runtime.",
+      "doneWhen": "Resolve applicable remaining original case facets or reviewed pilot applicability decisions; any additional Auth/fixture/storage/legacy command requires a bounded scope, not696e replay.",
+      "gateScope": "R1_CURRENT_CANDIDATE"
+    },
+    {
+      "id": "ORIGINAL-INCIDENT",
+      "status": "OPEN_UNRESTORED",
+      "dependsOn": "Separate owner disposition; B1 forensic exclusion remains enforced",
+      "doneWhen": "Only a separately approved evidence-supported disposition may change incident state; no reliable before image inferred and no new fixture used as restoration. P0 does not close incident or release HOLD.",
+      "gateScope": "SEPARATE_RELEASE_PILOT_OPERATIONAL_OR_OWNER_LIMITATION"
+    },
+    {
+      "id": "D15",
+      "status": "BLOCKED_CONTENT",
+      "dependsOn": "Four real approved lesson units and approval reference",
+      "doneWhen": "Preserve UC-C18/UC-A51 original completion/persisted progress acceptance; no invented lessons or content signoff.",
+      "gateScope": "SEPARATE_RELEASE_PILOT_OPERATIONAL_OR_OWNER_LIMITATION"
+    },
+    {
+      "id": "D17-OWNER-DEVICE-HOSTED",
+      "status": "BLOCKED",
+      "dependsOn": "Named advisor owners, required physical devices/manual AT/hosted candidate evidence",
+      "doneWhen": "Owner-specific decisions and required device/browser/hosted quality evidence recorded; simulated viewport/local syntax is insufficient.",
+      "gateScope": "SEPARATE_RELEASE_PILOT_OPERATIONAL_OR_OWNER_LIMITATION"
+    },
+    {
+      "id": "FORMAL-STAFF",
+      "status": "BLOCKED_SCOPE",
+      "dependsOn": "Separate formal membership/role owner authorization",
+      "doneWhen": "Approved real staff handoff/membership and Auth/RLS evidence. Existing active membership0 is a scope issue; do not remove checks or ask for another login as a substitute.",
+      "gateScope": "SEPARATE_RELEASE_PILOT_OPERATIONAL_OR_OWNER_LIMITATION"
+    },
+    {
+      "id": "RELEASE",
+      "status": "HOLD_NOT_DEPLOYED",
+      "dependsOn": "Owner review of unresolved gates and exact candidate/deployment authority",
+      "doneWhen": "Separate applicable push/merge/migration/deploy/pilot/observation authorization and evidence. Provider disabled; no external messages/invites/payments/paid AI.",
+      "gateScope": "SEPARATE_RELEASE_PILOT_OPERATIONAL_OR_OWNER_LIMITATION"
+    },
+    {
+      "id": "NODE22-TOOLCHAIN",
+      "status": "PASS_CURRENT_NODE22_FULL_STATIC_BUILD",
+      "dependsOn": "Existing v22.23.4 with explicit existing npm_execpath; no package provisioning.",
+      "doneWhen": "2082/0/363;289files; original16/194;7 CLI recheck; type/lint/build/ESM/manifest0. Initial2080/2 standalone launcher failure retained.",
+      "gateScope": "SEPARATE_RELEASE_PILOT_OPERATIONAL_OR_OWNER_LIMITATION"
+    },
+    {
+      "id": "REQUESTED-MODEL-INTERFACE",
+      "status": "UNKNOWN_NODE_REPL_KERNEL_ASSETS_PATH_MISSING",
+      "dependsOn": "A functioning read-only execution-interface inspection. The current node_repl initialization failed before any window/UI state was returned.",
+      "doneWhen": "Observe the user-requested selection directly; do not infer a model ID, use docs as proof of local selection, or switch another model.",
+      "gateScope": "SEPARATE_RELEASE_PILOT_OPERATIONAL_OR_OWNER_LIMITATION"
+    }
+  ],
+  "pristineGlobalRpcRerun": false,
+  "retainedPristineEvidence": "D19-pristine-rpc-delivery.json; historical source-bound, not rebound as B2 runtime",
+  "runtimeManifest": "D19-C1-browser-continuation-runtime-manifest.json",
+  "runtimeManifestSha256": "696e94c29e62a27e820d7d12f5aa74c0d1e7b62f97f3b57db787074512a2626d",
+  "scopeClarification": "Original failedB2 fields remain historical. Current696e authority and verified scope are in D19-C1-continuation-delivery.json. Original case expectations are not waived; additional data/Auth/legacy/storage/production/lifecycle scopes are not implicitly authorized.",
+  "currentB2RuntimeApproved": true,
+  "currentB2RuntimeAttempted": true,
+  "currentB2BootstrapVerified": false,
+  "recoveryManifest": "D19-B2-recovery-runtime-manifest.json",
+  "recoveryManifestSha256": "257d43f4f8030cab8c84974653d1ce06af14db6a7932bc2f591791aab119cb07",
+  "recoveryRuntimeApproved": true,
+  "checkpoint": "Approved696e scope complete:17 API cases carried after live dependency revalidation;5 composite UI cases/2 obligations pass, exact persisted pending/finance neutral; Node22+24 full2082/0/363. Remaining per-case applicability and separate operational blockers retained.",
+  "currentC1BootstrapVerified": true,
+  "newSourceRuntimeApproved": true,
+  "applicabilityReview": "D19-C1-R1-applicability-reconciliation.json",
+  "currentContinuationManifestApproved": true,
+  "currentContinuationScopeVerified": true,
+  "currentContinuationEvidence": "D19-C1-continuation-delivery.json"
+}

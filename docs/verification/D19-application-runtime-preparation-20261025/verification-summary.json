@@ -1,0 +1,23 @@
+{
+  "at": "2026-10-25T14:59:25.841254+00:00",
+  "command": [
+    "python",
+    "docs/verification/D19-application-runtime-preparation-20261025/verify-delivery.py"
+  ],
+  "checkerSha256": "13beaa83fce4acd60e21a7bdbcd5f3261bdefc2125936b67bdd63c5302b11713",
+  "exit": 0,
+  "status": "PASS_LOCAL_C2_PREPARATION_NOT_RUNTIME_OR_R1",
+  "source": "e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993",
+  "fullPassed": 2129,
+  "originalAudit16": 16,
+  "protected194": 194,
+  "supplementChecks": 26,
+  "originalCases": 107,
+  "priorEvidenceRecordsPreserved": 1979,
+  "currentEvidenceRecords": 2084,
+  "actualTargetCalls": 0,
+  "runtimeApproved": false,
+  "incidentOpen": true,
+  "releaseHold": true,
+  "providerEnabled": false
+}

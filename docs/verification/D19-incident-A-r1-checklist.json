@@ -1,0 +1,211 @@
+{
+  "sourceFingerprint": "9812cc7755dd6443f8fa4b39bc92e6c26536b54e15ba1c0cbc494815375dd5e1",
+  "status": "AFTER_AUTHORIZED_A_READS_INCIDENT_OPEN_R1_NOT_VERIFIED",
+  "items": [
+    {
+      "id": "R1-01",
+      "gateClass": "R1_DECISION_PREREQUISITE",
+      "status": "A_READS_PERFORMED_WITH_LIMITS_REMEDY_DECISION_PENDING",
+      "dependencies": [],
+      "requirement": "Choose/approve incident pathA/B; exactC remains conditional. Preserve original3-row failure and distinguish restore/contain/accept/close.",
+      "doneWhen": "Owner-approved remedy scope, bounded impact/provenance and required verification; non-restoration never relabelled restored. Any acceptance ofcontainment and laterrelease/closure areseparate explicit decisions.",
+      "existingEvidence": [
+        "D19-incident-decision-pack.json",
+        "D19-support-current-preservation-incident.json",
+        "D19-incident-A-report.md",
+        "D19-incident-A-case-findings.json"
+      ],
+      "stillNotRun": "No incident disposition or closure. Q1 server-file metadata remains UNKNOWN_PERMISSION_DENIED; Q2 found no credible readable before image; Q3 scoped current-state reads completed. Further source extraction beyond existing readable evidence requires its own exact authority."
+    },
+    {
+      "id": "R1-02",
+      "gateClass": "R1_REQUIRED_RUNTIME_PRECONDITION",
+      "status": "PENDING_TRUSTED_TARGET_FOR_ROLE_RENEWAL",
+      "dependencies": [
+        "R1-01"
+      ],
+      "requirement": "A trustworthy approved target and exact current candidate binding before SDK/setup; old shaped not silentlyreused asclean",
+      "doneWhen": "Identity/host/proxy/container/project/volume gate, source9812 fingerprint ornew verified fingerprint, schema/RPC/grants/RLS/history diff, exact namespace/ID journal and independent beforebaseline; no reset oroldchecksum rewrite.",
+      "existingEvidence": [
+        "D19-pristine-rpc-catalog-diff-resolution.json",
+        "code-fingerprint.json"
+      ],
+      "stillNotRun": "Future role-renewal target identity and any new fixture setup. The original shaped target was verified for this read-only investigation only; it has not been certified clean or restored."
+    },
+    {
+      "id": "R1-03",
+      "gateClass": "R1_REQUIRED_LOCAL_GATES",
+      "status": "PASSED_AT_CHECKPOINT_RETAINED_NOT_RERUN",
+      "dependencies": [],
+      "requirement": "Original16 semantics, protected194, applicable fullsuite and required integration gates",
+      "doneWhen": "Current unchanged source mayretain1982pass/363gatedskip/277files andstatic gates with verified binding; ifsource/schema changes, rerun impacted gates. Required live integrations mustpass withoutskip;offline skipisnotpass.",
+      "existingEvidence": [
+        "D19-pristine-rpc-full-results.json",
+        "D19-pristine-rpc-test-results.json"
+      ],
+      "stillNotRun": "No tests inthis decision-only turn; necessary live reward/proof integration evidence onfuture trusted role target mustbe renewed or explicitly source/time-bound"
+    },
+    {
+      "id": "R1-04",
+      "gateClass": "R1_REQUIRED_RUNTIME",
+      "status": "HISTORICAL_ROLE8_CORE9_NOT_FRESH_CLEAN_TARGET_353",
+      "dependencies": [
+        "R1-02"
+      ],
+      "requirement": "Real Auth/API/RLS role separation and legacy CRM transactional handoff",
+      "doneWhen": "Creator valid join/submit, legacyinvalid URLs notordinaryapproved; reviewer/operator note+review+audit atomicity, revision/CAS409 andidempotent retries; no-membership andcross-workspace rejected; brand_users.user_id PKunchanged; finance read-only andno self-elevation.",
+      "existingEvidence": [
+        "D19-current-role-results.json",
+        "D19-current-core-results.json"
+      ],
+      "stillNotRun": "These complete journeys afterincident remedy onan approved trusted target bound tofinal353-source candidate; existing8+9 atcdf remainhistorical"
+    },
+    {
+      "id": "R1-05",
+      "gateClass": "R1_REQUIRED_BROWSER_AND_PERSISTENCE",
+      "status": "HISTORICAL_EDGE5_NOT_FRESH_CLEAN_TARGET_353",
+      "dependencies": [
+        "R1-02",
+        "R1-04"
+      ],
+      "requirement": "Creator→reviewer→operator→finance completelegacy/active/proof/pendingreward browserhandoff",
+      "doneWhen": "Join→deliver→revision→resubmit→approvedpublish→proofcorrection/acceptedrequiredanchors→operatorcomplete; Creator/operator/financeseparate sessions andhardreload showthesame onependingreward ID/history. Real403/409/network/empty/stale states recoverandpreserveinput. Browsermetadata/proxy/mock limitations explicitlylabelled.",
+      "existingEvidence": [
+        "D19-current-browser-results.json",
+        "D19-current-runtime/browser/D19-browser-summary.json"
+      ],
+      "stillNotRun": [
+        "Fresh complete pendingreward revision/proof historybrowserjourney",
+        "Finance handoff-only reload/controls",
+        "Reviewer inputretention afterforbidden save",
+        "Platform-only editor recovery withoutworkspace/relogin",
+        "Creator/operator/finance hardreload agreement"
+      ],
+      "notClaimed": [
+        "Physicaldevice orSafari/WebKit",
+        "Realexternalproofmetadata provider; existingunavailable state andexplicit access503mock notliveproof"
+      ]
+    },
+    {
+      "id": "R1-06",
+      "gateClass": "R1_REQUIRED_FINANCIAL_NEUTRALITY",
+      "status": "HISTORICAL_FUNDED_CORE_NEUTRALITY_NOT_RENEWED",
+      "dependencies": [
+        "R1-04",
+        "R1-05"
+      ],
+      "requirement": "Pendingreward nevercreditsledger/withdrawable ordeb​itsbudget; no newpayment feature",
+      "doneWhen": "Fundednon-null baseline andexactbefore/after vectors throughsubmit/review/proof/completion/cancel/reapproval/reload; onehandoff, immutablecontract/oldissuedanchor preserved, expectedappend-onlyhistory; noledger/availablecash/budgetdelta. Unknown historicalpromise blocked, neverbackfilled fromcurrentsettings.",
+      "existingEvidence": [
+        "D19-current-browser-neutrality.json",
+        "D19-current-api-neutrality.json"
+      ],
+      "stillNotRun": "Fresh completefunded legacy/active/proof/pending reward E2Eonapprovedtrustedrole target; pristineglobal neutral3calls do notsubstitute"
+    },
+    {
+      "id": "R1-07",
+      "gateClass": "R1_SCOPED_GLOBAL_RPC_ACCEPTANCE",
+      "status": "PASSED_RETAIN_NO_RERUN_THIS_TURN",
+      "dependencies": [],
+      "requirement": "Keep2unchanged originalglobalcases and3realneutralcalls onnewpristine target asboundedpassed evidence",
+      "doneWhen": "Retain original2pass/0fail/3filtered, close1→0 andsnapshot1,10financialtables+XPunchanged, schema sourcebinding; donotcallthis439+2asafresh441run",
+      "existingEvidence": [
+        "D19-pristine-rpc-delivery.json",
+        "D19-pristine-rpc-rpc-persistence-neutrality.json"
+      ],
+      "stillNotRun": "Nothing scheduled; explicit no rerun inthis scope"
+    },
+    {
+      "id": "R1-08",
+      "gateClass": "R1_DELIVERY_VERDICT",
+      "status": "NOT_R1_VERIFIED_HOLD",
+      "dependencies": [
+        "R1-01",
+        "R1-02",
+        "R1-03",
+        "R1-04",
+        "R1-05",
+        "R1-06",
+        "R1-07"
+      ],
+      "requirement": "107case/20task traceability and4evidence layers preserveoriginalauditoutcomes, scopedR1 verdict",
+      "doneWhen": "Allapplicablegates andnecessaryintegration green onapprovedcandidate/target, remedyverification andownerdecisionsrecorded; explicitoriginalfailed incidentunchanged; source/expiry bindingsvalid. No toast/READY/PR substitute.",
+      "existingEvidence": [
+        "adfocate-delivery.json",
+        "audit_case_coverage.csv",
+        "release-review-request.json"
+      ],
+      "stillNotRun": "FinalR1 acceptance afterapproved remedy andnecessary role/browser verification; norelease/closure approval now"
+    },
+    {
+      "id": "EXT-D15",
+      "gateClass": "INDEPENDENT_CONTENT_AND_R2_BLOCKER",
+      "status": "BLOCKED_CONTENT_NOT_PROVIDED",
+      "dependencies": [
+        "Contentowner supplies4realapprovedlessons andapprovalreference"
+      ],
+      "requirement": "PreserveUC-C18/UC-A51 fourreal-unit originalsemantics",
+      "doneWhen": "Approvedrealunits, correctrequiredlevel/progressvisibility anddurablecomplete/reloadtests; syntheticdraftsnevercountasapprovedcontent",
+      "existingEvidence": [
+        "D15-delivery.json"
+      ],
+      "stillNotRun": "Realcurriculum acceptance; nofabrication. R1internalverdict wouldnotclearthisblocker"
+    },
+    {
+      "id": "EXT-D17",
+      "gateClass": "INDEPENDENT_NAMED_OWNER_QUALITY_HOSTED_BLOCKER",
+      "status": "BLOCKED_NAMED_OWNER_DEVICE_HOSTED",
+      "dependencies": [
+        "Realowner names/authority",
+        "Actualdevices/browsers/AT",
+        "Authorizedhostedtarget"
+      ],
+      "requirement": "Per-notice humanreview481historicalunion (393current,88notobservedstillopen), qualityandhosted evidence",
+      "doneWhen": "Namedowner/authority/decision/time/refpernotice, authorizedhostedidentity/SHA/schema, nativezoom/physicaldevice/Safari/manualATandappropriatefield/workload evidence. Localaxe/CSSviewport/12pagelab/100readsnotfullacceptance.",
+      "existingEvidence": [
+        "D17-R2-advisor-owner-acceptance.json",
+        "D17-R2-delivery.json"
+      ],
+      "stillNotRun": "Humanadvisoracceptance, native/device/Safari/AT, authorizedhostedquality, unrenewed1k/10k/INP/outcomemetrics; neverinventzeros"
+    },
+    {
+      "id": "EXT-STAFF",
+      "gateClass": "FORMAL_HANDOFF_AND_RELEASE_BLOCKER",
+      "status": "BLOCKED_SCOPE_AUTHORIZATION",
+      "dependencies": [
+        "Actualowner authorizationforexactstaff/workspace/rolegrants/cutover"
+      ],
+      "requirement": "Formalstafflogin historywith0activemembershipisscopeproblem, notreauthrequest",
+      "doneWhen": "Separatelyauthorizedexactidentity/membership/rolehandoff withaudit/revision/idempotence androleUAT; retainstaff/workspacegatesandsingleworkspacePK. Syntheticrolesdonotproverealstaffhandoff.",
+      "existingEvidence": [
+        "D18-delivery.json",
+        "adfocate-delivery.json"
+      ],
+      "stillNotRun": "Formalstaffgrants/cutover; forbidden now"
+    },
+    {
+      "id": "EXT-RELEASE",
+      "gateClass": "PRODUCTION_HOSTED_PILOT_APPROVAL",
+      "status": "NOT_AUTHORIZED_NOT_DEPLOYED_HOLD",
+      "dependencies": [
+        "Prerequisiteverdicts",
+        "Freshboundunexpiredfoundationevidence",
+        "Explicitprotectedexecution/deployment/pilotapproval"
+      ],
+      "requirement": "Keepcode/test/deployment/runtime separate; trueproviderdisabled",
+      "doneWhen": "Onlyafteractualseparateauthorization runexactproductionreadonlypreflight/reviewedforwardmigration/deployment andpilotinspection/observation gates asrequired; neverextend/deleteevidenceexpiry; oldmodel/providerconfignotimplicitlyenabled",
+      "existingEvidence": [
+        "../operations/production-release-foundation.md",
+        "release-review-request.json"
+      ],
+      "stillNotRun": "Hosted/production/pilot/deploy/7dayobservation. No newapprovalimplied bydecisionpackorR1; paidAI/realmessages/payments outside scope"
+    }
+  ],
+  "separateGateMeaning": "R1scopedinternalverification neverclearsD15/R2/physical-device/hosted/formalstaff/productionapprovals; thispacketclearsnone",
+  "existingRuntimeSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+  "latestCandidateFingerprint": "9812cc7755dd6443f8fa4b39bc92e6c26536b54e15ba1c0cbc494815375dd5e1",
+  "applicationSourceUnchangedAtCheckpoint": true,
+  "newTestRunCount": 0,
+  "historicalChecklist": "D19-incident-decision-r1-checklist.json",
+  "currentReadonlyEvidence": "D19-incident-A-delivery.json"
+}

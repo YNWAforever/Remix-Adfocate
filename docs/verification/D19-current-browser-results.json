@@ -1,0 +1,109 @@
+{
+  "phase": "browser",
+  "startedAt": "2026-10-24T05:13:04.189853+00:00",
+  "finishedAt": "2026-10-24T05:14:22.484870+00:00",
+  "sourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+  "command": "npm.cmd exec --offline --yes --package=node@22 -- node scripts/audit/run-pilot-browser.mjs",
+  "exit": 0,
+  "log": "logs/D19-current-browser.log",
+  "priorEvidenceRestored": 956,
+  "captured": [
+    {
+      "historicalPath": "docs/verification/D19-browser-after.json",
+      "captured": "docs/verification/D19-current-runtime/browser/D19-browser-after.json",
+      "bytes": 1127,
+      "sha256": "703145b80b8cb74ae4ef11dbc606ce2274ef244adcd73d4b1d9ebc3a67d0de8d",
+      "oldBytesRestored": true,
+      "appendOnlyDelta": false
+    },
+    {
+      "historicalPath": "docs/verification/D19-browser-before-handoff.json",
+      "captured": "docs/verification/D19-current-runtime/browser/D19-browser-before-handoff.json",
+      "bytes": 609,
+      "sha256": "591a51c0ba1a6fe9aae44e898a1457949bf8b8a449a4806b99c50b0e4b6a054e",
+      "oldBytesRestored": true,
+      "appendOnlyDelta": false
+    },
+    {
+      "historicalPath": "docs/verification/D19-browser-fixture.json",
+      "captured": "docs/verification/D19-current-runtime/browser/D19-browser-fixture.json",
+      "bytes": 2378,
+      "sha256": "b594b5f71c38604048daa4787a9e7877271605cdb189546c691c2e0c1bdd120c",
+      "oldBytesRestored": true,
+      "appendOnlyDelta": false
+    },
+    {
+      "historicalPath": "docs/verification/D19-browser-legacy.json",
+      "captured": "docs/verification/D19-current-runtime/browser/D19-browser-legacy.json",
+      "bytes": 459,
+      "sha256": "c9faf023f5ea7f86efd1058b6d834082a2fff191eed25cd152bd60220537eb7f",
+      "oldBytesRestored": true,
+      "appendOnlyDelta": false
+    },
+    {
+      "historicalPath": "docs/verification/D19-browser-roundtrip.json",
+      "captured": "docs/verification/D19-current-runtime/browser/D19-browser-roundtrip.json",
+      "bytes": 690,
+      "sha256": "41d40a1ad5a99babae10c1d34bc4a5d73b3318cab8f7d6a4be593cc5e8d187ab",
+      "oldBytesRestored": true,
+      "appendOnlyDelta": false
+    },
+    {
+      "historicalPath": "docs/verification/D19-browser-summary.json",
+      "captured": "docs/verification/D19-current-runtime/browser/D19-browser-summary.json",
+      "bytes": 2938,
+      "sha256": "74946320dda99d24eae982f553d1653a6c47dba5fbcc5b07249f6a0e8840e21e",
+      "oldBytesRestored": true,
+      "appendOnlyDelta": false
+    },
+    {
+      "historicalPath": "docs/verification/D19-finance-ui.json",
+      "captured": "docs/verification/D19-current-runtime/browser/D19-finance-ui.json",
+      "bytes": 226,
+      "sha256": "9aab51193c91fcb7bad108f4e3ee03eee7989d3ea6281cdc6421da9ed22c9083",
+      "oldBytesRestored": true,
+      "appendOnlyDelta": false
+    },
+    {
+      "historicalPath": "docs/verification/D19-fixtures.jsonl",
+      "captured": "docs/verification/D19-current-runtime/browser/D19-fixtures.jsonl",
+      "bytes": 43133,
+      "sha256": "b82f8bac87e2623cb40dfe2ceb42751c992b0b575df60058623d0eca2ffeef75",
+      "oldBytesRestored": true,
+      "appendOnlyDelta": true
+    },
+    {
+      "historicalPath": "docs/verification/D19-handoff-ui.json",
+      "captured": "docs/verification/D19-current-runtime/browser/D19-handoff-ui.json",
+      "bytes": 317,
+      "sha256": "a9c7727a47eb5388e7d7deefa2288d52eb3d7f30b8cdbe086a26c61c7eede65b",
+      "oldBytesRestored": true,
+      "appendOnlyDelta": false
+    },
+    {
+      "historicalPath": "docs/verification/D19-platform-ui.json",
+      "captured": "docs/verification/D19-current-runtime/browser/D19-platform-ui.json",
+      "bytes": 204,
+      "sha256": "9ff46d7b08300d8cbfe0c2b227d62b79d24c6dbb4fe8c625ddec3b577493e0f0",
+      "oldBytesRestored": true,
+      "appendOnlyDelta": false
+    },
+    {
+      "historicalPath": "docs/verification/D19-reviewer-ui.json",
+      "captured": "docs/verification/D19-current-runtime/browser/D19-reviewer-ui.json",
+      "bytes": 127,
+      "sha256": "6b267f33467508412a9b3c91eee104001eb49d8525d75d88c02787021935c815",
+      "oldBytesRestored": true,
+      "appendOnlyDelta": false
+    },
+    {
+      "historicalPath": "docs/verification/workflow-runtime.jsonl",
+      "captured": "docs/verification/D19-current-runtime/browser/workflow-runtime.jsonl",
+      "bytes": 1097,
+      "sha256": "97e7d7e2f9607c375abeb5e3c20eea73fc64f71c3a5073bd3cda80532a02a5f3",
+      "oldBytesRestored": true,
+      "appendOnlyDelta": true
+    }
+  ],
+  "scope": "Existing tests/runner, fresh exact-owned fixtures; no production target, external providers or cleanup; original evidence bytes restored after phase"
+}

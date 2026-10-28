@@ -1,3 +1,4 @@
+import { fixtureName } from "./helpers";
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { cleanup, DEMO_WS, hasSupabaseEnv, makeCreator, serviceForTests, userForJwt } from "./helpers";
 
@@ -8,8 +9,8 @@ suite("social trust schema and RLS", () => {
   afterAll(cleanup);
 
   it("lets a creator read only their own social trust account", async () => {
-    const c1 = await makeCreator("social-schema-1@test.local");
-    const c2 = await makeCreator("social-schema-2@test.local");
+    const c1 = await makeCreator(fixtureName("social-schema-1@test.local"));
+    const c2 = await makeCreator(fixtureName("social-schema-2@test.local"));
     const svc = serviceForTests();
 
     const { error: insertErr } = await svc.from("creator_social_accounts").insert([
@@ -54,8 +55,8 @@ suite("social trust schema and RLS", () => {
   });
 
   it("keeps public passport token hashes private to the owning creator", async () => {
-    const c1 = await makeCreator("social-passport-token-1@test.local");
-    const c2 = await makeCreator("social-passport-token-2@test.local");
+    const c1 = await makeCreator(fixtureName("social-passport-token-1@test.local"));
+    const c2 = await makeCreator(fixtureName("social-passport-token-2@test.local"));
     const svc = serviceForTests();
 
     const { error: insertErr } = await svc.from("creator_public_passports").insert([
@@ -72,7 +73,7 @@ suite("social trust schema and RLS", () => {
   });
 
   it("blocks creators from inserting or updating scan-derived social metrics", async () => {
-    const creator = await makeCreator("social-schema-metrics@test.local");
+    const creator = await makeCreator(fixtureName("social-schema-metrics@test.local"));
     const user = userForJwt(creator.jwt);
     const svc = serviceForTests();
 
@@ -156,7 +157,7 @@ suite("social trust schema and RLS", () => {
   });
 
   it("blocks creators from inserting or updating passport token hashes directly", async () => {
-    const creator = await makeCreator("social-passport-write@test.local");
+    const creator = await makeCreator(fixtureName("social-passport-write@test.local"));
     const user = userForJwt(creator.jwt);
     const svc = serviceForTests();
 

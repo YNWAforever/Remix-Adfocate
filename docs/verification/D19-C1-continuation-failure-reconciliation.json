@@ -1,0 +1,37 @@
+{
+  "observerRefreshBounds": {
+    "originalSourcePrivate": ".codex-tmp/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-final-readback-attempt1.mjs",
+    "status": "READONLY_OBSERVER_ASSERTION_FAILED",
+    "cause": "Observer assumed refresh-token growth <= session-growth cap; actual approved Auth rotation allows refresh rows within original row cap.",
+    "actualAuthActions": {
+      "login": 7,
+      "token_refreshed": 1,
+      "token_revoked": 1
+    },
+    "originalCapsWeakened": false,
+    "dataChangedByObserver": false
+  },
+  "collectionDto": {
+    "originalCommand": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/68d510a8-82a8-42bd-b3e8-4561580a7a19/collection-readback-command-attempt1.json",
+    "originalLogPrivate": ".codex-tmp/adfocate-d19-b2-20261025-recovery-4d6ca2c8/collection-after-handoff-attempt1.private.log",
+    "status": "HTTP200_OBSERVER_BINDING_ASSERTION_FAILED",
+    "cause": "Minimal DTO does not expose raw mission_id; use selected missions.slug plus active_workflow_id for the same saved submission.",
+    "applicationChanged": false,
+    "dataChangedByObserver": false
+  },
+  "Node22InitialFull": {
+    "report": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/node22-full.json",
+    "passed": 2080,
+    "failed": 2,
+    "cause": "Standalone npm discovery; source unchanged; explicit existing npm_execpath yielded7 target and2082 full passes."
+  },
+  "resourceStops": {
+    "missingFailureTimeReading": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/browser-continuation-initial-resource-stop.json",
+    "knownFalseGate": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/browser-continuation-adopt-preflight-1.json",
+    "runtimeChildStartedBeforePassingGate": false
+  },
+  "priorBrowserFailure": {
+    "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/browser/browser-summary.json",
+    "preserved": true
+  }
+}

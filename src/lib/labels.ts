@@ -3,6 +3,8 @@
  * No hooks. Call t(categoryLabelKey(value)) in components.
  */
 
+import { canonicalMissionCategory } from "./missionCategories";
+
 const CATEGORY_KEY_MAP: Record<string, string> = {
   "全部": "app.category.all",
   "社交": "app.category.social",
@@ -21,7 +23,7 @@ const CATEGORY_KEY_MAP: Record<string, string> = {
 
 /** Maps a zh category value to its dict key. Falls back to the value itself. */
 export function categoryLabelKey(value: string): string {
-  return CATEGORY_KEY_MAP[value] ?? value;
+  return CATEGORY_KEY_MAP[canonicalMissionCategory(value)] ?? value;
 }
 
 const PLATFORM_DISPLAY_KEY_MAP: Record<string, string> = {

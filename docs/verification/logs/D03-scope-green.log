@@ -1,0 +1,11 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ✓ server/test/staffAuth.test.ts (17 tests) 10ms
+ ✓ server/test/audit-admin-scope.test.ts (5 tests) 16ms
+
+ Test Files  2 passed (2)
+      Tests  22 passed (22)
+   Start at  01:00:51
+   Duration  2.97s (transform 367ms, setup 703ms, collect 559ms, tests 26ms, environment 3.08s, prepare 399ms)
+

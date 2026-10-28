@@ -1,0 +1,28 @@
+{
+  "startedAt": "2026-10-25T18:26:43.933761+00:00",
+  "command": [
+    "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "--no-file-parallelism",
+    "--reporter=default",
+    "--reporter=json",
+    "--outputFile.json=docs/verification/D19-C2-runtime-20261026/transport-full-results.json"
+  ],
+  "node": "v22.23.4",
+  "resource": {
+    "at": "2026-10-25T18:26:43.933063+00:00",
+    "freePhysicalGiB": 5.836788177490234,
+    "freeCommitGiB": 7.038074493408203,
+    "minimumGiB": 3,
+    "freeDiskGiB": 22.028034210205078
+  },
+  "credentialsProxiesPreloadsStripped": true,
+  "integrationDisabled": true,
+  "label": "transport-full",
+  "log": "docs/verification/D19-C2-runtime-20261026/transport-full.log",
+  "runtimeTargetCallsRequested": false,
+  "pid": 27652,
+  "endedAt": "2026-10-25T18:39:14.526712+00:00",
+  "exit": 1
+}

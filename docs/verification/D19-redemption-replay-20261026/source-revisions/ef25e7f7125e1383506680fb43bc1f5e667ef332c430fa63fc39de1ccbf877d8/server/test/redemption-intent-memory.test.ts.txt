@@ -1,0 +1,123 @@
+// @vitest-environment node
+import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { PGlite } from "@electric-sql/pglite";
+import { Hono } from "hono";
+import { createHash } from "node:crypto";
+import { readFileSync, writeFileSync, existsSync } from "node:fs";
+import { resolve } from "node:path";
+import process from "node:process";
+
+const transport = vi.hoisted(() => ({ rpc: (_jwt: string, _name: string, _args: Record<string, unknown>): Promise<unknown> => { throw new Error("Memory transport not installed"); }, realClients: 0 }));
+vi.mock("@supabase/supabase-js", () => ({ createClient: () => { transport.realClients++; throw new Error("Real SDK forbidden"); } }));
+vi.mock("../../server/lib/supabase", () => ({ makeUserClient: (jwt: string) => ({ rpc: (name: string,args: Record<string,unknown>) => transport.rpc(jwt,name,args) }) }));
+import { redemptionRoutes } from "../../server/routes/redemption";
+import type { Env } from "../../server/app";
+
+const A="00000000-0000-4000-8000-000000000001",B="00000000-0000-4000-8000-000000000002",W="00000000-0000-4000-8000-000000000003";
+const G="00000000-0000-4000-8000-000000000010",G2="00000000-0000-4000-8000-000000000011";
+const R1="00000000-0000-4000-8000-000000000020",R2="00000000-0000-4000-8000-000000000021";
+type Redemption={id:string;creator_id:string;gift_id:string;code:string;points_spent:number;status:string;created_at:string;client_request_id?:string|null};
+type Snapshot={balances:Array<{creator_id:string;balance:number}>;ledger:Array<{creator_id:string;delta:number}>;stock:Array<{id:string;stock_remaining:number}>;codes:Array<{code:string;status:string;issued_to:string|null}>;redemptions:Redemption[]};
+let db:PGlite,app:Hono<Env>;
+let calls:Array<{owner:string;name:string;args:Record<string,unknown>}>;
+let events:Array<Record<string,unknown>>;
+const observations:unknown[]=[];
+const schemaSources:unknown[]=[];
+async function snapshot():Promise<Snapshot>{
+  const r=await db.query<{state:Snapshot}>(`select jsonb_build_object(
+    'balances',(select jsonb_agg(jsonb_build_object('creator_id',creator_id,'balance',balance)order by creator_id)from public.point_balances),
+    'ledger',(select coalesce(jsonb_agg(jsonb_build_object('creator_id',creator_id,'delta',delta)order by created_at,id),'[]'::jsonb)from public.point_transactions),
+    'stock',(select jsonb_agg(jsonb_build_object('id',id,'stock_remaining',stock_remaining)order by id)from public.redemption_gifts),
+    'codes',(select jsonb_agg(jsonb_build_object('code',code,'status',status,'issued_to',issued_to)order by code)from public.redemption_codes),
+    'redemptions',(select coalesce(jsonb_agg(to_jsonb(r)order by created_at,id),'[]'::jsonb)from public.redemptions r))as state`);
+  return r.rows[0].state;
+}
+async function post(request:string,gift=G,owner=A){
+  const response=await app.request("/api/redemption/redeem",{method:"POST",headers:{Authorization:`Bearer ${owner}`,"Content-Type":"application/json"},body:JSON.stringify({gift_id:gift,client_request_id:request})});
+  const result=await response.json()as Redemption&{code:string};events.push({request,gift,owner,status:response.status,result});return{status:response.status,result};
+}
+beforeEach(async()=>{
+  calls=[];events=[];transport.realClients=0;db=await PGlite.create();
+  await db.exec(`create schema auth;create table auth.users(id uuid primary key);
+    create role anon;create role authenticated;create role service_role;
+    grant usage on schema public,auth to anon,authenticated,service_role;
+    create function auth.uid()returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;`);
+  const initialPath="supabase/migrations/0001_init.sql",redemptionPath="supabase/migrations/0006_redemption.sql";
+  const initial=readFileSync(initialPath,"utf8"),redemption=readFileSync(redemptionPath,"utf8");
+  // Use exact current base-table DDL and the complete actual redemption migration.
+  // Realtime publication/RLS from0001 are outside this focused memory profile.
+  const tables=initial.split("-- Realtime for live balance")[0];
+  await db.exec(tables);await db.exec(redemption);
+  const forwardPath="supabase/migrations/20261025194402_redemption_intents.sql",forward=readFileSync(forwardPath,"utf8");
+  await db.exec(forward);
+  if(schemaSources.length===0)for(const[path,raw,used]of[[initialPath,initial,tables],[redemptionPath,redemption,redemption],[forwardPath,forward,forward]])schemaSources.push({path,rawSha256:createHash("sha256").update(raw).digest("hex"),executedSha256:createHash("sha256").update(used).digest("hex"),scope:path===initialPath?"Exact base-table prefix before Realtime":"Complete SQL, including actual redeem_gift/ACL/RLS"});
+  await db.query("insert into public.workspaces(id,slug,name)values($1,'memory','Offline')",[W]);
+  await db.query("insert into auth.users(id)values($1),($2)",[A,B]);
+  await db.query("insert into public.creators(id,workspace_id)values($1,$3),($2,$3)",[A,B,W]);
+  await db.query("insert into public.point_balances(creator_id,workspace_id,balance)values($1,$3,200),($2,$3,200)",[A,B,W]);
+  await db.query("insert into public.redemption_gifts(id,workspace_id,name,points_cost,stock_qty,stock_remaining,gift_type)values($1,$3,'GiftA',50,4,4,'voucher'),($2,$3,'GiftB',70,2,2,'voucher')",[G,G2,W]);
+  for(const[g,codes]of[[G,["A1","A2","A3","A4"]],[G2,["B1","B2"]]]as const)for(const code of codes)await db.query("insert into public.redemption_codes(gift_id,workspace_id,code)values($1,$2,$3)",[g,W,code]);
+  transport.rpc=async(jwt,name,args)=>{
+    expect(["redeem_gift","redeem_gift_with_request"]).toContain(name);expect(Object.keys(args).sort()).toEqual(args.p_request_id===undefined?["p_gift"]:["p_gift","p_request_id"]);calls.push({owner:jwt,name,args});
+    try{
+      const data=await db.transaction(async tx=>{
+        await tx.query("select set_config('request.jwt.claim.sub',$1,true)",[jwt]);await tx.exec("set local role authenticated");
+        const r=await tx.query<{redemption:Redemption}>(args.p_request_id===undefined?"select to_jsonb(public.redeem_gift($1::uuid))as redemption":"select to_jsonb(public.redeem_gift_with_request($1::uuid,$2::uuid))as redemption",args.p_request_id===undefined?[args.p_gift]:[args.p_gift,args.p_request_id]);return r.rows[0].redemption;
+      });return{data,error:null};
+    }catch(cause){const e=cause as Error&{code?:string};return{data:null,error:{message:e.message,code:e.code??"XX000",details:null,hint:null}};}
+  };
+  app=new Hono<Env>();app.use("*",async(c,next)=>{const id=c.req.header("Authorization")?.slice(7);if(id!==A&&id!==B)return c.json({error:"Scripted identity required"},401);c.set("jwt",id);c.set("userId",id);c.set("workspaceId",W);await next();});app.route("/api/redemption",redemptionRoutes);
+});
+afterEach(async()=>{observations.push({test:expect.getState().currentTestName,events,calls,after:await snapshot(),realSdkClients:transport.realClients});await db.close();expect(transport.realClients).toBe(0);});
+afterAll(()=>{if(!process.env.REDEMPTION_READBACK)return;const out=resolve(process.env.REDEMPTION_READBACK);expect(out.startsWith(resolve("docs/verification/D19-redemption-replay-20261026"))).toBe(true);expect(existsSync(out)).toBe(false);writeFileSync(out,JSON.stringify({scope:"Fresh in-memory PostgreSQL/PGlite, actual current Hono route and SQL; scripted Auth/transport only. No isolated/live target, actual Auth/RLS service, independent-connection concurrency, payment or provider.",schemaSources,observations},null,2)+"\n");});
+
+describe("UC-C33 current actual redemption SQL/route intent replay",()=>{
+  it("same intent after a lost response returns the same saved code and debits only once",async()=>{
+    const first=await post(R1);expect(first.status).toBe(200);const retry=await post(R1);const state=await snapshot();events.push({readback:state});
+    expect(retry.status).toBe(200);expect(retry.result.id).toBe(first.result.id);expect(retry.result.code).toBe(first.result.code);
+    expect(state.balances.find(r=>r.creator_id===A)!.balance).toBe(150);expect(state.ledger).toHaveLength(1);expect(state.redemptions).toHaveLength(1);expect(state.stock.find(r=>r.id===G)!.stock_remaining).toBe(3);
+  });
+  it("a deliberate second new intent still receives a DISTINCT code and its own debit",async()=>{
+    const first=await post(R1);const second=await post(R2);expect(first.status).toBe(200);expect(second.status).toBe(200);expect(second.result.id).not.toBe(first.result.id);expect(second.result.code).not.toBe(first.result.code);
+    const state=await snapshot();expect(state.balances.find(r=>r.creator_id===A)!.balance).toBe(100);expect(state.ledger).toHaveLength(2);expect(state.redemptions).toHaveLength(2);
+  });
+  it("retry recovers the original saved result even when that first action exhausted stock",async()=>{
+    await db.query("update public.redemption_gifts set stock_remaining=1 where id=$1",[G]);const first=await post(R1);expect(first.status).toBe(200);const retry=await post(R1);events.push({readback:await snapshot()});
+    expect(retry.status).toBe(200);expect(retry.result.id).toBe(first.result.id);expect((await snapshot()).ledger).toHaveLength(1);
+  });
+  it("the same intent cannot be changed to another gift and debit a second time",async()=>{
+    expect((await post(R1)).status).toBe(200);const changed=await post(R1,G2);events.push({readback:await snapshot()});expect(changed.status).toBe(409);expect(changed.result.code).toBe("request_conflict");expect((await snapshot()).ledger).toHaveLength(1);
+  });
+  it("a failed debit rolls back stock/code and the same intent can succeed after the balance fixture changes",async()=>{
+    await db.query("update public.point_balances set balance=0 where creator_id=$1",[A]);const before=await snapshot();expect((await post(R1)).status).toBe(409);expect(await snapshot()).toEqual(before);
+    await db.query("update public.point_balances set balance=100 where creator_id=$1",[A]);expect((await post(R1)).status).toBe(200);expect((await snapshot()).ledger).toHaveLength(1);
+  });
+  it("another recipient using the same client UUID never receives the first person's code",async()=>{
+    const first=await post(R1);const other=await post(R1,G,B);expect(first.status).toBe(200);expect(other.status).toBe(200);expect(other.result.creator_id).toBe(B);expect(other.result.code).not.toBe(first.result.code);
+    const state=await snapshot();expect(state.codes.find(r=>r.code===first.result.code)!.issued_to).toBe(A);expect(state.codes.find(r=>r.code===other.result.code)!.issued_to).toBe(B);
+  });
+  it("a late receipt-update failure rolls back the original financial operation before an exact retry",async()=>{
+    await db.exec(`create function public.fail_memory_receipt()returns trigger language plpgsql as $$begin raise exception 'memory_receipt_fault';end$$;
+      create trigger fail_memory_receipt before update of client_request_id on public.redemptions for each row execute function public.fail_memory_receipt();`);
+    const before=await snapshot();expect((await post(R1)).status).toBe(500);expect(await snapshot()).toEqual(before);
+    await db.exec("drop trigger fail_memory_receipt on public.redemptions;drop function public.fail_memory_receipt();");
+    expect((await post(R1)).status).toBe(200);expect((await post(R1)).status).toBe(200);expect((await snapshot()).ledger).toHaveLength(1);
+  });
+  it("legacy callers without a client ID retain two deliberately distinct redemption results",async()=>{
+    const one=await transport.rpc(A,"redeem_gift",{p_gift:G})as{data:Redemption;error:null};
+    const two=await transport.rpc(A,"redeem_gift",{p_gift:G})as{data:Redemption;error:null};
+    expect(one.error).toBeNull();expect(two.error).toBeNull();expect(two.data.id).not.toBe(one.data.id);expect(two.data.code).not.toBe(one.data.code);expect((await snapshot()).ledger).toHaveLength(2);
+  });
+  it("the wrapper denies anon, the pool stays private and SQL history RLS hides the other recipient",async()=>{
+    const q=await db.query<{anon:boolean;authenticated:boolean}>("select has_function_privilege('anon','public.redeem_gift_with_request(uuid,uuid)','execute')as anon,has_function_privilege('authenticated','public.redeem_gift_with_request(uuid,uuid)','execute')as authenticated");expect(q.rows[0]).toEqual({anon:false,authenticated:true});
+    const owner=await post(R1);expect(owner.status).toBe(200);
+    const other=await db.transaction(async tx=>{await tx.query("select set_config('request.jwt.claim.sub',$1,true)",[B]);await tx.exec("set local role authenticated");return tx.query("select code from public.redemptions");});expect(other.rows).toEqual([]);
+    await expect(db.transaction(async tx=>{await tx.exec("set local role authenticated");return tx.query("select code from public.redemption_codes");})).rejects.toMatchObject({code:"42501"});
+  });
+  it("malformed or null request bodies fail before the SQL command",async()=>{
+    for(const body of ["null",'{"gift_id":"'+G+'","client_request_id":null}','{"gift_id":"'+G+'","client_request_id":"bad"}',"{"]){
+      const r=await app.request("/api/redemption/redeem",{method:"POST",headers:{Authorization:`Bearer ${A}`,"Content-Type":"application/json"},body});expect(r.status).toBe(400);
+    }
+    expect(calls).toHaveLength(0);expect((await snapshot()).ledger).toHaveLength(0);
+  });
+});

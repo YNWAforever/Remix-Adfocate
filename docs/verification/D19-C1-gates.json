@@ -1,0 +1,299 @@
+{
+  "sourceFingerprint": "e83998d178061043688016056a5a78fc61df58bac28f3d0d0b66d639306037bd",
+  "full": {
+    "command": [
+      "node",
+      "node_modules/vitest/vitest.mjs",
+      "run",
+      "--no-file-parallelism",
+      "--reporter=json",
+      "--outputFile=docs\\verification\\adfocate-d19-b2-20261025-recovery-4d6ca2c8\\continuation-final-full.json"
+    ],
+    "exit": 0,
+    "passed": 2082,
+    "failed": 0,
+    "gatedSkip": 363,
+    "files": 289,
+    "report": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-final-full.json",
+    "commandReceipt": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-final-full-command.json"
+  },
+  "originalAudit16": {
+    "passed": 16,
+    "failed": 0,
+    "skipped": 0,
+    "total": 16
+  },
+  "protected194": {
+    "passed": 194,
+    "failed": 0,
+    "skipped": 0,
+    "total": 194
+  },
+  "releaseFoundationFromFull": {
+    "passed": 107,
+    "failed": 0,
+    "skipped": 0,
+    "total": 107
+  },
+  "node": "v24.18.0",
+  "Node22": {
+    "status": "PASS_LOCAL_CURRENT_SOURCE",
+    "version": "v22.23.4",
+    "executable": "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+    "packageDownloadOrInstall": false,
+    "npmCli": "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+    "npmExecpathExplicit": true,
+    "full": {
+      "passed": 2082,
+      "failed": 0,
+      "gatedSkip": 363,
+      "files": 289,
+      "report": {
+        "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/node22-npm-full.json",
+        "sha256": "c6ff847474596c718dbe0eb6a9b8da9c30205295ec0a016b49fa7e7b7fa4b70f"
+      },
+      "commandReceipt": {
+        "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/node22-npm-full-command.json",
+        "sha256": "1d9dc289010eceacfa13889855c2ed6c70243e17e4956d4f0e8e62f5600e1f6c"
+      }
+    },
+    "originalAudit16": {
+      "passed": 16,
+      "failed": 0,
+      "skipped": 0,
+      "total": 16
+    },
+    "protected194": {
+      "passed": 194,
+      "failed": 0,
+      "skipped": 0,
+      "total": 194
+    },
+    "static": {
+      "type": {
+        "exit": 0,
+        "command": [
+          "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+          "node_modules/typescript/bin/tsc",
+          "--noEmit"
+        ],
+        "receipt": {
+          "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/node22-npm-type-command.json",
+          "sha256": "6c7c27804cc0af56c91c6dbe2ab09d640195f90b6d8f8740109488d0b3615402"
+        },
+        "log": {
+          "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/node22-npm-type.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "lint": {
+        "exit": 0,
+        "command": [
+          "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+          "node_modules/eslint/bin/eslint.js",
+          "."
+        ],
+        "receipt": {
+          "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/node22-npm-lint-command.json",
+          "sha256": "8f0e766729da634816bb33e57140ef90623c7b64b1a49e1a44d544c4c044c2a6"
+        },
+        "log": {
+          "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/node22-npm-lint.log",
+          "sha256": "e6e016e4fe0cf1d2a8190e99e008bde00ef39764514624f7cc26a2e4170cc27d"
+        }
+      },
+      "build": {
+        "exit": 0,
+        "command": [
+          "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+          "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+          "run",
+          "build"
+        ],
+        "receipt": {
+          "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/node22-npm-build-command.json",
+          "sha256": "be5806839f1d1f1664d9af6c2bb62bbee9c3ce6a41adec960ac77d6bcd010f4f"
+        },
+        "log": {
+          "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/node22-npm-build.log",
+          "sha256": "6ca1f207fa49a6700da1f81b0942f1c3adf16146409acf7713bad5992d23ce99"
+        }
+      },
+      "esm": {
+        "exit": 0,
+        "command": [
+          "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+          "scripts/check-esm-extensions.mjs"
+        ],
+        "receipt": {
+          "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/node22-npm-esm-command.json",
+          "sha256": "37f7de59897c371a68bbd40cc33f227e8390f6e8764c4324473bc45990f0a3b8"
+        },
+        "log": {
+          "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/node22-npm-esm.log",
+          "sha256": "b654fb9381ed836f5045e91ed2cde87f4f7cede86cd34768fd9f7f53922430de"
+        }
+      },
+      "manifest": {
+        "exit": 0,
+        "command": [
+          "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+          "node_modules/vite-node/vite-node.mjs",
+          "--script",
+          "scripts/release/manifest-cli.ts",
+          "check"
+        ],
+        "receipt": {
+          "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/node22-npm-manifest-command.json",
+          "sha256": "370f263c3dbb0a06be32653b029ee4be5bb0417e1099df3a2473fe5964f76963"
+        },
+        "log": {
+          "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/node22-npm-manifest.log",
+          "sha256": "a960201611f548456f8a7b53fff8a4e5fecd1b5edd538856140bebf756b9afb3"
+        }
+      }
+    },
+    "lintExistingWarnings": 4,
+    "initialStandaloneFull": {
+      "passed": 2080,
+      "failed": 2,
+      "gatedSkip": 363,
+      "report": {
+        "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/node22-full.json",
+        "sha256": "3de73135dccf4d61018bf0ae960159d0a7e41a7a782b24258c469c7c4bc2d2cc"
+      },
+      "meaning": "Two release npm entrypoint tests failed in the standalone launcher; its bundled npm fallback path is absent. Supplying existing npm_execpath preserves both fail-closed assertions. Source is unchanged."
+    },
+    "npmCliRecheck": {
+      "passed": 7,
+      "failed": 0,
+      "report": {
+        "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/node22-npm-cli.json",
+        "sha256": "ce9764de83a04a1c4e71ad1126b4b834de9f0ec111428eb68ae2c527124d95be"
+      }
+    },
+    "initialResourceStopsRetained": true,
+    "runtimeC1Toolchain": "Real C1 browser/API used Node24.18.0; Node22 proof is local full/static/build, not hosted/runtime deployment."
+  },
+  "actualC1TargetUsedForLocalGates": false,
+  "wholeR1Verified": false,
+  "lint": {
+    "exit": 0,
+    "command": [
+      "node",
+      "node_modules/eslint/bin/eslint.js",
+      "."
+    ],
+    "log": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-final-lint.log",
+    "receipt": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-final-lint-command.json",
+    "existingWarnings": 4
+  },
+  "type": {
+    "exit": 0,
+    "command": [
+      "node",
+      "node_modules/typescript/bin/tsc",
+      "--noEmit"
+    ],
+    "log": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-final-type.log",
+    "receipt": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-final-type-command.json"
+  },
+  "build": {
+    "exit": 0,
+    "command": [
+      "npm.cmd",
+      "run",
+      "build"
+    ],
+    "log": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-final-build.log",
+    "receipt": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-final-build-command.json"
+  },
+  "esm": {
+    "exit": 0,
+    "command": [
+      "node",
+      "scripts/check-esm-extensions.mjs"
+    ],
+    "log": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-final-esm.log",
+    "receipt": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-final-esm-command.json"
+  },
+  "manifest": {
+    "exit": 0,
+    "command": [
+      "node",
+      "node_modules/vite-node/vite-node.mjs",
+      "--script",
+      "scripts/release/manifest-cli.ts",
+      "check"
+    ],
+    "log": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-final-manifest.log",
+    "receipt": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-final-manifest-command.json"
+  },
+  "offline": {
+    "exit": 0,
+    "command": [
+      "node",
+      "scripts/audit/adopt-browser-fixture.mjs",
+      "docs/verification/D19-C1-browser-continuation-runtime-manifest.json",
+      "--offline-check"
+    ],
+    "log": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-final-offline.log",
+    "receipt": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-final-offline-command.json"
+  },
+  "targeted": {
+    "passed": 48,
+    "failed": 0,
+    "report": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/recovery-targeted-final.json",
+    "note": "6 editor recovery +28 context namespace +14 pure provenance/source cases; full suite rechecks final source."
+  },
+  "redEvidence": [
+    "autosave-red.json",
+    "autosave-conflict-red.json",
+    "recovery-artifact-scope-red.json",
+    "browser-recovery-guard-red.json",
+    "continuation-lint.log",
+    "continuation-type.log"
+  ],
+  "originSourceRuntime": {
+    "sourceFingerprint": "6285bca02a74bedf3eda7259238366e9023fcc0cae24fe5e7c874ae9dd118d7b",
+    "role": {
+      "passed": 8,
+      "failed": 0
+    },
+    "core": {
+      "passed": 9,
+      "failed": 0
+    },
+    "browser": {
+      "passed": 2,
+      "failed": 1,
+      "notRun": 2,
+      "phaseExit": 1
+    },
+    "newSourceRuntime": "NOT_RUN_NOT_APPROVED"
+  },
+  "historicalBefore696e": {
+    "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/continuation-before/D19-C1-gates.json",
+    "sha256": "538c4093bb0c37b1c557593be01e61801a710c37d1e665afd3cc9391ba39cb2a"
+  },
+  "currentApprovedRuntime": {
+    "manifestSha256": "696e94c29e62a27e820d7d12f5aa74c0d1e7b62f97f3b57db787074512a2626d",
+    "sourceFingerprint": "e83998d178061043688016056a5a78fc61df58bac28f3d0d0b66d639306037bd",
+    "carriedApiCases": 17,
+    "apiReruns": 0,
+    "browserPassed": 5,
+    "browserFailed": 0,
+    "browserSkipped": 0,
+    "extraBrowserObligations": 2,
+    "financialNeutrality": true,
+    "finalReadback": {
+      "path": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/68d510a8-82a8-42bd-b3e8-4561580a7a19/final-readback-after-collection.json",
+      "sha256": "d8293fc21dfad2bfaa7356a7922b0e6b4dfc3e3f9a9df16d495ad4946469e87d"
+    },
+    "supplementalCollectionReadbacks": {
+      "verified": 1,
+      "initialObserverAssumptionFailure": 1,
+      "authSignIns": 0
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "passed": 0,
+  "failed": 1,
+  "skipped": 13,
+  "failures": [
+    {
+      "test": "previews earning resources with a clear preparation label (zh)",
+      "message": "Error: Unable to find an element with the text: 課程主題預覽 · 內容準備中. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible."
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ❯ src/routes/-_app.login.test.tsx (21 tests | 1 failed | 20 skipped) 93ms
+   × Login (WhatsApp primary) > announces a busy email request while submission is pending 92ms
+     → expect(element).toBeDisabled()
+
+Received element is not disabled:
+  <input
+  aria-describedby="login-forgot-help"
+  aria-invalid="false"
+  autocomplete="email"
+  class="w-full rounded-xl border-2 border-[var(--color-ink)] bg-white p-3 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45"
+  id="login-password-email"
+  placeholder="[email-redacted]"
+  required=""
+  type="email"
+  value="[email-redacted]"
+/>
+ ❯ src/routes/-_app.profile.test.tsx (10 tests | 1 failed | 9 skipped) 68ms
+   × Profile page > locks edited input while the profile write is pending 67ms
+     → expect(element).toBeDisabled()
+
+Received element is not disabled:
+  <input
+  aria-label="顯示名稱"
+  class="w-full rounded-xl border-2 border-[var(--color-ink)] bg-white p-3"
+  value="阿明"
+/>
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/routes/-_app.login.test.tsx > Login (WhatsApp primary) > announces a busy email request while submission is pending
+Error: expect(element).toBeDisabled()
+
+Received element is not disabled:
+  <input
+  aria-describedby="login-forgot-help"
+  aria-invalid="false"
+  autocomplete="email"
+  class="w-full rounded-xl border-2 border-[var(--color-ink)] bg-white p-3 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45"
+  id="login-password-email"
+  placeholder="[email-redacted]"
+  required=""
+  type="email"
+  value="[email-redacted]"
+/>
+ ❯ src/routes/-_app.login.test.tsx:174:19
+    172|     fireEvent.change(email, { target: { value: "[email-redacted]" } });
+    173|     fireEvent.submit(email.closest("form")!);
+    174|     expect(email).toBeDisabled();
+       |                   ^
+    175| 
+    176|     await waitFor(() => expect(screen.getByRole("button", { name: "傳…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/routes/-_app.profile.test.tsx > Profile page > locks edited input while the profile write is pending
+Error: expect(element).toBeDisabled()
+
+Received element is not disabled:
+  <input
+  aria-label="顯示名稱"
+  class="w-full rounded-xl border-2 border-[var(--color-ink)] bg-white p-3"
+  value="阿明"
+/>
+ ❯ src/routes/-_app.profile.test.tsx:108:43
+    106|   it("locks edited input while the profile write is pending", () => {
+    107|     hoisted.pending = true; renderProfile(); fireEvent.click(screen.ge…
+    108|     expect(screen.getByLabelText("顯示名稱")).toBeDisabled();
+       |                                           ^
+    109|     expect(screen.getByRole("button", { name: "取消", exact: true })).…
+    110|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+ Test Files  2 failed (2)
+      Tests  2 failed | 29 skipped (31)
+   Start at  13:35:23
+   Duration  3.75s (transform 276ms, setup 480ms, collect 901ms, tests 161ms, environment 1.60s, prepare 238ms)
+

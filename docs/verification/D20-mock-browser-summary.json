@@ -1,0 +1,58 @@
+{
+  "sourceFingerprint": "544f5a717aa6550e1dad0acdb3c69041c8530f25f6dd1ed05ca43a847779aa7b",
+  "status": "PASS_OFFLINE_EDGE_MOCK_TRANSPORT",
+  "passed": 6,
+  "failed": 0,
+  "skipped": 0,
+  "stats": {
+    "startTime": "2026-10-23T21:01:06.014Z",
+    "duration": 12036.824999999999,
+    "expected": 6,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "cases": [
+    {
+      "name": "D20 creator lazy checklist, disabled provider and keyboard close",
+      "passed": true,
+      "durationMs": 4686
+    },
+    {
+      "name": "D20 operator lazy checklist, disabled provider and keyboard close",
+      "passed": true,
+      "durationMs": 784
+    },
+    {
+      "name": "D20 mock en sources and stale warning retain the question",
+      "passed": true,
+      "durationMs": 816
+    },
+    {
+      "name": "D20 mock zh sources and stale warning retain the question",
+      "passed": true,
+      "durationMs": 837
+    },
+    {
+      "name": "D20 unknown outcome does not retry; 429 retry retains ID; 409 stops with input intact",
+      "passed": true,
+      "durationMs": 912
+    },
+    {
+      "name": "D20 ignores a delayed v1 mock after switching to v2",
+      "passed": true,
+      "durationMs": 747
+    }
+  ],
+  "externalRequestsZeroAsserted": true,
+  "apiResponses": "Playwright transport fakes, not real API/DB results",
+  "sessions": "No real Auth/session; browser SDK uses offline.invalid and a non-credential placeholder",
+  "environment": "Loopback-only static component harness, Edge, 390x844 EN /1280x900 ZH; lazy/checklist/keyboard and error recovery; not physical device, Safari or accessibility certification",
+  "screenshots": [
+    "D20-mock-panel-en.png",
+    "D20-mock-panel-zh.png"
+  ],
+  "realProviderRequests": 0,
+  "dbConnectionsOrFixtures": 0,
+  "businessActions": 0
+}

@@ -1,0 +1,10 @@
+[
+  {
+    "path": "docs/verification/D19-legacy-sql-memory-20261026/legacy-reward-core.node.mjs",
+    "sha256": "464579087e0b75675a63b60083ad621918f41d61a59161855b00b0f8b13d4e26"
+  },
+  {
+    "path": "docs/verification/D19-legacy-sql-memory-20261026/sql-profile.mjs",
+    "sha256": "4a0ef8bf8533032efe5dd5729eac8d094cc876643d098e737ad7ceaccf8035df"
+  }
+]

@@ -1,0 +1,752 @@
+{
+  "sourceFingerprint": "6285bca02a74bedf3eda7259238366e9023fcc0cae24fe5e7c874ae9dd118d7b",
+  "manifestSha256": "a0f09af0a7bce75e6842a1d42042ac4471e757c184574d7e5dcf9a23fdc57989",
+  "projectId": "adfocate-d19-b2-20261025-recovery-4d6ca2c8",
+  "authorizationBasis": "Existing approved C1 application bootstrap, pinned repo auto_expose_new_tables=false, and exact referenced historical profile chain. No new source, provider profile or grant expansion.",
+  "referenceChain": [
+    "D19-C1-source-revision-runtime-manifest.json schemaProfile.historicalCompatibilityReference",
+    "D19-pristine-rpc-catalog-diff-resolution.json initialCatalogDiff",
+    "D19-pristine-rpc-schema-diff.json providerProfileAlignment",
+    "D19-pristine-rpc-provider-profile-alignment.json"
+  ],
+  "currentDiffMatchesExistingReviewedProfileExactly": true,
+  "prior72CanonicalSourceHashesMatchCurrent": true,
+  "providerConfigurationSql": "alter default privileges in schema public revoke select,insert,update,delete on tables from anon,authenticated,service_role;alter default privileges in schema public revoke usage,select on sequences from anon,authenticated,service_role;",
+  "existingLegacyTableAclAlignmentSql": [
+    "revoke all on public.\"academy_content\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"academy_content\" to anon;",
+    "revoke all on public.\"academy_content\" from authenticated;",
+    "grant select,truncate,references,trigger,maintain on public.\"academy_content\" to authenticated;",
+    "revoke all on public.\"assistant_conversations\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"assistant_conversations\" to anon;",
+    "revoke all on public.\"assistant_messages\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"assistant_messages\" to anon;",
+    "revoke all on public.\"brand_invites\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"brand_invites\" to anon;",
+    "revoke all on public.\"brand_invites\" from authenticated;",
+    "grant truncate,references,trigger,maintain on public.\"brand_invites\" to authenticated;",
+    "revoke all on public.\"brand_users\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"brand_users\" to anon;",
+    "revoke all on public.\"brand_users\" from authenticated;",
+    "grant select,truncate,references,trigger,maintain on public.\"brand_users\" to authenticated;",
+    "revoke all on public.\"campaign_missions\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"campaign_missions\" to anon;",
+    "revoke all on public.\"campaign_participants\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"campaign_participants\" to anon;",
+    "revoke all on public.\"campaign_participants\" from authenticated;",
+    "grant select,truncate,references,trigger,maintain on public.\"campaign_participants\" to authenticated;",
+    "revoke all on public.\"campaign_rank_snapshots\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"campaign_rank_snapshots\" to anon;",
+    "revoke all on public.\"campaign_rank_snapshots\" from authenticated;",
+    "grant truncate,references,trigger,maintain on public.\"campaign_rank_snapshots\" to authenticated;",
+    "revoke all on public.\"campaigns\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"campaigns\" to anon;",
+    "revoke all on public.\"campaigns\" from authenticated;",
+    "grant insert,select,delete,truncate,references,trigger,maintain on public.\"campaigns\" to authenticated;",
+    "revoke all on public.\"content_categories\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"content_categories\" to anon;",
+    "revoke all on public.\"content_categories\" from authenticated;",
+    "grant select,truncate,references,trigger,maintain on public.\"content_categories\" to authenticated;",
+    "revoke all on public.\"content_item_tags\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"content_item_tags\" to anon;",
+    "revoke all on public.\"content_item_tags\" from authenticated;",
+    "grant select,truncate,references,trigger,maintain on public.\"content_item_tags\" to authenticated;",
+    "revoke all on public.\"content_items\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"content_items\" to anon;",
+    "revoke all on public.\"content_items\" from authenticated;",
+    "grant select,truncate,references,trigger,maintain on public.\"content_items\" to authenticated;",
+    "revoke all on public.\"content_tags\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"content_tags\" to anon;",
+    "revoke all on public.\"content_tags\" from authenticated;",
+    "grant select,truncate,references,trigger,maintain on public.\"content_tags\" to authenticated;",
+    "revoke all on public.\"creator_portfolio_links\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"creator_portfolio_links\" to anon;",
+    "revoke all on public.\"creator_public_passports\" from anon;",
+    "revoke all on public.\"creator_public_passports\" from authenticated;",
+    "grant select,delete on public.\"creator_public_passports\" to authenticated;",
+    "revoke all on public.\"creator_public_profile_snapshots\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"creator_public_profile_snapshots\" to anon;",
+    "revoke all on public.\"creator_public_profile_snapshots\" from authenticated;",
+    "grant select,truncate,references,trigger,maintain on public.\"creator_public_profile_snapshots\" to authenticated;",
+    "revoke all on public.\"creator_review_notes\" from anon;",
+    "revoke all on public.\"creator_review_notes\" from authenticated;",
+    "revoke all on public.\"creator_review_statuses\" from anon;",
+    "revoke all on public.\"creator_review_statuses\" from authenticated;",
+    "revoke all on public.\"creator_social_accounts\" from anon;",
+    "revoke all on public.\"creator_social_accounts\" from authenticated;",
+    "grant select,delete on public.\"creator_social_accounts\" to authenticated;",
+    "revoke all on public.\"creator_social_scan_snapshots\" from anon;",
+    "revoke all on public.\"creator_social_scan_snapshots\" from authenticated;",
+    "grant select on public.\"creator_social_scan_snapshots\" to authenticated;",
+    "revoke all on public.\"creators\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"creators\" to anon;",
+    "revoke all on public.\"creators\" from authenticated;",
+    "grant select,truncate,references,trigger,maintain on public.\"creators\" to authenticated;",
+    "revoke all on public.\"earnings_balances\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"earnings_balances\" to anon;",
+    "revoke all on public.\"earnings_balances\" from authenticated;",
+    "grant select,truncate,references,trigger,maintain on public.\"earnings_balances\" to authenticated;",
+    "revoke all on public.\"earnings_transactions\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"earnings_transactions\" to anon;",
+    "revoke all on public.\"earnings_transactions\" from authenticated;",
+    "grant select,truncate,references,trigger,maintain on public.\"earnings_transactions\" to authenticated;",
+    "revoke all on public.\"kb_chunks\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"kb_chunks\" to anon;",
+    "revoke all on public.\"kb_chunks\" from authenticated;",
+    "grant select,truncate,references,trigger,maintain on public.\"kb_chunks\" to authenticated;",
+    "revoke all on public.\"kb_documents\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"kb_documents\" to anon;",
+    "revoke all on public.\"kb_documents\" from authenticated;",
+    "grant select,truncate,references,trigger,maintain on public.\"kb_documents\" to authenticated;",
+    "revoke all on public.\"mission_shortlists\" from anon;",
+    "revoke all on public.\"mission_shortlists\" from authenticated;",
+    "revoke all on public.\"mission_submissions\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"mission_submissions\" to anon;",
+    "revoke all on public.\"mission_submissions\" from authenticated;",
+    "grant select,truncate,references,trigger,maintain on public.\"mission_submissions\" to authenticated;",
+    "revoke all on public.\"missions\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"missions\" to anon;",
+    "revoke all on public.\"missions\" from authenticated;",
+    "grant insert,select,delete,truncate,references,trigger,maintain on public.\"missions\" to authenticated;",
+    "revoke all on public.\"notifications\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"notifications\" to anon;",
+    "revoke all on public.\"notifications\" from authenticated;",
+    "grant select,truncate,references,trigger,maintain on public.\"notifications\" to authenticated;",
+    "revoke all on public.\"operator_audit_events\" from anon;",
+    "revoke all on public.\"operator_audit_events\" from authenticated;",
+    "revoke all on public.\"point_balances\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"point_balances\" to anon;",
+    "revoke all on public.\"point_balances\" from authenticated;",
+    "grant select,truncate,references,trigger,maintain on public.\"point_balances\" to authenticated;",
+    "revoke all on public.\"point_transactions\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"point_transactions\" to anon;",
+    "revoke all on public.\"point_transactions\" from authenticated;",
+    "grant select,truncate,references,trigger,maintain on public.\"point_transactions\" to authenticated;",
+    "revoke all on public.\"redemption_codes\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"redemption_codes\" to anon;",
+    "revoke all on public.\"redemption_codes\" from authenticated;",
+    "grant truncate,references,trigger,maintain on public.\"redemption_codes\" to authenticated;",
+    "revoke all on public.\"redemption_gifts\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"redemption_gifts\" to anon;",
+    "revoke all on public.\"redemption_gifts\" from authenticated;",
+    "grant select,truncate,references,trigger,maintain on public.\"redemption_gifts\" to authenticated;",
+    "revoke all on public.\"redemptions\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"redemptions\" to anon;",
+    "revoke all on public.\"redemptions\" from authenticated;",
+    "grant select,truncate,references,trigger,maintain on public.\"redemptions\" to authenticated;",
+    "revoke all on public.\"staff_users\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"staff_users\" to anon;",
+    "revoke all on public.\"staff_users\" from authenticated;",
+    "grant truncate,references,trigger,maintain on public.\"staff_users\" to authenticated;",
+    "revoke all on public.\"workspace_budget_transactions\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"workspace_budget_transactions\" to anon;",
+    "revoke all on public.\"workspace_budget_transactions\" from authenticated;",
+    "grant select,truncate,references,trigger,maintain on public.\"workspace_budget_transactions\" to authenticated;",
+    "revoke all on public.\"workspace_budget_transactions\" from service_role;",
+    "grant select,truncate,references,trigger,maintain on public.\"workspace_budget_transactions\" to service_role;",
+    "revoke all on public.\"workspace_budgets\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"workspace_budgets\" to anon;",
+    "revoke all on public.\"workspace_budgets\" from authenticated;",
+    "grant select,truncate,references,trigger,maintain on public.\"workspace_budgets\" to authenticated;",
+    "revoke all on public.\"workspace_budgets\" from service_role;",
+    "grant select,truncate,references,trigger,maintain on public.\"workspace_budgets\" to service_role;",
+    "revoke all on public.\"workspaces\" from anon;",
+    "grant truncate,references,trigger,maintain on public.\"workspaces\" to anon;",
+    "revoke all on public.\"workspaces\" from authenticated;",
+    "grant select,truncate,references,trigger,maintain on public.\"workspaces\" to authenticated;"
+  ],
+  "currentDiff": [
+    {
+      "table": "academy_content",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "academy_content",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "rDxtm"
+    },
+    {
+      "table": "assistant_conversations",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "assistant_messages",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "brand_invites",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "brand_invites",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "brand_users",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "brand_users",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "rDxtm"
+    },
+    {
+      "table": "campaign_missions",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "campaign_participants",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "campaign_participants",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "rDxtm"
+    },
+    {
+      "table": "campaign_rank_snapshots",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "campaign_rank_snapshots",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "campaigns",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "campaigns",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "ardDxtm"
+    },
+    {
+      "table": "content_categories",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "content_categories",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "rDxtm"
+    },
+    {
+      "table": "content_item_tags",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "content_item_tags",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "rDxtm"
+    },
+    {
+      "table": "content_items",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "content_items",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "rDxtm"
+    },
+    {
+      "table": "content_tags",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "content_tags",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "rDxtm"
+    },
+    {
+      "table": "creator_portfolio_links",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "creator_public_passports",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": ""
+    },
+    {
+      "table": "creator_public_passports",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "rd"
+    },
+    {
+      "table": "creator_public_profile_snapshots",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "creator_public_profile_snapshots",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "rDxtm"
+    },
+    {
+      "table": "creator_review_notes",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": ""
+    },
+    {
+      "table": "creator_review_notes",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": ""
+    },
+    {
+      "table": "creator_review_statuses",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": ""
+    },
+    {
+      "table": "creator_review_statuses",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": ""
+    },
+    {
+      "table": "creator_social_accounts",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": ""
+    },
+    {
+      "table": "creator_social_accounts",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "rd"
+    },
+    {
+      "table": "creator_social_scan_snapshots",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": ""
+    },
+    {
+      "table": "creator_social_scan_snapshots",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "r"
+    },
+    {
+      "table": "creators",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "creators",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "rDxtm"
+    },
+    {
+      "table": "earnings_balances",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "earnings_balances",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "rDxtm"
+    },
+    {
+      "table": "earnings_transactions",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "earnings_transactions",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "rDxtm"
+    },
+    {
+      "table": "kb_chunks",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "kb_chunks",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "rDxtm"
+    },
+    {
+      "table": "kb_documents",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "kb_documents",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "rDxtm"
+    },
+    {
+      "table": "mission_shortlists",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": ""
+    },
+    {
+      "table": "mission_shortlists",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": ""
+    },
+    {
+      "table": "mission_submissions",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "mission_submissions",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "rDxtm"
+    },
+    {
+      "table": "missions",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "missions",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "ardDxtm"
+    },
+    {
+      "table": "notifications",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "notifications",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "rDxtm"
+    },
+    {
+      "table": "operator_audit_events",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": ""
+    },
+    {
+      "table": "operator_audit_events",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": ""
+    },
+    {
+      "table": "point_balances",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "point_balances",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "rDxtm"
+    },
+    {
+      "table": "point_transactions",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "point_transactions",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "rDxtm"
+    },
+    {
+      "table": "redemption_codes",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "redemption_codes",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "redemption_gifts",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "redemption_gifts",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "rDxtm"
+    },
+    {
+      "table": "redemptions",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "redemptions",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "rDxtm"
+    },
+    {
+      "table": "staff_users",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "staff_users",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "workspace_budget_transactions",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "workspace_budget_transactions",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "rDxtm"
+    },
+    {
+      "table": "workspace_budget_transactions",
+      "role": "service_role",
+      "before": "arwdDxtm",
+      "expected": "rDxtm"
+    },
+    {
+      "table": "workspace_budgets",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "workspace_budgets",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "rDxtm"
+    },
+    {
+      "table": "workspace_budgets",
+      "role": "service_role",
+      "before": "arwdDxtm",
+      "expected": "rDxtm"
+    },
+    {
+      "table": "workspaces",
+      "role": "anon",
+      "before": "arwdDxtm",
+      "expected": "Dxtm"
+    },
+    {
+      "table": "workspaces",
+      "role": "authenticated",
+      "before": "arwdDxtm",
+      "expected": "rDxtm"
+    }
+  ],
+  "sourceMigrationsChanged": false,
+  "zeroBusinessBeforeResume": {
+    "creators": 0,
+    "missions": 0,
+    "authUsers": 0,
+    "workspaces": 0,
+    "submissions": 0,
+    "storageBuckets": 2,
+    "storageObjects": 0
+  },
+  "historyPreserved": [
+    {
+      "name": "init",
+      "version": "0001"
+    },
+    {
+      "name": "harden_rls",
+      "version": "0002"
+    },
+    {
+      "name": "onboarding",
+      "version": "0003"
+    },
+    {
+      "name": "grants",
+      "version": "0004"
+    },
+    {
+      "name": "mission_submissions",
+      "version": "0005"
+    },
+    {
+      "name": "redemption",
+      "version": "0006"
+    },
+    {
+      "name": "earnings",
+      "version": "0007"
+    },
+    {
+      "name": "leveling",
+      "version": "0008"
+    },
+    {
+      "name": "passport_scores",
+      "version": "0009"
+    },
+    {
+      "name": "applications",
+      "version": "0010"
+    },
+    {
+      "name": "mission_brief",
+      "version": "0011"
+    },
+    {
+      "name": "trust_profile_bundle",
+      "version": "0012"
+    },
+    {
+      "name": "operator_creator_selection_crm",
+      "version": "0013"
+    },
+    {
+      "name": "operator_crm_workspace_guard",
+      "version": "0014"
+    },
+    {
+      "name": "creator_profile_media",
+      "version": "0015"
+    },
+    {
+      "name": "assistant",
+      "version": "0016"
+    },
+    {
+      "name": "social_verification",
+      "version": "0017"
+    },
+    {
+      "name": "mission_authoring",
+      "version": "0018"
+    },
+    {
+      "name": "mission_brief_rich",
+      "version": "0019"
+    },
+    {
+      "name": "staff_auth",
+      "version": "0020"
+    },
+    {
+      "name": "content_hub",
+      "version": "0021"
+    },
+    {
+      "name": "notifications",
+      "version": "0022"
+    },
+    {
+      "name": "brand_access",
+      "version": "0023"
+    },
+    {
+      "name": "brand_budget",
+      "version": "0024"
+    },
+    {
+      "name": "campaigns",
+      "version": "0025"
+    },
+    {
+      "name": "campaigns_s2",
+      "version": "0026"
+    },
+    {
+      "name": "brand_resources",
+      "version": "0027"
+    },
+    {
+      "name": "academy_content",
+      "version": "0028"
+    },
+    {
+      "name": "profile_media_private_grants",
+      "version": "20260618135028"
+    },
+    {
+      "name": "profile_media_url_validation",
+      "version": "20260619013000"
+    }
+  ],
+  "runtimeExecuted": false,
+  "noPristineTargetQueryOrRerun": true,
+  "noNewResources": true,
+  "noOriginalIncidentChange": true
+}

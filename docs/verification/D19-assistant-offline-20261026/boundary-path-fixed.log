@@ -1,0 +1,11 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ✓ docs/verification/D19-assistant-offline-20261026/assistant-boundary.test.tsx (8 tests) 439ms
+
+ Test Files  1 passed (1)
+      Tests  8 passed (8)
+   Start at  01:08:51
+   Duration  3.47s (transform 369ms, setup 356ms, collect 870ms, tests 439ms, environment 1.49s, prepare 130ms)
+
+JSON report written to C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/docs/verification/D19-assistant-offline-20261026/boundary-path-fixed-native.json

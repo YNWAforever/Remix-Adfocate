@@ -5,5 +5,5 @@ export const Route = createFileRoute("/admin/academy/$id")({ component: EditorPa
 
 function EditorPage() {
   const { id } = useParams({ from: "/admin/academy/$id" });
-  return <AcademyEditor id={id} />;
+  return <AcademyEditor key={id} id={id} />;
 }

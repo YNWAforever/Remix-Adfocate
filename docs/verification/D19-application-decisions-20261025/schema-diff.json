@@ -1,0 +1,46 @@
+{
+  "at": "2026-10-25T12:31:26.095140+00:00",
+  "candidateSourceFingerprint": "1d3df1fe48e87d784b18ff5bfde3ebe438411187bac6a28d83a3ff6d21f02191",
+  "existingRawChecksumsUnchanged": 72,
+  "sourceMigrationFiles": 73,
+  "observedLiveMigrationRows": {
+    "count": 72,
+    "evidence": "docs/verification/adfocate-d19-b2-20261025-recovery-4d6ca2c8/68d510a8-82a8-42bd-b3e8-4561580a7a19/final-readback-after-collection.json",
+    "scope": "Retained previous approved696e readback; not queried this turn."
+  },
+  "added": [
+    {
+      "path": "supabase/migrations/20261025120934_application_decisions.sql",
+      "sha256": "abbfc0499afbe771e36540443a93c979521be1fe70c321f6fb8ff6996a45a35c",
+      "objects": [
+        "public.decide_mission_application(uuid,uuid,uuid,uuid,bigint,text,text)"
+      ],
+      "grants": {
+        "service_role": [
+          "EXECUTE"
+        ],
+        "PUBLIC": [],
+        "anon": [],
+        "authenticated": []
+      },
+      "rlsChanges": [],
+      "newTables": [],
+      "columnChanges": [],
+      "existingFunctionReplacements": []
+    }
+  ],
+  "targetSchemaWritesThisTurn": 0,
+  "hostedOrProductionWrites": 0,
+  "existingMigrationChecksumChanges": 0,
+  "targetApplyStatus": "NOT_AUTHORIZED_NOT_RUN",
+  "embeddedScope": "Ten owned-memory function/transaction/grant tests; workflow creation uses a narrow contract stub. Not a real Auth/RLS or multi-connection rehearsal.",
+  "releaseManifest": {
+    "path": "supabase/release-manifest.json",
+    "sha256": "4659eda99773b5b1c8cd5e3b569de2e2240b1626d135f4843d0a8dded67e5997",
+    "digest": "3c79ff945eed94725517b20c7351885196373c1ca3d9d2294143fb58a9263650",
+    "managedMigrations": 43,
+    "previous42EntriesUnchanged": true,
+    "uniqueCapabilities": 591,
+    "previous587Preserved": true
+  }
+}

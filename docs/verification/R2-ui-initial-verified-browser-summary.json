@@ -1,0 +1,106 @@
+{
+  "runId": "08530ddb-c357-4638-8ab8-af5854f42fa3",
+  "target": {
+    "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+    "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+    "disposable": true,
+    "projectId": "adfocate-r1-empty-20261023",
+    "proxy": "none",
+    "apiPort": 56421,
+    "apiContainerId": "1b9c41318298d79308db7782f51474541ad5abf0120fa93b96a2a9ea59d043ee",
+    "databaseContainerId": "e7c8efa295cd5544a8b2a100a73b6953cd6ddd486aaf394f231482067523e12d",
+    "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+    "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+    "networkId": "9e5d3069e8255d70b8eef56020c8ea2618fdb2626d92d9a04e51ea2de41a98e0"
+  },
+  "tests": [
+    {
+      "title": "UC-C15 real empty redemption history, return entrance and recovery",
+      "ok": true,
+      "results": [
+        {
+          "status": "passed",
+          "duration": 16183
+        }
+      ]
+    },
+    {
+      "title": "UC-C16 real no-active-challenge state and failed-read retry",
+      "ok": true,
+      "results": [
+        {
+          "status": "passed",
+          "duration": 5029
+        }
+      ]
+    },
+    {
+      "title": "UC-C17 real Academy readable/preparing and locked eligibility; empty and fault UI",
+      "ok": true,
+      "results": [
+        {
+          "status": "passed",
+          "duration": 4270
+        }
+      ]
+    },
+    {
+      "title": "UC-A45 real empty applications, recoverable failure and reload",
+      "ok": true,
+      "results": [
+        {
+          "status": "passed",
+          "duration": 1955
+        }
+      ]
+    },
+    {
+      "title": "UC-A49 challenge/content empty entrances, preserved filter and retry",
+      "ok": true,
+      "results": [
+        {
+          "status": "passed",
+          "duration": 2295
+        }
+      ]
+    },
+    {
+      "title": "F27 parent metadata saves with explicit retry and survives hard reload",
+      "ok": true,
+      "results": [
+        {
+          "status": "passed",
+          "duration": 2241
+        }
+      ]
+    },
+    {
+      "title": "F27 real 409 compares latest and preserves both authored and concurrent metadata",
+      "ok": true,
+      "results": [
+        {
+          "status": "passed",
+          "duration": 2954
+        }
+      ]
+    }
+  ],
+  "stats": {
+    "startTime": "2026-10-24T01:13:46.881Z",
+    "duration": 52025.229999999996,
+    "expected": 7,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "passed": 7,
+  "emptyReadCounts": {
+    "history": 0,
+    "campaigns": 0,
+    "applications": 0,
+    "adminCampaigns": 0,
+    "content": 9
+  },
+  "browser": "Installed desktop Edge; 390x844 and 1280x900 CSS viewports; not physical mobile/Safari",
+  "scope": "Real local Auth/API/RLS/DB successful reads and metadata writes; explicit fault/empty mocks labelled in each UI record; no curriculum, external provider or formal staff cutover."
+}

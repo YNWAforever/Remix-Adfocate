@@ -1,6 +1,7 @@
 import { useId } from "react";
 import { useI18n } from "../lib/i18n";
 import type { MyMission } from "../lib/queries/kocmax";
+import type { NextBestAction } from "../lib/creatorActivation";
 
 const ACTIVE_STATUSES = new Set<MyMission["status"]>([
   "joined",
@@ -20,16 +21,18 @@ export function ActiveMissionSummary({
   isError,
   onRetry,
   getMissionHref,
+  workActions,
 }: {
   missions: MyMission[];
   isLoading: boolean;
   isError: boolean;
   onRetry: () => void;
   getMissionHref?: (mission: MyMission) => string;
+  workActions?: ReadonlyMap<string, NextBestAction>;
 }) {
   const { t } = useI18n();
   const headingId = useId();
-  const activeMissions = missions.filter(({ status }) => ACTIVE_STATUSES.has(status));
+  const activeMissions = missions.filter((mission) => ACTIVE_STATUSES.has(mission.status) || workActions?.has(mission.id));
 
   if (!isLoading && !isError && activeMissions.length === 0) return null;
 
@@ -61,14 +64,14 @@ export function ActiveMissionSummary({
           {activeMissions.map((mission) => (
             <li key={mission.id}>
               <a
-                href={getMissionHref?.(mission) ?? `/mission/${mission.missions.slug}`}
+                href={workActions?.get(mission.id)?.to ?? getMissionHref?.(mission) ?? `/mission/${mission.missions.slug}`}
                 className="flex min-h-11 items-center justify-between gap-3 rounded-xl border border-[var(--color-ink)] p-3 no-underline transition hover:bg-[var(--color-paper)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
               >
                 <span className="min-w-0 font-heading text-sm font-semibold">
                   {mission.missions.title}
                 </span>
                 <span className="shrink-0 rounded-full border border-[var(--color-ink)] px-2 py-0.5 font-mono text-[10px] uppercase">
-                  {t(STATUS_KEY[mission.status] ?? mission.status)}
+                  {t(workActions?.get(mission.id)?.titleKey ?? STATUS_KEY[mission.status] ?? mission.status)}
                 </span>
               </a>
             </li>

@@ -1,0 +1,11 @@
+{
+  "browserSourceFingerprint": "34eb1272e0d17fad3481ce40a928bb08870df1ee29f1295b58501657382c4a43",
+  "finalSourceFingerprint": "cdf8597d00d4cf716823a420296cb0e40ba1fa13e0fa11ca7feb735f8f04c996",
+  "changedAfterFullBrowser": [
+    "scripts/audit/inspect-d17-r2-advisors.mjs",
+    "scripts/audit/inspect-d17-r2-advisors.test.ts"
+  ],
+  "scope": "Only the read-only advisor inspector builtin imports and Docker DB-port binding guard, plus its fully mocked regressions. Every UI/API/SQL/quality runner/e2e source hash unchanged; full gates run on final source and the inspector plus performance rerun after gates.",
+  "applicationCodeChanged": false,
+  "schemaChanged": false
+}

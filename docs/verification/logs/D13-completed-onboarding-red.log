@@ -1,0 +1,40 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ❯ src/routes/-_app.onboarding.test.tsx (17 tests | 1 failed | 16 skipped) 68ms
+   × Onboarding wizard > does not offer the welcome reward again after a completed reload 67ms
+     → expect(element).not.toBeInTheDocument()
+
+expected document not to contain element, found <button
+  class="btn-primary min-h-11 w-full rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 font-heading font-bold disabled:opacity-50"
+  type="button"
+>
+  領取 100 積分
+</button> instead
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/routes/-_app.onboarding.test.tsx > Onboarding wizard > does not offer the welcome reward again after a completed reload
+Error: expect(element).not.toBeInTheDocument()
+
+expected document not to contain element, found <button
+  class="btn-primary min-h-11 w-full rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 font-heading font-bold disabled:opacity-50"
+  type="button"
+>
+  領取 100 積分
+</button> instead
+ ❯ src/routes/-_app.onboarding.test.tsx:91:92
+     89|     window.history.replaceState({}, "", "/onboarding?next=" + encodeUR…
+     90|     renderWizard();
+     91|     expect(screen.queryByRole("button", { name: dict.zh["app.onboardin…
+       |                                                                                            ^
+     92|     expect(screen.getByRole("link", { name: "繼續原先操作" })).toHaveA…
+     93|     expect(hoisted.complete).not.toHaveBeenCalled();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 16 skipped (17)
+   Start at  13:05:13
+   Duration  2.74s (transform 255ms, setup 232ms, collect 1.35s, tests 68ms, environment 779ms, prepare 123ms)
+

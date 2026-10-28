@@ -1,0 +1,453 @@
+{
+  "task": "D13",
+  "updatedAt": "2026-10-23T06:07:20.485648+00:00",
+  "executionModel": {
+    "verifiedFrom": "execution interface turn_context",
+    "model": "gpt-6.1-sol",
+    "switched": false,
+    "checkedAt": "2026-10-23T05:28:39.171914+00:00"
+  },
+  "headSha": "7cfa3dc84c821719a4dff754229a591c81786c53",
+  "branch": "codex/adfocate-r1-pilot-20261023",
+  "commit": null,
+  "push": false,
+  "merge": false,
+  "deploy": false,
+  "newResult": {
+    "code": "implemented using existing Auth/onboarding/social/Passport modules",
+    "test": "verified local full suite and guarded disposable integration/UI",
+    "deployment": "not-deployed",
+    "runtime": "real local Auth/Storage/API and Edge; PKCE UI exchange explicitly mocked"
+  },
+  "priorCodeFingerprint": "879169bdea26e901bb3151971d2ad9b1ede7603d8ee71a535db31388cc1ad412",
+  "codeFingerprint": "f3850e65a73f5de44781022f1d81c574f80207987e964a9ac99f84a8a84f81fd",
+  "changedFiles": [
+    "e2e/creator-identity-profile.spec.ts",
+    "eslint.config.js",
+    "scripts/audit/run-identity.mjs",
+    "scripts/audit/run-integration.mjs",
+    "server/lib/social/passportSocial.test.ts",
+    "server/lib/social/passportSocial.ts",
+    "server/routes/me.ts",
+    "server/routes/social.ts",
+    "server/test/audit-identity-contract.test.ts",
+    "src/components/AuthFeedback.return.test.tsx",
+    "src/components/AuthFeedback.tsx",
+    "src/components/PassportTrustSummary.test.tsx",
+    "src/components/PassportTrustSummary.tsx",
+    "src/components/SocialAccountSummary.tsx",
+    "src/components/SocialTrustPanel.test.tsx",
+    "src/components/SocialTrustPanel.tsx",
+    "src/lib/auth-flow.test.ts",
+    "src/lib/auth-flow.ts",
+    "src/lib/authFeedback.ts",
+    "src/lib/i18n.dict.ts",
+    "src/lib/queries/kocmax.ts",
+    "src/lib/socialAccountPresentation.test.ts",
+    "src/lib/socialAccountPresentation.ts",
+    "src/routes/-_app.auth.callback.test.tsx",
+    "src/routes/-_app.auth.reset-password.test.tsx",
+    "src/routes/-_app.login.test.tsx",
+    "src/routes/-_app.onboarding.test.tsx",
+    "src/routes/-_app.passport.test.tsx",
+    "src/routes/-_app.profile.test.tsx",
+    "src/routes/-app.auth.callback.test.tsx",
+    "src/routes/_app.auth.callback.tsx",
+    "src/routes/_app.auth.reset-password.tsx",
+    "src/routes/_app.login.tsx",
+    "src/routes/_app.onboarding.tsx",
+    "src/routes/_app.passport.tsx",
+    "src/routes/_app.profile.tsx",
+    "src/routes/_app.tsx"
+  ],
+  "taskOnlyPatch": "D13-changes.patch",
+  "gates": [
+    {
+      "gate": "D13-targeted",
+      "command": "node node_modules/vitest/vitest.mjs run server/lib/social/passportSocial.test.ts src/lib/socialAccountPresentation.test.ts src/lib/auth-flow.test.ts src/routes/-_app.login.test.tsx src/components/SocialTrustPanel.test.tsx src/components/PassportTrustSummary.test.tsx src/routes/-_app.profile.test.tsx src/routes/-app.auth.callback.test.tsx src/routes/-_app.auth.callback.test.tsx src/routes/-_app.auth.reset-password.test.tsx src/routes/-_app.onboarding.test.tsx src/components/AuthFeedback.return.test.tsx src/routes/-_app.passport.test.tsx --maxWorkers=1 --minWorkers=1",
+      "passed": 126,
+      "files": 13,
+      "log": "logs/D13-targeted-final.log",
+      "finalRevalidatedBy": "D13-full-suite"
+    },
+    {
+      "gate": "D13-real-api-and-browser",
+      "command": "node scripts/audit/run-identity.mjs",
+      "apiPassed": 8,
+      "browserPassed": 4,
+      "log": "logs/D13-browser-verified.log",
+      "limits": "PKCE UI exchange explicitly mocked; Auth protocol/password/Storage operations real local"
+    },
+    {
+      "gate": "D13-full-suite",
+      "command": "npm exec --offline --yes --package=node@22 -- node node_modules/vitest/vitest.mjs run --maxWorkers=1 --minWorkers=1 --reporter=default --reporter=json --outputFile=.codex-tmp/D13-full-suite.json",
+      "node": "22.23.4",
+      "passed": 1736,
+      "skipped": 332,
+      "failed": 0,
+      "testFiles": 249,
+      "audit16Passed": 16,
+      "original194Passed": 194,
+      "log": "logs/D13-full-suite.log"
+    },
+    {
+      "gate": "D13-typecheck",
+      "command": "npm run type-check",
+      "exit": 0,
+      "log": "logs/D13-typecheck.log"
+    },
+    {
+      "gate": "D13-lint",
+      "command": "npm run lint",
+      "exit": 0,
+      "preExistingAppWarnings": 4,
+      "rulesUnchanged": "D13-eslint-scope.json",
+      "log": "logs/D13-lint.log"
+    },
+    {
+      "gate": "D13-build",
+      "command": "npm exec --offline --yes --package=node@22 -- npm run build",
+      "exit": 0,
+      "log": "logs/D13-build-node22.log"
+    },
+    {
+      "gate": "D13-native-esm",
+      "command": "tsc src/lib/authFeedback.ts src/lib/socialAccountPresentation.ts --outDir .codex-tmp/D13-native-esm --rootDir . --target es2022 --module esnext --moduleResolution bundler --skipLibCheck --types node; cached Node22 imports and safety assertions",
+      "exit": 0,
+      "log": "logs/D13-native-esm-node22.log"
+    },
+    {
+      "gate": "D13-manifest",
+      "command": "npm run release:manifest:check",
+      "exit": 0,
+      "log": "logs/D13-manifest-check.log"
+    },
+    {
+      "gate": "D13-diff",
+      "command": "git diff --check",
+      "exit": 0,
+      "log": "logs/D13-diff-check.log"
+    }
+  ],
+  "api": {
+    "runId": "dc8e3b52-ee86-4f22-aa0a-87a2cbf8d8d1",
+    "target": {
+      "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+      "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+      "disposable": true,
+      "projectId": "adfocate-r1-empty-20261023",
+      "proxy": "none",
+      "apiPort": 56421,
+      "apiContainerId": "1b9c41318298d79308db7782f51474541ad5abf0120fa93b96a2a9ea59d043ee",
+      "databaseContainerId": "e7c8efa295cd5544a8b2a100a73b6953cd6ddd486aaf394f231482067523e12d",
+      "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+      "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+      "networkId": "9e5d3069e8255d70b8eef56020c8ea2618fdb2626d92d9a04e51ea2de41a98e0"
+    },
+    "results": [
+      "profile-passport-projection",
+      "profile-unrelated-edit-preserves-canonical-and-legacy",
+      "foreign-account-and-rls-denied",
+      "onboarding-resume-and-unique-welcome",
+      "real-auth-non-enumerating-errors",
+      "real-auth-single-use-and-expiry",
+      "real-recovery-password-updated",
+      "owned-media-public-minimization-and-revoke"
+    ],
+    "socialIds": [
+      "29754d3f-955e-49d5-8172-9e204997faa9",
+      "cddf2ff1-9aa6-4a9f-96d8-a592bba65888",
+      "9e0f7ecb-0eab-49d2-ac57-d7690a8657ac"
+    ],
+    "mediaIds": [
+      "df2e0739-5794-449b-a096-d24f244506e4",
+      "06fce484-3040-4289-8ac3-ee3975f6ba82"
+    ],
+    "additionalAuthIds": [
+      "4f57e3da-4312-47ab-afd4-92999eebd858"
+    ],
+    "avatarObjectRetained": true,
+    "welcome": {
+      "before": {
+        "xp": 0,
+        "points": 50,
+        "withdrawable": 0,
+        "budget": null,
+        "pointLedger": 0,
+        "cashLedger": 0,
+        "redemptions": 0,
+        "budgetLedger": 0,
+        "rewardInventory": []
+      },
+      "after": {
+        "xp": 0,
+        "points": 150,
+        "withdrawable": 0,
+        "budget": null,
+        "pointLedger": 1,
+        "cashLedger": 0,
+        "redemptions": 0,
+        "budgetLedger": 0,
+        "rewardInventory": []
+      },
+      "existingWelcomeDelta": 100,
+      "existingWelcomeRows": 1,
+      "concurrentCalls": 4,
+      "replayUnchanged": true
+    },
+    "sessionPolicy": {
+      "oldAccessAccepted": false,
+      "oldRefreshAccepted": false,
+      "jwtLifetimeSeconds": 3600,
+      "scope": "observed existing local Auth policy; no production policy or expiry changed"
+    },
+    "neutrality": {
+      "before": {
+        "xp": 0,
+        "points": 50,
+        "withdrawable": 0,
+        "budget": null,
+        "pointLedger": 0,
+        "cashLedger": 0,
+        "redemptions": 0,
+        "budgetLedger": 0,
+        "rewardInventory": []
+      },
+      "after": {
+        "xp": 0,
+        "points": 50,
+        "withdrawable": 0,
+        "budget": null,
+        "pointLedger": 0,
+        "cashLedger": 0,
+        "redemptions": 0,
+        "budgetLedger": 0,
+        "rewardInventory": []
+      },
+      "allEqual": true
+    },
+    "providers": "local Auth and Storage; no email sent (admin-generated test links); external HTTP denied; no paid scan or real notification",
+    "cleanup": "not-run; exact IDs retained"
+  },
+  "browser": {
+    "runId": "dc8e3b52-ee86-4f22-aa0a-87a2cbf8d8d1",
+    "target": {
+      "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+      "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+      "disposable": true,
+      "projectId": "adfocate-r1-empty-20261023",
+      "proxy": "none",
+      "apiPort": 56421,
+      "apiContainerId": "1b9c41318298d79308db7782f51474541ad5abf0120fa93b96a2a9ea59d043ee",
+      "databaseContainerId": "e7c8efa295cd5544a8b2a100a73b6953cd6ddd486aaf394f231482067523e12d",
+      "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+      "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+      "networkId": "9e5d3069e8255d70b8eef56020c8ea2618fdb2626d92d9a04e51ea2de41a98e0"
+    },
+    "tests": [
+      {
+        "title": "D13 login keeps one email, hides account existence and recovers an expired return link",
+        "ok": true,
+        "results": [
+          {
+            "status": "passed",
+            "duration": 6418
+          }
+        ]
+      },
+      {
+        "title": "D13 profile cancel, recoverable save and Passport reload preserve the same sources",
+        "ok": true,
+        "results": [
+          {
+            "status": "passed",
+            "duration": 6751
+          }
+        ]
+      },
+      {
+        "title": "D13 onboarding resumes after a reload, skips optional socials and retains a unique welcome",
+        "ok": true,
+        "results": [
+          {
+            "status": "passed",
+            "duration": 6314
+          }
+        ]
+      },
+      {
+        "title": "D13 recovery UI validates then updates a real local Auth account (PKCE transport mocked)",
+        "ok": true,
+        "results": [
+          {
+            "status": "passed",
+            "duration": 1759
+          }
+        ]
+      }
+    ],
+    "stats": {
+      "startTime": "2026-10-23T05:48:44.628Z",
+      "duration": 24867.524999999998,
+      "expected": 4,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "browser": "installed Edge, 390x844 emulated viewport",
+    "auth": "real local password login; recovery UI PKCE exchange explicitly mocked; local Auth update real",
+    "providers": "external HTTP blocked; no email, WhatsApp, paid social/AI or external publication",
+    "nonWelcomeNeutral": true,
+    "welcomeUnique": true
+  },
+  "financialNeutrality": {
+    "runId": "dc8e3b52-ee86-4f22-aa0a-87a2cbf8d8d1",
+    "before": {
+      "creator": {
+        "xp": 0,
+        "budget": null,
+        "points": 50,
+        "cashLedger": 0,
+        "pointLedger": 0,
+        "redemptions": 0,
+        "budgetLedger": 0,
+        "withdrawable": 0,
+        "rewardInventory": []
+      },
+      "fresh": {
+        "xp": 0,
+        "budget": null,
+        "points": 0,
+        "cashLedger": 0,
+        "pointLedger": 0,
+        "redemptions": 0,
+        "budgetLedger": 0,
+        "withdrawable": 0,
+        "rewardInventory": []
+      },
+      "recoveryActor": {
+        "xp": 0,
+        "budget": null,
+        "points": 150,
+        "cashLedger": 0,
+        "pointLedger": 1,
+        "redemptions": 0,
+        "budgetLedger": 0,
+        "withdrawable": 0,
+        "rewardInventory": []
+      }
+    },
+    "after": {
+      "creator": {
+        "xp": 0,
+        "budget": null,
+        "points": 50,
+        "cashLedger": 0,
+        "pointLedger": 0,
+        "redemptions": 0,
+        "budgetLedger": 0,
+        "withdrawable": 0,
+        "rewardInventory": []
+      },
+      "fresh": {
+        "xp": 0,
+        "budget": null,
+        "points": 100,
+        "cashLedger": 0,
+        "pointLedger": 1,
+        "redemptions": 0,
+        "budgetLedger": 0,
+        "withdrawable": 0,
+        "rewardInventory": []
+      },
+      "recoveryActor": {
+        "xp": 0,
+        "budget": null,
+        "points": 150,
+        "cashLedger": 0,
+        "pointLedger": 1,
+        "redemptions": 0,
+        "budgetLedger": 0,
+        "withdrawable": 0,
+        "rewardInventory": []
+      }
+    },
+    "nonWelcomeNeutral": true,
+    "welcomeUnique": true,
+    "note": "Only the existing 100-point welcome bonus may change points/pointLedger; no mission reward, cash, budget, redemption or inventory changes."
+  },
+  "schema": {
+    "changed": false,
+    "newMigrations": 0,
+    "manifestDigest": "a1cfcb804a2d369df16a2e7542cde4346429bcfb652a7707efdf929c0e62ff86",
+    "observation": "D13-schema-observation.json",
+    "historyRows": 67,
+    "productionQueried": false
+  },
+  "postRuntimeChanges": [
+    "EOF blank-line removal emitted identical JavaScript (D13-post-runtime-format.json)",
+    "Lint-only exclusion of ignored private artifacts; app rules unchanged (D13-eslint-scope.json)"
+  ],
+  "limitations": [
+    "No deployment, CI, production queries, real memberships, external email/WhatsApp/Google/social provider acceptance or paid AI.",
+    "Canonical sync/ownership states were synthetic seeded fixtures; no real social ownership check or paid scan was performed.",
+    "PKCE UI exchange was mocked with a valid owned local session; real local Auth single-use/expired/recovery/password/session behavior was separately exercised. Full real email delivery/PKCE provider flow is not certified.",
+    "Existing welcome bonus is separately measured (+100 points, one ledger row); no mission pending-reward completion/payment was exercised or changed. Earlier R1/D08/D09/D12 runtime remains historical at its recorded fingerprint.",
+    "Skipped integration tests are not passes. The broad legacy integration command was not used because its cleanup/shared DEMO setup exceeds the exact-fixture scope; the guarded D13 integration suite replaces it for this task.",
+    "No Safari/WebKit, physical-device, 200% zoom, complete accessibility, load/performance or concurrent profile editing certification. Four existing app lint warnings and build route/bundle warnings remain."
+  ],
+  "nextTask": "D14",
+  "evidence": [
+    "D13-delivery.json",
+    "D13-api-contract.json",
+    "D13-browser-summary.json",
+    "D13-auth-recovery.json",
+    "D13-profile-roundtrip.json",
+    "D13-onboarding-roundtrip.json",
+    "D13-recovery-ui.json",
+    "D13-browser-neutrality.json",
+    "D13-schema-observation.json",
+    "D13-auth-runtime-config.json",
+    "D13-fixture-retention.json",
+    "D13-eslint-scope.json",
+    "D13-post-runtime-format.json",
+    "D13-changes.patch",
+    "logs/D13-targeted-final.log",
+    "logs/D13-browser-verified.log",
+    "logs/D13-full-suite.log",
+    "logs/D13-typecheck.log",
+    "logs/D13-lint.log",
+    "logs/D13-build-node22.log",
+    "logs/D13-native-esm-node22.log",
+    "logs/D13-manifest-check.log",
+    "logs/D13-diff-check.log"
+  ],
+  "attempts": {
+    "productRed": [
+      "D13-identity-red.log: 8 failures, 8 unsafe-return passes",
+      "D13-presentation-ui-red.log",
+      "D13-social-recovery-red.log",
+      "D13-profile-preservation-red.log",
+      "D13-callback-red.log",
+      "D13-recovery-fragment-red.log",
+      "D13-completed-onboarding-red.log",
+      "D13-replacement-return-red.log",
+      "D13-passport-recovery-red.log",
+      "D13-profile-exact-roundtrip-red.log",
+      "D13-pending-input-red.log",
+      "D13-pending-onboarding-red.log",
+      "D13-score-copy-red.log"
+    ],
+    "harnessAndStatic": [
+      "D13-api-attempt1.log: bulk insert missing explicit false defaults",
+      "D13-api-attempt2.log: 7 API passed; public path incorrectly singular",
+      "D13-api-attempt3.log: retained global verified-handle collision; changed to run-specific handle, no deletion/constraint relaxation",
+      "D13-browser-attempt1.log: label/heading case and missing mock PKCE verifier",
+      "D13-browser-attempt2.log: real exact-roundtrip RED, added missing optional field during unrelated edit",
+      "D13-typecheck-attempt.log: optional route-search typing and test nullability",
+      "D13-typecheck-final-attempt.log: Testing Library does not accept Playwright exact option",
+      "D13-lint-attempt.log; D13-lint-generated-artifact-attempt.log: control-regex form/private scratch scanning",
+      "D13-diff-check-attempt.log: extra EOF blank line"
+    ]
+  }
+}

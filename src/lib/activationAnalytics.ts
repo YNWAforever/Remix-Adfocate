@@ -92,6 +92,10 @@ export type RewardHandoffAnalyticsProperties = {
  * Do not add direct creator identifiers or creator-authored content here.
  */
 export type ActivationEventMap = {
+  product_action_result: {
+    entityId: string; action: "join" | "draft_submit" | "review" | "proof_submit" | "complete";
+    revision: number; result: "saved" | "conflict" | "failed"; persisted: boolean;
+  };
   landing_page_viewed: { locale: string; deviceCategory: DeviceCategory };
   signup_started: {
     locale: string;
@@ -255,6 +259,7 @@ export type ActivationEventMap = {
 };
 
 const ACTIVATION_PROPERTY_KEYS = {
+  product_action_result: ["entityId", "action", "revision", "result"],
   landing_page_viewed: ["locale", "deviceCategory"],
   signup_started: ["locale", "deviceCategory", "source"],
   signup_completed: ["locale", "deviceCategory", "method"],
@@ -419,6 +424,13 @@ export function trackActivationEvent<K extends keyof ActivationEventMap>(
   name: K,
   properties: ActivationEventMap[K],
 ): boolean {
+  if (name === "product_action_result") {
+    const p = properties as ActivationEventMap["product_action_result"];
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(p.entityId)
+      || !["join", "draft_submit", "review", "proof_submit", "complete"].includes(p.action)
+      || !Number.isSafeInteger(p.revision) || p.revision < 0 || !["saved", "conflict", "failed"].includes(p.result)
+      || (p.result === "saved" && p.persisted !== true)) return false;
+  }
   const allowed = new Set<string>(ACTIVATION_PROPERTY_KEYS[name]);
   const safeProperties = Object.fromEntries(
     Object.entries(properties).filter(([key, value]) =>

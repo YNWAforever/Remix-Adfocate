@@ -1,0 +1,24 @@
+{
+  "runId": "a6cb60d6-37ca-4f96-9379-4a332469ab81",
+  "submissionId": "ef350ef1-ac4a-488d-bb2e-65d9980257a4",
+  "workflowId": "14878891-a9eb-4e26-a5eb-87bcf1c6f3c4",
+  "pendingRewardId": "6fdf2c11-c561-438f-b327-5d8abc822dd6",
+  "creatorReward": {
+    "pointsAmount": 500,
+    "cashAmount": 125,
+    "currency": "HKD",
+    "xpAmount": 0
+  },
+  "operatorReward": {
+    "pointsAmount": 500,
+    "cashAmount": 125,
+    "currency": "HKD",
+    "xpAmount": 0
+  },
+  "historyEvents": 15,
+  "persistedAfterReload": true,
+  "creatorPrivateIdRedacted": true,
+  "reviewTransitions": "reviewer UI; read-only API assertions",
+  "completion": "operator UI",
+  "proofMetadata": "external HTTP blocked"
+}

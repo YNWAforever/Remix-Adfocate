@@ -1,0 +1,100 @@
+{
+  "runId": "dc8e3b52-ee86-4f22-aa0a-87a2cbf8d8d1",
+  "target": {
+    "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+    "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+    "disposable": true,
+    "projectId": "adfocate-r1-empty-20261023",
+    "proxy": "none",
+    "apiPort": 56421,
+    "apiContainerId": "1b9c41318298d79308db7782f51474541ad5abf0120fa93b96a2a9ea59d043ee",
+    "databaseContainerId": "e7c8efa295cd5544a8b2a100a73b6953cd6ddd486aaf394f231482067523e12d",
+    "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+    "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+    "networkId": "9e5d3069e8255d70b8eef56020c8ea2618fdb2626d92d9a04e51ea2de41a98e0"
+  },
+  "results": [
+    "profile-passport-projection",
+    "profile-unrelated-edit-preserves-canonical-and-legacy",
+    "foreign-account-and-rls-denied",
+    "onboarding-resume-and-unique-welcome",
+    "real-auth-non-enumerating-errors",
+    "real-auth-single-use-and-expiry",
+    "real-recovery-password-updated",
+    "owned-media-public-minimization-and-revoke"
+  ],
+  "socialIds": [
+    "29754d3f-955e-49d5-8172-9e204997faa9",
+    "cddf2ff1-9aa6-4a9f-96d8-a592bba65888",
+    "9e0f7ecb-0eab-49d2-ac57-d7690a8657ac"
+  ],
+  "mediaIds": [
+    "df2e0739-5794-449b-a096-d24f244506e4",
+    "06fce484-3040-4289-8ac3-ee3975f6ba82"
+  ],
+  "additionalAuthIds": [
+    "4f57e3da-4312-47ab-afd4-92999eebd858"
+  ],
+  "avatarObjectRetained": true,
+  "welcome": {
+    "before": {
+      "xp": 0,
+      "points": 50,
+      "withdrawable": 0,
+      "budget": null,
+      "pointLedger": 0,
+      "cashLedger": 0,
+      "redemptions": 0,
+      "budgetLedger": 0,
+      "rewardInventory": []
+    },
+    "after": {
+      "xp": 0,
+      "points": 150,
+      "withdrawable": 0,
+      "budget": null,
+      "pointLedger": 1,
+      "cashLedger": 0,
+      "redemptions": 0,
+      "budgetLedger": 0,
+      "rewardInventory": []
+    },
+    "existingWelcomeDelta": 100,
+    "existingWelcomeRows": 1,
+    "concurrentCalls": 4,
+    "replayUnchanged": true
+  },
+  "sessionPolicy": {
+    "oldAccessAccepted": false,
+    "oldRefreshAccepted": false,
+    "jwtLifetimeSeconds": 3600,
+    "scope": "observed existing local Auth policy; no production policy or expiry changed"
+  },
+  "neutrality": {
+    "before": {
+      "xp": 0,
+      "points": 50,
+      "withdrawable": 0,
+      "budget": null,
+      "pointLedger": 0,
+      "cashLedger": 0,
+      "redemptions": 0,
+      "budgetLedger": 0,
+      "rewardInventory": []
+    },
+    "after": {
+      "xp": 0,
+      "points": 50,
+      "withdrawable": 0,
+      "budget": null,
+      "pointLedger": 0,
+      "cashLedger": 0,
+      "redemptions": 0,
+      "budgetLedger": 0,
+      "rewardInventory": []
+    },
+    "allEqual": true
+  },
+  "providers": "local Auth and Storage; no email sent (admin-generated test links); external HTTP denied; no paid scan or real notification",
+  "cleanup": "not-run; exact IDs retained"
+}

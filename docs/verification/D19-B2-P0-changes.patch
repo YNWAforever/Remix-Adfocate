@@ -1,0 +1,1559 @@
+--- a/e2e/creator-operator-mission.spec.ts
++++ b/e2e/creator-operator-mission.spec.ts
+@@ -1,3 +1,5 @@
++// @ts-expect-error Native local evidence helper.
++import {FixtureJournal,bindBrowserJournal} from "../scripts/audit/fixture-journal.mjs";
+ import { expect, test, type Page } from "@playwright/test";
+ import { readFileSync, writeFileSync } from "node:fs";
+ import { randomUUID } from "node:crypto";
+@@ -6,17 +8,19 @@
+ // @ts-expect-error Identity helper is native ESM.
+ import {verifiedTarget as verifyBrowserTarget} from "../scripts/audit/local-targets.mjs";
+ const pilot=process.env.ADFOCATE_BROWSER_SCOPE==="D19";
+-const verified=pilot?verifyBrowserTarget("empty"):null;
+-const fixture=JSON.parse(readFileSync(pilot?".codex-tmp/D19-browser-fixture.private.json":".codex-tmp/browser-fixture.private.json","utf8"));
++const verified=pilot?verifyBrowserTarget():null;
++const selected=verified?.context;
++const fixture=selected?selected.readPrivate("browser-fixture.private.json"):JSON.parse(readFileSync(pilot?".codex-tmp/D19-browser-fixture.private.json":".codex-tmp/browser-fixture.private.json","utf8"));
+ if(pilot)expect(fixture.target).toEqual(verified.identity);
+ const evidencePrefix = pilot?"D19-":process.env.ADFOCATE_BROWSER_SCOPE === "D08" ? "D08-" : "";
+ test("real roles reload one durable pending reward and its revision/proof history",async({browser,request})=>{
+   const creatorContext=await browser.newContext(evidencePrefix ? {viewport:{width:360,height:800}} : {});let operatorContext=await browser.newContext();
+   for(const context of [creatorContext,operatorContext]){
+     await context.addInitScript(()=>localStorage.setItem("lang","en"));
+-    await context.route("**/*",route=>{
++    if(selected)await bindBrowserJournal(context,new FixtureJournal(selected.privatePath(`transport-browser-${process.pid}-${context===creatorContext?"creator":"reviewer"}.jsonl`),selected.lineage,{requests:selected.manifest.fixture.transportWriteCapPerProcess}),selected.origins);
++    else await context.route("**/*",route=>{
+       const url=new URL(route.request().url());
+-      return url.hostname==="127.0.0.1"?route.continue():route.abort();
++      return (selected?.origins??["http://127.0.0.1:56400","http://127.0.0.1:56421"]).includes(url.origin)?route.continue():route.abort();
+     });
+   }
+   const creator=await creatorContext.newPage();let operator=await operatorContext.newPage();
+@@ -33,6 +37,7 @@
+     expect(response.status(),`${path}: ${await response.text()}`).toBe(200); return response.json();
+   }
+   await login(creator,fixture.creator);
++  if(selected){await creator.goto("/my");await expect(creator.getByText("You haven't joined any missions yet.",{exact:true})).toBeVisible();}
+   if(pilot){
+     await creator.goto(`/mission/${fixture.legacyMission.slug}`);
+     const joined=creator.waitForResponse(r=>new URL(r.url()).pathname.endsWith("/join")&&r.request().method()==="POST");
+@@ -43,7 +48,7 @@
+     await operator.goto("/admin/submissions");const approved=operator.waitForResponse(r=>new URL(r.url()).pathname===`/api/admin/submissions/${legacy.id}/approve`&&r.request().method()==="POST");await operator.getByRole("button",{name:"Approve",exact:true}).click();expect((await approved).status()).toBe(200);
+     await creator.reload();expect(verified.sql(`select status from public.mission_submissions where id='${legacy.id}';`)).toBe("approved");
+     fixture.legacy={submissionId:legacy.id,creatorId:fixture.creator.id,missionId:fixture.legacyMission.id};
+-    writeFileSync("docs/verification/D19-browser-legacy.json",JSON.stringify({runId:fixture.runId,...fixture.legacy,ui:"Creator login/join/invalid-input retention/submit → reviewer approve → Creator reload",result:"passed",financialMeaning:"Existing legacy issuance measured before active pending baseline; no new payment feature"},null,2)+"\n");
++    writeFileSync(selected?.publicPath("browser-legacy.json")??"docs/verification/D19-browser-legacy.json",JSON.stringify({...(selected?{lineage:selected.lineage}:{}),runId:fixture.runId,...fixture.legacy,ui:"Creator login/join/invalid-input retention/submit → reviewer approve → Creator reload",result:"passed",financialMeaning:"Existing legacy issuance measured before active pending baseline; no new payment feature"},null,2)+"\n");
+   }
+   await creator.goto(`/mission/${fixture.mission.slug}`);
+   const joined=creator.waitForResponse(response=>response.url().endsWith("/join")&&response.request().method()==="POST");
+@@ -77,6 +82,25 @@
+     homeChecks.push({state:after.workflow.state,action:label,clicks:1,revision:after.workflow.revision});
+   }
+   await creator.goto(workspaceUrl);
++  if(selected){
++    const draftPath=`/api/my-missions/${submissionId}/work-items/${itemId}/draft`,pattern=`**${draftPath}`;
++    // Explicit browser transport mock: no target write occurs for the failed attempt.
++    await creator.route(pattern,route=>route.abort("failed"));
++    await creator.getByRole("textbox",{name:"Caption or copy",exact:true}).fill("Browser retained after network failure");
++    await expect(creator.getByRole("button",{name:"Retry save",exact:true})).toBeVisible();
++    await expect(creator.getByRole("textbox",{name:"Caption or copy",exact:true})).toHaveValue("Browser retained after network failure");
++    await creator.unroute(pattern);await creator.getByRole("button",{name:"Retry save",exact:true}).click();
++    await expect.poll(async()=>(await read()).workItems.find(i=>i.id===itemId)!.draft?.caption).toBe("Browser retained after network failure");
++    const saved=(await read()).workItems.find(i=>i.id===itemId)!.draft!;
++    const concurrent=await request.patch(draftPath,{headers:{Authorization:`Bearer ${fixture.creator.jwt}`,"X-Workspace-Slug":fixture.slug},data:{revision:saved.revision,caption:"Concurrent server draft",externalUrl:saved.externalUrl,checklist:saved.checklist}});expect(concurrent.status()).toBe(200);
++    const stale=creator.waitForResponse(r=>new URL(r.url()).pathname===draftPath&&r.request().method()==="PATCH"&&r.status()===409);
++    await creator.getByRole("textbox",{name:"Caption or copy",exact:true}).fill("Browser retained after real 409");await stale;
++    await expect(creator.getByText("Concurrent server draft",{exact:true})).toBeVisible();
++    await expect(creator.getByRole("textbox",{name:"Caption or copy",exact:true})).toHaveValue("Browser retained after real 409");
++    await creator.getByRole("button",{name:"Save retained draft against latest revision",exact:true}).click();
++    await expect.poll(async()=>(await read()).workItems.find(i=>i.id===itemId)!.draft?.caption).toBe("Browser retained after real 409");
++    writeFileSync(selected.publicPath("browser-recovery.json"),JSON.stringify({lineage:selected.lineage,submissionId,itemId,emptyBeforeJoin:true,networkFailure:"explicit transport mock",stale409:"real concurrent database revision",inputRetained:true,explicitRetry:true,newSubjectsOrWorkflows:0},null,2)+"\n");
++  }
+   await creator.getByRole("textbox",{name:"Caption or copy",exact:true}).fill("Browser original draft");
+   await creator.getByRole("checkbox").first().check();
+   await expect.poll(async()=> (await read()).workItems.find(item=>item.id===itemId)!.draft?.caption).toBe("Browser original draft");
+@@ -136,14 +160,15 @@
+   const {verifiedTarget}=await import("../scripts/audit/local-targets.mjs");
+   // @ts-expect-error Native ESM test utility has no declaration file.
+   const {neutralitySnapshot}=await import("../scripts/audit/neutrality-snapshot.mjs");
+-  const target=verifiedTarget("empty");
++  const target=verifiedTarget();
+   expect(target.sql(`select state from public.mission_workflows where id='${workflowId}';`)).toBe("proof_verified");
+-  writeFileSync(`docs/verification/${evidencePrefix}browser-before-handoff.json`,JSON.stringify({runId:fixture.runId,phase:"immediately-before-completion",snapshot:neutralitySnapshot(target,fixture.creator.id,fixture.workspaceId)},null,2)+"\n");
++  writeFileSync(selected?.publicPath("browser-before-handoff.json")??`docs/verification/${evidencePrefix}browser-before-handoff.json`,JSON.stringify({...(selected?{lineage:selected.lineage}:{}),runId:fixture.runId,phase:"immediately-before-completion",snapshot:neutralitySnapshot(target,fixture.creator.id,fixture.workspaceId)},null,2)+"\n");
+   if(pilot){
+     const anchors=verified.sql(`select jsonb_agg(jsonb_build_object('id',id,'status',status,'pointsAwarded',points_awarded,'xpAwarded',xp_awarded) order by id) from public.mission_submissions where workspace_id='${fixture.workspaceId}' and status='approved';`);
+-    const before=JSON.parse(readFileSync("docs/verification/D19-browser-before-handoff.json","utf8"));before.legacyAnchors=JSON.parse(anchors);writeFileSync("docs/verification/D19-browser-before-handoff.json",JSON.stringify(before,null,2)+"\n");
++    const before=JSON.parse(readFileSync(selected?.publicPath("browser-before-handoff.json")??"docs/verification/D19-browser-before-handoff.json","utf8"));before.legacyAnchors=JSON.parse(anchors);writeFileSync(selected?.publicPath("browser-before-handoff.json")??"docs/verification/D19-browser-before-handoff.json",JSON.stringify(before,null,2)+"\n");
+     await operatorContext.close();operatorContext=await browser.newContext();await operatorContext.addInitScript(session=>{localStorage.setItem("lang","en");localStorage.setItem("sb-127-auth-token",JSON.stringify(session));},fixture.operatorSession);
+-    await operatorContext.route("**/*",route=>{const u=new URL(route.request().url());return u.hostname==="127.0.0.1"&&["56400","56421"].includes(u.port)?route.continue():route.abort();});operator=await operatorContext.newPage();
++    if(selected)await bindBrowserJournal(operatorContext,new FixtureJournal(selected.privatePath(`transport-browser-${process.pid}-operator.jsonl`),selected.lineage,{requests:selected.manifest.fixture.transportWriteCapPerProcess}),selected.origins);
++    else await operatorContext.route("**/*",route=>{const u=new URL(route.request().url());return (selected?.origins??["http://127.0.0.1:56400","http://127.0.0.1:56421"]).includes(u.origin)?route.continue():route.abort();});operator=await operatorContext.newPage();
+   }
+   await operator.bringToFront();
+   // Reconcile the operator page with the persisted proof before opening completion.
+@@ -152,7 +177,7 @@
+   await expect(operator).toHaveURL(/\/admin\/active-missions\//);
+   await operator.getByRole("button",{name:"Approve completion",exact:true}).click();
+   await expect(operator.getByRole("alertdialog")).toBeVisible();
+-  await operator.screenshot({path:".codex-tmp/operator-before-completion.png"});
++  await operator.screenshot({path:selected?.privatePath("operator-before-completion.png")??".codex-tmp/operator-before-completion.png"});
+   await operator.getByRole("alertdialog").getByRole("button",{name:"Confirm approval",exact:true}).click();
+   await expect.poll(async()=>(await read()).pendingReward?.status).toBe("pending");
+   const completion=await api<{pendingReward:{id:string;reward:unknown}}>(fixture.operator.jwt,`/admin/active-missions/${workflowId}/completion`);
+@@ -163,10 +188,10 @@
+   expect(creatorReload.pendingReward!.reward).toEqual(operatorReload.pendingReward.reward);
+   expect(creatorReload.events.length).toBeGreaterThan(8);
+   await checkHome("View reward review", false);
+-  if(evidencePrefix==="D08-") writeFileSync("docs/verification/D08-home-roundtrip.json",JSON.stringify({runId:fixture.runId,submissionId,workflowId,homeChecks,creatorViewport:{width:360,height:800},minimumPrimaryTarget44px:true,noHomeHorizontalOverflow:true,persistedAfterNavigationAndReload:true},null,2)+"\n");
+-  writeFileSync(`docs/verification/${evidencePrefix}browser-roundtrip.json`,JSON.stringify({runId:fixture.runId,submissionId,workflowId,pendingRewardId:completion.pendingReward.id,
++  if(evidencePrefix==="D08-") writeFileSync("docs/verification/D08-home-roundtrip.json",JSON.stringify({...(selected?{lineage:selected.lineage}:{}),runId:fixture.runId,submissionId,workflowId,homeChecks,creatorViewport:{width:360,height:800},minimumPrimaryTarget44px:true,noHomeHorizontalOverflow:true,persistedAfterNavigationAndReload:true},null,2)+"\n");
++  writeFileSync(selected?.publicPath("browser-roundtrip.json")??`docs/verification/${evidencePrefix}browser-roundtrip.json`,JSON.stringify({...(selected?{lineage:selected.lineage}:{}),runId:fixture.runId,submissionId,workflowId,pendingRewardId:completion.pendingReward.id,
+     creatorReward:creatorReload.pendingReward!.reward,operatorReward:operatorReload.pendingReward.reward,historyEvents:creatorReload.events.length,
+     persistedAfterReload:true,creatorPrivateIdRedacted:creatorReload.pendingReward!.id===null,reviewTransitions:pilot?"reviewer UI; read-only API assertions":"operator UI; read-only API assertions",completion:"operator UI",proofMetadata:"external HTTP blocked"},null,2)+"\n");
+-  if(pilot){fixture.core={creatorId:fixture.creator.id,submissionId,workflowId,itemId,pendingRewardId:completion.pendingReward.id};writeFileSync(".codex-tmp/D19-browser-fixture.private.json",JSON.stringify(fixture));}
++  if(pilot){fixture.core={creatorId:fixture.creator.id,submissionId,workflowId,itemId,pendingRewardId:completion.pendingReward.id};writeFileSync(selected?.privatePath("browser-fixture.private.json")??".codex-tmp/D19-browser-fixture.private.json",JSON.stringify(fixture));}
+   await creatorContext.close();await operatorContext.close();
+ });
+--- a/e2e/staff-access.spec.ts
++++ b/e2e/staff-access.spec.ts
+@@ -1,3 +1,5 @@
++// @ts-expect-error Native local evidence helper.
++import {FixtureJournal,bindBrowserJournal} from "../scripts/audit/fixture-journal.mjs";
+ import {test,expect,type Browser} from "@playwright/test";
+ import {readFileSync,writeFileSync} from "node:fs";
+ import {isDeepStrictEqual} from "node:util";
+@@ -5,15 +7,17 @@
+ // @ts-expect-error Native ESM identity verifier has no declaration file.
+ import {verifiedTarget} from "../scripts/audit/local-targets.mjs";
+ const task=process.env.ADFOCATE_BROWSER_SCOPE==="D19"?"D19":"D18";
+-const target=["D18","D19"].includes(process.env.ADFOCATE_BROWSER_SCOPE??"")?verifiedTarget("empty"):null;
+-const fx=target?JSON.parse(readFileSync(task==="D19"?".codex-tmp/D19-browser-fixture.private.json":".codex-tmp/D18-fixture.private.json","utf8")):{};
++const target=["D18","D19"].includes(process.env.ADFOCATE_BROWSER_SCOPE??"")?verifiedTarget():null;
++const selected=target?.context;
++const fx=selected?selected.readPrivate("browser-fixture.private.json"):target?JSON.parse(readFileSync(task==="D19"?".codex-tmp/D19-browser-fixture.private.json":".codex-tmp/D18-fixture.private.json","utf8")):{};
+ if(target&&!isDeepStrictEqual(target.identity,fx.target))throw new Error("D18 browser target drift");
+ test.beforeEach(()=>test.skip(!target,"Use the identity-gated D18 runner."));
+-const record=(name:string,data:unknown)=>writeFileSync(`docs/verification/${task}-${name}.json`,JSON.stringify({runId:fx.runId,data},null,2)+"\n");
++const record=(name:string,data:unknown)=>writeFileSync(selected?.publicPath(`${name}.json`)??`docs/verification/${task}-${name}.json`,JSON.stringify({...(selected?{lineage:selected.lineage}:{}),runId:fx.runId,data},null,2)+"\n");
+ async function context(browser:Browser,actor=fx.roles.finance_viewer,lang="en",width=390){
+  const ctx=await browser.newContext({viewport:{width,height:900}});
+  await ctx.addInitScript(({session,lang})=>{localStorage.setItem("lang",lang);localStorage.setItem("sb-127-auth-token",JSON.stringify(session));},{session:actor.session,lang});
+- await ctx.route("**/*",route=>{const u=new URL(route.request().url());return u.hostname==="127.0.0.1"&&["56400","56421"].includes(u.port)?route.continue():route.abort();});return ctx;
++ if(selected)await bindBrowserJournal(ctx,new FixtureJournal(selected.privatePath(`transport-browser-${process.pid}-${actor.id}-${width}-${lang}.jsonl`),selected.lineage,{requests:selected.manifest.fixture.transportWriteCapPerProcess}),selected.origins);
++ else await ctx.route("**/*",route=>{const u=new URL(route.request().url());return (selected?.origins??["http://127.0.0.1:56400","http://127.0.0.1:56421"]).includes(u.origin)?route.continue():route.abort();});return ctx;
+ }
+ const headers=(actor:{jwt:string})=>({Authorization:`Bearer ${actor.jwt}`,"X-Workspace-Slug":fx.slug});
+ test("D18 finance reloads the same saved handoff with read-only controls and scoped navigation",async({browser})=>{
+@@ -25,6 +29,18 @@
+  await page.reload();await expect(page.getByLabel("Staff role")).toContainText("Finance viewer");
+  const next=await page.request.get("/api/admin/reward-handoffs",{headers:headers(fx.roles.finance_viewer)});expect((await next.json()).items.find((r:{id:string})=>r.id===fx.core.pendingRewardId)).toMatchObject({status:"pending"});
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);record("finance-ui",{pendingRewardId:fx.core.pendingRewardId,reloadSame:true,settingsWrite:403,readOnly:true,viewport:390});await ctx.close();
++ if(selected){
++  // The denial workspace is owned by this browser phase and has no workflows.
++  // Reuse its already signed-in foreign actor; create no additional subjects or data.
++  const emptyContext=await context(browser,fx.roles.foreign,"en",1280),empty=await emptyContext.newPage();
++  await empty.goto(`/admin/active-missions?ws=${fx.otherWorkspaceId}`);
++  await expect(empty.getByText("No active mission reviews match these filters.",{exact:true})).toBeVisible();
++  const result=await empty.request.get("/api/admin/active-missions/queue",{headers:{Authorization:`Bearer ${fx.roles.foreign.jwt}`,"X-Workspace-Slug":fx.otherWorkspaceId}});
++  expect(result.status()).toBe(200);expect((await result.json()).items).toEqual([]);
++  await empty.reload();await expect(empty.getByText("No active mission reviews match these filters.",{exact:true})).toBeVisible();
++  expect(target!.sql(`begin read only;select count(*)from public.mission_workflows where workspace_id='${fx.otherWorkspaceId}';commit;`)).toBe("0");
++  record("denial-empty-ui",{workspaceId:fx.otherWorkspaceId,actorId:fx.roles.foreign.id,savedWorkflowCount:0,reloadEmpty:true,newFixtureRows:0});await emptyContext.close();
++ }
+ });
+ test("D18 reviewer retains authored input after a real forbidden mission save",async({browser})=>{
+  const ctx=await context(browser,fx.roles.reviewer,"zh",1280),page=await ctx.newPage();await page.goto("/admin/missions/new");await expect(page.getByLabel("Staff role")).toContainText("Reviewer");await page.waitForLoadState("networkidle");
+@@ -56,6 +72,6 @@
+   await expect(page.getByText(/reward.*pending|pending.*reward/i).first()).toBeVisible();await ctx.close();
+  }
+  expect(projections).toHaveLength(4);for(const projection of projections)expect(projection).toEqual(projections[0]);
+- const live=verifiedTarget("empty");expect(live.identity).toEqual(fx.target);expect(live.sql(`select count(*) from public.mission_pending_rewards where id='${fx.core.pendingRewardId}' and mission_workflow_id='${fx.core.workflowId}' and mission_submission_id='${fx.core.submissionId}';`)).toBe("1");
++ const live=verifiedTarget();expect(live.identity).toEqual(fx.target);expect(live.sql(`select count(*) from public.mission_pending_rewards where id='${fx.core.pendingRewardId}' and mission_workflow_id='${fx.core.workflowId}' and mission_submission_id='${fx.core.submissionId}';`)).toBe("1");
+  record("handoff-ui",{pendingRewardId:fx.core.pendingRewardId,readbacks:projections.length,operatorReadbacks:ids.length,creatorInternalIdHidden:true,allVisibleFieldsSame:true,oneSavedWorkflowReward:true,historyRetained:true});
+ });
+--- a/playwright.pilot.config.ts
++++ b/playwright.pilot.config.ts
+@@ -1,5 +1,8 @@
+ import {defineConfig} from '@playwright/test';
+ import process from 'node:process';
+ import quality from './playwright.quality.config';
++// @ts-expect-error Native local identity helper.
++import {b2ExecutionContext} from './scripts/audit/local-targets.mjs';
++const selected=b2ExecutionContext();
+ const phase=process.env.ADFOCATE_BROWSER_PHASE==='roles'?'roles':'journey';
+-export default defineConfig({...quality,testMatch:['creator-operator-mission.spec.ts','staff-access.spec.ts'],reporter:[['line'],['json',{outputFile:`.codex-tmp/D19-browser-${phase}-results.private.json`}]]});
++export default defineConfig({...quality,testMatch:['creator-operator-mission.spec.ts','staff-access.spec.ts'],reporter:[['line'],['json',{outputFile:selected?.privatePath(`browser-${phase}-results.private.json`)??`.codex-tmp/D19-browser-${phase}-results.private.json`}]]});
+--- a/playwright.quality.config.ts
++++ b/playwright.quality.config.ts
+@@ -1,7 +1,10 @@
+ import { defineConfig } from "@playwright/test";
+ import process from "node:process";
++// @ts-expect-error Native local identity helper.
++import { b2ExecutionContext } from "./scripts/audit/local-targets.mjs";
++const selected = b2ExecutionContext(), origin = selected?.origins[0] ?? "http://127.0.0.1:56400";
+ export default defineConfig({testDir:"./e2e",fullyParallel:false,workers:1,retries:0,timeout:180000,expect:{timeout:20000},
+  reporter:[["line"],["json",{outputFile:".codex-tmp/D17-browser-results.private.json"}]],
+- use:{baseURL:"http://127.0.0.1:56400",channel:"msedge",viewport:{width:1280,height:900},locale:"en-HK",timezoneId:"Asia/Hong_Kong",trace:"off",screenshot:"off",video:"off"},
+- webServer:{command:`"${process.execPath}" node_modules/vite-node/vite-node.mjs scripts/audit/serve-quality.ts`,url:"http://127.0.0.1:56400/api/health",reuseExistingServer:false,timeout:60000,stdout:"ignore",stderr:"pipe"},
++ use:{baseURL:origin,channel:"msedge",viewport:{width:1280,height:900},locale:"en-HK",timezoneId:"Asia/Hong_Kong",trace:"off",screenshot:"off",video:"off"},
++ webServer:{command:`"${process.execPath}" node_modules/vite-node/vite-node.mjs scripts/audit/serve-quality.ts`,url:origin+"/api/health",reuseExistingServer:false,timeout:60000,stdout:"ignore",stderr:"pipe"},
+ });
+--- /dev/null
++++ b/scripts/audit/b2-bootstrap-profile.mjs
+@@ -0,0 +1,81 @@
++// Pure offline profile builder. No Docker, SQL driver, Auth client or network imports.
++import { readFileSync } from "node:fs";
++import { createHash } from "node:crypto";
++const sha = value => createHash("sha256").update(value).digest("hex");
++const guard = "supabase/migrations/20261022170454_audit_legacy_evidence.sql";
++function tokens(source) {
++  const parts = []; let i = 0;
++  while (i < source.length) {
++    const rest = source.slice(i);
++    if (rest.startsWith("--")) { const end = source.indexOf("\n", i); parts.push({ text: " ", literal: false }); i = end < 0 ? source.length : end + 1; }
++    else if (rest.startsWith("/*")) { const end = source.indexOf("*/", i + 2); if (end < 0) break; parts.push({ text: " ", literal: false }); i = end + 2; }
++    else if (source[i] === "'") {
++      let end = i + 1;
++      while (end < source.length) { if (source[end] === "'" && source[end + 1] === "'") end += 2; else if (source[end++] === "'") break; }
++      if (source[end - 1] !== "'") break;
++      parts.push({ text: source.slice(i, end), literal: true }); i = end;
++    } else {
++      const tag = /^(\$[a-zA-Z_0-9]*\$)/.exec(rest)?.[1];
++      if (tag) { const end = source.indexOf(tag, i + tag.length); if (end < 0) break; parts.push({ text: source.slice(i, end + tag.length), literal: true }); i = end + tag.length; }
++      else { parts.push({ text: source[i++], literal: false }); }
++    }
++  }
++  return parts;
++}
++export function topLevelStatements(source) {
++  const statements = []; let current = "";
++  for (const t of tokens(source)) {
++    if (!t.literal && t.text === ";") { if (current.trim()) statements.push(current.trim()); current = ""; }
++    else current += t.text;
++  }
++  return statements;
++}
++function valueCount(statement) {
++  const masked = tokens(statement).map(t => t.literal ? "''" : t.text).join("");
++  const values = /\bvalues\b([\s\S]*?)(?:\bon conflict\b|$)/i.exec(masked)?.[1];
++  if (!values) return 0;
++  let level = 0, count = 0;
++  for (const char of values) { if (char === "(") { if (level++ === 0) count++; } else if (char === ")") level--; }
++  return count;
++}
++export function historicalCheckpointSql(h) {
++  if (!h || h.phase !== "core" || ![h.workspaceId, h.missionId, h.creatorId, h.submissionId, h.namespace].every(v => /^[a-f0-9-]{36}$/i.test(v))
++    || JSON.stringify(h.contentUrls) !== '["wwww"]' || h.queueIndex !== 0) throw new Error("B2 historical exact ID/checkpoint profile invalid");
++  return `begin;
++insert into public.workspaces(id,slug,name) values('${h.workspaceId}','audit-${h.namespace}','Synthetic audit workspace A');
++insert into auth.users(id,email) values('${h.creatorId}','${h.creatorId}@example.test');
++insert into public.creators(id,workspace_id,display_name,onboarding_completed) values('${h.creatorId}','${h.workspaceId}','queue-${h.namespace}-0',true);
++insert into public.missions(id,workspace_id,slug,title,mission_type,access_type,points_reward,cash_reward,quota,filled,status,required_level,creator_workflow_mode) values('${h.missionId}','${h.workspaceId}','audit-mission-${h.missionId}','Owned historical legacy boundary','ugc','open',500,125,2,1,'active','L0','legacy');
++insert into public.mission_submissions(id,workspace_id,mission_id,creator_id,status,content_urls) values('${h.submissionId}','${h.workspaceId}','${h.missionId}','${h.creatorId}','submitted',array['wwww']);
++commit;`;
++}
++export function buildBootstrapProfile(spec, historical, read = path => readFileSync(path, "utf8")) {
++  if (spec.fullMigrations?.length !== 72 || new Set(spec.fullMigrations.map(m => m.path)).size !== 72) throw new Error("B2 reviewed 72-file schema profile required");
++  const checkpointSql = historicalCheckpointSql(historical), migrations = [], steps = [], inventory = new Map();
++  for (const m of spec.fullMigrations) {
++    const sql = read(m.path);
++    if (sha(sql) !== m.sha256) throw new Error(`B2 migration checksum mismatch: ${m.path}`);
++    if (m.path === guard) steps.push({ kind: "owned-historical-checkpoint", phase: "core", sql: checkpointSql, sha256: sha(checkpointSql), additions: { workspaces: 1, auth_users: 1, creators: 1, missions: 1, mission_submissions: 1 }, consumesNormalFixtureCaps: true });
++    migrations.push({ ...m }); steps.push({ kind: "migration", ...m });
++    for (const statement of topLevelStatements(sql)) {
++      const table = /^insert\s+into\s+([a-z_]+\.[a-z_]+)/i.exec(statement)?.[1];
++      if (!table) continue;
++      const row = inventory.get(table) ?? { table, valueRowCount: 0, sources: [], insertSelect: false };
++      row.valueRowCount += valueCount(statement); row.sources.push({ path: m.path, statementSha256: sha(statement) });
++      if (!/\bvalues\b/i.test(tokens(statement).filter(t => !t.literal).map(t => t.text).join(""))) row.insertSelect = true;
++      inventory.set(table, row);
++    }
++  }
++  if (!steps.some(s => s.kind === "owned-historical-checkpoint")) throw new Error("B2 historical guard migration missing");
++  const compatibility = spec.candidateCompatibilityStatementsNewTargetOnly;
++  if (compatibility?.length !== 9 || compatibility.some(s => !/^(grant update\("[a-z_]+"\)on public\."[a-z_]+"to authenticated;|revoke execute on function public\.get_assistant_request\(uuid,uuid\)from service_role;)$/.test(s))) throw new Error("B2 exact compatibility profile invalid");
++  steps.push(...compatibility.map(sql => ({ kind: "compatibility", sql, sha256: sha(sql), application: "only if effective catalog diff matches the reviewed new-target profile" })));
++  const legacySource = read("supabase/migrations/0005_mission_submissions.sql"), budgetSource = read("supabase/migrations/0024_brand_budget.sql");
++  if (!legacySource.includes("xp_awarded = xp_awarded + 25") || !legacySource.includes("xp = xp + 10")
++    || !budgetSource.includes("xp_awarded = xp_awarded + 100 + v_bonus") || !budgetSource.includes("v_bonus := 50")) throw new Error("B2 legacy XP contract drift");
++  const profile = { migrations, steps, seedInventory: [...inventory.values()], historicalLegacy: historical,
++    legacyXp: { join: 10, submit: 25, ordinaryApproval: 100, fiveStarBonus: 50, testQualityRating: null, cumulative: 135, activeJoin: 10 },
++    seedSqlAllowed: false, replayPolicy: "new empty volume only; 72 forward files; no reset/reapply; checkpoint before guard; baseline after full profile",
++    baselinePolicy: "Capture exact IDs/row hashes after replay. Immutable migration seeds separate from the five explicit core-owned checkpoint rows; later fixtures must adopt these rows, not duplicate them." };
++  return { ...profile, profileDigest: sha(JSON.stringify(profile)) };
++}
+--- /dev/null
++++ b/scripts/audit/b2-fixture-inventory.mjs
+@@ -0,0 +1,64 @@
++import { readFileSync, readdirSync } from "node:fs";
++import { dirname } from "node:path";
++import { FixtureJournal, durableJson } from "./fixture-journal.mjs";
++function list(values) {
++  if (!Array.isArray(values) || values.some(v => !/^[a-f0-9-]{36}$/i.test(v))) throw new Error("B2 inventory exact ID list invalid");
++  return values.length ? values.map(v => `'${v}'`).join(",") : "null";
++}
++export function fixtureInventorySql(scopes, owned) {
++  const workspaces = list(owned.workspaces ?? []), users = list(owned.auth_users ?? []), academy = list(owned.academy_content ?? []);
++  const selectors = {
++    workspace: `t.workspace_id in (${workspaces})`, "workspace-self": `t.id in (${workspaces})`,
++    "auth-self": `t.id::text in (${users})`, "auth-user": `t.user_id::text in (${users})`, "creator": `t.creator_id in (${users})`,
++    recipient: `t.recipient_id in (${users})`,
++    "staff-command": `t.request_id in (select request_id from public.staff_access_audit where user_id in (${users}))`,
++    conversation: `t.conversation_id in (select id from public.assistant_conversations where creator_id in (${users}))`,
++    academy: `t.id in (${academy})`, lesson: `t.track_id in (${academy})`,
++    storage: `t.owner_id::text in (${users})`,
++    "auth-audit": `t.payload->>'actor_id' in (${users})`,
++    "auth-session": `t.session_id in (select id from auth.sessions where user_id in (${users}))`,
++    "auth-factor": `t.factor_id in (select id from auth.mfa_factors where user_id in (${users}))`,
++  };
++  const entries = Object.entries(scopes).map(([family, scope]) => {
++    if (!/^[a-z_]+$/.test(family) || !/^(public|private|auth|storage)\.[a-z_]+$/.test(scope.relation)
++      || !Array.isArray(scope.key) || scope.key.length === 0 || scope.key.some(k => !/^[a-z_]+$/.test(k))) throw new Error("B2 inventory relation/key invalid");
++    const where = selectors[scope.selector]; if (!where) throw new Error("B2 inventory selector invalid");
++    const key = scope.key.map(k => `coalesce(t.${k}::text,'')`).join("||':'||");
++    return `'${family}',(select jsonb_build_object('count',count(*),'ids',coalesce(jsonb_agg(${key} order by ${key}),'[]'::jsonb),'rowHashes',coalesce(jsonb_object_agg(${key},md5(to_jsonb(t)::text)),'{}'::jsonb)) from ${scope.relation} t where ${where})`;
++  });
++  // PostgreSQL variadic functions accept at most 100 arguments; chunk the manifest.
++  const chunks = []; for (let i = 0; i < entries.length; i += 40) chunks.push(`jsonb_build_object(${entries.slice(i, i + 40).join(",")})`);
++  return `begin read only;select ${chunks.length ? chunks.join("||") : "'{}'::jsonb"};commit;`;
++}
++export function preflightB2FixtureShape(target) {
++  if (!target.context) return;
++  const scopes = target.context.manifest.fixture.rowScopes;
++  if (!scopes || Object.keys(scopes).length === 0) throw new Error("B2 explicit inventory profile required before client/setup");
++  // Empty exact-ID predicates resolve every required relation/column without reading other subjects.
++  JSON.parse(target.sql(fixtureInventorySql(scopes, {workspaces:[],auth_users:[]})));
++}
++export function assertInventoryCaps(inventory, caps) {
++  for (const [family, cap] of Object.entries(caps)) {
++    if (family === "requests") continue;
++    if (!inventory[family] || !Number.isInteger(inventory[family].count)) throw new Error(`B2 inventory missing family: ${family}`);
++    if (inventory[family].count > cap) throw new Error(`B2 inventory row cap exceeded: ${family}`);
++  }
++}
++export function captureB2Inventory(target) {
++  const context = target.context; if (!context) return null;
++  const journal = new FixtureJournal(context.privatePath("owned-journal.jsonl"), context.lineage, context.manifest.fixture.rowCaps[context.phase]);
++  journal.assertReady();
++  for (const name of readdirSync(dirname(context.privatePath("owned-journal.jsonl"))).filter(n => /^(?:(?:owner-)?transport-\d+|transport-browser-[a-z0-9-]+)\.jsonl$/.test(n))) {
++    new FixtureJournal(context.privatePath(name), context.lineage, {requests:context.manifest.fixture.transportWriteCapPerProcess}).assertReady();
++  }
++  const owned = journal.owned();
++  // Exact IDs only. This query returns opaque keys and hashes, never row contents, JWTs or emails.
++  const inventory = JSON.parse(target.sql(fixtureInventorySql(context.manifest.fixture.rowScopes, owned)));
++  assertInventoryCaps(inventory, context.manifest.fixture.rowCaps[context.phase]);
++  durableJson(context.publicPath("fixture-inventory.json"), { lineage: context.lineage, target: target.identity, inventory, cleanupApproved: false, at: new Date().toISOString() });
++  return inventory;
++}
++export function assertPhaseDependency(context, phase) {
++  const result = context.assertLineage(JSON.parse(readFileSync(context.publicPath("phase-result.json", phase), "utf8")), phase);
++  if (result.exitCode !== 0 || result.signal) throw new Error("B2 predecessor phase did not pass");
++}
+--- a/scripts/audit/deny-external-fetch.mjs
++++ b/scripts/audit/deny-external-fetch.mjs
+@@ -1,10 +1,21 @@
+ // Test-process preload only. No application feature flag or production behavior change.
+ import { URL } from "node:url";
++import { b2ExecutionContext } from "./local-targets.mjs";
++import { FixtureJournal, journalTransportFetch } from "./fixture-journal.mjs";
++import process from "node:process";
++const selected = b2ExecutionContext();
++const origins = selected?.origins ?? ["http://127.0.0.1:56400", "http://127.0.0.1:56421", "http://127.0.0.1:56521"];
+ const originalFetch=globalThis.fetch;
++let journalledFetch;
+ globalThis.fetch=(input,init)=>{
+-  const url=new URL(typeof input === "string" || input instanceof URL ? input : input.url);
+-  if (url.hostname !== "127.0.0.1" || !["56400","56421","56521"].includes(url.port)) {
++  const url=new globalThis.URL(typeof input === "string" || input instanceof URL ? input : input.url);
++  if (!origins.includes(url.origin)) {
+     return Promise.reject(new Error("External HTTP disabled for synthetic acceptance"));
++  }
++  const method=(init?.method??(input instanceof globalThis.Request?input.method:"GET")).toUpperCase();
++  if (selected && !["GET","HEAD","OPTIONS"].includes(method)) {
++    journalledFetch ??= journalTransportFetch(originalFetch, new FixtureJournal(selected.privatePath(`transport-${process.pid}.jsonl`), selected.lineage, {requests:selected.manifest.fixture.transportWriteCapPerProcess}), origins);
++    return journalledFetch(input,init);
+   }
+   return originalFetch(input,init);
+ };
+--- /dev/null
++++ b/scripts/audit/fixture-journal.mjs
+@@ -0,0 +1,127 @@
++// Local acceptance evidence only. This never grants application/RLS permissions.
++import { closeSync, existsSync, fsyncSync, mkdirSync, openSync, readFileSync, writeSync } from "node:fs";
++import { dirname } from "node:path";
++import { randomUUID, createHash } from "node:crypto";
++import { isDeepStrictEqual } from "node:util";
++
++export function durableJson(path, value) {
++  mkdirSync(dirname(path), { recursive: true });
++  const fd = openSync(path, "w", 0o600);
++  try { writeSync(fd, JSON.stringify(value, (key, v) => key === "client" ? undefined : v) + "\n"); fsyncSync(fd); }
++  finally { closeSync(fd); }
++}
++export class FixtureJournal {
++  constructor(path, lineage, caps) {
++    if (!caps || Object.values(caps).some(n => !Number.isInteger(n) || n < 0)) throw new Error("B2 journal caps must be explicit nonnegative integers");
++    this.path = path; this.lineage = lineage; this.caps = caps; this.entries = []; this.inFlight = new Set();
++    mkdirSync(dirname(path), { recursive: true });
++    if (existsSync(path)) {
++      try { this.entries = readFileSync(path, "utf8").split("\n").filter(Boolean).map(line => JSON.parse(line)); }
++      catch { throw new Error("B2 unresolved truncated journal; read-only reconciliation required"); }
++      if (this.entries.some(e => !isDeepStrictEqual(e.lineage, lineage))) throw new Error("B2 journal lineage mismatch");
++    }
++  }
++  append(value) {
++    const entry = { ...value, lineage: this.lineage, at: new Date().toISOString() };
++    const fd = openSync(this.path, "a", 0o600);
++    try { writeSync(fd, JSON.stringify(entry) + "\n"); fsyncSync(fd); } finally { closeSync(fd); }
++    this.entries.push(entry); return entry;
++  }
++  owned() {
++    const tables = {};
++    for (const e of this.entries.filter(e => ["success", "observed"].includes(e.state))) {
++      for (const [table, ids] of Object.entries(e.ids ?? {})) tables[table] = [...new Set([...(tables[table] ?? []), ...ids])];
++    }
++    return tables;
++  }
++  assertReady() {
++    const last = new Map(this.entries.filter(e => e.token).map(e => [e.token, e]));
++    if ([...last.values()].some(e => e.state === "unknown" || e.state === "intent" && !this.inFlight.has(e.token))) throw new Error("B2 UNKNOWN/unresolved operation; no automatic create/reseed");
++  }
++  begin(label, reserve = {}, planned = {}) {
++    this.assertReady();
++    for (const [family, count] of Object.entries(reserve)) {
++      if (!(family in this.caps) || !Number.isInteger(count) || count < 0) throw new Error("B2 journal family/scope invalid");
++      const used = this.entries.filter(e => e.state === "intent").reduce((n, e) => n + (e.reserve?.[family] ?? 0), 0);
++      if (used + count > this.caps[family]) throw new Error(`B2 ${family} reservation cap exceeded`);
++    }
++    for (const [family, ids] of Object.entries(planned)) {
++      if (!(family in this.caps) || ids.length > (reserve[family] ?? 0) || ids.some(id => !/^[a-f0-9-]{36}$/i.test(id))) throw new Error("B2 planned exact IDs invalid");
++    }
++    const token = randomUUID(); this.append({ state: "intent", token, label, reserve, planned }); this.inFlight.add(token); return token;
++  }
++  finish(token, ids = {}, receipt = {}) {
++    const intent = this.entries.find(e => e.token === token && e.state === "intent");
++    if (!intent || this.entries.some(e => e.token === token && e.state !== "intent")) throw new Error("B2 operation already settled or unknown");
++    this.checkIds(ids); this.append({ state: "success", token, ids, receipt }); this.inFlight.delete(token);
++  }
++  checkIds(ids) {
++    const owned = this.owned();
++    for (const [family, values] of Object.entries(ids)) {
++      if (!(family in this.caps) || values.some(id => !/^[a-f0-9-]{36}$/i.test(id))) throw new Error("B2 success IDs/family invalid");
++      if (new Set([...(owned[family] ?? []), ...values]).size > this.caps[family]) throw new Error(`B2 ${family} observed row cap exceeded`);
++    }
++  }
++  observe(ids) { this.checkIds(ids); this.append({ state: "observed", ids }); }
++  async perform(label, reserve, operation, planned = {}) {
++    const token = this.begin(label, reserve, planned);
++    try { const ids = await operation(); this.finish(token, ids ?? {}); return ids; }
++    catch (error) { this.append({ state: "unknown", token, reason: "operation_or_receipt_failed; retain reservation and reconcile exact correlation read-only" }); throw error; }
++  }
++  performSync(label, reserve, operation, planned = {}) {
++    const token = this.begin(label, reserve, planned);
++    try { const ids = operation(); this.finish(token, ids ?? {}); return ids; }
++    catch (error) { this.append({ state: "unknown", token, reason: "operation_or_receipt_failed" }); throw error; }
++  }
++}
++
++export function transportReceipt(status, body) {
++  const text = JSON.stringify(body ?? null);
++  // References prove what was returned; they are explicitly not table ownership grants.
++  return { status, bodySha256: createHash("sha256").update(text).digest("hex"), returnedUuidReferences: [...new Set(text.match(/[a-f0-9]{8}-(?:[a-f0-9]{4}-){3}[a-f0-9]{12}/gi) ?? [])] };
++}
++export function journalTransportFetch(delegate, journal, origins) {
++  return async (input, init) => {
++    const url = new globalThis.URL(input instanceof globalThis.Request ? input.url : String(input));
++    if (!origins.includes(url.origin)) throw new Error("B2 transport origin disabled");
++    const method = (init?.method ?? (input instanceof globalThis.Request ? input.method : "GET")).toUpperCase();
++    if (["GET", "HEAD", "OPTIONS"].includes(method)) return delegate(input, init);
++    if (["close_due_campaigns", "snapshot_campaign_leaderboards"].includes(url.pathname.split("/").at(-1))) throw new Error("B2 global RPC excluded; pristine acceptance is already retained");
++    const token = journal.begin(`${method}:${url.pathname}`, { requests: 1 });
++    try {
++      const response = await delegate(input, init);
++      const body = await response.clone().json().catch(() => null);
++      journal.finish(token, {}, transportReceipt(response.status, body)); return response;
++    } catch (error) {
++      journal.append({ state: "unknown", token, reason: "transport_response_or_durable_receipt_lost" }); throw error;
++    }
++  };
++}
++export function journalOwnerSql(delegate, journal, privatePath) {
++  return query => {
++    const token = journal.begin("owner-sql", { requests: 1 });
++    // The exact DDL/statement stays private; public receipts contain only a digest/UUID references.
++    durableJson(privatePath(`owner-sql-${token}.private.json`), { lineage: journal.lineage, token, query });
++    try { const output = delegate(query); journal.finish(token, {}, transportReceipt(200, output)); return output; }
++    catch (error) { journal.append({ state: "unknown", token, reason: "owner_sql_or_receipt_failed" }); throw error; }
++  };
++}
++export async function bindBrowserJournal(context, journal, origins) {
++  const requests = new WeakMap(), pending = new Set(); let failure;
++  const unknown = token => { requests.delete(token.request); journal.append({state:"unknown",token:token.id,reason:"browser_response_or_receipt_lost"}); };
++  await context.route("**/*", async route => {
++    const request=route.request(),url=new globalThis.URL(request.url());
++    if (!origins.includes(url.origin)) return route.abort();
++    if (["GET","HEAD","OPTIONS"].includes(request.method())) return route.continue();
++    const token={id:journal.begin(`${request.method()}:${url.pathname}`,{requests:1}),request};requests.set(request,token);
++    try { return await route.continue(); } catch(error) { unknown(token); throw error; }
++  });
++  context.on("response", response => {
++    const token=requests.get(response.request()); if(!token)return;requests.delete(token.request);
++    const receipt=(async()=>{try{journal.finish(token.id,{},transportReceipt(response.status(),await response.json().catch(()=>null)));}catch(error){failure=error;unknown(token);}})();
++    pending.add(receipt);void receipt.finally(()=>pending.delete(receipt));
++  });
++  context.on("requestfailed", request=>{const token=requests.get(request);if(token)unknown(token);});
++  const close=context.close.bind(context);
++  context.close=async(...args)=>{await Promise.all(pending);if(failure)throw failure;if(journal.inFlight.size)throw new Error("B2 unresolved browser request before close");journal.assertReady();return close(...args);};
++}
+--- a/scripts/audit/local-targets.mjs
++++ b/scripts/audit/local-targets.mjs
+@@ -1,11 +1,15 @@
+ // Operates only on the two disposable projects created for this authorized run.
+ // No SDK import, SQL connection, fixture or migration precedes Docker identity verification.
+-import { execFileSync } from "node:child_process";
++import { execFileSync, spawnSync } from "node:child_process";
+ import { readFileSync, writeFileSync, readdirSync } from "node:fs";
+-import { resolve } from "node:path";
++import { resolve, relative, isAbsolute } from "node:path";
++import { createHash } from "node:crypto";
++import { isDeepStrictEqual } from "node:util";
+ import process from "node:process";
+ import { log } from "node:console";
+ import { assertAcceptanceTargetAllowed, verifyIntegrationIdentity } from "../run-integration-tests.mjs";
++import { assertPhaseDependency } from "./b2-fixture-inventory.mjs";
++import { FixtureJournal, journalOwnerSql } from "./fixture-journal.mjs";
+ 
+ const runId = "01a16483-e55d-7332-9ddc-7e8a3f68eb11";
+ const ownerAuthorization = "2026-10-23 user: you decide; local disposable targets only";
+@@ -13,7 +17,135 @@
+ function docker(args, options = {}) {
+   return execFileSync("docker", args, { encoding: "utf8", timeout: 120000, ...options }).trim();
+ }
++const sha = value => createHash("sha256").update(value).digest("hex");
++const json = path => JSON.parse(readFileSync(path, "utf8"));
++function localPath(path) {
++  const absolute = resolve(root, path), rel = relative(root, absolute);
++  if (rel.startsWith("..") || isAbsolute(rel)) throw new Error("B2 path must stay in the current worktree");
++  return absolute;
++}
++// No Docker/key/client access here. A P0 approval is deliberately not runtime authority.
++export function b2ExecutionContext(env = process.env) {
++  if (!env.ADFOCATE_B2_MANIFEST_PATH) return null;
++  const raw = readFileSync(localPath(env.ADFOCATE_B2_MANIFEST_PATH), "utf8");
++  const manifest = JSON.parse(raw), manifestSha256 = sha(raw);
++  const approval = env.ADFOCATE_B2_AUTHORIZATION_PATH && json(localPath(env.ADFOCATE_B2_AUTHORIZATION_PATH));
++  if (manifest.kind !== "D19_B2_EXECUTION_SPEC" || manifest.schemaVersion !== 2 || manifest.specificationReady !== true
++    || approval?.kind !== "B2_RUNTIME_AUTHORIZATION" || approval.approved !== true || !approval.ownerReference
++    || approval.manifestSha256 !== manifestSha256 || approval.sourceFingerprint !== manifest.candidate?.fingerprint) {
++    throw new Error("B2 runtime authorization must bind the reviewed manifest and source");
++  }
++  const fingerprint = json(resolve(root, "docs/verification/code-fingerprint.json"));
++  if (!Array.isArray(fingerprint.files) || fingerprint.files.length === 0
++    || sha(JSON.stringify(fingerprint.files)) !== manifest.candidate.fingerprint
++    || fingerprint.fingerprint !== manifest.candidate.fingerprint
++    || fingerprint.files.some(f => sha(readFileSync(localPath(f.path), "utf8").replace(/\r\n/g, "\n")) !== f.sha256)) {
++    throw new Error("B2 candidate source fingerprint drift");
++  }
++  const target = manifest.target, phase = env.ADFOCATE_B2_PHASE;
++  const plan = manifest.fixture.phases.find(p => p.phase === phase);
++  if (!plan || !/^[a-f0-9-]{36}$/.test(plan.plannedNamespace) || !/^adfocate-d19-b2-[a-z0-9-]+$/.test(target.projectId)
++    || target.ports.host !== "127.0.0.1" || target.ports.proxy !== "none"
++    || new Set([target.ports.web, target.ports.api, target.ports.database]).size !== 3
++    || [target.ports.web, target.ports.api, target.ports.database].some(p => !Number.isInteger(p) || p < 1024 || p > 65535)
++    || !isDeepStrictEqual(target.resourceCaps, { projects: 1, persistentDataVolumes: 1, networks: 1, containers: 5 })
++    || target.databaseVolumeName !== `${target.projectId}-db-data` || target.networkName !== `${target.projectId}-net`) {
++    throw new Error("B2 explicit phase, target or resource scope invalid");
++  }
++  assertAcceptanceTargetAllowed(target);
++  const lineage = (selectedPhase = phase) => ({ projectId: target.projectId, ownerRunId: target.plannedOwnerRunId,
++    sourceFingerprint: manifest.candidate.fingerprint, manifestSha256, phase: selectedPhase,
++    namespace: manifest.fixture.phases.find(p => p.phase === selectedPhase)?.plannedNamespace });
++  const phasePath = (base, name, selectedPhase) => {
++    if (!/^[a-zA-Z0-9_.-]+$/.test(name) || name.startsWith(".") || !lineage(selectedPhase).namespace) throw new Error("B2 evidence path invalid");
++    return resolve(root, base, target.projectId, selectedPhase, name);
++  };
++  const assertLineage = (value, selectedPhase = phase) => {
++    if (!isDeepStrictEqual(value?.lineage, lineage(selectedPhase))) throw new Error("B2 fixture/evidence lineage mismatch");
++    return value;
++  };
++  return { manifest, manifestSha256, approval, phase, plan, lineage: lineage(), lineageFor: lineage, assertLineage,
++    origins: [`http://127.0.0.1:${target.ports.web}`, `http://127.0.0.1:${target.ports.api}`],
++    publicPath: (name, selectedPhase = phase) => phasePath("docs/verification", name, selectedPhase),
++    privatePath: (name, selectedPhase = phase) => phasePath(".codex-tmp", name, selectedPhase),
++    readPrivate: (name, selectedPhase = phase) => assertLineage(json(phasePath(".codex-tmp", name, selectedPhase)), selectedPhase) };
++}
++function verifiedB2Target(bootstrapOnly = false) {
++  const context = b2ExecutionContext(), { manifest, manifestSha256, approval } = context, spec = manifest.target;
++  if (!bootstrapOnly && context.phase !== "role") assertPhaseDependency(context, context.phase === "core" ? "role" : "core");
++  const receipt = json(localPath(process.env.ADFOCATE_B2_TARGET_RECEIPT_PATH ?? "missing-b2-receipt.json"));
++  const identity = receipt.identity, ids = receipt.containerIds, services = ["kong", "db", "auth", "rest", "storage"];
++  if (receipt.manifestSha256 !== manifestSha256 || receipt.sourceFingerprint !== manifest.candidate.fingerprint
++    || identity?.projectId !== spec.projectId || identity.runId !== spec.plannedOwnerRunId
++    || identity.ownerAuthorization !== approval.ownerReference || identity.apiPort !== spec.ports.api || identity.proxy !== "none"
++    || receipt.createdThisRun !== true || receipt.volumeWasAbsent !== true || receipt.networkWasAbsent !== true
++    || receipt.volumeName !== spec.databaseVolumeName || !receipt.databaseCreatedAt || !receipt.volumeCreatedAt
++    || !ids || !isDeepStrictEqual(Object.keys(ids).sort(), services.toSorted()) || new Set(Object.values(ids)).size !== 5
++    || services.some(s => !/^[a-f0-9]{64}$/.test(ids[s]) || !/^sha256:[a-f0-9]{64}$/.test(spec.serviceImageIds[s]))
++    || identity.apiContainerId !== ids.kong || identity.databaseContainerId !== ids.db
++    || identity.apiImageId !== spec.serviceImageIds.kong || identity.databaseImageId !== spec.serviceImageIds.db
++    || (!bootstrapOnly && (receipt.bootstrap?.verified !== true || receipt.bootstrap.profileDigest !== manifest.bootstrap.profileDigest
++      || !/^[a-f0-9]{64}$/.test(receipt.bootstrap.baselineSha256)))
++    || (bootstrapOnly && (context.phase !== "role" || receipt.bootstrap?.verified !== false))) throw new Error("B2 target/bootstrap receipt mismatch");
++  assertAcceptanceTargetAllowed(receipt);
++  const metadata = (args, asJson = true) => {
++    const result = spawnSync("docker", args, { encoding: "utf8", timeout: 10000 });
++    if (result.status !== 0 || result.error) throw new Error("B2 Docker metadata unavailable");
++    return asJson ? JSON.parse(result.stdout) : result.stdout.trim();
++  };
++  if (metadata(["context", "inspect", "--format", "{{.Endpoints.docker.Host}}"], false)
++    !== "npipe:////./pipe/dockerDesktopLinuxEngine") throw new Error("B2 local engine mismatch");
++  const format = '{"id":{{json .Id}},"image":{{json .Image}},"running":{{json .State.Running}},"project":{{json (index .Config.Labels "com.supabase.cli.project")}},"ports":{{json .NetworkSettings.Ports}},"networks":{{json .NetworkSettings.Networks}},"mounts":{{json .Mounts}},"tmpfs":{{json .HostConfig.Tmpfs}},"created":{{json .Created}}}';
++  const containers = Object.fromEntries(services.map(s => [s, metadata(["inspect", "--format", format, ids[s]])]));
++  for (const s of services) {
++    const c = containers[s]; assertAcceptanceTargetAllowed(c);
++    if (c.id !== ids[s] || c.image !== spec.serviceImageIds[s] || c.project !== spec.projectId || !c.running
++      || Object.keys(c.networks ?? {}).length !== 1 || Object.values(c.networks)[0].NetworkID !== identity.networkId) throw new Error("B2 service/network identity mismatch");
++    const volumes = (c.mounts ?? []).filter(m => m.Type !== "tmpfs");
++    if (s === "db" ? volumes.length !== 1 || volumes[0].Type !== "volume" || volumes[0].Name !== spec.databaseVolumeName
++      || volumes[0].Destination !== "/var/lib/postgresql/data" || !volumes[0].RW : volumes.length !== 0) throw new Error("B2 volume/mount scope mismatch");
++    const tmpfs = Object.entries(c.tmpfs ?? {}), temporary = (c.mounts ?? []).filter(m => m.Type === "tmpfs");
++    if (s === "storage" ? spec.storageTmpfs?.destination !== "/var/lib/storage" || spec.storageTmpfs.sizeBytes !== 268435456
++      || tmpfs.length !== 1 || tmpfs[0][0] !== spec.storageTmpfs.destination || tmpfs[0][1] !== "rw,size=268435456"
++      || temporary.length !== 1 || temporary[0].Destination !== spec.storageTmpfs.destination : tmpfs.length !== 0 || temporary.length !== 0) throw new Error("B2 storage tmpfs scope mismatch");
++    const bindings = Object.values(c.ports ?? {}).flat().filter(Boolean);
++    const expectedPort = s === "db" ? spec.ports.database : s === "kong" ? spec.ports.api : null;
++    if (expectedPort ? bindings.length !== 1 || bindings[0].HostIp !== "127.0.0.1" || Number(bindings[0].HostPort) !== expectedPort : bindings.length !== 0) throw new Error("B2 service port scope mismatch");
++  }
++  const network = metadata(["network", "inspect", "--format", '{"id":{{json .Id}},"internal":{{json .Internal}},"labels":{{json .Labels}},"containers":{{json .Containers}},"options":{{json .Options}}}', identity.networkId]);
++  const members = Array.isArray(network.containers) ? network.containers : Object.keys(network.containers ?? {});
++  if (network.id !== identity.networkId || network.internal !== false || network.labels?.["adfocate.run"] !== identity.runId
++    || network.options?.["com.docker.network.bridge.enable_ip_masquerade"] !== "false"
++    || network.options?.["com.docker.network.bridge.host_binding_ipv4"] !== "127.0.0.1"
++    || !isDeepStrictEqual([...members].sort(), Object.values(ids).sort())) throw new Error("B2 exclusive network scope mismatch");
++  const volume = metadata(["volume", "inspect", "--format", '{"name":{{json .Name}},"created":{{json .CreatedAt}},"labels":{{json .Labels}}}', spec.databaseVolumeName]);
++  if (volume.name !== spec.databaseVolumeName || volume.created !== receipt.volumeCreatedAt
++    || containers.db.created !== receipt.databaseCreatedAt || volume.labels?.["adfocate.run"] !== identity.runId
++    || volume.labels?.["com.supabase.cli.project"] !== spec.projectId) throw new Error("B2 fresh volume identity mismatch");
++  const publicEnv = { SUPABASE_URL: context.origins[1], SUPABASE_ANON_KEY: "identity-check-before-key-read", SUPABASE_SERVICE_KEY: "identity-check-before-key-read", INTEGRATION_TARGET_IDENTITY_JSON: JSON.stringify(identity) };
++  verifyIntegrationIdentity(publicEnv);
++  let ownerSql;
++  const sql = query => {
++    ownerSql ??= journalOwnerSql(q => docker(["exec", "-i", identity.databaseContainerId, "psql", "-X", "-q", "-A", "-t", "-v", "ON_ERROR_STOP=1", "-U", "postgres", "-d", "postgres"], {input:q}), new FixtureJournal(context.privatePath(`owner-transport-${process.pid}.jsonl`), context.lineage, {requests:manifest.fixture.transportWriteCapPerProcess}), context.privatePath);
++    return ownerSql(query);
++  };
++  if (bootstrapOnly) return { identity, context, sql };
++  const keys = json(resolve(root, ".codex-tmp", spec.projectId, "keys.private.json"));
++  if (keys.API_URL !== publicEnv.SUPABASE_URL || !keys.ANON_KEY || !keys.SERVICE_ROLE_KEY) throw new Error("B2 new key source mismatch");
++  return { identity, context, sql, env: { ...publicEnv, SUPABASE_ANON_KEY: keys.ANON_KEY, SUPABASE_SERVICE_KEY: keys.SERVICE_ROLE_KEY } };
++}
++// Runtime authorization is still mandatory. The return value has no application keys/client.
++// Caller must prove public schema/history empty before executing the sealed forward-only profile.
++export function verifiedB2BootstrapTarget() {
++  if (!process.env.ADFOCATE_B2_MANIFEST_PATH) throw new Error("B2 explicit bootstrap manifest required");
++  return verifiedB2Target(true);
++}
+ export function verifiedTarget(kind) {
++  if (process.env.ADFOCATE_B2_MANIFEST_PATH) {
++    if (kind !== undefined) throw new Error("B2 requires explicit manifest selection; legacy selector refused");
++    return verifiedB2Target();
++  }
++  kind ??= "empty";
+   if (!["empty", "shaped"].includes(kind)) throw new Error("unknown disposable target");
+   const projectId = `adfocate-r1-${kind}-20261023`;
+   assertAcceptanceTargetAllowed({ projectId });
+--- a/scripts/audit/prepare-pilot-browser.ts
++++ b/scripts/audit/prepare-pilot-browser.ts
+@@ -1,12 +1,18 @@
+ import {readFileSync,writeFileSync} from 'node:fs';
+ import {createStaffCapabilityFixture} from '../../server/test/staffCapabilityFixture.js';
++// @ts-expect-error Native local verifier; runs before any fixture/client.
++import {verifiedTarget} from './local-targets.mjs';
++const selected=verifiedTarget(),context=selected.context;
++if(context&&context.phase!=='browser')throw new Error('B2 browser setup phase mismatch');
++// Read and attest the role dependency before creating any browser fixture rows.
++const roleFixture=context?context.readPrivate('staff-fixture.private.json','role'):JSON.parse(readFileSync('.codex-tmp/D19-role-fixture.private.json','utf8'));
++if(JSON.stringify(roleFixture.target)!==JSON.stringify(selected.identity)||!roleFixture.resource?.id||!roleFixture.roles?.content_editor?.id)throw new Error('B2 editor/resource dependency mismatch');
+ const owned=await createStaffCapabilityFixture('D19'),base=owned.base;
+ const legacyMission=await base.mission('legacy'),mission=await base.mission('active_workspace');
+-const roleFixture=JSON.parse(readFileSync('.codex-tmp/D19-role-fixture.private.json','utf8'));
+-const value={runId:base.runId,target:base.target.identity,workspaceId:base.workspaceId,otherWorkspaceId:base.otherWorkspaceId,slug:base.slug,mission,legacyMission,
++const value={...(context?{lineage:context.lineage}:{}),runId:base.runId,target:base.target.identity,workspaceId:base.workspaceId,otherWorkspaceId:base.otherWorkspaceId,slug:base.slug,mission,legacyMission,
+  creators:base.creators,creator:base.creators[0],operator:owned.roles.operator,operatorSession:owned.roles.operator.session,reviewerSession:owned.roles.reviewer.session,
+- roles:{...owned.roles,content_editor:roleFixture.roles.content_editor},resource:roleFixture.resource,authIds:JSON.parse(readFileSync('.codex-tmp/D19-fixture.private.json','utf8')).authIds,
++ roles:{...owned.roles,content_editor:roleFixture.roles.content_editor},resource:roleFixture.resource,authIds:JSON.parse(readFileSync(context?.privatePath('staff-fixture.private.json')??'.codex-tmp/D19-fixture.private.json','utf8')).authIds,
+  initialSnapshots:await Promise.all(base.creators.map(c=>base.neutrality(c.id))),platformEditorFixtureRunId:roleFixture.runId};
+-writeFileSync('.codex-tmp/D19-browser-fixture.private.json',JSON.stringify(value,(key,v)=>key==='client'?undefined:v));
+-writeFileSync('docs/verification/D19-browser-fixture.json',JSON.stringify({runId:base.runId,target:base.target.identity,workspaceIds:[base.workspaceId,base.otherWorkspaceId],missionIds:[legacyMission.id,mission.id],authIds:value.authIds,initialSnapshots:value.initialSnapshots,platformEditorFixtureRunId:roleFixture.runId,cleanup:'none; exact owned IDs retained'},null,2)+'\n');
++writeFileSync(context?.privatePath('browser-fixture.private.json')??'.codex-tmp/D19-browser-fixture.private.json',JSON.stringify(value,(key,v)=>key==='client'?undefined:v));
++writeFileSync(context?.publicPath('browser-fixture.json')??'docs/verification/D19-browser-fixture.json',JSON.stringify({...(context?{lineage:context.lineage}:{}),runId:base.runId,target:base.target.identity,workspaceIds:[base.workspaceId,base.otherWorkspaceId],missionIds:[legacyMission.id,mission.id],authIds:value.authIds,initialSnapshots:value.initialSnapshots,platformEditorFixtureRunId:roleFixture.runId,cleanup:'none; exact owned IDs retained'},null,2)+'\n');
+ console.log('D19 browser fixture ready after target verification; private sessions retained locally.');
+--- a/scripts/audit/run-integration.mjs
++++ b/scripts/audit/run-integration.mjs
+@@ -3,11 +3,18 @@
+ import { verifiedTarget } from "./local-targets.mjs";
+ import { resolve } from "node:path";
+ import { pathToFileURL } from "node:url";
+-const target=verifiedTarget("empty");
++import {mkdirSync,writeFileSync} from "node:fs";
++import {dirname} from "node:path";
++import {captureB2Inventory} from "./b2-fixture-inventory.mjs";
++const target=verifiedTarget();
+ const selected=process.argv[2];
++if(target.context&&selected!==(target.context.phase==="role"?"staff":target.context.phase==="core"?"pilot":null))throw new Error("B2 integration command/phase mismatch");
+ if(selected && !["mission-list","authoring","identity","public-claims","academy","quality","staff","pilot"].includes(selected))throw new Error("unsupported audit integration scope");
+ const file=selected==="pilot"?"server/test/audit-workflow-roundtrip.test.ts":selected==="staff"?"server/test/audit-staff-capabilities.test.ts":selected==="quality"?"server/test/audit-quality.test.ts":selected==="mission-list"?"server/test/audit-mission-list-contract.test.ts":selected==="authoring"?"server/test/audit-mission-authoring-contract.test.ts":selected==="identity"?"server/test/audit-identity-contract.test.ts":selected==="public-claims"?"server/test/audit-public-claims-contract.test.ts":selected==="academy"?"server/test/audit-academy-progress.test.ts":"server/test/audit-workflow-roundtrip.test.ts";
+-const result=spawnSync(process.execPath,["node_modules/vitest/vitest.mjs","run","--maxWorkers=1","--minWorkers=1",file],{
+-  env:{...process.env,...target.env,RUN_INTEGRATION:"0",RUN_AUDIT_INTEGRATION:"1",OPENAI_API_KEY:"",OPENROUTER_API_KEY:"",ANTHROPIC_API_KEY:"",
++const output=target.context?.privatePath("vitest-results.private.json");
++const result=spawnSync(process.execPath,["node_modules/vitest/vitest.mjs","run","--maxWorkers=1","--minWorkers=1",file,...(output?["--reporter=json",`--outputFile=${output}`]:[])],{
++  env:{...process.env,...target.env,...(target.context?{ADFOCATE_ACCEPTANCE_TASK:"D19"}:{}),RUN_INTEGRATION:"0",RUN_AUDIT_INTEGRATION:"1",OPENAI_API_KEY:"",OPENROUTER_API_KEY:"",ANTHROPIC_API_KEY:"",
+     NODE_OPTIONS:`--import=${pathToFileURL(resolve("scripts/audit/deny-external-fetch.mjs")).href}`},stdio:"inherit"});
+-process.exit(result.status??1);
++let status=result.status??1;
++if(target.context){try{captureB2Inventory(verifiedTarget());}catch{status=1;process.stderr.write("B2 inventory/identity/journal gate failed; retain exact records and do not reseed.\n");}const path=target.context.publicPath("phase-result.json");mkdirSync(dirname(path),{recursive:true});writeFileSync(path,JSON.stringify({lineage:target.context.lineage,target:target.identity,exitCode:status,signal:result.signal??null,source:file,at:new Date().toISOString()},null,2)+"\n");}
++process.exit(status);
+--- a/scripts/audit/run-pilot-browser.mjs
++++ b/scripts/audit/run-pilot-browser.mjs
+@@ -6,21 +6,25 @@
+ import process from 'node:process';
+ import {verifiedTarget} from './local-targets.mjs';
+ import {neutralitySnapshot} from './neutrality-snapshot.mjs';
+-const target=verifiedTarget('empty');
++import {captureB2Inventory} from './b2-fixture-inventory.mjs';
++const target=verifiedTarget();
++const context=target.context;
++if(context&&context.phase!=='browser')throw new Error('B2 browser runner phase mismatch');
+ const env={...process.env,...target.env,NODE_ENV:'production',ADFOCATE_BROWSER_SCOPE:'D19',ADFOCATE_ACCEPTANCE_TASK:'D19',RUN_INTEGRATION:'0',RUN_AUDIT_INTEGRATION:'0',OPENAI_API_KEY:'',OPENROUTER_API_KEY:'',ANTHROPIC_API_KEY:'',NODE_OPTIONS:`--import=${pathToFileURL(resolve('scripts/audit/deny-external-fetch.mjs')).href}`};
+ const run=(args,extra={})=>spawnSync(process.execPath,args,{env:{...env,...extra},stdio:'inherit'}).status??1;
+ if(!process.argv.includes('--resume')){const prepared=run(['node_modules/vite-node/vite-node.mjs','scripts/audit/prepare-pilot-browser.ts']);if(prepared)process.exit(prepared);}
+-const fx=JSON.parse(readFileSync('.codex-tmp/D19-browser-fixture.private.json','utf8'));if(!equal(fx.target,target.identity))throw new Error('D19 browser target mismatch');
++const fx=context?context.readPrivate('browser-fixture.private.json'):JSON.parse(readFileSync('.codex-tmp/D19-browser-fixture.private.json','utf8'));if(!equal(fx.target,target.identity))throw new Error('D19 browser target mismatch');
+ Object.assign(env,{VITE_SUPABASE_URL:target.env.SUPABASE_URL,VITE_SUPABASE_ANON_KEY:target.env.SUPABASE_ANON_KEY,VITE_DEFAULT_WORKSPACE:fx.slug,VITE_ENABLE_WHATSAPP:'false',VITE_ENABLE_GOOGLE:'false'});
+ const build=run(['node_modules/vite/bin/vite.js','build','--mode','production']);if(build)process.exit(build);
+ const summaries=[];let status=0;
+ for(const phase of ['journey','roles']){
+  status=run(['node_modules/@playwright/test/cli.js','test',phase==='journey'?'e2e/creator-operator-mission.spec.ts':'e2e/staff-access.spec.ts','--config=playwright.pilot.config.ts'],{ADFOCATE_BROWSER_PHASE:phase});
+- const raw=JSON.parse(readFileSync(`.codex-tmp/D19-browser-${phase}-results.private.json`,'utf8')),tests=[];
++ const raw=JSON.parse(readFileSync(context?.privatePath(`browser-${phase}-results.private.json`)??`.codex-tmp/D19-browser-${phase}-results.private.json`,'utf8')),tests=[];
+  const visit=s=>{for(const spec of s.specs??[])tests.push({title:spec.title,ok:spec.ok,results:spec.tests.flatMap(t=>t.results.map(r=>({status:r.status,duration:r.duration})))});for(const child of s.suites??[])visit(child);};for(const s of raw.suites)visit(s);
+  summaries.push({phase,tests,stats:raw.stats});if(status)break;
+ }
+-writeFileSync('docs/verification/D19-browser-summary.json',JSON.stringify({runId:fx.runId,target:target.identity,summaries,passed:summaries.flatMap(s=>s.tests).filter(t=>t.ok).length,status,scope:'Real local browser→API→Auth/RLS/DB legacy and active workflow; external proof metadata unavailable; access503 is an explicit transport mock. No production or paid provider.'},null,2)+'\n');
+-const live=verifiedTarget('empty'),after=neutralitySnapshot(live,fx.creator.id,fx.workspaceId);
+-writeFileSync('docs/verification/D19-browser-after.json',JSON.stringify({runId:fx.runId,target:live.identity,after},null,2)+'\n');
++const live=verifiedTarget(),after=neutralitySnapshot(live,fx.creator.id,fx.workspaceId);
++if(context){try{captureB2Inventory(live);}catch{status=1;process.stderr.write('B2 browser inventory/identity/journal gate failed; no reseed.\n');}writeFileSync(context.publicPath('phase-result.json'),JSON.stringify({lineage:context.lineage,target:live.identity,exitCode:status,at:new Date().toISOString()},null,2)+'\n');}
++writeFileSync(context?.publicPath('browser-after.json')??'docs/verification/D19-browser-after.json',JSON.stringify({...(context?{lineage:context.lineage}:{}),runId:fx.runId,target:live.identity,after},null,2)+'\n');
++writeFileSync(context?.publicPath('browser-summary.json')??'docs/verification/D19-browser-summary.json',JSON.stringify({...(context?{lineage:context.lineage}:{}),runId:fx.runId,target:target.identity,summaries,passed:summaries.flatMap(s=>s.tests).filter(t=>t.ok).length,status,scope:'Real local browser→API→Auth/RLS/DB legacy and active workflow; external proof metadata unavailable; access503 is an explicit transport mock. No production or paid provider.'},null,2)+'\n');
+ process.exit(status);
+--- a/scripts/audit/serve-quality.ts
++++ b/scripts/audit/serve-quality.ts
+@@ -3,7 +3,7 @@
+ import { resolve,extname,sep } from "node:path";
+ import { gzipSync } from "node:zlib";
+ import { verifiedTarget } from "./local-targets.mjs";
+-const target=verifiedTarget("empty");
++const target=verifiedTarget();
+ Object.assign(process.env,target.env,{OPENAI_API_KEY:"",OPENROUTER_API_KEY:"",ANTHROPIC_API_KEY:""});
+ const [{createApp},{createViteApiMiddleware}]=await Promise.all([import("../../server/app.js"),import("../../server/devApi.js")]);
+ const api=createViteApiMiddleware(createApp().app),root=resolve("dist");
+@@ -17,4 +17,4 @@
+  res.setHeader("Cache-Control",extname(file)===".html"?"no-cache":"public,max-age=3600");
+  if(gzip){res.setHeader("Content-Encoding","gzip");res.setHeader("Vary","Accept-Encoding");}
+  res.end(gzip?gzipSync(body):body);
+-})).listen(56400,"127.0.0.1",()=>console.log("D17 production assets + local API listening on loopback"));
++})).listen(target.context?.manifest.target.ports.web??56400,"127.0.0.1",()=>console.log("D17 production assets + local API listening on loopback"));
+--- a/server/test/audit-staff-capabilities.test.ts
++++ b/server/test/audit-staff-capabilities.test.ts
+@@ -17,7 +17,7 @@
+  }
+  afterAll(async()=>{
+   if(!fixture)return;const after=await Promise.all(fixture.creators.map(c=>fixture.neutrality(c.id)));const expected=afterJoin??initialBefore;
+-  owned.save("api-finished");writeFileSync(`docs/verification/${task}-api-contract.json`,JSON.stringify({runId:fixture.runId,target:fixture.target.identity,results,roles:Object.fromEntries(Object.entries(roles).map(([name,actor])=>[name,{id:actor.id}])),neutrality:{initialBefore,joinBaseline,before:expected,after,allEqual:JSON.stringify(expected)===JSON.stringify(after)},provider:"proof metadata mocked unavailable; no real messages/payments/paid AI",scope:"Only new exact-owned fixture staff/memberships/roles changed; no production data or automatic migration grants"},null,2)+"\n");expect(after).toEqual(expected);
++  owned.save("api-finished");writeFileSync(fixture.target.context?.publicPath("api-contract.json")??`docs/verification/${task}-api-contract.json`,JSON.stringify({...(fixture.target.context?{lineage:fixture.target.context.lineage}:{}),runId:fixture.runId,target:fixture.target.identity,results,roles:Object.fromEntries(Object.entries(roles).map(([name,actor])=>[name,{id:actor.id}])),neutrality:{initialBefore,joinBaseline,before:expected,after,allEqual:JSON.stringify(expected)===JSON.stringify(after)},provider:"proof metadata mocked unavailable; no real messages/payments/paid AI",scope:"Only new exact-owned fixture staff/memberships/roles changed; no production data or automatic migration grants"},null,2)+"\n");expect(after).toEqual(expected);
+  });
+  it("requires a separate staff grant despite brand owner membership and preserves no-membership scope errors",async()=>{
+   const access=await request<{access:{workspace:{role:null}}}>(roles.noRole.jwt,"/admin/access");expect(access.access.workspace.role).toBeNull();
+--- a/server/test/audit-workflow-roundtrip.test.ts
++++ b/server/test/audit-workflow-roundtrip.test.ts
+@@ -172,6 +172,16 @@
+     fixture.recordEvidence({caseId:"D16-saved-turn",requestId,result:"passed",provider:"not-called; synthetic answer",replaySameResult:true});
+   },30000);
+   it("retains the legacy join/submit/review journey with evidence validation",async()=>{
++    if(fixture.historical){
++      const historical=fixture.historical;
++      const before=fixture.target.sql(`begin read only;select to_jsonb(s) from public.mission_submissions s where id='${historical.submissionId}';commit;`);
++      const financialBefore=await Promise.all(fixture.creators.map(c=>fixture.neutrality(c.id)));
++      const rejected=await request<{code:string}>((owned?.roles.reviewer??fixture.operator).jwt,`/admin/submissions/${historical.submissionId}/approve`,"POST",{},undefined,400);
++      expect(rejected.code).toBe("invalid_evidence");
++      expect(fixture.target.sql(`begin read only;select to_jsonb(s) from public.mission_submissions s where id='${historical.submissionId}';commit;`)).toBe(before);
++      expect(await Promise.all(fixture.creators.map(c=>fixture.neutrality(c.id)))).toEqual(financialBefore);
++      fixture.recordEvidence({caseId:"B2-historical-invalid-legacy",submissionId:historical.submissionId,ordinaryApprovalRejected:400,storedRowUnchanged:true,financialStateUnchanged:true,source:"owned pre-guard bootstrap checkpoint; never an original incident before image",result:"passed"});
++    }
+     const creator=fixture.creators[0],mission=await fixture.mission("legacy");
+     const joined=await request<{id:string}>(creator.jwt,`/missions/${mission.slug}/join`,"POST");
+     await request(creator.jwt,`/missions/${mission.slug}/submit`,"PUT",{content_urls:["invalid"]},undefined,400);
+--- a/server/test/auditWorkflowFixture.ts
++++ b/server/test/auditWorkflowFixture.ts
+@@ -1,17 +1,33 @@
+ import { randomUUID } from "node:crypto";
+-import { appendFileSync, writeFileSync } from "node:fs";
++import { appendFileSync, writeFileSync, mkdirSync, openSync, closeSync } from "node:fs";
++import { dirname } from "node:path";
++// @ts-expect-error Native audit helper; never part of the product engine.
++import { FixtureJournal, durableJson } from "../../scripts/audit/fixture-journal.mjs";
++// @ts-expect-error Native local read-only inventory helper.
++import { preflightB2FixtureShape } from "../../scripts/audit/b2-fixture-inventory.mjs";
+ import type { SupabaseClient } from "@supabase/supabase-js";
+ 
+ export async function createAuditFixture() {
+   // @ts-expect-error Native ESM identity verifier has no declaration file.
+   const { verifiedTarget } = await import("../../scripts/audit/local-targets.mjs");
+-  const target = verifiedTarget("empty"); // Must precede SDK import and all clients/setup.
++  const target = verifiedTarget(); // Explicit B2 manifest or legacy default; before all clients/setup.
++  const context = target.context;
++  preflightB2FixtureShape(target);
++  const journal = context ? new FixtureJournal(context.privatePath("owned-journal.jsonl"), context.lineage, context.manifest.fixture.rowCaps[context.phase]) : null;
++  if (context) {
++    journal.assertReady();
++    const claim = context.privatePath("fixture-claim.json"); mkdirSync(dirname(claim), { recursive: true });
++    // No entire-phase retry, even after a crash. Resume is read-only or uses exact complete receipts.
++    try { closeSync(openSync(claim, "wx", 0o600)); } catch { throw new Error("B2 fixture phase already claimed; no automatic reseed"); }
++    durableJson(claim, { lineage: context.lineage, state: "claimed" });
++    mkdirSync(dirname(context.publicPath("workflow-runtime.jsonl")), { recursive: true });
++  }
+   Object.assign(process.env, target.env, { OPENAI_API_KEY: "", OPENROUTER_API_KEY: "", ANTHROPIC_API_KEY: "" });
+   const { createClient } = await import("@supabase/supabase-js");
+   const options = { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } };
+   const service = createClient(target.env.SUPABASE_URL, target.env.SUPABASE_SERVICE_KEY, options);
+-  const runId = randomUUID();
+-  const workspaceId = randomUUID(), otherWorkspaceId = randomUUID();
++  const runId = context?.plan.plannedNamespace ?? randomUUID();
++  const workspaceId = context?.plan.plannedPrimaryWorkspaceId ?? randomUUID(), otherWorkspaceId = context?.plan.plannedDenialWorkspaceId ?? randomUUID();
+   const slug = `audit-${runId}`;
+   const authIds: string[] = [];
+   const missionIds: string[] = [];
+@@ -19,21 +35,48 @@
+     if (result.error) throw new Error(result.error.message);
+     return result.data;
+   };
+-  must(await service.from("workspaces").insert([
++  const correlation: Record<string, unknown>[] = [];
++  const saveCorrelation = () => { if (context) durableJson(context.privatePath("correlation.private.json"), { lineage: context.lineage, correlation }); };
++  async function insert(table: string, value: Record<string, unknown> | Record<string, unknown>[], fields = "*") {
++    const rows = Array.isArray(value) ? value : [value];
++    const key = ["id", "user_id"].find(k => rows.every(r => typeof r[k] === "string"));
++    const perform = async (): Promise<Record<string, unknown>[]> => must(await service.from(table).insert(value).select(fields)) as unknown as Record<string, unknown>[];
++    if (!journal) return perform();
++    let result: Record<string, unknown>[] = [];
++    await journal.perform(`insert:${table}`, { [table]: rows.length }, async () => {
++      result = (await perform()) ?? [];
++      const resultKey = key ?? "id";
++      const ids = result.map(r => String(r.id ?? r[resultKey] ?? r.creator_id ?? ""));
++      return { [table]: ids };
++    }, key ? { [table]: rows.map(r => String(r[key])) } : {});
++    return result;
++  }
++  const historical = context?.manifest.bootstrap.historicalLegacy;
++  const adopted = historical && context.phase === historical.phase ? historical : null;
++  if (adopted) {
++    const row = JSON.parse(target.sql(`begin read only;select jsonb_build_object('workspaceId',w.id,'missionId',m.id,'submissionId',s.id,'creatorId',s.creator_id,'status',s.status,'contentUrls',s.content_urls) from public.workspaces w join public.missions m on m.workspace_id=w.id join public.mission_submissions s on s.mission_id=m.id where w.id='${workspaceId}' and m.id='${adopted.missionId}' and s.id='${adopted.submissionId}' and s.creator_id='${adopted.creatorId}';commit;`));
++    if (!row || row.status !== "submitted" || JSON.stringify(row.contentUrls) !== JSON.stringify(adopted.contentUrls)) throw new Error("B2 historical checkpoint readback mismatch");
++    journal.observe({ workspaces: [workspaceId], missions: [adopted.missionId], mission_submissions: [adopted.submissionId], auth_users: [adopted.creatorId], creators: [adopted.creatorId] });
++    authIds.push(adopted.creatorId);
++  }
++  await insert("workspaces", [
+     { id: workspaceId, slug, name: "Synthetic audit workspace A" },
+     { id: otherWorkspaceId, slug: `${slug}-b`, name: "Synthetic audit workspace B" },
+-  ]));
++  ].filter(row => !adopted || row.id !== workspaceId));
+   async function account(role: "creator" | "operator" | "no-membership", index: number) {
+     const email = `${role}-${index}-${runId}@example.test`, password = `Audit-${randomUUID()}!`;
+-    const created = must(await service.auth.admin.createUser({ email, password, email_confirm: true }));
+-    const id = created.user!.id; authIds.push(id);
++    correlation.push({ role, index, email, password, state: "intent" }); saveCorrelation();
++    let id = "";
++    const create = async () => { const created = must(await service.auth.admin.createUser({ email, password, email_confirm: true })); id = created.user!.id; return { auth_users: [id] }; };
++    if (journal) await journal.perform(`auth:${role}:${index}`, { auth_users: 1 }, create); else await create();
++    authIds.push(id); correlation.push({ email, id, state: "success" }); saveCorrelation();
+     if (role === "creator") {
+-      must(await service.from("creators").insert({ id, workspace_id: workspaceId, display_name: `Audit creator ${index}`, xp: 0, onboarding_completed: true }));
+-      must(await service.from("point_balances").insert({ creator_id: id, workspace_id: workspaceId, balance: 50 }));
+-      must(await service.from("earnings_balances").insert({ creator_id: id, workspace_id: workspaceId, available: 0 }));
++      await insert("creators", { id, workspace_id: workspaceId, display_name: `Audit creator ${index}`, xp: 0, onboarding_completed: true });
++      await insert("point_balances", { creator_id: id, workspace_id: workspaceId, balance: 50 });
++      await insert("earnings_balances", { creator_id: id, workspace_id: workspaceId, available: 0 });
+     } else {
+-      must(await service.from("staff_users").insert({ user_id: id, email, active: true }));
+-      if (role === "operator") must(await service.from("brand_users").insert({ user_id: id, email, workspace_id: workspaceId, active: true, role: "member" }));
++      await insert("staff_users", { user_id: id, email, active: true });
++      if (role === "operator") await insert("brand_users", { user_id: id, email, workspace_id: workspaceId, active: true, role: "member" });
+     }
+     const client = createClient(target.env.SUPABASE_URL, target.env.SUPABASE_ANON_KEY, options);
+     const signedIn = must(await client.auth.signInWithPassword({ email, password }));
+@@ -42,20 +85,23 @@
+   const creators = [await account("creator", 1), await account("creator", 2)];
+   const operator = await account("operator", 1), noMembership = await account("no-membership", 1);
+   async function mission(mode: "legacy" | "active_workspace", fulfillment = false, quota = 1) {
+-    const id = randomUUID(), missionSlug = `audit-mission-${id}`; missionIds.push(id);
+-    must(await service.from("missions").insert({ id, workspace_id: workspaceId, slug: missionSlug, title: `Synthetic ${mode} mission`,
++    const planned = context?.plan.plannedMissions.find((m: { id: string; kind: string }) => !missionIds.includes(m.id) && (mode === "legacy" ? m.kind === "legacy" : ["active", "unknown-contract"].includes(m.kind)));
++    if (context && !planned) throw new Error("B2 mission cap/plan exhausted");
++    const id = planned?.id ?? randomUUID(), missionSlug = `audit-mission-${id}`; missionIds.push(id);
++    if (adopted?.missionId === id) return { id, slug: missionSlug };
++    await insert("missions", { id, workspace_id: workspaceId, slug: missionSlug, title: `Synthetic ${mode} mission`,
+       mission_type: "ugc", access_type: "open", points_reward: 500, cash_reward: 125, quota, status: "active", required_level: "L0",
+       creator_workflow_mode: mode, fulfillment_required: fulfillment, revision_limit: 2, review_sla_hours: 48, revision_response_hours: 48,
+-      platforms: ["instagram"], deliverables: ["One synthetic post"], requirements: ["Show the synthetic product"] }));
++      platforms: ["instagram"], deliverables: ["One synthetic post"], requirements: ["Show the synthetic product"] });
+     if (mode === "active_workspace") {
+-      const templates = must(await service.from("mission_deliverable_templates").insert([true, false].map((required, position) => ({
++      const templates = await insert("mission_deliverable_templates", [true, false].map((required, position) => ({
+         workspace_id: workspaceId, mission_id: id, title: required ? "Required synthetic post" : "Optional synthetic post", platform: "instagram",
+         required, position, publication_instructions: "Synthetic acceptance only; never publish", publication_window_hours: 72,
+         required_disclosures: [], proof_evidence_policy: {},
+-      }))).select("id,position"));
+-      for (const template of templates ?? []) must(await service.from("mission_deliverable_requirements").insert({
++      })), "id,position");
++      for (const template of templates ?? []) await insert("mission_deliverable_requirements", {
+         workspace_id: workspaceId, mission_deliverable_template_id: template.id, category: "format", requirement_text: "Show the product", required: true, position: 0,
+-      }));
++      });
+     }
+     return { id, slug: missionSlug };
+   }
+@@ -77,25 +123,29 @@
+   const publicIds = () => ({ runId, workspaceIds: [workspaceId,otherWorkspaceId], authIds, missionIds });
+   function queueCreators(count: number) {
+     if (!Number.isInteger(count) || count < 1 || count > 51) throw new Error("bounded synthetic queue fixture required");
+-    const ids = Array.from({length:count},()=>randomUUID());
++    const ids: string[] = context?.plan.plannedQueueCreatorIds ?? Array.from({length:count},()=>randomUUID());
++    if (ids.length !== count) throw new Error("B2 queue exact plan mismatch");
+     const prefix = `queue-${runId}`;
+-    target.sql(`begin;
+-      insert into auth.users(id,email) values ${ids.map((id)=>`('${id}','${id}@example.test')`).join(",")};
+-      insert into public.creators(id,workspace_id,display_name,onboarding_completed) values ${ids.map((id,index)=>`('${id}','${workspaceId}','${prefix}-${index}',true)`).join(",")};
+-      commit;`);
+-    authIds.push(...ids);
++    const added = ids.filter(id => id !== adopted?.creatorId);
++    const perform = () => { target.sql(`begin;
++      insert into auth.users(id,email) values ${added.map((id)=>`('${id}','${id}@example.test')`).join(",")};
++      insert into public.creators(id,workspace_id,display_name,onboarding_completed) values ${added.map(id=>`('${id}','${workspaceId}','${prefix}-${ids.indexOf(id)}',true)`).join(",")};
++      commit;`); return { auth_users: added, creators: added }; };
++    if (journal) journal.performSync("queue-creators", { auth_users: added.length, creators: added.length }, perform, { auth_users: added, creators: added }); else perform();
++    authIds.push(...added);
+     return {ids,prefix};
+   }
+   function recordEvidence(value: Record<string, unknown>) {
+     // Cancellation responses contain authored notes. Keep the transition result only.
+     const safe = { ...value };
+     if ("cancellation" in safe) { delete safe.cancellation; safe.cancelled = true; }
+-    appendFileSync("docs/verification/workflow-runtime.jsonl", JSON.stringify({ ...publicIds(), ...safe }) + "\n");
++    appendFileSync(context?.publicPath("workflow-runtime.jsonl") ?? "docs/verification/workflow-runtime.jsonl", JSON.stringify({ ...(context ? { lineage: context.lineage } : {}), ...publicIds(), ...safe }) + "\n");
+   }
+   // Private local credentials stay ignored. Evidence records only opaque IDs and values.
+-  writeFileSync(`.codex-tmp/fixture-${runId}.private.json`, JSON.stringify({ ...publicIds(), slug, env: target.env, creators, operator, noMembership },
+-    (key, value) => key === "client" ? undefined : value));
++  const privateValue = { ...(context ? { lineage: context.lineage } : {}), ...publicIds(), slug, env: target.env, creators, operator, noMembership };
++  if (context) durableJson(context.privatePath("fixture.private.json"), privateValue);
++  else writeFileSync(`.codex-tmp/fixture-${runId}.private.json`, JSON.stringify(privateValue, (key, value) => key === "client" ? undefined : value));
+   recordEvidence({ stage: "fixture-created", target: target.identity, cleanup: "not-run; retained for inspection; only these exact IDs may be removed" });
+   return { runId, target, service: service as SupabaseClient, workspaceId, otherWorkspaceId, slug, creators, operator, noMembership,
+-    mission, neutrality, queueCreators, recordEvidence, must };
++    mission, neutrality, queueCreators, recordEvidence, must, journal, insert, historical: adopted, saveCorrelation, correlation };
+ }
+--- /dev/null
++++ b/server/test/b2-bootstrap-profile.test.ts
+@@ -0,0 +1,36 @@
++import { describe, expect, it } from "vitest";
++import { readFileSync } from "node:fs";
++// @ts-expect-error Native pure planning helper; never connects to a database.
++import { buildBootstrapProfile, topLevelStatements } from "../../scripts/audit/b2-bootstrap-profile.mjs";
++const reviewed = JSON.parse(readFileSync("docs/verification/D19-B2-manifest.json", "utf8"));
++const core = reviewed.fixture.phases.find((p: { phase: string }) => p.phase === "core");
++const historical = { phase: "core", workspaceId: core.plannedPrimaryWorkspaceId, missionId: core.plannedMissions.find((m: { kind: string }) => m.kind === "legacy").id,
++  creatorId: "11111111-1111-4111-8111-111111111111", submissionId: "22222222-2222-4222-8222-222222222222", namespace: core.plannedNamespace, contentUrls: ["wwww"], queueIndex: 0 };
++describe("B2 bootstrap profile, offline only", () => {
++  it("pins all 72 original migration bytes and inserts the historical checkpoint before the guard", () => {
++    const profile = buildBootstrapProfile(reviewed.schemaProfile, historical);
++    expect(profile.migrations).toHaveLength(72);
++    const checkpoint = profile.steps.findIndex((s: { kind: string }) => s.kind === "owned-historical-checkpoint");
++    expect(profile.steps[checkpoint + 1].path).toBe("supabase/migrations/20261022170454_audit_legacy_evidence.sql");
++    expect(profile.steps[checkpoint].sql).toContain(historical.submissionId);
++    expect(profile.steps[checkpoint].sql).not.toMatch(/disable|session_replication_role|truncate|delete from/i);
++    expect(profile.steps.filter((s: { kind: string }) => s.kind === "compatibility")).toHaveLength(9);
++    expect(profile.seedInventory.find((s: { table: string }) => s.table === "public.academy_content").valueRowCount).toBe(31);
++    expect(profile.seedInventory.some((s: { table: string }) => s.table === "storage.buckets")).toBe(true);
++  });
++  it("refuses a source checksum mismatch, missing checkpoint and SQL interpolation in IDs", () => {
++    const altered = structuredClone(reviewed.schemaProfile); altered.fullMigrations[0].sha256 = "0".repeat(64);
++    expect(() => buildBootstrapProfile(altered, historical)).toThrow(/checksum/i);
++    expect(() => buildBootstrapProfile(reviewed.schemaProfile, null)).toThrow(/historical/i);
++    expect(() => buildBootstrapProfile(reviewed.schemaProfile, { ...historical, creatorId: "';drop table" })).toThrow(/ID/i);
++  });
++  it("does not treat function bodies, quoted prose or dollar-quoted lesson text as top-level DML", () => {
++    const statements = topLevelStatements("-- seed\ncreate function f() returns void as $$begin insert into x values(1); end;$$ language plpgsql; insert into y values ('semi;quote');");
++    expect(statements).toHaveLength(2); expect(statements[1]).toMatch(/^insert into y/);
++    expect(topLevelStatements("select 'unterminated")).toHaveLength(0);
++  });
++  it("separates legacy join10, submit25, approval100 from cumulative135, and pins the no-rating approval", () => {
++    const profile = buildBootstrapProfile(reviewed.schemaProfile, historical);
++    expect(profile.legacyXp).toEqual({ join: 10, submit: 25, ordinaryApproval: 100, fiveStarBonus: 50, testQualityRating: null, cumulative: 135, activeJoin: 10 });
++  });
++});
+--- /dev/null
++++ b/server/test/b2-fixture-inventory.test.ts
+@@ -0,0 +1,20 @@
++import { describe, expect, it } from "vitest";
++// @ts-expect-error Pure local inventory query builder, no SQL execution in this test.
++import { fixtureInventorySql, assertInventoryCaps } from "../../scripts/audit/b2-fixture-inventory.mjs";
++const ids={workspaces:["11111111-1111-4111-8111-111111111111"],auth_users:["22222222-2222-4222-8222-222222222222"]};
++const scopes={mission_workflows:{relation:"public.mission_workflows",key:["id"],selector:"workspace"},staff_platform_roles:{relation:"public.staff_platform_roles",key:["user_id","role"],selector:"auth-user"}};
++describe("B2 exact scoped child inventory",()=>{
++ it("builds a read-only snapshot with row IDs/hashes, bound to current exact workspace and Auth IDs",()=>{
++  const sql=fixtureInventorySql(scopes,ids);
++  expect(sql).toMatch(/^begin read only;/);expect(sql).toContain(ids.workspaces[0]);expect(sql).toContain(ids.auth_users[0]);expect(sql).toContain("md5(to_jsonb(t)::text)");expect(sql).not.toMatch(/insert |update |delete |truncate /i);
++ });
++ it("rejects a malformed ID or undeclared selector before SQL is invoked",()=>{
++  expect(()=>fixtureInventorySql(scopes,{...ids,auth_users:["';unsafe"]})).toThrow(/ID/i);
++  expect(()=>fixtureInventorySql({x:{relation:"public.x",key:["id"],selector:"anywhere"}},ids)).toThrow(/selector/i);
++ });
++ it("fails closed on missing child families or counts over the reviewed caps",()=>{
++  expect(()=>assertInventoryCaps({mission_workflows:{count:2,ids:[]}}, {mission_workflows:1})).toThrow(/cap/i);
++  expect(()=>assertInventoryCaps({}, {mission_workflows:1})).toThrow(/missing/i);
++  expect(()=>assertInventoryCaps({mission_workflows:{count:1,ids:["owned"]}}, {mission_workflows:1})).not.toThrow();
++ });
++});
+--- /dev/null
++++ b/server/test/b2-fixture-journal.test.ts
+@@ -0,0 +1,73 @@
++import { afterEach, describe, expect, it } from "vitest";
++import { appendFileSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
++import { tmpdir } from "node:os";
++import { join } from "node:path";
++// @ts-expect-error Native audit helper.
++import { FixtureJournal, journalTransportFetch, bindBrowserJournal } from "../../scripts/audit/fixture-journal.mjs";
++const dirs: string[] = [];
++const lineage = { projectId: "unit-b2", ownerRunId: "unit", phase: "core", namespace: "unit", sourceFingerprint: "unit", manifestSha256: "unit" };
++function fixture() { const dir = mkdtempSync(join(tmpdir(), "adfocate-b2-journal-")); dirs.push(dir); return { dir, path: join(dir, "owned.jsonl") }; }
++afterEach(() => { for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true }); });
++describe("B2 durable exact-ID fixture journal", () => {
++  it("persists a reservation before executing a write and captures success IDs immediately", async () => {
++    const { path } = fixture(), journal = new FixtureJournal(path, lineage, { auth_users: 1 });
++    const id = "11111111-1111-4111-8111-111111111111";
++    await journal.perform("auth-create", { auth_users: 1 }, async () => {
++      const rows = readFileSync(path, "utf8").trim().split("\n").map(line => JSON.parse(line));
++      expect(rows.at(-1)).toMatchObject({ state: "intent", lineage, reserve: { auth_users: 1 } });
++      return { auth_users: [id] };
++    });
++    expect(new FixtureJournal(path, lineage, { auth_users: 1 }).owned()).toEqual({ auth_users: [id] });
++    expect(() => journal.begin("second", { auth_users: 1 })).toThrow(/cap/i);
++  });
++  it("retains UNKNOWN reservation across restart and forbids automatic reseed", async () => {
++    const { path } = fixture(), journal = new FixtureJournal(path, lineage, { workspaces: 2 });
++    await expect(journal.perform("workspaces", { workspaces: 2 }, async () => { throw Error("response lost"); })).rejects.toThrow("response lost");
++    const resumed = new FixtureJournal(path, lineage, { workspaces: 2 });
++    expect(() => resumed.begin("retry whole phase", {})).toThrow(/UNKNOWN|unresolved/i);
++    expect(readFileSync(path, "utf8")).toContain('"state":"unknown"');
++  });
++  it("treats an interrupted intent as unresolved and rejects foreign evidence lineage", () => {
++    const { path } = fixture(), journal = new FixtureJournal(path, lineage, { missions: 1 });
++    journal.begin("mission", { missions: 1 });
++    expect(() => new FixtureJournal(path, lineage, { missions: 1 }).begin("retry", {})).toThrow(/unresolved/i);
++    expect(() => new FixtureJournal(path, { ...lineage, sourceFingerprint: "other" }, { missions: 1 })).toThrow(/lineage/i);
++  });
++  it("records all planned IDs before a transactional queue write; no success is inferred from intent", () => {
++    const { path } = fixture(), journal = new FixtureJournal(path, lineage, { auth_users: 2 });
++    const ids = ["11111111-1111-4111-8111-111111111111", "22222222-2222-4222-8222-222222222222"];
++    journal.begin("queue", { auth_users: 2 }, { auth_users: ids });
++    expect(journal.owned()).toEqual({});
++    expect(JSON.parse(readFileSync(path, "utf8").trim()).planned).toEqual({ auth_users: ids });
++  });
++  it("fails closed on partial/truncated journal and unapproved table families", () => {
++    const { path } = fixture(), journal = new FixtureJournal(path, lineage, { workspaces: 1 });
++    expect(() => journal.begin("out of scope", { payments: 1 })).toThrow(/family|scope/i);
++    appendFileSync(path, '{"state":');expect(()=>new FixtureJournal(path,lineage,{workspaces:1})).toThrow(/truncated/i);
++  });
++  it("journals outgoing mutation intent before transport, then response UUID references without claiming table ownership",async()=>{
++    const {path}=fixture(),journal=new FixtureJournal(path,lineage,{requests:2});
++    const id="11111111-1111-4111-8111-111111111111";
++    const delegate=async()=>{expect(readFileSync(path,"utf8")).toContain('"state":"intent"');return new Response(JSON.stringify({id}),{status:200});};
++    const send=journalTransportFetch(delegate,journal,["http://127.0.0.1:56821"]);
++    expect((await send("http://127.0.0.1:56821/rest/v1/rpc/save_assistant_turn",{method:"POST",body:'{"unit":"private authored text"}'})).status).toBe(200);
++    expect(journal.owned()).toEqual({});const rows=readFileSync(path,"utf8");expect(rows).toContain(id);expect(rows).not.toContain("private authored text");
++    await expect(send("http://127.0.0.1:56821/rest/v1/rpc/close_due_campaigns",{method:"POST"})).rejects.toThrow(/global|pristine/i);
++  });
++  it("allows concurrent commands in one live process, but a reconstructed process cannot reseed unfinished work",()=>{
++    const {path}=fixture(),journal=new FixtureJournal(path,lineage,{requests:2});
++    const a=journal.begin("a",{requests:1}),b=journal.begin("b",{requests:1});journal.finish(b,{});
++    expect(()=>new FixtureJournal(path,lineage,{requests:2}).begin("restart",{})).toThrow(/unresolved/i);journal.finish(a,{});
++  });
++  it("persists browser mutation intent before continuing the real request and drains response receipts before close",async()=>{
++    const {path}=fixture(),journal=new FixtureJournal(path,lineage,{requests:2});
++    const handlers:Record<string,(v:unknown)=>void>={};let routeHandler:(v:unknown)=>Promise<void>=async()=>{};let closed=false;
++    const context={route:async(_pattern:string,handler:typeof routeHandler)=>{routeHandler=handler;},on:(name:string,handler:(v:unknown)=>void)=>{handlers[name]=handler;},close:async()=>{closed=true;}};
++    await bindBrowserJournal(context,journal,["http://127.0.0.1:56821"]);
++    const req={url:()=>"http://127.0.0.1:56821/auth/v1/token",method:()=>"POST"};
++    await routeHandler({request:()=>req,continue:async()=>{expect(readFileSync(path,"utf8")).toContain('"state":"intent"');},abort:async()=>{throw Error("unexpected abort");}});
++    handlers.response({request:()=>req,status:()=>200,json:async()=>({user:{id:"11111111-1111-4111-8111-111111111111"},access_token:"unit-secret"})});
++    await context.close();expect(closed).toBe(true);expect(readFileSync(path,"utf8")).not.toContain("unit-secret");
++    expect(()=>new FixtureJournal(path,lineage,{requests:2}).assertReady()).not.toThrow();
++  });
++});
+--- /dev/null
++++ b/server/test/b2-fixture-wiring.test.ts
+@@ -0,0 +1,53 @@
++import { afterEach, describe, expect, it, vi } from "vitest";
++import { existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
++import { tmpdir } from "node:os";
++import { join } from "node:path";
++const mocks = vi.hoisted(() => ({ target: {} as Record<string, unknown>, createClient: vi.fn() }));
++vi.mock("../../scripts/audit/local-targets.mjs", () => ({ verifiedTarget: vi.fn(() => mocks.target) }));
++vi.mock("@supabase/supabase-js", () => ({ createClient: mocks.createClient }));
++import { createAuditFixture } from "./auditWorkflowFixture";
++const dirs: string[] = [];
++afterEach(() => { for (const d of dirs.splice(0)) rmSync(d, { recursive: true, force: true }); vi.clearAllMocks(); });
++function harness(failAuth = false) {
++  const dir = mkdtempSync(join(tmpdir(), "adfocate-b2-wire-")); dirs.push(dir);
++  const lineage = { projectId: "unit", phase: "core", namespace: "11111111-1111-4111-8111-111111111111" };
++  const plan = { plannedNamespace: lineage.namespace, plannedPrimaryWorkspaceId: "22222222-2222-4222-8222-222222222222", plannedDenialWorkspaceId: "33333333-3333-4333-8333-333333333333", plannedMissions: [] };
++  const context = { lineage, phase: "core", plan, manifest: { bootstrap: {}, fixture: { phases: [plan], rowScopes:{workspaces:{relation:"public.workspaces",key:["id"],selector:"workspace-self"}}, rowCaps: { core: { auth_users: 62, workspaces: 2, creators: 53, staff_users: 9, brand_users: 7, point_balances: 2, earnings_balances: 2, requests: 200 } } } },
++    privatePath: (name: string) => join(dir, name), publicPath: (name: string) => join(dir, "public-" + name) };
++  const journalPath = context.privatePath("owned-journal.jsonl"), writes: { table: string; rows: Record<string, unknown>[] }[] = [];
++  let count = 0;
++  const checkIntent = () => {
++    expect(existsSync(journalPath), "intent must be durable before any setup write").toBe(true);
++    const last = readFileSync(journalPath, "utf8").trim().split("\n").map(line => JSON.parse(line)).at(-1);
++    expect(last.state).toBe("intent"); expect(last.lineage).toEqual(lineage);
++  };
++  const client = {
++    from: (table: string) => ({ insert: (value: Record<string, unknown> | Record<string, unknown>[]) => {
++      checkIntent(); const rows = Array.isArray(value) ? value : [value]; writes.push({ table, rows });
++      const result = { data: rows, error: null }; return Object.assign(Promise.resolve(result), { select: () => Promise.resolve(result) });
++    } }),
++    auth: { admin: { createUser: async () => { checkIntent(); if (failAuth) throw Error("lost Auth response"); return { data: { user: { id: `00000000-0000-4000-8000-${String(++count).padStart(12, "0")}` } }, error: null }; } },
++      signInWithPassword: async () => ({ data: { session: { access_token: "unit-only" } }, error: null }) },
++  };
++  mocks.target = { identity: { projectId: "unit", runId: "unit" }, context, env: { SUPABASE_URL: "http://127.0.0.1:56821", SUPABASE_SERVICE_KEY: "unit-only", SUPABASE_ANON_KEY: "unit-only" }, sql: vi.fn(()=>"{}") };
++  mocks.createClient.mockReturnValue(client);
++  return { context, writes, journalPath, dir };
++}
++describe("B2 existing factory context wiring", () => {
++  it("uses planned workspace/namespace IDs and writes durable intent/success receipts for setup", async () => {
++    const h = harness(), f = await createAuditFixture();
++    expect(f.runId).toBe(h.context.plan.plannedNamespace);
++    expect(f.workspaceId).toBe(h.context.plan.plannedPrimaryWorkspaceId);
++    expect(h.writes.find(w => w.table === "workspaces")!.rows.map(r => r.id)).toEqual([h.context.plan.plannedPrimaryWorkspaceId, h.context.plan.plannedDenialWorkspaceId]);
++    const rows = readFileSync(h.journalPath, "utf8").trim().split("\n").map(line => JSON.parse(line));
++    expect(rows.filter(r => r.state === "success").flatMap(r => r.ids.auth_users ?? [])).toHaveLength(4);
++    expect(existsSync(h.context.privatePath("fixture.private.json"))).toBe(true);
++  });
++  it("blocks a second whole-phase seed and retains UNKNOWN after an ambiguous Auth response", async () => {
++    const h = harness(true); await expect(createAuditFixture()).rejects.toThrow("lost Auth response");
++    expect(readFileSync(h.journalPath, "utf8")).toContain('"state":"unknown"');
++    const calls = mocks.createClient.mock.calls.length;
++    await expect(createAuditFixture()).rejects.toThrow(/already|unresolved|claim/i);
++    expect(mocks.createClient).toHaveBeenCalledTimes(calls);
++  });
++});
+--- /dev/null
++++ b/server/test/b2-origin-binding.test.ts
+@@ -0,0 +1,16 @@
++import { afterEach, describe, expect, it, vi } from "vitest";
++const state = vi.hoisted(() => ({ context: null as null | { origins: string[] } }));
++vi.mock("../../scripts/audit/local-targets.mjs", () => ({ b2ExecutionContext: () => state.context }));
++const original = globalThis.fetch;
++afterEach(() => { globalThis.fetch = original; vi.resetModules(); state.context = null; });
++describe("B2 process origin binding", () => {
++  it("permits only selected web/API origins and rejects old targets, DB ports and public URLs before delegate", async () => {
++    state.context = { origins: ["http://127.0.0.1:56800", "http://127.0.0.1:56821"] };
++    const delegate = vi.fn(async () => new Response("unit")); globalThis.fetch = delegate;
++    // @ts-expect-error Native audit process preload.
++    await import("../../scripts/audit/deny-external-fetch.mjs");
++    for (const origin of state.context.origins) expect((await fetch(origin + "/health")).status).toBe(200);
++    for (const origin of ["http://127.0.0.1:56421", "http://127.0.0.1:56521", "http://127.0.0.1:56822", "https://127.0.0.1:56821", "https://example.test", "http://localhost:56821"]) await expect(fetch(origin)).rejects.toThrow(/disabled|origin/i);
++    expect(delegate).toHaveBeenCalledTimes(2);
++  });
++});
+--- /dev/null
++++ b/server/test/b2-runtime-manifest.test.ts
+@@ -0,0 +1,27 @@
++import { describe, expect, it } from "vitest";
++import { readFileSync } from "node:fs";
++import { createHash } from "node:crypto";
++const read=(p:string)=>JSON.parse(readFileSync(p,"utf8"));
++describe("B2 reviewable runtime manifest is explicit authority, not P0 permission",()=>{
++ it("requires a separate unapproved digest-bound runtime receipt and keeps original incident/release/provider states",()=>{
++  const m=read("docs/verification/D19-B2-runtime-manifest.json"),a=read("docs/verification/D19-B2-runtime-authorization-template.json");
++  expect(m.kind).toBe("D19_B2_EXECUTION_SPEC");expect(m.specificationReady).toBe(true);expect(a.approved).toBe(false);
++  expect(a.manifestSha256).toBe(createHash("sha256").update(readFileSync("docs/verification/D19-B2-runtime-manifest.json")).digest("hex"));
++  expect(m.invariants).toMatchObject({incidentOpen:true,restored:false,releaseHold:true,providerEnabled:false,wholeR1Verified:false,D15ContentBlocked:true,advisorOwnerDeviceHostedStaffBlocked:true});
++ });
++ it("separates bounded fixture additions from migration seeds and the adopted historical checkpoint",()=>{
++  const m=read("docs/verification/D19-B2-runtime-manifest.json"),caps=m.fixture.rowCaps;
++  expect(caps.role.auth_users+caps.core.auth_users+caps.browser.auth_users).toBe(84);
++  expect(caps.role.workspaces+caps.core.workspaces+caps.browser.workspaces).toBe(6);
++  expect(caps.role.mission_submissions+caps.core.mission_submissions+caps.browser.mission_submissions).toBe(7);
++  expect(m.fixture.phases.find((p:{phase:string})=>p.phase==="core").plannedQueueCreatorIds).toContain(m.bootstrap.historicalLegacy.creatorId);
++  expect(m.bootstrap.historicalLegacy.countedWithinCoreCaps).toBe(true);
++  for(const phase of ["role","core","browser"]){expect(caps[phase].academy_lessons).toBe(0);expect(caps[phase].mission_draft_assets).toBe(0);expect(caps[phase].storage_objects).toBe(0);}
++ });
++ it("binds current source and bootstrap profile without reusing pristine/global RPC acceptance",()=>{
++  const m=read("docs/verification/D19-B2-runtime-manifest.json"),fp=read("docs/verification/code-fingerprint.json"),profile=read("docs/verification/D19-B2-bootstrap-profile.json");
++  expect(m.candidate.fingerprint).toBe(fp.fingerprint);expect(m.bootstrap.profileDigest).toBe(profile.profileDigest);expect(profile.migrations).toHaveLength(72);
++  expect(m.execution.pristineRpcRerun).toBe(false);expect(m.fixture.legacyExistingIssuanceRequiresExplicitRuntimeApproval.approvalXpDelta).toBe(100);
++  expect(m.execution.commands).toHaveLength(3);
++ });
++});
+--- /dev/null
++++ b/server/test/b2-target-context.test.ts
+@@ -0,0 +1,135 @@
++import { afterEach, describe, expect, it, vi } from "vitest";
++import { createHash } from "node:crypto";
++import { resolve } from "node:path";
++
++const io = vi.hoisted(() => ({ read: vi.fn(), exec: vi.fn(), inspect: vi.fn() }));
++vi.mock("node:child_process", async original => {
++  const cp = await original<typeof import("node:child_process")>();
++  return { ...cp, default: { ...cp, execFileSync: io.exec, spawnSync: io.inspect }, execFileSync: io.exec, spawnSync: io.inspect };
++});
++vi.mock("node:fs", async original => {
++  const fs = await original<typeof import("node:fs")>();
++  return { ...fs, default: { ...fs, readFileSync: io.read }, readFileSync: io.read };
++});
++// @ts-expect-error Existing executable target module is native ESM.
++const { verifiedTarget, verifiedB2BootstrapTarget } = await import("../../scripts/audit/local-targets.mjs");
++const hash = (value: string) => createHash("sha256").update(value).digest("hex");
++afterEach(() => vi.unstubAllEnvs());
++
++function scenario() {
++  const projectId = "adfocate-d19-b2-20261025-12345678", runId = "11111111-1111-4111-8111-111111111111";
++  const created = "2026-10-25T01:00:00Z", networkId = "f".repeat(64);
++  const containerIds = { kong: "a".repeat(64), db: "b".repeat(64), auth: "c".repeat(64), rest: "d".repeat(64), storage: "e".repeat(64) };
++  const serviceImageIds = Object.fromEntries(Object.keys(containerIds).map((s, i) => [s, "sha256:" + String(i + 1).repeat(64)]));
++  const files = [{ path: ".codex-tmp/b2-unit-source.txt", sha256: hash("unit source") }];
++  const fingerprint = hash(JSON.stringify(files));
++  const manifest = {
++    kind: "D19_B2_EXECUTION_SPEC", schemaVersion: 2, specificationReady: true,
++    candidate: { fingerprint }, target: { projectId, plannedOwnerRunId: runId, databaseVolumeName: projectId + "-db-data", networkName: projectId + "-net", serviceImageIds,
++      resourceCaps: { projects: 1, persistentDataVolumes: 1, networks: 1, containers: 5 },storageTmpfs:{destination:"/var/lib/storage",sizeBytes:268435456},
++      ports: { host: "127.0.0.1", api: 56821, database: 56822, web: 56800, proxy: "none" } },
++    fixture: { phases: [{ phase: "role", plannedNamespace: "22222222-2222-4222-8222-222222222222" }, { phase: "core", plannedNamespace: "33333333-3333-4333-8333-333333333333" }, { phase: "browser", plannedNamespace: "44444444-4444-4444-8444-444444444444" }] },
++    bootstrap: { profileDigest: "9".repeat(64) },
++  };
++  const raw = JSON.stringify(manifest), digest = hash(raw), privateRoot = resolve(".codex-tmp", projectId);
++  const approval = { kind: "B2_RUNTIME_AUTHORIZATION", approved: true, manifestSha256: digest, sourceFingerprint: fingerprint, ownerReference: "Unit authority only, no real permission" };
++  const identity = { disposable: true, projectId, runId, proxy: "none", ownerAuthorization: approval.ownerReference,
++    apiPort: 56821, apiContainerId: containerIds.kong, databaseContainerId: containerIds.db, apiImageId: serviceImageIds.kong, databaseImageId: serviceImageIds.db, networkId };
++  const receipt = { manifestSha256: digest, sourceFingerprint: fingerprint, identity, containerIds, createdThisRun: true, volumeWasAbsent: true, networkWasAbsent: true,
++    databaseCreatedAt: created, volumeCreatedAt: created, volumeName: manifest.target.databaseVolumeName,
++    bootstrap: { verified: true, profileDigest: manifest.bootstrap.profileDigest, baselineSha256: "8".repeat(64) } };
++  const store = new Map<string, string>([
++    [resolve(".codex-tmp/b2-unit-manifest.json"), raw], [resolve(".codex-tmp/b2-unit-approval.json"), JSON.stringify(approval)],
++    [resolve(".codex-tmp/b2-unit-receipt.json"), JSON.stringify(receipt)],
++    [resolve("docs/verification/code-fingerprint.json"), JSON.stringify({ fingerprint, files })],
++    [resolve(files[0].path), "unit source"], [resolve(privateRoot, "keys.private.json"), JSON.stringify({ API_URL: "http://127.0.0.1:56821", ANON_KEY: "unit-anon", SERVICE_ROLE_KEY: "unit-service" })],
++  ]);
++  io.read.mockReset().mockImplementation((p: string) => {
++    const key = resolve(String(p)); if (store.has(key)) return store.get(key);
++    if (key.endsWith("empty-start.private.log")) return JSON.stringify({ DB_URL: "unit", API_URL: "http://127.0.0.1:56421", ANON_KEY: "unit-anon", SERVICE_ROLE_KEY: "unit-service" });
++    throw Error("Unexpected file read: " + key);
++  });
++  const metadata = Object.fromEntries(Object.entries(containerIds).map(([service, id]) => [id, {
++    id, image: serviceImageIds[service], running: true, project: projectId, created, networks: { only: { NetworkID: networkId } },
++    ports: service === "kong" ? { "8000/tcp": [{ HostIp: "127.0.0.1", HostPort: "56821" }] } : service === "db" ? { "5432/tcp": [{ HostIp: "127.0.0.1", HostPort: "56822" }] } : {},
++    mounts: service === "db" ? [{ Type: "volume", Name: receipt.volumeName, Destination: "/var/lib/postgresql/data", RW: true }] : service === "storage" ? [{Type:"tmpfs",Destination:"/var/lib/storage",RW:true}]:[],
++    tmpfs:service==="storage"?{"/var/lib/storage":"rw,size=268435456"}:{},
++  }]));
++  const network = { id: networkId, internal: false, labels: { "adfocate.run": runId }, containers: Object.values(containerIds), options: { "com.docker.network.bridge.enable_ip_masquerade": "false", "com.docker.network.bridge.host_binding_ipv4": "127.0.0.1" } };
++  const volume = { name: receipt.volumeName, created, labels: { "adfocate.run": runId, "com.supabase.cli.project": projectId } };
++  const inspect = (_command: string, args: string[]) => {
++    if (args[0] === "context") return { status: 0, stdout: "npipe:////./pipe/dockerDesktopLinuxEngine" };
++    const value = args[0] === "network" ? network : args[0] === "volume" ? volume : metadata[args.at(-1)!];
++    if (!value) throw Error("Unexpected metadata command");
++    return { status: 0, stdout: JSON.stringify(value) };
++  };
++  io.inspect.mockReset().mockImplementation(inspect);
++  // The old loader would reach its old target; retain a complete old-shape double for RED.
++  io.exec.mockReset().mockImplementation((_command: string, args: string[]) => {
++    if (args[0] === "network") return JSON.stringify({ labels: { "adfocate.run": "01a16483-e55d-7332-9ddc-7e8a3f68eb11" }, options: { "com.docker.network.bridge.host_binding_ipv4": "127.0.0.1" } });
++    const isDb = args.at(-1)?.startsWith("supabase_db_");
++    return JSON.stringify({ id: isDb ? "b".repeat(64) : "a".repeat(64), image: isDb ? serviceImageIds.db : serviceImageIds.kong,
++      network: { only: { NetworkID: networkId } } });
++  });
++  vi.stubEnv("ADFOCATE_B2_MANIFEST_PATH", ".codex-tmp/b2-unit-manifest.json");
++  vi.stubEnv("ADFOCATE_B2_AUTHORIZATION_PATH", ".codex-tmp/b2-unit-approval.json");
++  vi.stubEnv("ADFOCATE_B2_TARGET_RECEIPT_PATH", ".codex-tmp/b2-unit-receipt.json");
++  vi.stubEnv("ADFOCATE_B2_PHASE", "role");
++  const sync = () => { store.set(resolve(".codex-tmp/b2-unit-approval.json"), JSON.stringify(approval)); store.set(resolve(".codex-tmp/b2-unit-receipt.json"), JSON.stringify(receipt)); };
++  return { store, manifest, approval, receipt, identity, metadata, network, volume, privateRoot, sync };
++}
++
++describe("B2 explicit execution binding before client setup", () => {
++  it("refuses P0-only authority before any Docker or key-file access", () => {
++    const h = scenario(); h.approval.kind = "B2_P0_AUTHORIZATION"; h.sync();
++    expect(() => verifiedTarget()).toThrow(/B2.*runtime.*author/i);
++    expect(io.exec).not.toHaveBeenCalled(); expect(io.inspect).not.toHaveBeenCalled();
++    expect(io.read.mock.calls.some(([p]) => String(p).endsWith("keys.private.json"))).toBe(false);
++  });
++  it("does not silently interpret an old empty selector inside a B2 run", () => {
++    scenario(); expect(() => verifiedTarget("empty")).toThrow(/B2.*explicit/i);
++    expect(io.exec).not.toHaveBeenCalled(); expect(io.inspect).not.toHaveBeenCalled();
++  });
++  it("returns the new target only after source, approval, five services and bootstrap receipt match", () => {
++    const h = scenario(); const target = verifiedTarget();
++    expect(target.identity).toEqual(h.identity); expect(target.env.SUPABASE_URL).toBe("http://127.0.0.1:56821");
++    expect(target.context.phase).toBe("role"); expect(target.context.origins).toEqual(["http://127.0.0.1:56800", "http://127.0.0.1:56821"]);
++    expect(target.context.publicPath("receipt.json")).toBe(resolve("docs/verification", h.manifest.target.projectId, "role", "receipt.json"));
++    expect(io.exec).not.toHaveBeenCalled();
++  });
++  it.each(["manifest-digest", "source-drift", "bootstrap-missing"])("rejects %s before reading service keys", kind => {
++    const h = scenario();
++    if (kind === "manifest-digest") h.approval.manifestSha256 = "0".repeat(64);
++    if (kind === "source-drift") h.store.set(resolve(".codex-tmp/b2-unit-source.txt"), "changed source");
++    if (kind === "bootstrap-missing") h.receipt.bootstrap.verified = false;
++    h.sync(); expect(() => verifiedTarget()).toThrow(/B2/i);
++    expect(io.read.mock.calls.some(([p]) => String(p).endsWith("keys.private.json"))).toBe(false);
++  });
++  it("rejects an observed extra data volume even under a new project name", () => {
++    const h = scenario(); h.metadata[h.receipt.containerIds.storage].mounts.push({ Type: "volume", Name: "unapproved-volume", Destination: "/var/lib/storage", RW: true });
++    expect(() => verifiedTarget()).toThrow(/B2.*mount|B2.*volume/i);
++    expect(io.read.mock.calls.some(([p]) => String(p).endsWith("keys.private.json"))).toBe(false);
++  });
++  it("rejects missing or oversized storage tmpfs instead of accepting image-created anonymous volumes",()=>{
++    const h=scenario();h.metadata[h.receipt.containerIds.storage].tmpfs["/var/lib/storage"]="rw,size=536870912";
++    expect(()=>verifiedTarget()).toThrow(/B2.*tmpfs/i);
++  });
++  it("rejects a shared network member rather than trusting loopback labels", () => {
++    const h = scenario(); h.network.containers.push("0".repeat(64));
++    expect(() => verifiedTarget()).toThrow(/B2.*network/i);
++    expect(io.read.mock.calls.some(([p]) => String(p).endsWith("keys.private.json"))).toBe(false);
++  });
++  it("verifies new infrastructure for owner bootstrap without reading application keys or constructing a client",()=>{
++    const h=scenario();h.receipt.bootstrap.verified=false;h.sync();
++    const target=verifiedB2BootstrapTarget();expect(target.identity).toEqual(h.identity);expect(target.env).toBeUndefined();
++    expect(io.exec).not.toHaveBeenCalled();expect(io.read.mock.calls.some(([p])=>String(p).endsWith("keys.private.json"))).toBe(false);
++    expect(()=>verifiedTarget()).toThrow(/bootstrap/i);
++  });
++  it("binds borrowed role evidence to the exact global run, target and candidate rather than a fixed D19 filename",()=>{
++    const h=scenario(),context=verifiedTarget().context;
++    expect(()=>context.assertLineage({lineage:{...context.lineage,projectId:"old-empty"}})).toThrow(/lineage/i);
++    expect(()=>context.publicPath("../../D19-browser-summary.json")).toThrow(/path/i);
++    expect(()=>context.assertLineage({lineage:context.lineage})).not.toThrow();
++    expect(h.store.has(context.publicPath("anything.json"))).toBe(false);
++  });
++});
+--- a/server/test/staffCapabilityFixture.ts
++++ b/server/test/staffCapabilityFixture.ts
+@@ -2,30 +2,36 @@
+ import { randomUUID } from "node:crypto";
+ import { isDeepStrictEqual } from "node:util";
+ import type { createAuditFixture } from "./auditWorkflowFixture.js";
++// @ts-expect-error Native local evidence helper.
++import {durableJson} from "../../scripts/audit/fixture-journal.mjs";
+ export async function createStaffCapabilityFixture(task:"D18"|"D19"="D18"){
+  if(!["D18","D19"].includes(task))throw new Error("Unsupported fixture evidence namespace");
+  // @ts-expect-error Native ESM identity verifier has no declaration file.
+  const {verifiedTarget}=await import("../../scripts/audit/local-targets.mjs");
+- const target=verifiedTarget("empty"); // Precedes SDK import, all clients, credentials and setup.
++ const target=verifiedTarget(); // Precedes SDK import, all clients, credentials and setup.
+  const base=await (await import("./auditWorkflowFixture.js")).createAuditFixture();
+  if(!isDeepStrictEqual(target.identity,base.target.identity))throw new Error(`${task} target drift`);
+  const {createClient}=await import("@supabase/supabase-js");
++ const context=target.context,journal=base.journal;
+  type Actor=Awaited<ReturnType<typeof createAuditFixture>>["operator"];
+  const roles:Record<string,Actor>={admin:base.operator};
+- const ids=[...base.creators.map(c=>c.id),base.operator.id,base.noMembership.id],bootstrapRequests:string[]=[];
++ const ids=[...base.creators.map(c=>c.id),base.operator.id,base.noMembership.id,...(base.historical?[base.historical.creatorId]:[])],bootstrapRequests:string[]=[];
+  let extra:Record<string,unknown>={};
+  function save(stage:string){
+-  const value={runId:base.runId,target:target.identity,workspaceId:base.workspaceId,otherWorkspaceId:base.otherWorkspaceId,slug:base.slug,creators:base.creators,noMembership:base.noMembership,roles,authIds:ids,bootstrapRequests,...extra};
++  const value={...(context?{lineage:context.lineage}:{}),runId:base.runId,target:target.identity,workspaceId:base.workspaceId,otherWorkspaceId:base.otherWorkspaceId,slug:base.slug,creators:base.creators,noMembership:base.noMembership,roles,authIds:ids,bootstrapRequests,...extra};
+   const json=JSON.stringify(value,(k,v)=>k==="client"?undefined:v);
+-  writeFileSync(`.codex-tmp/${task}-fixture-${base.runId}.private.json`,json);writeFileSync(`.codex-tmp/${task}-fixture.private.json`,json);
+-  appendFileSync(`docs/verification/${task}-fixtures.jsonl`,JSON.stringify({runId:base.runId,stage,target:target.identity,workspaceIds:[base.workspaceId,base.otherWorkspaceId],authIds:ids,bootstrapRequests,cleanup:"retained exact owned IDs; no reset/delete"})+"\n");
++  if(context)durableJson(context.privatePath("staff-fixture.private.json"),value);
++  else{writeFileSync(`.codex-tmp/${task}-fixture-${base.runId}.private.json`,json);writeFileSync(`.codex-tmp/${task}-fixture.private.json`,json);}
++  appendFileSync(context?.publicPath("fixtures.jsonl")??`docs/verification/${task}-fixtures.jsonl`,JSON.stringify({...(context?{lineage:context.lineage}:{}),runId:base.runId,stage,target:target.identity,workspaceIds:[base.workspaceId,base.otherWorkspaceId],authIds:ids,bootstrapRequests,cleanup:"retained exact owned IDs; no reset/delete"})+"\n");
+  }
+  async function actor(name:string,workspace:string|null=base.workspaceId){
+   const email=`${task.toLowerCase()}-${name}-${base.runId}@example.test`,password=`Owned-${randomUUID()}!`;
+-  const created=base.must(await base.service.auth.admin.createUser({email,password,email_confirm:true}));
+-  const id=created.user!.id;ids.push(id);save("auth-created");
+-  base.must(await base.service.from("staff_users").insert({user_id:id,email,active:true}));
+-  if(workspace)base.must(await base.service.from("brand_users").insert({user_id:id,workspace_id:workspace,email,active:true,role:name==="noRole"?"owner":"member"}));
++  base.correlation.push({name,email,password,state:"intent"});base.saveCorrelation();
++  let id="";const create=async()=>{const created=base.must(await base.service.auth.admin.createUser({email,password,email_confirm:true}));id=created.user!.id;return{auth_users:[id]};};
++  if(journal)await journal.perform(`staff-auth:${name}`,{auth_users:1},create);else await create();
++  ids.push(id);save("auth-created");
++  await base.insert("staff_users",{user_id:id,email,active:true});
++  if(workspace)await base.insert("brand_users",{user_id:id,workspace_id:workspace,email,active:true,role:name==="noRole"?"owner":"member"});
+   const client=createClient(target.env.SUPABASE_URL,target.env.SUPABASE_ANON_KEY,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false,storageKey:`${task.toLowerCase()}-${id}`}});
+   const signed=base.must(await client.auth.signInWithPassword({email,password}));
+   roles[name]={id,email,password,jwt:signed.session!.access_token,session:signed.session!,client};save("actor-signed-in");return roles[name];
+@@ -33,14 +39,16 @@
+  function bootstrap(user:string,workspace:string|null,role:string){
+   if(![base.operator.id,user,...(workspace?[workspace]:[])].every(v=>/^[a-f0-9-]{36}$/.test(v))||!["workspace_admin","operator","reviewer","finance_viewer","content_editor"].includes(role))throw new Error("invalid exact bootstrap fixture IDs");
+   const request=randomUUID();bootstrapRequests.push(request);save("bootstrap-planned");
+-  target.sql(`select private.bootstrap_staff_access('${base.operator.id}',${workspace?`'${workspace}'`:'null'},'${user}','${role}',true,0,'${request}','Explicit owned ${task} fixture setup','synthetic-owned-${task}-owner-attestation');`);save("bootstrap-saved");
++  const apply=()=>{target.sql(`select private.bootstrap_staff_access('${base.operator.id}',${workspace?`'${workspace}'`:'null'},'${user}','${role}',true,0,'${request}','Explicit owned ${task} fixture setup','synthetic-owned-${task}-owner-attestation');`);const audit=JSON.parse(target.sql(`begin read only;select coalesce(jsonb_agg(id),'[]'::jsonb)from public.staff_access_audit where request_id='${request}';commit;`));return{[workspace?"staff_workspace_roles":"staff_platform_roles"]:[user],staff_access_commands:[request],staff_access_audit:audit};};
++  if(journal)journal.performSync(`bootstrap:${role}`,{[workspace?"staff_workspace_roles":"staff_platform_roles"]:1,staff_access_commands:1,staff_access_audit:1},apply);else apply();save("bootstrap-saved");
+  }
+  save("base-created");
+  if(task==="D19"){
+-  const budgetId=randomUUID(),giftId=randomUUID();
++  const budgetId=context?.plan.plannedBudgetId??randomUUID(),giftId=context?.plan.plannedGiftId??randomUUID();
+   extra={...extra,financialFixture:{budgetId,giftId,initialBudget:9000,enforced:true,initialStock:3}};save("funded-fixture-planned");
+   // Budget writes intentionally remain owner-only; never widen service/browser grants for a fixture.
+-  target.sql(`begin;insert into public.workspace_budgets(id,workspace_id,balance,enforced) values ('${budgetId}','${base.workspaceId}',9000,true);insert into public.redemption_gifts(id,workspace_id,name,points_cost,stock_qty,stock_remaining,gift_type,status) values ('${giftId}','${base.workspaceId}','Owned D19 neutrality inventory',1000,3,3,'digital','available');commit;`);
++  const fund=()=>{target.sql(`begin;insert into public.workspace_budgets(id,workspace_id,balance,enforced) values ('${budgetId}','${base.workspaceId}',9000,true);insert into public.redemption_gifts(id,workspace_id,name,points_cost,stock_qty,stock_remaining,gift_type,status) values ('${giftId}','${base.workspaceId}','Owned D19 neutrality inventory',1000,3,3,'digital','available');commit;`);return{workspace_budgets:[budgetId],redemption_gifts:[giftId]};};
++  if(journal)journal.performSync("funded-baseline",{workspace_budgets:1,redemption_gifts:1},fund,{workspace_budgets:[budgetId],redemption_gifts:[giftId]});else fund();
+   save("funded-fixture-created");
+  }
+  bootstrap(base.operator.id,base.workspaceId,"workspace_admin");
+@@ -49,5 +57,5 @@
+  const revocable=await actor("revocable");bootstrap(revocable.id,base.workspaceId,"operator");
+  await actor("noRole");const foreign=await actor("foreign",base.otherWorkspaceId);bootstrap(foreign.id,base.otherWorkspaceId,"workspace_admin");
+  save("ready");
+- return {base,roles,saveLegacy:(legacy:Record<string,unknown>)=>{extra={...extra,legacy};save("legacy-saved");},saveResource:(resource:Record<string,unknown>)=>{extra={...extra,resource};save("resource-saved");},saveCore:(core:Record<string,unknown>)=>{extra={...extra,core};save("core-saved");},save};
++ return {base,roles,saveLegacy:(legacy:Record<string,unknown>)=>{if(journal)journal.observe({mission_submissions:[legacy.submissionId]});extra={...extra,legacy};save("legacy-saved");},saveResource:(resource:Record<string,unknown>)=>{if(journal)journal.observe({academy_content:[resource.id]});extra={...extra,resource};save("resource-saved");},saveCore:(core:Record<string,unknown>)=>{if(journal)journal.observe({mission_workflows:[core.workflowId],mission_submissions:[core.submissionId],mission_work_items:[core.itemId],mission_pending_rewards:[core.pendingRewardId??core.cancelledPendingRewardId]});extra={...extra,core};save("core-saved");},save};
+ }
+--- /dev/null
++++ b/src/components/active-mission/DraftEditor.recovery.test.tsx
+@@ -0,0 +1,29 @@
++import { act, fireEvent, render, screen } from "@testing-library/react";
++import { afterEach, describe, expect, it, vi } from "vitest";
++import { DraftEditor } from "./DraftEditor";
++import type { MissionWorkItemView } from "@/lib/activeMission";
++vi.mock("@/lib/i18n", async () => { const {dict}=await import("@/lib/i18n.dict"); return { useI18n:()=>({lang:"en",t:(key:string)=>dict.en[key]??key}) }; });
++const item: MissionWorkItemView = { id:"owned-item",title:"Owned draft",platform:"instagram",required:true,position:0,state:"drafting",deadline:null,
++ requirements:[],draft:{id:"owned-draft",revision:3,caption:"Saved before",externalUrl:null,checklist:{},lastSavedAt:"2026-10-25T00:00:00Z"},currentSubmittedVersionId:null,approvedVersionId:null,reviewStartedAt:null,reviewDueAt:null };
++afterEach(()=>vi.useRealTimers());
++const edit = async () => { fireEvent.change(screen.getByLabelText("Caption or copy"),{target:{value:"Retained local input"}});await act(async()=>vi.advanceTimersByTimeAsync(850)); };
++describe("B2 draft recovery without losing authored input",()=>{
++ it("compares a real stale revision payload and retries the retained input only on explicit choice",async()=>{
++  vi.useFakeTimers();const stale=Object.assign(new Error("stale"),{code:"WORKFLOW_STALE"});
++  const onSave=vi.fn().mockRejectedValueOnce(stale).mockResolvedValue({draft:{...item.draft,revision:6}}),onSubmit=vi.fn();
++  const view=render(<DraftEditor item={item} onSave={onSave} onSubmit={onSubmit}/>);await edit();
++  const currentDraft={...item.draft!,revision:5,caption:"Concurrent server input"};
++  view.rerender(<DraftEditor item={{...item,draft:currentDraft}} conflict={{workItemId:item.id,localDraft:{workItemId:item.id,revision:3,caption:"Retained local input",externalUrl:null,checklist:{}},currentDraft}} onSave={onSave} onSubmit={onSubmit}/>);
++  expect(screen.getByLabelText("Caption or copy")).toHaveValue("Retained local input");expect(screen.getByText("Concurrent server input")).toBeVisible();
++  expect(onSave).toHaveBeenCalledTimes(1);
++  await act(async()=>fireEvent.click(screen.getByRole("button",{name:"Save retained draft against latest revision"})));
++  expect(onSave).toHaveBeenLastCalledWith(expect.objectContaining({revision:5,caption:"Retained local input"}));expect(onSubmit).not.toHaveBeenCalled();
++ });
++ it("keeps network-failed input and retries the same draft revision without submitting",async()=>{
++  vi.useFakeTimers();const onSave=vi.fn().mockRejectedValueOnce(new TypeError("network unavailable")).mockResolvedValue({draft:{...item.draft,revision:4}}),onSubmit=vi.fn();
++  render(<DraftEditor item={item} onSave={onSave} onSubmit={onSubmit}/>);await edit();
++  expect(screen.getByLabelText("Caption or copy")).toHaveValue("Retained local input");
++  await act(async()=>fireEvent.click(screen.getByRole("button",{name:"Retry save"})));
++  expect(onSave).toHaveBeenLastCalledWith(expect.objectContaining({revision:3,caption:"Retained local input"}));expect(onSave).toHaveBeenCalledTimes(2);expect(onSubmit).not.toHaveBeenCalled();
++ });
++});
+--- a/src/components/active-mission/DraftEditor.tsx
++++ b/src/components/active-mission/DraftEditor.tsx
+@@ -112,6 +112,7 @@
+   const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
+   const [editSequence, setEditSequence] = useState(0);
+   const [isSubmitting, setIsSubmitting] = useState(false);
++  const [isRecovering, setIsRecovering] = useState(false);
+   const [submitError, setSubmitError] = useState<string | null>(null);
+   const submitErrorRef = useRef<HTMLParagraphElement>(null);
+   const [fileError, setFileError] = useState<string | null>(null);
+@@ -155,6 +156,7 @@
+     setFileError(null);
+     setSubmitError(null);
+     setIsSubmitting(false);
++    setIsRecovering(false);
+     submitAttemptRef.current = null;
+   }, [item.draft, item.id, stateItemId]);
+ 
+@@ -185,7 +187,7 @@
+   }, [isCurrentScope, onSave]);
+ 
+   useEffect(() => {
+-    if (editSequence === 0 || !canEdit || stateItemId !== item.id) return;
++    if (editSequence === 0 || !canEdit || stateItemId !== item.id || conflict) return;
+     setSaveStatus("saving");
+     if (autosaveTimerRef.current) clearTimeout(autosaveTimerRef.current);
+     autosaveTimerRef.current = setTimeout(() => {
+@@ -209,11 +211,29 @@
+     return () => {
+       if (autosaveTimerRef.current) clearTimeout(autosaveTimerRef.current);
+     };
+-  }, [canEdit, caption, checklist, editSequence, externalUrl, isCurrentScope, item.id, queueSave, renderGeneration, stateItemId]);
++  }, [canEdit, caption, checklist, conflict, editSequence, externalUrl, isCurrentScope, item.id, queueSave, renderGeneration, stateItemId]);
+ 
+   function markEdited() {
+     setSaveStatus("saving");
+     setEditSequence((current) => current + 1);
++  }
++
++  async function retryRetainedDraft() {
++    if (!canEdit || isRecovering || isSubmitting) return;
++    if (effectiveSaveStatus === "conflict" && !conflict?.currentDraft) return;
++    if (autosaveTimerRef.current) clearTimeout(autosaveTimerRef.current);
++    // The user has compared the server draft and explicitly chosen to save local input.
++    if (conflict?.currentDraft) revisionRef.current = conflict.currentDraft.revision;
++    const generation = renderGeneration, workItemId = item.id;
++    setIsRecovering(true); setSaveStatus("saving");
++    try {
++      await queueSave({workItemId, revision:revisionRef.current, caption, externalUrl:externalUrl.trim() || null, checklist}, generation);
++      if (isCurrentScope(generation, workItemId)) setSaveStatus("saved");
++    } catch (error) {
++      if (isCurrentScope(generation, workItemId)) setSaveStatus(isStaleError(error) ? "conflict" : "error");
++    } finally {
++      if (isCurrentScope(generation, workItemId)) setIsRecovering(false);
++    }
+   }
+ 
+   async function submitVersion() {
+@@ -358,6 +378,15 @@
+         <p role="status" aria-live="polite" aria-atomic="true" className="text-sm font-semibold text-[var(--color-soft-ink)]">{statusMessage}</p>
+       </div>
+ 
++      {canEdit && (effectiveSaveStatus === "error" || conflict?.currentDraft) ? (
++        <div className="space-y-2 rounded-xl border-2 border-[var(--color-ink)] p-3">
++          {conflict?.currentDraft ? <><p className="font-bold">{t("app.activeMission.editor.currentServerDraft")}</p><p className="whitespace-pre-wrap break-words">{conflict.currentDraft.caption}</p></> : null}
++          <button type="button" disabled={isRecovering || isSubmitting} onClick={() => void retryRetainedDraft()} className="min-h-11 rounded-full border-2 border-[var(--color-ink)] px-4 py-2 font-bold disabled:opacity-50">
++            {t(conflict?.currentDraft ? "app.activeMission.editor.retryRetained" : "app.activeMission.editor.retrySave")}
++          </button>
++        </div>
++      ) : null}
++
+       {assistContext && <MissionAssistLauncher context={assistContext} checklist={requirements.map(r => ({ id: r.id, text: r.label, complete: checklist[r.id] === true }))} />}
+ 
+       <div className="grid gap-2">
+@@ -485,7 +514,7 @@
+         {!allRequiredChecked ? <p className="text-sm text-[var(--color-soft-ink)]">{t("app.activeMission.editor.completeChecklist")}</p> : null}
+         <button
+           type="button"
+-          disabled={!canEdit || !allRequiredChecked || isSubmitting}
++          disabled={!canEdit || !allRequiredChecked || isSubmitting || isRecovering || effectiveSaveStatus === "conflict"}
+           onClick={() => void submitVersion()}
+           className="min-h-11 w-full touch-manipulation rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-ink)] px-5 py-3 font-heading font-bold text-white hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+         >
+--- a/src/lib/i18n.dict.ts
++++ b/src/lib/i18n.dict.ts
+@@ -838,6 +838,9 @@
+     "app.activeMission.editor.status.saved": "Saved",
+     "app.activeMission.editor.status.conflict": "Save conflict. Your local changes are still here; compare them with the server draft.",
+     "app.activeMission.editor.status.error": "Couldn’t save. Your changes are still here. Try again.",
++    "app.activeMission.editor.currentServerDraft": "Current server draft",
++    "app.activeMission.editor.retryRetained": "Save retained draft against latest revision",
++    "app.activeMission.editor.retrySave": "Retry save",
+     "app.activeMission.editor.status.ready": "Draft ready",
+     "app.activeMission.editor.revisionDeadline": "Revision deadline",
+     "app.activeMission.editor.caption": "Caption or copy",
+@@ -2338,6 +2341,9 @@
+     "app.activeMission.editor.status.saved": "已儲存",
+     "app.activeMission.editor.status.conflict": "儲存發生衝突。你的本機修改仍然保留，請與伺服器草稿比較。",
+     "app.activeMission.editor.status.error": "未能儲存。你的修改仍然保留，請再試一次。",
++    "app.activeMission.editor.currentServerDraft": "伺服器目前草稿",
++    "app.activeMission.editor.retryRetained": "以最新版本儲存已保留草稿",
++    "app.activeMission.editor.retrySave": "重試儲存",
+     "app.activeMission.editor.status.ready": "草稿已準備好",
+     "app.activeMission.editor.revisionDeadline": "修改截止時間",
+     "app.activeMission.editor.caption": "說明文字或文案",

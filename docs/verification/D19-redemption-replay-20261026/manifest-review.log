@@ -1,0 +1,10 @@
+Warning: Route file "C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023/src/routes/_site.smoke.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "C:\Users\laich\Documents\Adfocate\worktrees\adfocate-r1-20261023\src\routes\-_site.smoke.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+{"status":"PASS_LOCAL_MANIFEST_REVIEW_NOT_RUNTIME","source":"4f2c3faa22bf835911a55dc7bb099910e4308fc1b7a5570d58f32386708934b9","sourceRecords":793,"runtimeAuthorized":false,"actualTargetCalls":0}

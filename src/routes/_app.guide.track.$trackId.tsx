@@ -5,6 +5,10 @@ import { useMe } from "@/lib/queries/kocmax";
 import { academyKeys, fetchAcademyTrack } from "@/lib/academy";
 import { eligibility } from "@/lib/missionMeta";
 import { useI18n } from "@/lib/i18n";
+import { Markdown } from "@/components/Markdown";
+import { ApiError } from "@/lib/api";
+import { AcademyLearning } from "@/components/AcademyLearning";
+import { useCanShowPreviousData } from "@/components/RequestFeedback";
 
 export const Route = createFileRoute("/_app/guide/track/$trackId")({ component: TrackDetailPage });
 
@@ -14,14 +18,16 @@ function TrackDetailPage() {
   const { t, lang } = useI18n();
   const uiLang = lang === "en" ? "en" : "zh-HK";
   const q = useQuery({ queryKey: academyKeys.track(trackId, uiLang), queryFn: () => fetchAcademyTrack(trackId, uiLang), retry: false });
-  const track = q.data?.item;
+  const showSavedTrack = useCanShowPreviousData(q, academyKeys.track(trackId, uiLang));
+  const track = showSavedTrack ? q.data?.item : undefined;
 
   // apiFetch throws on a 404 → error state; gate not-found on q.isError, never on pending.
   if (q.isLoading) return <div className="p-4 text-sm">…</div>;
-  if (q.isError) {
+  if (q.isError && !track) {
     return (
       <div className="flex flex-col items-center gap-4 p-8 text-center">
-        <p className="text-sm text-[var(--color-magenta)]">{t("app.guide.trackNotFound")}</p>
+        <p role="alert" className="text-sm text-[var(--color-magenta)]">{t(q.error instanceof ApiError && q.error.status === 404 ? "app.guide.trackNotFound" : "app.guide.loadFailed")}</p>
+        <button onClick={() => q.refetch()} className="text-sm underline">{t("common.retry")}</button>
         <Link to="/guide" className="text-sm underline">{t("common.back")}</Link>
       </div>
     );
@@ -32,7 +38,7 @@ function TrackDetailPage() {
   const unlocked = elig.qualified;
   const needsVerification = elig.labelKey === "app.eligibility.verifyToUnlock";
   const levelLabel = track.meta.levelLabel ?? track.requiredLevel ?? "";
-  const bodyText = track.body && track.body.trim() ? track.body : track.excerpt;
+  const hasBody = Boolean(track.body?.trim());
 
   return (
     <div className="mx-auto max-w-lg pb-6 lg:max-w-5xl">
@@ -45,11 +51,18 @@ function TrackDetailPage() {
       </header>
 
       <div className="p-4 space-y-4">
+        {q.isError && <div role="alert"><p>{t("app.guide.staleContent")}</p><button onClick={() => q.refetch()} className="underline">{t("common.retry")}</button></div>}
         <div className="flex gap-2 text-sm text-[var(--color-ink-muted)]">
-          <span>{track.meta.duration}</span><span>·</span><span>{levelLabel}</span>
+          <span>{levelLabel}</span>
         </div>
         {unlocked ? (
-          <p className="text-sm leading-relaxed">{bodyText}</p>
+          hasBody ? <Markdown source={track.body!} /> : (
+            <section className="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-4">
+              <h2 className="font-heading font-bold">{t("app.guide.contentPreparing")}</h2>
+              <p className="text-sm">{t("app.guide.lessonsPreparing")}</p>
+              {track.excerpt && <div><h3 className="text-sm font-bold">{t("app.guide.introduction")}</h3><p className="text-sm leading-relaxed">{track.excerpt}</p></div>}
+            </section>
+          )
         ) : (
           <div className="rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-cream)] p-5 space-y-3 text-center">
             <Lock size={32} className="mx-auto text-[var(--color-ink-muted)]" aria-hidden />
@@ -64,6 +77,7 @@ function TrackDetailPage() {
             )}
           </div>
         )}
+        {unlocked && track.learningEnabled && me.data?.id && <AcademyLearning key={me.data.id} creatorId={me.data.id} slug={track.slug} />}
       </div>
     </div>
   );

@@ -1,0 +1,115 @@
+
+ RUN  v2.1.9 C:/Users/laich/Documents/Adfocate/worktrees/adfocate-r1-20261023
+
+ ❯ server/test/audit-workflow-roundtrip.test.ts (9 tests | 1 failed) 18822ms
+   ✓ D07 exact-ID disposable workflow roundtrip > pages 51 real database creators once with stable ties and a scoped total 819ms
+   ✓ D07 exact-ID disposable workflow roundtrip > persists race/join, receipt, revision, proof correction, one pending reward and cancellation without financial effects 3263ms
+   ✓ D07 exact-ID disposable workflow roundtrip > rolls back a real audit fault and serializes concurrent CRM retries 2091ms
+   ✓ D07 exact-ID disposable workflow roundtrip > retains the legacy join/submit/review journey with evidence validation 323ms
+   × D07 exact-ID disposable workflow roundtrip > D19 reapproval preserves an issued legacy anchor and reloads one neutral pending reward through finance 443ms
+     → expected { workflow: { …(4) }, …(3) } to deeply equal { workflow: { …(4) }, …(3) }
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  server/test/audit-workflow-roundtrip.test.ts > D07 exact-ID disposable workflow roundtrip > D19 reapproval preserves an issued legacy anchor and reloads one neutral pending reward through finance
+AssertionError: expected { workflow: { …(4) }, …(3) } to deeply equal { workflow: { …(4) }, …(3) }
+
+- Expected
++ Received
+
+  Object {
+    "decision": Object {
+      "decidedAt": "2026-10-23T18:43:03.593396+00:00",
+      "decidedBy": "1bdb869c-46ac-4f0b-b1b6-1b65b683f82a",
+      "evidence": Object {
+        "requiredItems": Array [
+          Object {
+            "attemptNumber": 2,
+            "contentChecksum": "5974a4cc4312e20f560a1d79d6a4ca496d04c9b2e8e7b0003b49ca78467784a5",
+            "metadataStatus": "unavailable",
+            "proofAttemptId": "761216e0-f580-4b33-b750-eb231365aef1",
+            "proofReviewId": "c1d5172c-0373-4180-a61d-be6e1bfcf88a",
+            "reviewDecision": "verified",
+            "reviewNumber": 2,
+            "reviewedAt": "2026-10-23T18:42:59.537609+00:00",
+            "submittedAt": "2026-10-23T18:42:59.186405+00:00",
+            "workItemId": "7fffeb15-8517-4d27-9e46-9f8a7d84e6bc",
+          },
+        ],
+      },
+      "id": "58d9261a-d950-4c7c-a965-800d7e76ba82",
+      "kind": "approved",
+      "reasonCategory": null,
+      "reasonNote": null,
+      "requiredItemCount": 1,
+      "verifiedRequiredItemCount": 1,
+      "workflowRevision": 2,
+    },
+-   "idempotent": false,
++   "idempotent": true,
+    "pendingReward": Object {
+      "cancellationDecisionId": null,
+      "cancelledAt": null,
+      "completionDecisionId": "58d9261a-d950-4c7c-a965-800d7e76ba82",
+      "createdAt": "2026-10-23T18:43:03.593396+00:00",
+      "creatorId": "1fa035c7-244d-4f1e-bdff-7988eabf9e81",
+      "decision": Object {
+        "decidedAt": "2026-10-23T18:43:03.593396+00:00",
+        "decidedBy": "1bdb869c-46ac-4f0b-b1b6-1b65b683f82a",
+        "evidence": Object {
+          "requiredItems": Array [
+            Object {
+              "attemptNumber": 2,
+              "contentChecksum": "5974a4cc4312e20f560a1d79d6a4ca496d04c9b2e8e7b0003b49ca78467784a5",
+              "metadataStatus": "unavailable",
+              "proofAttemptId": "761216e0-f580-4b33-b750-eb231365aef1",
+              "proofReviewId": "c1d5172c-0373-4180-a61d-be6e1bfcf88a",
+              "reviewDecision": "verified",
+              "reviewNumber": 2,
+              "reviewedAt": "2026-10-23T18:42:59.537609+00:00",
+              "submittedAt": "2026-10-23T18:42:59.186405+00:00",
+              "workItemId": "7fffeb15-8517-4d27-9e46-9f8a7d84e6bc",
+            },
+          ],
+        },
+        "id": "58d9261a-d950-4c7c-a965-800d7e76ba82",
+        "kind": "approved",
+        "reasonCategory": null,
+        "reasonNote": null,
+        "requiredItemCount": 1,
+        "verifiedRequiredItemCount": 1,
+        "workflowRevision": 2,
+      },
+      "id": "1823789f-8811-445d-bd63-78dec732ed8f",
+      "missionId": "9c912f37-5924-49d6-8ed8-f44e260f3dee",
+      "processingWindowDays": null,
+      "reward": Object {
+        "cashAmount": 125,
+        "currency": "HKD",
+        "pointsAmount": 500,
+        "xpAmount": 0,
+      },
+      "rewardContractId": "c2347043-519f-4d50-8762-032363d51723",
+      "status": "pending",
+      "submissionId": "01f03869-a1c6-409b-a53b-623311db370b",
+      "targetAt": null,
+      "workflowId": "7b9f26c7-39bf-4079-98df-0ce0d58be891",
+    },
+    "workflow": Object {
+      "id": "7b9f26c7-39bf-4079-98df-0ce0d58be891",
+      "revision": 3,
+      "state": "reward_pending",
+      "updatedAt": "2026-10-23T18:43:03.593396+00:00",
+    },
+  }
+
+ ❯ server/test/audit-workflow-roundtrip.test.ts:193:196
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 8 passed (9)
+   Start at  02:42:39
+   Duration  24.28s (transform 2.24s, setup 3.80s, collect 102ms, tests 18.82s, environment 0ms, prepare 1.08s)
+

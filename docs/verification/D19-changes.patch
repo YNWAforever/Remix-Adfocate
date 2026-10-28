@@ -1,0 +1,1050 @@
+--- a/e2e/creator-operator-mission.spec.ts
++++ b/e2e/creator-operator-mission.spec.ts
+@@ -3,10 +3,15 @@
+ import { randomUUID } from "node:crypto";
+ import process from "node:process";
+ import type { ActiveMissionWorkspace, MissionPublicationView } from "../src/lib/activeMission";
+-const fixture=JSON.parse(readFileSync(".codex-tmp/browser-fixture.private.json","utf8"));
+-const evidencePrefix = process.env.ADFOCATE_BROWSER_SCOPE === "D08" ? "D08-" : "";
++// @ts-expect-error Identity helper is native ESM.
++import {verifiedTarget as verifyBrowserTarget} from "../scripts/audit/local-targets.mjs";
++const pilot=process.env.ADFOCATE_BROWSER_SCOPE==="D19";
++const verified=pilot?verifyBrowserTarget("empty"):null;
++const fixture=JSON.parse(readFileSync(pilot?".codex-tmp/D19-browser-fixture.private.json":".codex-tmp/browser-fixture.private.json","utf8"));
++if(pilot)expect(fixture.target).toEqual(verified.identity);
++const evidencePrefix = pilot?"D19-":process.env.ADFOCATE_BROWSER_SCOPE === "D08" ? "D08-" : "";
+ test("real roles reload one durable pending reward and its revision/proof history",async({browser,request})=>{
+-  const creatorContext=await browser.newContext(evidencePrefix ? {viewport:{width:360,height:800}} : {}),operatorContext=await browser.newContext();
++  const creatorContext=await browser.newContext(evidencePrefix ? {viewport:{width:360,height:800}} : {});let operatorContext=await browser.newContext();
+   for(const context of [creatorContext,operatorContext]){
+     await context.addInitScript(()=>localStorage.setItem("lang","en"));
+     await context.route("**/*",route=>{
+@@ -14,9 +19,9 @@
+       return url.hostname==="127.0.0.1"?route.continue():route.abort();
+     });
+   }
+-  const creator=await creatorContext.newPage(),operator=await operatorContext.newPage();
++  const creator=await creatorContext.newPage();let operator=await operatorContext.newPage();
+   // Reuse the already authenticated operator session from setup; JWT is verified by the real Auth service.
+-  await operatorContext.addInitScript(session=>localStorage.setItem("sb-127-auth-token",JSON.stringify(session)),fixture.operatorSession);
++  await operatorContext.addInitScript(session=>localStorage.setItem("sb-127-auth-token",JSON.stringify(session)),pilot?fixture.reviewerSession:fixture.operatorSession);
+   async function login(page:Page,actor:{email:string;password:string}){
+     await page.goto("/login"); await page.locator('input[type="email"]').first().fill(actor.email);
+     await page.locator('input[type="password"]') .fill(actor.password);
+@@ -28,6 +33,18 @@
+     expect(response.status(),`${path}: ${await response.text()}`).toBe(200); return response.json();
+   }
+   await login(creator,fixture.creator);
++  if(pilot){
++    await creator.goto(`/mission/${fixture.legacyMission.slug}`);
++    const joined=creator.waitForResponse(r=>new URL(r.url()).pathname.endsWith("/join")&&r.request().method()==="POST");
++    await creator.getByRole("button",{name:"Join Mission",exact:true}).click();const join=await joined;expect(join.status()).toBe(200);const legacy=await join.json();
++    await creator.locator("textarea").fill("invalid");await creator.getByRole("button",{name:"Submit Content",exact:true}).click();await expect(creator.getByRole("alert")).toContainText("HTTP(S)");await expect(creator.locator("textarea")).toHaveValue("invalid");
++    await creator.locator("textarea").fill(`https://example.test/d19-${fixture.runId}`);
++    const submitted=creator.waitForResponse(r=>new URL(r.url()).pathname.endsWith("/submit")&&r.request().method()==="PUT");await creator.getByRole("button",{name:"Submit Content",exact:true}).click();expect((await submitted).status()).toBe(200);
++    await operator.goto("/admin/submissions");const approved=operator.waitForResponse(r=>new URL(r.url()).pathname===`/api/admin/submissions/${legacy.id}/approve`&&r.request().method()==="POST");await operator.getByRole("button",{name:"Approve",exact:true}).click();expect((await approved).status()).toBe(200);
++    await creator.reload();expect(verified.sql(`select status from public.mission_submissions where id='${legacy.id}';`)).toBe("approved");
++    fixture.legacy={submissionId:legacy.id,creatorId:fixture.creator.id,missionId:fixture.legacyMission.id};
++    writeFileSync("docs/verification/D19-browser-legacy.json",JSON.stringify({runId:fixture.runId,...fixture.legacy,ui:"Creator login/join/invalid-input retention/submit → reviewer approve → Creator reload",result:"passed",financialMeaning:"Existing legacy issuance measured before active pending baseline; no new payment feature"},null,2)+"\n");
++  }
+   await creator.goto(`/mission/${fixture.mission.slug}`);
+   const joined=creator.waitForResponse(response=>response.url().endsWith("/join")&&response.request().method()==="POST");
+   await creator.getByRole("button",{name:"Join Mission",exact:true}).click();
+@@ -38,7 +55,7 @@
+   const workspaceUrl=`/my/${submissionId}?item=${itemId}`;
+   const homeChecks: Array<{state:string;action:string;clicks:number;revision:number}> = [];
+   async function checkHome(label: string, item = true) {
+-    if (!evidencePrefix) return;
++    if (evidencePrefix!=="D08-") return;
+     const before = await read();
+     await creator.goto("/home");
+     await creator.reload();
+@@ -122,6 +139,12 @@
+   const target=verifiedTarget("empty");
+   expect(target.sql(`select state from public.mission_workflows where id='${workflowId}';`)).toBe("proof_verified");
+   writeFileSync(`docs/verification/${evidencePrefix}browser-before-handoff.json`,JSON.stringify({runId:fixture.runId,phase:"immediately-before-completion",snapshot:neutralitySnapshot(target,fixture.creator.id,fixture.workspaceId)},null,2)+"\n");
++  if(pilot){
++    const anchors=verified.sql(`select jsonb_agg(jsonb_build_object('id',id,'status',status,'pointsAwarded',points_awarded,'xpAwarded',xp_awarded) order by id) from public.mission_submissions where workspace_id='${fixture.workspaceId}' and status='approved';`);
++    const before=JSON.parse(readFileSync("docs/verification/D19-browser-before-handoff.json","utf8"));before.legacyAnchors=JSON.parse(anchors);writeFileSync("docs/verification/D19-browser-before-handoff.json",JSON.stringify(before,null,2)+"\n");
++    await operatorContext.close();operatorContext=await browser.newContext();await operatorContext.addInitScript(session=>{localStorage.setItem("lang","en");localStorage.setItem("sb-127-auth-token",JSON.stringify(session));},fixture.operatorSession);
++    await operatorContext.route("**/*",route=>{const u=new URL(route.request().url());return u.hostname==="127.0.0.1"&&["56400","56421"].includes(u.port)?route.continue():route.abort();});operator=await operatorContext.newPage();
++  }
+   await operator.bringToFront();
+   // Reconcile the operator page with the persisted proof before opening completion.
+   // Proof verification invalidates several projections; do not click during their replacement.
+@@ -140,9 +163,10 @@
+   expect(creatorReload.pendingReward!.reward).toEqual(operatorReload.pendingReward.reward);
+   expect(creatorReload.events.length).toBeGreaterThan(8);
+   await checkHome("View reward review", false);
+-  if(evidencePrefix) writeFileSync("docs/verification/D08-home-roundtrip.json",JSON.stringify({runId:fixture.runId,submissionId,workflowId,homeChecks,creatorViewport:{width:360,height:800},minimumPrimaryTarget44px:true,noHomeHorizontalOverflow:true,persistedAfterNavigationAndReload:true},null,2)+"\n");
++  if(evidencePrefix==="D08-") writeFileSync("docs/verification/D08-home-roundtrip.json",JSON.stringify({runId:fixture.runId,submissionId,workflowId,homeChecks,creatorViewport:{width:360,height:800},minimumPrimaryTarget44px:true,noHomeHorizontalOverflow:true,persistedAfterNavigationAndReload:true},null,2)+"\n");
+   writeFileSync(`docs/verification/${evidencePrefix}browser-roundtrip.json`,JSON.stringify({runId:fixture.runId,submissionId,workflowId,pendingRewardId:completion.pendingReward.id,
+     creatorReward:creatorReload.pendingReward!.reward,operatorReward:operatorReload.pendingReward.reward,historyEvents:creatorReload.events.length,
+-    persistedAfterReload:true,creatorPrivateIdRedacted:creatorReload.pendingReward!.id===null,reviewTransitions:"operator UI; read-only API assertions",completion:"operator UI",proofMetadata:"external HTTP blocked"},null,2)+"\n");
++    persistedAfterReload:true,creatorPrivateIdRedacted:creatorReload.pendingReward!.id===null,reviewTransitions:pilot?"reviewer UI; read-only API assertions":"operator UI; read-only API assertions",completion:"operator UI",proofMetadata:"external HTTP blocked"},null,2)+"\n");
++  if(pilot){fixture.core={creatorId:fixture.creator.id,submissionId,workflowId,itemId,pendingRewardId:completion.pendingReward.id};writeFileSync(".codex-tmp/D19-browser-fixture.private.json",JSON.stringify(fixture));}
+   await creatorContext.close();await operatorContext.close();
+ });
+--- a/e2e/staff-access.spec.ts
++++ b/e2e/staff-access.spec.ts
+@@ -4,11 +4,12 @@
+ import process from "node:process";
+ // @ts-expect-error Native ESM identity verifier has no declaration file.
+ import {verifiedTarget} from "../scripts/audit/local-targets.mjs";
+-const target=process.env.ADFOCATE_BROWSER_SCOPE==="D18"?verifiedTarget("empty"):null;
+-const fx=target?JSON.parse(readFileSync(".codex-tmp/D18-fixture.private.json","utf8")):{};
++const task=process.env.ADFOCATE_BROWSER_SCOPE==="D19"?"D19":"D18";
++const target=["D18","D19"].includes(process.env.ADFOCATE_BROWSER_SCOPE??"")?verifiedTarget("empty"):null;
++const fx=target?JSON.parse(readFileSync(task==="D19"?".codex-tmp/D19-browser-fixture.private.json":".codex-tmp/D18-fixture.private.json","utf8")):{};
+ if(target&&!isDeepStrictEqual(target.identity,fx.target))throw new Error("D18 browser target drift");
+ test.beforeEach(()=>test.skip(!target,"Use the identity-gated D18 runner."));
+-const record=(name:string,data:unknown)=>writeFileSync(`docs/verification/D18-${name}.json`,JSON.stringify({runId:fx.runId,data},null,2)+"\n");
++const record=(name:string,data:unknown)=>writeFileSync(`docs/verification/${task}-${name}.json`,JSON.stringify({runId:fx.runId,data},null,2)+"\n");
+ async function context(browser:Browser,actor=fx.roles.finance_viewer,lang="en",width=390){
+  const ctx=await browser.newContext({viewport:{width,height:900}});
+  await ctx.addInitScript(({session,lang})=>{localStorage.setItem("lang",lang);localStorage.setItem("sb-127-auth-token",JSON.stringify(session));},{session:actor.session,lang});
+--- /dev/null
++++ b/playwright.pilot.config.ts
+@@ -0,0 +1,5 @@
++import {defineConfig} from '@playwright/test';
++import process from 'node:process';
++import quality from './playwright.quality.config';
++const phase=process.env.ADFOCATE_BROWSER_PHASE==='roles'?'roles':'journey';
++export default defineConfig({...quality,testMatch:['creator-operator-mission.spec.ts','staff-access.spec.ts'],reporter:[['line'],['json',{outputFile:`.codex-tmp/D19-browser-${phase}-results.private.json`}]]});
+--- a/scripts/audit/configure-local-auth.mjs
++++ b/scripts/audit/configure-local-auth.mjs
+@@ -5,7 +5,8 @@
+ import { Buffer } from "node:buffer";
+ import process from "node:process";
+ import { verifiedTarget } from "./local-targets.mjs";
+-const target=verifiedTarget("empty"); // identity gate before inspecting private container config
++const kind=process.argv[2]??"empty";
++const target=verifiedTarget(kind); // identity gate before inspecting private container config
+ const docker=(args)=>execFileSync("docker",args,{encoding:"utf8",timeout:60000}).trim();
+ const name=`supabase_auth_${target.identity.projectId}`;
+ const [source]=JSON.parse(docker(["inspect",name]));
+--- /dev/null
++++ b/scripts/audit/prepare-pilot-browser.ts
+@@ -0,0 +1,12 @@
++import {readFileSync,writeFileSync} from 'node:fs';
++import {createStaffCapabilityFixture} from '../../server/test/staffCapabilityFixture.js';
++const owned=await createStaffCapabilityFixture('D19'),base=owned.base;
++const legacyMission=await base.mission('legacy'),mission=await base.mission('active_workspace');
++const roleFixture=JSON.parse(readFileSync('.codex-tmp/D19-role-fixture.private.json','utf8'));
++const value={runId:base.runId,target:base.target.identity,workspaceId:base.workspaceId,otherWorkspaceId:base.otherWorkspaceId,slug:base.slug,mission,legacyMission,
++ creators:base.creators,creator:base.creators[0],operator:owned.roles.operator,operatorSession:owned.roles.operator.session,reviewerSession:owned.roles.reviewer.session,
++ roles:{...owned.roles,content_editor:roleFixture.roles.content_editor},resource:roleFixture.resource,authIds:JSON.parse(readFileSync('.codex-tmp/D19-fixture.private.json','utf8')).authIds,
++ initialSnapshots:await Promise.all(base.creators.map(c=>base.neutrality(c.id))),platformEditorFixtureRunId:roleFixture.runId};
++writeFileSync('.codex-tmp/D19-browser-fixture.private.json',JSON.stringify(value,(key,v)=>key==='client'?undefined:v));
++writeFileSync('docs/verification/D19-browser-fixture.json',JSON.stringify({runId:base.runId,target:base.target.identity,workspaceIds:[base.workspaceId,base.otherWorkspaceId],missionIds:[legacyMission.id,mission.id],authIds:value.authIds,initialSnapshots:value.initialSnapshots,platformEditorFixtureRunId:roleFixture.runId,cleanup:'none; exact owned IDs retained'},null,2)+'\n');
++console.log('D19 browser fixture ready after target verification; private sessions retained locally.');
+--- a/scripts/audit/run-integration.mjs
++++ b/scripts/audit/run-integration.mjs
+@@ -5,8 +5,8 @@
+ import { pathToFileURL } from "node:url";
+ const target=verifiedTarget("empty");
+ const selected=process.argv[2];
+-if(selected && !["mission-list","authoring","identity","public-claims","academy","quality","staff"].includes(selected))throw new Error("unsupported audit integration scope");
+-const file=selected==="staff"?"server/test/audit-staff-capabilities.test.ts":selected==="quality"?"server/test/audit-quality.test.ts":selected==="mission-list"?"server/test/audit-mission-list-contract.test.ts":selected==="authoring"?"server/test/audit-mission-authoring-contract.test.ts":selected==="identity"?"server/test/audit-identity-contract.test.ts":selected==="public-claims"?"server/test/audit-public-claims-contract.test.ts":selected==="academy"?"server/test/audit-academy-progress.test.ts":"server/test/audit-workflow-roundtrip.test.ts";
++if(selected && !["mission-list","authoring","identity","public-claims","academy","quality","staff","pilot"].includes(selected))throw new Error("unsupported audit integration scope");
++const file=selected==="pilot"?"server/test/audit-workflow-roundtrip.test.ts":selected==="staff"?"server/test/audit-staff-capabilities.test.ts":selected==="quality"?"server/test/audit-quality.test.ts":selected==="mission-list"?"server/test/audit-mission-list-contract.test.ts":selected==="authoring"?"server/test/audit-mission-authoring-contract.test.ts":selected==="identity"?"server/test/audit-identity-contract.test.ts":selected==="public-claims"?"server/test/audit-public-claims-contract.test.ts":selected==="academy"?"server/test/audit-academy-progress.test.ts":"server/test/audit-workflow-roundtrip.test.ts";
+ const result=spawnSync(process.execPath,["node_modules/vitest/vitest.mjs","run","--maxWorkers=1","--minWorkers=1",file],{
+   env:{...process.env,...target.env,RUN_INTEGRATION:"0",RUN_AUDIT_INTEGRATION:"1",OPENAI_API_KEY:"",OPENROUTER_API_KEY:"",ANTHROPIC_API_KEY:"",
+     NODE_OPTIONS:`--import=${pathToFileURL(resolve("scripts/audit/deny-external-fetch.mjs")).href}`},stdio:"inherit"});
+--- /dev/null
++++ b/scripts/audit/run-pilot-browser.mjs
+@@ -0,0 +1,26 @@
++import {readFileSync,writeFileSync} from 'node:fs';
++import {spawnSync} from 'node:child_process';
++import {resolve} from 'node:path';
++import {pathToFileURL} from 'node:url';
++import {isDeepStrictEqual as equal} from 'node:util';
++import process from 'node:process';
++import {verifiedTarget} from './local-targets.mjs';
++import {neutralitySnapshot} from './neutrality-snapshot.mjs';
++const target=verifiedTarget('empty');
++const env={...process.env,...target.env,NODE_ENV:'production',ADFOCATE_BROWSER_SCOPE:'D19',ADFOCATE_ACCEPTANCE_TASK:'D19',RUN_INTEGRATION:'0',RUN_AUDIT_INTEGRATION:'0',OPENAI_API_KEY:'',OPENROUTER_API_KEY:'',ANTHROPIC_API_KEY:'',NODE_OPTIONS:`--import=${pathToFileURL(resolve('scripts/audit/deny-external-fetch.mjs')).href}`};
++const run=(args,extra={})=>spawnSync(process.execPath,args,{env:{...env,...extra},stdio:'inherit'}).status??1;
++if(!process.argv.includes('--resume')){const prepared=run(['node_modules/vite-node/vite-node.mjs','scripts/audit/prepare-pilot-browser.ts']);if(prepared)process.exit(prepared);}
++const fx=JSON.parse(readFileSync('.codex-tmp/D19-browser-fixture.private.json','utf8'));if(!equal(fx.target,target.identity))throw new Error('D19 browser target mismatch');
++Object.assign(env,{VITE_SUPABASE_URL:target.env.SUPABASE_URL,VITE_SUPABASE_ANON_KEY:target.env.SUPABASE_ANON_KEY,VITE_DEFAULT_WORKSPACE:fx.slug,VITE_ENABLE_WHATSAPP:'false',VITE_ENABLE_GOOGLE:'false'});
++const build=run(['node_modules/vite/bin/vite.js','build','--mode','production']);if(build)process.exit(build);
++const summaries=[];let status=0;
++for(const phase of ['journey','roles']){
++ status=run(['node_modules/@playwright/test/cli.js','test',phase==='journey'?'e2e/creator-operator-mission.spec.ts':'e2e/staff-access.spec.ts','--config=playwright.pilot.config.ts'],{ADFOCATE_BROWSER_PHASE:phase});
++ const raw=JSON.parse(readFileSync(`.codex-tmp/D19-browser-${phase}-results.private.json`,'utf8')),tests=[];
++ const visit=s=>{for(const spec of s.specs??[])tests.push({title:spec.title,ok:spec.ok,results:spec.tests.flatMap(t=>t.results.map(r=>({status:r.status,duration:r.duration})))});for(const child of s.suites??[])visit(child);};for(const s of raw.suites)visit(s);
++ summaries.push({phase,tests,stats:raw.stats});if(status)break;
++}
++writeFileSync('docs/verification/D19-browser-summary.json',JSON.stringify({runId:fx.runId,target:target.identity,summaries,passed:summaries.flatMap(s=>s.tests).filter(t=>t.ok).length,status,scope:'Real local browser→API→Auth/RLS/DB legacy and active workflow; external proof metadata unavailable; access503 is an explicit transport mock. No production or paid provider.'},null,2)+'\n');
++const live=verifiedTarget('empty'),after=neutralitySnapshot(live,fx.creator.id,fx.workspaceId);
++writeFileSync('docs/verification/D19-browser-after.json',JSON.stringify({runId:fx.runId,target:live.identity,after},null,2)+'\n');
++process.exit(status);
+--- /dev/null
++++ b/scripts/audit/run-pilot-support.mjs
+@@ -0,0 +1,45 @@
++// Existing business integration on the second already-owned target. No reset or old-row cleanup.
++import {readFileSync,writeFileSync,existsSync,appendFileSync} from 'node:fs';
++import {createHash,randomUUID} from 'node:crypto';
++import {spawnSync} from 'node:child_process';
++import {resolve} from 'node:path';
++import {pathToFileURL} from 'node:url';
++import process from 'node:process';
++import {verifiedTarget} from './local-targets.mjs';
++import {integrationFiles,publicationProofPreflightFile} from '../run-integration-tests.mjs';
++const target=verifiedTarget('shaped'),receipt='.codex-tmp/D19-support.private.json';
++const tableNames=JSON.parse(target.sql("select jsonb_agg(tablename order by tablename) from pg_tables where schemaname='public';"));
++if(!tableNames.every(n=>/^[a-z0-9_]+$/.test(n)))throw new Error('unexpected catalog identifier');
++const snapshot=()=>JSON.parse(target.sql(`select jsonb_object_agg(name,rows) from (${tableNames.map(n=>`select '${n}' as name,coalesce(jsonb_agg(to_jsonb(r)),'[]'::jsonb)as rows from public.${n} r`).join(' union all ')}) all_rows;`));
++const canonical=v=>JSON.stringify(v),hash=v=>createHash('sha256').update(canonical(v)).digest('hex');
++let fixture;
++if(existsSync(receipt)){
++ fixture=JSON.parse(readFileSync(receipt,'utf8'));
++ if(JSON.stringify(fixture.identity)!==JSON.stringify(target.identity))throw new Error('D19 support resume target drift');
++}else{
++ const before=snapshot(),demo='00000000-0000-0000-0000-0000000000aa';
++ if(before.workspaces.some(r=>r.id===demo)||before.academy_content.length||before.missions.some(r=>['koc-trial-serum','ugc-cafe','clip-skincare','ugc-pet','koc-trial-mask','ugc-travel'].includes(r.slug)))throw new Error('support fixture collision; no overwrite/reset permitted');
++ const seed=readFileSync('supabase/seed.sql','utf8'),academy=readFileSync('supabase/migrations/0028_academy_content.sql','utf8').split('-- Guide docs seed (8 rows) -----')[1];
++ if(!academy||/\b(delete\s+from|truncate|drop\s+table)\b/i.test(seed)||/^\s*(create|alter|grant|revoke|drop)\b/im.test(academy))throw new Error('non-data/destructive seed refused');
++ fixture={runId:randomUUID(),identity:target.identity,before,workspaceIds:[demo],seedSha256:createHash('sha256').update(seed).digest('hex'),academyDmlSha256:createHash('sha256').update(academy).digest('hex')};
++ writeFileSync(receipt,JSON.stringify(fixture)); // Persist recovery identity before the additive fixture transaction.
++ target.sql(`begin;\n${seed}\n${academy}\ncommit;`);
++ const seeded=snapshot(),tables={};
++ for(const name of tableNames){const old=new Set(before[name].map(hash)),rows=seeded[name].filter(r=>!old.has(hash(r))),key=['id','user_id','creator_id','workspace_id'].find(k=>rows.some(r=>typeof r[k]==='string'));if(key)tables[name]={key,ids:rows.map(r=>r[key]).filter(v=>typeof v==='string')};}
++ writeFileSync('.codex-tmp/D19-support-owned.json',JSON.stringify({tables}));
++ writeFileSync('docs/verification/D19-support-fixture.json',JSON.stringify({runId:fixture.runId,target:target.identity,workspaceIds:fixture.workspaceIds,seedSha256:fixture.seedSha256,academyDmlSha256:fixture.academyDmlSha256,tables,originalTables:tableNames.map(name=>({name,rows:before[name].length,hashes:before[name].map(hash).sort()})),content:'Historical seed DML copied as disposable integration fixtures only. No DDL/history replay, no new lessons, no approved-curriculum acceptance; D15 blocker unchanged.',cleanup:'Only exact successful creation IDs, with parent ownership, may be changed; access/active-history actors retained.'},null,2)+'\n');
++}
++const attemptNamespace=randomUUID();
++appendFileSync('docs/verification/D19-support-attempts.jsonl',JSON.stringify({at:new Date().toISOString(),namespace:attemptNamespace,seedRunId:fixture.runId,selected:process.argv.slice(2)})+'\n');
++const env={...process.env,...target.env,INTEGRATION_FIXTURE_NAMESPACE:attemptNamespace,INTEGRATION_FIXTURE_SCOPE_JSON:JSON.stringify({runId:target.identity.runId,workspaceIds:fixture.workspaceIds}),INTEGRATION_OWNED_IDS_PATH:resolve('.codex-tmp/D19-support-owned.json'),INTEGRATION_OWNED_JOURNAL:resolve('docs/verification/D19-support-owned-ids.jsonl'),INTEGRATION_MUTATION_OWNERSHIP:'1',INTEGRATION_CAPABILITY_FIXTURES:'1',INTEGRATION_RETAIN_FIXTURES:'0',RUN_INTEGRATION:'1',INTEGRATION_RUNNER:'1',RUN_AUDIT_INTEGRATION:'0',ADFOCATE_ACCEPTANCE_TASK:'D19',OPENAI_API_KEY:'',OPENROUTER_API_KEY:'',ANTHROPIC_API_KEY:'',NODE_OPTIONS:`--import=${pathToFileURL(resolve('scripts/audit/deny-external-fetch.mjs')).href}`};
++const selected=process.argv.slice(2);if(selected.some(n=>!integrationFiles.includes(n)))throw new Error('unreviewed integration file');
++const exec=(files,name)=>spawnSync(process.execPath,['node_modules/vitest/vitest.mjs','run','--no-file-parallelism','--maxWorkers=1','--minWorkers=1','--reporter=default','--reporter=json',`--outputFile=.codex-tmp/D19-${name}-results.private.json`,...files],{env,stdio:'inherit'}).status??1;
++let status=exec([publicationProofPreflightFile],'support-preflight');
++if(!status)status=exec(selected.length?selected:integrationFiles,'support');
++const live=verifiedTarget('shaped'),changes=[];
++for(const name of tableNames)for(const row of fixture.before[name]){
++ const encoded=JSON.stringify(row).replaceAll("'","''");
++ if(live.sql(`select exists(select 1 from public.${name} r where to_jsonb(r)='${encoded}'::jsonb);`)!=='t')changes.push({table:name,originalRowHash:hash(row)});
++}
++writeFileSync('docs/verification/D19-support-sentinel-check.json',JSON.stringify({runId:fixture.runId,target:live.identity,preExistingPublicRowsUnchanged:changes.length===0,changes,originalRows:Object.values(fixture.before).reduce((n,rows)=>n+rows.length,0),scope:'All pre-existing public base-table rows in shaped target; only hashes exported, not authored row content. Schema/Auth/Storage identity and original SQL are checked separately.'},null,2)+'\n');
++process.exit(status||changes.length?1:0);
+--- a/scripts/audit/verify-capabilities.mjs
++++ b/scripts/audit/verify-capabilities.mjs
+@@ -20,7 +20,7 @@
+     const [role,objectSchema,object]=parts,match=/^([a-z0-9_]+)\((.*)\)$/.exec(object);
+     if(!match)throw new Error("unknown grant capability");
+     const target=`${objectSchema}.${match[1]}`,privilege=match[2];
+-    if(["all","select","insert","update","delete"].includes(privilege)){
++    if(["all","select","insert","update","delete","truncate"].includes(privilege)){
+       const privileges=privilege==="all"?["SELECT","INSERT","UPDATE","DELETE","TRUNCATE","REFERENCES","TRIGGER"]:[privilege.toUpperCase()];
+       return `to_regclass(${quote(target)}) is not null and ${privileges.map((p)=>`has_table_privilege(${quote(role)},${quote(target)},${quote(p)})`).join(" and ")}`;
+     }
+--- a/scripts/release/manifest.test.ts
++++ b/scripts/release/manifest.test.ts
+@@ -63,6 +63,7 @@
+   "20261023093445_academy_learning_conflicts.sql",
+   "20261023095521_academy_approval_index.sql",
+   "20261023124149_staff_access_capabilities.sql",
++  "20261023192141_pilot_legacy_access_hardening.sql",
+ ] as const;
+ 
+ // Pinned by checksum in manifest.ts, so the fixture copies the repository's real bytes instead of
+--- a/scripts/release/manifest.ts
++++ b/scripts/release/manifest.ts
+@@ -939,6 +939,76 @@
+     "transactionExpectation": "transactional",
+     "replayExpectation": "migration_history_noop"
+   },
++{
++  "version": "20261023192141",
++  "name": "pilot_legacy_access_hardening",
++  "phase": "staff_access",
++  "dependsOn": [
++    "20261023124149"
++  ],
++  "capabilities": [
++    "grant-removed:anon.public.creator_social_accounts(select)",
++    "grant-removed:anon.public.creator_social_accounts(insert)",
++    "grant-removed:anon.public.creator_social_accounts(update)",
++    "grant-removed:anon.public.creator_social_accounts(delete)",
++    "grant-removed:authenticated.public.creator_social_accounts(truncate)",
++    "grant-removed:authenticated.public.creator_social_accounts(insert)",
++    "grant-removed:authenticated.public.creator_social_accounts(update)",
++    "grant-removed:anon.public.creator_social_scan_snapshots(select)",
++    "grant-removed:anon.public.creator_social_scan_snapshots(insert)",
++    "grant-removed:anon.public.creator_social_scan_snapshots(update)",
++    "grant-removed:anon.public.creator_social_scan_snapshots(delete)",
++    "grant-removed:authenticated.public.creator_social_scan_snapshots(truncate)",
++    "grant-removed:authenticated.public.creator_social_scan_snapshots(insert)",
++    "grant-removed:authenticated.public.creator_social_scan_snapshots(update)",
++    "grant-removed:authenticated.public.creator_social_scan_snapshots(delete)",
++    "grant-removed:anon.public.creator_public_passports(select)",
++    "grant-removed:anon.public.creator_public_passports(insert)",
++    "grant-removed:anon.public.creator_public_passports(update)",
++    "grant-removed:anon.public.creator_public_passports(delete)",
++    "grant-removed:authenticated.public.creator_public_passports(truncate)",
++    "grant-removed:authenticated.public.creator_public_passports(insert)",
++    "grant-removed:authenticated.public.creator_public_passports(update)",
++    "grant-removed:anon.public.creator_review_statuses(select)",
++    "grant-removed:anon.public.creator_review_statuses(insert)",
++    "grant-removed:anon.public.creator_review_statuses(update)",
++    "grant-removed:anon.public.creator_review_statuses(delete)",
++    "grant-removed:authenticated.public.creator_review_statuses(truncate)",
++    "grant-removed:authenticated.public.creator_review_statuses(select)",
++    "grant-removed:authenticated.public.creator_review_statuses(insert)",
++    "grant-removed:authenticated.public.creator_review_statuses(update)",
++    "grant-removed:authenticated.public.creator_review_statuses(delete)",
++    "grant-removed:anon.public.creator_review_notes(select)",
++    "grant-removed:anon.public.creator_review_notes(insert)",
++    "grant-removed:anon.public.creator_review_notes(update)",
++    "grant-removed:anon.public.creator_review_notes(delete)",
++    "grant-removed:authenticated.public.creator_review_notes(truncate)",
++    "grant-removed:authenticated.public.creator_review_notes(select)",
++    "grant-removed:authenticated.public.creator_review_notes(insert)",
++    "grant-removed:authenticated.public.creator_review_notes(update)",
++    "grant-removed:authenticated.public.creator_review_notes(delete)",
++    "grant-removed:anon.public.mission_shortlists(select)",
++    "grant-removed:anon.public.mission_shortlists(insert)",
++    "grant-removed:anon.public.mission_shortlists(update)",
++    "grant-removed:anon.public.mission_shortlists(delete)",
++    "grant-removed:authenticated.public.mission_shortlists(truncate)",
++    "grant-removed:authenticated.public.mission_shortlists(select)",
++    "grant-removed:authenticated.public.mission_shortlists(insert)",
++    "grant-removed:authenticated.public.mission_shortlists(update)",
++    "grant-removed:authenticated.public.mission_shortlists(delete)",
++    "grant-removed:anon.public.operator_audit_events(select)",
++    "grant-removed:anon.public.operator_audit_events(insert)",
++    "grant-removed:anon.public.operator_audit_events(update)",
++    "grant-removed:anon.public.operator_audit_events(delete)",
++    "grant-removed:authenticated.public.operator_audit_events(truncate)",
++    "grant-removed:authenticated.public.operator_audit_events(select)",
++    "grant-removed:authenticated.public.operator_audit_events(insert)",
++    "grant-removed:authenticated.public.operator_audit_events(update)",
++    "grant-removed:authenticated.public.operator_audit_events(delete)"
++  ],
++  "transactionExpectation": "transactional",
++  "replayExpectation": "migration_history_noop"
++},
+ ] as const satisfies readonly ReviewedMigration[];
+ 
+ const NON_RELEASE_TIMESTAMP_MIGRATIONS = new Set([
+--- a/scripts/release/preflight.test.ts
++++ b/scripts/release/preflight.test.ts
+@@ -38,8 +38,8 @@
+       ...new Set(manifest.migrations.flatMap((migration) => migration.capabilities)),
+     ];
+ 
+-    // Retain all 501 earlier contracts and add the 28 D18 staff access capabilities.
+-    expect(capabilities).toHaveLength(529);
++    // Retain all 529 earlier capabilities; add the D19 legacy denial contracts.
++    expect(capabilities).toHaveLength(587);
+     expect(capabilities.filter((capability) => !hasCapabilityValidator(capability))).toEqual([]);
+   });
+ 
+@@ -397,3 +397,11 @@
+     ).rejects.toThrow("preflight output must not be inside supabase/migrations");
+   });
+ });
++
++it.each(['INSERT','UPDATE','DELETE','TRUNCATE'])('D19 detects stale %s table grants without treating them as RPCs', async privilege => {
++ const capability=`grant-removed:authenticated.public.example(${privilege.toLowerCase()})`;
++ const check=async (schema:string)=>runPreflight({databaseUrl:'postgresql://synthetic',projectRef:'disposable',manifestDigest:'a'.repeat(64),expectedCapabilities:[capability],now:new Date('2026-10-24')},{run:vi.fn().mockResolvedValue({code:0,stdout:'',stderr:''}),readFile:vi.fn().mockResolvedValue(schema),rm:vi.fn(),tempFile:()=> 'synthetic.sql'});
++ expect((await check(`GRANT ${privilege} ON TABLE public.example TO authenticated;`)).capabilities[0].status).toBe('divergent');
++ expect((await check('GRANT ALL ON TABLE public.example TO authenticated;')).capabilities[0].status).toBe('divergent');
++ expect((await check('')).capabilities[0].status).toBe('unverifiable');
++});
+--- a/scripts/release/preflight.ts
++++ b/scripts/release/preflight.ts
+@@ -61,8 +61,8 @@
+ function grantValidator(role: string, schemaName: string, object: string, privilege: string) {
+   const target = qualified(schemaName, object);
+   const grantee = identifier(role);
+-  if (privilege === "select" || privilege === "all") {
+-    const action = privilege === "all" ? "ALL(?: PRIVILEGES)?" : "SELECT";
++  if (["select", "insert", "update", "delete", "truncate", "all"].includes(privilege)) {
++    const action = privilege === "all" ? "ALL(?: PRIVILEGES)?" : `(?:${privilege.toUpperCase()}|ALL(?: PRIVILEGES)?)`;
+     return (schema: string) =>
+       presentIf(
+         statementMatches(
+--- a/server/test/admin-staff.test.ts
++++ b/server/test/admin-staff.test.ts
+@@ -1,3 +1,4 @@
++import { grantStaffFixture } from "./helpers";
+ import { fixtureName } from "./helpers";
+ import { randomUUID } from "node:crypto";
+ import { afterAll, beforeAll, describe, expect, it } from "vitest";
+@@ -81,6 +82,7 @@
+ 
+   it("audit attribution uses the staff identity, not client headers", async () => {
+     const staff = await makeStaff(`staff-audit-${randomUUID()}@test.local`, DEMO_WS);
++    await grantStaffFixture(staff.userId,DEMO_WS,"operator");
+     const creator = await makeCreator(fixtureName("audit-target@test.local"));
+     // A CRM action (review) as the staff JWT — also send spoofed operator headers.
+     const res = await app.request(`/api/admin/creators/${creator.userId}/review`, {
+--- a/server/test/audit-staff-capabilities.test.ts
++++ b/server/test/audit-staff-capabilities.test.ts
+@@ -5,18 +5,19 @@
+ import type { createStaffCapabilityFixture } from "./staffCapabilityFixture";
+ import type { ActiveMissionWorkspace, MissionPublicationView } from "../../src/lib/activeMission";
+ vi.mock("../lib/activeMission/proofUrl.js",()=>({inspectProofUrl:async({url}:{url:string})=>({normalizedUrl:url,status:"unavailable",metadata:{},errorCategory:"network"})}));
+-describe.skipIf(process.env.RUN_AUDIT_INTEGRATION!=="1")("D18 exact-owned staff roles/API/RLS",()=>{
++const task=process.env.ADFOCATE_ACCEPTANCE_TASK==="D19"?"D19":"D18";
++describe.skipIf(process.env.RUN_AUDIT_INTEGRATION!=="1")(`${task} exact-owned staff roles/API/RLS`,()=>{
+  let owned:Awaited<ReturnType<typeof createStaffCapabilityFixture>>,fixture:Awaited<ReturnType<typeof createStaffCapabilityFixture>>["base"],roles:Awaited<ReturnType<typeof createStaffCapabilityFixture>>["roles"];
+  let app:ReturnType<(typeof import("../app"))["createApp"]>["app"],initialBefore:unknown,afterJoin:unknown,joinBaseline:unknown;
+  const results:{path:string;method:string;status:number}[]=[];
+- beforeAll(async()=>{owned=await (await import("./staffCapabilityFixture")).createStaffCapabilityFixture();fixture=owned.base;roles=owned.roles;app=(await import("../app")).createApp().app;initialBefore=await Promise.all(fixture.creators.map(c=>fixture.neutrality(c.id)));},90000);
++ beforeAll(async()=>{owned=await (await import("./staffCapabilityFixture")).createStaffCapabilityFixture(task);fixture=owned.base;roles=owned.roles;app=(await import("../app")).createApp().app;initialBefore=await Promise.all(fixture.creators.map(c=>fixture.neutrality(c.id)));},90000);
+  async function request<T=Record<string,unknown>>(jwt:string,path:string,method="GET",body?:unknown,key?:string,status=200):Promise<T>{
+   const r=await app.request(`/api${path}`,{method,headers:{Authorization:`Bearer ${jwt}`,"X-Workspace-Slug":fixture.slug,"Content-Type":"application/json",...(key?{"Idempotency-Key":key}:{})},...(body===undefined?{}:{body:JSON.stringify(body)})});
+   const value=await r.json();results.push({path:path.replace(/[0-9a-f]{8}-[0-9a-f-]{27,}/gi,":id"),method,status:r.status});expect(r.status,`${method} ${path}: ${JSON.stringify(value)}`).toBe(status);return value as T;
+  }
+  afterAll(async()=>{
+   if(!fixture)return;const after=await Promise.all(fixture.creators.map(c=>fixture.neutrality(c.id)));const expected=afterJoin??initialBefore;
+-  owned.save("api-finished");writeFileSync("docs/verification/D18-api-contract.json",JSON.stringify({runId:fixture.runId,target:fixture.target.identity,results,roles:Object.fromEntries(Object.entries(roles).map(([name,actor])=>[name,{id:actor.id}])),neutrality:{initialBefore,joinBaseline,before:expected,after,allEqual:JSON.stringify(expected)===JSON.stringify(after)},provider:"proof metadata mocked unavailable; no real messages/payments/paid AI",scope:"Only new exact-owned fixture staff/memberships/roles changed; no production data or automatic migration grants"},null,2)+"\n");expect(after).toEqual(expected);
++  owned.save("api-finished");writeFileSync(`docs/verification/${task}-api-contract.json`,JSON.stringify({runId:fixture.runId,target:fixture.target.identity,results,roles:Object.fromEntries(Object.entries(roles).map(([name,actor])=>[name,{id:actor.id}])),neutrality:{initialBefore,joinBaseline,before:expected,after,allEqual:JSON.stringify(expected)===JSON.stringify(after)},provider:"proof metadata mocked unavailable; no real messages/payments/paid AI",scope:"Only new exact-owned fixture staff/memberships/roles changed; no production data or automatic migration grants"},null,2)+"\n");expect(after).toEqual(expected);
+  });
+  it("requires a separate staff grant despite brand owner membership and preserves no-membership scope errors",async()=>{
+   const access=await request<{access:{workspace:{role:null}}}>(roles.noRole.jwt,"/admin/access");expect(access.access.workspace.role).toBeNull();
+@@ -63,7 +64,7 @@
+   await request(roles.admin.jwt,path,"PUT",{...body,active:true,expectedRevision:2,requestId:randomUUID(),reason:"Owned fixture role restored"});await request(actor.jwt,"/admin/creators/review");
+  });
+  it("requires platform content editor for global drafts without inventing course content",async()=>{
+-  const editor=roles.content_editor,body={kind:"resource",slug:`d18-resource-${fixture.runId}`,title_zh:"合成角色資源",title_en:"Owned role resource",excerpt_zh:"角色權限測試",body_zh:"Synthetic draft body for role acceptance. No course lessons or content approval."};
++  const editor=roles.content_editor,body={kind:"resource",slug:`${task.toLowerCase()}-resource-${fixture.runId}`,title_zh:"合成角色資源",title_en:"Owned role resource",excerpt_zh:"角色權限測試",body_zh:"Synthetic draft body for role acceptance. No course lessons or content approval."};
+   const created=await request<{item:{id:string}}>(editor.jwt,"/admin/academy","POST",body,undefined,201);
+   owned.saveResource({id:created.item.id,slug:body.slug});
+   await request(editor.jwt,`/admin/academy/${created.item.id}`);await request(roles.admin.jwt,`/admin/academy/${created.item.id}`,"GET",undefined,undefined,403);await request(roles.operator.jwt,"/admin/content","GET",undefined,undefined,403);
+--- a/server/test/audit-workflow-roundtrip.test.ts
++++ b/server/test/audit-workflow-roundtrip.test.ts
+@@ -9,9 +9,14 @@
+ const enabled = process.env.RUN_AUDIT_INTEGRATION === "1";
+ describe.skipIf(!enabled)("D07 exact-ID disposable workflow roundtrip", () => {
+   let fixture: Awaited<ReturnType<typeof createAuditFixture>>;
++  let owned:Awaited<ReturnType<(typeof import("./staffCapabilityFixture.js"))["createStaffCapabilityFixture"]>>|undefined;
++  let core:Record<string,string>|undefined;
+   let app: ReturnType<(typeof import("../app"))["createApp"]>["app"];
+   beforeAll(async () => {
+-    fixture = await (await import("./auditWorkflowFixture")).createAuditFixture();
++    if(process.env.ADFOCATE_ACCEPTANCE_TASK==="D19"){
++      owned=await(await import("./staffCapabilityFixture.js")).createStaffCapabilityFixture("D19");
++      fixture={...owned.base,operator:owned.roles.operator};
++    }else fixture = await (await import("./auditWorkflowFixture")).createAuditFixture();
+     app = (await import("../app")).createApp().app;
+   }, 60000);
+   async function request<T>(jwt:string,path:string,method="GET",body?:unknown,key?:string,status=200):Promise<T> {
+@@ -51,6 +56,7 @@
+     let workspace = await read(); const workflowId=workspace.workflow.id; const itemId=workspace.workItems.find((item)=>item.required)!.id;
+     const creatorPath=`/my-missions/${submissionId}/work-items/${itemId}`;
+     const operatorPath=`/admin/active-missions/${workflowId}/work-items/${itemId}`;
++    const reviewer=owned?.roles.reviewer??fixture.operator;
+     const before = await fixture.neutrality(creator.id);
+     expect(workspace.workflow.state).toBe("fulfillment_pending");
+     await request(fixture.operator.jwt,`/admin/active-missions/${workflowId}/fulfillment/shipped`,"POST",{note:"Synthetic shipment"});
+@@ -65,8 +71,8 @@
+     await request(creator.jwt,`${creatorPath}/submit`,"POST",submitBody,submitKey);
+     await request(creator.jwt,`${creatorPath}/submit`,"POST",submitBody,submitKey);
+     workspace=await read(); item=workspace.workItems.find((candidate)=>candidate.id===itemId)!;
+-    await request(fixture.operator.jwt,`${operatorPath}/start-review`,"POST",{expectedState:item.state});
+-    await request(fixture.operator.jwt,`${operatorPath}/request-revision`,"POST",{expectedState:"under_review",versionId:item.currentSubmittedVersionId,
++    await request(reviewer.jwt,`${operatorPath}/start-review`,"POST",{expectedState:item.state});
++    await request(reviewer.jwt,`${operatorPath}/request-revision`,"POST",{expectedState:"under_review",versionId:item.currentSubmittedVersionId,
+       deadline:new Date(Date.now()+86400000).toISOString(),items:[{category:"quality",text:"Keep the product visible",required:true}]});
+     workspace=await read(); item=workspace.workItems.find((candidate)=>candidate.id===itemId)!;
+     expect(item.state).toBe("revision_requested");
+@@ -74,26 +80,26 @@
+     workspace=await read(); item=workspace.workItems.find((candidate)=>candidate.id===itemId)!;
+     await request(creator.jwt,`${creatorPath}/submit`,"POST",{expectedRevision:item.draft!.revision},randomUUID());
+     workspace=await read(); item=workspace.workItems.find((candidate)=>candidate.id===itemId)!;
+-    await request(fixture.operator.jwt,`${operatorPath}/start-review`,"POST",{expectedState:item.state});
+-    await request(fixture.operator.jwt,`${operatorPath}/approve-to-publish`,"POST",{expectedState:"under_review",versionId:item.currentSubmittedVersionId});
++    await request(reviewer.jwt,`${operatorPath}/start-review`,"POST",{expectedState:item.state});
++    await request(reviewer.jwt,`${operatorPath}/approve-to-publish`,"POST",{expectedState:"under_review",versionId:item.currentSubmittedVersionId});
+     const publicationPath=`/my-missions/${submissionId}/publication/${itemId}`;
+     const publication=async()=> (await request<{publication:MissionPublicationView}>(creator.jwt,publicationPath)).publication;
+     let proof=await publication();
+     await request(creator.jwt,`${publicationPath}/proofs`,"POST",{expectedState:proof.state,expectedRevision:proof.revision,
+       primaryUrl:`https://www.instagram.com/p/${randomUUID().replaceAll("-","")}/`,additionalUrls:[],evidenceAssetIds:[]},randomUUID());
+     proof=await publication();
+-    await request(fixture.operator.jwt,`${operatorPath}/proof-review/start`,"POST",{expectedState:proof.state,expectedRevision:proof.revision,attemptId:proof.currentAttempt!.id},randomUUID());
++    await request(reviewer.jwt,`${operatorPath}/proof-review/start`,"POST",{expectedState:proof.state,expectedRevision:proof.revision,attemptId:proof.currentAttempt!.id},randomUUID());
+     proof=await publication();
+     const proofChecklist={publicly_accessible:true,platform_matches:true,account_matches:true,content_matches_approved_version:true,timing_acceptable:true,disclosures_present:true};
+-    await request(fixture.operator.jwt,`${operatorPath}/proof-review/corrections`,"POST",{expectedState:proof.state,expectedRevision:proof.revision,
++    await request(reviewer.jwt,`${operatorPath}/proof-review/corrections`,"POST",{expectedState:proof.state,expectedRevision:proof.revision,
+       attemptId:proof.currentAttempt!.id,checklist:{...proofChecklist,content_matches_approved_version:false},corrections:[{category:"content",text:"Use approved content",position:0}]},randomUUID());
+     proof=await publication(); expect(proof.state).toBe("proof_correction_requested");
+     await request(creator.jwt,`${publicationPath}/proofs`,"POST",{expectedState:proof.state,expectedRevision:proof.revision,
+       primaryUrl:`https://www.instagram.com/p/${randomUUID().replaceAll("-","")}/`,additionalUrls:[],evidenceAssetIds:[]},randomUUID());
+     proof=await publication();
+-    await request(fixture.operator.jwt,`${operatorPath}/proof-review/start`,"POST",{expectedState:proof.state,expectedRevision:proof.revision,attemptId:proof.currentAttempt!.id},randomUUID());
+-    proof=await publication();
+-    await request(fixture.operator.jwt,`${operatorPath}/proof-review/verify`,"POST",{expectedState:proof.state,expectedRevision:proof.revision,attemptId:proof.currentAttempt!.id,checklist:proofChecklist},randomUUID());
++    await request(reviewer.jwt,`${operatorPath}/proof-review/start`,"POST",{expectedState:proof.state,expectedRevision:proof.revision,attemptId:proof.currentAttempt!.id},randomUUID());
++    proof=await publication();
++    await request(reviewer.jwt,`${operatorPath}/proof-review/verify`,"POST",{expectedState:proof.state,expectedRevision:proof.revision,attemptId:proof.currentAttempt!.id,checklist:proofChecklist},randomUUID());
+     workspace=await read(); expect(workspace.workflow.state).toBe("proof_verified");
+     // Creator projection deliberately hides the private contract. Only the operator can complete.
+     const review=await request<{completionEligibility:{eligible:boolean;blockers:string[]}}>(fixture.operator.jwt,`/admin/active-missions/${workflowId}/completion`);
+@@ -112,6 +118,7 @@
+     workspace=await read(); expect(workspace.pendingReward?.status).toBe("cancelled");
+     const after=await fixture.neutrality(creator.id); expect(after).toEqual(before);
+     expect(workspace.events.length).toBeGreaterThan(8);
++    core={submissionId,workflowId,itemId,creatorId:creator.id,cancelledPendingRewardId:completion.pendingReward.id};owned?.saveCore(core);
+     fixture.recordEvidence({caseId:"D07-active",submissionId,workflowId,decisionId:completion.decision.id,pendingRewardId:completion.pendingReward.id,
+       beforeSnapshot:before,pendingSnapshot,afterSnapshot:after,historyEvents:workspace.events.length,cancellation,
+       metadataProvider:"mock-unavailable",auth:"real-local-Supabase",result:"passed"});
+@@ -169,9 +176,26 @@
+     const joined=await request<{id:string}>(creator.jwt,`/missions/${mission.slug}/join`,"POST");
+     await request(creator.jwt,`/missions/${mission.slug}/submit`,"PUT",{content_urls:["invalid"]},undefined,400);
+     await request(creator.jwt,`/missions/${mission.slug}/submit`,"PUT",{content_urls:["https://example.test/synthetic-proof"]});
+-    await request(fixture.operator.jwt,`/admin/submissions/${joined.id}/approve`,"POST",{});
++    await request((owned?.roles.reviewer??fixture.operator).jwt,`/admin/submissions/${joined.id}/approve`,"POST",{});
+     const row=fixture.must(await fixture.service.from("mission_submissions").select("id,status,reviewed_at").eq("id",joined.id).single());
+     expect(row!.status).toBe("approved"); expect(row!.reviewed_at).toBeTruthy();
++    owned?.saveLegacy({submissionId:joined.id,missionId:mission.id,missionSlug:mission.slug,creatorId:creator.id});
+     fixture.recordEvidence({caseId:"D07-legacy",submissionId:joined.id,result:"passed",auth:"real-local-Supabase",financialMeaning:"existing legacy reward behavior; separate from neutral pending handoff"});
+   },30000);
++  if(process.env.ADFOCATE_ACCEPTANCE_TASK==="D19")it("D19 reapproval preserves an issued legacy anchor and reloads one neutral pending reward through finance",async()=>{
++    expect(owned).toBeDefined();expect(core).toBeDefined();const c=core!;
++    const creator=fixture.creators.find(x=>x.id===c.creatorId)!;
++    const legacy=()=>JSON.parse(fixture.target.sql(`select coalesce(jsonb_agg(jsonb_build_object('id',id,'status',status,'pointsAwarded',points_awarded,'xpAwarded',xp_awarded) order by id),'[]'::jsonb) from public.mission_submissions where workspace_id='${fixture.workspaceId}' and status='approved';`));
++    const before=await Promise.all(fixture.creators.map(x=>fixture.neutrality(x.id))),anchors=legacy();expect(anchors.length).toBeGreaterThan(0);
++    expect(before[0].budget).toBeGreaterThan(0);expect(before[0].rewardInventory).toHaveLength(1);
++    const workspace=await request<ActiveMissionWorkspace>(creator.jwt,`/my-missions/${c.submissionId}/workspace`);expect(workspace.workflow.state).toBe("proof_verified");
++    const body={expectedState:"proof_verified",expectedRevision:workspace.workflow.revision},key=randomUUID();
++    const path=`/admin/active-missions/${c.workflowId}/completion`;
++    const first=await request<{pendingReward:{id:string}}>(fixture.operator.jwt,path,"POST",body,key),replay=await request<typeof first>(fixture.operator.jwt,path,"POST",body,key);expect(replay.pendingReward.id).toBe(first.pendingReward.id);expect((replay as {idempotent?:boolean}).idempotent).toBe(true);
++    const finance=await request<{items:{id:string;status:string}[]}>(owned!.roles.finance_viewer.jwt,"/admin/reward-handoffs");expect(finance.items.find(x=>x.id===first.pendingReward.id)).toMatchObject({status:"pending"});
++    const after=await Promise.all(fixture.creators.map(x=>fixture.neutrality(x.id)));expect(after).toEqual(before);expect(legacy()).toEqual(anchors);
++    expect(fixture.target.sql(`select count(*) from public.mission_pending_rewards where mission_workflow_id='${c.workflowId}' and status='pending';`)).toBe("1");
++    owned!.saveCore({...c,pendingRewardId:first.pendingReward.id});
++    fixture.recordEvidence({caseId:"D19-reapproval",beforeSnapshot:before,afterSnapshot:after,legacyBefore:anchors,legacyAfter:legacy(),pendingRewardId:first.pendingReward.id,historyRetained:true,result:"passed"});
++  },60000);
+ });
+--- a/server/test/campaigns.test.ts
++++ b/server/test/campaigns.test.ts
+@@ -1,3 +1,4 @@
++import { grantStaffFixture } from "./helpers";
+ import { fixtureName } from "./helpers";
+ import { describe, it, expect, beforeAll, afterAll } from "vitest";
+ import { serviceForTests, makeCreator, makeMission, makeStaff, cleanup, DEMO_WS, userForJwt } from "./helpers.js";
+@@ -445,6 +446,7 @@
+ 
+     // This operator belongs only to the campaign's workspace (single-workspace PK).
+     const operator = await makeStaff(fixtureName("campaign-route-operator@test.local"), wsId);
++    await grantStaffFixture(operator.userId,wsId,"workspace_admin");
+     const operatorHeaders = { Authorization: `Bearer ${operator.jwt}`, "X-Workspace-Slug": fixtureName("test-camp-route-ws") };
+ 
+     // Mission in that workspace.
+--- a/server/test/content.test.ts
++++ b/server/test/content.test.ts
+@@ -16,7 +16,13 @@
+     await cleanup();
+     koc = await makeCreator(fixtureName("content-read@test.local"), 0);
+     const svc = serviceForTests();
+-    const { data: cat } = await svc.from("content_categories").select("id").eq("slug", "creator-tips").single();
++    const categorySlug = process.env.INTEGRATION_FIXTURE_NAMESPACE ? `creator-tips-${process.env.INTEGRATION_FIXTURE_NAMESPACE}` : "creator-tips";
++    if (process.env.INTEGRATION_MUTATION_OWNERSHIP === "1") {
++      const seeded = await svc.from("content_categories").insert({ slug: categorySlug, label_zh: "Synthetic category" });
++      if (seeded.error && seeded.error.code !== "23505") throw seeded.error;
++    }
++    const { data: cat, error: categoryError } = await svc.from("content_categories").select("id").eq("slug", categorySlug).single();
++    if (categoryError) throw categoryError;
+     const categoryId = cat!.id;
+     await svc.from("content_items").insert([
+       { kind: "article", slug: "c1-pub", status: "published", title_zh: "已發布", body_zh: "內容", audience: "creator", published_at: new Date().toISOString() },
+--- /dev/null
++++ b/server/test/fixture-staff-grants.test.ts
+@@ -0,0 +1,17 @@
++// @vitest-environment node
++import {beforeEach,afterEach,it,expect,vi} from 'vitest';
++const h=vi.hoisted(()=>({id:'11111111-1111-4111-8111-111111111111',owned:true,sql:vi.fn(()=>''),identity:{projectId:'adfocate-r1-shaped-20261023'},request:vi.fn(async()=>new Response('{}'))}));
++vi.mock('../app.js',()=>({createApp:()=>({app:{request:h.request}})}));
++vi.mock('./ownedFixtureTransport.js',()=>({ownsFixtureId:()=>h.owned,createOwnedFixtureFetch:vi.fn(),fixtureOwnership:()=>({}),captureFixtureRows:vi.fn()}));
++vi.mock('../../scripts/audit/local-targets.mjs',()=>({verifiedTarget:()=>({identity:h.identity,sql:h.sql})}));
++vi.mock('./helpers.js',async original=>({...await original<object>(),makeStaff:async()=>({userId:h.id,email:'owned@test.local',jwt:'fixture-session'}),serviceForTests:()=>({auth:{getUser:async()=>({data:{user:{id:h.id}},error:null})}})}));
++beforeEach(()=>{vi.resetModules();vi.clearAllMocks();h.owned=true;vi.stubEnv('INTEGRATION_CAPABILITY_FIXTURES','1');vi.stubEnv('INTEGRATION_TARGET_IDENTITY_JSON',JSON.stringify(h.identity));});
++afterEach(()=>vi.unstubAllEnvs());
++it('D19 compatibility operator explicitly receives workspace and platform grants before business requests',async()=>{
++ const {createFixtureStaffApp}=await import('./fixtureStaffTransport');await createFixtureStaffApp().fixtureOperator();
++ expect(h.sql.mock.calls.flat().filter(x=>String(x).includes('bootstrap_staff_access')).join('\n')).toContain('workspace_admin');
++ expect(h.sql.mock.calls.flat().filter(x=>String(x).includes('bootstrap_staff_access')).join('\n')).toContain('content_editor');
++});
++it('D19 compatibility fixture cannot grant a pre-existing unowned staff subject',async()=>{
++ h.owned=false;const {createFixtureStaffApp}=await import('./fixtureStaffTransport');await expect(createFixtureStaffApp().fixtureOperator()).rejects.toThrow(/owned/);expect(h.sql).not.toHaveBeenCalled();
++});
+--- a/server/test/fixtureStaffTransport.ts
++++ b/server/test/fixtureStaffTransport.ts
+@@ -3,7 +3,8 @@
+ // Auth-gate tests use createApp directly, so rejection/auto-enrol assertions are not bypassed.
+ import { randomUUID } from "node:crypto";
+ import { createApp } from "../app.js";
+-import { DEMO_WS, makeStaff, serviceForTests } from "./helpers.js";
++import { DEMO_WS, makeStaff, serviceForTests, grantStaffFixture } from "./helpers.js";
++import { captureFixtureRows } from "./ownedFixtureTransport.js";
+ 
+ export function createFixtureStaffApp() {
+   const result=createApp(),original=result.app.request.bind(result.app);
+@@ -15,7 +16,11 @@
+     let pending=creating.get(key);
+     if(!pending){
+       pending=makeStaff(`business-fixture-${randomUUID()}@test.local`,DEMO_WS)
+-        .then((next)=>{actors.set(key,next);return next;});
++        .then(async(next)=>{
++          await grantStaffFixture(next.userId,DEMO_WS,"workspace_admin");
++          await grantStaffFixture(next.userId,null,"content_editor");
++          actors.set(key,next);return next;
++        });
+       creating.set(key,pending);
+     }
+     try{return await pending;}finally{creating.delete(key);}
+@@ -26,7 +31,13 @@
+     if(secret && secret===(process.env.ADMIN_SECRET||"test-admin-secret") && !headers.has("Authorization")){
+       const staff=await fixtureOperator();headers.delete("x-admin-secret");headers.set("Authorization",`Bearer ${staff.jwt}`);
+       headers.set("X-Workspace-Slug","demo");
+-      return original(input,{...init,headers},env,ctx);
++      const response=await original(input,{...init,headers},env,ctx);
++      if(process.env.INTEGRATION_MUTATION_OWNERSHIP==="1"&&response.ok&&["POST","PATCH"].includes(init?.method??"GET")){
++        const path=new URL(input instanceof Request?input.url:String(input),"http://fixture.invalid").pathname;
++        const table=path.startsWith("/api/admin/academy")?"academy_content":path.startsWith("/api/admin/content")?"content_items":null;
++        if(table){const value=await response.clone().json().catch(()=>null);if(value?.item)captureFixtureRows(table,value.item);}
++      }
++      return response;
+     }
+     return original(input,init,env,ctx);
+   }) as typeof result.app.request;
+--- a/server/test/helpers.ts
++++ b/server/test/helpers.ts
+@@ -1,4 +1,7 @@
+ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
++import { createOwnedFixtureFetch, fixtureOwnership, ownsFixtureId, captureFixtureRows } from "./ownedFixtureTransport.js";
++import { randomUUID } from "node:crypto";
++import { isDeepStrictEqual } from "node:util";
+ // @ts-expect-error Executable ESM identity verifier has no declaration file.
+ import { verifyIntegrationIdentity } from "../../scripts/run-integration-tests.mjs";
+ 
+@@ -60,7 +63,10 @@
+ }
+ 
+ function service(): SupabaseClient {
+-  if (!_service) _service = createClient(url, serviceKey, nextClientOptions());
++  if (!_service) {
++    const options=nextClientOptions();
++    _service=createClient(url,serviceKey,process.env.INTEGRATION_MUTATION_OWNERSHIP==="1"?{...options,global:{...options.global,fetch:createOwnedFixtureFetch()}}:options);
++  }
+   return _service;
+ }
+ 
+@@ -129,6 +135,23 @@
+   });
+   if (signErr) throw signErr;
+   return { userId, email, jwt: session.session!.access_token };
++}
++
++/** Explicit D19 fixture grants only. Never applies to arbitrary staff or real memberships. */
++export async function grantStaffFixture(userId:string,workspaceId:string|null,role:"workspace_admin"|"operator"|"reviewer"|"finance_viewer"|"content_editor") {
++  if(process.env.INTEGRATION_CAPABILITY_FIXTURES!=="1")return;
++  if(!ownsFixtureId("staff_users",userId))throw new Error("Staff subject is not an exact owned fixture ID");
++  const identity=JSON.parse(process.env.INTEGRATION_TARGET_IDENTITY_JSON??"{}");
++  const kind=identity.projectId==="adfocate-r1-shaped-20261023"?"shaped":identity.projectId==="adfocate-r1-empty-20261023"?"empty":null;
++  if(!kind)throw new Error("Unapproved fixture project");
++  // @ts-expect-error Native ESM identity helper.
++  const target=(await import("../../scripts/audit/local-targets.mjs")).verifiedTarget(kind);
++  if(!isDeepStrictEqual(identity,target.identity))throw new Error("Fixture grant target drift");
++  if(!/^[a-f0-9-]{36}$/i.test(userId)||workspaceId&&!/^[a-f0-9-]{36}$/i.test(workspaceId)||!["workspace_admin","operator","reviewer","finance_viewer","content_editor"].includes(role))throw new Error("Invalid exact fixture grant");
++  const existing=target.sql(workspaceId?`select role from public.staff_workspace_roles where user_id='${userId}' and workspace_id='${workspaceId}' and active;`:`select role from public.staff_platform_roles where user_id='${userId}' and role='content_editor' and active;`);
++  if(existing){if(existing!==role)throw new Error("Existing fixture grant differs; no implicit promotion");return;}
++  target.sql(`select private.bootstrap_staff_access('${userId}',${workspaceId?`'${workspaceId}'`:'null'},'${userId}','${role}',true,0,'${randomUUID()}','Explicit D19 business integration actor','D19 owned disposable test attestation');`);
++  captureFixtureRows(workspaceId?"staff_workspace_roles":"staff_platform_roles",{user_id:userId});
+ }
+ 
+ let brandWsSeq = 0;
+@@ -357,6 +380,7 @@
+ 
+ 
+ export async function cleanup() {
++  if(process.env.INTEGRATION_RETAIN_FIXTURES==="1")return {retainedIds:fixtureOwnership()};
+   // Never discover ownership from an email/phone/slug prefix. Only IDs captured on creation.
+   if (!fixtureIds.users.size && !fixtureIds.missions.size && !fixtureIds.gifts.size && !fixtureIds.workspaces.size) return;
+   const svc = service();
+@@ -378,7 +402,10 @@
+   for(const table of ["operator_audit_events","mission_shortlists","mission_submissions"]) await remove(table,"mission_id",removableMissions);
+   if(await remove("missions","id",removableMissions)) for(const id of removableMissions)fixtureIds.missions.delete(id);
+   // Active histories are append-only. Keep their actors/data for inspection instead of disabling guards.
+-  const users=protectedMissions.size ? [] : [...fixtureIds.users];
++  const owned=fixtureOwnership();
++  const grantedStaff=new Set([...(owned.staff_workspace_roles?.ids??[]),...(owned.staff_platform_roles?.ids??[])]);
++  // Access audits keep their exact new actors and memberships; never remove audit/FK guards.
++  const users=protectedMissions.size ? [] : [...fixtureIds.users].filter(id=>!grantedStaff.has(id));
+   for(const table of ["operator_audit_events","creator_review_notes","creator_review_statuses","mission_shortlists",
+     "creator_public_passports","creator_public_profile_snapshots","creator_portfolio_links","creator_social_accounts",
+     "redemptions","earnings_transactions","earnings_balances","point_transactions","point_balances"]){
+@@ -409,7 +436,7 @@
+     const reset=await svc.rpc("set_workspace_budget_enforcement",{p_workspace:DEMO_WS,p_enforced:false});
+     if(reset.error)throw reset.error;
+   }
+-  return {retainedIds:[...new Set([...retained,...protectedMissions,...(protectedMissions.size?fixtureIds.users:[])])]};
++  return {retainedIds:[...new Set([...retained,...grantedStaff,...protectedMissions,...(protectedMissions.size?fixtureIds.users:[])])]};
+ }
+ 
+ 
+--- a/server/test/insights.test.ts
++++ b/server/test/insights.test.ts
+@@ -1,8 +1,9 @@
++import { grantStaffFixture } from "./helpers";
+ import { fixtureName } from "./helpers";
+ // server/test/insights.test.ts
+ import { describe, it, expect, beforeAll, afterAll } from "vitest";
+ import { createApp } from "../app";
+-import { DEMO_WS, makeStaff, makeCreator, seedSubmission, cleanup, hasSupabaseEnv } from "./helpers";
++import { DEMO_WS, makeStaff, makeCreator, seedSubmission, cleanup, hasSupabaseEnv, serviceForTests } from "./helpers";
+ 
+ const { app } = createApp();
+ const suite = hasSupabaseEnv ? describe : describe.skip;
+@@ -18,9 +19,14 @@
+   beforeAll(async () => {
+     await cleanup();
+     staff = await makeStaff(fixtureName("insights-staff@test.local"), DEMO_WS);
++    await grantStaffFixture(staff.userId,DEMO_WS,"operator");
+     creator = await makeCreator(fixtureName("insights-koc@test.local"), 0);
+     await seedSubmission(creator.userId, "joined", fixtureName("test-insights-joined"));
+     await seedSubmission(creator.userId, "submitted", fixtureName("test-insights-submitted"));
++    // D17 reports completed Hong Kong days; keep seeded activity inside that window.
++    const previousDay = new Date(Date.now() - 86_400_000).toISOString();
++    const dated = await serviceForTests().from("mission_submissions").update({ created_at: previousDay, submitted_at: previousDay }).eq("creator_id", creator.userId);
++    if (dated.error) throw dated.error;
+   });
+   afterAll(cleanup);
+ 
+--- /dev/null
++++ b/server/test/ownedFixtureTransport.ts
+@@ -0,0 +1,76 @@
++// Test service transport only. User/RLS clients and the real application are never wrapped.
++import {appendFileSync,existsSync,readFileSync} from 'node:fs';
++const ids=new Map<string,Set<string>>(),keys=new Map<string,string>();let loaded=false;
++const uuid=/^[a-f0-9-]{36}$/i;
++function remember(table:string,key:string,values:string[],write=true){
++ const owned=ids.get(table)??new Set<string>();for(const id of values)if(uuid.test(id))owned.add(id);ids.set(table,owned);keys.set(table,key);
++ if(write&&process.env.INTEGRATION_OWNED_JOURNAL&&values.length)appendFileSync(process.env.INTEGRATION_OWNED_JOURNAL,JSON.stringify({table,key,ids:values.filter(id=>uuid.test(id))})+'\n');
++}
++function load(){
++ if(loaded)return;loaded=true;
++ const seed=process.env.INTEGRATION_OWNED_IDS_PATH;
++ if(seed){const data=JSON.parse(readFileSync(seed,'utf8'))as{tables:Record<string,{key:string;ids:string[]}>};for(const [table,row]of Object.entries(data.tables))remember(table,row.key,row.ids,false);}
++ const journal=process.env.INTEGRATION_OWNED_JOURNAL;
++ if(journal&&existsSync(journal))for(const line of readFileSync(journal,'utf8').trim().split('\n').filter(Boolean)){const row=JSON.parse(line)as{table:string;key:string;ids:string[]};remember(row.table,row.key,row.ids,false);}
++}
++export function ownsFixtureId(table:string,id:string){load();return Boolean(ids.get(table)?.has(id));}
++export function fixtureOwnership(){load();return Object.fromEntries([...ids].map(([table,values])=>[table,{key:keys.get(table)!,ids:[...values]}]));}
++export function captureFixtureRows(table:string,value:unknown){
++ load();const rows=(Array.isArray(value)?value:[value]).filter((r):r is Record<string,unknown>=>Boolean(r)&&typeof r==='object');
++ const key=['id','user_id','creator_id','workspace_id'].find(k=>rows.some(r=>typeof r[k]==='string'));
++ if(key)remember(table,key,rows.flatMap(r=>typeof r[key]==='string'?[r[key]as string]:[]));
++}
++function exact(value:string|null):string[]|null{
++ if(!value)return null;if(value.startsWith('eq.')&&uuid.test(value.slice(3)))return[value.slice(3)];
++ if(value.startsWith('in.(')&&value.endsWith(')')){const values=value.slice(4,-1).split(',');return values.every(x=>uuid.test(x))?values:null;}return null;
++}
++const parents:Record<string,string>={creator_id:'creators',user_id:'auth_users',mission_id:'missions',campaign_id:'campaigns',workspace_id:'workspaces',gift_id:'redemption_gifts',mission_workflow_id:'mission_workflows',mission_work_item_id:'mission_work_items',submission_id:'mission_submissions'};
++export function createOwnedFixtureFetch(delegate:typeof fetch=globalThis.fetch):typeof fetch{
++ load();const origin=new URL(process.env.SUPABASE_URL!).origin;
++ return async(input,init)=>{
++  const url=new URL(input instanceof Request?input.url:String(input)),method=(init?.method??(input instanceof Request?input.method:'GET')).toUpperCase();
++  if(url.origin!==origin)return new Response(JSON.stringify({code:'FIXTURE_TARGET_MISMATCH',message:'Fixture transport cannot leave its verified target'}),{status:403});
++  const headers=new Headers(init?.headers??(input instanceof Request?input.headers:undefined));
++  const match=/^\/rest\/v1\/([^/]+)$/.exec(url.pathname),table=match?.[1];
++  if(table&&['PATCH','DELETE'].includes(method)){
++   const key=keys.get(table)??'id',selected=exact(url.searchParams.get(key));let owned=ids.get(table)??new Set<string>();
++   // A command may return a workflow ID before any service read of its row.
++   // Resolve only exact parent IDs and attest their existing owned ancestor.
++   for(const [field,parentTable] of Object.entries(parents)){
++    const values=exact(url.searchParams.get(field));
++    if(!values?.length||values.length>100||values.every(v=>ownsFixtureId(parentTable,v)))continue;
++    const probe=new URL(`/rest/v1/${parentTable}`,origin);probe.searchParams.set('select','*');probe.searchParams.set('id',values.length===1?`eq.${values[0]}`:`in.(${values.join(',')})`);probe.searchParams.set('limit',String(values.length));
++    const probeHeaders=new Headers(headers);probeHeaders.set('Accept','application/json');
++    const inspected=await delegate(probe.href,{method:'GET',headers:probeHeaders});
++    const rows:unknown=inspected.ok?await inspected.json().catch(()=>null):null;
++    if(Array.isArray(rows)&&rows.length===values.length&&rows.every(r=>r&&values.includes(r.id)&&Object.entries(parents).some(([ancestor,ancestorTable])=>typeof r[ancestor]==='string'&&ownsFixtureId(ancestorTable,r[ancestor]))))captureFixtureRows(parentTable,rows);
++   }
++   const parent=Object.entries(parents).find(([field,parentTable])=>{const values=exact(url.searchParams.get(field));return values?.length&&values.every(v=>ownsFixtureId(parentTable,v));});
++   // RPC/API-created child IDs are not service inserts. Attest their existing parent,
++   // then keep the caller's exact ID selector; never infer ownership from a slug/name.
++   if(selected?.length&&selected.length<=100&&!parent&&!selected.every(id=>owned.has(id))){
++    const probe=new URL(url.href);probe.searchParams.set('select','*');probe.searchParams.set('limit',String(selected.length));
++    const probeHeaders=new Headers(headers);probeHeaders.set('Accept','application/json');
++    const inspected=await delegate(probe.href,{method:'GET',headers:probeHeaders});
++    const rows:unknown=inspected.ok?await inspected.json().catch(()=>null):null;
++    if(Array.isArray(rows)&&rows.length===selected.length&&rows.every(r=>r&&selected.includes(r[key])&&Object.entries(parents).some(([field,parentTable])=>typeof r[field]==='string'&&ownsFixtureId(parentTable,r[field]))))captureFixtureRows(table,rows);
++    owned=ids.get(table)??owned;
++   }
++   if(selected&&!selected.every(id=>owned.has(id))&&!parent||!selected&&!parent&&!owned.size)return new Response(JSON.stringify({code:'FIXTURE_NOT_OWNED',message:'Only exact IDs captured in this fixture run may be changed'}),{status:403});
++   if(!parent&&!selected)url.searchParams.append(key,`in.(${[...owned].join(',')})`);
++  }
++  if(table&&method==='POST')headers.set('Prefer',(headers.get('Prefer')??'').split(',').filter(x=>!x.startsWith('return=')).concat('return=representation').filter(Boolean).join(','));
++  const response=await delegate(url.href, {...init,headers});
++  if(response.ok&&method==='GET'&&table){
++   const value:unknown=await response.clone().json().catch(()=>null);
++   const rows=(Array.isArray(value)?value:[value]).filter((r):r is Record<string,unknown>=>Boolean(r)&&typeof r==='object');
++   captureFixtureRows(table,rows.filter(r=>Object.entries(parents).some(([field,parentTable])=>typeof r[field]==='string'&&ownsFixtureId(parentTable,r[field]))));
++  }
++  if(response.ok&&method==='POST'){
++   const value:unknown=await response.clone().json().catch(()=>null);
++   if(table)captureFixtureRows(table,value);
++   else if(url.pathname==='/auth/v1/admin/users'&&value&&typeof value==='object'){const user='user'in value?value.user:value;if(user&&typeof user==='object'&&'id'in user&&typeof user.id==='string')remember('auth_users','id',[user.id]);}
++  }
++  return response;
++ };
++}
+--- /dev/null
++++ b/server/test/pilot-fixture-ownership.test.ts
+@@ -0,0 +1,74 @@
++// @vitest-environment node
++import {beforeEach,afterEach,it,expect,vi} from 'vitest';
++vi.mock('../../scripts/run-integration-tests.mjs',()=>({verifyIntegrationIdentity:()=>({runId:'01a16483-e55d-7332-9ddc-7e8a3f68eb11'})}));
++const owned='11111111-1111-4111-8111-111111111111',foreign='22222222-2222-4222-8222-222222222222';
++let requests:{url:string;method:string}[];
++beforeEach(()=>{
++ vi.resetModules();requests=[];vi.stubEnv('SUPABASE_URL','http://127.0.0.1:56521');vi.stubEnv('SUPABASE_SERVICE_KEY','owned-service-fixture');vi.stubEnv('SUPABASE_ANON_KEY','owned-anon-fixture');vi.stubEnv('INTEGRATION_MUTATION_OWNERSHIP','1');
++ vi.stubGlobal('fetch',vi.fn(async(input:RequestInfo|URL,init?:RequestInit)=>{
++  const url=String(input),method=init?.method??'GET';requests.push({url,method});
++  if(method==='POST')return new Response(JSON.stringify([{id:owned}]),{status:201,headers:{'Content-Type':'application/json'}});
++  return new Response('[]',{status:200,headers:{'Content-Type':'application/json'}});
++ }));
++});
++afterEach(()=>{vi.unstubAllGlobals();vi.unstubAllEnvs();});
++it('D19 refuses a cleanup selector when no exact current-run IDs are owned',async()=>{
++ const {serviceForTests}=await import('./helpers');const result=await serviceForTests().from('content_items').delete().like('slug','test-%');
++ expect(result.error?.code).toBe('FIXTURE_NOT_OWNED');expect(requests).toHaveLength(0);
++});
++it('D19 constrains a broad cleanup selector to exact successful creation IDs',async()=>{
++ const {serviceForTests}=await import('./helpers');const svc=serviceForTests();await svc.from('content_items').insert({id:owned,title_zh:'Owned fixture'}).select('id');
++ const result=await svc.from('content_items').delete().like('slug','test-%');expect(result.error).toBeNull();
++ const url=new URL(requests.find(r=>r.method==='DELETE')!.url);expect(url.searchParams.get('id')).toBe(`in.(${owned})`);expect(url.searchParams.get('slug')).toBe('like.test-%');
++});
++it('D19 refuses an explicitly foreign ID even when the same table has an owned ID',async()=>{
++ const {serviceForTests}=await import('./helpers');const svc=serviceForTests();await svc.from('content_items').insert({id:owned,title_zh:'Owned fixture'}).select('id');
++ const result=await svc.from('content_items').update({title_zh:'Must not overwrite'}).eq('id',foreign);expect(result.error?.code).toBe('FIXTURE_NOT_OWNED');expect(requests.filter(r=>r.method==='PATCH')).toHaveLength(0);
++});
++it('D19 allows a child cleanup only when its parent selector is an exact owned creator ID',async()=>{
++ const {serviceForTests}=await import('./helpers');const svc=serviceForTests();await svc.from('creators').insert({id:owned}).select('id');
++ expect((await svc.from('point_transactions').delete().eq('creator_id',owned)).error).toBeNull();
++ expect((await svc.from('point_transactions').delete().eq('creator_id',foreign)).error?.code).toBe('FIXTURE_NOT_OWNED');expect(requests.filter(r=>r.method==='DELETE')).toHaveLength(1);
++});
++it('D19 passes an absolute string URL to the external-fetch deny preload across URL realms',async()=>{
++ const {serviceForTests}=await import('./helpers');await serviceForTests().from('workspaces').select('id');
++ expect(typeof vi.mocked(globalThis.fetch).mock.calls[0][0]).toBe('string');
++});
++it('D19 attests an RPC-created child through an exact owned workspace before deleting that child ID',async()=>{
++ const {serviceForTests}=await import('./helpers');const svc=serviceForTests();await svc.from('workspaces').insert({id:owned}).select('id');
++ vi.mocked(globalThis.fetch).mockImplementationOnce(async()=>new Response(JSON.stringify([{id:foreign,workspace_id:owned}]),{status:200}));
++ const result=await svc.from('mission_publication_proof_assets').delete().eq('id',foreign);expect(result.error).toBeNull();
++ expect(vi.mocked(globalThis.fetch).mock.calls.some(([,init])=>init?.method==='DELETE')).toBe(true);
++});
++it('D19 rejects a child belonging to a workspace outside the exact owned scope',async()=>{
++ const {serviceForTests}=await import('./helpers');const svc=serviceForTests();await svc.from('workspaces').insert({id:owned}).select('id');
++ vi.mocked(globalThis.fetch).mockImplementationOnce(async()=>new Response(JSON.stringify([{id:foreign,workspace_id:foreign}]),{status:200}));
++ const result=await svc.from('mission_publication_proof_assets').delete().eq('id',foreign);expect(result.error?.code).toBe('FIXTURE_NOT_OWNED');
++ expect(vi.mocked(globalThis.fetch).mock.calls.some(([,init])=>init?.method==='DELETE')).toBe(false);
++});
++
++it('D19 captures RPC-created work item IDs only after an owned-parent read',async()=>{
++ const {serviceForTests}=await import('./helpers');const svc=serviceForTests();await svc.from('workspaces').insert({id:owned}).select('id');
++ vi.mocked(globalThis.fetch).mockImplementationOnce(async()=>new Response(JSON.stringify([{id:foreign,workspace_id:owned}]),{status:200}));
++ await svc.from('mission_work_items').select('id,workspace_id');
++ const result=await svc.from('mission_publication_instructions').update({frozen_at:'fixture'}).eq('mission_work_item_id',foreign);
++ expect(result.error).toBeNull();
++});
++it('D19 captures an owned workflow read before an exact fulfilment update',async()=>{
++ const {serviceForTests}=await import('./helpers');const svc=serviceForTests();await svc.from('workspaces').insert({id:owned}).select('id');
++ vi.mocked(globalThis.fetch).mockImplementationOnce(async()=>new Response(JSON.stringify([{id:foreign,workspace_id:owned}]),{status:200}));
++ await svc.from('mission_workflows').select('id,workspace_id');
++ const result=await svc.from('mission_fulfillments').update({status:'shipped'}).eq('mission_workflow_id',foreign);
++ expect(result.error).toBeNull();
++});
++
++it.each([['mission_fulfillments','mission_workflow_id','mission_workflows'],['mission_publication_instructions','mission_work_item_id','mission_work_items']])('D19 attests an unread RPC parent before updating %s',async(table,field,parentTable)=>{
++ const {serviceForTests}=await import('./helpers');const svc=serviceForTests();await svc.from('workspaces').insert({id:owned}).select('id');
++ vi.mocked(globalThis.fetch).mockImplementationOnce(async(input)=>{expect(String(input)).toContain(`/rest/v1/${parentTable}?`);return new Response(JSON.stringify([{id:foreign,workspace_id:owned}]),{status:200});});
++ expect((await svc.from(table).update({status:'fixture'}).eq(field,foreign)).error).toBeNull();
++});
++it('D19 refuses an unread RPC parent in a foreign workspace',async()=>{
++ const {serviceForTests}=await import('./helpers');const svc=serviceForTests();await svc.from('workspaces').insert({id:owned}).select('id');
++ vi.mocked(globalThis.fetch).mockImplementationOnce(async()=>new Response(JSON.stringify([{id:foreign,workspace_id:foreign}]),{status:200}));
++ expect((await svc.from('mission_fulfillments').update({status:'shipped'}).eq('mission_workflow_id',foreign)).error?.code).toBe('FIXTURE_NOT_OWNED');
++});
+--- a/server/test/radar.test.ts
++++ b/server/test/radar.test.ts
+@@ -1,3 +1,4 @@
++import { grantStaffFixture } from "./helpers";
+ import { fixtureName } from "./helpers";
+ // server/test/radar.test.ts
+ import { describe, it, expect, beforeAll, afterAll } from "vitest";
+@@ -17,6 +18,7 @@
+   beforeAll(async () => {
+     await cleanup();
+     staff = await makeStaff(fixtureName("radar-staff@test.local"), DEMO_WS);
++    await grantStaffFixture(staff.userId,DEMO_WS,"operator");
+     // Seed a creator with a stale submission (so at-risk queue is non-empty)
+     const creator = await makeCreator(fixtureName("radar-koc@test.local"), 0);
+     await seedSubmission(creator.userId, "approved", fixtureName("test-radar-approved"));
+--- a/server/test/staffCapabilityFixture.ts
++++ b/server/test/staffCapabilityFixture.ts
+@@ -2,12 +2,13 @@
+ import { randomUUID } from "node:crypto";
+ import { isDeepStrictEqual } from "node:util";
+ import type { createAuditFixture } from "./auditWorkflowFixture.js";
+-export async function createStaffCapabilityFixture(){
++export async function createStaffCapabilityFixture(task:"D18"|"D19"="D18"){
++ if(!["D18","D19"].includes(task))throw new Error("Unsupported fixture evidence namespace");
+  // @ts-expect-error Native ESM identity verifier has no declaration file.
+  const {verifiedTarget}=await import("../../scripts/audit/local-targets.mjs");
+  const target=verifiedTarget("empty"); // Precedes SDK import, all clients, credentials and setup.
+  const base=await (await import("./auditWorkflowFixture.js")).createAuditFixture();
+- if(!isDeepStrictEqual(target.identity,base.target.identity))throw new Error("D18 target drift");
++ if(!isDeepStrictEqual(target.identity,base.target.identity))throw new Error(`${task} target drift`);
+  const {createClient}=await import("@supabase/supabase-js");
+  type Actor=Awaited<ReturnType<typeof createAuditFixture>>["operator"];
+  const roles:Record<string,Actor>={admin:base.operator};
+@@ -16,29 +17,37 @@
+  function save(stage:string){
+   const value={runId:base.runId,target:target.identity,workspaceId:base.workspaceId,otherWorkspaceId:base.otherWorkspaceId,slug:base.slug,creators:base.creators,noMembership:base.noMembership,roles,authIds:ids,bootstrapRequests,...extra};
+   const json=JSON.stringify(value,(k,v)=>k==="client"?undefined:v);
+-  writeFileSync(`.codex-tmp/D18-fixture-${base.runId}.private.json`,json);writeFileSync(".codex-tmp/D18-fixture.private.json",json);
+-  appendFileSync("docs/verification/D18-fixtures.jsonl",JSON.stringify({runId:base.runId,stage,target:target.identity,workspaceIds:[base.workspaceId,base.otherWorkspaceId],authIds:ids,bootstrapRequests,cleanup:"retained exact owned IDs; no reset/delete"})+"\n");
++  writeFileSync(`.codex-tmp/${task}-fixture-${base.runId}.private.json`,json);writeFileSync(`.codex-tmp/${task}-fixture.private.json`,json);
++  appendFileSync(`docs/verification/${task}-fixtures.jsonl`,JSON.stringify({runId:base.runId,stage,target:target.identity,workspaceIds:[base.workspaceId,base.otherWorkspaceId],authIds:ids,bootstrapRequests,cleanup:"retained exact owned IDs; no reset/delete"})+"\n");
+  }
+  async function actor(name:string,workspace:string|null=base.workspaceId){
+-  const email=`d18-${name}-${base.runId}@example.test`,password=`Owned-${randomUUID()}!`;
++  const email=`${task.toLowerCase()}-${name}-${base.runId}@example.test`,password=`Owned-${randomUUID()}!`;
+   const created=base.must(await base.service.auth.admin.createUser({email,password,email_confirm:true}));
+   const id=created.user!.id;ids.push(id);save("auth-created");
+   base.must(await base.service.from("staff_users").insert({user_id:id,email,active:true}));
+   if(workspace)base.must(await base.service.from("brand_users").insert({user_id:id,workspace_id:workspace,email,active:true,role:name==="noRole"?"owner":"member"}));
+-  const client=createClient(target.env.SUPABASE_URL,target.env.SUPABASE_ANON_KEY,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false,storageKey:`d18-${id}`}});
++  const client=createClient(target.env.SUPABASE_URL,target.env.SUPABASE_ANON_KEY,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false,storageKey:`${task.toLowerCase()}-${id}`}});
+   const signed=base.must(await client.auth.signInWithPassword({email,password}));
+   roles[name]={id,email,password,jwt:signed.session!.access_token,session:signed.session!,client};save("actor-signed-in");return roles[name];
+  }
+  function bootstrap(user:string,workspace:string|null,role:string){
+   if(![base.operator.id,user,...(workspace?[workspace]:[])].every(v=>/^[a-f0-9-]{36}$/.test(v))||!["workspace_admin","operator","reviewer","finance_viewer","content_editor"].includes(role))throw new Error("invalid exact bootstrap fixture IDs");
+   const request=randomUUID();bootstrapRequests.push(request);save("bootstrap-planned");
+-  target.sql(`select private.bootstrap_staff_access('${base.operator.id}',${workspace?`'${workspace}'`:'null'},'${user}','${role}',true,0,'${request}','Explicit owned D18 fixture setup','synthetic-owned-D18-owner-attestation');`);save("bootstrap-saved");
++  target.sql(`select private.bootstrap_staff_access('${base.operator.id}',${workspace?`'${workspace}'`:'null'},'${user}','${role}',true,0,'${request}','Explicit owned ${task} fixture setup','synthetic-owned-${task}-owner-attestation');`);save("bootstrap-saved");
+  }
+- save("base-created");bootstrap(base.operator.id,base.workspaceId,"workspace_admin");
++ save("base-created");
++ if(task==="D19"){
++  const budgetId=randomUUID(),giftId=randomUUID();
++  extra={...extra,financialFixture:{budgetId,giftId,initialBudget:9000,enforced:true,initialStock:3}};save("funded-fixture-planned");
++  // Budget writes intentionally remain owner-only; never widen service/browser grants for a fixture.
++  target.sql(`begin;insert into public.workspace_budgets(id,workspace_id,balance,enforced) values ('${budgetId}','${base.workspaceId}',9000,true);insert into public.redemption_gifts(id,workspace_id,name,points_cost,stock_qty,stock_remaining,gift_type,status) values ('${giftId}','${base.workspaceId}','Owned D19 neutrality inventory',1000,3,3,'digital','available');commit;`);
++  save("funded-fixture-created");
++ }
++ bootstrap(base.operator.id,base.workspaceId,"workspace_admin");
+  for(const role of ["operator","reviewer","finance_viewer"]){const user=await actor(role);bootstrap(user.id,base.workspaceId,role);}
+  const editor=await actor("content_editor",null);bootstrap(editor.id,null,"content_editor");
+  const revocable=await actor("revocable");bootstrap(revocable.id,base.workspaceId,"operator");
+  await actor("noRole");const foreign=await actor("foreign",base.otherWorkspaceId);bootstrap(foreign.id,base.otherWorkspaceId,"workspace_admin");
+  save("ready");
+- return {base,roles,saveResource:(resource:Record<string,unknown>)=>{extra={...extra,resource};save("resource-saved");},saveCore:(core:Record<string,unknown>)=>{extra={...extra,core};save("core-saved");},save};
++ return {base,roles,saveLegacy:(legacy:Record<string,unknown>)=>{extra={...extra,legacy};save("legacy-saved");},saveResource:(resource:Record<string,unknown>)=>{extra={...extra,resource};save("resource-saved");},saveCore:(core:Record<string,unknown>)=>{extra={...extra,core};save("core-saved");},save};
+ }
+--- /dev/null
++++ b/supabase/migrations/20261023192141_pilot_legacy_access_hardening.sql
+@@ -0,0 +1,13 @@
++-- Reassert the intended legacy browser ACLs on catalogs with broad inherited grants.
++-- Existing table grants override column grants; RLS alone cannot restrict scan fields.
++-- No data, roles, memberships, policies, legacy migration bytes or history are rewritten.
++begin;
++revoke all on public.creator_social_accounts, public.creator_social_scan_snapshots,
++  public.creator_public_passports, public.creator_review_statuses, public.creator_review_notes,
++  public.mission_shortlists, public.operator_audit_events from public, anon, authenticated;
++grant select, delete on public.creator_social_accounts, public.creator_public_passports to authenticated;
++grant select on public.creator_social_scan_snapshots to authenticated;
++grant insert (creator_id, workspace_id, platform, handle, profile_url)
++  on public.creator_social_accounts to authenticated;
++grant update (handle, profile_url) on public.creator_social_accounts to authenticated;
++commit;
+--- a/supabase/release-manifest.json
++++ b/supabase/release-manifest.json
+@@ -1163,6 +1163,78 @@
+       ],
+       "transactionExpectation": "transactional",
+       "replayExpectation": "migration_history_noop"
++    },
++    {
++      "version": "20261023192141",
++      "name": "pilot_legacy_access_hardening",
++      "path": "supabase/migrations/20261023192141_pilot_legacy_access_hardening.sql",
++      "sha256": "4669bd408714f65c152320a1ffdd0a932dc0fbf391a5c2281a642a00d1223cd2",
++      "phase": "staff_access",
++      "dependsOn": [
++        "20261023124149"
++      ],
++      "capabilities": [
++        "grant-removed:anon.public.creator_social_accounts(select)",
++        "grant-removed:anon.public.creator_social_accounts(insert)",
++        "grant-removed:anon.public.creator_social_accounts(update)",
++        "grant-removed:anon.public.creator_social_accounts(delete)",
++        "grant-removed:authenticated.public.creator_social_accounts(truncate)",
++        "grant-removed:authenticated.public.creator_social_accounts(insert)",
++        "grant-removed:authenticated.public.creator_social_accounts(update)",
++        "grant-removed:anon.public.creator_social_scan_snapshots(select)",
++        "grant-removed:anon.public.creator_social_scan_snapshots(insert)",
++        "grant-removed:anon.public.creator_social_scan_snapshots(update)",
++        "grant-removed:anon.public.creator_social_scan_snapshots(delete)",
++        "grant-removed:authenticated.public.creator_social_scan_snapshots(truncate)",
++        "grant-removed:authenticated.public.creator_social_scan_snapshots(insert)",
++        "grant-removed:authenticated.public.creator_social_scan_snapshots(update)",
++        "grant-removed:authenticated.public.creator_social_scan_snapshots(delete)",
++        "grant-removed:anon.public.creator_public_passports(select)",
++        "grant-removed:anon.public.creator_public_passports(insert)",
++        "grant-removed:anon.public.creator_public_passports(update)",
++        "grant-removed:anon.public.creator_public_passports(delete)",
++        "grant-removed:authenticated.public.creator_public_passports(truncate)",
++        "grant-removed:authenticated.public.creator_public_passports(insert)",
++        "grant-removed:authenticated.public.creator_public_passports(update)",
++        "grant-removed:anon.public.creator_review_statuses(select)",
++        "grant-removed:anon.public.creator_review_statuses(insert)",
++        "grant-removed:anon.public.creator_review_statuses(update)",
++        "grant-removed:anon.public.creator_review_statuses(delete)",
++        "grant-removed:authenticated.public.creator_review_statuses(truncate)",
++        "grant-removed:authenticated.public.creator_review_statuses(select)",
++        "grant-removed:authenticated.public.creator_review_statuses(insert)",
++        "grant-removed:authenticated.public.creator_review_statuses(update)",
++        "grant-removed:authenticated.public.creator_review_statuses(delete)",
++        "grant-removed:anon.public.creator_review_notes(select)",
++        "grant-removed:anon.public.creator_review_notes(insert)",
++        "grant-removed:anon.public.creator_review_notes(update)",
++        "grant-removed:anon.public.creator_review_notes(delete)",
++        "grant-removed:authenticated.public.creator_review_notes(truncate)",
++        "grant-removed:authenticated.public.creator_review_notes(select)",
++        "grant-removed:authenticated.public.creator_review_notes(insert)",
++        "grant-removed:authenticated.public.creator_review_notes(update)",
++        "grant-removed:authenticated.public.creator_review_notes(delete)",
++        "grant-removed:anon.public.mission_shortlists(select)",
++        "grant-removed:anon.public.mission_shortlists(insert)",
++        "grant-removed:anon.public.mission_shortlists(update)",
++        "grant-removed:anon.public.mission_shortlists(delete)",
++        "grant-removed:authenticated.public.mission_shortlists(truncate)",
++        "grant-removed:authenticated.public.mission_shortlists(select)",
++        "grant-removed:authenticated.public.mission_shortlists(insert)",
++        "grant-removed:authenticated.public.mission_shortlists(update)",
++        "grant-removed:authenticated.public.mission_shortlists(delete)",
++        "grant-removed:anon.public.operator_audit_events(select)",
++        "grant-removed:anon.public.operator_audit_events(insert)",
++        "grant-removed:anon.public.operator_audit_events(update)",
++        "grant-removed:anon.public.operator_audit_events(delete)",
++        "grant-removed:authenticated.public.operator_audit_events(truncate)",
++        "grant-removed:authenticated.public.operator_audit_events(select)",
++        "grant-removed:authenticated.public.operator_audit_events(insert)",
++        "grant-removed:authenticated.public.operator_audit_events(update)",
++        "grant-removed:authenticated.public.operator_audit_events(delete)"
++      ],
++      "transactionExpectation": "transactional",
++      "replayExpectation": "migration_history_noop"
+     }
+   ]
+ }

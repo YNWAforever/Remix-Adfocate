@@ -5,7 +5,7 @@ import { isAbsolute, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { PreflightReport, ReleaseEvidence } from "./contracts";
 import { parseEvidence, verifyEvidence } from "./evidence";
-import { digestManifest, parseReleaseManifest, validateManifest } from "./manifest";
+import { currentReleaseCapabilities, digestManifest, parseReleaseManifest, validateManifest } from "./manifest";
 import { runPreflight, type PreflightDeps } from "./preflight";
 import { runCommand, type CommandResult, type CommandRunner } from "./process";
 
@@ -251,7 +251,7 @@ export async function runExecutorCli(
     throw new Error(`release evidence rejected: ${parsedEvidence.errors.join("; ")}`);
   }
   const evidence = parsedEvidence.evidence;
-  const expectedCapabilities = [...new Set(manifest.migrations.flatMap((migration) => migration.capabilities))];
+  const expectedCapabilities = currentReleaseCapabilities(manifest);
   const freshPreflight = () =>
     runPreflight(
       {

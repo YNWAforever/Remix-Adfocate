@@ -1,0 +1,30 @@
+{
+  "startedAt": "2026-10-25T21:12:47.936863+00:00",
+  "command": [
+    "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+    "node_modules/typescript/bin/tsc",
+    "--noEmit",
+    "--project",
+    "docs/verification/D19-asset-offline-20261026/tsconfig.offline.json"
+  ],
+  "node": "v22.23.4",
+  "resource": {
+    "at": "2026-10-25T21:12:47.868310+00:00",
+    "freePhysicalGiB": 4.307086944580078,
+    "freeCommitGiB": 3.2742347717285156,
+    "minimumGiB": 3,
+    "freeDiskGiB": 21.846355438232422
+  },
+  "credentialsProxiesPreloadsStripped": true,
+  "integrationDisabled": true,
+  "label": "type-after-resource",
+  "log": "docs/verification/D19-asset-offline-20261026/type-after-resource.log",
+  "runtimeTargetCallsRequested": false,
+  "sourceFingerprint": "4f2c3faa22bf835911a55dc7bb099910e4308fc1b7a5570d58f32386708934b9",
+  "sourceRecords": 793,
+  "npmExecpathProvided": "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+  "pid": 6660,
+  "sourceUnchangedAfter": true,
+  "endedAt": "2026-10-25T21:13:04.682505+00:00",
+  "exit": 0
+}

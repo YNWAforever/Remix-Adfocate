@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { useId } from "react";
 
 import { useI18n } from "@/lib/i18n";
-import type { AuthFeedbackState } from "@/lib/authFeedback";
+import { safeCreatorReturn, type AuthFeedbackState } from "@/lib/authFeedback";
 
 type AuthFeedbackProps = {
   feedback: AuthFeedbackState;
@@ -24,6 +24,8 @@ export function AuthFeedback({
   const instanceId = useId();
   const titleId = `auth-feedback-${instanceId}-title`;
   const bodyId = `auth-feedback-${instanceId}-body`;
+  const next = typeof window === "undefined" ? null : safeCreatorReturn(new URLSearchParams(window.location.search).get("next"));
+  const search = next ? { next } : undefined;
 
   return (
     <section
@@ -52,6 +54,7 @@ export function AuthFeedback({
       {feedback.action === "request_new_link" && (
         <Link
           to={requestNewLinkTo}
+          search={search}
           className={`${actionClassName} bg-[var(--color-magenta)] text-white`}
         >
           {t(feedback.actionKey)}
@@ -60,6 +63,7 @@ export function AuthFeedback({
       {feedback.action === "back_to_login" && (
         <Link
           to={loginTo}
+          search={search}
           className={`${actionClassName} bg-[var(--color-ink)] text-white`}
         >
           {t(feedback.actionKey)}

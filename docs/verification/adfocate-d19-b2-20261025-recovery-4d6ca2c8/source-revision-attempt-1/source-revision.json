@@ -1,0 +1,12 @@
+{
+  "at": "2026-10-25T06:34:29.069722+00:00",
+  "previousFingerprint": "d13fe2b7e8b9838972b8d93881dc17e8ccfc2795bc133b01cdc4f1a35426f893",
+  "fingerprint": "2c9e08351e8c30bf755c9e9790616be9f05925925ba767bd138c7f11796bb9e9",
+  "sourceRecords": 779,
+  "changedSourcePaths": [
+    "scripts/audit/local-targets.mjs",
+    "server/test/b2-target-context.test.ts"
+  ],
+  "candidateManifestRebinding": "PENDING_EXPLICIT_SOURCE_REVISION_APPROVAL",
+  "currentRuntimePermission": "C1 original allocation retained; no extra resource request; new source not silently attributed to old approval"
+}

@@ -1,0 +1,99 @@
+{
+  "at": "2026-10-25T18:35:34.623493+00:00",
+  "originalApprovedManifest": {
+    "path": "docs/verification/D19-C2-application-runtime-manifest.json",
+    "sha256": "eb5ca8f03a85c5589cc6cbf27ec0ca5524e8600fd2914ad1d4d73f17eec5009a"
+  },
+  "actualApproval": {
+    "path": "docs/verification/D19-C2-runtime-20261026/owner-approval.json",
+    "sha256": "ce8a572a88b8fb7be8c27b36b17ae49f5687206e65eb7def0bacfd59bf46242a"
+  },
+  "originalAuthorization": {
+    "path": "docs/verification/D19-application-runtime-preparation-20261025/runtime-authorization.json",
+    "sha256": "a909d1c60409db853da5949ee0b6ae29d6f69694fbd2c0bae313c3661557e894"
+  },
+  "attempts": [
+    {
+      "receipt": {
+        "path": "docs/verification/D19-C2-runtime-20261026/runtime-command.json",
+        "sha256": "88e4903d49c2c6fba26f5ffce2f8eea36e51b69203ac4cf23fc600a35dada8e2"
+      },
+      "result": {
+        "path": "docs/verification/D19-C2-runtime-20261026/runtime-first-attempt-result.json",
+        "sha256": "b54f5361d02db773ade87ccff1dfcb8c8385508c405e51b9dbb7983d621c6e0a"
+      },
+      "stoppedAt": "identity",
+      "classification": "Default sandbox Docker pipe permission denial; no target SQL/client/setup",
+      "exit": 1
+    },
+    {
+      "receipt": {
+        "path": "docs/verification/D19-C2-runtime-20261026/permission-continuation-command.json",
+        "sha256": "971d9f06e18d1620f53f889d13566c979b823c5f8d1d77984a142f324ebc2083"
+      },
+      "result": {
+        "path": "docs/verification/D19-C2-runtime-20261026/permission-attempt-result.json",
+        "sha256": "e824aed1fb0abc15cff0204fb73cde86b83e1dc23cff04b061c44c80aa2a2a18"
+      },
+      "identity": {
+        "path": "docs/verification/D19-C2-runtime-20261026/permission-attempt-identity.json",
+        "sha256": "69e89e771694e20cb76ce11c6bc4d67ee78ffb885acf49cb91bd581c850f37a8"
+      },
+      "stoppedAt": "provenance",
+      "classification": "Real Docker owner transport ENOBUFS at full raw catalog SELECT above default1MiB",
+      "exit": 1
+    }
+  ],
+  "sourceOfFailedAttempts": "e8a3ad3d7d35ed33eedf6486068dfa1aec6486a0e97b9ad8dcf4915744cb2993",
+  "privateDiagnosticLogHash": "28a1d35ccdae19d54629b1f3b1b41d49e393b72c3d9f69348553c6121077453e",
+  "safeError": "spawnSync docker ENOBUFS",
+  "catalogMeasurement": {
+    "path": "docs/verification/D19-C2-runtime-20261026/catalog-output-measurement.json",
+    "sha256": "1a0f1bc83a737ed37be663d406207fbccf2aa4940dc7e4c514f7e94a3fe74359"
+  },
+  "readonlyCompletedSqlCalls": 19,
+  "failedCaptureReadonlyCatalogSelectAttempts": 1,
+  "firstReadonly": {
+    "path": "docs/verification/D19-C2-runtime-20261026/read-only-provenance-checked.json",
+    "sha256": "334c8a887be2e61ef6febd001bc8587c4ec26cbe30842b76cac88fd5abcb048a"
+  },
+  "postFailureReadonly": {
+    "path": "docs/verification/D19-C2-runtime-20261026/post-provenance-failure.json",
+    "sha256": "5d2bb8bcca26478cacdbbf0c5ebd9274f0d40ebea98e3a9bbb1089d3b0e2cea6"
+  },
+  "fullFiveServiceIdentityPassed": true,
+  "old70FamiliesAndEightSectionCatalogUnchanged": true,
+  "stateAtPostFailure": {
+    "history": 72,
+    "missions": 6,
+    "newHistory": 0,
+    "workspaces": 6,
+    "newFunction": 0,
+    "authSubjects": 84,
+    "newWorkspace": 0
+  },
+  "claimCreated": false,
+  "ownedJournalCreated": false,
+  "migrationApplied": false,
+  "realApplicationSdkClientsCreated": 0,
+  "newAuthSubjectsCreated": 0,
+  "newDomainFixturesCreated": 0,
+  "applicationApiAssertionsExecuted": 0,
+  "applicationBrowserScenariosExecuted": 0,
+  "originalAcceptanceOrPristineReruns": 0,
+  "physicalResourceAdds": 0,
+  "dockerLifecycleActions": 0,
+  "productionOrFormalStaffWrites": 0,
+  "writerAttemptsAfterTransportFix": 0,
+  "newSourceApproved": false,
+  "incidentOpen": true,
+  "restored": false,
+  "releaseHold": true,
+  "providerEnabled": false,
+  "wholeR1Verified": false,
+  "unknown": [
+    "No successful complete raw C2 catalog capture or forward73 before/after comparison yet.",
+    "No new application Auth/RLS/race/rollback/replay/notification/browser persisted-state acceptance.",
+    "Read-only proof is bound to its recorded time, not authority for a future setup; fresh checks remain mandatory."
+  ]
+}

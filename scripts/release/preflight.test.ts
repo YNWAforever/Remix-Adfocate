@@ -4,6 +4,32 @@ import { describe, expect, it, vi } from "vitest";
 import { hasCapabilityValidator, runPreflight, runPreflightCli } from "./preflight";
 
 describe("release preflight", () => {
+  it("does not claim a removed grant is safe from dump text alone", async () => {
+    async function check(schema: string) {
+      return runPreflight({ databaseUrl: "postgresql://synthetic", projectRef: "disposable", manifestDigest: "a".repeat(64),
+        expectedCapabilities: ["grant-removed:service_role.public.old_rpc(uuid)"], now: new Date("2026-10-23") }, {
+        run: vi.fn().mockResolvedValue({ code: 0, stdout: "", stderr: "" }), readFile: vi.fn().mockResolvedValue(schema),
+        rm: vi.fn(), tempFile: () => "synthetic.sql",
+      });
+    }
+    expect((await check("GRANT EXECUTE ON FUNCTION public.old_rpc(uuid) TO service_role;")).capabilities[0].status).toBe("divergent");
+    expect((await check("")).capabilities[0].status).toBe("unverifiable");
+  });
+  it("retires obsolete constraint and RPC grant requirements in the CLI's final capability set", async () => {
+    const manifest = readFileSync("supabase/release-manifest.json", "utf8");
+    const report = await runPreflightCli(["--output", "docs/verification/preflight.json"], process.cwd(),
+      { PREFLIGHT_DATABASE_URL: "postgresql://synthetic", RELEASE_PROJECT_REF: "disposable" }, {
+        run: vi.fn().mockResolvedValue({ code: 0, stdout: "", stderr: "" }),
+        readFile: vi.fn(async (path) => path.endsWith("release-manifest.json") ? manifest : ""),
+        rm: vi.fn(), tempFile: () => "synthetic.sql", writeFile: vi.fn(),
+      });
+    const names = report.capabilities.map((capability) => capability.name);
+    expect(names).not.toContain("constraint:public.mission_submissions.mission_submissions_creator_workspace_fk");
+    expect(names).toContain("constraint-removed:public.mission_submissions.mission_submissions_creator_workspace_fk");
+    expect(names).not.toContain("grant:service_role.public.create_publication_proof_asset(uuid,uuid,uuid,uuid,text,text,bigint,text,integer)");
+    expect(names).toContain("grant-removed:service_role.public.create_publication_proof_asset(uuid,uuid,uuid,uuid,text,text,bigint,text,integer)");
+    expect(names).toContain("grant:service_role.public.create_publication_proof_asset(uuid,uuid,uuid,uuid,text,text,bigint,text,integer,text,integer,text)");
+  });
   it("has a validator for every capability declared by the committed release manifest", () => {
     const manifest = JSON.parse(
       readFileSync("supabase/release-manifest.json", "utf8"),
@@ -12,7 +38,52 @@ describe("release preflight", () => {
       ...new Set(manifest.migrations.flatMap((migration) => migration.capabilities)),
     ];
 
-    expect(capabilities).toHaveLength(433);
+    // Retain the 617 prior contracts and the three explicit claim denials.
+    expect(capabilities).toHaveLength(620);
+    const claimDenials = ["authenticated", "anon", "public"].map(role => `grant-removed:${role}.public.claim_assistant_request(uuid,uuid,uuid)`);
+    expect(capabilities).toEqual(expect.arrayContaining(claimDenials));
+    const reviewValidityCapabilities = [
+      "function:public.legacy_evidence_sql_valid",
+      "grant:service_role.public.legacy_evidence_sql_valid(public.mission_submissions)",
+      "grant-removed:authenticated.public.legacy_evidence_sql_valid(public.mission_submissions)",
+      "grant-removed:anon.public.legacy_evidence_sql_valid(public.mission_submissions)",
+      "grant-removed:public.public.legacy_evidence_sql_valid(public.mission_submissions)",
+    ];
+    expect(capabilities).toEqual(expect.arrayContaining(reviewValidityCapabilities));
+    const applicationCapabilities = ["function:public.decide_mission_application",
+      "grant:service_role.public.decide_mission_application(uuid,uuid,uuid,uuid,bigint,text,text)",
+      "grant-removed:anon.public.decide_mission_application(uuid,uuid,uuid,uuid,bigint,text,text)",
+      "grant-removed:authenticated.public.decide_mission_application(uuid,uuid,uuid,uuid,bigint,text,text)"];
+    expect(capabilities).toEqual(expect.arrayContaining(applicationCapabilities));
+    const redemptionCapabilities = [
+      "column:public.redemptions.client_request_id",
+      "index:public.redemptions.redemptions_creator_request_uniq",
+      "function:public.redeem_gift_with_request",
+      "grant:authenticated.public.redeem_gift_with_request(uuid,uuid)",
+      "grant:service_role.public.redeem_gift_with_request(uuid,uuid)",
+      "grant-removed:anon.public.redeem_gift_with_request(uuid,uuid)",
+      "grant-removed:public.public.redeem_gift_with_request(uuid,uuid)",
+    ];
+    expect(capabilities).toEqual(expect.arrayContaining(redemptionCapabilities));
+    const repairCapabilities = [
+      "grant-removed:anon.public.submit_mission(uuid,text[],jsonb)",
+      "grant-removed:public.public.submit_mission(uuid,text[],jsonb)",
+      "function:public.get_legacy_correction_evidence",
+      "grant:service_role.private.valid_legacy_evidence(text[])",
+      "grant:service_role.public.get_legacy_correction_evidence(uuid,uuid)",
+      "grant-removed:authenticated.private.valid_legacy_evidence(text[])",
+      "grant-removed:anon.private.valid_legacy_evidence(text[])",
+      "grant-removed:public.private.valid_legacy_evidence(text[])",
+      "grant-removed:authenticated.public.request_legacy_evidence_correction(uuid,uuid,uuid,uuid,bigint,text)",
+      "grant-removed:anon.public.request_legacy_evidence_correction(uuid,uuid,uuid,uuid,bigint,text)",
+      "grant-removed:public.public.request_legacy_evidence_correction(uuid,uuid,uuid,uuid,bigint,text)",
+      "grant-removed:authenticated.public.get_legacy_correction_evidence(uuid,uuid)",
+      "grant-removed:anon.public.get_legacy_correction_evidence(uuid,uuid)",
+      "grant-removed:public.public.get_legacy_correction_evidence(uuid,uuid)",
+    ];
+    expect(capabilities).toEqual(expect.arrayContaining(repairCapabilities));
+    expect(capabilities.filter((capability) => ![...repairCapabilities, ...reviewValidityCapabilities, ...claimDenials].includes(capability))).toHaveLength(598);
+    expect(capabilities.filter((capability) => ![...applicationCapabilities, ...redemptionCapabilities, ...repairCapabilities, ...reviewValidityCapabilities, ...claimDenials].includes(capability))).toHaveLength(587);
     expect(capabilities.filter((capability) => !hasCapabilityValidator(capability))).toEqual([]);
   });
 
@@ -164,6 +235,7 @@ describe("release preflight", () => {
           "grant:authenticated.public.example_function(uuid,timestamptz)",
           "grant:authenticated.public.named_function(uuid,timestamptz)",
           "grant:service_role.public.submit_mission_publication_proof(uuid,uuid,uuid,uuid,text,integer,uuid,jsonb,uuid[])",
+          "grant:service_role.public.legacy_evidence_sql_valid(public.mission_submissions)",
           "grant:authenticated.public.example(all)",
           "grant:authenticated.public.example(select)",
         ],
@@ -175,6 +247,7 @@ describe("release preflight", () => {
           "GRANT ALL PRIVILEGES ON FUNCTION public.example_function(pg_catalog.uuid, timestamp with time zone) TO authenticated;",
           "GRANT ALL ON FUNCTION \"public\".\"named_function\"(\"p_id\" \"uuid\", \"p_at\" \"timestamp with time zone\") TO \"authenticated\";",
           "GRANT ALL ON FUNCTION \"public\".\"submit_mission_publication_proof\"(\"p_mission\" \"uuid\", \"p_workspace\" \"uuid\", \"p_creator\" \"uuid\", \"p_submission\" \"uuid\", \"p_url\" \"text\", \"p_revision\" \"integer\", \"p_actor\" \"uuid\", \"p_evidence\" \"jsonb\", \"p_asset_ids\" \"uuid\"[]) TO \"service_role\";",
+          "GRANT EXECUTE ON FUNCTION public.legacy_evidence_sql_valid(\"public\".\"mission_submissions\") TO service_role;",
           "GRANT ALL ON TABLE public.example TO authenticated;",
           "GRANT SELECT ON TABLE public.example TO authenticated;",
         ].join("\n")),
@@ -184,6 +257,21 @@ describe("release preflight", () => {
     );
 
     expect(report.capabilities.every((capability) => capability.status === "present")).toBe(true);
+  });
+
+  it("keeps composite function argument schemas distinct", async () => {
+    const report = await runPreflight({
+      databaseUrl: "postgresql://secret", projectRef: "project-ref", manifestDigest: "a".repeat(64),
+      expectedCapabilities: [
+        "grant:service_role.public.legacy_evidence_sql_valid(public.mission_submissions)",
+        "grant:service_role.public.legacy_evidence_sql_valid(private.mission_submissions)",
+      ], now: new Date(),
+    }, {
+      run: vi.fn().mockResolvedValue({ code: 0, stdout: "", stderr: "" }),
+      readFile: vi.fn().mockResolvedValue("GRANT EXECUTE ON FUNCTION public.legacy_evidence_sql_valid(public.mission_submissions) TO service_role;"),
+      rm: vi.fn().mockResolvedValue(undefined), tempFile: () => "C:/temp/schema.sql",
+    });
+    expect(report.capabilities.map(capability => capability.status)).toEqual(["present", "absent"]);
   });
 
   it("uses only migration list, dry-run, and schema dump without reporting the URL", async () => {
@@ -369,4 +457,12 @@ describe("release preflight", () => {
       ),
     ).rejects.toThrow("preflight output must not be inside supabase/migrations");
   });
+});
+
+it.each(['INSERT','UPDATE','DELETE','TRUNCATE'])('D19 detects stale %s table grants without treating them as RPCs', async privilege => {
+ const capability=`grant-removed:authenticated.public.example(${privilege.toLowerCase()})`;
+ const check=async (schema:string)=>runPreflight({databaseUrl:'postgresql://synthetic',projectRef:'disposable',manifestDigest:'a'.repeat(64),expectedCapabilities:[capability],now:new Date('2026-10-24')},{run:vi.fn().mockResolvedValue({code:0,stdout:'',stderr:''}),readFile:vi.fn().mockResolvedValue(schema),rm:vi.fn(),tempFile:()=> 'synthetic.sql'});
+ expect((await check(`GRANT ${privilege} ON TABLE public.example TO authenticated;`)).capabilities[0].status).toBe('divergent');
+ expect((await check('GRANT ALL ON TABLE public.example TO authenticated;')).capabilities[0].status).toBe('divergent');
+ expect((await check('')).capabilities[0].status).toBe('unverifiable');
 });

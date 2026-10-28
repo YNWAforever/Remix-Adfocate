@@ -1,0 +1,118 @@
+{
+  "at": "2026-10-25T21:41:14.213187+00:00",
+  "codeFingerprint": "4f2c3faa22bf835911a55dc7bb099910e4308fc1b7a5570d58f32386708934b9",
+  "goalStatus": "blocked",
+  "method": "Exact raw hashes of blocked-audit/goal-tool receipts and updated planning/delivery metadata. No source/runtime/case acceptance change; prior2787 records preserved.",
+  "files": [
+    {
+      "path": "docs/superpowers/plans/2026-10-23-adfocate-implementation-plan.md",
+      "sha256": "f1a0fd16e3bf7998f47c49b72c59d0050ff93da0368bf5eaf8cb6ab6ca2c9c7f",
+      "bytes": 69764
+    },
+    {
+      "path": "docs/verification/adfocate-delivery.json",
+      "sha256": "3423feaca4c68c35f2111cef1823cfb68d37fd9d9c4b8eaf3c54580e35e26755",
+      "bytes": 684976
+    },
+    {
+      "path": "docs/verification/adfocate-task-ledger.md",
+      "sha256": "b8d0563a915d2ee1809dc6f34da90ee814a321b7eff6e08bbc05d2fb38789ca6",
+      "bytes": 40563
+    },
+    {
+      "path": "docs/verification/audit_case_coverage.csv",
+      "sha256": "85f2e2dfd775488ad6c07095525e0d6c094c8b22c71e796944272330c3aa205d",
+      "bytes": 189392
+    },
+    {
+      "path": "docs/verification/code-fingerprint.json",
+      "sha256": "e67a1fa981883c2cf8341e9f2823b3dea9360c28ffe6e4c0f16bce89a50f4684",
+      "bytes": 120640
+    },
+    {
+      "path": "docs/verification/D19-blocked-audit-20261026/audit.json",
+      "sha256": "db8285956a7245f64c5dd5fed2c97be336bf959f719e6b53ee7d572389e767bb",
+      "bytes": 11294
+    },
+    {
+      "path": "docs/verification/D19-blocked-audit-20261026/audit.md",
+      "sha256": "ec9028f8e8dc5871788a6ba72ce2da4f266f6b7081d3ada0c8bbe997b9c82768",
+      "bytes": 1690
+    },
+    {
+      "path": "docs/verification/D19-blocked-audit-20261026/before/docs/superpowers/plans/2026-10-23-adfocate-implementation-plan.md",
+      "sha256": "4b128e09c967117063aa4afa59c830ea7a6053d7540b0cbd423c0c2dc0f97f3a",
+      "bytes": 68748
+    },
+    {
+      "path": "docs/verification/D19-blocked-audit-20261026/before/docs/verification/adfocate-delivery.json",
+      "sha256": "492f20e9ffe725f71cc36890b8553fed5582f9e4c7a79ad6628d2c58030dd51f",
+      "bytes": 683293
+    },
+    {
+      "path": "docs/verification/D19-blocked-audit-20261026/before/docs/verification/adfocate-task-ledger.md",
+      "sha256": "76bb9dee0d33f80bee35f0edcaf99c85a0b907e6829de240c4fb40614fb6d6d3",
+      "bytes": 39686
+    },
+    {
+      "path": "docs/verification/D19-blocked-audit-20261026/before/docs/verification/evidence-integrity.json",
+      "sha256": "c290ca61a20d1ff3b062a76b9b8fac9fb6e5d1b1aedfd5d6dbed78fc96a55030",
+      "bytes": 567840
+    },
+    {
+      "path": "docs/verification/D19-blocked-audit-20261026/before/docs/verification/implementation_backlog.csv",
+      "sha256": "454193d7244babc956fda14b4f5604f1eed19ec8f4f2d84f18006443daeb8b7e",
+      "bytes": 20518
+    },
+    {
+      "path": "docs/verification/D19-blocked-audit-20261026/checkpoint.json",
+      "sha256": "91425a93a3b8cd65e381a2c018a58841b85aac9a3bf235cb3a6a9d7288d34bfe",
+      "bytes": 2845
+    },
+    {
+      "path": "docs/verification/D19-blocked-audit-20261026/goal-before-transition.json",
+      "sha256": "453f09459961706c5e1d222a23c193aa6995d770157a95293cda696dbe907aa6",
+      "bytes": 4799
+    },
+    {
+      "path": "docs/verification/D19-blocked-audit-20261026/goal-transition.json",
+      "sha256": "cc818e36c13e3642ecc24fc720c00869200b68de0695f63b73ea6cbb7790602e",
+      "bytes": 4950
+    },
+    {
+      "path": "docs/verification/D19-blocked-audit-20261026/integrity-preseal-command.json",
+      "sha256": "9f1e8b1d32d01b114a07bf2ccb03105dce311485c8c4b4eb027cfa70944cfdd8",
+      "bytes": 654
+    },
+    {
+      "path": "docs/verification/D19-blocked-audit-20261026/integrity-preseal.log",
+      "sha256": "fae7fae70cea44c8d8232cc8219e99d6a87f4767107b4700d3cbc4878cf1a72f",
+      "bytes": 396
+    },
+    {
+      "path": "docs/verification/D19-blocked-audit-20261026/revalidation.json",
+      "sha256": "1d1337e2557466399fcbed9e536ede03319f4fb1cc57550d63b7e014cedf4279",
+      "bytes": 2355
+    },
+    {
+      "path": "docs/verification/D19-blocked-audit-20261026/rollback.json",
+      "sha256": "31d933c818eec15958cc252b5fa50db6f005eaaf53c35425290d25c8ef88d407",
+      "bytes": 2147
+    },
+    {
+      "path": "docs/verification/D19-blocked-audit-20261026/verify-audit.py",
+      "sha256": "03da60a636bf79732e55731e49f2e84f03c1e5f7da820d188f8d3c6c487db595",
+      "bytes": 5853
+    },
+    {
+      "path": "docs/verification/D19-C2-current-source-runtime-manifest.json",
+      "sha256": "cb93361481d8d6a42785077809c4e5338745ffcb2c3e41ffc62ed72631f59a65",
+      "bytes": 42854
+    },
+    {
+      "path": "docs/verification/implementation_backlog.csv",
+      "sha256": "ab38560e4d4cac8fad7b5a5297c738fa5d7611913a34f5e74c5ded224fc7e48b",
+      "bytes": 20796
+    }
+  ]
+}

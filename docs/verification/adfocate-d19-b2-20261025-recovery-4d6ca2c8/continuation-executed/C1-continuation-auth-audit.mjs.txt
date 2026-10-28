@@ -1,0 +1,17 @@
+import {readFileSync,writeFileSync} from 'node:fs';
+import assert from 'node:assert/strict';
+import process from 'node:process';
+import {verifiedTarget} from '../scripts/audit/local-targets.mjs';
+const read=p=>JSON.parse(readFileSync(p,'utf8')),path='docs/verification/D19-C1-browser-continuation-runtime-manifest.json',m=read(path),r=m.execution.recovery;
+for(const key of Object.keys(process.env))if(key.startsWith('DOCKER_')||/SUPABASE|ADFOCATE|INTEGRATION|OPENAI|OPENROUTER|ANTHROPIC|GEMINI|SMTP|SENDGRID|RESEND|TWILIO/.test(key))delete process.env[key];
+Object.assign(process.env,m.execution.environment,{DOCKER_CONTEXT:'desktop-linux',ADFOCATE_B2_PHASE:'browser',NODE_OPTIONS:''});
+const target=verifiedTarget(),inventories=Object.values(r.references.phases).map(p=>read(p.inventory.path).inventory);
+const ids=[...new Set(inventories.flatMap(i=>i.auth_users.ids))],oldLogs=[...new Set(inventories.flatMap(i=>i.auth_audit_log_entries.ids))];
+assert([...ids,...oldLogs].every(id=>/^[a-f0-9]{8}-(?:[a-f0-9]{4}-){3}[a-f0-9]{12}$/.test(id)));
+const list=values=>values.map(id=>"'"+id+"'").join(',');
+const rows=JSON.parse(target.sql(`begin read only;select coalesce(jsonb_agg(jsonb_build_object('actorId',actor,'action',action,'count',n)order by actor,action),'[]'::jsonb)from(select payload->>'actor_id'as actor,payload->>'action'as action,count(*)as n from auth.audit_log_entries where payload->>'actor_id'in(${list(ids)})and id::text not in(${list(oldLogs)})group by payload->>'actor_id',payload->>'action')x;commit;`));
+const renewed=read('.codex-tmp/'+m.target.projectId+'/'+m.execution.artifactNamespace+'/session-renewal.private.json'),allowed=Object.keys(renewed.sessions);assert.equal(allowed.length,6);assert(rows.every(row=>allowed.includes(row.actorId)));
+const counts={};for(const row of rows)counts[row.action]=(counts[row.action]??0)+row.count;
+const report={at:new Date().toISOString(),identity:target.identity,lineage:target.context.lineage,source:'Live Auth audit after excluding exact prior log IDs; only action/count/opaque fixture actor ID selected',newActions:rows,actionCounts:counts,existingActorsOnly:true,approvedActorCount:6,authSdkCalls:0,dataOrSettingsChanged:false};
+writeFileSync('docs/verification/'+m.target.projectId+'/'+m.execution.artifactNamespace+'/auth-session-audit.json',JSON.stringify(report,null,2)+'\n');
+process.stdout.write(JSON.stringify({status:'OBSERVED_EXISTING_ACTOR_AUTH_AUDIT',actionCounts:counts,existingActorsOnly:true,actorCount:new Set(rows.map(r=>r.actorId)).size,authSdkCalls:0})+'\n');

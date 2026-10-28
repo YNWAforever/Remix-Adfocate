@@ -1,0 +1,166 @@
+{
+  "target": {
+    "runId": "01a16483-e55d-7332-9ddc-7e8a3f68eb11",
+    "ownerAuthorization": "2026-10-23 user: you decide; local disposable targets only",
+    "disposable": true,
+    "projectId": "adfocate-r1-empty-20261023",
+    "proxy": "none",
+    "apiPort": 56421,
+    "apiContainerId": "1b9c41318298d79308db7782f51474541ad5abf0120fa93b96a2a9ea59d043ee",
+    "databaseContainerId": "e7c8efa295cd5544a8b2a100a73b6953cd6ddd486aaf394f231482067523e12d",
+    "apiImageId": "sha256:1b53405d8680a09d6f44494b7990bf7da2ea43f84a258c59717d4539abf09f6d",
+    "databaseImageId": "sha256:80d7b27c3e8d77cfa7226eee9508671796da214781ff15a35b3670d7ad5ee453",
+    "networkId": "9e5d3069e8255d70b8eef56020c8ea2618fdb2626d92d9a04e51ea2de41a98e0"
+  },
+  "runs": [
+    {
+      "runId": "560c5421-28dc-45f0-bdd5-56f32cffdb02",
+      "authIds": [
+        "838e1f10-4f9c-47ef-86d8-4b0b7b5f200d",
+        "aa7c6137-9628-4022-9acd-aef3a1c8a5c3",
+        "65106508-5b87-4951-a899-7d54638cabe4",
+        "aab21249-c389-44ef-bade-bad42cce962d"
+      ],
+      "missionIds": [],
+      "workspaceIds": [
+        "3126762c-9306-4436-b22a-275cd821c6be",
+        "7ffe5e43-7fad-4816-b5ce-a90cfe998bbd"
+      ]
+    },
+    {
+      "runId": "a384eed0-7c75-4954-b09b-ec43169da8a4",
+      "authIds": [
+        "2909ce5c-01cd-4b30-8fd1-95a286eb5ff3",
+        "89226c31-2a5f-493b-9f54-fb7e511a1e0d",
+        "6c81857d-cda9-4ae3-bd6c-472bad87cd1e",
+        "b3394fdf-2f22-45dc-8ded-698cabfe0e40"
+      ],
+      "missionIds": [],
+      "workspaceIds": [
+        "07d32289-670b-4ac0-9f14-61229d65bb32",
+        "9d024fa4-300f-46d1-8b8e-617536271fc0"
+      ]
+    },
+    {
+      "runId": "e2c62eca-cc85-421e-8c22-27d9e405c979",
+      "authIds": [
+        "dc60eb42-56c0-4f0b-8ea7-8583624677a8",
+        "017ea09d-1a79-4f1a-afb6-74c4d65c2ea6",
+        "b6346618-1ba8-4eb9-8776-3a4d0c83f435",
+        "df47657e-7ac1-4927-bdae-fad8b7ed8e45"
+      ],
+      "missionIds": [],
+      "workspaceIds": [
+        "744de16e-b461-4a20-afb6-c817213ea2a0",
+        "bc842434-9d09-4dca-a3e9-010fca318f38"
+      ]
+    },
+    {
+      "runId": "fb5ac09e-9878-4ef4-a115-2843fb9a7396",
+      "authIds": [
+        "59378027-984c-485d-aec2-41882af3016b",
+        "ae381339-840c-41ea-b5ce-724b1cf9ef42",
+        "d86d6264-f456-42e7-982f-5365f53c3f6d",
+        "ef0eea59-782d-4ea5-be3c-57e6656b1da0"
+      ],
+      "missionIds": [],
+      "workspaceIds": [
+        "005f74eb-d74b-4c9a-9cac-b116e1a7a4fb",
+        "88f5e4f9-431b-4f45-88dd-f211038e3f38"
+      ]
+    }
+  ],
+  "contents": [
+    {
+      "id": "4e920727-ae07-4eb9-b0dc-ae44add8ded5",
+      "kind": "resource",
+      "slug": "d14-browser-560c5421-28dc-45f0-bdd5-56f32cffdb02",
+      "status": "published"
+    },
+    {
+      "id": "a733b11c-683b-42ab-9f2e-fd700a4bc1d0",
+      "kind": "resource",
+      "slug": "d14-browser-a384eed0-7c75-4954-b09b-ec43169da8a4",
+      "status": "published"
+    },
+    {
+      "id": "d4da1705-b725-47db-bac2-50c3ed793a89",
+      "kind": "resource",
+      "slug": "d14-browser-e2c62eca-cc85-421e-8c22-27d9e405c979",
+      "status": "published"
+    },
+    {
+      "id": "37090ff2-e695-469f-8ea0-88afaf1cf2af",
+      "kind": "track",
+      "slug": "d14-empty-560c5421-28dc-45f0-bdd5-56f32cffdb02",
+      "status": "published"
+    },
+    {
+      "id": "8be70a0b-5538-498b-99ed-692b2c956f22",
+      "kind": "track",
+      "slug": "d14-empty-a384eed0-7c75-4954-b09b-ec43169da8a4",
+      "status": "published"
+    },
+    {
+      "id": "9066271c-09c5-413f-8553-8640c3cd2462",
+      "kind": "track",
+      "slug": "d14-empty-e2c62eca-cc85-421e-8c22-27d9e405c979",
+      "status": "published"
+    },
+    {
+      "id": "c2a72cbf-ea74-41d8-9a25-5f730368c4e2",
+      "kind": "track",
+      "slug": "d14-gated-560c5421-28dc-45f0-bdd5-56f32cffdb02",
+      "status": "published"
+    },
+    {
+      "id": "01e7c1cf-f343-4e2f-8ef3-4b91a9b93feb",
+      "kind": "track",
+      "slug": "d14-gated-a384eed0-7c75-4954-b09b-ec43169da8a4",
+      "status": "published"
+    },
+    {
+      "id": "9bb0adf0-4db2-49be-8c27-ed83fa0ab55b",
+      "kind": "track",
+      "slug": "d14-gated-e2c62eca-cc85-421e-8c22-27d9e405c979",
+      "status": "published"
+    },
+    {
+      "id": "b50b6f0a-0887-42ab-9a99-1df2d5d067ab",
+      "kind": "track",
+      "slug": "d14-ready-560c5421-28dc-45f0-bdd5-56f32cffdb02",
+      "status": "published"
+    },
+    {
+      "id": "ad993651-9138-4db0-b2b4-f80db264ba5d",
+      "kind": "track",
+      "slug": "d14-ready-a384eed0-7c75-4954-b09b-ec43169da8a4",
+      "status": "published"
+    },
+    {
+      "id": "499e6ea9-b1f8-4d86-bb04-d472c577212e",
+      "kind": "track",
+      "slug": "d14-ready-e2c62eca-cc85-421e-8c22-27d9e405c979",
+      "status": "published"
+    },
+    {
+      "id": "601fedce-4981-4e0b-aee6-4f219d82f7eb",
+      "kind": "resource",
+      "slug": "d14-resource-560c5421-28dc-45f0-bdd5-56f32cffdb02",
+      "status": "published"
+    },
+    {
+      "id": "6486d652-8104-43b2-9105-f67ad96b9cbb",
+      "kind": "resource",
+      "slug": "d14-resource-a384eed0-7c75-4954-b09b-ec43169da8a4",
+      "status": "published"
+    },
+    {
+      "id": "99cae89f-d946-4b1b-b79b-b314f19277e2",
+      "kind": "resource",
+      "slug": "d14-resource-e2c62eca-cc85-421e-8c22-27d9e405c979",
+      "status": "published"
+    }
+  ],
+  "cleanup": "All exact IDs retained, including setup failures and partial browser attempts; no reset, broad delete or cleanup."
+}

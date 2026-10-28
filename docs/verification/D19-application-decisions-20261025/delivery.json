@@ -1,0 +1,250 @@
+{
+  "atUTC": "2026-10-25T13:47:25.385429+00:00",
+  "atHongKong": "2026-10-25T21:47:25.385429+08:00",
+  "task": "D19 original R1 application-decision acceptance gap",
+  "sourceFingerprint": "1d3df1fe48e87d784b18ff5bfde3ebe438411187bac6a28d83a3ff6d21f02191",
+  "sourceFiles": 785,
+  "headSha": "7cfa3dc84c821719a4dff754229a591c81786c53",
+  "branch": "codex/adfocate-r1-pilot-20261023",
+  "newResult": "LOCAL_APPLICATION_DECISION_REPAIR_PASS; REAL_AUTH_RLS_RACE_NOTIFICATION_BROWSER_ACCEPTANCE_NOT_RUN",
+  "tasks": [
+    "D04",
+    "D07",
+    "D19"
+  ],
+  "changedSourceFiles": [
+    "scripts/release/manifest.test.ts",
+    "scripts/release/manifest.ts",
+    "scripts/release/preflight.test.ts",
+    "server/routes/admin.ts",
+    "server/test/b2-runtime-manifest.test.ts",
+    "src/routes/-_app.mission.$missionSlug.test.tsx",
+    "src/routes/-admin.applications.test.tsx",
+    "src/routes/_app.mission.$missionSlug.tsx",
+    "src/routes/admin.applications.tsx",
+    "supabase/release-manifest.json",
+    "server/test/audit-application-decisions.test.ts",
+    "server/test/audit-application-decisions.embedded.test.ts",
+    "supabase/migrations/20261025120934_application_decisions.sql"
+  ],
+  "taskPatch": {
+    "path": "docs/verification/D19-application-decisions-20261025/source-changes.patch",
+    "sha256": "5b3c4b7593bfd9f7ca8888ce0f47c065874a9424e851a2b2e40686e4a7581dc6"
+  },
+  "code": "Local application decision transaction, trusted attribution, request receipt and reason/error/readback UI implemented; existing engines extended.",
+  "test": {
+    "full-delivery-final": {
+      "command": [
+        "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+        "node_modules/vitest/vitest.mjs",
+        "run",
+        "--no-file-parallelism",
+        "--reporter=json",
+        "--outputFile=C:\\Users\\laich\\Documents\\Adfocate\\worktrees\\adfocate-r1-20261023\\docs\\verification\\D19-application-decisions-20261025\\full-delivery-final.json"
+      ],
+      "exit": 0,
+      "receipt": {
+        "path": "docs/verification/D19-application-decisions-20261025/full-delivery-final-command.json",
+        "sha256": "622dfff9dc996794928ba73735379ef77d9cd6b0b93c34f3a5014305c84c8e57"
+      },
+      "log": {
+        "path": "docs/verification/D19-application-decisions-20261025/full-delivery-final.log",
+        "sha256": "c989eb291575ee7bb84d80dad287800473fae1ca27b6e8605bf8d119f3c7eb4d"
+      }
+    },
+    "type-delivery-final": {
+      "command": [
+        "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+        "node_modules/typescript/bin/tsc",
+        "--noEmit"
+      ],
+      "exit": 0,
+      "receipt": {
+        "path": "docs/verification/D19-application-decisions-20261025/type-delivery-final-command.json",
+        "sha256": "6f547cd9e75aa2628f1e2f5f20a9d90dea890aade3b6bb9d198983421aee0e0b"
+      },
+      "log": {
+        "path": "docs/verification/D19-application-decisions-20261025/type-delivery-final.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "lint-delivery-final": {
+      "command": [
+        "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+        "node_modules/eslint/bin/eslint.js",
+        "."
+      ],
+      "exit": 0,
+      "receipt": {
+        "path": "docs/verification/D19-application-decisions-20261025/lint-delivery-final-command.json",
+        "sha256": "9ef8a373467d0c4b4c8195f6fd485ce828c090346382d4df10e8e8827ff75102"
+      },
+      "log": {
+        "path": "docs/verification/D19-application-decisions-20261025/lint-delivery-final.log",
+        "sha256": "e6e016e4fe0cf1d2a8190e99e008bde00ef39764514624f7cc26a2e4170cc27d"
+      }
+    },
+    "build-delivery-final": {
+      "command": [
+        "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+        "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+        "run",
+        "build"
+      ],
+      "exit": 0,
+      "receipt": {
+        "path": "docs/verification/D19-application-decisions-20261025/build-delivery-final-command.json",
+        "sha256": "eb812528a5b1cf6e37fcd709bc1d0c1a6a253e2177ad1c05fbf1f5d35dddc619"
+      },
+      "log": {
+        "path": "docs/verification/D19-application-decisions-20261025/build-delivery-final.log",
+        "sha256": "f784abc416af1cd981d3f02a7664c94df4266cafe2888d45e57de67c59ada56a"
+      }
+    },
+    "esm-delivery-final": {
+      "command": [
+        "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+        "scripts/check-esm-extensions.mjs"
+      ],
+      "exit": 0,
+      "receipt": {
+        "path": "docs/verification/D19-application-decisions-20261025/esm-delivery-final-command.json",
+        "sha256": "dd650f90c803c7ef1af60ff7a1c1841b072b36a65a2b7e36c54ee2338bc3b984"
+      },
+      "log": {
+        "path": "docs/verification/D19-application-decisions-20261025/esm-delivery-final.log",
+        "sha256": "b654fb9381ed836f5045e91ed2cde87f4f7cede86cd34768fd9f7f53922430de"
+      }
+    },
+    "manifest-delivery-final": {
+      "command": [
+        "C:\\Users\\laich\\AppData\\Local\\npm-cache\\_npx\\52027bd8fc0022aa\\node_modules\\node\\bin\\node.exe",
+        "node_modules/vite-node/vite-node.mjs",
+        "--script",
+        "scripts/release/manifest-cli.ts",
+        "check"
+      ],
+      "exit": 0,
+      "receipt": {
+        "path": "docs/verification/D19-application-decisions-20261025/manifest-delivery-final-command.json",
+        "sha256": "4d02db2935bd64fc77362846e8aa86cba7d5478e9bb2b04c216058d8ad73817c"
+      },
+      "log": {
+        "path": "docs/verification/D19-application-decisions-20261025/manifest-delivery-final.log",
+        "sha256": "0c307f70f5aa6f9cb7ac767ef86b9fe5bca27bb11fbb2d9481d5ce1470fab6b9"
+      }
+    },
+    "full": {
+      "passed": 2103,
+      "failed": 0,
+      "gatedSkip": 363,
+      "files": 291,
+      "report": {
+        "path": "docs/verification/D19-application-decisions-20261025/full-delivery-final.json",
+        "sha256": "9c3cb7e9efee8637db83243189a0d3ac2db1d548e8d85b2c2a6489017394bbe7"
+      }
+    },
+    "originalAudit16": {
+      "passed": 16,
+      "failed": 0,
+      "skipped": 0,
+      "total": 16
+    },
+    "protected194": {
+      "passed": 194,
+      "failed": 0,
+      "skipped": 0,
+      "total": 194
+    },
+    "protectedPaths": [
+      "server/test/active-missions-publication-operator.test.ts",
+      "server/test/admin-reward-handoffs.test.ts",
+      "server/test/staffAuth.test.ts",
+      "src/components/admin/ActiveMissionReview.test.tsx",
+      "src/components/admin/MissionCompletionReview.test.tsx",
+      "src/components/admin/RewardHandoffQueue.test.tsx",
+      "src/components/admin/StaffAuthGate.test.tsx",
+      "src/components/admin/WorkspaceSwitcher.test.tsx",
+      "src/routes/-admin.active-missions.test.tsx",
+      "src/routes/-admin.reward-handoffs.test.tsx"
+    ],
+    "applicationTransport": {
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0,
+      "total": 7
+    },
+    "applicationEmbedded": {
+      "passed": 10,
+      "failed": 0,
+      "skipped": 0,
+      "total": 10
+    },
+    "operatorUi": {
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0,
+      "total": 4
+    },
+    "creatorDetailUi": {
+      "passed": 20,
+      "failed": 0,
+      "skipped": 0,
+      "total": 20
+    },
+    "sourceFingerprint": "1d3df1fe48e87d784b18ff5bfde3ebe438411187bac6a28d83a3ff6d21f02191",
+    "Node24CurrentFull": "NOT_RUN; previous e839 Node24 full2082/0/363 retained only at its source",
+    "lintExistingWarnings": 4
+  },
+  "deployment": "NOT_DEPLOYED",
+  "runtime": {
+    "authorizedForCurrentSource": false,
+    "serverTargetActionsExecuted": 0,
+    "physicalResourcesCreated": 0,
+    "newAuthSubjectsOrSessions": 0,
+    "newServerFixtures": 0,
+    "memoryContractTestsExecuted": true,
+    "realAuthRlsRaceNotificationsBrowser": "NOT_RUN",
+    "approved696eRetainedAtOriginalSource": "e83998d178061043688016056a5a78fc61df58bac28f3d0d0b66d639306037bd"
+  },
+  "financialNeutrality": {
+    "newServerWindowMeasured": false,
+    "retainedApproved696eWindowPassed": true,
+    "retainedEvidence": {
+      "path": "docs/verification/D19-C1-continuation-delivery.json",
+      "sha256": "8a3a12aed1110453865e3e47fd8f842d01d502b27a8ef58e52350cce8ba310b0"
+    },
+    "pendingMeaning": "Promise only; no ledger/withdrawable/budget/payment functionality added.",
+    "joinXpSemantics": "The original application acceptance +10XP/filled increment is retained exactly once in owned-memory tests; it is not a pending-reward financial event."
+  },
+  "schema": {
+    "path": "docs/verification/D19-application-decisions-20261025/schema-diff.json",
+    "sha256": "7ddae68547d9ce8092b245bfd63e8a936926e181b162ac6cedc5c5dd3358f514"
+  },
+  "caseCoverage": {
+    "path": "docs/verification/D19-application-decisions-20261025/case-coverage.json",
+    "sha256": "8d686f764c2cd236e455f9b2dc609e2792062654ba99a04c01fc34c2dd78d5b8"
+  },
+  "failureReconciliation": {
+    "path": "docs/verification/D19-application-decisions-20261025/failure-reconciliation.json",
+    "sha256": "f5cd86ec02aa805c5e69d39ca6e91ebfe3cf4368fafb52f9a2dbc446a3faf3a8"
+  },
+  "rollback": "docs/verification/D19-application-decisions-20261025/rollback.json",
+  "remaining": {
+    "path": "docs/verification/D19-application-decisions-20261025/remaining-acceptance.json",
+    "sha256": "cdabf3dc59fd339ce7e65ceab0b65ebfabeff15d6ce8cf1ee6e1c265eae9234c"
+  },
+  "wholeR1Verified": false,
+  "incidentOpen": true,
+  "restored": false,
+  "releaseHold": true,
+  "providerEnabled": false,
+  "D15ContentBlocked": true,
+  "advisorOwnerDeviceHostedFormalStaffBlocked": true,
+  "productionDataOrMembershipWrites": false,
+  "commit": null,
+  "push": false,
+  "merge": false,
+  "deploy": false,
+  "nextTask": "D19: finish the local source-bound application/asset/cross-Creator supplement harness and reviewable runtime manifest; no696e replay. Continue original-case applicability review without waiving any case."
+}

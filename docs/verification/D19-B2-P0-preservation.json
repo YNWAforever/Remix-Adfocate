@@ -1,0 +1,20 @@
+{
+  "sourceFingerprint": "7943636116d39d489e0f0d1623784627ab0388650fb2e680c12c90eb1a2d1ac6",
+  "priorEvidenceRecords": 1270,
+  "priorEvidenceBytePreserved": 1266,
+  "sharedMetadataChanged": [
+    "docs/verification/adfocate-delivery.json",
+    "docs/verification/audit_case_coverage.csv",
+    "docs/verification/code-fingerprint.json",
+    "docs/verification/implementation_backlog.csv"
+  ],
+  "allOtherPriorEvidenceUnchanged": true,
+  "originalCaseRows": 107,
+  "originalFindingRows": 28,
+  "originalBacklogRows": 20,
+  "originalColumnsPreserved": true,
+  "oldMigrationSourceBytesPreserved": 72,
+  "sourceBeforeCopies": 16,
+  "newSourceFiles": 11,
+  "beforeFindingCsvCopyBasis": "Exact current bytes matched the pre-turn checkpoint SHA256 before capture; the initial copied checkpoint lacked that CSV file, so no content was inferred."
+}

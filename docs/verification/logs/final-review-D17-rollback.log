@@ -1,0 +1,82 @@
+D12-changes.patch: check-only exit=1
+error: patch failed: src/lib/i18n.dict.ts:896
+error: src/lib/i18n.dict.ts: patch does not apply
+error: patch failed: src/components/admin/MissionEditor.tsx:235
+error: src/components/admin/MissionEditor.tsx: patch does not apply
+error: patch failed: scripts/audit/run-integration.mjs:5
+error: scripts/audit/run-integration.mjs: patch does not apply
+
+D13-changes.patch: check-only exit=1
+error: patch failed: scripts/audit/run-integration.mjs:5
+error: scripts/audit/run-integration.mjs: patch does not apply
+
+D14-changes.patch: check-only exit=1
+error: patch failed: src/routes/_app.guide.track.$trackId.tsx:5
+error: src/routes/_app.guide.track.$trackId.tsx: patch does not apply
+error: patch failed: src/lib/academy.ts:14
+error: src/lib/academy.ts: patch does not apply
+error: patch failed: src/components/admin/AcademyEditor.tsx:29
+error: src/components/admin/AcademyEditor.tsx: patch does not apply
+error: patch failed: server/routes/academy.ts:48
+error: server/routes/academy.ts: patch does not apply
+error: patch failed: scripts/audit/run-integration.mjs:5
+error: scripts/audit/run-integration.mjs: patch does not apply
+
+D15-changes.patch: check-only exit=1
+error: patch failed: supabase/release-manifest.json:1043
+error: supabase/release-manifest.json: patch does not apply
+error: patch failed: src/components/admin/AcademyEditor.tsx:2
+error: src/components/admin/AcademyEditor.tsx: patch does not apply
+error: patch failed: scripts/release/preflight.test.ts:38
+error: scripts/release/preflight.test.ts: patch does not apply
+error: patch failed: scripts/release/manifest.ts:867
+error: scripts/release/manifest.ts: patch does not apply
+error: patch failed: scripts/release/manifest.test.ts:59
+error: scripts/release/manifest.test.ts: patch does not apply
+error: patch failed: scripts/release/contracts.ts:4
+error: scripts/release/contracts.ts: patch does not apply
+error: patch failed: scripts/audit/run-integration.mjs:5
+error: scripts/audit/run-integration.mjs: patch does not apply
+
+D17-changes.patch: check-only exit=1
+error: patch failed: src/components/admin/AdminTopBar.tsx:17
+error: src/components/admin/AdminTopBar.tsx: patch does not apply
+error: patch failed: scripts/audit/run-integration.mjs:5
+error: scripts/audit/run-integration.mjs: patch does not apply
+
+D18-changes.patch: check-only exit=1
+error: patch failed: supabase/release-manifest.json:1121
+error: supabase/release-manifest.json: patch does not apply
+error: patch failed: src/components/admin/AdminTopBar.tsx:34
+error: src/components/admin/AdminTopBar.tsx: patch does not apply
+error: patch failed: server/test/staffCapabilityFixture.ts:1
+error: server/test/staffCapabilityFixture.ts: patch does not apply
+error: patch failed: server/test/audit-staff-capabilities.test.ts:1
+error: server/test/audit-staff-capabilities.test.ts: patch does not apply
+error: patch failed: server/routes/admin.ts:18
+error: server/routes/admin.ts: patch does not apply
+error: patch failed: server/lib/staffCapabilities.ts:1
+error: server/lib/staffCapabilities.ts: patch does not apply
+error: patch failed: scripts/release/preflight.test.ts:38
+error: scripts/release/preflight.test.ts: patch does not apply
+error: patch failed: scripts/release/manifest.ts:899
+error: scripts/release/manifest.ts: patch does not apply
+error: patch failed: scripts/release/manifest.test.ts:62
+error: scripts/release/manifest.test.ts: patch does not apply
+error: patch failed: scripts/audit/run-integration.mjs:5
+error: scripts/audit/run-integration.mjs: patch does not apply
+error: patch failed: e2e/staff-access.spec.ts:1
+error: e2e/staff-access.spec.ts: patch does not apply
+
+D19-changes.patch: check-only exit=0
+
+
+D20-changes.patch: check-only exit=0
+
+
+R2-ui-changes.patch: check-only exit=0
+
+
+D17-R2-changes.patch: check-only exit=0
+
+No patch applied; no source or data rollback performed.
