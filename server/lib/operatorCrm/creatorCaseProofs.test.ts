@@ -26,8 +26,7 @@ function row(overrides: Record<string, unknown> = {}) {
 const MISSIONS = new Map([["submission-1", { title: "Summer launch", slug: "summer-launch" }]]);
 
 /**
- * Minimal PostgREST stub. `mission_publication_proof_attempts` resolves on `.order()`,
- * `mission_submissions` resolves on `.in()` — matching how each query terminates.
+ * Minimal thenable PostgREST stub supporting the membership, attempt and mission reads.
  */
 function stubClient(
   attempts: { data?: unknown; error?: unknown },
@@ -37,12 +36,14 @@ function stubClient(
 ) {
   return {
     from: (table: string) => {
-      const result = table === "mission_submissions" ? submissions : attempts;
+      const result = table === "brand_users" ? { data: [{ workspace_id: "workspace-1" }] }
+        : table === "mission_submissions" ? submissions : attempts;
       const builder = {
         select: (projection: string) => { select(table, projection); return builder; },
-        eq: (column: string, value: string) => { eq(column, value); return builder; },
-        in: () => Promise.resolve(result),
+        eq: (column: string, value: string | boolean) => { eq(column, value); return builder; },
+        in: () => builder,
         order: () => Promise.resolve(result),
+        then: (resolve: (value: typeof result) => unknown) => Promise.resolve(result).then(resolve),
       };
       return builder;
     },
@@ -194,9 +195,8 @@ describe("getCreatorCaseProofs", () => {
   it("selects workspace, current-attempt and claim fields through the real FK hints", async () => {
     const select = vi.fn();
     const eq = vi.fn();
-    await getCreatorCaseProofs(stubClient({ data: [] }, { data: [] }, select, eq), "creator-1");
-    const projection = select.mock.calls[0][1] as string;
-    expect(select.mock.calls[0][0]).toBe("mission_publication_proof_attempts");
+    await getCreatorCaseProofs(stubClient({ data: [] }, { data: [] }, select, eq), "creator-1", "operator-1");
+    const projection = select.mock.calls.find(([table]) => table === "mission_publication_proof_attempts")![1] as string;
     expect(projection).toContain("workspace_id");
     expect(projection).toContain("mission_work_items!mission_publication_proof_attempts_work_item_workspace_fk!inner(");
     expect(projection).toContain("current_proof_attempt_id");
@@ -212,6 +212,7 @@ describe("getCreatorCaseProofs", () => {
         { data: [{ id: "submission-1", missions: { title: "Summer launch", slug: "summer-launch" } }] },
       ),
       "creator-1",
+      "operator-1",
     );
 
     expect(result.status).toBe("available");
@@ -226,6 +227,7 @@ describe("getCreatorCaseProofs", () => {
     const result = await getCreatorCaseProofs(
       stubClient({ data: [row()] }, { error: { code: "57014", message: "timeout" } }),
       "creator-1",
+      "operator-1",
     );
 
     expect(result.status).toBe("available");
@@ -236,17 +238,17 @@ describe("getCreatorCaseProofs", () => {
   });
 
   it("reports a missing relation as not_configured", async () => {
-    const result = await getCreatorCaseProofs(stubClient({ error: { code: "42P01" } }), "creator-1");
+    const result = await getCreatorCaseProofs(stubClient({ error: { code: "42P01" } }), "creator-1", "operator-1");
     expect(result).toEqual({ status: "unavailable", reason: "not_configured" });
   });
 
   it("reports a stale PostgREST schema cache as not_configured", async () => {
-    const result = await getCreatorCaseProofs(stubClient({ error: { code: "PGRST205" } }), "creator-1");
+    const result = await getCreatorCaseProofs(stubClient({ error: { code: "PGRST205" } }), "creator-1", "operator-1");
     expect(result).toEqual({ status: "unavailable", reason: "not_configured" });
   });
 
   it("reports any other query error as source_error", async () => {
-    const result = await getCreatorCaseProofs(stubClient({ error: { code: "57014", message: "timeout" } }), "creator-1");
+    const result = await getCreatorCaseProofs(stubClient({ error: { code: "57014", message: "timeout" } }), "creator-1", "operator-1");
     expect(result).toEqual({ status: "unavailable", reason: "source_error" });
   });
 
@@ -257,7 +259,7 @@ describe("getCreatorCaseProofs", () => {
       },
     } as never;
 
-    await expect(getCreatorCaseProofs(client, "creator-1")).resolves.toEqual({
+    await expect(getCreatorCaseProofs(client, "creator-1", "operator-1")).resolves.toEqual({
       status: "unavailable",
       reason: "source_error",
     });

@@ -230,12 +230,27 @@ async function loadMissions(supabase: SupabaseClient, rows: unknown): Promise<Ma
 export async function getCreatorCaseProofs(
   supabase: SupabaseClient,
   creatorId: string,
+  operatorId: string,
 ): Promise<CreatorCaseEnrichment<CreatorCaseProofItem[]>> {
   try {
+    // Proof reads use the same active workspace membership as active-mission
+    // detail. The creator case itself being global does not grant proof access.
+    const membership = await supabase
+      .from("brand_users")
+      .select("workspace_id")
+      .eq("user_id", operatorId)
+      .eq("active", true);
+    if (membership.error) return { status: "unavailable", reason: "source_error" };
+    const workspaceIds = asArray(membership.data)
+      .map((row) => readString(row, "workspace_id"))
+      .filter((id): id is string => !!id);
+    if (workspaceIds.length === 0) return { status: "available", value: [] };
+
     const { data, error } = await supabase
       .from("mission_publication_proof_attempts")
       .select(PROOF_PROJECTION)
       .eq("submitted_by", creatorId)
+      .in("workspace_id", workspaceIds)
       .order("submitted_at", { ascending: false });
 
     if (error) {
