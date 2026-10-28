@@ -66,3 +66,45 @@ it("revalidates staff access during same-user token refresh", async () => {
   expect(await screen.findByRole("alert")).toHaveTextContent("app.admin.notStaff");
   expect(screen.queryByText("Private staff-a")).not.toBeInTheDocument();
 });
+
+it.each(["response", "transport", "session"])("retains unsaved input through a same-user %s outage and explicit retry", async (failure) => {
+  const session = { access_token: "synthetic", user: { id: "staff-a" } };
+  h.session.mockResolvedValue({ data: { session }, error: null });
+  const fetch = vi.fn().mockImplementation(async () => Response.json({ staff: { userId: "staff-a" } }));
+  vi.stubGlobal("fetch", fetch);
+  const changed = vi.fn();
+  render(<StaffAuthGate onIdentityChange={changed}>{() => <input aria-label="Unsaved review" defaultValue="" />}</StaffAuthGate>);
+  const input = await screen.findByRole("textbox", { name: "Unsaved review" });
+  fireEvent.change(input, { target: { value: "Retain my review draft" } });
+  if (failure === "response") fetch.mockResolvedValueOnce(new Response("{}", { status: 503 }));
+  else if (failure === "transport") fetch.mockRejectedValueOnce(new TypeError("Offline"));
+  else h.session.mockRejectedValueOnce(new Error("Session unavailable"));
+
+  await act(async () => { h.callback!("TOKEN_REFRESHED", session); });
+  await screen.findByRole("alert");
+  expect(screen.queryByRole("textbox", { name: "Unsaved review" })).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "Retry" }));
+
+  expect(await screen.findByRole("textbox", { name: "Unsaved review" })).toBe(input);
+  expect(input).toHaveValue("Retain my review draft");
+  expect(changed).not.toHaveBeenCalled();
+});
+
+it.each([401, 403])("does not restore a retained view after a definitive %s denial followed by an outage", async (status) => {
+  const session = { access_token: "synthetic", user: { id: "staff-a" } };
+  h.session.mockResolvedValue({ data: { session }, error: null });
+  const fetch = vi.fn().mockImplementation(async () => Response.json({ staff: { userId: "staff-a" } }));
+  vi.stubGlobal("fetch", fetch);
+  render(<StaffAuthGate>{() => <input aria-label="Unsaved review" defaultValue="Private draft" />}</StaffAuthGate>);
+  const input = await screen.findByRole("textbox", { name: "Unsaved review" });
+
+  fetch.mockResolvedValueOnce(new Response("{}", { status }));
+  await act(async () => { h.callback!("TOKEN_REFRESHED", session); });
+  expect(input).not.toBeInTheDocument();
+
+  fetch.mockResolvedValueOnce(new Response("{}", { status: 503 }));
+  await act(async () => { h.callback!("TOKEN_REFRESHED", session); });
+  await screen.findByRole("alert");
+  expect(input).not.toBeInTheDocument();
+  expect(screen.queryByLabelText("Unsaved review")).not.toBeInTheDocument();
+});

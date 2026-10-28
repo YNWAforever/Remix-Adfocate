@@ -18,11 +18,13 @@ type ReviewActionPanelProps = {
     review: AdminReviewProjection;
   };
   variant?: "compact" | "full";
+  workspace?: string;
   onSuccess?: () => void;
 };
 
-export function ReviewActionPanel({ creator, variant = "compact", onSuccess }: ReviewActionPanelProps) {
+export function ReviewActionPanel({ creator, variant = "compact", workspace, onSuccess }: ReviewActionPanelProps) {
   const access=useStaffAccess();
+  const requestWorkspace = workspace ?? access?.access?.workspace?.id ?? "";
   const queryClient = useQueryClient();
   const [status, setStatus] = useState<AdminReviewStatus>(creator.review.status);
   const [riskLevel, setRiskLevel] = useState<AdminRiskLevel>(creator.review.riskLevel);
@@ -62,7 +64,7 @@ export function ReviewActionPanel({ creator, variant = "compact", onSuccess }: R
     mutationFn: (body: ReviewBody) => {
       command.current ??= { id: crypto.randomUUID(), revision: revision.current, body };
       const pending = command.current;
-      return postCreatorReview(creator.id, { ...pending.body, requestId: pending.id, expectedRevision: pending.revision });
+      return postCreatorReview(creator.id, { ...pending.body, requestId: pending.id, expectedRevision: pending.revision }, requestWorkspace);
     },
     onSuccess: async (response, body) => {
       command.current = null;
@@ -75,7 +77,7 @@ export function ReviewActionPanel({ creator, variant = "compact", onSuccess }: R
     },
   });
 
-  const comparison = useMutation({ mutationFn: () => fetchCreatorDetail(creator.id) });
+  const comparison = useMutation({ mutationFn: () => fetchCreatorDetail(creator.id, requestWorkspace) });
   const conflict = mutation.error && "status" in mutation.error && mutation.error.status === 409;
   const unknown = Boolean(mutation.error && !conflict && command.current);
   const recovery = <>

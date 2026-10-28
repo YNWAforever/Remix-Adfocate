@@ -88,7 +88,7 @@ let history: ReturnType<typeof createBrowserHistory>;
 let queryClient: QueryClient;
 const requests = vi.fn();
 
-function mount(initialProof = proof, updatedAt = Date.now()) {
+function mount(initialProof = proof, updatedAt = Date.now(), seedCase = true) {
   const root = createRootRoute();
   const operator = createRoute({ getParentRoute: () => root, path: "operator", component: OperatorLayout });
   const creator = createRoute({
@@ -105,9 +105,9 @@ function mount(initialProof = proof, updatedAt = Date.now()) {
   queryClient = new QueryClient({ defaultOptions: { queries: { retry: false, staleTime: 30_000 } } });
   const workspace = new URLSearchParams(window.location.search).get("ws")
     ?? sessionStorage.getItem("adfocate_admin_workspace") ?? "";
-  queryClient.setQueryData(["admin-creator-detail", "creator-1", workspace], creatorDetail);
+  if (seedCase) queryClient.setQueryData(["admin-creator-detail", "creator-1", workspace], creatorDetail);
   caseProofKey = ["admin-creator-proofs", "creator-1", workspace];
-  queryClient.setQueryData(caseProofKey, { proofs: { status: "available", value: [initialProof] } }, { updatedAt });
+  if (seedCase) queryClient.setQueryData(caseProofKey, { proofs: { status: "available", value: [initialProof] } }, { updatedAt });
   render(
     <QueryClientProvider client={queryClient}>
       <I18nProvider>
@@ -145,6 +145,25 @@ describe("creator case proof navigation", () => {
     queryClient?.clear();
     vi.unstubAllGlobals();
     sessionStorage.clear();
+  });
+
+  it("does not populate an inaccessible workspace's case cache with default-workspace reads", async () => {
+    window.history.replaceState(null, "", "/operator/creators/creator-1?ws=workspace-other");
+    requests.mockImplementation(async (url: string, init?: RequestInit) => {
+      // The server rejects an explicitly inaccessible workspace, but an omitted
+      // scope defaults to this user's current membership in workspace-owner.
+      if (new Headers(init?.headers).get("X-Workspace-Slug") === "workspace-other") {
+        return Response.json({ code: "NOT_FOUND", error: "Not found" }, { status: 404 });
+      }
+      if (url === "/api/admin/creators/creator-1") return Response.json(creatorDetail);
+      if (url === caseProofUrl) return Response.json({ proofs: { status: "available", value: [proof] } });
+      throw new Error(`Unexpected request: ${url}`);
+    });
+    mount(proof, Date.now(), false);
+    await waitFor(() => expect(queryClient.getQueryState(caseProofKey)?.status).toBe("error"));
+    expect(queryClient.getQueryData(caseProofKey)).toBeUndefined();
+    expect(queryClient.getQueryData(["admin-creator-detail", "creator-1", "workspace-other"])).toBeUndefined();
+    expect(screen.queryByRole("link", { name: "Review proof" })).not.toBeInTheDocument();
   });
 
   it.each(["", "workspace-other"])("loads the owning workspace from selection '%s' after canonical validation", async (selected) => {
@@ -257,6 +276,8 @@ describe("creator case proof navigation", () => {
     expect(within(panel).getByText(label)).toBeVisible();
     expect(Boolean(within(panel).queryByText("1 pending"))).toBe(pending);
     expect(requests.mock.calls.filter(([url]) => url === caseProofUrl)).toHaveLength(1);
+    const caseRead = requests.mock.calls.find(([url]) => url === caseProofUrl)!;
+    expect(new Headers(caseRead[1].headers).get("X-Workspace-Slug")).toBe(proof.workspaceId);
     expect(Date.now() - seededAt).toBeLessThan(30_000);
     expect(queryClient.getQueryData(caseProofKey)).toEqual({ proofs: { status: "available", value: [nextProof] } });
   });

@@ -9,6 +9,7 @@ import {
   fetchAdminMissions,
   fetchActiveMissionQueue,
   fetchCreatorDetail,
+  fetchCreatorPublicationProofs,
   fetchCreatorReviewQueue,
   fetchEngagedUsers,
   fetchMissionShortlist,
@@ -16,6 +17,7 @@ import {
   grantActiveMissionRevision,
   markActiveMissionShipped,
   postCreatorReview,
+  postCreatorNote,
   requestActiveMissionRevision,
   startActiveMissionReview,
 } from "./admin";
@@ -98,6 +100,23 @@ describe("admin client helpers", () => {
         }),
       }),
     );
+  });
+
+  it("binds creator case reads, review and notes to the selected workspace", async () => {
+    const fetchMock = vi.spyOn(globalThis, "fetch").mockImplementation(async (_url, init) => {
+      const workspace = new Headers(init?.headers).get("X-Workspace-Slug");
+      return workspace === "inaccessible"
+        ? Response.json({ code: "NOT_FOUND", error: "Not found" }, { status: 404 })
+        : Response.json({ creator: { id: "creator-1" } });
+    });
+    const calls = [
+      () => fetchCreatorDetail("creator-1", "inaccessible"),
+      () => fetchCreatorPublicationProofs("creator-1", "inaccessible"),
+      () => postCreatorReview("creator-1", { status: "approved", riskLevel: "low" }, "inaccessible"),
+      () => postCreatorNote("creator-1", { category: "other", body: "Retained note" }, "inaccessible"),
+    ];
+    for (const call of calls) await expect(call()).rejects.toMatchObject({ status: 404, code: "NOT_FOUND" });
+    expect(fetchMock).toHaveBeenCalledTimes(4);
   });
 
   it("reads mission shortlist responses from the shortlists key", async () => {

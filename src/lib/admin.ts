@@ -665,8 +665,10 @@ export function fetchCreatorReviewQueue(filters: CreatorReviewQueueFilters = {})
   );
 }
 
-export function fetchCreatorDetail(creatorId: string) {
-  return adminFetch<AdminCreatorDetailResponse>(`/admin/creators/${creatorId}`);
+export function fetchCreatorDetail(creatorId: string, workspace = "") {
+  return adminFetch<AdminCreatorDetailResponse>(`/admin/creators/${creatorId}`, {
+    headers: activeMissionWorkspaceHeader(workspace),
+  });
 }
 
 /** Mirrors `CreatorCaseEnrichment` on the server: side panels degrade, they don't throw. */
@@ -700,18 +702,21 @@ export type CreatorCaseProofItem = {
   reviewedAt: string | null;
 };
 
-export function fetchCreatorPublicationProofs(creatorId: string) {
+export function fetchCreatorPublicationProofs(creatorId: string, workspace = "") {
   return adminFetch<{ proofs: CreatorCaseEnrichment<CreatorCaseProofItem[]> }>(
     `/admin/creators/${creatorId}/publication-proofs`,
+    { headers: activeMissionWorkspaceHeader(workspace) },
   );
 }
 
 export function postCreatorReview(
   creatorId: string,
   body: { status: AdminReviewStatus; riskLevel: AdminRiskLevel; summary?: string; note?: string; requestId?: string; expectedRevision?: number },
+  workspace = "",
 ) {
   return adminFetch<{ review: AdminReviewProjection }>(`/admin/creators/${creatorId}/review`, {
     method: "POST",
+    headers: activeMissionWorkspaceHeader(workspace),
     body: JSON.stringify({
       status: body.status,
       risk_level: body.riskLevel,
@@ -723,10 +728,10 @@ export function postCreatorReview(
   });
 }
 
-export function postCreatorNote(creatorId: string, body: { category: AdminNoteCategory; body: string; requestId?: string; expectedRevision?: number }) {
+export function postCreatorNote(creatorId: string, body: { category: AdminNoteCategory; body: string; requestId?: string; expectedRevision?: number }, workspace = "") {
   return adminFetch<{ note: { id: string; category: AdminNoteCategory; body: string; created_at: string } }>(
     `/admin/creators/${creatorId}/notes`,
-    { method: "POST", body: JSON.stringify({ category: body.category, body: body.body, request_id: body.requestId, expected_revision: body.expectedRevision }) },
+    { method: "POST", headers: activeMissionWorkspaceHeader(workspace), body: JSON.stringify({ category: body.category, body: body.body, request_id: body.requestId, expected_revision: body.expectedRevision }) },
   );
 }
 

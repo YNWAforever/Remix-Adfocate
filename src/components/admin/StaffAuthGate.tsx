@@ -21,10 +21,10 @@ export function StaffAuthGate({ children, refreshKey = 0, onIdentityChange }: { 
     try {
     const { data, error } = await supabase.auth.getSession();
     if (request !== sequence.current) return;
-    sessionOwner.current = data.session?.user?.id ?? null;
     if (error) { setPhase("unavailable"); return; }
+    sessionOwner.current = data.session?.user?.id ?? null;
     const token = data.session?.access_token;
-    if (!token) { setPhase("signed_out"); return; }
+    if (!token) { setStaff(null); setPhase("signed_out"); return; }
     const res = await fetch("/api/admin/me", { headers: { Authorization: `Bearer ${token}` } });
     if (request !== sequence.current) return;
     if (res.status === 200) {
@@ -33,8 +33,10 @@ export function StaffAuthGate({ children, refreshKey = 0, onIdentityChange }: { 
       setStaff(body.staff);
       setPhase("authed");
     } else if (res.status === 403) {
+      setStaff(null);
       setPhase("not_staff");
     } else if (res.status === 401) {
+      setStaff(null);
       setPhase("signed_out");
     } else {
       setPhase("unavailable");
@@ -63,14 +65,20 @@ export function StaffAuthGate({ children, refreshKey = 0, onIdentityChange }: { 
       options: { redirectTo: `${window.location.origin}/auth/callback?next=/admin` },
     });
 
-  if (phase === "authed" && staff) return <>{children(staff)}</>;
-
-  if (phase === "unavailable") return (
+  const unavailable = (
     <div role="alert" className="mx-auto max-w-sm space-y-3 p-6 text-center">
       <p>{lang === "zh" ? "暫時無法核實營運服務，請重試。" : "Staff service is temporarily unavailable. Please retry."}</p>
-      <button type="button" onClick={() => void check()}>{lang === "zh" ? "重試" : "Retry"}</button>
+      <button type="button" onClick={() => void check(Boolean(staff))}>{lang === "zh" ? "重試" : "Retry"}</button>
     </div>
   );
+
+  // A same-user revalidation outage hides the view without discarding drafts.
+  // Definitive denials and identity changes clear staff and unmount the view.
+  if (staff && (phase === "authed" || phase === "unavailable")) return <>
+    <div hidden={phase !== "authed"}>{children(staff)}</div>
+    {phase === "unavailable" && unavailable}
+  </>;
+  if (phase === "unavailable") return unavailable;
 
   if (phase === "not_staff") {
     return (

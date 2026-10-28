@@ -91,7 +91,7 @@ function OperatorCreatorDetail({ creatorId, workspace }: { creatorId: string; wo
     queryKey: ["admin-creator-detail", creatorId, workspace],
     enabled: authed,
     retry: false,
-    queryFn: () => fetchCreatorDetail(creatorId),
+    queryFn: () => fetchCreatorDetail(creatorId, workspace),
   });
 
   // Separate query so a proof-source outage never blocks the case file itself; the
@@ -100,7 +100,7 @@ function OperatorCreatorDetail({ creatorId, workspace }: { creatorId: string; wo
     queryKey: ["admin-creator-proofs", creatorId, workspace],
     enabled: authed,
     retry: false,
-    queryFn: () => fetchCreatorPublicationProofs(creatorId),
+    queryFn: () => fetchCreatorPublicationProofs(creatorId, workspace),
   });
 
   const visibleDetail = useCanShowPreviousData(detail, ["admin-creator-detail", creatorId, workspace]) ? detail.data : undefined;
@@ -109,7 +109,7 @@ function OperatorCreatorDetail({ creatorId, workspace }: { creatorId: string; wo
     mutationFn: (body: { category: AdminNoteCategory; body: string }) => {
       noteRequest.current ??= { id: crypto.randomUUID(), revision: noteRevision.current ?? visibleDetail?.review.revision ?? 0, ...body };
       const pending = noteRequest.current;
-      return postCreatorNote(creatorId, { category: pending.category, body: pending.body, requestId: pending.id, expectedRevision: pending.revision });
+      return postCreatorNote(creatorId, { category: pending.category, body: pending.body, requestId: pending.id, expectedRevision: pending.revision }, workspace);
     },
     onSuccess: async () => {
       setNoteBody(""); noteRequest.current = null; noteRevision.current = null; noteComparison.reset();
@@ -117,7 +117,7 @@ function OperatorCreatorDetail({ creatorId, workspace }: { creatorId: string; wo
     },
   });
 
-  const noteComparison = useMutation({ mutationFn: () => fetchCreatorDetail(creatorId) });
+  const noteComparison = useMutation({ mutationFn: () => fetchCreatorDetail(creatorId, workspace) });
   const noteConflict = noteMutation.error && "status" in noteMutation.error && noteMutation.error.status === 409;
   const noteUnknown = Boolean(noteMutation.error && !noteConflict && noteRequest.current);
 
@@ -438,6 +438,7 @@ function OperatorCreatorDetail({ creatorId, workspace }: { creatorId: string; wo
                 <section className="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3">
                   <h3 className="font-heading font-bold">Review action</h3>
                   <ReviewActionPanel
+                    workspace={workspace}
                     creator={{
                       id: creator.id,
                       displayName: creator.display_name ?? "Unknown creator",

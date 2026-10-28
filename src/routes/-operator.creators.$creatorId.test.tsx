@@ -255,7 +255,7 @@ describe("operator creator detail", () => {
         body: "Great for launch.",
         requestId: expect.any(String),
         expectedRevision: 0,
-      }),
+      }, "workspace-1"),
     );
   });
 
@@ -317,7 +317,7 @@ describe("operator creator detail", () => {
     fireEvent.click(screen.getByLabelText("Save internal note"));
     await waitFor(() => expect(screen.getByLabelText("New internal note")).toHaveValue(""));
     fireEvent.click(screen.getByLabelText("Save review action"));
-    await waitFor(() => expect(hoisted.postCreatorReview).toHaveBeenCalledWith("creator-1", expect.objectContaining({ expectedRevision: 1 })));
+    await waitFor(() => expect(hoisted.postCreatorReview).toHaveBeenCalledWith("creator-1", expect.objectContaining({ expectedRevision: 1 }), "workspace-1"));
   });
 });
 
@@ -370,7 +370,7 @@ describe("operator creator detail", () => {
     fireEvent.change(screen.getByLabelText("New internal note"), { target: { value: "New subject note" } });
     fireEvent.click(screen.getByLabelText("Save internal note"));
     await waitFor(() => expect(hoisted.postCreatorNote).toHaveBeenCalledTimes(2));
-    expect(hoisted.postCreatorNote.mock.calls[1]).toEqual([change === "creator" ? "creator-2" : "creator-1", expect.objectContaining({ body: "New subject note", expectedRevision: 8 })]);
+    expect(hoisted.postCreatorNote.mock.calls[1]).toEqual([change === "creator" ? "creator-2" : "creator-1", expect.objectContaining({ body: "New subject note", expectedRevision: 8 }), change === "workspace" ? "workspace-2" : "workspace-1"]);
     expect(hoisted.postCreatorNote.mock.calls[1][1].requestId).not.toBe(hoisted.postCreatorNote.mock.calls[0][1].requestId);
   });
 
