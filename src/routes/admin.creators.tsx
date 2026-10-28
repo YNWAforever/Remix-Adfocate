@@ -14,7 +14,7 @@ import {
   type CreatorReviewQueueFilters,
 } from "@/lib/admin";
 import { useI18n } from "@/lib/i18n";
-import { RequestFeedback, canShowPreviousData } from "@/components/RequestFeedback";
+import { RequestFeedback, useCanShowPreviousData } from "@/components/RequestFeedback";
 
 export const Route = createFileRoute("/admin/creators")({
   component: CreatorsTab,
@@ -61,7 +61,7 @@ function CreatorsTab() {
         pageSize: 25,
       }),
   });
-  const visibleCreators = canShowPreviousData(creators.error) ? creators.data : undefined;
+  const visibleCreators = useCanShowPreviousData(creators, ["admin-creators-review", { q: debouncedQ, status, risk, sort, missionId, workspace, page }]) ? creators.data : undefined;
   useEffect(() => {
     if (!visibleCreators || creators.isFetching || creators.isError) return;
     const selectedId = sessionStorage.getItem("adfocate-queue-focus");

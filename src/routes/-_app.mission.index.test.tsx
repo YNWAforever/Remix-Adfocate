@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { Mission } from "@/lib/queries/kocmax";
 import { ApiError } from "@/lib/api";
 
@@ -54,7 +55,8 @@ import { Route } from "./_app.mission.index";
 
 function renderMissions() {
   const Component = Route.options.component as React.ComponentType;
-  return render(<Component />);
+  const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  return render(<Component />, { wrapper: ({ children }) => <QueryClientProvider client={client}>{children}</QueryClientProvider> });
 }
 
 beforeEach(() => {

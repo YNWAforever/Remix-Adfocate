@@ -7,7 +7,7 @@ import { useAdminAuth } from "@/components/admin/AdminAuthContext";
 import { useAdminWorkspace } from "@/components/admin/AdminWorkspaceContext";
 import { TrendChart } from "@/components/admin/TrendChart";
 import { useI18n } from "@/lib/i18n";
-import { RequestFeedback, canShowPreviousData } from "@/components/RequestFeedback";
+import { RequestFeedback, useCanShowPreviousData } from "@/components/RequestFeedback";
 
 export const Route = createFileRoute("/admin/insights")({ component: InsightsPage });
 
@@ -167,7 +167,7 @@ function InsightsPage() {
     if (q.error instanceof AdminAuthError) reportAuthError(q.error);
   }, [q.error, reportAuthError]);
 
-  const data = canShowPreviousData(q.error) ? q.data?.insights : undefined;
+  const data = useCanShowPreviousData(q, adminKeys.insights(workspace, win)) ? q.data?.insights : undefined;
 
   return (
     <div className="space-y-4">

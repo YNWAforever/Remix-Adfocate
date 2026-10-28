@@ -78,7 +78,7 @@ export function SocialTrustPanel({ presentations, legacyHandles = [] }: { presen
             </> : null}
           </div>;
         })}
-        {connectable && !platformRows.some(row => row.accountId) ? <form className="space-y-2" onSubmit={event => {
+        {connectable ? <form className="space-y-2" onSubmit={event => {
           event.preventDefault(); if (!handle.trim() || pending) return;
           void run(platform, () => add.mutateAsync({ platform: inputKey, handle }));
         }}>

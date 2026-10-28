@@ -13,7 +13,7 @@ import { useAdminAuth } from "@/components/admin/AdminAuthContext";
 import { useAdminWorkspace } from "@/components/admin/AdminWorkspaceContext";
 import { ReviewBadge, ShortlistBadge } from "@/components/operator/OperatorBadges";
 import { useI18n } from "@/lib/i18n";
-import { RequestFeedback, canShowPreviousData } from "@/components/RequestFeedback";
+import { RequestFeedback, useCanShowPreviousData } from "@/components/RequestFeedback";
 
 export const Route = createFileRoute("/admin/applications")({ component: ApplicationsTab });
 
@@ -29,7 +29,7 @@ function ApplicationsTab() {
     enabled: authed,
     retry: false,
   });
-  const visibleApps = canShowPreviousData(apps.error) ? apps.data : undefined;
+  const visibleApps = useCanShowPreviousData(apps, adminKeys.applications(workspace)) ? apps.data : undefined;
   useEffect(() => {
     if (apps.error instanceof AdminAuthError) reportAuthError(apps.error);
   }, [apps.error, reportAuthError]);

@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMyMissions, type MyMission, type SubmissionStatus } from "@/lib/queries/kocmax";
 import { SkeletonCard } from "@/components/SkeletonCard";
 import { useI18n } from "@/lib/i18n";
-import { RequestFeedback, canShowPreviousData } from "@/components/RequestFeedback";
+import { RequestFeedback, useCanShowPreviousData } from "@/components/RequestFeedback";
 
 export const Route = createFileRoute("/_app/my/")({ component: MyMissions });
 
@@ -57,6 +57,7 @@ function MissionSubmissionLink({ submission }: { submission: MyMission }) {
 function MyMissions() {
   const { t } = useI18n();
   const mine = useMyMissions();
+  const showSavedMissions = useCanShowPreviousData(mine, ["my-missions", "all"]);
   if (mine.isLoading) {
     return (
       <div className="mx-auto w-full max-w-lg p-4 lg:max-w-5xl">
@@ -64,7 +65,7 @@ function MyMissions() {
       </div>
     );
   }
-  const visibleMissions = canShowPreviousData(mine.error) ? mine.data : undefined;
+  const visibleMissions = showSavedMissions ? mine.data : undefined;
   const subs: MyMission[] = visibleMissions ?? [];
 
   return (

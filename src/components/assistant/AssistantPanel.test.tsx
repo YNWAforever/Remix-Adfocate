@@ -84,4 +84,19 @@ describe("AssistantPanel", () => {
     expect(screen.getByPlaceholderText(/輸入/)).toHaveValue("");
     expect(screen.getByRole("status")).toHaveTextContent("已保存 / Saved");
   });
+
+  it("preserves text edited while the current answer is pending", () => {
+    render(<AssistantPanel onClose={() => {}} />);
+    const input = screen.getByPlaceholderText(/輸入/);
+    fireEvent.change(input, { target: { value: "First question" } });
+    fireEvent.click(screen.getByRole("button", { name: /傳送|送出|發送/ }));
+    const [body, callbacks] = mutate.mock.calls[0];
+    fireEvent.change(input, { target: { value: "Keep this next question" } });
+
+    act(() => callbacks.onSuccess({ request_id: body.client_request_id, persistence: "saved",
+      answer: "First answer", conversation_id: "conversation", citations: [] }));
+
+    expect(screen.getByText("First answer")).toBeInTheDocument();
+    expect(input).toHaveValue("Keep this next question");
+  });
 });

@@ -9,6 +9,37 @@ export function canShowPreviousData(error: unknown): boolean {
 // A later outage is not evidence that access was restored.
 const deniedQueries = new WeakMap<object, number>();
 type CachedRead = { data?: unknown; error?: unknown; isError?: boolean; isSuccess?: boolean };
+/** One subscription for dynamic useQueries results; barriers survive page remounts. */
+export function useCanShowPreviousQueriesData(reads: readonly { read: CachedRead; queryKey: QueryKey }[]): boolean[] {
+  const cache = useQueryClient().getQueryCache();
+  const [, refresh] = useState(0);
+  const hashes = JSON.stringify(reads.map(({ queryKey }) => cache.find({ queryKey, exact: true })?.queryHash ?? null));
+  useEffect(() => {
+    const queryHashes: (string | null)[] = JSON.parse(hashes);
+    const record = (query: { state: { error: unknown; status: string; dataUpdateCount: number } }) => {
+      const barrier = deniedQueries.get(query);
+      if (!canShowPreviousData(query.state.error)) {
+        if (barrier === query.state.dataUpdateCount) return;
+        deniedQueries.set(query, query.state.dataUpdateCount);
+      } else if (query.state.status === "success" && barrier !== undefined && query.state.dataUpdateCount > barrier) {
+        deniedQueries.delete(query);
+      } else return;
+      refresh(value => value + 1);
+    };
+    for (const queryHash of queryHashes) {
+      const query = queryHash === null ? undefined : cache.get(queryHash);
+      if (query) record(query);
+    }
+    return cache.subscribe(event => {
+      if (event.type === "updated" && queryHashes.includes(event.query.queryHash)) record(event.query);
+    });
+  }, [cache, hashes]);
+  return reads.map(({ read, queryKey }) => {
+    const query = cache.find({ queryKey, exact: true });
+    const barrier = query && deniedQueries.get(query);
+    return canShowPreviousData(read.error) && (barrier === undefined || Boolean(query && query.state.dataUpdateCount > barrier));
+  });
+}
 export function useCanShowPreviousData(read: CachedRead, queryKey: QueryKey, actionError?: unknown): boolean {
   const client = useQueryClient(), cache = client.getQueryCache();
   const query = cache.find({ queryKey, exact: true });

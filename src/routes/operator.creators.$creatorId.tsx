@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { RequestFeedback, canShowPreviousData } from "@/components/RequestFeedback";
+import { RequestFeedback, useCanShowPreviousData } from "@/components/RequestFeedback";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, CalendarClock, NotebookPen, ShieldCheck, UserRound } from "lucide-react";
@@ -103,7 +103,7 @@ function OperatorCreatorDetail({ creatorId, workspace }: { creatorId: string; wo
     queryFn: () => fetchCreatorPublicationProofs(creatorId),
   });
 
-  const visibleDetail = canShowPreviousData(detail.error) ? detail.data : undefined;
+  const visibleDetail = useCanShowPreviousData(detail, ["admin-creator-detail", creatorId, workspace]) ? detail.data : undefined;
   const noteMutation = useMutation({
     mutationFn: (body: { category: AdminNoteCategory; body: string }) => {
       noteRequest.current ??= { id: crypto.randomUUID(), revision: noteRevision.current ?? visibleDetail?.review.revision ?? 0, ...body };

@@ -51,12 +51,19 @@ describe("R2 original empty/list UI acceptance", () => {
     expect(await screen.findByText("暫無兌換記錄")).toBeInTheDocument();
   });
   it("UC-C15 revoked permission hides a previously cached redemption code", async () => {
-    const { client } = show(History); await screen.findByText("暫無兌換記錄");
+    const { client, unmount } = show(History); await screen.findByText("暫無兌換記錄");
     act(() => client.setQueryData(["redemptions"], [{ id: "old", points_spent: 1, code: "PRIVATE-CODE", created_at: "2026-10-01", redemption_gifts: { name: "Old gift" } }]));
     await screen.findByText(/PRIVATE-CODE/);
     h.creator.mockRejectedValueOnce(new ApiError(403, "forbidden", "Denied"));
     await act(async () => { await client.refetchQueries({ queryKey: ["redemptions"] }); });
     expect(await screen.findByRole("alert")).toHaveTextContent(/Workspace access/);
+    expect(screen.queryByText(/PRIVATE-CODE/)).not.toBeInTheDocument();
+    h.creator.mockRejectedValue(unavailable());
+    await act(async () => { await client.refetchQueries({ queryKey: ["redemptions"] }); });
+    expect(screen.queryByText(/PRIVATE-CODE/)).not.toBeInTheDocument();
+    unmount();
+    show(History, client);
+    await screen.findByRole("alert");
     expect(screen.queryByText(/PRIVATE-CODE/)).not.toBeInTheDocument();
   });
   it("UC-C16 shows no active challenge only after a successful read", async () => {

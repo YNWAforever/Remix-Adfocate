@@ -2,14 +2,14 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useRedemptions } from "@/lib/queries/kocmax";
 import { SkeletonCard } from "@/components/SkeletonCard";
 import { useI18n } from "@/lib/i18n";
-import { RequestFeedback, canShowPreviousData } from "@/components/RequestFeedback";
+import { RequestFeedback, useCanShowPreviousData } from "@/components/RequestFeedback";
 
 export const Route = createFileRoute("/_app/redemption/history")({ component: RedemptionHistory });
 
 function RedemptionHistory() {
   const { t } = useI18n();
   const q = useRedemptions();
-  const records = canShowPreviousData(q.error) ? q.data : undefined;
+  const records = useCanShowPreviousData(q, ["redemptions"]) ? q.data : undefined;
   return (
     <div className="mx-auto w-full max-w-lg space-y-4 p-4 lg:max-w-3xl">
       <div className="flex items-center justify-between">

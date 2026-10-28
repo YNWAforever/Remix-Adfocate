@@ -3,11 +3,12 @@ import { useEffect, useRef } from "react";
 import { ApiError } from "@/lib/api";
 import { activeMissionNextBestAction, type NextBestAction } from "@/lib/creatorActivation";
 import { useI18n } from "@/lib/i18n";
-import { activeMissionWorkspaceQueryOptions } from "@/lib/queries/activeMission";
+import { activeMissionQueryKey, activeMissionWorkspaceQueryOptions } from "@/lib/queries/activeMission";
 import type { MyMission } from "@/lib/queries/kocmax";
 import type { CreatorActivationQuerySection } from "@/lib/useCreatorActivation";
 import { ActiveMissionSummary } from "./ActiveMissionSummary";
 import { NextBestActionCard } from "./NextBestActionCard";
+import { useCanShowPreviousData, useCanShowPreviousQueriesData } from "./RequestFeedback";
 
 const active = (mission: MyMission) => Boolean(mission.active_workflow_id)
   || mission.creator_workflow_mode === "active_workspace"
@@ -29,12 +30,15 @@ export function CreatorWorkHome({ missions, fallbackAction, onAction, onView }: 
   onView: (action: NextBestAction) => void;
 }) {
   const { lang, t } = useI18n();
-  const candidates = denied(missions.error) ? [] : (missions.data ?? []).filter(current);
+  const showMissions = useCanShowPreviousData(missions, ["my-missions", "all"]);
+  const candidates = showMissions ? (missions.data ?? []).filter(current) : [];
   const activeMissions = candidates.filter(active);
   const workspaces = useQueries({ queries: activeMissions.map(({ id }) => activeMissionWorkspaceQueryOptions(id)) });
+  const showWorkspaces = useCanShowPreviousQueriesData(activeMissions.map(({ id }, index) => ({ read: workspaces[index], queryKey: activeMissionQueryKey(id) })));
   const byId = new Map(activeMissions.map((mission, index) => [mission.id, workspaces[index]]));
+  const authorizedIds = new Set(activeMissions.filter((_, index) => showWorkspaces[index]).map(mission => mission.id));
   const actions = new Map<string, NextBestAction>();
-  const visible = candidates.filter((mission) => !denied(byId.get(mission.id)?.error ?? null));
+  const visible = candidates.filter((mission) => !active(mission) || authorizedIds.has(mission.id));
   for (const mission of visible) {
     const workspace = byId.get(mission.id)?.data;
     if (active(mission)) {

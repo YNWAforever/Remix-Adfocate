@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ComponentType, ReactNode } from "react";
 import { creatorWorkWorkspace as workspace } from "@/test/creatorWorkWorkspace";
@@ -150,6 +150,29 @@ describe("Creator work home (unit transport fixtures)", () => {
     renderHome();
     expect(screen.getByText("You have no current work.")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Open guide" })).toBeInTheDocument();
+  });
+
+  it.each([401, 403, 404])("keeps work hidden after %s followed by a 503, including a remount", async status => {
+    setup([mission("private")]);
+    mocks.api.mockResolvedValue(workspace("private", "drafting", "drafting"));
+    const { client, unmount } = renderHome();
+    await screen.findByRole("link", { name: "Continue draft" });
+    mocks.api.mockRejectedValue(new ApiError(status, "DENIED", "denied"));
+    await act(async () => { await client.refetchQueries({ queryKey: ["active-mission", "private"] }); });
+    await waitFor(() => expect(screen.queryAllByText("Mission private")).toHaveLength(0));
+    mocks.api.mockRejectedValue(new ApiError(503, "UNAVAILABLE", "offline"));
+    await act(async () => { await client.refetchQueries({ queryKey: ["active-mission", "private"] }); });
+    await waitFor(() => expect(screen.queryByRole("link", { name: "Continue draft" })).not.toBeInTheDocument());
+    client.setQueryDefaults(["active-mission", "private"], { gcTime: Infinity });
+    unmount();
+    const Home = Route.options.component as ComponentType;
+    render(<QueryClientProvider client={client}><I18nProvider><Home /></I18nProvider></QueryClientProvider>);
+    await waitFor(() => expect(client.isFetching()).toBe(0));
+    expect(screen.queryAllByText("Mission private")).toHaveLength(0);
+    expect(screen.queryByRole("link", { name: "Continue draft" })).not.toBeInTheDocument();
+    mocks.api.mockResolvedValue(workspace("private", "drafting", "drafting"));
+    await act(async () => { await client.refetchQueries({ queryKey: ["active-mission", "private"] }); });
+    expect(await screen.findByRole("link", { name: "Continue draft" })).toBeInTheDocument();
   });
 
   it("shows verified proof as awaiting completion rather than another publishing action", async () => {

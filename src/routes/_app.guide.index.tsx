@@ -7,7 +7,7 @@ import { GuideDocList } from "@/components/GuideDocList";
 import { PlaybookCard } from "@/components/PlaybookCard";
 import { AcademyTrackCard } from "@/components/AcademyTrackCard";
 import { getRead } from "@/lib/guideProgress";
-import { RequestFeedback, canShowPreviousData } from "@/components/RequestFeedback";
+import { RequestFeedback, useCanShowPreviousData } from "@/components/RequestFeedback";
 
 export const Route = createFileRoute("/_app/guide/")({ component: GuideHub });
 
@@ -16,7 +16,7 @@ function GuideHub() {
   const { t, lang } = useI18n();
   const uiLang = lang === "en" ? "en" : "zh-HK";
   const q = useQuery({ queryKey: academyKeys.bundle(uiLang), queryFn: () => fetchAcademy(uiLang), retry: false });
-  const bundle = canShowPreviousData(q.error) ? q.data : undefined;
+  const bundle = useCanShowPreviousData(q, academyKeys.bundle(uiLang)) ? q.data : undefined;
 
   const creatorLevel = me.data?.level;
   const isTrusted = me.data?.is_trusted ?? false;

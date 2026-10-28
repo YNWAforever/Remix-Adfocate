@@ -13,7 +13,7 @@ import {
 import { useAdminAuth } from "@/components/admin/AdminAuthContext";
 import { useAdminWorkspace } from "@/components/admin/AdminWorkspaceContext";
 import { useI18n } from "@/lib/i18n";
-import { RequestFeedback, canShowPreviousData } from "@/components/RequestFeedback";
+import { RequestFeedback, useCanShowPreviousData } from "@/components/RequestFeedback";
 import { validateSubmissionEvidence } from "@/lib/submissionEvidence";
 
 export const Route = createFileRoute("/admin/submissions")({ component: SubmissionsTab });
@@ -30,7 +30,7 @@ function SubmissionsTab() {
     enabled: authed,
     retry: false,
   });
-  const visibleSubs = canShowPreviousData(subs.error) ? subs.data : undefined;
+  const visibleSubs = useCanShowPreviousData(subs, [...adminKeys.submissions("submitted", workspace), submissionId]) ? subs.data : undefined;
   useEffect(() => {
     if (subs.error instanceof AdminAuthError) reportAuthError(subs.error);
   }, [subs.error, reportAuthError]);

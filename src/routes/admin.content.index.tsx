@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { listAdminContent, contentKeys, type ContentStatus } from "@/lib/content";
-import { RequestFeedback, canShowPreviousData } from "@/components/RequestFeedback";
+import { RequestFeedback, useCanShowPreviousData } from "@/components/RequestFeedback";
 import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/admin/content/")({ component: ContentList });
@@ -16,7 +16,7 @@ function ContentList() {
   const [status, setStatus] = useState("");
   const filters: Record<string, string> = status ? { status } : {};
   const q = useQuery({ queryKey: contentKeys.adminList(filters), queryFn: () => listAdminContent(filters), retry: false });
-  const data = canShowPreviousData(q.error) ? q.data : undefined;
+  const data = useCanShowPreviousData(q, contentKeys.adminList(filters)) ? q.data : undefined;
 
   return (
     <div className="space-y-3">

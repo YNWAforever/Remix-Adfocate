@@ -8,7 +8,7 @@ import {
 } from "@/lib/admin";
 import { useAdminAuth } from "@/components/admin/AdminAuthContext";
 import { useAdminWorkspace } from "@/components/admin/AdminWorkspaceContext";
-import { RequestFeedback, canShowPreviousData } from "@/components/RequestFeedback";
+import { RequestFeedback, useCanShowPreviousData } from "@/components/RequestFeedback";
 
 export const Route = createFileRoute("/admin/missions/")({ component: MissionsList });
 
@@ -28,7 +28,7 @@ function MissionsList() {
     enabled: authed,
     retry: false,
   });
-  const visibleMissions = canShowPreviousData(list.error) ? list.data : undefined;
+  const visibleMissions = useCanShowPreviousData(list, adminMissionKeys.list(workspace, status)) ? list.data : undefined;
   useEffect(() => {
     if (list.error instanceof AdminAuthError) reportAuthError(list.error);
   }, [list.error, reportAuthError]);

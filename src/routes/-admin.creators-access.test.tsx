@@ -16,6 +16,7 @@ async function refetchFailure(status:number){
   const qc=new QueryClient({defaultOptions:{queries:{retry:false}}}); const C=Route.options.component as React.ComponentType;
   render(<QueryClientProvider client={qc}><C/></QueryClientProvider>); await screen.findByText("Previously authorized creator");
   await act(async()=>{await qc.refetchQueries();}); await waitFor(()=>expect(screen.getByRole("alert")).toBeInTheDocument());
+  return qc;
 }
 it("removes cached rows immediately when refetch revokes workspace access",async()=>{
   await refetchFailure(403); expect(screen.queryByText("Previously authorized creator")).not.toBeInTheDocument();
@@ -23,6 +24,15 @@ it("removes cached rows immediately when refetch revokes workspace access",async
 it("retains the previous rows with a stale warning during a temporary outage",async()=>{
   await refetchFailure(503); expect(screen.getByText("Previously authorized creator")).toBeInTheDocument();
   expect(screen.getByText(/Showing the previous saved data/)).toBeInTheDocument();
+});
+it("keeps denied creator rows hidden through a later outage until a successful read",async()=>{
+  const qc = await refetchFailure(403);
+  h.fetch.mockRejectedValue(Object.assign(new Error("offline"), {status:503}));
+  await act(async()=>{await qc.refetchQueries();});
+  expect(screen.queryByText("Previously authorized creator")).not.toBeInTheDocument();
+  h.fetch.mockResolvedValue({creators:[{id:"a",displayName:"Authorized again"}],page:1,pageSize:25,total:1});
+  await act(async()=>{await qc.refetchQueries();});
+  expect(await screen.findByText("Authorized again")).toBeInTheDocument();
 });
 it("restores the selected creator focus and scroll after returning to the same queue",async()=>{
   const scroll=vi.spyOn(window,"scrollTo").mockImplementation(()=>{});

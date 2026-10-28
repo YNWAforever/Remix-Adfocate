@@ -129,6 +129,14 @@ describe("SocialTrustPanel", () => {
     } finally { hoisted.accounts.pop(); }
   });
 
+  it("can add a corrected handle when the platform already has an account", async () => {
+    renderEn(<SocialTrustPanel />);
+    fireEvent.change(screen.getByLabelText("Instagram handle"), { target: { value: "@corrected" } });
+    fireEvent.click(screen.getByText("Save Instagram"));
+    await waitFor(() => expect(hoisted.add).toHaveBeenCalledWith({ platform: "instagram", handle: "@corrected" }));
+    expect(screen.getByText("@ming")).toBeInTheDocument();
+  });
+
   it("uses the scanned avatar only after explicit selection", async () => {
     renderEn(<SocialTrustPanel />);
     fireEvent.click(screen.getByText("Use as Adfocate avatar"));

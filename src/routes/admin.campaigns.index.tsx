@@ -6,7 +6,7 @@ import {
   AdminAuthError, AdminRequestError, adminKeys, closeCampaign, fetchCampaigns,
   publishCampaign, settleCampaign, type AdminCampaign,
 } from "@/lib/admin";
-import { RequestFeedback, canShowPreviousData } from "@/components/RequestFeedback";
+import { RequestFeedback, useCanShowPreviousData } from "@/components/RequestFeedback";
 import { useAdminAuth } from "@/components/admin/AdminAuthContext";
 import { useAdminWorkspace } from "@/components/admin/AdminWorkspaceContext";
 
@@ -30,7 +30,7 @@ function CampaignsList() {
     enabled: authed,
     retry: false,
   });
-  const visible = canShowPreviousData(list.error) ? list.data : undefined;
+  const visible = useCanShowPreviousData(list, adminKeys.campaigns(workspace, status)) ? list.data : undefined;
   useEffect(() => {
     if (list.error instanceof AdminAuthError) reportAuthError(list.error);
   }, [list.error, reportAuthError]);

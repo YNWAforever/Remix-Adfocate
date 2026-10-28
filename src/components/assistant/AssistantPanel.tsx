@@ -59,7 +59,9 @@ export function AssistantPanel({ onClose }: { onClose: () => void }) {
     }]);
     if (reply.persistence === "saved") {
       if (reply.conversation_id) setConversationId(reply.conversation_id);
-      setInput(""); pendingRequest.current = null; setSaved(true); setFeedback("已保存 / Saved");
+      const sentMessage = pendingRequest.current?.message;
+      setInput(current => current.trim() === sentMessage ? "" : current);
+      pendingRequest.current = null; setSaved(true); setFeedback("已保存 / Saved");
     } else { setSaved(false); setFeedback("尚未確認保存；輸入已保留。請查看同一要求的結果，系統不會自動再次生成。 / Saving is not confirmed. Your input is retained. Check this request; generation will not restart automatically."); }
   }
   function send(message: string) {

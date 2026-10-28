@@ -4,7 +4,7 @@ import { useMe, useMissions, type SubmissionStatus } from "@/lib/queries/kocmax"
 import { FilterPills } from "@/components/FilterPills";
 import { MissionCard, missionCardDecisionProps } from "@/components/MissionCard";
 import { SkeletonCard } from "@/components/SkeletonCard";
-import { canShowPreviousData, RequestFeedback } from "@/components/RequestFeedback";
+import { useCanShowPreviousData, RequestFeedback } from "@/components/RequestFeedback";
 import { useI18n } from "@/lib/i18n";
 import { categoryLabelKey } from "@/lib/labels";
 import { canonicalMissionCategory, missionCategoryOptions, ALL_CATEGORY } from "@/lib/missionCategories";
@@ -32,7 +32,7 @@ function Missions() {
   const me = useMe();
   const { t } = useI18n();
   // One list DTO supplies cards and filter options, including unknown historic values.
-  const data = canShowPreviousData(missions.error) ? missions.data : undefined;
+  const data = useCanShowPreviousData(missions, ["missions", ALL_CATEGORY]) ? missions.data : undefined;
   const categories = [ALL_CATEGORY, ...missionCategoryOptions([...(data?.map((mission) => mission.category) ?? []), ...(category !== ALL_CATEGORY ? [category] : [])])];
   const visible = data?.filter((mission) => category === ALL_CATEGORY || canonicalMissionCategory(mission.category ?? "") === category);
   return (
