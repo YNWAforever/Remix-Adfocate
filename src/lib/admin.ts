@@ -664,6 +664,43 @@ export function fetchCreatorDetail(creatorId: string) {
   return adminFetch<AdminCreatorDetailResponse>(`/admin/creators/${creatorId}`);
 }
 
+/** Mirrors `CreatorCaseEnrichment` on the server: side panels degrade, they don't throw. */
+export type CreatorCaseEnrichment<T> =
+  | { status: "available"; value: T }
+  | { status: "unavailable"; reason: "source_error" | "not_configured" };
+
+export type CreatorCaseProofReviewState =
+  | "awaiting_review"
+  | "in_review"
+  | "correction_requested"
+  | "verified";
+
+export type CreatorCaseProofItem = {
+  attemptId: string;
+  workspaceId: string;
+  isCurrentAttempt: boolean;
+  workflowId: string;
+  workItemId: string;
+  workItemTitle: string;
+  platform: string;
+  missionTitle: string | null;
+  missionSlug: string | null;
+  attemptNumber: number;
+  primaryUrl: string;
+  submittedAt: string;
+  submittedLate: boolean;
+  metadataStatus: "available" | "unavailable" | "unsafe";
+  reviewState: CreatorCaseProofReviewState;
+  reviewSummary: string | null;
+  reviewedAt: string | null;
+};
+
+export function fetchCreatorPublicationProofs(creatorId: string) {
+  return adminFetch<{ proofs: CreatorCaseEnrichment<CreatorCaseProofItem[]> }>(
+    `/admin/creators/${creatorId}/publication-proofs`,
+  );
+}
+
 export function postCreatorReview(
   creatorId: string,
   body: { status: AdminReviewStatus; riskLevel: AdminRiskLevel; summary?: string; note?: string },

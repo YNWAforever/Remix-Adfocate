@@ -9,10 +9,12 @@ import {
   ShortlistBadge,
   SocialSyncBadge,
 } from "@/components/operator/OperatorBadges";
+import { CreatorCaseProofPanel } from "@/components/operator/CreatorCaseProofPanel";
 import { ReviewActionPanel } from "@/components/operator/ReviewActionPanel";
 import {
   AdminAuthError,
   fetchCreatorDetail,
+  fetchCreatorPublicationProofs,
   postCreatorNote,
   type AdminNoteCategory,
 } from "@/lib/admin";
@@ -77,6 +79,15 @@ function OperatorCreatorDetailRoute() {
     queryFn: () => fetchCreatorDetail(creatorId),
   });
 
+  // Separate query so a proof-source outage never blocks the case file itself; the
+  // route already degrades panel-by-panel via the enrichment envelope.
+  const proofs = useQuery({
+    queryKey: ["admin-creator-proofs", creatorId],
+    enabled: authed,
+    retry: false,
+    queryFn: () => fetchCreatorPublicationProofs(creatorId),
+  });
+
   const noteMutation = useMutation({
     mutationFn: (body: { category: AdminNoteCategory; body: string }) => postCreatorNote(creatorId, body),
     onSuccess: async () => {
@@ -103,7 +114,13 @@ function OperatorCreatorDetailRoute() {
   // Must run in an effect (not during render) to avoid updating the parent layout mid-render.
   useEffect(() => {
     if (detail.error instanceof AdminAuthError) reportAuthError(detail.error);
-  }, [detail.error, reportAuthError]);
+    if (proofs.error instanceof AdminAuthError) reportAuthError(proofs.error);
+  }, [detail.error, proofs.error, reportAuthError]);
+
+  // A transport failure is presented as the same "unavailable" state the server sends,
+  // so the panel has one degraded path instead of two.
+  const proofEnrichment =
+    proofs.data?.proofs ?? (proofs.isError ? ({ status: "unavailable", reason: "source_error" } as const) : undefined);
 
   return (
     <>
@@ -385,6 +402,8 @@ function OperatorCreatorDetailRoute() {
                     onSuccess={() => queryClient.invalidateQueries({ queryKey: ["admin-creator-detail", creatorId] })}
                   />
                 </section>
+
+                <CreatorCaseProofPanel proofs={proofEnrichment} isLoading={proofs.isLoading} />
 
                 <section className="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3">
                   <h3 className="font-heading font-bold">Shortlist memberships</h3>

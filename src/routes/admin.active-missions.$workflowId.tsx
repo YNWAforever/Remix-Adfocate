@@ -38,8 +38,11 @@ import {
 } from "@/lib/queries/activeMission";
 
 export const Route = createFileRoute("/admin/active-missions/$workflowId")({
-  validateSearch: (search: Record<string, unknown>) => ({
+  validateSearch: (search: Record<string, unknown>): { workItemId: string | undefined; ws?: string } => ({
     workItemId: typeof search.workItemId === "string" ? search.workItemId : undefined,
+    // The destination workspace provider reads this UUID, then the switcher resolves
+    // its canonical slug from the authorized workspace list before queries run.
+    ws: typeof search.ws === "string" ? search.ws : undefined,
   }),
   component: AdminActiveMissionReviewRoute,
 });

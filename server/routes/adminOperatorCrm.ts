@@ -1,5 +1,6 @@
 import { Hono } from "hono";
 import type { Context } from "hono";
+import { getCreatorCaseProofs } from "../lib/operatorCrm/creatorCaseProofs.js";
 import {
   addCreatorReviewNote,
   getCreatorOperatorDetail,
@@ -89,6 +90,16 @@ adminOperatorCrmRoutes.get("/creators/:id", async (c) => {
   } catch (error) {
     return crmError(c, error);
   }
+});
+
+adminOperatorCrmRoutes.get("/creators/:id/publication-proofs", async (c) => {
+  const operatorId = c.get("staff").userId;
+  if (!operatorId) {
+    return c.json({ error: "A staff user session is required", code: "NOT_AUTHORIZED" }, 403);
+  }
+  // Returns an enrichment envelope rather than failing: a missing or broken proof
+  // source degrades this one panel, leaving the rest of the case file usable.
+  return c.json({ proofs: await getCreatorCaseProofs(serviceClient(), c.req.param("id"), operatorId) });
 });
 
 adminOperatorCrmRoutes.post("/creators/:id/review", async (c) => {
