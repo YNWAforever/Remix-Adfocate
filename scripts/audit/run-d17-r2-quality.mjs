@@ -1,5 +1,6 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
+import { randomUUID } from "node:crypto";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { isDeepStrictEqual } from "node:util";
@@ -23,17 +24,20 @@ if (production) {
   if (build.status !== 0) process.exit(build.status ?? 1);
 }
 const before = [fx.creator.id, fx.other.id].map(id => neutralitySnapshot(target, id, fx.workspaceId));
-const run = spawnSync(process.execPath, ["node_modules/@playwright/test/cli.js", "test", "--config=playwright.d17-r2.config.ts", ...(phase.startsWith("profile-") ? ["--grep", "records current production-asset"] : [])], { env, stdio: "inherit" });
+// Keep prior raw evidence intact and consume only this invocation's reporter output.
+const reportPath = resolve(`.codex-tmp/D17-R2-browser-${phase}-${randomUUID()}.private.json`);
+const run = spawnSync(process.execPath, ["node_modules/@playwright/test/cli.js", "test", "--config=playwright.d17-r2.config.ts", ...(phase.startsWith("profile-") ? ["--grep", "records current production-asset"] : [])], { env: { ...env, PLAYWRIGHT_JSON_OUTPUT_FILE: reportPath }, stdio: "inherit" });
+if (run.error || run.signal || run.status !== 0) process.exit(run.status || 1);
 const checked = verifiedTarget("empty"), after = [fx.creator.id, fx.other.id].map(id => neutralitySnapshot(checked, id, fx.workspaceId));
 writeFileSync(`docs/verification/D17-R2-neutrality-${phase}.json`, JSON.stringify({ runId: fx.runId, target: checked.identity, before, after, allEqual: isDeepStrictEqual(before, after),
   scope: "Read-only quality review of prior R2 owned fixtures; no new fixture, content save, membership, reward or financial action. D19 funded neutrality remains historical." }, null, 2) + "\n");
-const raw = JSON.parse(readFileSync(`.codex-tmp/D17-R2-browser-${phase}.private.json`, "utf8")), tests = [];
+const raw = JSON.parse(readFileSync(reportPath, "utf8")), tests = [];
 const visit = suite => {
   for (const spec of suite.specs ?? []) tests.push({ title: spec.title, ok: spec.ok, results: spec.tests.flatMap(t => t.results.map(r => ({ status: r.status, duration: r.duration }))) });
   for (const child of suite.suites ?? []) visit(child);
 };
 for (const suite of raw.suites ?? []) visit(suite);
-writeFileSync(`docs/verification/D17-R2-browser-${phase}.json`, JSON.stringify({ target: checked.identity, runId: fx.runId, tests, stats: raw.stats,
+writeFileSync(`docs/verification/D17-R2-browser-${phase}.json`, JSON.stringify({ target: checked.identity, runId: fx.runId, rawReport: reportPath, tests, stats: raw.stats,
   productionAssets: production,
   browser: "Installed desktop Edge; real owned Auth/API/RLS reads; explicit 503 recovery mock. No native browser zoom, physical device, Safari, manual AT, hosted or field-performance acceptance." }, null, 2) + "\n");
-process.exit(run.status || (isDeepStrictEqual(before, after) ? 0 : 1));
+process.exit(isDeepStrictEqual(before, after) ? 0 : 1);

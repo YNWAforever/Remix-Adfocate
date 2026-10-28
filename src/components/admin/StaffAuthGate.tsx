@@ -10,14 +10,18 @@ export function StaffAuthGate({ children, refreshKey = 0, onIdentityChange }: { 
   const [phase, setPhase] = useState<Phase>("loading");
   const [staff, setStaff] = useState<AdminStaff | null>(null);
   const sequence = useRef(0);
+  const sessionOwner = useRef<string | null>(null);
 
-  const check = useCallback(async () => {
+  const check = useCallback(async (preserveView = false) => {
     const request = ++sequence.current;
-    setPhase("loading");
-    setStaff(null);
+    if (!preserveView) {
+      setPhase("loading");
+      setStaff(null);
+    }
     try {
     const { data, error } = await supabase.auth.getSession();
     if (request !== sequence.current) return;
+    sessionOwner.current = data.session?.user?.id ?? null;
     if (error) { setPhase("unavailable"); return; }
     const token = data.session?.access_token;
     if (!token) { setPhase("signed_out"); return; }
@@ -41,7 +45,15 @@ export function StaffAuthGate({ children, refreshKey = 0, onIdentityChange }: { 
   useEffect(() => {
     const requests = sequence;
     void check();
-    const { data } = supabase.auth.onAuthStateChange(() => { onIdentityChange?.(); void check(); });
+    const { data } = supabase.auth.onAuthStateChange((_event, session) => {
+      const owner = session?.user?.id ?? null;
+      const sameOwner = owner !== null && owner === sessionOwner.current;
+      sessionOwner.current = owner;
+      if (!sameOwner) onIdentityChange?.();
+      // Same-user events also fire on token refresh and tab focus. Revalidate
+      // access without unmounting the editor or clearing its cached reads.
+      void check(sameOwner);
+    });
     return () => { requests.current++; data.subscription.unsubscribe(); };
   }, [check, refreshKey, onIdentityChange]);
 

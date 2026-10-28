@@ -53,6 +53,7 @@ export function AssistantPanel({ onClose }: { onClose: () => void }) {
 
   function receive(reply: AssistantReply) {
     const id = pendingRequest.current?.id;
+    if (!id || reply.request_id !== id) return;
     if (reply.answer) setTurns((prev) => [...prev.filter((turn) => !(turn.side === "assistant" && turn.requestId === id)), {
       side: "assistant", requestId: id, text: reply.persistence === "saved" ? reply.answer! : `未確認保存 / Not confirmed saved: ${reply.answer}`, citations: reply.citations,
     }]);
@@ -67,8 +68,9 @@ export function AssistantPanel({ onClose }: { onClose: () => void }) {
     if ([...message].length > 4000) { setSaved(false); setFeedback("訊息上限為 4,000 字。 / Limit: 4,000 Unicode characters."); return; }
     if (pendingRequest.current && pendingRequest.current.message !== text) { setSaved(false); setFeedback("請先查看上一個要求，或明確開始新問題。 / Check the previous request or start a new question first."); return; }
     if (!pendingRequest.current) {
-      pendingRequest.current = { id: crypto.randomUUID(), message: text, conversationId };
-      setTurns((prev) => [...prev, { side: "user", text, requestId: pendingRequest.current!.id }]);
+      const request = { id: crypto.randomUUID(), message: text, conversationId };
+      pendingRequest.current = request;
+      setTurns((prev) => [...prev, { side: "user", text, requestId: request.id }]);
     }
     setInput(text); setFeedback(""); setSaved(false);
     chat.mutate({ message: text, conversation_id: pendingRequest.current.conversationId, client_request_id: pendingRequest.current.id }, {
@@ -106,8 +108,10 @@ export function AssistantPanel({ onClose }: { onClose: () => void }) {
         {chat.isPending && <p className="text-xs text-[var(--color-soft-ink)]">{t("app.assistant.thinking")}</p>}
         {feedback && <div role={saved ? "status" : "alert"} className="space-y-2 text-sm"><p>{feedback}</p>
           {pendingRequest.current && <button type="button" disabled={chat.isPending} onClick={async () => {
-            try { receive(await apiFetch<AssistantReply>(`/assistant/requests/${pendingRequest.current!.id}`)); }
-            catch { setFeedback("暫未能查閱結果，請稍後再試。 / Request status unavailable; try again later."); }
+            const requestId = pendingRequest.current?.id;
+            if (!requestId) return;
+            try { receive(await apiFetch<AssistantReply>(`/assistant/requests/${requestId}`)); }
+            catch { if (pendingRequest.current?.id === requestId) setFeedback("暫未能查閱結果，請稍後再試。 / Request status unavailable; try again later."); }
           }}>查看要求結果 / Check request</button>}
           {pendingRequest.current && <button type="button" disabled={chat.isPending} onClick={() => { pendingRequest.current = null; setFeedback(""); }}>開始新問題 / New question</button>}
         </div>}
