@@ -838,14 +838,14 @@ export function fetchApplications(workspace = "") {
   return adminFetch<{ applications: Application[] }>(`/admin/applications${qs ? `?${qs}` : ""}`);
 }
 
-export function acceptApplication(id: string) {
-  return adminFetch(`/admin/applications/${id}/accept`, { method: "POST", body: JSON.stringify({}) });
+export function acceptApplication(id: string, requestId?: string) {
+  return adminFetch(`/admin/applications/${id}/accept`, { method: "POST", body: JSON.stringify({ request_id: requestId }) });
 }
 
-export function declineApplication(id: string, notes?: string) {
+export function declineApplication(id: string, notes?: string, requestId?: string) {
   return adminFetch(`/admin/applications/${id}/decline`, {
     method: "POST",
-    body: JSON.stringify(notes ? { notes } : {}),
+    body: JSON.stringify({ notes: notes || undefined, request_id: requestId }),
   });
 }
 

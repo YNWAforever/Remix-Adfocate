@@ -35,8 +35,8 @@ function ApplicationsTab() {
   }, [apps.error, reportAuthError]);
 
   const decide = useMutation({
-    mutationFn: ({ id, action, notes }: { id: string; action: "accept" | "decline"; notes?: string; workspace: string }) =>
-      action === "accept" ? acceptApplication(id) : declineApplication(id, notes),
+    mutationFn: ({ id, action, notes, requestId }: { id: string; action: "accept" | "decline"; notes?: string; workspace: string; requestId: string }) =>
+      action === "accept" ? acceptApplication(id, requestId) : declineApplication(id, notes, requestId),
     onSuccess: (_data, variables) => qc.invalidateQueries({ queryKey: adminKeys.applications(variables.workspace) }),
   });
   const decisionError = decide.variables?.workspace === workspace ? decide.error : null;
@@ -49,10 +49,14 @@ function ApplicationsTab() {
       <RequestFeedback error={apps.error} stale={Boolean(visibleApps)} retry={() => void apps.refetch()} />
       <RequestFeedback error={decisionError} summary={alreadyDecided ? decisionError.message : undefined}
         retry={() => {
-          if (alreadyDecided) void apps.refetch();
+          if (decisionError && "status" in decisionError && decisionError.status === 409) void apps.refetch();
           else if (decide.variables?.workspace === workspace) {
             const command = decide.variables;
-            decide.mutate(command.action === "decline" ? { ...command, notes: reasons[`${workspace}:${command.id}`] ?? command.notes } : command);
+            const status = decisionError && "status" in decisionError ? Number(decisionError.status) : 0;
+            // A lost response may already have saved this exact reason. Only a
+            // definitive rejection permits a new command with the edited input.
+            decide.mutate(status >= 400 && status < 500 ? { ...command, requestId: crypto.randomUUID(),
+              ...(command.action === "decline" ? { notes: reasons[`${workspace}:${command.id}`] ?? command.notes } : {}) } : command);
           }
         }} />
       {!apps.isError && visibleApps?.applications.length === 0 && <p role="status" className="text-sm text-[var(--color-soft-ink)]">{t("app.admin.applicationsEmpty")}</p>}
@@ -85,8 +89,8 @@ function ApplicationsTab() {
                 className="min-h-20 w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 py-1" />
             </label>
             <div className="flex shrink-0 gap-2">
-              <button aria-label={t("app.admin.applicationsAccept")} disabled={decide.isPending || apps.isError || apps.isFetching} onClick={() => decide.mutate({ id: a.id, action: "accept", workspace })} className="min-h-11 rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 font-heading font-bold">{t("app.admin.applicationsAccept")}</button>
-              <button aria-label={t("app.admin.applicationsDecline")} disabled={decide.isPending || apps.isError || apps.isFetching || !reasons[`${workspace}:${a.id}`]?.trim()} onClick={() => decide.mutate({ id: a.id, action: "decline", notes: reasons[`${workspace}:${a.id}`], workspace })} className="min-h-11 rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 font-heading font-bold">{t("app.admin.applicationsDecline")}</button>
+              <button aria-label={t("app.admin.applicationsAccept")} disabled={decide.isPending || apps.isError || apps.isFetching} onClick={() => decide.mutate({ id: a.id, action: "accept", workspace, requestId: crypto.randomUUID() })} className="min-h-11 rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 font-heading font-bold">{t("app.admin.applicationsAccept")}</button>
+              <button aria-label={t("app.admin.applicationsDecline")} disabled={decide.isPending || apps.isError || apps.isFetching || !reasons[`${workspace}:${a.id}`]?.trim()} onClick={() => decide.mutate({ id: a.id, action: "decline", notes: reasons[`${workspace}:${a.id}`], workspace, requestId: crypto.randomUUID() })} className="min-h-11 rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 font-heading font-bold">{t("app.admin.applicationsDecline")}</button>
             </div>
           </div>
         </div>

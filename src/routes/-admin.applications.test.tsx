@@ -43,7 +43,7 @@ describe("admin applications tab", () => {
     expect(screen.getByText("needs_review")).toBeInTheDocument();
     expect(screen.getByText("not shortlisted")).toBeInTheDocument();
     fireEvent.click(screen.getByLabelText("接受"));
-    await waitFor(() => expect(h.acceptApplication).toHaveBeenCalledWith("a1"));
+    await waitFor(() => expect(h.acceptApplication).toHaveBeenCalledWith("a1", expect.any(String)));
   });
 
   it("UC-C25 retains the decline reason and row after a failure and retries explicitly", async () => {
@@ -57,7 +57,8 @@ describe("admin applications tab", () => {
     expect(reason).toHaveValue("Please improve the portfolio"); expect(screen.getByText("Amy")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "重試 / Retry" }));
     await waitFor(() => expect(h.declineApplication).toHaveBeenCalledTimes(2));
-    expect(h.declineApplication.mock.calls).toEqual([["a1", "Please improve the portfolio"], ["a1", "Please improve the portfolio"]]);
+    expect(h.declineApplication.mock.calls[0]).toEqual(["a1", "Please improve the portfolio", expect.any(String)]);
+    expect(h.declineApplication.mock.calls[1]).toEqual(h.declineApplication.mock.calls[0]);
   });
 
   it("UC-A10 shows who already processed the application and keeps local input on409", async () => {
@@ -69,14 +70,42 @@ describe("admin applications tab", () => {
     expect(screen.getByText("Amy")).toBeInTheDocument(); expect(h.declineApplication).toHaveBeenCalledTimes(1);
   });
 
-  it("UC-A06 retries the currently visible reason after an operator edits a failed request", async () => {
+  it("UC-A06 uses the edited reason for a new command after a definitive validation rejection", async () => {
     h.fetchApplications.mockResolvedValue({ applications: [{ id: "a1", creators: { display_name: "Amy" }, missions: { title: "Test mission" } }] });
-    h.declineApplication.mockRejectedValueOnce(new Error("unavailable")).mockResolvedValue({});
+    h.declineApplication.mockRejectedValueOnce(Object.assign(new Error("Invalid reason"), { status: 400 })).mockResolvedValue({});
     r(); await screen.findByText("Amy"); const reason = screen.getByLabelText(/拒絕原因/);
     fireEvent.change(reason, { target: { value: "First reason" } }); fireEvent.click(screen.getByLabelText("拒絕")); await screen.findByRole("alert");
     fireEvent.change(reason, { target: { value: "Updated reason" } }); fireEvent.click(screen.getByRole("button", { name: "重試 / Retry" }));
     await waitFor(() => expect(h.declineApplication).toHaveBeenCalledTimes(2));
-    expect(h.declineApplication.mock.calls).toEqual([["a1", "First reason"], ["a1", "Updated reason"]]);
+    expect(h.declineApplication.mock.calls[0]).toEqual(["a1", "First reason", expect.any(String)]);
+    expect(h.declineApplication.mock.calls[1]).toEqual(["a1", "Updated reason", expect.any(String)]);
+    expect(h.declineApplication.mock.calls[1][2]).not.toBe(h.declineApplication.mock.calls[0][2]);
     expect(reason).toHaveValue("Updated reason");
+  });
+
+  it("replays the original decline command after a lost response while retaining newer local input", async () => {
+    h.fetchApplications.mockResolvedValue({ applications: [{ id: "a1", creators: { display_name: "Amy" }, missions: { title: "Test mission" } }] });
+    h.declineApplication.mockRejectedValueOnce(new TypeError("Response lost after commit")).mockResolvedValue({});
+    r(); await screen.findByText("Amy"); const reason = screen.getByLabelText(/拒絕原因/);
+    fireEvent.change(reason, { target: { value: "First reason" } });
+    fireEvent.click(screen.getByLabelText("拒絕")); await screen.findByRole("alert");
+    fireEvent.change(reason, { target: { value: "Updated reason" } });
+    fireEvent.click(screen.getByRole("button", { name: "重試 / Retry" }));
+    await waitFor(() => expect(h.declineApplication).toHaveBeenCalledTimes(2));
+    expect(h.declineApplication.mock.calls[1]).toEqual(h.declineApplication.mock.calls[0]);
+    expect(reason).toHaveValue("Updated reason");
+  });
+
+  it("gives a deliberately changed decline command a new identity after a lost response", async () => {
+    h.fetchApplications.mockResolvedValue({ applications: [{ id: "a1", creators: { display_name: "Amy" }, missions: { title: "Test mission" } }] });
+    h.declineApplication.mockRejectedValueOnce(new TypeError("Response lost after commit")).mockResolvedValue({});
+    r(); await screen.findByText("Amy"); const reason = screen.getByLabelText(/拒絕原因/);
+    fireEvent.change(reason, { target: { value: "First reason" } });
+    fireEvent.click(screen.getByLabelText("拒絕")); await screen.findByRole("alert");
+    fireEvent.change(reason, { target: { value: "Updated reason" } });
+    fireEvent.click(screen.getByLabelText("拒絕"));
+    await waitFor(() => expect(h.declineApplication).toHaveBeenCalledTimes(2));
+    expect(h.declineApplication.mock.calls[1]).toEqual(["a1", "Updated reason", expect.any(String)]);
+    expect(h.declineApplication.mock.calls[1][2]).not.toBe(h.declineApplication.mock.calls[0][2]);
   });
 });

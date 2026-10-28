@@ -86,3 +86,20 @@ it("retains the correction receipt key and revision when the first outcome is un
   await waitFor(() => expect(h.correct).toHaveBeenCalledTimes(2));
   expect(h.correct.mock.calls[1]).toEqual(h.correct.mock.calls[0]);
 });
+it.each(["An edited reason", ""])("replays the original correction reason after an unknown outcome despite subsequent input: %s", async editedNote => {
+  const C = Route.options.component as React.ComponentType;
+  h.correct.mockRejectedValueOnce(new TypeError("Response lost after commit")).mockResolvedValue({ status: "joined" });
+  render(<QueryClientProvider client={new QueryClient()}><C /></QueryClientProvider>);
+  await screen.findByText("Synthetic Creator");
+  const note = screen.getByLabelText("app.admin.submissionsNotesLabel");
+  fireEvent.change(note, { target: { value: "Replace the invalid URL" } });
+  const button = screen.getByRole("button", { name: /correction|修正/i });
+  fireEvent.click(button);
+  await screen.findByText(/The request could not be completed/);
+  fireEvent.change(note, { target: { value: editedNote } });
+  expect(button).toBeEnabled();
+  fireEvent.click(button);
+  await waitFor(() => expect(h.correct).toHaveBeenCalledTimes(2));
+  expect(h.correct.mock.calls[1]).toEqual(h.correct.mock.calls[0]);
+  expect(note).toHaveValue(editedNote);
+});

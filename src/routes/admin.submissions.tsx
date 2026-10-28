@@ -56,19 +56,16 @@ function SubmissionCard({ submission, onDone }: { submission: Submission; onDone
   const { t } = useI18n();
   const [rating, setRating] = useState("");
   const [notes, setNotes] = useState("");
-  const correctionKey = useRef<string | null>(null);
-  const correctionRevision = useRef(submission.evidence_revision ?? 0);
+  const correctionCommand = useRef<{ note: string; requestId: string; expectedRevision: number } | null>(null);
   const correction = useMutation({ mutationFn: () => {
-    if (!correctionKey.current) {
-      correctionKey.current = crypto.randomUUID();
-      correctionRevision.current = submission.evidence_revision ?? 0;
-    }
-    return requestLegacyEvidenceCorrection(submission.id, { note: notes.trim(), requestId: correctionKey.current, expectedRevision: correctionRevision.current });
-  }, onSuccess: () => { correctionKey.current = null; onDone(); },
+    // Unknown outcomes must replay the whole command, including the reason.
+    correctionCommand.current ??= { note: notes.trim(), requestId: crypto.randomUUID(), expectedRevision: submission.evidence_revision ?? 0 };
+    return requestLegacyEvidenceCorrection(submission.id, correctionCommand.current);
+  }, onSuccess: () => { correctionCommand.current = null; onDone(); },
   onError: (error) => {
     // SQL confirms that a stale command did not run. A retry after refreshing
     // starts a new command; unknown outcomes retain the original receipt key.
-    if ("code" in error && error.code === "EVIDENCE_STALE") correctionKey.current = null;
+    if ("code" in error && error.code === "EVIDENCE_STALE") correctionCommand.current = null;
   } });
   const approve = useMutation({
     mutationFn: () => approveSubmission(submission.id, { notes: notes || undefined, rating: rating ? Number(rating) : undefined }),
@@ -88,7 +85,7 @@ function SubmissionCard({ submission, onDone }: { submission: Submission; onDone
       <RequestFeedback error={approve.error ?? reject.error ?? correction.error}
         retry={correction.error && "code" in correction.error && correction.error.code === "EVIDENCE_STALE" ? onDone : undefined} />
       {!validEvidence && <p role="alert">作品網址無效，請先要求 Creator 修正。 / Invalid work URL. Request correction before approval.</p>}
-      {!validEvidence && <button type="button" disabled={busy || !notes.trim()} onClick={() => correction.mutate()} className="font-bold underline">要求修正網址 / Request correction</button>}
+      {!validEvidence && <button type="button" disabled={busy || (!correctionCommand.current && !notes.trim())} onClick={() => correction.mutate()} className="font-bold underline">要求修正網址 / Request correction</button>}
       <ul className="space-y-1 text-sm">
         {submission.content_urls.map((url) => (
           <li key={url}>
