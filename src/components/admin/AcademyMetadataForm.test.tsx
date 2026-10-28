@@ -70,9 +70,76 @@ describe("F27 parent metadata business form", () => {
   it("playbook idea editing preserves the other language and nested future fields", async () => {
     const row = { ...initial, kind: "playbook", metadata: { ideas: [{ zh: "原中文", en: "Original", future: true }], levels: ["L0"], extension: 9 } };
     h.get.mockResolvedValue({ item: row }); h.update.mockImplementation(async (_id, patch) => ({ item: { ...row, ...patch } })); show();
-    await screen.findByRole("textbox", { name: "Content ideas (中文)" }); fireEvent.click(screen.getByRole("button", { name: "EN" }));
-    fireEvent.change(screen.getByRole("textbox", { name: "Content ideas (EN)" }), { target: { value: "Authored idea" } });
+    await screen.findByRole("textbox", { name: "Content idea 1 (中文)" }); fireEvent.click(screen.getByRole("button", { name: "EN" }));
+    fireEvent.change(screen.getByRole("textbox", { name: "Content idea 1 (EN)" }), { target: { value: "Authored idea" } });
     fireEvent.click(screen.getByRole("button", { name: "Save" }));
     await waitFor(() => expect(h.update).toHaveBeenCalledWith("owned-track", { metadata: { ...row.metadata, ideas: [{ zh: "原中文", en: "Authored idea", future: true }] }, updated_at: initial.updated_at }));
   });
+});
+
+it("keeps multilingual idea rows paired when removing one and adding another", async () => {
+  const ideas = [{ zh: "第一項", en: "First idea", future: { keep: 1 } }, { zh: "第二項", en: "Second idea", future: { keep: 2 } }];
+  const row = { ...initial, kind: "playbook", metadata: { ideas, extension: 9 } };
+  h.get.mockResolvedValue({ item: row }); h.update.mockImplementation(async (_id, patch) => ({ item: { ...row, ...patch } })); show();
+  await screen.findByRole("textbox", { name: "Content idea 1 (中文)" });
+  fireEvent.click(screen.getByRole("button", { name: "Remove content idea 1 in both languages" }));
+  expect(screen.getByRole("textbox", { name: "Content idea 1 (中文)" })).toHaveValue("第二項");
+  fireEvent.click(screen.getByRole("button", { name: "Add content idea" }));
+  fireEvent.change(screen.getByRole("textbox", { name: "Content idea 2 (中文)" }), { target: { value: "新增項目\n保留換行" } });
+  fireEvent.click(screen.getByRole("button", { name: "EN" }));
+  expect(screen.getByRole("textbox", { name: "Content idea 1 (EN)" })).toHaveValue("Second idea");
+  expect(screen.getByRole("textbox", { name: "Content idea 2 (EN)" })).toHaveValue("");
+  fireEvent.click(screen.getByRole("button", { name: "Save" }));
+  await waitFor(() => expect(h.update).toHaveBeenCalledWith("owned-track", { metadata: { extension: 9, ideas: [ideas[1], { zh: "新增項目\n保留換行", en: "" }] }, updated_at: initial.updated_at }));
+});
+
+it("rebases an edited idea translation without overwriting another author's language or extension", async () => {
+  const row = { ...initial, kind: "playbook", metadata: { ideas: [{ zh: "原中文", en: "Original", future: true }, { zh: "第二項", en: "Second", extension: 1 }] } };
+  const latest = { ...row, updated_at: "2026-10-24T01:00:00Z", metadata: { ideas: [{ zh: "原中文", en: "Concurrent EN", future: "remote" }, row.metadata.ideas[1]], added: true } };
+  h.get.mockResolvedValueOnce({ item: row }).mockResolvedValue({ item: latest });
+  h.update.mockRejectedValueOnce(Object.assign(new Error("Changed"), { status: 409 })); show();
+  fireEvent.change(await screen.findByRole("textbox", { name: "Content idea 1 (中文)" }), { target: { value: "我的中文" } });
+  fireEvent.click(screen.getByRole("button", { name: "Save" }));
+  fireEvent.click(await screen.findByRole("button", { name: "Compare latest" }));
+  fireEvent.click(await screen.findByRole("button", { name: "Keep my edits on this revision" }));
+  fireEvent.click(screen.getByRole("button", { name: "Save" }));
+  await waitFor(() => expect(h.update).toHaveBeenLastCalledWith("owned-track", { metadata: { ...latest.metadata, ideas: [{ zh: "我的中文", en: "Concurrent EN", future: "remote" }, row.metadata.ideas[1]] }, updated_at: latest.updated_at }));
+});
+
+it.each(["reorder", "add"])("keeps both idea snapshots when concurrent %s makes translation pairing ambiguous", async change => {
+  const ideas = [{ zh: "第一項", en: "First" }, { zh: "第二項", en: "Second" }];
+  const row = { ...initial, kind: "playbook", metadata: { ideas } };
+  const latest = { ...row, updated_at: "2026-10-24T01:00:00Z", metadata: { ideas: change === "reorder" ? [ideas[1], ideas[0]] : [...ideas, { zh: "遠端新增", en: "Remote added" }] } };
+  h.get.mockResolvedValueOnce({ item: row }).mockResolvedValue({ item: latest });
+  h.update.mockRejectedValueOnce(Object.assign(new Error("Changed"), { status: 409 })); show();
+  fireEvent.change(await screen.findByRole("textbox", { name: "Content idea 1 (中文)" }), { target: { value: "保留的本機中文" } });
+  fireEvent.click(screen.getByRole("button", { name: "Save" }));
+  fireEvent.click(await screen.findByRole("button", { name: "Compare latest" }));
+  fireEvent.click(await screen.findByRole("button", { name: "Keep my edits on this revision" }));
+  expect(await screen.findByText(/Idea rows changed; your draft and latest comparison are preserved/)).toBeVisible();
+  expect(screen.getByRole("textbox", { name: "Content idea 1 (中文)" })).toHaveValue("保留的本機中文");
+  expect(screen.getByRole("button", { name: "Keep my edits on this revision" })).toBeVisible();
+  expect(h.update).toHaveBeenCalledTimes(1);
+});
+
+it("explicitly adopts changed latest idea rows while retaining the other authored fields", async () => {
+  const ideas = [{ zh: "第一項", en: "First" }, { zh: "第二項", en: "Second" }];
+  const row = { ...initial, kind: "playbook", metadata: { ideas } };
+  const latest = { ...row, updated_at: "2026-10-24T02:00:00Z", metadata: { ideas: [ideas[1], ideas[0], { zh: "遠端新增", en: "Remote added" }], future: "remote" } };
+  h.get.mockResolvedValueOnce({ item: row }).mockResolvedValue({ item: latest });
+  h.update.mockImplementation(async (_id, patch) => ({ item: { ...latest, ...patch } })).mockRejectedValueOnce(Object.assign(new Error("Changed"), { status: 409 })); show();
+  fireEvent.change(await screen.findByRole("textbox", { name: "Content idea 1 (中文)" }), { target: { value: "本機點子修改" } });
+  fireEvent.change(screen.getByRole("textbox", { name: "Title (中文)" }), { target: { value: "保留的標題" } });
+  fireEvent.click(screen.getByRole("button", { name: "Save" }));
+  fireEvent.click(await screen.findByRole("button", { name: "Compare latest" }));
+  fireEvent.click(await screen.findByRole("button", { name: "Keep my edits on this revision" }));
+  await screen.findByText(/Idea rows changed; your draft and latest comparison are preserved/);
+  expect(screen.getByRole("textbox", { name: "Content idea 1 (中文)" })).toHaveValue("本機點子修改");
+  fireEvent.click(screen.getByRole("button", { name: "Use latest ideas and discard local idea edits" }));
+  expect(screen.getByRole("textbox", { name: "Content idea 1 (中文)" })).toHaveValue("第二項");
+  expect(screen.getByRole("textbox", { name: "Content idea 3 (中文)" })).toHaveValue("遠端新增");
+  expect(screen.getByRole("textbox", { name: "Title (中文)" })).toHaveValue("保留的標題");
+  fireEvent.click(screen.getByRole("button", { name: "Keep my edits on this revision" }));
+  fireEvent.click(screen.getByRole("button", { name: "Save" }));
+  await waitFor(() => expect(h.update).toHaveBeenLastCalledWith("owned-track", { title_zh: "保留的標題", updated_at: latest.updated_at }));
 });

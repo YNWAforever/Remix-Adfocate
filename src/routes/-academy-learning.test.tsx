@@ -1,6 +1,6 @@
 import type { ComponentType } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 const h = vi.hoisted(() => ({ api: vi.fn(), completed: false, conflict: false, version: 1, actor: "creator-a" }));
 vi.mock("@tanstack/react-router", async original => ({ ...(await original<object>()),
@@ -37,6 +37,53 @@ beforeEach(() => {
   });
 });
 describe("D15 learning UI", () => {
+  it("keeps denied lesson cache hidden through later outages until a successful authorized read", async () => {
+    const { client } = show(); await screen.findByRole("heading", { name: "Unit one v1" });
+    for (const error of [new ApiError(403, "forbidden", "Denied"), new ApiError(503, "unavailable", "Unavailable"), new TypeError("Network unavailable")]) {
+      h.api.mockRejectedValue(error);
+      await act(async () => { await client.refetchQueries({ queryKey: ["academy-learning"] }); });
+      expect(screen.queryByRole("heading", { name: "Unit one v1" })).not.toBeInTheDocument();
+      expect(screen.getByRole("alert")).toBeInTheDocument();
+    }
+    h.api.mockResolvedValue(bundle());
+    await act(async () => { await client.refetchQueries({ queryKey: ["academy-learning"] }); });
+    expect(screen.getByRole("heading", { name: "Unit one v1" })).toBeInTheDocument();
+  });
+
+  it("does not clear completion denial after an unsuccessful refresh", async () => {
+    show(); await screen.findByRole("heading", { name: "Unit one v1" });
+    h.api.mockRejectedValueOnce(new ApiError(403, "forbidden", "Denied"));
+    fireEvent.click(screen.getAllByRole("button", { name: "標記完成" })[0]);
+    await screen.findByRole("alert");
+    h.api.mockRejectedValue(new ApiError(503, "unavailable", "Unavailable"));
+    fireEvent.click(screen.getByRole("button", { name: "重試載入單元" }));
+    await waitFor(() => expect(h.api).toHaveBeenCalledTimes(3));
+    await waitFor(() => expect(screen.getByRole("alert")).toBeInTheDocument());
+    expect(screen.queryByRole("heading", { name: "Unit one v1" })).not.toBeInTheDocument();
+    h.api.mockResolvedValue(bundle());
+    fireEvent.click(screen.getByRole("button", { name: "重試載入單元" }));
+    expect(await screen.findByRole("heading", { name: "Unit one v1" })).toBeInTheDocument();
+  });
+
+  it("hides lessons after denied completion and recovers reading after access is restored", async () => {
+    show(); await screen.findByRole("heading", { name: "Unit one v1" });
+    h.api.mockRejectedValueOnce(new ApiError(403, "forbidden", "Access revoked"));
+    fireEvent.click(screen.getAllByRole("button", { name: "標記完成" })[0]);
+    await screen.findByRole("alert");
+    expect(screen.queryByRole("heading", { name: "Unit one v1" })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "重試載入單元" }));
+    expect(await screen.findByRole("heading", { name: "Unit one v1" })).toBeInTheDocument();
+    expect(screen.getByText("0 / 2 已完成")).toBeInTheDocument();
+  });
+  it.each([401, 403, 404, 503])("handles a cached lesson refetch denied with %s", async status => {
+    const { client } = show();
+    await screen.findByRole("heading", { name: "Unit one v1" });
+    h.api.mockRejectedValue(new ApiError(status, "read_failed", "Read failed"));
+    await act(async () => { await client.refetchQueries({ queryKey: ["academy-learning"] }); });
+    await screen.findByRole("alert");
+    if (status === 503) expect(screen.getByRole("heading", { name: "Unit one v1" })).toBeInTheDocument();
+    else expect(screen.queryByRole("heading", { name: "Unit one v1" })).not.toBeInTheDocument();
+  });
   it("renders actual units, completes one, and reads the same 1/2 on a fresh mount", async () => {
     const first = show();
     expect(await screen.findByText("0 / 2 已完成")).toBeInTheDocument();
@@ -77,4 +124,20 @@ describe("D15 learning UI", () => {
     await waitFor(() => expect(screen.queryByRole("alert")).not.toBeInTheDocument());
     expect(screen.getByText("0 / 2 已完成")).toBeInTheDocument();
   });
+});
+
+it("retains a completion denial across remount until the same query reads successfully", async () => {
+  const first = show(); await screen.findByRole("heading", { name: "Unit one v1" });
+  h.api.mockRejectedValueOnce(new ApiError(403, "forbidden", "Denied"));
+  fireEvent.click(screen.getAllByRole("button", { name: "標記完成" })[0]);
+  await screen.findByRole("alert");
+  first.unmount();
+  h.api.mockRejectedValue(new ApiError(503, "unavailable", "Unavailable"));
+  const C = Route.options.component as ComponentType;
+  render(<QueryClientProvider client={first.client}><C /></QueryClientProvider>);
+  await act(async () => { await first.client.refetchQueries({ queryKey: ["academy-learning"] }); });
+  expect(screen.queryByRole("heading", { name: "Unit one v1" })).not.toBeInTheDocument();
+  h.api.mockResolvedValue(bundle());
+  await act(async () => { await first.client.refetchQueries({ queryKey: ["academy-learning"] }); });
+  expect(screen.getByRole("heading", { name: "Unit one v1" })).toBeInTheDocument();
 });

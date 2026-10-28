@@ -1,6 +1,8 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { vi } from "vitest";
+import { ApiError } from "@/lib/api";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const hoisted = vi.hoisted(() => ({
   createShare: vi.fn().mockResolvedValue({ token: "token", publicUrl: "/passport/token" }),
@@ -34,6 +36,7 @@ const hoisted = vi.hoisted(() => ({
     },
     isLoading: false,
     isError: false,
+    error: null as Error | null,
   },
 }));
 vi.mock("@/lib/queries/kocmax", () => ({
@@ -47,11 +50,34 @@ import { Route } from "./_app.passport";
 
 function renderPassport() {
   const C = Route.options.component as React.ComponentType;
-  return render(<C />);
+  const client = new QueryClient();
+  return render(<C />, { wrapper: ({ children }) => <QueryClientProvider client={client}>{children}</QueryClientProvider> });
 }
 
 describe("Passport page", () => {
-  beforeEach(() => { vi.clearAllMocks(); hoisted.passport.isError = false; });
+  beforeEach(() => { vi.clearAllMocks(); hoisted.passport.isError = false; hoisted.passport.error = null; });
+  it("keeps denied passport cache hidden through later outages until an authorized read succeeds", () => {
+    const view = renderPassport();
+    expect(screen.getByText("12,000 followers")).toBeInTheDocument();
+    const C = Route.options.component as React.ComponentType;
+    for (const error of [new ApiError(403, "forbidden", "Denied"), new ApiError(503, "unavailable", "Unavailable"), new TypeError("Network unavailable")]) {
+      hoisted.passport.isError = true; hoisted.passport.error = error;
+      view.rerender(<C />);
+      expect(screen.queryByText("12,000 followers")).not.toBeInTheDocument();
+      expect(screen.getByRole("alert")).toBeInTheDocument();
+    }
+    hoisted.passport.isError = false; hoisted.passport.error = null;
+    view.rerender(<C />);
+    expect(screen.getByText("12,000 followers")).toBeInTheDocument();
+  });
+  it.each([401, 403, 404, 503])("handles cached private passport data after a %s response", status => {
+    hoisted.passport.isError = true;
+    hoisted.passport.error = new ApiError(status, "read_failed", "Read failed");
+    renderPassport();
+    expect(screen.getByRole("alert")).toBeInTheDocument();
+    if (status === 503) expect(screen.getByText("12,000 followers")).toBeInTheDocument();
+    else expect(screen.queryByText("12,000 followers")).not.toBeInTheDocument();
+  });
   it("keeps saved scores and offers retry when a refetch fails", () => {
     hoisted.passport.isError = true; renderPassport();
     expect(screen.getByText("50")).toBeInTheDocument();

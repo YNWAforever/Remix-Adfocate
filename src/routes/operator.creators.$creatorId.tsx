@@ -71,16 +71,21 @@ function maybeRecord(value: unknown) {
 }
 
 function OperatorCreatorDetailRoute() {
-  const { t } = useI18n();
   const { creatorId } = Route.useParams();
   const { workspace } = useAdminWorkspace();
+  return <OperatorCreatorDetail key={`${workspace}:${creatorId}`} creatorId={creatorId} workspace={workspace} />;
+}
+
+function OperatorCreatorDetail({ creatorId, workspace }: { creatorId: string; workspace: string }) {
+  const { t } = useI18n();
   const returnTo = safeCreatorQueueReturn(Route.useSearch().returnTo);
   const queueSearch = parseCreatorQueueSearch(Object.fromEntries(new URL(returnTo, window.location.origin).searchParams));
   queueSearch.ws = workspace;
   const queryClient = useQueryClient();
   const { authed, reportAuthError } = useAdminAuth();
   const [noteBody, setNoteBody] = useState("");
-  const noteRequest = useRef<{ id: string; revision: number } | null>(null);
+  const noteRequest = useRef<{ id: string; revision: number; category: AdminNoteCategory; body: string } | null>(null);
+  const noteRevision = useRef<number | null>(null);
 
   const detail = useQuery({
     queryKey: ["admin-creator-detail", creatorId, workspace],
@@ -101,14 +106,19 @@ function OperatorCreatorDetailRoute() {
   const visibleDetail = canShowPreviousData(detail.error) ? detail.data : undefined;
   const noteMutation = useMutation({
     mutationFn: (body: { category: AdminNoteCategory; body: string }) => {
-      noteRequest.current ??= { id: crypto.randomUUID(), revision: visibleDetail?.review.revision ?? 0 };
-      return postCreatorNote(creatorId, { ...body, requestId: noteRequest.current.id, expectedRevision: noteRequest.current.revision });
+      noteRequest.current ??= { id: crypto.randomUUID(), revision: noteRevision.current ?? visibleDetail?.review.revision ?? 0, ...body };
+      const pending = noteRequest.current;
+      return postCreatorNote(creatorId, { category: pending.category, body: pending.body, requestId: pending.id, expectedRevision: pending.revision });
     },
     onSuccess: async () => {
-      setNoteBody(""); noteRequest.current = null;
+      setNoteBody(""); noteRequest.current = null; noteRevision.current = null; noteComparison.reset();
       await queryClient.invalidateQueries({ queryKey: ["admin-creator-detail", creatorId] });
     },
   });
+
+  const noteComparison = useMutation({ mutationFn: () => fetchCreatorDetail(creatorId) });
+  const noteConflict = noteMutation.error && "status" in noteMutation.error && noteMutation.error.status === 409;
+  const noteUnknown = Boolean(noteMutation.error && !noteConflict && noteRequest.current);
 
   const creator = visibleDetail?.creator;
   const detailData = visibleDetail;
@@ -140,6 +150,23 @@ function OperatorCreatorDetailRoute() {
     <>
       <div className="mx-auto max-w-6xl space-y-4 p-4">
         <RequestFeedback error={noteMutation.error} />
+        {noteConflict && <div className="space-y-2 text-sm">
+          <button type="button" disabled={noteComparison.isPending} onClick={() => { noteComparison.reset(); noteComparison.mutate(); }}>Compare latest note revision</button>
+          <RequestFeedback error={noteComparison.error} />
+          {noteComparison.isSuccess && <>
+            <p>Latest note revision {noteComparison.data.review.revision ?? 0}</p>
+            <p>{noteComparison.data.review.summary}</p>
+            <ul>{noteComparison.data.notes.map(row => <li key={row.id}>{row.body}</li>)}</ul>
+            <button type="button" onClick={() => {
+              noteRevision.current = noteComparison.data.review.revision ?? 0;
+              noteRequest.current = null;
+              noteMutation.reset(); noteComparison.reset();
+            }}>Keep note on latest revision</button>
+          </>}
+        </div>}
+        {noteUnknown && <button type="button" disabled={noteMutation.isPending} onClick={() => {
+          if (noteRequest.current) noteMutation.mutate({ category: noteRequest.current.category, body: noteRequest.current.body });
+        }}>Retry same note request</button>}
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3">
           <div className="space-y-1">
             <div className="flex flex-wrap items-center gap-2">
@@ -387,6 +414,7 @@ function OperatorCreatorDetailRoute() {
                   <div className="space-y-2">
                     <textarea
                       aria-label="New internal note"
+                      disabled={noteMutation.isPending || noteUnknown}
                       value={noteBody}
                       onChange={(event) => setNoteBody(event.target.value)}
                       rows={4}
@@ -395,7 +423,7 @@ function OperatorCreatorDetailRoute() {
                     <button
                       type="button"
                       aria-label="Save internal note"
-                      disabled={noteMutation.isPending || noteBody.trim().length === 0}
+                      disabled={noteMutation.isPending || Boolean(noteConflict) || noteUnknown || noteBody.trim().length === 0}
                       onClick={() => noteMutation.mutate({ category: "other", body: noteBody.trim() })}
                       className="inline-flex h-10 items-center justify-center rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-4 text-sm font-heading font-bold disabled:opacity-50"
                     >

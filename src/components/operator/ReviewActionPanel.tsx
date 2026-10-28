@@ -5,6 +5,7 @@ import { Check, Flag } from "lucide-react";
 import { useStaffAccess } from "@/components/admin/StaffAccessContext";
 import {
   postCreatorReview,
+  fetchCreatorDetail,
   type AdminRiskLevel,
   type AdminReviewProjection,
   type AdminReviewStatus,
@@ -29,55 +30,81 @@ export function ReviewActionPanel({ creator, variant = "compact", onSuccess }: R
   const [note, setNote] = useState("");
   const [validationError, setValidationError] = useState("");
   const [flagging, setFlagging] = useState(false);
-  const requestId = useRef<string | null>(null);
+  type ReviewBody = { status: AdminReviewStatus; riskLevel: AdminRiskLevel; summary: string; note?: string };
+  const command = useRef<{ id: string; revision: number; body: ReviewBody } | null>(null);
+  const baseline = useRef(creator.review);
+  const dirty = status !== baseline.current.status || riskLevel !== baseline.current.riskLevel
+    || summary !== (baseline.current.summary ?? "") || note.length > 0;
   const revision = useRef(creator.review.revision ?? 0);
   const lastCreator = useRef(creator.id);
 
   useEffect(() => {
-    if (lastCreator.current === creator.id) return;
+    if (lastCreator.current === creator.id) {
+      if (!command.current && !dirty && (creator.review.revision ?? 0) >= revision.current) {
+        revision.current = creator.review.revision ?? 0;
+        baseline.current = creator.review;
+        setStatus(creator.review.status); setRiskLevel(creator.review.riskLevel); setSummary(creator.review.summary ?? "");
+      }
+      return;
+    }
     lastCreator.current = creator.id;
-    requestId.current = null;
+    command.current = null;
+    baseline.current = creator.review;
     revision.current = creator.review.revision ?? 0;
     setStatus(creator.review.status);
     setRiskLevel(creator.review.riskLevel);
     setSummary(creator.review.summary ?? "");
     setNote("");
     setValidationError("");
-  }, [creator.id, creator.review]);
+  }, [creator.id, creator.review, dirty]);
 
   const mutation = useMutation({
-    mutationFn: (body: {
-      status: AdminReviewStatus;
-      riskLevel: AdminRiskLevel;
-      summary: string;
-      note?: string;
-    }) => {
-      requestId.current ??= crypto.randomUUID();
-      return postCreatorReview(creator.id, { ...body, requestId: requestId.current, expectedRevision: revision.current });
+    mutationFn: (body: ReviewBody) => {
+      command.current ??= { id: crypto.randomUUID(), revision: revision.current, body };
+      const pending = command.current;
+      return postCreatorReview(creator.id, { ...pending.body, requestId: pending.id, expectedRevision: pending.revision });
     },
-    onSuccess: async (response) => {
-      requestId.current = null;
+    onSuccess: async (response, body) => {
+      command.current = null;
+      comparison.reset();
       revision.current = response?.review?.revision ?? revision.current + 1;
+      baseline.current = { ...creator.review, ...body, revision: revision.current };
       setNote(""); setFlagging(false);
       await queryClient.invalidateQueries({ queryKey: ["admin-creators-review"] });
       onSuccess?.();
     },
   });
 
-  const reload = async () => {
-    await queryClient.refetchQueries({ queryKey: ["admin-creator-detail", creator.id] });
-    await queryClient.refetchQueries({ queryKey: ["admin-creators-review"] });
-    const detail = queryClient.getQueriesData<{ review?: AdminReviewProjection }>({ queryKey: ["admin-creator-detail", creator.id] }).find(([, value]) => value?.review)?.[1];
-    const queue = queryClient.getQueriesData<{ creators?: Array<{ id: string; review: AdminReviewProjection }> }>({ queryKey: ["admin-creators-review"] }).flatMap(([, value]) => value?.creators ?? []).find((row) => row.id === creator.id);
-    const latest = detail?.review ?? queue?.review;
-    if (latest) { revision.current = latest.revision ?? 0; requestId.current = null; mutation.reset(); setValidationError("已載入最新紀錄；請比較保留的輸入後再儲存。 / Latest record loaded. Compare your retained input before saving."); }
-  };
+  const comparison = useMutation({ mutationFn: () => fetchCreatorDetail(creator.id) });
+  const conflict = mutation.error && "status" in mutation.error && mutation.error.status === 409;
+  const unknown = Boolean(mutation.error && !conflict && command.current);
+  const recovery = <>
+    <RequestFeedback error={mutation.error} />
+    {conflict && <div className="space-y-2 text-sm">
+      <button type="button" disabled={comparison.isPending} onClick={() => { comparison.reset(); comparison.mutate(); }}>Compare latest review</button>
+      <RequestFeedback error={comparison.error} />
+      {comparison.isSuccess && <>
+        <p>Latest review revision {comparison.data.review.revision ?? 0}</p>
+        <p>{comparison.data.review.status} · {comparison.data.review.riskLevel}</p>
+        <p>{comparison.data.review.summary}</p>
+        <button type="button" onClick={() => {
+          revision.current = comparison.data.review.revision ?? 0;
+          command.current = null;
+          baseline.current = comparison.data.review;
+          mutation.reset(); comparison.reset();
+          setValidationError("已保留輸入，請核對後再儲存。 / Input retained; compare before saving.");
+        }}>Keep review on latest revision</button>
+      </>}
+    </div>}
+    {unknown && <button type="button" disabled={mutation.isPending} onClick={() => command.current && mutation.mutate(command.current.body)}>Retry same review request</button>}
+  </>;
   if(access&&!access.can("creator.review"))return <p className="text-xs">Read only / 只供檢視；如有未儲存輸入會保留至職責恢復。</p>;
   if (variant === "full" || flagging) {
     return (
       <div className="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3">
         {flagging && <p>Flag 會影響一般邀請資格，請填寫具體原因。 / A flag affects invitation eligibility. Give a specific reason.</p>}
-        <RequestFeedback error={mutation.error} retry={() => void reload()} />
+        {recovery}
+        <fieldset disabled={mutation.isPending || unknown} className="space-y-3">
         <div className="grid gap-3 md:grid-cols-2">
           <label className="space-y-1 text-xs font-bold text-[var(--color-soft-ink)]">
             <span>Review status</span>
@@ -137,12 +164,12 @@ export function ReviewActionPanel({ creator, variant = "compact", onSuccess }: R
         </label>
 
         {validationError ? <p role="alert" className="text-sm font-medium text-[var(--color-magenta)]">{validationError}</p> : null}
-        {flagging && <button type="button" disabled={mutation.isPending} onClick={() => { setFlagging(false); setNote(""); setValidationError(""); }}>取消 / Cancel</button>}
+        {flagging && <button type="button" disabled={mutation.isPending || Boolean(conflict) || unknown} onClick={() => { setFlagging(false); setNote(""); setValidationError(""); }}>取消 / Cancel</button>}
 
         <button
           type="button"
           aria-label="Save review action"
-          disabled={mutation.isPending}
+          disabled={mutation.isPending || Boolean(conflict) || unknown}
           onClick={() => {
             const trimmedNote = note.trim();
             if (status === "flagged" && !trimmedNote) {
@@ -160,18 +187,19 @@ export function ReviewActionPanel({ creator, variant = "compact", onSuccess }: R
         >
           Save review
         </button>
+        </fieldset>
       </div>
     );
   }
 
   return (
     <div className="flex gap-2">
-      <RequestFeedback error={mutation.error} retry={() => void reload()} />
+      {recovery}
       <button
         type="button"
         aria-label={`Approve ${creator.displayName}`}
         title="Approve creator"
-        disabled={mutation.isPending}
+        disabled={mutation.isPending || Boolean(conflict) || unknown}
         onClick={() =>
           mutation.mutate({
             status: "approved",
@@ -187,7 +215,7 @@ export function ReviewActionPanel({ creator, variant = "compact", onSuccess }: R
         type="button"
         aria-label={`Flag ${creator.displayName}`}
         title="Flag creator"
-        disabled={mutation.isPending}
+        disabled={mutation.isPending || Boolean(conflict) || unknown}
         onClick={() => { setStatus("flagged"); setFlagging(true); }}
         className="inline-flex h-9 w-9 items-center justify-center rounded-full border-2 border-[var(--color-ink)] bg-white disabled:opacity-50"
       >

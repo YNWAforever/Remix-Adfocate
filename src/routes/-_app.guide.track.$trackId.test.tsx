@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { AcademyTrack } from "@/lib/academy";
 import { ApiError } from "@/lib/api";
@@ -42,11 +42,11 @@ import { Route } from "./_app.guide.track.$trackId";
 function renderTrack() {
   const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   const C = Route.options.component as React.ComponentType;
-  return render(
+  return { client: qc, ...render(
     <QueryClientProvider client={qc}>
       <C />
     </QueryClientProvider>,
-  );
+  ) };
 }
 
 const A3_TRACK: AcademyTrack = {
@@ -79,6 +79,33 @@ beforeEach(() => {
 });
 
 describe("Track detail page — gating", () => {
+  it("keeps denied course cache hidden through later outages until a successful authorized read", async () => {
+    hoisted.me = { data: { id: "u1", level: "L3", is_trusted: true } };
+    hoisted.trackId = "a3";
+    hoisted.fetchAcademyTrack.mockResolvedValue({ item: A3_TRACK });
+    const { client } = renderTrack(); await screen.findByText(A3_DESC);
+    for (const error of [new ApiError(403, "forbidden", "Denied"), new ApiError(503, "unavailable", "Unavailable"), new TypeError("Network unavailable")]) {
+      hoisted.fetchAcademyTrack.mockRejectedValue(error);
+      await act(async () => { await client.refetchQueries(); });
+      expect(screen.queryByText(A3_DESC)).not.toBeInTheDocument();
+      expect(screen.getByRole("alert")).toBeInTheDocument();
+    }
+    hoisted.fetchAcademyTrack.mockResolvedValue({ item: A3_TRACK });
+    await act(async () => { await client.refetchQueries(); });
+    expect(screen.getByText(A3_DESC)).toBeInTheDocument();
+  });
+  it.each([401, 403, 404, 503])("handles a cached course refetch denied with %s", async status => {
+    hoisted.me = { data: { id: "u1", level: "L3", is_trusted: true } };
+    hoisted.trackId = "a3";
+    hoisted.fetchAcademyTrack.mockResolvedValue({ item: A3_TRACK });
+    const { client } = renderTrack();
+    await screen.findByText(A3_DESC);
+    hoisted.fetchAcademyTrack.mockRejectedValue(new ApiError(status, "read_failed", "Read failed"));
+    await act(async () => { await client.refetchQueries(); });
+    await screen.findByRole("alert");
+    if (status === 503) expect(screen.getByText(A3_DESC)).toBeInTheDocument();
+    else expect(screen.queryByText(A3_DESC)).not.toBeInTheDocument();
+  });
   it("locked (raw L1 < required L2): renders teaser, NOT description", async () => {
     hoisted.me = { data: { id: "u1", level: "L1", is_trusted: false } };
     hoisted.trackId = "a3";

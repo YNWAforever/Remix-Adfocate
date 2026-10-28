@@ -7,6 +7,7 @@ import { ScoreRing } from "@/components/ScoreRing";
 import { useI18n } from "@/lib/i18n";
 import { useCreatePassportShare, useMe, useMyPassport, useRevokePassportShare } from "@/lib/queries/kocmax";
 import { SCORE_META, SCORE_ORDER, BADGES } from "@/lib/passport";
+import { useCanShowPreviousData } from "@/components/RequestFeedback";
 
 export const Route = createFileRoute("/_app/passport")({ component: Passport });
 
@@ -17,6 +18,7 @@ function Passport() {
   const { t } = useI18n();
   const me = useMe();
   const passport = useMyPassport();
+  const showSavedPassport = useCanShowPreviousData(passport, ["passport"]);
   const share = useCreatePassportShare();
   const revoke = useRevokePassportShare();
   const [shareUrl, setShareUrl] = useState<string | null>(null);
@@ -30,7 +32,7 @@ function Passport() {
       </div>
     );
   }
-  if (!passport.data) {
+  if (!passport.data || !showSavedPassport) {
     return (
       <div className="mx-auto max-w-lg p-4">
         <p role="alert" className="text-sm text-[var(--color-magenta)]">{t("common.loadFailed")}</p>

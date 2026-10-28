@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ApiError } from "@/lib/api";
 
 const { mockNavigate } = vi.hoisted(() => ({ mockNavigate: vi.fn() }));
 vi.mock("@tanstack/react-router", async (importOriginal) => {
@@ -35,6 +36,7 @@ const hoisted = vi.hoisted(() => ({
     },
     isLoading: false,
     isError: false,
+    error: null as Error | null,
   },
 }));
 vi.mock("@/lib/queries/kocmax", () => ({
@@ -80,6 +82,8 @@ function renderProfile() {
 describe("Profile page", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    hoisted.me.isError = false;
+    hoisted.me.error = null;
     hoisted.pending = false;
     hoisted.update.mockResolvedValue({});
     hoisted.signOut.mockResolvedValue({ error: null });
@@ -94,6 +98,29 @@ describe("Profile page", () => {
     expect(screen.getByRole("heading", { name: "社交帳號" })).toBeInTheDocument();
     expect(screen.getByText("ABCD1234")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "創作者媒體" })).toBeInTheDocument();
+  });
+  it("keeps denied profile cache hidden through later outages until an authorized read succeeds", () => {
+    const view = renderProfile();
+    expect(screen.getByText("ABCD1234")).toBeInTheDocument();
+    const C = Route.options.component as React.ComponentType;
+    const client = new QueryClient();
+    for (const error of [new ApiError(403, "forbidden", "Denied"), new ApiError(503, "unavailable", "Unavailable"), new TypeError("Network unavailable")]) {
+      hoisted.me.isError = true; hoisted.me.error = error;
+      view.rerender(<QueryClientProvider client={client}><C /></QueryClientProvider>);
+      expect(screen.queryByText("ABCD1234")).not.toBeInTheDocument();
+      expect(screen.getByRole("alert")).toBeInTheDocument();
+    }
+    hoisted.me.isError = false; hoisted.me.error = null;
+    view.rerender(<QueryClientProvider client={client}><C /></QueryClientProvider>);
+    expect(screen.getByText("ABCD1234")).toBeInTheDocument();
+  });
+  it.each([401, 403, 404, 503])("handles cached private profile data after a %s response", status => {
+    hoisted.me.isError = true;
+    hoisted.me.error = new ApiError(status, "read_failed", "Read failed");
+    renderProfile();
+    expect(screen.getByRole("alert")).toBeInTheDocument();
+    if (status === 503) expect(screen.getByText("ABCD1234")).toBeInTheDocument();
+    else expect(screen.queryByText("ABCD1234")).not.toBeInTheDocument();
   });
 
   it("reveals edit inputs when 編輯 is tapped", () => {

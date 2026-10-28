@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { adminLessonKey, getAdminLessons, saveLesson, lessonAction, type AdminLesson, type LessonDraft } from "@/lib/academyProgress";
-import { ApiError } from "@/lib/api";
+import { AdminRequestError } from "@/lib/admin";
 import { Markdown } from "../Markdown";
 const empty: LessonDraft = { title_zh: "", title_en: "", body_zh: "", body_en: "", position: 0 };
 const values = (row: LessonDraft): LessonDraft => ({ title_zh: row.title_zh, title_en: row.title_en, body_zh: row.body_zh, body_en: row.body_en, position: row.position });
@@ -18,7 +18,7 @@ export function AcademyLessonsEditor({ trackId, lang }: { trackId: string; lang:
   const action = useMutation({ mutationFn: (type: "publish" | "archive") => lessonAction(trackId, selected!, type, approval), onSuccess: ({ item }) => saved(item) });
   const busy = save.isPending || action.isPending;
   const error = save.error ?? action.error;
-  const conflict = error instanceof ApiError && error.status === 409;
+  const conflict = error instanceof AdminRequestError && error.status === 409;
   const latest = query.data?.items.find(row => row.id === selected?.id && row.content_version === selected.content_version);
   function choose(row: AdminLesson | null) {
     if (dirty && !window.confirm("Discard unsaved lesson edits? 放棄未儲存的單元修改？")) return;

@@ -49,6 +49,12 @@ describe("finishAuth", () => {
     await finishAuth(navigate as never);
     expect(navigate).toHaveBeenCalledWith({ to: "/onboarding", search: { next: "/profile" } });
   });
+  it.each(["/guide/track/approved-course#lesson", "/campaigns/current", "/notifications?from=email", "/explore"])("returns to the existing Creator route %s after sign-in", async next => {
+    window.history.replaceState({}, "", "/login?next=" + encodeURIComponent(next));
+    apiFetch.mockResolvedValueOnce({ created: false }).mockResolvedValueOnce({ onboarding_completed: true });
+    await finishAuth(navigate as never);
+    expect(navigate).toHaveBeenCalledWith({ to: next });
+  });
 
   it.each(["https://outside.example/", "//outside.example/", "/\\outside.example/", "/admin", "/auth/callback?code=bad", "/mission/../login", "/%2f%2foutside.example", "/mission/%0d%0aheader"]) ("rejects unsafe return %s", async (next) => {
     window.history.replaceState({}, "", "/login?next=" + encodeURIComponent(next));

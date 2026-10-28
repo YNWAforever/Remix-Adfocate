@@ -3,6 +3,7 @@ import { useI18n } from "@/lib/i18n";
 import { ApiError } from "@/lib/api";
 import { completeLesson, getLearning, learningKey, type Lesson } from "@/lib/academyProgress";
 import { Markdown } from "./Markdown";
+import { useCanShowPreviousData } from "./RequestFeedback";
 
 export function AcademyLearning({ creatorId, slug }: { creatorId: string; slug: string }) {
   const { lang } = useI18n(), en = lang === "en", locale = en ? "en" : "zh-HK";
@@ -10,11 +11,12 @@ export function AcademyLearning({ creatorId, slug }: { creatorId: string; slug: 
   const query = useQuery({ queryKey: key, queryFn: () => getLearning(slug, locale), retry: false });
   const complete = useMutation({ mutationFn: (lesson: Lesson) => completeLesson(slug, lesson),
     onSuccess: () => qc.invalidateQueries({ queryKey: key }) });
-  const refresh = async () => { await query.refetch(); complete.reset(); };
+  const showSavedLearning = useCanShowPreviousData(query, key, complete.error);
+  const refresh = async () => { const result = await query.refetch(); if (result.isSuccess) complete.reset(); };
   if (query.isPending) return <p role="status">{en ? "Loading lessons…" : "載入單元中…"}</p>;
-  if (!query.data) return <div role="alert" className="space-y-2">
+  if (!query.data || !showSavedLearning) return <div role="alert" className="space-y-2">
     <p>{en ? "Lessons could not be loaded. Please retry." : "暫時無法載入單元，請重試。"}</p>
-    <button className="underline" onClick={() => query.refetch()}>{en ? "Retry lessons" : "重試載入單元"}</button>
+    <button className="underline" onClick={refresh}>{en ? "Retry lessons" : "重試載入單元"}</button>
   </div>;
   const learning = query.data;
   return <section aria-label={en ? "Course lessons" : "課程單元"} className="space-y-4">

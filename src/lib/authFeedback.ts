@@ -161,7 +161,7 @@ export function safeCreatorReturn(raw: string | null | undefined): string | null
   if (!raw || !raw.startsWith("/") || raw.startsWith("//") || hasUnsafeAuthPathChars(raw)) return null;
   try {
     const url = new URL(raw, "https://creator.invalid");
-    if (url.origin !== "https://creator.invalid" || !/^\/(home|mission|my|profile|passport|wallet|academy|match|more|redemption)(\/|$)/.test(url.pathname)) return null;
+    if (url.origin !== "https://creator.invalid" || !/^\/(home|mission|my|profile|passport|wallet|academy|guide|campaigns|notifications|explore|match|more|redemption)(\/|$)/.test(url.pathname)) return null;
     return `${url.pathname}${url.search}${url.hash}`;
   } catch { return null; }
 }

@@ -11,6 +11,7 @@ import { useI18n } from "@/lib/i18n";
 import { categoryLabelKey, platformDisplayLabelKey } from "@/lib/labels";
 import { useMe, useUpdateProfile, type SocialHandle } from "@/lib/queries/kocmax";
 import { supabase } from "@/lib/supabase";
+import { useCanShowPreviousData } from "@/components/RequestFeedback";
 
 export const Route = createFileRoute("/_app/profile")({ component: Profile });
 
@@ -23,6 +24,7 @@ function Profile() {
   const navigate = useNavigate();
   const qc = useQueryClient();
   const me = useMe();
+  const showSavedProfile = useCanShowPreviousData(me, ["me"]);
   const update = useUpdateProfile();
 
   const [editing, setEditing] = useState(false);
@@ -89,7 +91,7 @@ function Profile() {
       </div>
     );
   }
-  if (!me.data) {
+  if (!me.data || !showSavedProfile) {
     return (
       <div className="mx-auto max-w-lg p-4">
         <p role="alert" className="text-sm text-[var(--color-magenta)]">{t("common.loadFailed")}</p>

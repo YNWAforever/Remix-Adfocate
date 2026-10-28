@@ -8,7 +8,32 @@ function localized(value: unknown, lang: "zh" | "en"): string {
   return typeof value === "string" ? value : typeof object(value)[lang] === "string" ? object(value)[lang] as string : "";
 }
 function withLanguage(value: unknown, lang: "zh" | "en", text: string) {
-  return { ...(typeof value === "string" ? { zh: value, en: value } : object(value)), [lang]: text };
+  return { zh: "", en: "", ...(typeof value === "string" ? { zh: value, en: value } : object(value)), [lang]: text };
+}
+
+export class AcademyIdeaRebaseError extends Error {
+  constructor() { super("Idea rows changed; your draft and latest comparison are preserved. Compare each language before saving. / 內容點子次序或數量有變，已保留草稿及最新比較，請逐項核對中英文。"); }
+}
+
+const equal = (left: unknown, right: unknown) => JSON.stringify(left) === JSON.stringify(right);
+function rebaseIdeas(draft: unknown, baseline: unknown, latest: unknown): unknown {
+  if (equal(draft, latest) || equal(latest, baseline)) return draft;
+  if (!Array.isArray(draft) || !Array.isArray(baseline) || !Array.isArray(latest)
+    || draft.length !== baseline.length || latest.length !== baseline.length) throw new AcademyIdeaRebaseError();
+  // Legacy rows have no IDs. Only merge a changed row when an unchanged, unique
+  // translation still identifies the same row; never infer identity after a reorder.
+  const aligned = (row: unknown, index: number) => (["zh", "en"] as const).some(lang => {
+    const anchor = localized(baseline[index], lang);
+    return anchor !== "" && localized(row, lang) === anchor
+      && baseline.filter(original => localized(original, lang) === anchor).length === 1;
+  });
+  const translated = (row: unknown) => typeof row === "string" ? { zh: row, en: row } : object(row);
+  return draft.map((row, index) => {
+    if (equal(row, baseline[index])) return latest[index];
+    if (equal(latest[index], baseline[index])) return row;
+    if (!aligned(row, index) || !aligned(latest[index], index)) throw new AcademyIdeaRebaseError();
+    return rebaseAcademyMetadata(translated(row), translated(baseline[index]), translated(latest[index]));
+  });
 }
 
 /** Carry forward only authored changes, including individual translated metadata fields. */
@@ -16,6 +41,7 @@ export function rebaseAcademyMetadata(draft: Metadata, baseline: Metadata, lates
   const merged = { ...latest };
   for (const [key, value] of Object.entries(draft)) {
     if (JSON.stringify(value) === JSON.stringify(baseline[key])) continue;
+    if (key === "ideas") { merged[key] = rebaseIdeas(value, baseline[key], latest[key]); continue; }
     const nested = value !== null && typeof value === "object" && !Array.isArray(value);
     // A legacy plain string was displayed in both languages. Compare against that
     // same baseline so converting it to localized fields does not author the other language.
@@ -61,10 +87,22 @@ export function AcademyMetadataFields({ kind, lang, metadata, onChange }: {
         }} />{level}
       </label>)}
     </fieldset>
-    <label className="block text-sm">Content ideas ({suffix})
-      <textarea className={inputClass} rows={5} value={Array.isArray(metadata.ideas) ? metadata.ideas.map(v => localized(v, lang)).join("\n") : ""}
-        onChange={e => onChange({ ...metadata, ideas: e.target.value.split("\n").map((line,index) => withLanguage(Array.isArray(metadata.ideas) ? metadata.ideas[index] : undefined, lang, line)) })} />
-    </label>
+    <fieldset className="space-y-3"><legend>Content ideas ({suffix})</legend>
+      {(Array.isArray(metadata.ideas) ? metadata.ideas : []).map((idea, index) => <div key={index} className="space-y-2 rounded border p-2">
+        <label className="block text-sm">Content idea {index + 1} ({suffix})
+          <textarea className={inputClass} rows={3} value={localized(idea, lang)} onChange={e => {
+            const ideas = [...metadata.ideas as unknown[]];
+            ideas[index] = withLanguage(idea, lang, e.target.value);
+            onChange({ ...metadata, ideas });
+          }} />
+        </label>
+        <button type="button" aria-label={`Remove content idea ${index + 1} in both languages`} className="min-h-11 underline"
+          onClick={() => onChange({ ...metadata, ideas: (metadata.ideas as unknown[]).filter((_, position) => position !== index) })}>
+          Remove idea in both languages / 移除中英文項目
+        </button>
+      </div>)}
+      <button type="button" className="min-h-11 underline" onClick={() => onChange({ ...metadata, ideas: [...(Array.isArray(metadata.ideas) ? metadata.ideas : []), { zh: "", en: "" }] })}>Add content idea</button>
+    </fieldset>
   </section>;
   return null;
 }

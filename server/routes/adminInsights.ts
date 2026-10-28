@@ -35,7 +35,8 @@ adminInsightsRoutes.get("/insights", async c => {
       allRows((a,b) => svc.from("missions").select("id,status,quota,filled").eq("workspace_id",ws).eq("status","active").order("id").range(a,b)),
       allRows((a,b) => svc.from("mission_work_items").select("id,state,required,deadline,created_at,workflow:mission_workflows!mission_work_items_workflow_workspace_fk!inner(created_at)").eq("workspace_id",ws).gte("created_at",from).lt("created_at",until).order("id").range(a,b)),
       allRows((a,b) => svc.from("mission_draft_versions").select("id,mission_work_item_id,submitted_at,version_number").eq("workspace_id",ws).gte("submitted_at",from).lt("submitted_at",until).order("id").range(a,b)),
-      allRows((a,b) => svc.from("mission_review_rounds").select("id,mission_work_item_id,state,review_started_at,decision_at,round_number").eq("workspace_id",ws).gte("created_at",from).lt("created_at",until).order("id").range(a,b)),
+      // A round opened in this window may be decided later; only completed decisions before the cutoff belong here.
+      allRows((a,b) => svc.from("mission_review_rounds").select("id,mission_work_item_id,state,review_started_at,decision_at,round_number").eq("workspace_id",ws).gte("created_at",from).lt("created_at",until).lt("decision_at",until).order("id").range(a,b)),
     ]);
     const outcomes = workItems.map(item => {
       const submitted = versions.filter(v => v.mission_work_item_id === item.id).sort((a,b) => a.version_number - b.version_number);

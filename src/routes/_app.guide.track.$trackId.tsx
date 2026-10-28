@@ -8,6 +8,7 @@ import { useI18n } from "@/lib/i18n";
 import { Markdown } from "@/components/Markdown";
 import { ApiError } from "@/lib/api";
 import { AcademyLearning } from "@/components/AcademyLearning";
+import { useCanShowPreviousData } from "@/components/RequestFeedback";
 
 export const Route = createFileRoute("/_app/guide/track/$trackId")({ component: TrackDetailPage });
 
@@ -17,7 +18,8 @@ function TrackDetailPage() {
   const { t, lang } = useI18n();
   const uiLang = lang === "en" ? "en" : "zh-HK";
   const q = useQuery({ queryKey: academyKeys.track(trackId, uiLang), queryFn: () => fetchAcademyTrack(trackId, uiLang), retry: false });
-  const track = q.data?.item;
+  const showSavedTrack = useCanShowPreviousData(q, academyKeys.track(trackId, uiLang));
+  const track = showSavedTrack ? q.data?.item : undefined;
 
   // apiFetch throws on a 404 → error state; gate not-found on q.isError, never on pending.
   if (q.isLoading) return <div className="p-4 text-sm">…</div>;

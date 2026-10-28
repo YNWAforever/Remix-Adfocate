@@ -38,8 +38,8 @@ describe("release preflight", () => {
       ...new Set(manifest.migrations.flatMap((migration) => migration.capabilities)),
     ];
 
-    // Retain all587 earlier capabilities, four application and seven redemption contracts.
-    expect(capabilities).toHaveLength(598);
+    // Retain all598 prior contracts, plus14 explicit repair/helper contracts.
+    expect(capabilities).toHaveLength(612);
     const applicationCapabilities = ["function:public.decide_mission_application",
       "grant:service_role.public.decide_mission_application(uuid,uuid,uuid,uuid,bigint,text,text)",
       "grant-removed:anon.public.decide_mission_application(uuid,uuid,uuid,uuid,bigint,text,text)",
@@ -55,7 +55,25 @@ describe("release preflight", () => {
       "grant-removed:public.public.redeem_gift_with_request(uuid,uuid)",
     ];
     expect(capabilities).toEqual(expect.arrayContaining(redemptionCapabilities));
-    expect(capabilities.filter((capability) => ![...applicationCapabilities, ...redemptionCapabilities].includes(capability))).toHaveLength(587);
+    const repairCapabilities = [
+      "grant-removed:anon.public.submit_mission(uuid,text[],jsonb)",
+      "grant-removed:public.public.submit_mission(uuid,text[],jsonb)",
+      "function:public.get_legacy_correction_evidence",
+      "grant:service_role.private.valid_legacy_evidence(text[])",
+      "grant:service_role.public.get_legacy_correction_evidence(uuid,uuid)",
+      "grant-removed:authenticated.private.valid_legacy_evidence(text[])",
+      "grant-removed:anon.private.valid_legacy_evidence(text[])",
+      "grant-removed:public.private.valid_legacy_evidence(text[])",
+      "grant-removed:authenticated.public.request_legacy_evidence_correction(uuid,uuid,uuid,uuid,bigint,text)",
+      "grant-removed:anon.public.request_legacy_evidence_correction(uuid,uuid,uuid,uuid,bigint,text)",
+      "grant-removed:public.public.request_legacy_evidence_correction(uuid,uuid,uuid,uuid,bigint,text)",
+      "grant-removed:authenticated.public.get_legacy_correction_evidence(uuid,uuid)",
+      "grant-removed:anon.public.get_legacy_correction_evidence(uuid,uuid)",
+      "grant-removed:public.public.get_legacy_correction_evidence(uuid,uuid)",
+    ];
+    expect(capabilities).toEqual(expect.arrayContaining(repairCapabilities));
+    expect(capabilities.filter((capability) => !repairCapabilities.includes(capability))).toHaveLength(598);
+    expect(capabilities.filter((capability) => ![...applicationCapabilities, ...redemptionCapabilities, ...repairCapabilities].includes(capability))).toHaveLength(587);
     expect(capabilities.filter((capability) => !hasCapabilityValidator(capability))).toEqual([]);
   });
 

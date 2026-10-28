@@ -1,9 +1,10 @@
-vi.mock("@/components/admin/AdminWorkspaceContext", () => ({ useAdminWorkspace: () => ({ workspace: "workspace-1", workspaceSlug: "a", setWorkspace: vi.fn() }) }));
+vi.mock("@/components/admin/AdminWorkspaceContext", () => ({ useAdminWorkspace: () => ({ workspace: hoisted.workspace, workspaceSlug: "a", setWorkspace: vi.fn() }) }));
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const hoisted = vi.hoisted(() => ({
+  workspace: "workspace-1",
   fetchCreatorDetail: vi.fn(),
   fetchCreatorPublicationProofs: vi.fn(),
   postCreatorNote: vi.fn(),
@@ -29,6 +30,7 @@ vi.mock("@/lib/admin", async () => ({
 vi.mock("@/components/admin/AdminAuthContext", () => ({ useAdminAuth: () => ({ authed: true, staff: { userId: "u1", email: "a@x" }, reportAuthError: vi.fn() }) }));
 
 import { Route } from "./operator.creators.$creatorId";
+import { AdminRequestError } from "@/lib/admin";
 
 function renderRoute() {
   const C = Route.options.component as React.ComponentType;
@@ -42,6 +44,8 @@ function renderRoute() {
 describe("operator creator detail", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    hoisted.workspace = "workspace-1";
+    hoisted.fetchCreatorDetail.mockReset(); hoisted.postCreatorNote.mockReset(); hoisted.postCreatorReview.mockReset();
     vi.spyOn(Route, "useSearch").mockReturnValue({ returnTo: "/admin/creators?ws=workspace-1" } as never);
     vi.spyOn(Route, "useParams").mockReturnValue({ creatorId: "creator-1" } as never);
     hoisted.fetchCreatorPublicationProofs.mockResolvedValue({ proofs: { status: "available", value: [] } });
@@ -204,4 +208,111 @@ describe("operator creator detail", () => {
     expect(screen.getByText("Flagged reviews require a note")).toBeInTheDocument();
     expect(hoisted.postCreatorReview).not.toHaveBeenCalled();
   });
+
+  describe("CRM revision recovery", () => {
+  beforeEach(() => { vi.clearAllMocks(); });
+
+  it("retains a stale note until the operator compares and acknowledges the latest revision", async () => {
+    hoisted.postCreatorNote.mockRejectedValueOnce(new AdminRequestError("Changed", "CRM_STALE", undefined, 409)).mockResolvedValueOnce({ note: { id: "saved" } });
+    renderRoute(); await screen.findByText("Amy Chan");
+    const initial = await hoisted.fetchCreatorDetail.mock.results[0].value;
+    hoisted.fetchCreatorDetail.mockResolvedValue({ ...initial, review: { ...initial.review, revision: 3, summary: "Concurrent operator review" } });
+    fireEvent.change(screen.getByLabelText("New internal note"), { target: { value: "Retained note" } });
+    fireEvent.click(screen.getByLabelText("Save internal note"));
+    await screen.findByRole("alert");
+    expect(screen.getByLabelText("New internal note")).toHaveValue("Retained note");
+    fireEvent.click(screen.getByRole("button", { name: "Compare latest note revision" }));
+    await screen.findByText("Latest note revision 3");
+    expect(hoisted.postCreatorNote).toHaveBeenCalledTimes(1);
+    fireEvent.click(screen.getByRole("button", { name: "Keep note on latest revision" }));
+    await waitFor(() => expect(screen.getByLabelText("Save internal note")).toBeEnabled());
+    fireEvent.click(screen.getByLabelText("Save internal note"));
+    await waitFor(() => expect(hoisted.postCreatorNote).toHaveBeenCalledTimes(2));
+    expect(hoisted.postCreatorNote.mock.calls[1][1]).toMatchObject({ body: "Retained note", expectedRevision: 3 });
+    expect(hoisted.postCreatorNote.mock.calls[1][1].requestId).not.toBe(hoisted.postCreatorNote.mock.calls[0][1].requestId);
+    await waitFor(() => expect(screen.getByLabelText("New internal note")).toHaveValue(""));
+  });
+
+  it("retries an unknown note outcome with the original command and retains its identity", async () => {
+    hoisted.postCreatorNote.mockRejectedValueOnce(new TypeError("Lost response")).mockResolvedValueOnce({ note: { id: "saved" } });
+    renderRoute(); await screen.findByText("Amy Chan");
+    fireEvent.change(screen.getByLabelText("New internal note"), { target: { value: "One logical note" } });
+    fireEvent.click(screen.getByLabelText("Save internal note"));
+    await screen.findByRole("alert");
+    expect(screen.queryByRole("button", { name: "Compare latest note revision" })).not.toBeInTheDocument();
+    expect(screen.getByLabelText("New internal note")).toBeDisabled();
+    fireEvent.click(screen.getByRole("button", { name: "Retry same note request" }));
+    await waitFor(() => expect(hoisted.postCreatorNote).toHaveBeenCalledTimes(2));
+    expect(hoisted.postCreatorNote.mock.calls[1]).toEqual(hoisted.postCreatorNote.mock.calls[0]);
+  });
+
+  it("uses the shared revision after a successful note when review inputs are untouched", async () => {
+    renderRoute(); await screen.findByText("Amy Chan");
+    const initial = await hoisted.fetchCreatorDetail.mock.results[0].value;
+    hoisted.postCreatorNote.mockImplementation(async () => {
+      hoisted.fetchCreatorDetail.mockResolvedValue({ ...initial, review: { ...initial.review, revision: 1 } });
+      return { note: { id: "saved" } };
+    });
+    hoisted.postCreatorReview.mockResolvedValue({ review: { ...initial.review, revision: 2 } });
+    fireEvent.change(screen.getByLabelText("New internal note"), { target: { value: "A saved note" } });
+    fireEvent.click(screen.getByLabelText("Save internal note"));
+    await waitFor(() => expect(screen.getByLabelText("New internal note")).toHaveValue(""));
+    fireEvent.click(screen.getByLabelText("Save review action"));
+    await waitFor(() => expect(hoisted.postCreatorReview).toHaveBeenCalledWith("creator-1", expect.objectContaining({ expectedRevision: 1 })));
+  });
+});
+
+  it("retains a stale review until the latest decision is compared and acknowledged", async () => {
+    hoisted.postCreatorReview.mockRejectedValueOnce(new AdminRequestError("Changed", "CRM_STALE", undefined, 409)).mockResolvedValueOnce({ review: { revision: 4 } });
+    renderRoute(); await screen.findByText("Amy Chan");
+    const initial = await hoisted.fetchCreatorDetail.mock.results[0].value;
+    hoisted.fetchCreatorDetail.mockResolvedValue({ ...initial, review: { ...initial.review, revision: 3, summary: "Concurrent decision" } });
+    fireEvent.change(screen.getByLabelText("Review summary"), { target: { value: "Retained review" } });
+    fireEvent.click(screen.getByLabelText("Save review action")); await screen.findByRole("alert");
+    fireEvent.click(screen.getByRole("button", { name: "Compare latest review" }));
+    await screen.findByText("Latest review revision 3");
+    expect(screen.getByText("Concurrent decision")).toBeInTheDocument();
+    expect(hoisted.postCreatorReview).toHaveBeenCalledTimes(1);
+    fireEvent.click(screen.getByRole("button", { name: "Keep review on latest revision" }));
+    expect(screen.getByLabelText("Review summary")).toHaveValue("Retained review");
+    fireEvent.click(screen.getByLabelText("Save review action"));
+    await waitFor(() => expect(hoisted.postCreatorReview).toHaveBeenCalledTimes(2));
+    expect(hoisted.postCreatorReview.mock.calls[1][1]).toMatchObject({ summary: "Retained review", expectedRevision: 3 });
+    expect(hoisted.postCreatorReview.mock.calls[1][1].requestId).not.toBe(hoisted.postCreatorReview.mock.calls[0][1].requestId);
+  });
+
+  it("retries an unknown review outcome without rebasing its command identity", async () => {
+    hoisted.postCreatorReview.mockRejectedValueOnce(new TypeError("Lost response")).mockResolvedValueOnce({ review: { revision: 1 } });
+    renderRoute(); await screen.findByText("Amy Chan");
+    fireEvent.change(screen.getByLabelText("Review summary"), { target: { value: "One logical review" } });
+    fireEvent.click(screen.getByLabelText("Save review action")); await screen.findByRole("alert");
+    expect(screen.queryByRole("button", { name: "Compare latest review" })).not.toBeInTheDocument();
+    expect(screen.getByLabelText("Review summary")).toBeDisabled();
+    fireEvent.click(screen.getByRole("button", { name: "Retry same review request" }));
+    await waitFor(() => expect(hoisted.postCreatorReview).toHaveBeenCalledTimes(2));
+    expect(hoisted.postCreatorReview.mock.calls[1]).toEqual(hoisted.postCreatorReview.mock.calls[0]);
+  });
+
+  it.each(["creator", "workspace"])("isolates an unknown note command when the %s scope changes", async change => {
+    hoisted.postCreatorNote.mockRejectedValueOnce(new TypeError("Lost response"));
+    const view = renderRoute(); await screen.findByText("Amy Chan");
+    const initial = await hoisted.fetchCreatorDetail.mock.results[0].value;
+    fireEvent.change(screen.getByLabelText("New internal note"), { target: { value: "Previous subject note" } });
+    fireEvent.click(screen.getByLabelText("Save internal note")); await screen.findByRole("alert");
+    if (change === "creator") vi.mocked(Route.useParams).mockReturnValue({ creatorId: "creator-2" } as never);
+    else hoisted.workspace = "workspace-2";
+    hoisted.fetchCreatorDetail.mockResolvedValue({ ...initial, creator: { ...initial.creator, id: change === "creator" ? "creator-2" : "creator-1", display_name: "Second scope creator" }, review: { ...initial.review, revision: 8 } });
+    const C = Route.options.component as React.ComponentType;
+    view.rerender(<QueryClientProvider client={new QueryClient()}><C /></QueryClientProvider>);
+    await screen.findByText("Second scope creator");
+    expect(screen.getByLabelText("New internal note")).toHaveValue("");
+    expect(screen.queryByRole("button", { name: "Retry same note request" })).not.toBeInTheDocument();
+    hoisted.postCreatorNote.mockResolvedValueOnce({ note: { id: "new-note" } });
+    fireEvent.change(screen.getByLabelText("New internal note"), { target: { value: "New subject note" } });
+    fireEvent.click(screen.getByLabelText("Save internal note"));
+    await waitFor(() => expect(hoisted.postCreatorNote).toHaveBeenCalledTimes(2));
+    expect(hoisted.postCreatorNote.mock.calls[1]).toEqual([change === "creator" ? "creator-2" : "creator-1", expect.objectContaining({ body: "New subject note", expectedRevision: 8 })]);
+    expect(hoisted.postCreatorNote.mock.calls[1][1].requestId).not.toBe(hoisted.postCreatorNote.mock.calls[0][1].requestId);
+  });
+
 });

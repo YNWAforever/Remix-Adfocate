@@ -3,7 +3,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Markdown } from "@/components/Markdown";
 import { AcademyLessonsEditor } from "./AcademyLessonsEditor";
-import { AcademyMetadataFields, rebaseAcademyMetadata } from "./AcademyMetadataFields";
+import { AcademyMetadataFields, rebaseAcademyMetadata, AcademyIdeaRebaseError } from "./AcademyMetadataFields";
 import {
   getAdminAcademy, createAcademy, updateAcademy, academyAction, academyKeys,
   type AdminAcademyRow, type AcademyKind,
@@ -30,6 +30,7 @@ export function AcademyEditor({ id }: { id: string }) {
   const [lang, setLang] = useState<"zh" | "en">("zh");
   const [form, setForm] = useState<Partial<AdminAcademyRow>>(EMPTY);
   const baseline = useRef<Partial<AdminAcademyRow>>(EMPTY);
+  const [rebaseError, setRebaseError] = useState<string | null>(null);
 
   const existing = useQuery({
     queryKey: academyKeys.adminItem(id), enabled: !isNew,
@@ -78,11 +79,16 @@ export function AcademyEditor({ id }: { id: string }) {
   function keepDraftOnLatest() {
     const latest = comparison.data?.item;
     if (!latest) return;
-    const rebased = { ...latest, ...editedFields(form, baseline.current),
-      metadata: rebaseAcademyMetadata(form.metadata ?? {}, baseline.current.metadata ?? {}, latest.metadata ?? {}) };
-    baseline.current = latest;
-    setForm(rebased);
-    save.reset(); comparison.reset();
+    try {
+      const rebased = { ...latest, ...editedFields(form, baseline.current),
+        metadata: rebaseAcademyMetadata(form.metadata ?? {}, baseline.current.metadata ?? {}, latest.metadata ?? {}) };
+      baseline.current = latest;
+      setForm(rebased);
+      setRebaseError(null); save.reset(); comparison.reset();
+    } catch (error) {
+      if (!(error instanceof AcademyIdeaRebaseError)) throw error;
+      setRebaseError(error.message);
+    }
   }
 
   if (!isNew && !existing.data) return (
@@ -99,10 +105,25 @@ export function AcademyEditor({ id }: { id: string }) {
           <p>版本有更新。請比較最新內容，確認後再儲存你的改動。 Another version exists; compare it before retrying.</p>
           <button type="button" onClick={() => comparison.mutate()}>Compare latest</button>
           {comparison.error && <p role="alert">載入失敗，可重試。 {comparison.error.message}</p>}
+          {rebaseError && <>
+            <p role="alert">{rebaseError}</p>
+            {comparison.data && <button type="button" onClick={() => {
+              const latest = comparison.data?.item;
+              if (!latest) return;
+              const ideas = latest.metadata.ideas;
+              setForm(current => ({ ...current, metadata: { ...current.metadata, ideas } }));
+              setRebaseError(null);
+            }}>Use latest ideas and discard local idea edits</button>}
+          </>}
           {comparison.data && <>
             <dl className="space-y-2 break-words text-sm">
               <dt>Latest title / 最新標題</dt><dd>{comparison.data.item[lang === "zh" ? "title_zh" : "title_en"]}</dd>
               <dt>Latest body / 最新正文</dt><dd className="whitespace-pre-wrap">{comparison.data.item[lang === "zh" ? "body_zh" : "body_en"]}</dd>
+              {Array.isArray(comparison.data.item.metadata.ideas) && <>
+                <dt>Latest content ideas / 最新內容點子</dt><dd><ul>{comparison.data.item.metadata.ideas.map((idea, index) => <li key={index} className="whitespace-pre-wrap">
+                  {typeof idea === "string" ? idea : <>{typeof idea?.zh === "string" ? idea.zh : ""}<br />{typeof idea?.en === "string" ? idea.en : ""}</>}
+                </li>)}</ul></dd>
+              </>}
               <dt>Latest learning time / 最新學習時間</dt><dd>{typeof comparison.data.item.metadata.duration === "string" ? comparison.data.item.metadata.duration : String((comparison.data.item.metadata.duration as Record<string, unknown> | undefined)?.[lang] ?? "")}</dd>
             </dl>
             <p>確認後會保留你修改的欄位；未修改欄位沿用最新版本。 Only your edited fields will be carried forward.</p>

@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { fetchWorkspaces, adminMissionKeys, AdminAuthError } from "@/lib/admin";
+import { fetchWorkspaces, adminMissionKeys, AdminAuthError, AdminRequestError } from "@/lib/admin";
 import { useAdminAuth } from "./AdminAuthContext";
 import { useAdminWorkspace } from "./AdminWorkspaceContext";
 import { useStaffAccess } from "./StaffAccessContext";
@@ -33,7 +33,9 @@ export function WorkspaceSwitcher() {
   }, [setWorkspace, workspace, workspaceSlug, ws.data]);
 
   if(access?.access?.workspace===null)return <span className="text-sm">{access.can("content.manage")?"Platform content / 平台內容":"No workspace membership / 未有工作空間membership；請聯絡owner"}</span>;
-  if(access&&!access.access)return null;
+  if(access&&!access.access)return workspace && access.error instanceof AdminRequestError && access.error.status === 404
+    ? <button type="button" className="min-h-11 text-sm underline" onClick={() => setWorkspace("", "")}>Use current workspace / 重新核實目前工作空間</button>
+    : null;
   if (ws.isError) return <div role="alert" className="space-y-2 text-sm">
     <p>無法載入工作空間。若已登入但未獲分配，請聯絡 workspace owner。 / Workspace access could not be loaded. Ask the owner to check membership.</p>
     <button type="button" onClick={() => void ws.refetch()}>重試 / Retry</button>

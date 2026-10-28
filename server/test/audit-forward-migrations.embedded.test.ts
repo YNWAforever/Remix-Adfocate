@@ -2,6 +2,8 @@
 import { readFile } from "node:fs/promises";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import type { PGlite } from "@electric-sql/pglite";
+// @ts-expect-error Executable SQL statement parser has no declaration file.
+import { topLevelStatements } from "../../scripts/audit/b2-bootstrap-profile.mjs";
 
 // Local SQL contract target, not a Supabase/Auth/browser rehearsal. No URL, proxy,
 // host, filesystem data directory, credential, or fixture cleanup is configurable.
@@ -14,6 +16,17 @@ const creator = "00000000-0000-4000-8000-000000000013";
 const otherCreator = "00000000-0000-4000-8000-000000000014";
 const mission = "00000000-0000-4000-8000-000000000021";
 const submission = "00000000-0000-4000-8000-000000000031";
+const invalidAuthorityRows = [
+  { mission: "00000000-0000-4000-8000-000000000022", submission: "00000000-0000-4000-8000-000000000032", url: "https://example.test:99999/work" },
+  { mission: "00000000-0000-4000-8000-000000000023", submission: "00000000-0000-4000-8000-000000000033", url: "https://[::::]/work" },
+  { mission: "00000000-0000-4000-8000-000000000024", submission: "00000000-0000-4000-8000-000000000034", url: "https://256.1.1.1/work" },
+  { mission: "00000000-0000-4000-8000-000000000025", submission: "00000000-0000-4000-8000-000000000035", url: "https://a\u200db.test/work" },
+];
+const inverseAuthorityRows = [
+  { mission: "00000000-0000-4000-8000-000000000026", submission: "00000000-0000-4000-8000-000000000036", url: "https://example.test:/work" },
+  { mission: "00000000-0000-4000-8000-000000000027", submission: "00000000-0000-4000-8000-000000000037", url: "https://example.test:000080/work" },
+  { mission: "00000000-0000-4000-8000-000000000028", submission: "00000000-0000-4000-8000-000000000038", url: "https://@example.test/work" },
+];
 const request = "00000000-0000-4000-8000-000000000041";
 const secondRequest = "00000000-0000-4000-8000-000000000042";
 let db: PGlite;
@@ -29,6 +42,7 @@ create table public.staff_users(user_id uuid primary key,email text,active boole
 create table public.brand_users(user_id uuid primary key,workspace_id uuid,email text,role text,active boolean);
 create table public.missions(id uuid primary key,workspace_id uuid,creator_workflow_mode text default 'legacy');
 create table public.mission_submissions(id uuid primary key,workspace_id uuid,mission_id uuid,creator_id uuid,status text,content_urls text[],reviewer_notes text,reviewed_at timestamptz);
+grant select on public.mission_submissions to service_role;
 create table public.creator_social_accounts(id uuid primary key,creator_id uuid,workspace_id uuid,sync_status text,api_synced_at timestamptz);
 create table public.assistant_conversations(id uuid primary key default gen_random_uuid(),creator_id uuid references auth.users(id),workspace text,started_at timestamptz default now(),last_message_at timestamptz default now());
 create table public.assistant_messages(id uuid primary key default gen_random_uuid(),conversation_id uuid references public.assistant_conversations(id),role text,content text,citations jsonb default '[]',tool_calls jsonb default '[]',created_at timestamptz default now());
@@ -40,6 +54,13 @@ insert into public.brand_users values('${staff}','${A}','synthetic-a@example.tes
 insert into public.missions values('${mission}','${A}','legacy');
 -- Historical invalid row exists BEFORE the new migration. Never rewrite it during migration.
 insert into public.mission_submissions values('${submission}','${A}','${mission}','${creator}','submitted',array['wwww'],'historical reason',null);
+${[...invalidAuthorityRows, ...inverseAuthorityRows].map(row => `insert into public.missions values('${row.mission}','${A}','legacy');
+insert into public.mission_submissions values('${row.submission}','${A}','${row.mission}','${creator}','submitted',array['${row.url}'],'historical malformed authority',null);`).join("\n")}
+alter table public.creators add column xp integer not null default 35;
+alter table public.mission_submissions add column xp_awarded integer not null default 35;
+alter table public.mission_submissions add column submission_data jsonb;
+alter table public.mission_submissions add column submitted_at timestamptz;
+alter table public.mission_submissions add column review_deadline timestamptz;
 `;
 async function value<T>(sql: string, params: unknown[] = []): Promise<T> {
   const result = await db.query<{ value: T }>(sql, params); return result.rows[0]?.value;
@@ -66,6 +87,12 @@ beforeAll(async () => {
   for (const file of ["20261022170454_audit_legacy_evidence.sql", "20261022170751_audit_crm_commands.sql", "20261022171111_audit_creator_queue.sql", "20261022171843_audit_assistant_requests.sql", "20261022182544_audit_legacy_review_notes.sql"]) {
     await db.exec(await readFile(`supabase/migrations/${file}`, "utf8"));
   }
+  const submissionSql = await readFile("supabase/migrations/20260805120000_review_hardening.sql", "utf8");
+  const submit = topLevelStatements(submissionSql).find((sql: string) => sql.startsWith("create or replace function public.submit_mission("));
+  expect(submit).toBeDefined();
+  await db.exec(submit);
+  await db.exec(await readFile("supabase/migrations/20261028140231_legacy_submission_xp_once.sql", "utf8"));
+  await db.exec(await readFile("supabase/migrations/20261028140709_legacy_evidence_url_authority.sql", "utf8"));
 }, 60000);
 beforeEach(async () => { await db.exec("begin"); });
 afterEach(async () => { await db?.exec("rollback"); });
@@ -86,6 +113,74 @@ describe("forward SQL contracts on an owned memory engine", () => {
     await db.query("update public.mission_submissions set content_urls=array['https://example.test/work'],status='submitted' where id=$1", [submission]);
     await db.query("update public.mission_submissions set status='approved' where id=$1", [submission]);
     expect(await value("select status as value from public.mission_submissions where id=$1", [submission])).toBe("approved");
+  });
+  it("resubmits corrected historical evidence without granting submission XP again", async () => {
+    await value("select public.request_legacy_evidence_correction($1,$2,$3,$4,0,'Replace the work URL') as value", [A, staff, submission, request]);
+    await db.query("select set_config('request.jwt.claim.sub',$1,true)", [creator]);
+    const result = await value<{ status: string; xp_awarded: number }>("select to_jsonb(public.submit_mission($1,array['https://example.test/corrected'], '{}'::jsonb)) as value", [mission]);
+    expect(result).toMatchObject({ status: "submitted", xp_awarded: 35 });
+    expect(await value("select xp as value from public.creators where id=$1", [creator])).toBe(35);
+  });
+  it("still grants the original 25 XP for a first legacy submission", async () => {
+    await db.query("update public.mission_submissions set status='joined',xp_awarded=10 where id=$1", [submission]);
+    await db.query("update public.creators set xp=10 where id=$1", [creator]);
+    await db.query("select set_config('request.jwt.claim.sub',$1,true)", [creator]);
+    const result = await value<{ status: string; xp_awarded: number }>("select to_jsonb(public.submit_mission($1,array['https://example.test/first'], '{}'::jsonb)) as value", [mission]);
+    expect(result).toMatchObject({ status: "submitted", xp_awarded: 35 });
+    expect(await value("select xp as value from public.creators where id=$1", [creator])).toBe(35);
+  });
+  it.each([
+    "https://example.test:65536/work", "https://example.test:99999/work", "https://[::::]/work",
+    "https://[127.0.0.1]/work", "https://exa[mple.test/work", "https://example.test]/work",
+    "https://exa<mple.test/work", "https://exa^mple.test/work", "https://exa|mple.test/work",
+    "https://example%2Ftest/work", "https://example%00test/work", "https://example%25test/work",
+    "https://example%GGtest/work", "https://example%fftest/work", "https://exa\u007fmple.test/work",
+    "https://256.1.1.1/work", "https://1.2.3.4.5/work", "https://4294967296/work",
+    "https://08.1.1.1/work", "https://1.2.65536/work", "https://0x100.1.1.1/work", "https://0x100000000/work",
+    "https://２５６.１.１.１/work",
+  ])("blocks malformed HTTP authority through the direct submission RPC: %s", async url => {
+    expect(() => new URL(url)).toThrow();
+    await db.query("update public.mission_submissions set status='joined',xp_awarded=10 where id=$1", [submission]);
+    await db.query("update public.creators set xp=10 where id=$1", [creator]);
+    await db.query("select set_config('request.jwt.claim.sub',$1,true)", [creator]);
+    await rejected("select public.submit_mission($1,$2,'{}'::jsonb)", [mission, [url]], "invalid_evidence");
+    expect(await value("select status as value from public.mission_submissions where id=$1", [submission])).toBe("joined");
+    expect(await value("select xp as value from public.creators where id=$1", [creator])).toBe(10);
+  });
+  it.each(invalidAuthorityRows)("can correct preserved historical malformed authority: $url", async row => {
+    expect(() => new URL(row.url)).toThrow();
+    const corrected = await value<{ status: string }>("select public.request_legacy_evidence_correction($1,$2,$3,$4,0,'Replace malformed URL') as value", [A, staff, row.submission, request]);
+    expect(corrected.status).toBe("joined");
+    await db.query("select set_config('request.jwt.claim.sub',$1,true)", [creator]);
+    expect(await value("select to_jsonb(public.submit_mission($1,array['https://example.test/corrected'], '{}'::jsonb)) as value", [row.mission])).toMatchObject({ status: "submitted", xp_awarded: 35 });
+    expect(await value("select xp as value from public.creators where id=$1", [creator])).toBe(35);
+  });
+  it.each(inverseAuthorityRows)("projects a SQL-only rejection for an authorized correction: $url", async row => {
+    expect(() => new URL(row.url)).not.toThrow();
+    await db.exec("set local role service_role");
+    expect(await value("select public.get_legacy_correction_evidence($1,$2) as value", [A, row.submission])).toEqual({ content_urls: [row.url], evidence_revision: 0, sql_valid: false });
+    expect(await value("select public.get_legacy_correction_evidence($1,$2) as value", [B, row.submission])).toBeNull();
+    const args = [A, staff, row.submission, request];
+    const command = "select public.request_legacy_evidence_correction($1,$2,$3,$4,0,'Replace rejected URL') as value";
+    const first = await value(command, args);
+    expect(first).toMatchObject({ status: "joined", revision: 1 });
+    expect(await value(command, args)).toEqual(first);
+    await db.exec("reset role");
+  });
+  it.each(["anon", "authenticated"])("does not expose the scoped correction projection to %s", async role => {
+    await db.exec(`set local role ${role}`);
+    await rejected("select public.get_legacy_correction_evidence($1,$2)", [A, submission], "permission denied");
+  });
+  it.each([
+    "https://example.test/work", "HTTP://Example.TEST:80/work?next=one#part", "https://example.test:0/work", "https://example.test:65535/work",
+    "http://127.0.0.1/work", "https://192.168.10.20:8443/work", "https://[::1]/work",
+    "https://[2001:db8::1]:443/work", "https://[::ffff:192.168.1.1]/work", "https://例子.測試/work",
+    "https://example%2Etest/work", "https://%E4%BE%8B%E5%AD%90.%E6%B8%AC%E8%A9%A6/work",
+    "https://127.1/work", "https://2130706433/work", "https://0177.0.0.1/work", "https://0x7f.1/work",
+    "https://0x/work", "https://0xg/work", "https://１２７．０．０．１/work",
+  ])("retains accepted ordinary HTTP evidence: %s", async url => {
+    expect(() => new URL(url)).not.toThrow();
+    expect(await value("select private.valid_legacy_evidence($1) as value", [[url]])).toBe(true);
   });
   it("rolls back review, note and receipt when the audit insert fails", async () => {
     await db.exec("create function private.inject_audit_failure() returns trigger language plpgsql as $$begin raise exception 'injected audit outage'; end;$$; create trigger synthetic_audit_fault before insert on public.operator_audit_events for each row execute function private.inject_audit_failure();");

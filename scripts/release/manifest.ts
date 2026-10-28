@@ -1032,6 +1032,40 @@ const REVIEWED_MIGRATIONS = [
     ],
     transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
   },
+  {
+    version: "20261028140231", name: "legacy_submission_xp_once", phase: "legacy_evidence",
+    dependsOn: ["20260805120000", "20261022182544"],
+    capabilities: [
+      "function:public.submit_mission",
+      "grant:authenticated.public.submit_mission(uuid,text[],jsonb)",
+      "grant:service_role.public.submit_mission(uuid,text[],jsonb)",
+      "grant-removed:anon.public.submit_mission(uuid,text[],jsonb)",
+      "grant-removed:public.public.submit_mission(uuid,text[],jsonb)",
+    ],
+    transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
+  },
+  {
+    version: "20261028140709", name: "legacy_evidence_url_authority", phase: "legacy_evidence",
+    dependsOn: ["20261022170454", "20261022182544"],
+    capabilities: [
+      "function:private.valid_legacy_evidence",
+      "function:public.request_legacy_evidence_correction",
+      "function:public.get_legacy_correction_evidence",
+      "grant:service_role.private.valid_legacy_evidence(text[])",
+      "grant:service_role.public.request_legacy_evidence_correction(uuid,uuid,uuid,uuid,bigint,text)",
+      "grant:service_role.public.get_legacy_correction_evidence(uuid,uuid)",
+      "grant-removed:authenticated.private.valid_legacy_evidence(text[])",
+      "grant-removed:anon.private.valid_legacy_evidence(text[])",
+      "grant-removed:public.private.valid_legacy_evidence(text[])",
+      "grant-removed:authenticated.public.request_legacy_evidence_correction(uuid,uuid,uuid,uuid,bigint,text)",
+      "grant-removed:anon.public.request_legacy_evidence_correction(uuid,uuid,uuid,uuid,bigint,text)",
+      "grant-removed:public.public.request_legacy_evidence_correction(uuid,uuid,uuid,uuid,bigint,text)",
+      "grant-removed:authenticated.public.get_legacy_correction_evidence(uuid,uuid)",
+      "grant-removed:anon.public.get_legacy_correction_evidence(uuid,uuid)",
+      "grant-removed:public.public.get_legacy_correction_evidence(uuid,uuid)",
+    ],
+    transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
+  },
 ] as const satisfies readonly ReviewedMigration[];
 
 const NON_RELEASE_TIMESTAMP_MIGRATIONS = new Set([

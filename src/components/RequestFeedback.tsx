@@ -1,7 +1,51 @@
+import { useEffect, useRef, useState } from "react";
+import { useQueryClient, type QueryKey } from "@tanstack/react-query";
+
 export function canShowPreviousData(error: unknown): boolean {
   const status = typeof error === "object" && error !== null && "status" in error ? error.status : null;
   return status !== 401 && status !== 403 && status !== 404;
 }
+// Keep denial evidence with the cached query, including across page remounts.
+// A later outage is not evidence that access was restored.
+const deniedQueries = new WeakMap<object, number>();
+type CachedRead = { data?: unknown; error?: unknown; isError?: boolean; isSuccess?: boolean };
+export function useCanShowPreviousData(read: CachedRead, queryKey: QueryKey, actionError?: unknown): boolean {
+  const client = useQueryClient(), cache = client.getQueryCache();
+  const query = cache.find({ queryKey, exact: true });
+  const [denied, setDenied] = useState(false);
+  const seenActionDenial = useRef<unknown>(null);
+  const deniedRead = !canShowPreviousData(read.error);
+  const successfulRead = !read.error && (read.isSuccess ?? (!read.isError && read.data !== undefined));
+  const newActionDenial = !canShowPreviousData(actionError) && actionError !== seenActionDenial.current;
+  useEffect(() => {
+    const record = (blocked: boolean, successful: boolean) => {
+      if (blocked) {
+        if (query) deniedQueries.set(query, query.state.dataUpdateCount);
+        setDenied(true);
+      } else if (successful) {
+        const barrier = query && deniedQueries.get(query);
+        if (query && barrier !== undefined && query.state.dataUpdateCount <= barrier) return;
+        if (query) deniedQueries.delete(query);
+        setDenied(false);
+      }
+    };
+    record(deniedRead, successfulRead);
+    return cache.subscribe(event => {
+      if (event.type !== "updated" || event.query !== query) return;
+      record(!canShowPreviousData(query.state.error), query.state.status === "success");
+    });
+  }, [cache, query, deniedRead, successfulRead]);
+  useEffect(() => {
+    if (!newActionDenial) return;
+    seenActionDenial.current = actionError;
+    if (query) deniedQueries.set(query, query.state.dataUpdateCount);
+    setDenied(true);
+  }, [actionError, newActionDenial, query]);
+  const barrier = query && deniedQueries.get(query);
+  const authorizedRead = successfulRead && (!query || barrier === undefined || query.state.dataUpdateCount > barrier);
+  return !deniedRead && !newActionDenial && (authorizedRead || !(denied || barrier !== undefined));
+}
+
 export function RequestFeedback({ error, retry, stale = false, summary }: { error: unknown; retry?: () => void; stale?: boolean; summary?: string }) {
   if (!error) return null;
   const status = typeof error === "object" && error !== null && "status" in error ? error.status : null;

@@ -200,7 +200,26 @@ adminRoutes.post("/submissions/:id/request-correction", async (c) => {
   if (!body.note?.trim() || !body.request_id || !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(body.request_id)
     || !Number.isSafeInteger(body.expected_revision) || body.expected_revision! < 0) return c.json({ error: "A reason, request UUID and revision are required", code: "bad_request" }, 400);
   const scope = c.get("authorizedWorkspace");
-  const result = await serviceClient().rpc("request_legacy_evidence_correction", { p_workspace: scope.workspaceId, p_operator: scope.userId,
+  const svc = serviceClient();
+  try {
+    // Existing receipts must reach the locked command for exact replay/payload
+    // comparison even after replacement URLs and a newer revision were saved.
+    const receipt = await svc.from("legacy_evidence_corrections").select("request_id")
+      .eq("workspace_id", scope.workspaceId).eq("operator_id", scope.userId).eq("request_id", body.request_id).maybeSingle();
+    if (receipt.error) return c.json({ error: "Correction request unavailable; retry the same request", code: "correction_unavailable" }, 503);
+    if (!receipt.data) {
+      const evidence = await svc.rpc("get_legacy_correction_evidence", { p_workspace: scope.workspaceId, p_submission: c.req.param("id") });
+      if (evidence.error) return c.json({ error: "Evidence lookup unavailable; retry the same request", code: "correction_unavailable" }, 503);
+      if (!evidence.data) return c.json({ error: "Not found", code: "not_found" }, 404);
+      if (typeof evidence.data.sql_valid !== "boolean" || !Number.isSafeInteger(evidence.data.evidence_revision)) return c.json({ error: "Evidence validation unavailable; retry the same request", code: "correction_unavailable" }, 503);
+      // A changed revision can mean the original request just committed after
+      // the receipt read. The locked command checks its receipt before staleness.
+      if (evidence.data.evidence_revision === body.expected_revision && evidence.data.sql_valid && validateSubmissionEvidence(evidence.data.content_urls).ok) return c.json({ error: "Stored work URLs are valid; this correction is unavailable", code: "wrong_state" }, 409);
+    }
+  } catch {
+    return c.json({ error: "Correction request unavailable; retry the same request", code: "correction_unavailable" }, 503);
+  }
+  const result = await svc.rpc("request_legacy_evidence_correction", { p_workspace: scope.workspaceId, p_operator: scope.userId,
     p_submission: c.req.param("id"), p_request: body.request_id, p_expected_revision: body.expected_revision, p_note: body.note.trim() });
   if (result.error) {
     const code = result.error.message;
