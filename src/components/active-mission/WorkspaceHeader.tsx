@@ -1,6 +1,7 @@
 import type { ActiveMissionNextAction, ActiveMissionWorkspace } from "@/lib/activeMission";
 import { useI18n } from "@/lib/i18n";
 import { creatorRewardExperience } from "@/lib/rewardHandoff";
+import { formatHongKongDateTime } from "@/lib/creatorFormatting";
 
 type WorkspaceHeaderProps = {
   workspace: ActiveMissionWorkspace;
@@ -67,10 +68,7 @@ const BLOCK_REASON_KEYS: Record<string, string> = {
 };
 
 function formatDate(value: string, locale: string): string {
-  const parsed = new Date(value);
-  return Number.isNaN(parsed.getTime()) ? value : new Intl.DateTimeFormat(locale, {
-    dateStyle: "medium", timeStyle: "short", timeZone: "UTC",
-  }).format(parsed);
+  return formatHongKongDateTime(value, locale);
 }
 
 export function WorkspaceHeader({ workspace, nextAction, onPrimaryAction }: WorkspaceHeaderProps) {

@@ -1,6 +1,7 @@
 import { useId } from "react";
 import type { MissionWorkflowEvent } from "@/lib/activeMission";
 import { useI18n } from "@/lib/i18n";
+import { formatHongKongDateTime } from "@/lib/creatorFormatting";
 
 export type MissionVersionView = {
   id: string;
@@ -32,10 +33,7 @@ const EVENT_KEYS: Record<string, string> = {
 };
 
 function displayTime(value: string, locale: string): string {
-  const parsed = new Date(value);
-  return Number.isNaN(parsed.getTime()) ? value : new Intl.DateTimeFormat(locale, {
-    dateStyle: "medium", timeStyle: "medium", timeZone: "UTC",
-  }).format(parsed);
+  return formatHongKongDateTime(value, locale, true);
 }
 
 export function VersionTimeline({ versions, events }: VersionTimelineProps) {

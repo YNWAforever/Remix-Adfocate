@@ -4,11 +4,12 @@ import { useRealtimeBalance } from "@/lib/useRealtimeBalance";
 import { PointsBalanceCard } from "@/components/PointsBalanceCard";
 import { SkeletonCard } from "@/components/SkeletonCard";
 import { useI18n } from "@/lib/i18n";
+import { formatCreatorDate } from "@/lib/creatorFormatting";
 
 export const Route = createFileRoute("/_app/wallet")({ component: Wallet });
 
 function Wallet() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const me = useMe();
   const balance = useBalance();
   const history = usePointHistory();
@@ -32,7 +33,7 @@ function Wallet() {
               <li key={tx.id} className="pastel-card flex items-center justify-between rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3">
                 <div>
                   <p className="font-heading font-semibold">{tx.description ?? tx.type}</p>
-                  <p className="text-xs text-[var(--color-soft-ink)]">{tx.created_at.slice(0, 10)}</p>
+                  <p className="text-xs text-[var(--color-soft-ink)]">{formatCreatorDate(tx.created_at, lang)}</p>
                 </div>
                 <span className={`font-display font-bold ${tx.delta >= 0 ? "text-[var(--color-ink)]" : "text-[var(--color-magenta)]"}`}>{tx.delta >= 0 ? "+" : ""}{tx.delta}</span>
               </li>
@@ -62,7 +63,7 @@ function Wallet() {
               <li key={tx.id} className="pastel-card flex items-center justify-between rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3">
                 <div>
                   <p className="font-heading font-semibold">{tx.description ?? tx.type}</p>
-                  <p className="text-xs text-[var(--color-soft-ink)]">{tx.created_at.slice(0, 10)}</p>
+                  <p className="text-xs text-[var(--color-soft-ink)]">{formatCreatorDate(tx.created_at, lang)}</p>
                 </div>
                 <span className="font-display font-bold text-[var(--color-ink)]">+HK${tx.amount.toFixed(2)}</span>
               </li>

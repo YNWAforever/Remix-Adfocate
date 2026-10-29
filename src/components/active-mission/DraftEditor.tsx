@@ -14,6 +14,7 @@ import {
   ReviewFeedback,
   type RequiredChangeView,
 } from "./ReviewFeedback";
+import { formatHongKongDateTime } from "@/lib/creatorFormatting";
 
 type DraftSaveResult = void | MissionDraft | { draft: MissionDraft };
 
@@ -55,8 +56,7 @@ const DEFAULT_MAX_FILE_SIZE_BYTES = 20 * 1024 * 1024;
 const MAX_ASSET_COUNT = 5;
 
 function displayTime(value: string, locale: string): string {
-  const parsed = new Date(value);
-  return Number.isNaN(parsed.getTime()) ? value : new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeStyle: "short", timeZone: "UTC" }).format(parsed);
+  return formatHongKongDateTime(value, locale);
 }
 
 function revisionFrom(result: DraftSaveResult, fallback: number): number {

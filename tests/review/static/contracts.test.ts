@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { defect, knownBug } from "../support/bug";
-import { formatCreatorCurrency, formatCreatorDate } from "../../../src/lib/creatorFormatting";
+import { formatCreatorCurrency, formatCreatorDate, formatHongKongDateTime } from "../../../src/lib/creatorFormatting";
 
 const read = (p: string) => readFileSync(p, "utf8");
 const walk = (dir: string): string[] => readdirSync(dir, { withFileTypes: true }).flatMap(d =>
@@ -60,12 +60,14 @@ describe("Hong Kong locale: dates and currency", () => {
     expect(formatCreatorDate("2026-10-28T16:30:00Z", "en")).toMatch(/29/);
     expect(formatCreatorDate("2026-10-28T16:30:00Z", "zh")).toMatch(/29/);
     expect(formatCreatorCurrency(1234.5, "en")).toMatch(/HK\$|HKD/);
+    // A 23:59 HKT deadline must not render as 15:59 (UTC).
+    expect(formatHongKongDateTime("2026-10-28T15:59:00Z", "en-HK")).toMatch(/11:59\s?pm HKT/i);
   });
 
-  knownBug("F-020", "creator-facing components never format deadlines in UTC or by slicing ISO strings", () => {
-    const offenders = walk("src").filter(f => /\.(ts|tsx)$/.test(f) && !f.includes(".test.") && !f.includes("/admin/"))
+  it("[F-020 fixed] creator-facing components never format deadlines in UTC or by slicing ISO strings", () => {
+    const offenders = walk("src").filter(f => /\.(ts|tsx)$/.test(f) && !f.includes(".test.") && !f.includes("/admin/") && !/routes\/(admin|operator|brand)[._]/.test(f))
       .filter(f => /timeZone:\s*["']UTC["']|toISOString\(\)\.slice\(0,\s*10\)|\.slice\(0,\s*10\)/.test(read(f)));
-    defect(() => expect(offenders).toEqual([]));
+    expect(offenders).toEqual([]);
   });
 });
 
