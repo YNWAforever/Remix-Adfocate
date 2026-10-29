@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import type { Env } from "../app.js";
 import { makeUserClient } from "../lib/supabase.js";
+import { dbError } from "../lib/httpErrors.js";
 
 export const workspaceRoutes = new Hono<Env>();
 
@@ -11,6 +12,6 @@ workspaceRoutes.get("/", async (c) => {
     .select("slug, name, theme")
     .eq("id", c.get("workspaceId"))
     .single();
-  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  if (error) return dbError(c, error, "db_error", 500);
   return c.json(data);
 });

@@ -127,7 +127,7 @@ describe("failure mid-flow", () => {
     expect(Number(sql(`select balance from public.point_balances where creator_id=${q(c.id)} and workspace_id=${q(ws.id)};`))).toBe(0);
   });
 
-  knownBug("F-032", "an RPC failure returns a generic message, not the raw database error text", async () => {
+  it("[F-032 fixed] a budget failure is a clear 409 and database errors never echo Postgres text", async () => {
     const ws = newWorkspace();
     const op = await newStaff("operator", ws.id);
     const c = await newCreator();
@@ -139,8 +139,12 @@ describe("failure mid-flow", () => {
     sql(`insert into public.mission_submissions(mission_id,creator_id,workspace_id,status,content_urls) values (${q(m.id)},${q(c.id)},${q(ws.id)},'submitted',array['https://www.instagram.com/p/budget2/']);`);
     const sid = sql(`select id from public.mission_submissions where mission_id=${q(m.id)};`);
     const res = await api("POST", `/admin/submissions/${sid}/approve`, { jwt: op.jwt, ws: null, body: {} });
-    expect(res.status).toBeGreaterThanOrEqual(400);
-    defect(() => expect(res.body.code).not.toBe("rpc_error"));
+    expect(res.status).toBe(409);
+    expect(res.body.code).toBe("insufficient_budget");
+    // Force a PostgREST error (non-UUID id) on a creator route: generic message, stable code.
+    const bad = await api("POST", "/notifications/read", { jwt: c.jwt, body: { ids: ["not-a-uuid"] } });
+    expect(bad.status).toBeGreaterThanOrEqual(400);
+    expect(JSON.stringify(bad.body)).not.toMatch(/uuid|syntax|relation|column|function/i);
   });
 
   knownBug("F-021", "bootstrap reports failure when a balance row cannot be created", async () => {

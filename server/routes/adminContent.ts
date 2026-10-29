@@ -8,6 +8,7 @@ import {
   validateContentInput, validateContentEdit, canTransition, isPublishable,
   slugify, uniqueSlug, isAllowedImageUrl,
 } from "../lib/contentAuthoring.js";
+import { dbError } from "../lib/httpErrors.js";
 
 export const adminContentRoutes = new Hono<AdminEnv>();
 
@@ -37,14 +38,14 @@ adminContentRoutes.get("/content", async (c) => {
   const search = c.req.query("q"); if (search) q = q.ilike("title_zh", `%${search}%`);
   q = q.order("updated_at", { ascending: false }).range((page - 1) * pageSize, page * pageSize - 1);
   const { data, error, count } = await q;
-  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  if (error) return dbError(c, error, "db_error", 500);
   return c.json({ items: data ?? [], page, pageSize, total: count ?? 0 });
 });
 
 // ---- get one (incl. drafts) ----
 adminContentRoutes.get("/content/:id", async (c) => {
   const { data, error } = await serviceClient().from("content_items").select(COLS).eq("id", c.req.param("id")).maybeSingle();
-  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  if (error) return dbError(c, error, "db_error", 500);
   if (!data) return c.json({ error: "not found", code: "not_found" }, 404);
   return c.json({ item: data });
 });
@@ -64,7 +65,7 @@ adminContentRoutes.post("/content", async (c) => {
   const row: Record<string, unknown> = { slug, status: "draft", author_id: c.get("staff").userId };
   for (const k of EDITABLE) if (k in body) row[k] = body[k];
   const { data, error } = await svc.from("content_items").insert(row).select(COLS).single();
-  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  if (error) return dbError(c, error, "db_error", 500);
   return c.json({ item: data }, 201);
 });
 
@@ -79,7 +80,7 @@ adminContentRoutes.patch("/content/:id", async (c) => {
 
   const svc = serviceClient();
   const { data: cur, error: e0 } = await svc.from("content_items").select("status, updated_at").eq("id", id).maybeSingle();
-  if (e0) return c.json({ error: e0.message, code: "db_error" }, 500);
+  if (e0) return dbError(c, e0, "db_error", 500);
   if (!cur) return c.json({ error: "not found", code: "not_found" }, 404);
   if (body.updated_at && body.updated_at !== cur.updated_at)
     return c.json({ error: "stale", code: "conflict" }, 409);
@@ -91,7 +92,7 @@ adminContentRoutes.patch("/content/:id", async (c) => {
     patch.slug = slugify(body.slug);
   }
   const { data, error } = await svc.from("content_items").update(patch).eq("id", id).select(COLS).single();
-  if (error) return c.json({ error: error.message, code: error.code === "23505" ? "conflict" : "db_error" }, error.code === "23505" ? 409 : 500);
+  if (error) return error.code === "23505" ? c.json({ error: "此網址代稱已被使用 / This slug is already in use", code: "conflict" }, 409) : dbError(c, error, "db_error", 500);
   return c.json({ item: data });
 });
 
@@ -100,13 +101,13 @@ async function transition(c: import("hono").Context<AdminEnv>, to: ContentStatus
   const id = c.req.param("id");
   const svc = serviceClient();
   const { data: cur, error: e0 } = await svc.from("content_items").select("status, title_zh, body_zh").eq("id", id).maybeSingle();
-  if (e0) return c.json({ error: e0.message, code: "db_error" }, 500);
+  if (e0) return dbError(c, e0, "db_error", 500);
   if (!cur) return c.json({ error: "not found", code: "not_found" }, 404);
   if (!canTransition(cur.status as ContentStatus, to)) return c.json({ error: "bad transition", code: "conflict" }, 409);
   if (to === "published" && !isPublishable(cur as { title_zh: string; body_zh: string }))
     return c.json({ error: "needs title + body", code: "validation_error" }, 422);
   const { data, error } = await svc.from("content_items").update({ status: to, ...extra }).eq("id", id).select(COLS).single();
-  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  if (error) return dbError(c, error, "db_error", 500);
   return c.json({ item: data });
 }
 
@@ -129,19 +130,19 @@ adminContentRoutes.delete("/content/:id", async (c) => {
   if (!cur) return c.json({ error: "not found", code: "not_found" }, 404);
   if (cur.status !== "draft" || cur.published_at) return c.json({ error: "archive instead", code: "conflict" }, 409);
   const { error } = await svc.from("content_items").delete().eq("id", id);
-  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  if (error) return dbError(c, error, "db_error", 500);
   return c.json({ ok: true });
 });
 
 // ---- taxonomy ----
 adminContentRoutes.get("/content-categories", async (c) => {
   const { data, error } = await serviceClient().from("content_categories").select("id, slug, label_zh, label_en, sort").order("sort");
-  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  if (error) return dbError(c, error, "db_error", 500);
   return c.json({ categories: data ?? [] });
 });
 adminContentRoutes.get("/content-tags", async (c) => {
   const { data, error } = await serviceClient().from("content_tags").select("id, slug, label_zh, label_en").order("label_zh");
-  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  if (error) return dbError(c, error, "db_error", 500);
   return c.json({ tags: data ?? [] });
 });
 
@@ -154,7 +155,7 @@ adminContentRoutes.post("/content/media", async (c) => {
   const path = `images/${crypto.randomUUID()}.${ext}`;
   const svc = serviceClient();
   const { error } = await svc.storage.from("content-media").upload(path, await file.arrayBuffer(), { contentType: file.type, upsert: false });
-  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  if (error) return dbError(c, error, "db_error", 500);
   const { data } = svc.storage.from("content-media").getPublicUrl(path);
   return c.json({ url: data.publicUrl });
 });

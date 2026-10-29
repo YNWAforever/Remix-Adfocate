@@ -31,7 +31,7 @@ describe("creator inputs", () => {
     defect(() => expect(put.status).toBe(400));
   });
 
-  knownBug("F-028", "malformed JSON on submit returns 400, not 500", async () => {
+  it("[F-028 fixed via F-032] malformed JSON on submit returns 400, not 500", async () => {
     const c = await newCreator();
     const m = newMission();
     await api("POST", `/missions/${m.slug}/join`, { jwt: c.jwt });
@@ -39,7 +39,7 @@ describe("creator inputs", () => {
     const res = await createApp().app.request("http://local/api/missions/" + m.slug + "/submit", {
       method: "PUT", body: "{not json", headers: { Authorization: `Bearer ${c.jwt}`, "X-Workspace-Slug": "demo", "Content-Type": "application/json" },
     });
-    defect(() => expect(res.status).toBe(400));
+    expect(res.status).toBe(400);
   });
 
   it("evidence URLs: javascript:, credentials, empty and non-URL values are rejected", async () => {

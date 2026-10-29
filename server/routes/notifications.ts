@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import type { Env } from "../app.js";
 import { makeUserClient } from "../lib/supabase.js";
+import { dbError } from "../lib/httpErrors.js";
 
 export const notificationRoutes = new Hono<Env>();
 
@@ -28,8 +29,8 @@ notificationRoutes.get("/", async (c) => {
     q,
     supabase.from("notifications").select("id", { count: "exact", head: true }).eq("user_id", userId).is("read_at", null),
   ]);
-  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
-  if (cErr) return c.json({ error: cErr.message, code: "db_error" }, 500);
+  if (error) return dbError(c, error, "db_error", 500);
+  if (cErr) return dbError(c, cErr, "db_error", 500);
   return c.json({ items: items ?? [], unread_count: count ?? 0 });
 });
 
@@ -39,7 +40,7 @@ notificationRoutes.get("/unread-count", async (c) => {
   const userId = c.get("userId");
   const { count, error } = await supabase
     .from("notifications").select("id", { count: "exact", head: true }).eq("user_id", userId).is("read_at", null);
-  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  if (error) return dbError(c, error, "db_error", 500);
   return c.json({ count: count ?? 0 });
 });
 
@@ -53,7 +54,7 @@ notificationRoutes.post("/read", async (c) => {
   const { data, error } = await supabase
     .from("notifications").update({ read_at: new Date().toISOString() })
     .eq("user_id", userId).in("id", ids).is("read_at", null).select("id");
-  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  if (error) return dbError(c, error, "db_error", 500);
   return c.json({ updated: data?.length ?? 0 });  // actual rows flipped, not the input count
 });
 
@@ -64,6 +65,6 @@ notificationRoutes.post("/read-all", async (c) => {
   const { error } = await supabase
     .from("notifications").update({ read_at: new Date().toISOString() })
     .eq("user_id", userId).is("read_at", null);
-  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  if (error) return dbError(c, error, "db_error", 500);
   return c.json({ ok: true });
 });

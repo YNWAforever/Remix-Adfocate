@@ -1,4 +1,4 @@
-import { Hono } from "hono";
+import { Hono, type Context } from "hono";
 import type { Env } from "../app.js";
 import { ProfileMediaError, ownedAvatarPath, validateAvatarUpload } from "../lib/profileMedia/service.js";
 import { PROFILE_MEDIA_BUCKET } from "../lib/profileMedia/types.js";
@@ -11,16 +11,17 @@ import {
   updateProfileMediaLink,
 } from "../lib/profileMedia/repo.js";
 import { serviceClient } from "../lib/supabase.js";
+import { dbError } from "../lib/httpErrors.js";
 
 export const profileMediaRoutes = new Hono<Env>();
 
-function errorResponse(c: { json: (body: unknown, status?: number) => Response }, error: unknown) {
+function errorResponse(c: Context<Env>, error: unknown) {
   if (error instanceof ProfileMediaError) {
-    const status = error.code === "not_found" ? 404 : error.code === "db_error" ? 500 : 400;
-    return c.json({ error: error.message, code: error.code }, status);
+    if (error.code === "db_error") return dbError(c, error, "db_error", 500);
+    return c.json({ error: error.message, code: error.code }, error.code === "not_found" ? 404 : 400);
   }
   const message = error instanceof Error ? error.message : "Profile media request failed";
-  return c.json({ error: message, code: "db_error" }, 500);
+  return dbError(c, { message }, "db_error", 500);
 }
 
 profileMediaRoutes.get("/", async (c) => {

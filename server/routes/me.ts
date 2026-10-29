@@ -9,6 +9,7 @@ import { effectiveSocialHandles, privateSocialTrustSummary } from "../lib/social
 import { createPublicToken, hashPublicToken } from "../lib/tokens.js";
 import { isTrusted, effectiveLevel } from "../lib/trust.js";
 import { projectSocialAccounts } from "../../src/lib/socialAccountPresentation.js";
+import { dbError } from "../lib/httpErrors.js";
 
 /** Supabase stores phone digits without a leading '+'. Re-add it for E.164 display. */
 function toE164(phone: string | null | undefined): string | null {
@@ -118,7 +119,7 @@ meRoutes.get("/", async (c) => {
     .select(ME_PROJECTION)
     .eq("id", c.get("userId"))
     .single();
-  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  if (error) return dbError(c, error, "db_error", 500);
 
   const trusted = await isTrusted(supabase, c.get("userId"), (data as { xp?: number }).xp);
   let socialAccounts;
@@ -157,7 +158,7 @@ meRoutes.put("/profile", async (c) => {
       .select(ME_PROJECTION)
       .eq("id", c.get("userId"))
       .single();
-    if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+    if (error) return dbError(c, error, "db_error", 500);
     return c.json(data);
   }
 
@@ -167,7 +168,7 @@ meRoutes.put("/profile", async (c) => {
     .eq("id", c.get("userId"))
     .select(ME_PROJECTION)
     .single();
-  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  if (error) return dbError(c, error, "db_error", 500);
   if (body.social_handles !== undefined) await persistScores(c.get("userId"));
   return c.json(data);
 });
@@ -187,7 +188,7 @@ meRoutes.post("/avatar/from-social", async (c) => {
       .select(ME_PROJECTION)
       .eq("id", c.get("userId"))
       .single();
-    if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+    if (error) return dbError(c, error, "db_error", 500);
 
     return c.json({ ...data, avatar_url: avatarUrl });
   } catch (error) {
@@ -195,7 +196,7 @@ meRoutes.post("/avatar/from-social", async (c) => {
     if (code === "not_found") return c.json({ error: "Social account not found", code }, 404);
     if (code === "no_avatar") return c.json({ error: "No scanned avatar available", code }, 422);
     const message = error instanceof Error ? error.message : "Failed to select avatar";
-    return c.json({ error: message, code: "db_error" }, 500);
+    return dbError(c, { message }, "db_error", 500);
   }
 });
 
@@ -215,26 +216,26 @@ meRoutes.get("/passport", async (c) => {
     .select("level, xp, social_handles")
     .eq("id", userId)
     .single();
-  if (cErr) return c.json({ error: cErr.message, code: "db_error" }, 500);
+  if (cErr) return dbError(c, cErr, "db_error", 500);
 
   const { data: subs, error: sErr } = await supabase
     .from("mission_submissions")
     .select("status, quality_rating")
     .eq("creator_id", userId);
-  if (sErr) return c.json({ error: sErr.message, code: "db_error" }, 500);
+  if (sErr) return dbError(c, sErr, "db_error", 500);
 
   const { count: referredCount, error: rErr } = await serviceClient()
     .from("creators")
     .select("id", { count: "exact", head: true })
     .eq("referred_by", userId);
-  if (rErr) return c.json({ error: rErr.message, code: "db_error" }, 500);
+  if (rErr) return dbError(c, rErr, "db_error", 500);
 
   let syncedAccounts;
   try {
     syncedAccounts = await listSocialAccounts(serviceClient(), userId);
   } catch (err) {
     const message = err instanceof Error ? err.message : "Failed to load social accounts";
-    return c.json({ error: message, code: "db_error" }, 500);
+    return dbError(c, { message }, "db_error", 500);
   }
   const socialHandles = effectiveSocialHandles({
     syncedAccounts,
@@ -274,7 +275,7 @@ meRoutes.post("/passport/share", async (c) => {
       },
       { onConflict: "creator_id" },
     );
-  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  if (error) return dbError(c, error, "db_error", 500);
   return c.json({ token, publicUrl: `/passport/${token}` });
 });
 
@@ -283,7 +284,7 @@ meRoutes.delete("/passport/share", async (c) => {
     .from("creator_public_passports")
     .update({ enabled: false, revoked_at: new Date().toISOString() })
     .eq("creator_id", c.get("userId"));
-  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  if (error) return dbError(c, error, "db_error", 500);
   return c.json({ revoked: true });
 });
 
@@ -300,7 +301,7 @@ meRoutes.post("/level-seen", async (c) => {
     .select("level, xp")
     .eq("id", c.get("userId"))
     .single();
-  if (readErr) return c.json({ error: readErr.message, code: "db_error" }, 500);
+  if (readErr) return dbError(c, readErr, "db_error", 500);
 
   const trusted = await isTrusted(supabase, c.get("userId"), (current as { xp?: number }).xp);
   const seen = effectiveLevel((current as { level?: string }).level, trusted);
@@ -311,7 +312,7 @@ meRoutes.post("/level-seen", async (c) => {
     .eq("id", c.get("userId"))
     .select(ME_PROJECTION)
     .single();
-  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  if (error) return dbError(c, error, "db_error", 500);
   return c.json({
     ...data,
     is_trusted: trusted,

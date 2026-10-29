@@ -8,6 +8,7 @@ import {
   type AcademyInput, type AcademyEditInput, type AcademyStatus,
   validateAcademyInput, validateAcademyEdit,
 } from "../lib/academyAuthoring.js";
+import { dbError } from "../lib/httpErrors.js";
 
 export const adminAcademyRoutes = new Hono<AdminEnv>();
 adminAcademyRoutes.route("/", adminAcademyLessonsRoutes);
@@ -29,14 +30,14 @@ adminAcademyRoutes.get("/academy", async (c) => {
   const status = c.req.query("status"); if (status) q = q.eq("status", status);
   q = q.order("kind").order("sort");
   const { data, error } = await q;
-  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  if (error) return dbError(c, error, "db_error", 500);
   return c.json({ items: data ?? [] });
 });
 
 // ---- get one (incl. drafts) ----
 adminAcademyRoutes.get("/academy/:id", async (c) => {
   const { data, error } = await serviceClient().from("academy_content").select(COLS).eq("id", c.req.param("id")).maybeSingle();
-  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  if (error) return dbError(c, error, "db_error", 500);
   if (!data) return c.json({ error: "not found", code: "not_found" }, 404);
   return c.json({ item: data });
 });
@@ -51,7 +52,7 @@ adminAcademyRoutes.post("/academy", async (c) => {
   if (!row.slug) return c.json({ error: "slug required", code: "validation_error", fields: { slug: "請輸入 slug" } }, 422);
   for (const k of EDITABLE) if (k in body) row[k] = body[k];
   const { data, error } = await svc.from("academy_content").insert(row).select(COLS).single();
-  if (error) return c.json({ error: error.message, code: error.code === "23505" ? "conflict" : "db_error" }, error.code === "23505" ? 409 : 500);
+  if (error) return error.code === "23505" ? c.json({ error: "此網址代稱已被使用 / This slug is already in use", code: "conflict" }, 409) : dbError(c, error, "db_error", 500);
   return c.json({ item: data }, 201);
 });
 
@@ -63,7 +64,7 @@ adminAcademyRoutes.patch("/academy/:id", async (c) => {
   if (Object.keys(errors).length) return c.json({ error: "invalid", code: "validation_error", fields: errors }, 422);
   const svc = serviceClient();
   const { data: cur, error: e0 } = await svc.from("academy_content").select("status, updated_at").eq("id", id).maybeSingle();
-  if (e0) return c.json({ error: e0.message, code: "db_error" }, 500);
+  if (e0) return dbError(c, e0, "db_error", 500);
   if (!cur) return c.json({ error: "not found", code: "not_found" }, 404);
   if (body.updated_at && body.updated_at !== cur.updated_at) return c.json({ error: "stale", code: "conflict" }, 409);
   const patch: Record<string, unknown> = {};
@@ -73,7 +74,7 @@ adminAcademyRoutes.patch("/academy/:id", async (c) => {
     patch.slug = body.slug.trim();
   }
   const { data, error } = await svc.from("academy_content").update(patch).eq("id", id).select(COLS).single();
-  if (error) return c.json({ error: error.message, code: error.code === "23505" ? "conflict" : "db_error" }, error.code === "23505" ? 409 : 500);
+  if (error) return error.code === "23505" ? c.json({ error: "此網址代稱已被使用 / This slug is already in use", code: "conflict" }, 409) : dbError(c, error, "db_error", 500);
   return c.json({ item: data });
 });
 
@@ -88,12 +89,12 @@ async function transition(c: import("hono").Context<AdminEnv>, to: AcademyStatus
   const id = c.req.param("id");
   const svc = serviceClient();
   const { data: cur, error: e0 } = await svc.from("academy_content").select("status, title_zh").eq("id", id).maybeSingle();
-  if (e0) return c.json({ error: e0.message, code: "db_error" }, 500);
+  if (e0) return dbError(c, e0, "db_error", 500);
   if (!cur) return c.json({ error: "not found", code: "not_found" }, 404);
   if (!STATUS_NEXT[cur.status as AcademyStatus]?.includes(to)) return c.json({ error: "bad transition", code: "conflict" }, 409);
   if (to === "published" && !(cur.title_zh && String(cur.title_zh).trim())) return c.json({ error: "needs title", code: "validation_error" }, 422);
   const { data, error } = await svc.from("academy_content").update({ status: to, ...extra }).eq("id", id).select(COLS).single();
-  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  if (error) return dbError(c, error, "db_error", 500);
   return c.json({ item: data });
 }
 
@@ -109,6 +110,6 @@ adminAcademyRoutes.delete("/academy/:id", async (c) => {
   if (!cur) return c.json({ error: "not found", code: "not_found" }, 404);
   if (cur.status !== "draft" || cur.published_at) return c.json({ error: "archive instead", code: "conflict" }, 409);
   const { error } = await svc.from("academy_content").delete().eq("id", id);
-  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  if (error) return dbError(c, error, "db_error", 500);
   return c.json({ ok: true });
 });

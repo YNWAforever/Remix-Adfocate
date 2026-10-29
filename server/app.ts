@@ -1,4 +1,6 @@
 import { Hono } from "hono";
+import { HTTPException } from "hono/http-exception";
+import { GENERIC_ERROR, logServerError } from "./lib/httpErrors.js";
 import { workspaceAuth } from "./middleware/workspace.js";
 import { workspaceRoutes } from "./routes/workspace.js";
 import { meBootstrap, meRoutes } from "./routes/me.js";
@@ -29,6 +31,14 @@ export type Env = {
 export function createApp() {
   const app = new Hono<Env>().basePath("/api");
   app.get("/health", (c) => c.json({ ok: true }));
+  // Last resort for unhandled exceptions: structured log, generic JSON body. A malformed JSON
+  // request body (c.req.json() SyntaxError) is the client's fault, so it answers 400.
+  app.onError((err, c) => {
+    if (err instanceof SyntaxError) return c.json({ error: "Malformed JSON body", code: "bad_json" }, 400);
+    if (err instanceof HTTPException) return err.getResponse();
+    logServerError(c, "internal_error", err instanceof Error ? err.message : String(err));
+    return c.json({ error: GENERIC_ERROR, code: "internal_error" }, 500);
+  });
 
   // Unguarded: first-login creator bootstrap (runs before a creator row exists).
   app.route("/me", meBootstrap);

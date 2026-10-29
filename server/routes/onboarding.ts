@@ -3,6 +3,7 @@ import { MISSION_LIST_SELECT, serializeMission } from "../lib/missionDecision.js
 import { missionCategoryValues } from "../../src/lib/missionCategories.js";
 import type { Env } from "../app.js";
 import { makeUserClient, serviceClient } from "../lib/supabase.js";
+import { dbError } from "../lib/httpErrors.js";
 
 export const onboardingRoutes = new Hono<Env>();
 
@@ -14,7 +15,7 @@ onboardingRoutes.get("/status", async (c) => {
     .select("onboarding_step, onboarding_completed")
     .eq("id", c.get("userId"))
     .single();
-  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  if (error) return dbError(c, error, "db_error", 500);
   const completion_pct = data.onboarding_completed
     ? 100
     : Math.round(((data.onboarding_step - 1) / 4) * 100);
@@ -36,7 +37,7 @@ onboardingRoutes.put("/profile", async (c) => {
     .select("onboarding_step")
     .eq("id", c.get("userId"))
     .single();
-  if (readErr) return c.json({ error: readErr.message, code: "db_error" }, 500);
+  if (readErr) return dbError(c, readErr, "db_error", 500);
 
   const nextStep = Math.max(cur.onboarding_step, body.step ?? cur.onboarding_step);
   const patch: Record<string, unknown> = { onboarding_step: nextStep };
@@ -45,7 +46,7 @@ onboardingRoutes.put("/profile", async (c) => {
   if (body.categories !== undefined) patch.categories = body.categories;
 
   const { error } = await supabase.from("creators").update(patch).eq("id", c.get("userId"));
-  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  if (error) return dbError(c, error, "db_error", 500);
   return c.json({ onboarding_step: nextStep });
 });
 
@@ -65,7 +66,7 @@ onboardingRoutes.post("/social/connect", async (c) => {
     .select("social_handles")
     .eq("id", c.get("userId"))
     .single();
-  if (readErr) return c.json({ error: readErr.message, code: "db_error" }, 500);
+  if (readErr) return dbError(c, readErr, "db_error", 500);
 
   const handles = Array.isArray(cur.social_handles) ? cur.social_handles : [];
   handles.push({ platform, handle, followers: followers ?? null, verified: false });
@@ -74,7 +75,7 @@ onboardingRoutes.post("/social/connect", async (c) => {
     .from("creators")
     .update({ social_handles: handles })
     .eq("id", c.get("userId"));
-  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  if (error) return dbError(c, error, "db_error", 500);
   return c.json({ social_handles: handles });
 });
 
@@ -86,7 +87,7 @@ onboardingRoutes.get("/recommended-missions", async (c) => {
     .select("categories")
     .eq("id", c.get("userId"))
     .single();
-  if (creatorError) return c.json({ error: creatorError.message, code: "db_error" }, 500);
+  if (creatorError) return dbError(c, creatorError, "db_error", 500);
 
   let q = supabase
     .from("missions")
@@ -98,7 +99,7 @@ onboardingRoutes.get("/recommended-missions", async (c) => {
   if (me?.categories?.length) q = q.in("category", [...new Set((me.categories as string[]).flatMap(missionCategoryValues))]);
 
   const { data, error } = await q;
-  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  if (error) return dbError(c, error, "db_error", 500);
   return c.json({ missions: (data ?? []).map(serializeMission) });
 });
 
@@ -106,13 +107,13 @@ onboardingRoutes.get("/recommended-missions", async (c) => {
 onboardingRoutes.post("/complete", async (c) => {
   const svc = serviceClient();
   const { error } = await svc.rpc("award_welcome_bonus", { p_creator: c.get("userId") });
-  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  if (error) return dbError(c, error, "db_error", 500);
 
   const { data, error: readErr } = await svc
     .from("creators")
     .select("referral_code, onboarding_completed, onboarding_step")
     .eq("id", c.get("userId"))
     .single();
-  if (readErr) return c.json({ error: readErr.message, code: "db_error" }, 500);
+  if (readErr) return dbError(c, readErr, "db_error", 500);
   return c.json(data);
 });

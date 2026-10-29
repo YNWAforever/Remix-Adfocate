@@ -3,6 +3,7 @@ import type { Env } from "../app.js";
 import { makeUserClient } from "../lib/supabase.js";
 import { buildHooks } from "../lib/hookGen.js";
 import { enhanceHooks, type HookPlatform } from "../lib/llm.js";
+import { dbError } from "../lib/httpErrors.js";
 
 export const copilotRoutes = new Hono<Env>();
 
@@ -29,9 +30,9 @@ copilotRoutes.post("/hook-generator", async (c) => {
   ]);
   if (mErr) {
     if (mErr.code === "PGRST116") return c.json({ error: "mission not found", code: "not_found" }, 404);
-    return c.json({ error: mErr.message, code: "db_error" }, 500);
+    return dbError(c, mErr, "db_error", 500);
   }
-  if (cErr) return c.json({ error: cErr.message, code: "db_error" }, 500);
+  if (cErr) return dbError(c, cErr, "db_error", 500);
 
   const creatorNiche = (((creator?.categories as string[] | null) ?? [])[0]) ?? null;
   const title = mission.title as string;

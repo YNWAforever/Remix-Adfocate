@@ -23,6 +23,7 @@ import { validateSubmissionEvidence } from "../../src/lib/submissionEvidence.js"
 import { requireCapability, requirePlatformCapability, staffRouteRequirement, StaffCapabilityError } from "../lib/staffCapabilities.js";
 import { adminStaffAccessRoutes } from "./adminStaffAccess.js";
 import { staffMissionAssistRoutes } from "./assistant.js";
+import { dbError } from "../lib/httpErrors.js";
 
 /** Operator/brand admin endpoints. B3a: real per-staff Google login (staff_users),
  *  with the legacy shared secret kept as a one-release break-glass fallback (removed in B3b). */
@@ -163,13 +164,13 @@ adminRoutes.get("/submissions", async (c) => {
   };
   // Paged: a single read is capped at max_rows (1000) and would silently truncate the queue.
   const { data, error } = await fetchAllPages((from, to) => query().range(from, to));
-  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  if (error) return dbError(c, error, "db_error", 500);
   if (submissionId && !data?.length) return c.json({ error: "Not found", code: "not_found" }, 404);
   try {
     return c.json({ submissions: await enrichAdminMissionRows(svc, data ?? []) });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Failed to enrich submissions";
-    return c.json({ error: message, code: "db_error" }, 500);
+    return dbError(c, { message }, "db_error", 500);
   }
 });
 
@@ -240,7 +241,9 @@ adminRoutes.post("/submissions/:id/request-correction", async (c) => {
 function legacyDecisionError(c: Context, error: { message: string }) {
   if (error.message === "wrong_state") return c.json({ error: "此提交已由其他營運人員處理，請重新整理。 / This submission was already decided. Refresh the queue.", code: "wrong_state" }, 409);
   if (error.message === "not_found") return c.json({ error: "Not found", code: "not_found" }, 404);
-  return c.json({ error: error.message, code: "rpc_error" }, 400);
+  if (error.message === "insufficient_budget") return c.json({ error: "工作空間預算不足，請先增值。 / The workspace budget cannot cover this reward. Top up the budget first.", code: "insufficient_budget" }, 409);
+  if (error.message === "bad_rating") return c.json({ error: "quality_rating must be an integer 1-5", code: "bad_rating" }, 400);
+  return dbError(c, error, "rpc_error", 500);
 }
 
 adminRoutes.post("/submissions/:id/reject", async (c) => {
@@ -270,12 +273,12 @@ adminRoutes.get("/applications", async (c) => {
     return q.order("created_at", { ascending: true }).order("id");
   };
   const { data, error } = await fetchAllPages((from, to) => query().range(from, to));
-  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  if (error) return dbError(c, error, "db_error", 500);
   try {
     return c.json({ applications: await enrichAdminMissionRows(svc, data ?? []) });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Failed to enrich applications";
-    return c.json({ error: message, code: "db_error" }, 500);
+    return dbError(c, { message }, "db_error", 500);
   }
 });
 
@@ -297,7 +300,7 @@ adminRoutes.get("/engaged", async (c) => {
     return q.order("created_at", { ascending: true }).order("id");
   };
   const { data, error } = await fetchAllPages((from, to) => query().range(from, to));
-  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  if (error) return dbError(c, error, "db_error", 500);
   return c.json({ creators: shapeEngagedRoster((data ?? []) as unknown as EngagedSubmissionRow[]) });
 });
 
@@ -391,7 +394,7 @@ adminRoutes.post("/gifts/:id/codes", async (c) => {
     .select("id, workspace_id, stock_remaining")
     .eq("id", giftId)
     .maybeSingle();
-  if (gErr) return c.json({ error: gErr.message, code: "db_error" }, 500);
+  if (gErr) return dbError(c, gErr, "db_error", 500);
   if (!g) return c.json({ error: "not_found", code: "not_found" }, 404);
 
   const rows = codes.map((code) => ({ gift_id: giftId, workspace_id: g.workspace_id, code }));
@@ -399,7 +402,7 @@ adminRoutes.post("/gifts/:id/codes", async (c) => {
   if (insErr) {
     // 23505 = unique_violation: a code already exists in this gift's pool.
     if (insErr.code === "23505") return c.json({ error: "duplicate codes", code: "duplicate_codes" }, 409);
-    return c.json({ error: insErr.message, code: "db_error" }, 500);
+    return dbError(c, insErr, "db_error", 500);
   }
 
   // Bump stock by the batch size (single operator → no contention on this read-modify-write).
@@ -407,6 +410,6 @@ adminRoutes.post("/gifts/:id/codes", async (c) => {
     .from("redemption_gifts")
     .update({ stock_remaining: (g.stock_remaining ?? 0) + codes.length })
     .eq("id", giftId);
-  if (updErr) return c.json({ error: updErr.message, code: "db_error" }, 500);
+  if (updErr) return dbError(c, updErr, "db_error", 500);
   return c.json({ added: codes.length });
 });
