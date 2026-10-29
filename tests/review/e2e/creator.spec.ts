@@ -59,7 +59,7 @@ test("creator session cannot see operator data at /admin", async ({ page }) => {
   expect(adminCalls.every(s => s === 401 || s === 403)).toBe(true);
 });
 
-knownBug("F-010", "a rejected creator sees the reviewer's reason on the mission page", async ({ page }) => {
+test("[F-010 fixed] a rejected creator sees the reviewer's reason on the mission page", async ({ page }) => {
   const creator = await newCreator();
   const reviewer = await newStaff("reviewer");
   const m = newMission();
@@ -69,7 +69,7 @@ knownBug("F-010", "a rejected creator sees the reviewer's reason on the mission 
   await signIn(page, creator);
   await page.goto(`/mission/${m.slug}`);
   await expect(page.getByText(/Rejected|未獲接納|已拒絕/i).first()).toBeVisible();
-  await defect(() => expect(page.getByText("Lighting too dark — please reshoot")).toBeVisible({ timeout: 3000 }));
+  await expect(page.getByText(/Lighting too dark — please reshoot/)).toBeVisible();
 });
 
 knownBug("F-018", "the 'visit guide' link during onboarding opens the guide", async ({ page }) => {

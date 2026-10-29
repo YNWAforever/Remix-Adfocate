@@ -129,7 +129,8 @@ function MissionDetail() {
             <section className="pastel-card flex flex-wrap items-center justify-between gap-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4">
               <span className="font-heading font-bold">{t("app.mission.statusLabel")}</span>
               <span className="font-display">{STATUS_LABEL[sub.status] ?? sub.status}{sub.status === "approved" ? ` · ${t("app.mission.pointsAwarded", { n: sub.points_awarded ?? 0 })}` : ""}</span>
-              {sub.status === "declined" && <p className="w-full break-words text-sm">原因 / Reason：{sub.review_notes?.trim() || "未提供原因 / No reason provided"}</p>}
+              {(sub.status === "declined" || sub.status === "rejected") && <p className="w-full break-words text-sm">{t("app.mission.reviewReason", { reason: sub.review_notes?.trim() || t("app.mission.reviewReasonMissing") })}</p>}
+              {sub.status === "rejected" && <p className="w-full text-sm text-[var(--color-soft-ink)]">{t("app.mission.rejectedClosed")}</p>}
             </section>
           )}
 
