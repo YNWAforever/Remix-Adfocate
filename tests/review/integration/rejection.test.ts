@@ -71,7 +71,7 @@ describe("operator rejects / requests changes; creator sees reason and recovers"
     expect(resubmit.status).toBe(200);
   });
 
-  knownBug("F-012", "request-correction notifies the creator", async () => {
+  it("[F-012 fixed] request-correction notifies the creator", async () => {
     const creator = await newCreator();
     const reviewer = await newStaff("reviewer");
     const m = newMission();
@@ -81,7 +81,8 @@ describe("operator rejects / requests changes; creator sees reason and recovers"
     const before = notificationTypes(creator.id).length;
     const corr = await api("POST", `/admin/submissions/${sid}/request-correction`, { jwt: reviewer.jwt, ws: null, body: { note: "Link is broken", request_id: randomUUID(), expected_revision: rev } });
     expect(corr.status).toBe(200);
-    defect(() => expect(notificationTypes(creator.id).length).toBeGreaterThan(before));
+    expect(notificationTypes(creator.id).length).toBeGreaterThan(before);
+    expect(notificationTypes(creator.id)).toContain("submission_correction_requested");
   });
 
   it("application: decline requires a reason; accept notifies; first decision wins", async () => {

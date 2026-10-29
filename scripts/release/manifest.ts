@@ -1151,6 +1151,15 @@ const REVIEWED_MIGRATIONS = [
     ],
     transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
   },
+  {
+    version: "20261029140000", name: "correction_notification", phase: "legacy_evidence",
+    dependsOn: ["20261028140709", "20261029130000"],
+    capabilities: [
+      "constraint:public.notifications.notifications_type_check",
+      "function:public.request_legacy_evidence_correction",
+    ],
+    transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
+  },
 ] as const satisfies readonly ReviewedMigration[];
 
 const NON_RELEASE_TIMESTAMP_MIGRATIONS = new Set([

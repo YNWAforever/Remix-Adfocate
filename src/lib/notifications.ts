@@ -1,7 +1,7 @@
 import { CheckCircle2, XCircle, Gift, TrendingUp, UserCheck, UserX, Trophy, Award, Bell, Megaphone, type LucideIcon } from "lucide-react";
 
 export type NotificationType =
-  | "submission_approved" | "submission_rejected" | "redemption_ready"
+  | "submission_approved" | "submission_rejected" | "submission_correction_requested" | "redemption_ready"
   | "level_up" | "application_accepted" | "application_declined"
   | "campaign_goal_reached" | "campaign_prize_awarded" | "campaign_started"
   | "mission_product_shipped" | "mission_receipt_required"
@@ -46,6 +46,7 @@ const ICONS: Record<NotificationType, LucideIcon> = {
   mission_reward_pending: Bell,
   mission_reward_pending_cancelled: XCircle,
   mission_reward_settled: CheckCircle2,
+  submission_correction_requested: Bell,
 };
 
 export function iconFor(type: NotificationType): LucideIcon {

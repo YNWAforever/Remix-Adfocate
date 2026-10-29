@@ -1453,6 +1453,23 @@
       ],
       "transactionExpectation": "transactional",
       "replayExpectation": "migration_history_noop"
+    },
+    {
+      "version": "20261029140000",
+      "name": "correction_notification",
+      "path": "supabase/migrations/20261029140000_correction_notification.sql",
+      "sha256": "f91bc2ee917beb68e9a5c00701281c0eaf049e8870bdfe8f41378ad007f2462c",
+      "phase": "legacy_evidence",
+      "dependsOn": [
+        "20261028140709",
+        "20261029130000"
+      ],
+      "capabilities": [
+        "constraint:public.notifications.notifications_type_check",
+        "function:public.request_legacy_evidence_correction"
+      ],
+      "transactionExpectation": "transactional",
+      "replayExpectation": "migration_history_noop"
     }
   ]
 }
