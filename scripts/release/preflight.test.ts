@@ -3,6 +3,23 @@ import { resolve } from "node:path";
 import { describe, expect, it, vi } from "vitest";
 import { hasCapabilityValidator, runPreflight, runPreflightCli } from "./preflight";
 
+// Contracts added by the 2026-10-29 end-to-end review remediation (docs/review/).
+const REMEDIATION_CAPABILITIES = [
+  "grant-removed:authenticated.public.missions(insert)",
+  "grant-removed:authenticated.public.missions(delete)",
+  "grant-removed:authenticated.public.campaigns(insert)",
+  "grant-removed:authenticated.public.campaigns(delete)",
+  "grant-removed:authenticated.public.campaign_missions(insert)",
+  "grant-removed:authenticated.public.campaign_missions(update)",
+  "grant-removed:authenticated.public.campaign_missions(delete)",
+  "constraint:public.missions.missions_points_reward_nonneg",
+  "constraint:public.missions.missions_cash_reward_nonneg",
+  "constraint:public.missions.missions_cpm_nonneg",
+  "constraint:public.missions.missions_quota_filled_nonneg",
+  "constraint:public.campaigns.campaigns_bonus_nonneg",
+  "constraint:public.campaigns.campaigns_goal_target_positive",
+];
+
 describe("release preflight", () => {
   it("does not claim a removed grant is safe from dump text alone", async () => {
     async function check(schema: string) {
@@ -38,8 +55,10 @@ describe("release preflight", () => {
       ...new Set(manifest.migrations.flatMap((migration) => migration.capabilities)),
     ];
 
-    // Retain the 617 prior contracts and the three explicit claim denials.
-    expect(capabilities).toHaveLength(620);
+    // Retain the 617 prior contracts and the three explicit claim denials, plus the review
+    // remediation contracts (2026-10-29) listed in REMEDIATION_CAPABILITIES.
+    expect(capabilities).toEqual(expect.arrayContaining(REMEDIATION_CAPABILITIES));
+    expect(capabilities.filter((capability) => !REMEDIATION_CAPABILITIES.includes(capability))).toHaveLength(620);
     const claimDenials = ["authenticated", "anon", "public"].map(role => `grant-removed:${role}.public.claim_assistant_request(uuid,uuid,uuid)`);
     expect(capabilities).toEqual(expect.arrayContaining(claimDenials));
     const reviewValidityCapabilities = [
@@ -82,8 +101,8 @@ describe("release preflight", () => {
       "grant-removed:public.public.get_legacy_correction_evidence(uuid,uuid)",
     ];
     expect(capabilities).toEqual(expect.arrayContaining(repairCapabilities));
-    expect(capabilities.filter((capability) => ![...repairCapabilities, ...reviewValidityCapabilities, ...claimDenials].includes(capability))).toHaveLength(598);
-    expect(capabilities.filter((capability) => ![...applicationCapabilities, ...redemptionCapabilities, ...repairCapabilities, ...reviewValidityCapabilities, ...claimDenials].includes(capability))).toHaveLength(587);
+    expect(capabilities.filter((capability) => ![...repairCapabilities, ...reviewValidityCapabilities, ...claimDenials, ...REMEDIATION_CAPABILITIES].includes(capability))).toHaveLength(598);
+    expect(capabilities.filter((capability) => ![...applicationCapabilities, ...redemptionCapabilities, ...repairCapabilities, ...reviewValidityCapabilities, ...claimDenials, ...REMEDIATION_CAPABILITIES].includes(capability))).toHaveLength(587);
     expect(capabilities.filter((capability) => !hasCapabilityValidator(capability))).toEqual([]);
   });
 

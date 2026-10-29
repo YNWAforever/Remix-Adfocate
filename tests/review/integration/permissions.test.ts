@@ -3,7 +3,7 @@
 import { describe, expect, it } from "vitest";
 import { randomUUID } from "node:crypto";
 import { defect, knownBug } from "../support/bug";
-import { api, DEMO_WORKSPACE, joinAndSubmit, newBrand, newCreator, newMission, newStaff, newWorkspace, sql, q } from "../support/fixture";
+import { api, DEMO_WORKSPACE, joinAndSubmit, newBrand, newCreator, newMission, newStaff, newWorkspace, service, sql, q } from "../support/fixture";
 
 describe("creator cannot reach operator or brand surfaces", () => {
   it("creator JWT on /api/admin/* and /api/brand/* is refused", async () => {
@@ -113,24 +113,48 @@ describe("brand boundaries and direct database access", () => {
     expect(JSON.stringify(res.body)).not.toContain(DEMO_WORKSPACE);
   });
 
-  knownBug("F-003", "brand cannot insert a live mission with a negative reward directly via PostgREST", async () => {
+  it("[F-003 fixed] brand cannot insert a live mission with a negative reward directly via PostgREST", async () => {
     const brand = await newBrand();
     const slug = `review-direct-${randomUUID().slice(0, 6)}`;
     const res = await brand.client.from("missions").insert({
       workspace_id: DEMO_WORKSPACE, slug, title: "Direct insert", category: "beauty", mission_type: "ugc", access_type: "open",
       required_level: "L0", points_reward: -500, cash_reward: 9999, quota: 1, filled: 0, status: "active",
     }).select("id");
-    defect(() => expect(res.error).not.toBeNull());
+    expect(res.error).not.toBeNull();
   });
 
-  knownBug("F-003", "brand owner deleting a mission does not erase creators' submissions", async () => {
+  it("[F-003 fixed] brand owner deleting a mission does not erase creators' submissions", async () => {
     const brand = await newBrand(DEMO_WORKSPACE, "owner");
     const creator = await newCreator();
     const m = newMission();
     const sid = await joinAndSubmit(creator, m.slug);
     await brand.client.from("missions").delete().eq("id", m.id);
     const left = Number(sql(`select count(*) from public.mission_submissions where id=${q(sid)};`));
-    defect(() => expect(left).toBe(1));
+    expect(left).toBe(1);
+  });
+
+  it("[F-003] brands create and publish through the API; cash missions need staff; reward CHECKs hold", async () => {
+    const brand = await newBrand();
+    const slug = `review-brand-${randomUUID().slice(0, 6)}`;
+    const base = { slug, title: "Brand API mission", mission_type: "ugc", category: "beauty", access_type: "open",
+      points_reward: 50, quota: 5, description: "Review brand mission", deliverables: ["1 Reel"], platforms: ["instagram"],
+      deadline: new Date(Date.now() + 14 * 864e5).toISOString().slice(0, 10) };
+    const created = await api("POST", "/brand/missions", { jwt: brand.jwt, ws: null, body: base });
+    expect(created.status, JSON.stringify(created.body)).toBe(201);
+    const id = created.body.mission.id as string;
+    // Direct status flip via PostgREST is no longer possible.
+    const flip = await brand.client.from("missions").update({ status: "active" }).eq("id", id).select("id");
+    expect(flip.error).not.toBeNull();
+    const pub = await api("POST", `/brand/missions/${id}/publish`, { jwt: brand.jwt, ws: null });
+    expect(pub.status, JSON.stringify(pub.body)).toBe(200);
+    const cashSlug = `review-cash-${randomUUID().slice(0, 6)}`;
+    const cash = await api("POST", "/brand/missions", { jwt: brand.jwt, ws: null, body: { ...base, slug: cashSlug, cash_reward: 200 } });
+    expect(cash.status).toBe(201);
+    const cashPub = await api("POST", `/brand/missions/${cash.body.mission.id}/publish`, { jwt: brand.jwt, ws: null });
+    expect(cashPub.status).toBe(403);
+    expect(cashPub.body.code).toBe("staff_approval_required");
+    const neg = await service.from("missions").update({ points_reward: -1 }).eq("id", id).select("id");
+    expect(neg.error?.message ?? "").toMatch(/missions_points_reward_nonneg/);
   });
 
   knownBug("F-047", "a creator cannot read another workspace's knowledge-base documents", async () => {

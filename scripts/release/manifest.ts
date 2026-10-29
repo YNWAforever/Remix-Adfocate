@@ -1090,6 +1090,26 @@ const REVIEWED_MIGRATIONS = [
     ],
     transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
   },
+  {
+    version: "20261029100000", name: "brand_write_hardening", phase: "staff_access",
+    dependsOn: ["20261023192141"],
+    capabilities: [
+      "grant-removed:authenticated.public.missions(insert)",
+      "grant-removed:authenticated.public.missions(delete)",
+      "grant-removed:authenticated.public.campaigns(insert)",
+      "grant-removed:authenticated.public.campaigns(delete)",
+      "grant-removed:authenticated.public.campaign_missions(insert)",
+      "grant-removed:authenticated.public.campaign_missions(update)",
+      "grant-removed:authenticated.public.campaign_missions(delete)",
+      "constraint:public.missions.missions_points_reward_nonneg",
+      "constraint:public.missions.missions_cash_reward_nonneg",
+      "constraint:public.missions.missions_cpm_nonneg",
+      "constraint:public.missions.missions_quota_filled_nonneg",
+      "constraint:public.campaigns.campaigns_bonus_nonneg",
+      "constraint:public.campaigns.campaigns_goal_target_positive",
+    ],
+    transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
+  },
 ] as const satisfies readonly ReviewedMigration[];
 
 const NON_RELEASE_TIMESTAMP_MIGRATIONS = new Set([

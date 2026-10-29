@@ -94,7 +94,9 @@ guarded.post("/missions", async (c) => {
     effort: input.effort ?? null, status: "draft",
     ...normalizeBriefForWrite(input),
   };
-  const { data, error } = await makeUserClient(bearer(c)).from("missions").insert(insert).select(MISSION_COLS).single();
+  // Browser JWTs have no INSERT on missions (F-003); the API writes after validating and
+  // forcing workspace_id from the brand identity.
+  const { data, error } = await serviceClient().from("missions").insert(insert).select(MISSION_COLS).single();
   if (error) {
     if (error.code === "23505") return c.json({ error: "Slug 已被使用", code: "validation", fields: { slug: "此 workspace 已有相同 slug 的任務" } }, 422);
     return dbError(c, error, "db_error", 500);
@@ -149,10 +151,16 @@ guarded.post("/missions/:id/publish", async (c) => {
 
   const { ok, errors } = validateMission(m as unknown as MissionInput, "publish", hkToday());
   if (!ok) return c.json({ error: "發佈前請完成必填欄位", code: "validation", fields: errors }, 422);
+  // Cash-paying missions create a real liability, so a staff operator publishes them.
+  const cash = m as unknown as { cash_reward: number | null; cpm_rate: number | null };
+  if (Number(cash.cash_reward ?? 0) > 0 || Number(cash.cpm_rate ?? 0) > 0) {
+    return c.json({ error: "現金獎勵任務需由 Fimmick 營運團隊審核發佈 / Missions with cash rewards are published by Fimmick staff after review.", code: "staff_approval_required" }, 403);
+  }
 
   const now = new Date().toISOString();
-  const { data, error: uErr } = await uc.from("missions")
-    .update({ status: "active", published_at: now, updated_at: now }).eq("id", id).eq("status", "draft").select(MISSION_COLS).maybeSingle();
+  const { data, error: uErr } = await serviceClient().from("missions")
+    .update({ status: "active", published_at: now, updated_at: now })
+    .eq("id", id).eq("workspace_id", c.var.brand.workspaceId).eq("status", "draft").select(MISSION_COLS).maybeSingle();
   if (uErr) return dbError(c, uErr, "db_error", 500);
   if (!data) return c.json({ error: "只有草稿可以發佈", code: "invalid_transition" }, 409);
   return c.json({ mission: data });
@@ -167,8 +175,9 @@ guarded.post("/missions/:id/close", async (c) => {
   if ((m as { status: string }).status !== "active") return c.json({ error: "只有進行中的任務可以關閉", code: "invalid_transition" }, 409);
 
   const now = new Date().toISOString();
-  const { data, error: uErr } = await uc.from("missions")
-    .update({ status: "closed", closed_at: now, updated_at: now }).eq("id", id).eq("status", "active").select(MISSION_COLS).maybeSingle();
+  const { data, error: uErr } = await serviceClient().from("missions")
+    .update({ status: "closed", closed_at: now, updated_at: now })
+    .eq("id", id).eq("workspace_id", c.var.brand.workspaceId).eq("status", "active").select(MISSION_COLS).maybeSingle();
   if (uErr) return dbError(c, uErr, "db_error", 500);
   if (!data) return c.json({ error: "只有進行中的任務可以關閉", code: "invalid_transition" }, 409);
   return c.json({ mission: data });
@@ -186,10 +195,12 @@ guarded.delete("/missions/:id", async (c) => {
   if (cErr) return dbError(c, cErr, "db_error", 500);
   if ((count ?? 0) > 0) return c.json({ error: "已有報名紀錄的草稿不可刪除", code: "invalid_transition" }, 409);
 
-  // RLS delete policy additionally requires role='owner'; a member's delete affects 0 rows → 403.
-  const { data: del, error: dErr } = await uc.from("missions").delete().eq("id", id).select("id");
+  // Only brand owners delete, and only drafts in their own workspace (browser JWTs have no DELETE).
+  if (c.var.brand.role !== "owner") return c.json({ error: "只有擁有者可以刪除任務", code: "forbidden" }, 403);
+  const { data: del, error: dErr } = await serviceClient().from("missions").delete()
+    .eq("id", id).eq("workspace_id", c.var.brand.workspaceId).eq("status", "draft").select("id");
   if (dErr) return dbError(c, dErr, "db_error", 500);
-  if (!del || del.length === 0) return c.json({ error: "只有擁有者可以刪除任務", code: "forbidden" }, 403);
+  if (!del || del.length === 0) return c.json({ error: "只有草稿可以刪除", code: "invalid_transition" }, 409);
   return c.json({ ok: true });
 });
 
