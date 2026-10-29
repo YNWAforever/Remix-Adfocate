@@ -90,10 +90,10 @@ describe("operator role and workspace boundaries", () => {
     expect([401, 403]).toContain(res.status);
   });
 
-  knownBug("F-016", "the default /admin landing (insights) is usable by a finance_viewer", async () => {
+  it("[F-016] a finance_viewer is scoped to reward hand-offs (Insights stays creator.read; the UI now lands on hand-offs)", async () => {
     const finance = await newStaff("finance_viewer");
-    const res = await api("GET", "/admin/insights?window=30", { jwt: finance.jwt, ws: null });
-    defect(() => expect(res.status).toBe(200));
+    expect((await api("GET", "/admin/insights?window=30", { jwt: finance.jwt, ws: null })).status).toBe(403);
+    expect((await api("GET", "/admin/reward-handoffs", { jwt: finance.jwt, ws: null })).status).toBe(200);
   });
 
   it("ADMIN_SECRET break-glass header grants nothing", async () => {

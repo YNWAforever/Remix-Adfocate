@@ -1,7 +1,6 @@
 // Operator browser journeys. Staff sign-in is Google OAuth only, so tests inject the real
 // local Supabase session for a fixture staff user into the SPA's storage key.
 import { expect, test, type Page } from "@playwright/test";
-import { defect, knownBug } from "./bug";
 import { joinAndSubmit, newCreator, newMission, newStaff, sql, q, type Actor } from "../support/fixture";
 
 async function injectSession(page: Page, actor: Actor) {
@@ -42,13 +41,10 @@ test("[F-004 fixed] declining in the UI needs a reason and a confirmation", asyn
   await expect.poll(() => sql(`select status from public.mission_submissions where id=${q(sid)};`)).toBe("rejected");
 });
 
-knownBug("F-016", "a finance_viewer opening /admin lands on a page they are allowed to use", async ({ page }) => {
+test("[F-016 fixed] a finance_viewer opening /admin lands on a page they are allowed to use", async ({ page }) => {
   const finance = await newStaff("finance_viewer");
   await injectSession(page, finance);
   await page.goto("/admin");
-  await page.waitForLoadState("networkidle");
-  // Observed: lands on /admin/insights with "Workspace access is required. Contact the owner." although
-  // the role is valid; the only page this role may use is Reward handoffs.
-  await expect(page.getByText(/Reward handoffs/i).first()).toBeVisible();
-  await defect(() => expect(page.getByText(/Workspace access is required|requires an assigned staff capability/i)).toHaveCount(0, { timeout: 2000 }));
+  await expect(page).toHaveURL(/\/admin\/reward-handoffs/);
+  await expect(page.getByText(/Workspace access is required|requires an assigned staff capability/i)).toHaveCount(0);
 });
