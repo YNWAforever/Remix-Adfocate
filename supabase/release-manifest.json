@@ -1486,6 +1486,28 @@
       ],
       "transactionExpectation": "transactional",
       "replayExpectation": "migration_history_noop"
+    },
+    {
+      "version": "20261029160000",
+      "name": "assistant_history_readonly",
+      "path": "supabase/migrations/20261029160000_assistant_history_readonly.sql",
+      "sha256": "5a31956e7197983a6ced210683e56c144b0c0167265246912e9fe935ffeadd14",
+      "phase": "assistant_requests",
+      "dependsOn": [
+        "20261029000000"
+      ],
+      "capabilities": [
+        "grant-removed:authenticated.public.assistant_conversations(insert)",
+        "grant-removed:authenticated.public.assistant_conversations(update)",
+        "grant-removed:authenticated.public.assistant_conversations(delete)",
+        "grant-removed:authenticated.public.assistant_messages(insert)",
+        "grant-removed:authenticated.public.assistant_messages(update)",
+        "grant-removed:authenticated.public.assistant_messages(delete)",
+        "policy:public.assistant_conversations.conv_self",
+        "policy:public.assistant_messages.msg_self"
+      ],
+      "transactionExpectation": "transactional",
+      "replayExpectation": "migration_history_noop"
     }
   ]
 }

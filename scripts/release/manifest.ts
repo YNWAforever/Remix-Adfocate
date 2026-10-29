@@ -1169,6 +1169,21 @@ const REVIEWED_MIGRATIONS = [
     ],
     transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
   },
+  {
+    version: "20261029160000", name: "assistant_history_readonly", phase: "assistant_requests",
+    dependsOn: ["20261029000000"],
+    capabilities: [
+      "grant-removed:authenticated.public.assistant_conversations(insert)",
+      "grant-removed:authenticated.public.assistant_conversations(update)",
+      "grant-removed:authenticated.public.assistant_conversations(delete)",
+      "grant-removed:authenticated.public.assistant_messages(insert)",
+      "grant-removed:authenticated.public.assistant_messages(update)",
+      "grant-removed:authenticated.public.assistant_messages(delete)",
+      "policy:public.assistant_conversations.conv_self",
+      "policy:public.assistant_messages.msg_self",
+    ],
+    transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
+  },
 ] as const satisfies readonly ReviewedMigration[];
 
 const NON_RELEASE_TIMESTAMP_MIGRATIONS = new Set([
