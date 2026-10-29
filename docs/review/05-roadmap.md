@@ -5,6 +5,11 @@ Ordering principle: **unblock money and operations, then close privacy and compl
 - 🗄️ = needs a schema migration. Per the review rules, migrations need your sign-off before Phase 5.
 - 🧪 = a `knownBug` test already exists in `tests/review/`. It flips red when the fix lands, then becomes a regression test.
 
+> **Progress (Phase 5, 2026-10-29):**
+> - **Done:** Q1, Q2 (read-time masking; the bootstrap default is unchanged), Q3, Q4, Q5, Q6 (landing; the financial-KPI gating is still open), Q7, Q8, Q9, Q10, Q11 (code; bucket limits still open), Q12, L1, L9, and the code parts of L3 (reason, 409, confirmation) and F-028.
+> - **New:** F-053 was found and fixed.
+> - **Not started:** everything marked 🗄️, plus Q13–Q15, L7, L8 (tracker), L12, L13, L14.
+
 ## 1. Quick wins (each under a day; about 4–5 dev-days in total)
 
 | # | Finding | Change | Effort | Test |

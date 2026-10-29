@@ -22,6 +22,17 @@ Details: `00-actors` · `01-journeys` · `02-findings` (52 findings) · `03-scor
 - **The active-mission review flow.** It uses revisions and idempotency keys, and requires reasons.
 - **A large existing unit suite.** 2,402 passing tests.
 
+## Status after Phase 5 fixes (2026-10-29)
+
+18 code-only fixes landed and every test suite is green (2,420 unit tests; 83 review tests). What changed for each rating:
+
+| Actor | Rating | Why |
+|---|---|---|
+| Creators | 🔴 **Red for public launch** · 🟠 **Amber for the internal pilot** | **Fixed:** the passport email leak, editing in production (PATCH), the misleading payout copy, HKT dates, the wallet, onboarding dead ends, rejection feedback and deadline reminders. **Still blocking a public launch:** no payout flow (F-006), active rewards never settle (F-007/F-038), and no consent capture or deletion (F-008/F-009). These need migrations or new features. |
+| Operators | 🟠 **Amber** | **Fixed:** the queue past 250 items, edits in production, stale-edit and double-publish protection, a required reject reason with a 409 on races, no raw DB errors, role-aware landing, and safe media uploads. **Still open:** an audit row on legacy approve/reject (F-004), brands writing directly to the database (F-003), suspend/reinstate (F-017), an error tracker, and a staff-role UI (F-015). |
+
+Risks 1, 2 and 4 below are fixed. Risks 3, 6 and 9 are partly fixed. Risks 5, 7, 8 and 10 are open. **Next step:** approve the migration batch (F-003, F-004 audit, F-007/F-038, F-008, F-009, F-012, F-047/F-048). F-005 (CI integration) and F-049 (production database grants) also need owner input.
+
 ## Top 10 risks
 
 | # | Risk | Sev | Evidence |

@@ -159,3 +159,33 @@ After adding the tests: `npm run lint` → 0 errors, the 4 pre-existing warnings
 - **SQL fixtures:** direct SQL is used only to set up state the product has no API for, such as staff role grants, synthetic bulk users and suspension. App behaviour is always exercised through the API or UI.
 - **One temporary trigger:** the F-021 test creates a trigger to simulate an outage and always removes it in `finally`.
 - **Test data:** all users are `review-*@review.test` on the local stack. Nothing was created outside the local Docker containers.
+
+## 7. Phase 5 re-run (after fixes, 2026-10-29)
+
+| Suite | Before fixes | After fixes |
+|---|---|---|
+| `npm run lint` | 0 errors, 4 warnings | 0 errors, 4 warnings (unchanged, pre-existing) |
+| `npm run type-check` | ✅ | ✅ |
+| `npm run build` | ✅ | ✅ |
+| `npm test` (unit/component) | 2,402 passed | **2,420 passed** (+18 new regression tests), 0 failed |
+| Review: static and integration | 68 passed (29 known bugs) | **71 passed (12 known bugs)** |
+| Review: Playwright | 12 passed (7 known bugs) | **12 passed (0 known bugs)** |
+
+**New regression tests** in the repo's own suite, which CI runs:
+- `server/apiEntry.test.ts` (F-001)
+- `server/lib/contentMedia.test.ts` (F-014)
+- `server/lib/profileInput.test.ts` (F-028)
+- `src/routes/-admin.index.test.tsx` (F-016)
+
+**Extended regression tests** (existing files):
+- `server/test/cron-daily.test.ts` (F-012)
+- `src/routes/-admin.submissions.test.tsx` (F-004)
+- `src/routes/-admin.missions.manage.test.tsx` (F-053)
+- `src/routes/-_app.mission.$missionSlug.test.tsx` (F-010)
+- `src/routes/-_app.gate.test.tsx` (F-018)
+- `src/routes/-_app.wallet.test.tsx` (F-029)
+- `src/components/creator-activation.test.tsx` (F-006 copy)
+
+Each fixed `knownBug` in `tests/review/` was converted to a normal test labelled `[F-xx fixed]`. The 12 that remain still reproduce, and all need a migration or a new feature: F-003 ×2, F-004 (audit), F-007 ×2, F-009, F-010 (resubmit), F-012 (correction notification), F-017, F-038, F-047, F-048.
+
+One test-harness change was needed. `server/test/legacy-correction-validation.test.ts` uses a hand-written Supabase mock, which gained `.range()` for the paged queue reads (F-046). The real client is covered by the 250/1,100-row integration tests.

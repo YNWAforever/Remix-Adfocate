@@ -1,6 +1,6 @@
 # 02 — Findings
 
-Commit reviewed: `15f8ed1`. 52 findings: **3 Critical · 13 High · 23 Medium · 13 Low** (F-046 raised from High to Critical after Phase 3 measurement).
+Commit reviewed: `15f8ed1`. 53 findings: **3 Critical · 13 High · 24 Medium · 13 Low** (F-046 raised from High to Critical after Phase 3 measurement; F-053 found in Phase 5).
 
 How to read this table:
 - **Conf.** = confidence. **V** = I verified it directly (code read, plus the local DB where stated). **A** = found by a mapping agent and spot-checked against the code. **❓** = needs a runtime or production check before it can be confirmed.
@@ -8,13 +8,47 @@ How to read this table:
 - **Step** refers to the step IDs in `01-journeys.md` (C = creator, O = operator, B = brand, H = handoff).
 - Migration paths are under `supabase/migrations/`. Long timestamped filenames are shortened to their date prefix where unambiguous.
 
+## Phase 5 fix status (2026-10-29)
+
+18 commits on `claude/practical-planck-89f88d`, one per finding. Each was verified with lint, typecheck, the full unit suite (now 2,420 tests) and the review suite. Phase 5 was limited to **code-only** changes; anything needing a schema migration is still open (🗄️).
+
+**Fixed (12):**
+
+| Finding | Commit | What changed |
+|---|---|---|
+| F-001 | `ef420e5` | `api/index.ts` exports PATCH. A CI unit test checks that every route method is exported. |
+| F-046 | `cccd424` | Lookups are batched (100 ids) and lists are read in 1,000-row pages. Queues load at 250 and 1,100 items. |
+| F-002 | `7cb80fd` | The public passport masks contact-shaped names. Chosen names, including Chinese ones, are unchanged. |
+| F-022 | `a54b004` | `expected_updated_at` returns 409 `STALE_EDIT` on a stale save. Publish and close are conditional on the current status, so there is a single broadcast. |
+| F-053 | `4e5c5fd` | **New finding.** The Manage-panel application decline now sends the required reason. |
+| F-021 | `2e1d195` | Bootstrap returns a retryable 503 when a balance row isn't created, and a retry completes it. |
+| F-018 | `9bdfe0c` | The guide and profile can be opened during onboarding, and the onboarding shell has Sign out. |
+| F-020 | `e11ec37` | Creator deadlines and dates show in Hong Kong time with a zone label. |
+| F-026 | `5e35cd3` | Campaign detail has not-found, error and retry states, and shows the end date in HKT. |
+| F-029 | `c71b94b` | The wallet no longer shows a fake HK$0.00. Earnings history has loading, error and empty states, and amounts are signed correctly. |
+| F-014 | `b9fc62e` | CMS media is limited to PNG, JPEG, GIF and WebP (checked by magic bytes) and 5 MB. |
+| F-028 | `de9da4c`, `068259a` | Profile fields are bounded, and malformed JSON returns 400. Other write routes still lack schema validation (see N7). |
+
+**Partly fixed (6):**
+
+| Finding | Commit | Done | Still open |
+|---|---|---|---|
+| F-006 | `08cd4a7` | Copy no longer promises withdrawals. | The payout feature itself. |
+| F-004 | `08f5c57` | Reason required, confirmation step, 409 on races. | Operator id and audit row inside the RPC (🗄️). |
+| F-032 | `068259a` | No raw DB text reaches clients; global `onError`; structured logs. | An external error tracker and alerting. |
+| F-012 | `7602de1` | The daily cron sends deadline reminders. | A notification type for correction requests (🗄️). |
+| F-010 | `9a16898` | Reason shown, honest "closed" copy, notification title fixed. | Resubmission after rejection (🗄️). |
+| F-016 | `cfdd1f0` | Each role lands on a page it can open. | Hiding financial KPIs from reviewers. |
+
+**Still open, with tests that keep reproducing them:** F-003, F-004 (audit), F-007 ×2, F-009, F-010 (resubmit), F-012 (correction), F-017, F-038, F-047, F-048. Each needs a migration or a new feature.
+
 ## Summary by severity
 
 | Sev | IDs |
 |---|---|
 | Critical | F-001, F-006, F-046 |
 | High | F-002, F-003, F-004, F-005, F-007, F-008, F-009, F-010, F-012, F-032, F-038, F-049, F-022 |
-| Medium | F-011, F-013, F-015, F-016, F-017, F-018, F-020, F-021, F-023, F-024, F-025, F-026, F-027, F-029, F-033, F-035, F-036, F-039, F-041, F-045, F-047, F-052, F-014 |
+| Medium | F-053, F-011, F-013, F-015, F-016, F-017, F-018, F-020, F-021, F-023, F-024, F-025, F-026, F-027, F-029, F-033, F-035, F-036, F-039, F-041, F-045, F-047, F-052, F-014 |
 | Low | F-019, F-028, F-030, F-031, F-034, F-037, F-040, F-042, F-043, F-044, F-048, F-050, F-051 |
 
 ## Register
@@ -37,6 +71,7 @@ How to read this table:
 | F-038 | O3.5, H1 | High | Functional / Business | Contracts are captured only in `join_active_mission` (`20260731110000_reward_contract_capture.sql:4-18`). Application acceptance → `create_mission_workflow` (`20261025120934_application_decisions.sql:68`) captures none. Completion raises `reward_contract_required` (`20260731120000_*:118`). | An application-type active-workspace mission: accept the applicant, run the workflow to proof verified, then approve completion. | **Expected:** completion creates the reward hand-off. **Actual:** blocked until an operator backfills the contract manually from historical evidence (`docs/operations/reward-handoff.md`). | Capture the reward contract inside the accept path in the same transaction, or in `create_mission_workflow`. Add an integration test for apply → accept → complete. **Migration — ask first.** | S–M | V + static test |
 | F-046 | O2.1, O3.2, O3.x, O8.2 | **Critical** | Functional / Performance | `GET /admin/submissions` (`server/routes/admin.ts:147-169`) loads every pending row, then `enrichAdminMissionRows` passes all ids in a PostgREST `in.(…)` query string. **Measured on the local stack: 200 pending → 200 OK; 250 → 500 `{"error":"URI too long"}`; 1,100 → 500.** Other unbounded lists: `admin.ts:244-260` (applications), `:266-279` (engaged); `adminMissions.ts:132-156`; `adminCampaigns.ts:29-39`; `adminActiveMissions.ts:259-266`, and the detail view loads every proof review in the workspace (`:385-389`). The sidebar badge is `.length` (`src/components/admin/useAdminQueueCounts.ts:205`), which also breaks. | `tests/review/integration/scale-lifecycle.test.ts`: seed 250 `submitted` rows, then open `/admin/submissions`. | **Expected:** paginated queue with a true count. **Actual:** from ~250 pending items the legacy review queue (the default flow for every mission) returns 500, so operators cannot review anything until rows are cleared by other means. Above 1,000 rows, PostgREST `max_rows` would also truncate the lists that do load. | Paginate on the server (cursor, 50 per page). Do enrichment with SQL joins or an RPC instead of `in.(ids)` in the URL. Show badges with `count: 'exact', head: true`. Filter proof reviews by `work_item_id`. Add the 250/1,100 tests to CI. | M | V + test |
 | F-049 | C2.4 | High (if true) | Security | Migrations restrict creator UPDATE to profile columns (local DB verified: `avatar_url, categories, display_name, level_seen, onboarding_step, phone, social_handles`). But `0004_grants.sql:1-7` and `20261023192141_pilot_legacy_access_hardening.sql:2` state that production had "broad inherited grants", and the 2026-10-23 hardening did not include `creators`. Runbook: cloud has `auto_expose_new_tables=true`. | In **production**, run `select privilege_type from information_schema.role_table_grants where table_name='creators' and grantee='authenticated'`. | **Expected:** no table-wide UPDATE. **If actual includes UPDATE:** a creator can PATCH their own `xp`, `level`, `status`, `workspace_id` or `onboarding_completed=false` (re-claim the welcome bonus). | Run the ACL query in production. If present, add a forward migration revoking table-level UPDATE on `creators` (and audit all tables the same way). | S | ❓ |
+| F-053 | O3.1, O5.1 | Medium | Functional | `src/components/admin/MissionManage.tsx:38` called `declineApplication(id)` without notes, while `POST /admin/applications/:id/decline` requires a reason (`server/routes/admin.ts`, `application_reason_required`). | Open a mission → Manage → Decline an applicant. | **Expected:** the applicant is declined with a reason. **Actual:** always 400; the button never worked. | Prompt for the reason (fixed in `4e5c5fd`). | S | V + unit test |
 | F-011 | C8.1, H7 | Medium | UX / Business | `src/routes/_site.contact.tsx:164` (forms "do not send or save"). `RewardPendingCard` links to `/contact?topic=reward-pending&submission=…` (`src/routes/_app.my.$submissionId.tsx:377`), and the page ignores both params. | Click "Contact support" on a pending reward. | **Expected:** a support ticket or WhatsApp deep link. **Actual:** a dead form. | Link to WhatsApp Business or an email with the submission id prefilled, or add a `support_requests` table plus an operator queue. | S | A |
 | F-013 | O2.1, H1, H2, H4 | Medium | Observability / UX | Notifications target creators only. The operator signal is sidebar badges for applications and legacy submissions only (`useAdminQueueCounts.ts:18-25`). Active-mission queue has no badge. `review_deadline` (48 h) is not enforced anywhere (`20261028140231_*:37`). | Submit work as a creator, then look for any operator alert. | **Expected:** operators alerted, with SLA breach and stuck-item views. **Actual:** polling only. | Add an active-queue badge and an "overdue vs SLA" filter on queues. Add a daily digest email or Slack webhook. | M | V |
 | F-015 | O1.1, O1.2, B1, O5.3 | Medium | Functional / Ops | `server/routes/admin.ts:54` passes `emailVerified=false`, so `isStaffEmail` auto-promotion (`server/lib/staffAuth.ts:50-57`) is unreachable. APIs with no UI: `adminStaffAccess.ts:31-55`, `adminBrandInvites.ts:11`, `admin.ts:359` (gift codes). `StaffAccessContext.tsx:29` references `/admin/staff-access`, which has no route file. | A new @fimmick.com staff member signs in with Google. | **Expected:** they are promoted (per comments), or an admin grants a role in the UI. **Actual:** 403 until someone inserts `staff_users`, `brand_users` and `staff_workspace_roles` by SQL. | Decide the policy. Either pass `!!user.email_confirmed_at` (with Google, which verifies email) or delete the dead code and comments. Build `/admin/staff-access`, brand-invite and gift-code screens over the existing APIs. | M | V |
