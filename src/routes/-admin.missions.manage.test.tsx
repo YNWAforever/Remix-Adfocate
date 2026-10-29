@@ -57,6 +57,32 @@ describe("MissionManage", () => {
     fireEvent.click(screen.getByRole("button", { name: /批准/ }));
     await waitFor(() => expect(h.approveSubmission).toHaveBeenCalledWith("s1", expect.any(Object)));
   });
+
+  it("declines an applicant only with the reason the API requires", async () => {
+    h.declineApplication.mockResolvedValue({});
+    const prompt = vi.spyOn(window, "prompt");
+    r();
+    await screen.findByText("Amy");
+    prompt.mockReturnValueOnce("   ");
+    fireEvent.click(screen.getByRole("button", { name: /^拒絕$/ }));
+    expect(h.declineApplication).not.toHaveBeenCalled();
+    prompt.mockReturnValueOnce(" 不符合品牌要求 ");
+    fireEvent.click(screen.getByRole("button", { name: /^拒絕$/ }));
+    await waitFor(() => expect(h.declineApplication).toHaveBeenCalledWith("a1", "不符合品牌要求"));
+    prompt.mockRestore();
+  });
+
+  it("returns a submission only with a reason", async () => {
+    h.rejectSubmission.mockResolvedValue({});
+    const prompt = vi.spyOn(window, "prompt").mockReturnValueOnce(null).mockReturnValueOnce("請重拍");
+    r();
+    await screen.findByText("Bob");
+    fireEvent.click(screen.getByRole("button", { name: /退回/ }));
+    expect(h.rejectSubmission).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole("button", { name: /退回/ }));
+    await waitFor(() => expect(h.rejectSubmission).toHaveBeenCalledWith("s1", "請重拍"));
+    prompt.mockRestore();
+  });
 });
 
 describe("MissionEditor active workflow authoring", () => {
