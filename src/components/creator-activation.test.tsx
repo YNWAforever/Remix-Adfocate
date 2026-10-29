@@ -203,7 +203,7 @@ describe("EarningsSummaryCard", () => {
     );
 
     expect(screen.getByRole("heading", { name: "Earnings" })).toBeInTheDocument();
-    expect(screen.getByText("Available to withdraw")).toBeInTheDocument();
+    expect(screen.getByText("Cash credits (paid by Fimmick finance)")).toBeInTheDocument();
     expect(screen.getByText("Pending review or release")).toBeInTheDocument();
     expect(screen.getByText("HK$1,234.50")).toBeInTheDocument();
     expect(screen.getByText("HK$250.00")).toBeInTheDocument();
@@ -226,7 +226,7 @@ describe("EarningsSummaryCard", () => {
     );
 
     expect(screen.getByRole("heading", { name: "收入" })).toBeInTheDocument();
-    expect(screen.getByText("可提取金額")).toBeInTheDocument();
+    expect(screen.getByText("現金獎賞（由 Fimmick 財務部發放）")).toBeInTheDocument();
     expect(screen.getByText("待審核或發放")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "查看錢包詳情" })).toBeInTheDocument();
   });

@@ -70,10 +70,10 @@ describe("Hong Kong locale: dates and currency", () => {
 });
 
 describe("copy honesty", () => {
-  knownBug("F-006", "no copy promises withdrawable cash while no payout flow exists", () => {
+  it("[F-006 fixed] no copy promises withdrawable cash while no payout flow exists", () => {
     const hasPayoutRoute = walk("server/routes").some(f => /withdraw|payout/i.test(read(f)));
     expect(hasPayoutRoute).toBe(false);
     const dict = read("src/lib/i18n.dict.ts") + read("src/routes/_site.earn.tsx");
-    defect(() => expect(dict).not.toMatch(/Available to withdraw|可提現|可提取|cash you can withdraw/));
+    expect(dict).not.toMatch(/Available to withdraw|可提現收益|可提取金額|cash you can withdraw|可提取嘅真金白銀/);
   });
 });

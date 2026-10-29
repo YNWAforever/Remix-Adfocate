@@ -362,8 +362,8 @@ function EarnPage() {
                 </h3>
                 <p className="relative mt-2 text-sm leading-relaxed text-[var(--color-paper)]/75">
                   {tx(
-                    "Validated campaigns, retainers, and product drops settle as real cash you can withdraw.",
-                    "經驗證嘅活動、Retainer 同 Product Drop 結算成可提取嘅真金白銀。",
+                    "Validated campaigns, retainers, and product drops earn cash credits, paid out by Fimmick finance.",
+                    "經驗證嘅活動、Retainer 同 Product Drop 會累積現金獎賞，由 Fimmick 財務部發放。",
                   )}
                 </p>
               </article>
