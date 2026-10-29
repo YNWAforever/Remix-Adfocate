@@ -100,3 +100,20 @@ describe("operator rejects / requests changes; creator sees reason and recovers"
     expect(notificationTypes(creator.id)).toContain("application_accepted");
   });
 });
+
+describe("active-workspace application → reward contract (F-038)", () => {
+  it("[F-038 fixed] accepting an application freezes the reward contract with the workflow", async () => {
+    const creator = await newCreator();
+    const operator = await newStaff("operator");
+    const m = newMission({ access: "application", mode: "active_workspace", points: 300, cash: 120 });
+    sql(`insert into public.mission_deliverable_templates(workspace_id,mission_id,title,platform,position,required)
+         values ('00000000-0000-0000-0000-0000000000aa',${q(m.id)},'Reel','instagram',0,true);`);
+    expect((await api("POST", `/missions/${m.slug}/apply`, { jwt: creator.jwt })).status).toBe(200);
+    const id = sql(`select id from public.mission_submissions where mission_id=${q(m.id)} and creator_id=${q(creator.id)};`);
+    const accept = await api("POST", `/admin/applications/${id}/accept`, { jwt: operator.jwt, ws: null, body: { request_id: randomUUID() } });
+    expect(accept.status, JSON.stringify(accept.body)).toBe(200);
+    const contract = sql(`select c.points_amount||'|'||c.cash_amount||'|'||c.source from public.mission_reward_contracts c
+      join public.mission_workflows w on w.id=c.mission_workflow_id where w.mission_submission_id=${q(id)};`);
+    expect(contract).toBe("300|120.00|join");
+  });
+});

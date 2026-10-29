@@ -1408,6 +1408,25 @@
       ],
       "transactionExpectation": "transactional",
       "replayExpectation": "migration_history_noop"
+    },
+    {
+      "version": "20261029120000",
+      "name": "application_reward_contract",
+      "path": "supabase/migrations/20261029120000_application_reward_contract.sql",
+      "sha256": "a4a3cfd944c39548cd68d36f1aaa7a061968af1276fe63afb62d4788cc8337a8",
+      "phase": "reward_handoff",
+      "dependsOn": [
+        "20261025120934",
+        "20260731140000"
+      ],
+      "capabilities": [
+        "function:public.decide_mission_application",
+        "grant:service_role.public.decide_mission_application(uuid,uuid,uuid,uuid,bigint,text,text)",
+        "grant-removed:authenticated.public.decide_mission_application(uuid,uuid,uuid,uuid,bigint,text,text)",
+        "grant-removed:anon.public.decide_mission_application(uuid,uuid,uuid,uuid,bigint,text,text)"
+      ],
+      "transactionExpectation": "transactional",
+      "replayExpectation": "migration_history_noop"
     }
   ]
 }

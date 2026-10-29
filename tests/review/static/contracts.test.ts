@@ -47,10 +47,11 @@ describe("notifications and settlement wiring", () => {
     defect(() => expect(sql).toMatch(/'settled'[\s\S]{0,400}mission_pending_rewards|mission_pending_rewards[\s\S]{0,400}'settled'/));
   });
 
-  knownBug("F-038", "accepting an application captures a reward contract in the same transaction", () => {
-    const decide = read("supabase/migrations/20261025120934_application_decisions.sql");
+  it("[F-038 fixed] the latest decide_mission_application captures a reward contract on accept", () => {
+    const files = walk("supabase/migrations").sort().filter(f => /function public\.decide_mission_application/i.test(read(f)));
+    const decide = read(files.at(-1)!);
     expect(decide).toContain("create_mission_workflow");
-    defect(() => expect(decide).toMatch(/mission_reward_contracts|capture_.*contract/));
+    expect(decide).toMatch(/insert into public\.mission_reward_contracts/);
   });
 });
 
