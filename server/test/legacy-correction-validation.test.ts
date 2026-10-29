@@ -21,7 +21,7 @@ vi.mock("../lib/supabase", () => ({
     const read = { table, columns: "", filters: {} as Record<string, unknown> }; h.reads.push(read);
     const query = { select(columns: string) { read.columns = columns; return query; },
       eq(key: string, value: unknown) { read.filters[key] = value; return query; },
-      order() { return query; }, in() { return query; },
+      order() { return query; }, in() { return query; }, range() { return query; },
       then(resolve: (result: unknown) => unknown) {
         return Promise.resolve({ data: table === "mission_submissions" ? [{ id: submission, mission_id: "mission", creator_id: "creator", content_urls: h.urls, legacy_evidence_sql_valid: h.sqlValid }] : [], error: null }).then(resolve);
       },

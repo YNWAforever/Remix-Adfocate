@@ -26,17 +26,32 @@ describe("empty and scale", () => {
   });
 
   for (const n of [250, 1100]) {
-    knownBug("F-046", `the legacy submissions queue loads with ${n} pending items (fails from ~250: enrichment puts every id in the URL → "URI too long" 500)`, async () => {
+    it(`[F-046 fixed] the legacy submissions queue loads all ${n} pending items (was a "URI too long" 500 from ~250)`, async () => {
       const ws = newWorkspace();
       const op = await newStaff("operator", ws.id);
       const m = newMission({ workspaceId: ws.id, quota: 5000 });
       seedQueue(ws.id, m.id, n);
       expect(Number(sql(`select count(*) from public.mission_submissions where mission_id=${q(m.id)} and status='submitted';`))).toBe(n);
       const res = await api("GET", "/admin/submissions?status=submitted", { jwt: op.jwt, ws: null });
-      defect(() => expect(res.status, JSON.stringify(res.body).slice(0, 120)).toBe(200));
+      expect(res.status, JSON.stringify(res.body).slice(0, 120)).toBe(200);
       expect(res.body.submissions).toHaveLength(n);
     }, 300000);
   }
+
+  it("[F-046 fixed] the applications queue and engaged roster load 1,100 rows", async () => {
+    const ws = newWorkspace();
+    const op = await newStaff("operator", ws.id);
+    const m = newMission({ workspaceId: ws.id, quota: 5000, access: "application" });
+    seedQueue(ws.id, m.id, 1100);
+    sql(`update public.mission_submissions set status='applied' where mission_id=${q(m.id)};`);
+    const apps = await api("GET", "/admin/applications", { jwt: op.jwt, ws: null });
+    expect(apps.status, JSON.stringify(apps.body).slice(0, 120)).toBe(200);
+    expect(apps.body.applications).toHaveLength(1100);
+    sql(`update public.mission_submissions set status='joined' where mission_id=${q(m.id)};`);
+    const engaged = await api("GET", "/admin/engaged", { jwt: op.jwt, ws: null });
+    expect(engaged.status).toBe(200);
+    expect(engaged.body.creators).toHaveLength(1100);
+  }, 300000);
 
   it("the legacy submissions queue still loads at 200 pending items (boundary)", async () => {
     const ws = newWorkspace();

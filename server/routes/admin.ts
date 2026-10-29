@@ -5,6 +5,7 @@ import { adminOperatorCrmRoutes } from "./adminOperatorCrm.js";
 import { adminMissionRoutes } from "./adminMissions.js";
 import { makeUserClient, serviceClient } from "../lib/supabase.js";
 import { enrichAdminMissionRows } from "../lib/operatorCrm/repo.js";
+import { fetchAllPages } from "../lib/queryPaging.js";
 import { persistScores } from "../lib/persistScores.js";
 import { shapeEngagedRoster, type EngagedSubmissionRow } from "../lib/engagedRoster.js";
 import { markVerified } from "../lib/social/repo.js";
@@ -150,14 +151,18 @@ adminRoutes.get("/submissions", async (c) => {
   if (submissionId && !/^[0-9a-f-]{36}$/i.test(submissionId)) return c.json({ error: "Invalid submission", code: "bad_request" }, 400);
   const ws = c.req.query("workspace");
   const svc = serviceClient();
-  let q = svc
-    .from("mission_submissions")
-    .select(
-      "id, mission_id, status, content_urls, evidence_revision, legacy_evidence_sql_valid, submitted_at, created_at, creator_id, creators!inner(display_name), missions!inner(slug, title, points_reward)",
-    );
-  q = submissionId ? q.eq("id", submissionId) : q.eq("status", status);
-  if (ws) q = q.eq("missions.workspace_id", ws);
-  const { data, error } = await q.order("submitted_at", { ascending: true });
+  const query = () => {
+    let q = svc
+      .from("mission_submissions")
+      .select(
+        "id, mission_id, status, content_urls, evidence_revision, legacy_evidence_sql_valid, submitted_at, created_at, creator_id, creators!inner(display_name), missions!inner(slug, title, points_reward)",
+      );
+    q = submissionId ? q.eq("id", submissionId) : q.eq("status", status);
+    if (ws) q = q.eq("missions.workspace_id", ws);
+    return q.order("submitted_at", { ascending: true }).order("id");
+  };
+  // Paged: a single read is capped at max_rows (1000) and would silently truncate the queue.
+  const { data, error } = await fetchAllPages((from, to) => query().range(from, to));
   if (error) return c.json({ error: error.message, code: "db_error" }, 500);
   if (submissionId && !data?.length) return c.json({ error: "Not found", code: "not_found" }, 404);
   try {
@@ -244,12 +249,15 @@ adminRoutes.post("/submissions/:id/reject", async (c) => {
 adminRoutes.get("/applications", async (c) => {
   const ws = c.req.query("workspace");
   const svc = serviceClient();
-  let q = svc
-    .from("mission_submissions")
-    .select("id, mission_id, created_at, creator_id, creators!inner(display_name), missions!inner(slug, title, points_reward)")
-    .eq("status", "applied");
-  if (ws) q = q.eq("missions.workspace_id", ws);
-  const { data, error } = await q.order("created_at", { ascending: true });
+  const query = () => {
+    let q = svc
+      .from("mission_submissions")
+      .select("id, mission_id, created_at, creator_id, creators!inner(display_name), missions!inner(slug, title, points_reward)")
+      .eq("status", "applied");
+    if (ws) q = q.eq("missions.workspace_id", ws);
+    return q.order("created_at", { ascending: true }).order("id");
+  };
+  const { data, error } = await fetchAllPages((from, to) => query().range(from, to));
   if (error) return c.json({ error: error.message, code: "db_error" }, 500);
   try {
     return c.json({ applications: await enrichAdminMissionRows(svc, data ?? []) });
@@ -266,14 +274,17 @@ adminRoutes.get("/applications", async (c) => {
 adminRoutes.get("/engaged", async (c) => {
   const ws = c.req.query("workspace");
   const svc = serviceClient();
-  let q = svc
-    .from("mission_submissions")
-    .select(
-      "id, mission_id, creator_id, status, points_awarded, created_at, submitted_at, reviewed_at, review_deadline, creators!inner(id, display_name, avatar_url, level, xp), missions!inner(slug, title)",
-    )
-    .in("status", ["joined", "submitted", "under_review", "approved"]);
-  if (ws) q = q.eq("missions.workspace_id", ws);
-  const { data, error } = await q.order("created_at", { ascending: true });
+  const query = () => {
+    let q = svc
+      .from("mission_submissions")
+      .select(
+        "id, mission_id, creator_id, status, points_awarded, created_at, submitted_at, reviewed_at, review_deadline, creators!inner(id, display_name, avatar_url, level, xp), missions!inner(slug, title)",
+      )
+      .in("status", ["joined", "submitted", "under_review", "approved"]);
+    if (ws) q = q.eq("missions.workspace_id", ws);
+    return q.order("created_at", { ascending: true }).order("id");
+  };
+  const { data, error } = await fetchAllPages((from, to) => query().range(from, to));
   if (error) return c.json({ error: error.message, code: "db_error" }, 500);
   return c.json({ creators: shapeEngagedRoster((data ?? []) as unknown as EngagedSubmissionRow[]) });
 });
