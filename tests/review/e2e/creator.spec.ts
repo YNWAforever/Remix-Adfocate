@@ -98,7 +98,7 @@ knownBug("F-026", "campaign detail shows an error (not an endless spinner) when 
   await defect(() => expect(page.getByText("…", { exact: true })).toHaveCount(0, { timeout: 500 }));
 });
 
-knownBug("F-002", "a shared public passport page never shows the creator's email", async ({ page, browser }) => {
+test("[F-002 fixed] a shared public passport page never shows the creator's email", async ({ page, browser }) => {
   const creator = await newCreator();
   const share = await api("POST", "/me/passport/share", { jwt: creator.jwt });
   const token = share.body.token ?? share.body.share?.token ?? share.body.url?.split("/").pop();
@@ -107,7 +107,7 @@ knownBug("F-002", "a shared public passport page never shows the creator's email
   const pub = await anon.newPage();
   await pub.goto(`/passport/${token}`);
   await pub.waitForLoadState("networkidle");
-  await defect(() => expect(pub.getByText(creator.email)).toHaveCount(0, { timeout: 500 }));
+  await expect(pub.getByText(creator.email)).toHaveCount(0);
   await anon.close();
   void page;
 });

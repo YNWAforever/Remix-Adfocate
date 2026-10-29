@@ -71,7 +71,7 @@ describe("creator inputs", () => {
 });
 
 describe("public passport privacy", () => {
-  knownBug("F-002", "a shared passport never exposes the creator's email address", async () => {
+  it("[F-002 fixed] a shared passport never exposes the creator's email address", async () => {
     const c = await newCreator(); // display_name defaults to the sign-up email (server/routes/me.ts:75)
     const share = await api("POST", "/me/passport/share", { jwt: c.jwt });
     expect(share.status, JSON.stringify(share.body)).toBe(200);
@@ -79,7 +79,19 @@ describe("public passport privacy", () => {
     expect(token).toBeTruthy();
     const pub = await api("GET", `/public/passports/${token}`, { ws: null });
     expect(pub.status).toBe(200);
-    defect(() => expect(JSON.stringify(pub.body)).not.toContain(c.email));
+    expect(JSON.stringify(pub.body)).not.toContain(c.email);
+    expect(pub.body.creator.displayName).toMatch(/^KOC [0-9A-F]{4}$/);
+  });
+});
+
+describe("public passport keeps chosen names", () => {
+  it("a creator-chosen display name (Chinese) is shown unchanged", async () => {
+    const c = await newCreator();
+    await api("PUT", "/me/profile", { jwt: c.jwt, body: { display_name: "陳大文 KOC" } });
+    const share = await api("POST", "/me/passport/share", { jwt: c.jwt });
+    const token = (share.body.token ?? share.body.share?.token ?? share.body.url?.split("/").pop()) as string;
+    const pub = await api("GET", `/public/passports/${token}`, { ws: null });
+    expect(pub.body.creator.displayName).toBe("陳大文 KOC");
   });
 });
 
