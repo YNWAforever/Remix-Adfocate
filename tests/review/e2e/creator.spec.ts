@@ -93,12 +93,13 @@ knownBug("F-029", "the wallet never shows HK$0.00 while earnings are still loadi
   await defect(() => expect(page.getByText("HK$0.00")).toHaveCount(0, { timeout: 500 }));
 });
 
-knownBug("F-026", "campaign detail shows an error (not an endless spinner) when the API fails", async ({ page }) => {
+test("[F-026 fixed] campaign detail shows not-found (not an endless spinner) when the API fails", async ({ page }) => {
   const creator = await newCreator();
   await signIn(page, creator);
   await page.goto("/campaigns/review-does-not-exist");
-  await page.waitForTimeout(4000);
-  await defect(() => expect(page.getByText("…", { exact: true })).toHaveCount(0, { timeout: 500 }));
+  await expect(page.getByText(/doesn't exist or has ended/)).toBeVisible();
+  await page.getByRole("link", { name: /back to challenges/i }).click();
+  await expect(page).toHaveURL(/\/campaigns$/);
 });
 
 test("[F-002 fixed] a shared public passport page never shows the creator's email", async ({ page, browser }) => {
