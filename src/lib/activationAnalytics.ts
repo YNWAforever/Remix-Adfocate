@@ -48,7 +48,7 @@ const REWARD_HANDOFF_WORKFLOW_STATES = ["proof_verified", "reward_pending"] as c
 const REWARD_HANDOFF_CONTRACT_SOURCES = ["join", "operator_backfill", "missing"] as const;
 const REWARD_HANDOFF_DUE_FILTERS = ["all", "overdue", "due_soon", "no_target"] as const;
 const REWARD_HANDOFF_COMPONENT_FILTERS = ["all", "points", "cash", "xp"] as const;
-const REWARD_HANDOFF_STATUS_FILTERS = ["pending", "cancelled"] as const;
+const REWARD_HANDOFF_STATUS_FILTERS = ["pending", "cancelled", "settled"] as const;
 const REWARD_HANDOFF_ERROR_CATEGORIES = [
   "wrong_state",
   "required_proof_incomplete",

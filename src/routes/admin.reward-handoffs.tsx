@@ -5,6 +5,7 @@ import { AdminAuthError } from "@/lib/admin";
 import {
   fetchRewardHandoffs,
   setRewardProcessingWindow,
+  settleRewardHandoff,
   type RewardHandoffListFilters,
   type RewardHandoffQueueItem,
 } from "@/lib/adminRewardHandoff";
@@ -24,12 +25,12 @@ import { useI18n } from "@/lib/i18n";
 export type RewardHandoffSearch = {
   due?: "overdue" | "due_soon" | "no_target";
   component?: "points" | "cash" | "xp";
-  status: "pending" | "cancelled";
+  status: "pending" | "cancelled" | "settled";
 };
 
 const DUE = new Set(["overdue", "due_soon", "no_target"]);
 const COMPONENT = new Set(["points", "cash", "xp"]);
-const STATUS = new Set(["pending", "cancelled"]);
+const STATUS = new Set(["pending", "cancelled", "settled"]);
 
 export function validateRewardHandoffSearch(
   search: Record<string, unknown>,
@@ -190,6 +191,17 @@ export function AdminRewardHandoffsRoute() {
     });
   }
 
+  // One idempotency key per hand-off until it succeeds: a retry after a lost response replays.
+  const settleKeys = useRef(new Map<string, string>());
+  async function settle(item: RewardHandoffQueueItem) {
+    let key = settleKeys.current.get(item.id);
+    if (!key) { key = crypto.randomUUID(); settleKeys.current.set(item.id, key); }
+    await settleRewardHandoff({ workspace: workspaceSlug, pendingRewardId: item.id, idempotencyKey: key });
+    settleKeys.current.delete(item.id);
+    setAdditionalItems([]);
+    await queryClient.invalidateQueries({ queryKey: ["admin-reward-handoffs", workspaceSlug] });
+  }
+
   async function loadMore() {
     if (!nextCursor || loadingMore) return;
     const generation = paginationGenerationRef.current;
@@ -247,6 +259,7 @@ export function AdminRewardHandoffsRoute() {
       hasMore={Boolean(nextCursor)}
       loadingMore={loadingMore}
       onLoadMore={loadMore}
+      onSettle={settle}
     />
   );
 }

@@ -1133,6 +1133,24 @@ const REVIEWED_MIGRATIONS = [
     ],
     transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
   },
+  {
+    version: "20261029130000", name: "reward_settlement", phase: "reward_handoff",
+    dependsOn: ["20260731140000", "20261029120000"],
+    capabilities: [
+      "column:public.mission_pending_rewards.settled_at",
+      "column:public.mission_pending_rewards.settled_by",
+      "column:public.mission_pending_rewards.settlement_idempotency_key",
+      "constraint:public.mission_pending_rewards.mission_pending_rewards_settlement_check",
+      "index:public.point_transactions.point_transactions_mission_reward_uniq",
+      "index:public.earnings_transactions.earnings_transactions_mission_reward_uniq",
+      "function:public.settle_mission_reward_handoff",
+      "grant:service_role.public.settle_mission_reward_handoff(uuid,uuid,uuid,uuid)",
+      "grant-removed:authenticated.public.settle_mission_reward_handoff(uuid,uuid,uuid,uuid)",
+      "grant-removed:anon.public.settle_mission_reward_handoff(uuid,uuid,uuid,uuid)",
+      "grant-removed:public.public.settle_mission_reward_handoff(uuid,uuid,uuid,uuid)",
+    ],
+    transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
+  },
 ] as const satisfies readonly ReviewedMigration[];
 
 const NON_RELEASE_TIMESTAMP_MIGRATIONS = new Set([

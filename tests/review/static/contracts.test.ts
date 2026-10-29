@@ -3,7 +3,6 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
-import { defect, knownBug } from "../support/bug";
 import { formatCreatorCurrency, formatCreatorDate, formatHongKongDateTime } from "../../../src/lib/creatorFormatting";
 
 const read = (p: string) => readFileSync(p, "utf8");
@@ -35,16 +34,16 @@ describe("notifications and settlement wiring", () => {
     expect(cron).toContain("emit_active_mission_deadline_notifications");
   });
 
-  knownBug("F-007", "wallet 'pending' includes active-mission pending reward hand-offs", () => {
+  it("[F-007 fixed] wallet 'pending' includes active-mission pending reward hand-offs", () => {
     const wallet = read("server/routes/wallet.ts");
     expect(wallet).toContain("pending");
-    defect(() => expect(wallet).toMatch(/mission_pending_rewards|reward_handoff/));
+    expect(wallet).toMatch(/mission_pending_rewards|reward_handoff/);
   });
 
-  knownBug("F-007", "a migration settles mission_pending_rewards into a ledger (pending → settled)", () => {
+  it("[F-007 fixed] a migration settles mission_pending_rewards into a ledger (pending → settled)", () => {
     const sql = walk("supabase/migrations").map(read).join("\n");
     expect(sql).toContain("mission_pending_rewards");
-    defect(() => expect(sql).toMatch(/'settled'[\s\S]{0,400}mission_pending_rewards|mission_pending_rewards[\s\S]{0,400}'settled'/));
+    expect(sql).toMatch(/'settled'[\s\S]{0,400}mission_pending_rewards|mission_pending_rewards[\s\S]{0,400}'settled'/);
   });
 
   it("[F-038 fixed] the latest decide_mission_application captures a reward contract on accept", () => {

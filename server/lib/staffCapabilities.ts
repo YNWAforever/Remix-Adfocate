@@ -84,6 +84,7 @@ export function staffRouteRequirement(method: string, path: string): Requirement
     ["POST", ["active-missions/:workflowId/completion", "active-missions/:workflowId/reward-contract", "active-missions/:workflowId/reward-handoff/cancel", "active-missions/:workflowId/fulfillment/shipped", "reward-handoffs/:id/notifications/retry"], workspace("completion.approve")],
     ["GET", ["reward-handoffs"], workspace("reward.read")],
     ["PUT", ["reward-handoffs/settings"], workspace("reward.settings")],
+    ["POST", ["reward-handoffs/:id/settle"], workspace("reward.settings")],
     ["POST", ["gifts/:id/codes"], workspace("reward.settings")],
     ["POST", ["missions", "missions/:id/publish", "missions/:id/close", "missions/:id/duplicate", "campaigns", "campaigns/:id/publish", "campaigns/:id/missions", "campaigns/:id/close", "campaigns/:id/settle"], workspace("mission.manage")],
     ["PATCH", ["missions/:id", "campaigns/:id"], workspace("mission.manage")],

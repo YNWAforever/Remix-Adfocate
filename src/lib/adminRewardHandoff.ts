@@ -61,11 +61,12 @@ export type AdminPendingReward = {
   completionDecisionId: string;
   cancellationDecisionId: string | null;
   reward: Pick<RewardContract, "pointsAmount" | "cashAmount" | "currency" | "xpAmount">;
-  status: "pending" | "cancelled";
+  status: "pending" | "cancelled" | "settled";
   processingWindowDays: number | null;
   targetAt: string | null;
   createdAt: string;
   cancelledAt: string | null;
+  settledAt?: string | null;
   decision: AdminCompletionDecision | null;
 };
 
@@ -114,7 +115,7 @@ export type RewardHandoffListFilters = {
   workspace: string;
   due?: "overdue" | "due_soon" | "no_target" | "";
   component?: "points" | "cash" | "xp" | "";
-  status?: "pending" | "cancelled" | "";
+  status?: "pending" | "cancelled" | "settled" | "";
   cursor?: string;
   limit?: number;
 };
@@ -313,6 +314,15 @@ export function fetchRewardHandoffs(
   return adminFetch<RewardHandoffListResponse>(
     `/admin/reward-handoffs?${query}`,
     { headers: workspaceHeader(normalized.workspace) },
+  );
+}
+
+/** F-007: credit a pending hand-off to the creator's ledgers (workspace admin only). Reuse the
+ *  same idempotency key when retrying an unknown outcome so the server replays, not re-credits. */
+export function settleRewardHandoff(input: { workspace: string; pendingRewardId: string; idempotencyKey: string }) {
+  return mutation<{ workspace: string; idempotencyKey: string }, { pendingReward: unknown }>(
+    `/admin/reward-handoffs/${encodeURIComponent(normalizeIdentifier(input.pendingRewardId))}/settle`,
+    { workspace: input.workspace, idempotencyKey: input.idempotencyKey },
   );
 }
 

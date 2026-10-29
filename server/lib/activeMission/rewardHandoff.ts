@@ -2,6 +2,11 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 type JsonRow = Record<string, unknown>;
 
+/** pending → cancelled (returned for review) or pending → settled (credited to ledgers, F-007). */
+export type RewardHandoffStatus = "pending" | "cancelled" | "settled";
+const isHandoffStatus = (value: string | null): value is RewardHandoffStatus =>
+  value === "pending" || value === "cancelled" || value === "settled";
+
 export type RewardHandoffErrorCode =
   | "VALIDATION_FAILED"
   | "NOT_AUTHENTICATED"
@@ -15,6 +20,7 @@ export type RewardHandoffErrorCode =
   | "PENDING_REWARD_NOT_FOUND"
   | "CANCELLATION_NOT_ALLOWED"
   | "IDEMPOTENCY_CONFLICT"
+  | "INSUFFICIENT_BUDGET"
   | "UNKNOWN";
 
 export class RewardHandoffError extends Error {
@@ -108,12 +114,13 @@ export type PendingReward = {
   rewardContractId?: string;
   completionDecisionId?: string;
   reward: RewardBreakdown;
-  status: "pending" | "cancelled";
+  status: RewardHandoffStatus;
   processingWindowDays: number | null;
   targetAt: string | null;
   cancellationDecisionId?: string | null;
   createdAt: string;
   cancelledAt: string | null;
+  settledAt?: string | null;
   decisionState?: { kind: "approved" | "cancelled"; decidedAt: string };
   decision?: PendingRewardDecision | null;
 };
@@ -166,7 +173,7 @@ export type RewardHandoffListFilters = {
   operatorId: string;
   due?: "overdue" | "due_soon" | "no_target";
   component?: "points" | "cash" | "xp";
-  status: "pending" | "cancelled";
+  status: RewardHandoffStatus;
   cursor?: string;
   limit?: number;
 };
@@ -178,6 +185,7 @@ export type AdminRewardHandoffRepository = {
   listRewardHandoffs(input: RewardHandoffListFilters): Promise<unknown>;
   updateSettings(input: { workspaceSlug: string; operatorId: string; days: number | null }): Promise<unknown>;
   retryNotification(input: { workspaceSlug: string; operatorId: string; pendingRewardId: string; notificationType: "mission_reward_pending" | "mission_reward_pending_cancelled" }): Promise<unknown>;
+  settleRewardHandoff(input: { workspaceSlug: string; operatorId: string; pendingRewardId: string; idempotencyKey: string }): Promise<unknown>;
 };
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -185,7 +193,7 @@ const EVIDENCE_SOURCES = new Set(["mission_brief", "signed_agreement", "operator
 const CANCELLATION_REASONS = new Set(["contract_error", "eligibility_error", "duplicate", "other"]);
 const DUE_FILTERS = new Set(["overdue", "due_soon", "no_target"]);
 const COMPONENT_FILTERS = new Set(["points", "cash", "xp"]);
-const STATUS_FILTERS = new Set(["pending", "cancelled"]);
+const STATUS_FILTERS = new Set(["pending", "cancelled", "settled"]);
 
 function record(value: unknown): JsonRow {
   return value !== null && typeof value === "object" && !Array.isArray(value)
@@ -479,7 +487,7 @@ function operatorPendingReward(value: unknown, decisionValue?: unknown): Pending
   const id = text(row.id);
   const status = text(row.status);
   const createdAt = text(row.created_at ?? row.createdAt);
-  if (!id || (status !== "pending" && status !== "cancelled") || !createdAt) return null;
+  if (!id || !isHandoffStatus(status) || !createdAt) return null;
   const normalizedDecision = decision(decisionValue);
   return {
     id,
@@ -496,6 +504,7 @@ function operatorPendingReward(value: unknown, decisionValue?: unknown): Pending
     cancellationDecisionId: nullableText(row.cancellation_decision_id),
     createdAt,
     cancelledAt: nullableText(row.cancelled_at),
+    settledAt: nullableText(row.settled_at),
     decision: normalizedDecision,
   };
 }
@@ -507,7 +516,7 @@ export function normalizeCreatorRewardHandoffProjection(value: unknown): Pending
   const state = record(row.decisionState);
   const kind = text(state.kind);
   const decidedAt = text(state.decidedAt);
-  if ((status !== "pending" && status !== "cancelled") || !createdAt
+  if (!isHandoffStatus(status) || !createdAt
     || (kind !== "approved" && kind !== "cancelled") || !decidedAt) return null;
   return {
     id: null,
@@ -517,6 +526,7 @@ export function normalizeCreatorRewardHandoffProjection(value: unknown): Pending
     targetAt: nullableText(row.targetAt),
     createdAt,
     cancelledAt: nullableText(row.cancelledAt),
+    settledAt: nullableText(row.settledAt),
     decisionState: { kind, decidedAt },
   };
 }
@@ -537,7 +547,7 @@ export function buildCompletionEligibility(input: {
   if (input.workflowState !== "proof_verified") blockers.push("wrong_state");
   if (required.length === 0 || verified.length !== required.length) blockers.push("required_proof_incomplete");
   if (!input.contract) blockers.push("reward_contract_required");
-  if (input.pendingReward?.status === "pending") blockers.push("pending_reward_exists");
+  if (input.pendingReward?.status === "pending" || input.pendingReward?.status === "settled") blockers.push("pending_reward_exists");
   return {
     eligible: blockers.length === 0,
     blockers,
@@ -596,7 +606,7 @@ function assertCanonicalRewardHandoff(input: {
   const approvalId = text(pending.completion_decision_id);
   const cancellationId = text(pending.cancellation_decision_id);
   const status = text(pending.status);
-  if (!pendingId || !approvalId || (status !== "pending" && status !== "cancelled")
+  if (!pendingId || !approvalId || !isHandoffStatus(status)
     || !same(pending, "workspace_id", input.workspaceId)
     || !same(pending, "mission_workflow_id", workflowId)
     || !same(pending, "mission_submission_id", submissionId)
@@ -611,7 +621,7 @@ function assertCanonicalRewardHandoff(input: {
     || text(approval.pending_reward_id) !== null) {
     throw new RewardHandoffError("FORBIDDEN", "forbidden");
   }
-  if (status === "pending") {
+  if (status === "pending" || status === "settled") {
     if (cancellationId !== null || Object.keys(cancellation).length > 0) {
       throw new RewardHandoffError("FORBIDDEN", "forbidden");
     }
@@ -652,7 +662,7 @@ export function canonicalRewardHandoffQueueItem(
   const contractId = text(row.reward_contract_id);
   const status = text(row.status);
   if (!workflowId || !submissionId || !creatorId || !missionId || !contractId
-    || (status !== "pending" && status !== "cancelled")
+    || !isHandoffStatus(status)
     || !same(workflow, "id", workflowId) || !same(workflow, "workspace_id", workspaceId)
     || !same(workflow, "mission_submission_id", submissionId)
     || !same(submission, "id", submissionId) || !same(submission, "workspace_id", workspaceId)
@@ -669,7 +679,7 @@ export function canonicalRewardHandoffQueueItem(
     || !same(approval, "reward_contract_id", contractId)
     || text(approval.decision_kind) !== "approved"
     || text(approval.pending_reward_id) !== null) return null;
-  if (status === "pending"
+  if ((status === "pending" || status === "settled")
     && (text(row.cancellation_decision_id) !== null || Object.keys(cancellation).length > 0)) return null;
   if (status === "cancelled" && (
     !same(cancellation, "id", text(row.cancellation_decision_id))
@@ -811,6 +821,8 @@ function mapDatabaseError(error: { message?: string | null } | null): never {
     ["backfill_reason_required", "VALIDATION_FAILED"],
     ["reward_contract_source_missing", "VALIDATION_FAILED"],
     ["reward_processing_window_invalid", "VALIDATION_FAILED"],
+    ["insufficient_budget", "INSUFFICIENT_BUDGET"],
+    ["forbidden", "FORBIDDEN"],
     ["not_authorized", "FORBIDDEN"],
     ["not_found", "FORBIDDEN"],
     ["reward_workflow_not_found", "FORBIDDEN"],
@@ -830,6 +842,7 @@ function mapDatabaseError(error: { message?: string | null } | null): never {
     PENDING_REWARD_NOT_FOUND: "Pending reward was not found",
     CANCELLATION_NOT_ALLOWED: "Reward cancellation is not allowed",
     IDEMPOTENCY_CONFLICT: "Idempotency key conflicts with an earlier request",
+    INSUFFICIENT_BUDGET: "The workspace budget cannot cover this reward",
   };
   throw new RewardHandoffError(code, safeMessages[code]);
 }
@@ -1102,6 +1115,18 @@ export function createRewardHandoffRepository(client: SupabaseClient): AdminRewa
       };
     },
 
+    async settleRewardHandoff(input) {
+      const workspace = await authorizedWorkspace(client, input.workspaceSlug, input.operatorId);
+      const result = await client.rpc("settle_mission_reward_handoff", {
+        p_workspace: workspace.id,
+        p_pending_reward: input.pendingRewardId,
+        p_operator: input.operatorId,
+        p_idempotency_key: input.idempotencyKey,
+      });
+      if (result.error) mapDatabaseError(result.error);
+      return operatorPendingReward(result.data);
+    },
+
     async retryNotification(input) {
       const workspace = await authorizedWorkspace(client, input.workspaceSlug, input.operatorId);
       const result = await client.rpc("retry_reward_handoff_notification", {
@@ -1138,7 +1163,8 @@ export function rewardHandoffStatus(code: RewardHandoffErrorCode): 400 | 401 | 4
   if (code === "FORBIDDEN") return 403;
   if (code === "WORKFLOW_STALE" || code === "WRONG_STATE" || code === "IDEMPOTENCY_CONFLICT"
     || code === "PENDING_REWARD_EXISTS" || code === "PENDING_REWARD_NOT_FOUND"
-    || code === "CANCELLATION_NOT_ALLOWED" || code === "REWARD_CONTRACT_EXISTS") return 409;
+    || code === "CANCELLATION_NOT_ALLOWED" || code === "REWARD_CONTRACT_EXISTS"
+    || code === "INSUFFICIENT_BUDGET") return 409;
   if (code === "REWARD_CONTRACT_REQUIRED" || code === "COMPLETION_NOT_ELIGIBLE") return 422;
   return 500;
 }

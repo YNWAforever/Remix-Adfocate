@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import type { Env } from "../app.js";
-import { makeUserClient } from "../lib/supabase.js";
+import { makeUserClient, serviceClient } from "../lib/supabase.js";
 import { dbError } from "../lib/httpErrors.js";
 
 export const walletRoutes = new Hono<Env>();
@@ -46,10 +46,21 @@ walletRoutes.get("/earnings", async (c) => {
     .eq("creator_id", userId)
     .in("status", ["submitted", "under_review"]);
   if (pErr) return dbError(c, pErr, "db_error", 500);
-  const pending = (pend ?? []).reduce(
+  const legacyPending = (pend ?? []).reduce(
     (sum, r) => sum + Number((r as { missions?: { cash_reward?: number | null } }).missions?.cash_reward ?? 0),
     0,
   );
+
+  // + active-workspace rewards awaiting finance settlement (F-007). Creators cannot read
+  // mission_pending_rewards under RLS, so this is a service read scoped to the caller.
+  const { data: handoffs, error: hErr } = await serviceClient()
+    .from("mission_pending_rewards")
+    .select("cash_amount")
+    .eq("creator_id", userId)
+    .eq("workspace_id", c.get("workspaceId"))
+    .eq("status", "pending");
+  if (hErr) return dbError(c, hErr, "db_error", 500);
+  const pending = legacyPending + (handoffs ?? []).reduce((sum, r) => sum + Number(r.cash_amount ?? 0), 0);
 
   return c.json({ available: Number(bal?.available ?? 0), pending });
 });
