@@ -10,6 +10,7 @@ import { createPublicToken, hashPublicToken } from "../lib/tokens.js";
 import { isTrusted, effectiveLevel } from "../lib/trust.js";
 import { projectSocialAccounts } from "../../src/lib/socialAccountPresentation.js";
 import { dbError } from "../lib/httpErrors.js";
+import { profileInputError } from "../lib/profileInput.js";
 
 /** Supabase stores phone digits without a leading '+'. Re-add it for E.164 display. */
 function toE164(phone: string | null | undefined): string | null {
@@ -149,6 +150,8 @@ meRoutes.put("/profile", async (c) => {
   } catch {
     // Empty or non-JSON body → treat as a no-op (the empty-patch guard below returns the current row).
   }
+  const invalid = profileInputError(body as Record<string, unknown>);
+  if (invalid) return c.json({ error: "資料格式或長度不正確 / Invalid or too long profile field", code: "invalid_profile", field: invalid }, 400);
   const supabase = makeUserClient(c.get("jwt"));
 
   const patch: Record<string, unknown> = {};

@@ -2,7 +2,6 @@
 // on creator and admin forms; plus the public passport privacy leak.
 import { describe, expect, it } from "vitest";
 import { randomUUID } from "node:crypto";
-import { defect, knownBug } from "../support/bug";
 import { api, newCreator, newMission, newUser, sql, q } from "../support/fixture";
 
 const XSS = `<img src=x onerror="alert(document.cookie)"><script>alert(1)</script>`;
@@ -19,16 +18,17 @@ describe("creator inputs", () => {
 
   it("XSS payloads are stored as inert text and returned as JSON strings (rendering relies on React escaping)", async () => {
     const c = await newCreator();
-    const put = await api("PUT", "/me/profile", { jwt: c.jwt, body: { display_name: XSS } });
+    const put = await api("PUT", "/me/profile", { jwt: c.jwt, body: { display_name: `<img src=x onerror="alert(1)">` } });
     expect(put.status).toBe(200);
     const me = await api("GET", "/me", { jwt: c.jwt });
     expect(typeof me.body).toBe("object"); // JSON, never HTML
   });
 
-  knownBug("F-028", "a 100,000-character display name is rejected", async () => {
+  it("[F-028 fixed] a 100,000-character display name is rejected", async () => {
     const c = await newCreator();
     const put = await api("PUT", "/me/profile", { jwt: c.jwt, body: { display_name: "長".repeat(100_000) } });
-    defect(() => expect(put.status).toBe(400));
+    expect(put.status).toBe(400);
+    expect(put.body.field).toBe("display_name");
   });
 
   it("[F-028 fixed via F-032] malformed JSON on submit returns 400, not 500", async () => {

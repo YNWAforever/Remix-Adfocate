@@ -4,6 +4,7 @@ import { missionCategoryValues } from "../../src/lib/missionCategories.js";
 import type { Env } from "../app.js";
 import { makeUserClient, serviceClient } from "../lib/supabase.js";
 import { dbError } from "../lib/httpErrors.js";
+import { profileInputError } from "../lib/profileInput.js";
 
 export const onboardingRoutes = new Hono<Env>();
 
@@ -30,6 +31,8 @@ onboardingRoutes.put("/profile", async (c) => {
     categories?: string[];
     step?: number;
   }>();
+  const invalid = profileInputError(body as Record<string, unknown>);
+  if (invalid) return c.json({ error: "資料格式或長度不正確 / Invalid or too long profile field", code: "invalid_profile", field: invalid }, 400);
   const supabase = makeUserClient(c.get("jwt"));
 
   const { data: cur, error: readErr } = await supabase
