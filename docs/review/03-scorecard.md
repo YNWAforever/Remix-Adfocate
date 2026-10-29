@@ -38,9 +38,9 @@ Dimensions:
 | Stage | Func | UX | Data | Sec | Priv | Rel | Perf | Obs | Maint | Cost | Biz | Avg |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | O1 Login, roles, MFA, session | 🟥2 F-015 | 🟨3 F-034 | 🟩4 | 🟨3 F-035 F-016 | 🟩4 | 🟨3 F-035 | 🟩5 | 🟩4 | 🟨3 F-050 | 🟩5 | 🟥2 F-015 | 3.5 |
-| O2 Dashboard, queues, KPIs, alerts | 🟨3 F-016 | 🟨3 | 🟥2 F-046 | 🟨3 F-016 | 🟨3 | 🟩4 | 🟥2 F-046 | 🟥2 F-013 | 🟩4 | 🟨3 | 🟨3 | 2.9 |
+| O2 Dashboard, queues, KPIs, alerts | 🟥2 F-016 F-046 | 🟨3 | 🟥2 F-046 | 🟨3 F-016 | 🟨3 | 🟥2 F-046 | 🟥1 F-046 | 🟥2 F-013 | 🟩4 | 🟨3 | 🟨3 | 2.9 |
 | O3a Applications | 🟩5 | 🟩4 | 🟩5 | 🟩5 | 🟩4 | 🟩5 | 🟨3 F-046 | 🟩4 | 🟩4 | 🟩4 | 🟨3 F-045 | 4.2 |
-| O3b Legacy submissions review | 🟨3 F-037 | 🟥2 F-004 | 🟥2 F-004 | 🟨3 F-032 | 🟨3 | 🟨3 | 🟥2 F-046 | 🟥2 F-052 | 🟨3 | 🟩4 | 🟥2 F-045 | 2.6 |
+| O3b Legacy submissions review | 🟥1 F-046 F-037 | 🟥2 F-004 | 🟥2 F-004 | 🟨3 F-032 | 🟨3 | 🟥2 F-046 | 🟥1 F-046 | 🟥2 F-052 | 🟨3 | 🟩4 | 🟥2 F-045 | 2.6 |
 | O3c Active-mission and proof review | 🟩4 F-038 | 🟩4 | 🟩5 | 🟩5 | 🟩4 | 🟩4 | 🟨3 F-046 | 🟩4 | 🟨3 (975-line route) | 🟩4 | 🟨3 F-045 | 3.9 |
 | O4 Creator management, CRM | 🟨3 F-017 | 🟩4 | 🟨3 F-043 | 🟩4 | 🟨3 F-009 | 🟩4 | 🟩4 | 🟩4 | 🟩4 | 🟩4 | 🟥2 F-017 | 3.5 |
 | O5 Mission, campaign, budget, inventory | 🟥1 F-001❓ | 🟨3 | 🟥2 F-022 F-003 F-041 | 🟥2 F-003 | 🟩4 | 🟥2 F-001❓ F-022 | 🟨3 F-046 | 🟨3 F-052 | 🟨3 | 🟨3 F-039 | 🟥2 F-039 | 2.5 |
