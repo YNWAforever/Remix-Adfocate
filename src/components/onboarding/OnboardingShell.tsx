@@ -14,6 +14,7 @@ export function OnboardingShell({
   onBack,
   onDiscardAndBack,
   onCancelDiscard,
+  onSignOut,
   children,
 }: {
   step: number;
@@ -25,6 +26,8 @@ export function OnboardingShell({
   onBack: () => void;
   onDiscardAndBack: () => void;
   onCancelDiscard: () => void;
+  /** Onboarding hides the app navigation, so the shell offers the only way out. */
+  onSignOut?: () => void;
   children: ReactNode;
 }) {
   const { t } = useI18n();
@@ -64,7 +67,14 @@ export function OnboardingShell({
             <span className="font-display text-lg font-bold text-[var(--color-ink)]">
               Adfocate<span className="text-[var(--color-magenta)]">.</span>
             </span>
-            <span className="tag-mono">{t("app.onboarding.stepLabel", { step, total: totalSteps })}</span>
+            <span className="flex items-center gap-3">
+              <span className="tag-mono">{t("app.onboarding.stepLabel", { step, total: totalSteps })}</span>
+              {onSignOut ? (
+                <button type="button" onClick={onSignOut} className="text-xs font-semibold underline underline-offset-4">
+                  {t("app.profile.signOut")}
+                </button>
+              ) : null}
+            </span>
           </div>
           <ProgressBar value={step} max={totalSteps} />
           <div className="flex min-h-6 items-center justify-between gap-3">

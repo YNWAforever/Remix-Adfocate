@@ -72,13 +72,16 @@ test("[F-010 fixed] a rejected creator sees the reviewer's reason on the mission
   await expect(page.getByText(/Lighting too dark — please reshoot/)).toBeVisible();
 });
 
-knownBug("F-018", "the 'visit guide' link during onboarding opens the guide", async ({ page }) => {
+test("[F-018 fixed] the 'visit guide' link during onboarding opens the guide, and sign-out is available", async ({ page }) => {
   const user = await newUser("ui-onb");
   await signIn(page, user);
   await expect(page).toHaveURL(/\/onboarding/);
   await page.locator('a[href="/guide"]').first().click();
   await page.waitForLoadState("networkidle");
-  await defect(() => expect(page).toHaveURL(/\/guide/, { timeout: 3000 }));
+  await expect(page).toHaveURL(/\/guide/);
+  await page.goto("/onboarding");
+  await page.getByRole("button", { name: /sign out|登出/i }).click();
+  await expect(page).toHaveURL(/\/login/);
 });
 
 knownBug("F-029", "the wallet never shows HK$0.00 while earnings are still loading", async ({ page }) => {
