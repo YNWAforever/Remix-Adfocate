@@ -17,6 +17,7 @@ import { publicRoutes } from "./routes/public.js";
 import { socialRoutes } from "./routes/social.js";
 import { cronRoutes } from "./routes/cron.js";
 import { profileMediaRoutes } from "./routes/profileMedia.js";
+import { consentRoutes } from "./routes/consents.js";
 import { contentRoutes } from "./routes/content.js";
 import { academyRoutes } from "./routes/academy.js";
 import { academyLessonsRoutes } from "./routes/academyLessons.js";
@@ -53,6 +54,7 @@ export function createApp() {
   guarded.use("*", workspaceAuth);
   guarded.route("/me", meRoutes);
   guarded.route("/me/profile-media", profileMediaRoutes);
+  guarded.route("/me/consents", consentRoutes);
   guarded.route("/onboarding", onboardingRoutes);
   guarded.route("/wallet", walletRoutes);
   guarded.route("/missions", missionRoutes);

@@ -44,6 +44,16 @@ const REMEDIATION_CAPABILITIES = [
   "grant-removed:authenticated.public.assistant_messages(delete)",
   "policy:public.assistant_conversations.conv_self",
   "policy:public.assistant_messages.msg_self",
+  "table:public.creator_consents",
+  "rls:public.creator_consents",
+  "index:public.creator_consents.creator_consents_creator_document_idx",
+  "policy:public.creator_consents.creator_consents_self_read",
+  "trigger:public.creator_consents.creator_consents_append_only",
+  "function:private.creator_consents_append_only",
+  "grant:authenticated.public.creator_consents(select)",
+  "grant-removed:authenticated.public.creator_consents(insert)",
+  "grant-removed:anon.public.creator_consents(select)",
+  "grant:service_role.public.creator_consents(insert)",
 ];
 
 describe("release preflight", () => {

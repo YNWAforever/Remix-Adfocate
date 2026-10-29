@@ -2,6 +2,7 @@ import { useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { CreatorProfileMediaPanel } from "@/components/CreatorProfileMediaPanel";
+import { MarketingConsentToggle } from "@/components/ConsentGate";
 import { FilterPillsMulti } from "@/components/FilterPills";
 import { IdentityHeader } from "@/components/IdentityHeader";
 import { LangToggle } from "@/components/LangToggle";
@@ -254,6 +255,9 @@ function Profile() {
           </div>
         </fieldset>
       )}
+      <section className={`${CARD} p-5`}>
+        <MarketingConsentToggle />
+      </section>
     </div>
   );
 }

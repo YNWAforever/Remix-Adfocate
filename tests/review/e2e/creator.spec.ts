@@ -11,6 +11,15 @@ async function signIn(page: Page, actor: Actor) {
   await expect(page).not.toHaveURL(/\/login/);
 }
 
+async function acceptConsent(page: Page) {
+  const dialog = page.getByRole("dialog", { name: /before you continue/i });
+  await expect(dialog).toBeVisible();
+  await expect(dialog.getByRole("button", { name: /accept and continue/i })).toBeDisabled();
+  await dialog.getByLabel(/agree to the terms of service/i).check();
+  await dialog.getByRole("button", { name: /accept and continue/i }).click();
+  await expect(dialog).toHaveCount(0);
+}
+
 const noHorizontalOverflow = (page: Page) => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth);
 
 test("onboarded creator signs in, lands in the app, and sees an empty 'My missions' state", async ({ page }) => {
@@ -75,6 +84,7 @@ test("[F-018 fixed] the 'visit guide' link during onboarding opens the guide, an
   const user = await newUser("ui-onb");
   await signIn(page, user);
   await expect(page).toHaveURL(/\/onboarding/);
+  await acceptConsent(page);
   await page.locator('a[href="/guide"]').first().click();
   await page.waitForLoadState("networkidle");
   await expect(page).toHaveURL(/\/guide/);
@@ -114,4 +124,14 @@ test("[F-002 fixed] a shared public passport page never shows the creator's emai
   await expect(pub.getByText(creator.email)).toHaveCount(0);
   await anon.close();
   void page;
+});
+
+test("[F-008 fixed] a new account must accept the Terms and Privacy Policy before using the app, once", async ({ page }) => {
+  const user = await newUser("ui-consent");
+  await signIn(page, user);
+  await expect(page).toHaveURL(/\/onboarding/);
+  await expect(page.getByRole("link", { name: /privacy policy/i })).toHaveAttribute("href", "/legal/privacy");
+  await acceptConsent(page);
+  await page.reload();
+  await expect(page.getByRole("dialog", { name: /before you continue/i })).toHaveCount(0);
 });

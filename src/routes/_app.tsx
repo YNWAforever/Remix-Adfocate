@@ -10,6 +10,7 @@ import { SideNav } from "@/components/SideNav";
 import { AssistantLauncher } from "@/components/assistant/AssistantLauncher";
 import { LevelUpModal } from "@/components/LevelUpModal";
 import { NotificationToaster } from "@/components/NotificationToaster";
+import { ConsentGate } from "@/components/ConsentGate";
 import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/_app")({
@@ -78,6 +79,7 @@ function Layout() {
       {showNav && <SideNav />}
       <main id="main"><Outlet /></main>
       <LevelUpModal />
+      <ConsentGate enabled={!(path === "/login" || path.startsWith("/auth/"))} />
       {showNav && <BottomNav />}
       {showNav && <AssistantLauncher />}
       {showNav && <NotificationToaster />}

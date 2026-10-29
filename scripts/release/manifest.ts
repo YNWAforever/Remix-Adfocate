@@ -1184,6 +1184,23 @@ const REVIEWED_MIGRATIONS = [
     ],
     transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
   },
+  {
+    version: "20261029170000", name: "creator_consents", phase: "privacy_compliance",
+    dependsOn: [],
+    capabilities: [
+      "table:public.creator_consents",
+      "rls:public.creator_consents",
+      "index:public.creator_consents.creator_consents_creator_document_idx",
+      "policy:public.creator_consents.creator_consents_self_read",
+      "trigger:public.creator_consents.creator_consents_append_only",
+      "function:private.creator_consents_append_only",
+      "grant:authenticated.public.creator_consents(select)",
+      "grant-removed:authenticated.public.creator_consents(insert)",
+      "grant-removed:anon.public.creator_consents(select)",
+      "grant:service_role.public.creator_consents(insert)",
+    ],
+    transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
+  },
 ] as const satisfies readonly ReviewedMigration[];
 
 const NON_RELEASE_TIMESTAMP_MIGRATIONS = new Set([
@@ -1359,7 +1376,7 @@ export function parseReleaseManifest(value: unknown): ReleaseManifest {
     if (
       migration.phase !== "active_mission" &&
       migration.phase !== "publication_proof" &&
-      migration.phase !== "reward_handoff" && migration.phase !== "legacy_evidence" && migration.phase !== "operator_crm" && migration.phase !== "assistant_requests" && migration.phase !== "academy_learning" && migration.phase !== "staff_access" && migration.phase !== "redemption"
+      migration.phase !== "reward_handoff" && migration.phase !== "legacy_evidence" && migration.phase !== "operator_crm" && migration.phase !== "assistant_requests" && migration.phase !== "academy_learning" && migration.phase !== "staff_access" && migration.phase !== "redemption" && migration.phase !== "privacy_compliance"
     ) {
       invalid(`${path}.phase`, "is invalid");
     }
@@ -1531,7 +1548,7 @@ export async function validateManifest(
     "active_mission",
     "publication_proof",
     "reward_handoff",
-    "legacy_evidence", "operator_crm", "assistant_requests", "academy_learning", "staff_access", "redemption",
+    "legacy_evidence", "operator_crm", "assistant_requests", "academy_learning", "staff_access", "redemption", "privacy_compliance",
   ] satisfies ReleasePhase[]) {
     if (!parsed.migrations.some((migration) => migration.phase === phase)) {
       pushUnique(errors, `missing release phase: ${phase}`);

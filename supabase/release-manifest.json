@@ -1508,6 +1508,28 @@
       ],
       "transactionExpectation": "transactional",
       "replayExpectation": "migration_history_noop"
+    },
+    {
+      "version": "20261029170000",
+      "name": "creator_consents",
+      "path": "supabase/migrations/20261029170000_creator_consents.sql",
+      "sha256": "18197ffb547ad82068cec7a36c7dcf30a58e3e8a1344d72907af06c8e9bead13",
+      "phase": "privacy_compliance",
+      "dependsOn": [],
+      "capabilities": [
+        "table:public.creator_consents",
+        "rls:public.creator_consents",
+        "index:public.creator_consents.creator_consents_creator_document_idx",
+        "policy:public.creator_consents.creator_consents_self_read",
+        "trigger:public.creator_consents.creator_consents_append_only",
+        "function:private.creator_consents_append_only",
+        "grant:authenticated.public.creator_consents(select)",
+        "grant-removed:authenticated.public.creator_consents(insert)",
+        "grant-removed:anon.public.creator_consents(select)",
+        "grant:service_role.public.creator_consents(insert)"
+      ],
+      "transactionExpectation": "transactional",
+      "replayExpectation": "migration_history_noop"
     }
   ]
 }

@@ -61,10 +61,15 @@ export async function newUser(prefix: string): Promise<Actor> {
 }
 
 /** Bootstrap a creator through the real API; optionally finish onboarding (welcome bonus). */
-export async function newCreator(opts: { onboard?: boolean; slug?: string } = {}): Promise<Actor> {
+export async function newCreator(opts: { onboard?: boolean; slug?: string; consent?: boolean } = {}): Promise<Actor> {
   const user = await newUser("creator");
   const res = await api("POST", "/me/bootstrap", { jwt: user.jwt, body: { slug: opts.slug ?? "demo" }, ws: null });
   if (res.status !== 200) throw new Error(`bootstrap ${res.status} ${JSON.stringify(res.body)}`);
+  if (opts.consent !== false) {
+    const { LEGAL_VERSIONS } = await import("../../../src/lib/legalVersions");
+    const ok = await api("POST", "/me/consents", { jwt: user.jwt, body: { terms_version: LEGAL_VERSIONS.terms, privacy_version: LEGAL_VERSIONS.privacy } });
+    if (ok.status !== 200) throw new Error(`consent ${ok.status} ${JSON.stringify(ok.body)}`);
+  }
   if (opts.onboard !== false) {
     const done = await api("POST", "/onboarding/complete", { jwt: user.jwt });
     if (done.status !== 200) throw new Error(`onboarding/complete ${done.status} ${JSON.stringify(done.body)}`);
