@@ -1160,6 +1160,15 @@ const REVIEWED_MIGRATIONS = [
     ],
     transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
   },
+  {
+    version: "20261029150000", name: "kb_workspace_scope", phase: "assistant_requests",
+    dependsOn: ["20261022171843"],
+    capabilities: [
+      "policy:public.kb_documents.kb_documents_read",
+      "policy:public.kb_chunks.kb_chunks_read",
+    ],
+    transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
+  },
 ] as const satisfies readonly ReviewedMigration[];
 
 const NON_RELEASE_TIMESTAMP_MIGRATIONS = new Set([

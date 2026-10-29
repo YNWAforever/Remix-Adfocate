@@ -157,13 +157,20 @@ describe("brand boundaries and direct database access", () => {
     expect(neg.error?.message ?? "").toMatch(/missions_points_reward_nonneg/);
   });
 
-  knownBug("F-047", "a creator cannot read another workspace's knowledge-base documents", async () => {
+  it("[F-047 fixed] a creator cannot read another workspace's knowledge-base documents, but sees global and own ones", async () => {
     const other = newWorkspace();
     sql(`insert into public.kb_documents(source_type,source_ref,title,workspace,content,content_hash) values ('mission_brief',${q(randomUUID())},'Other brand secret pricing',${q(other.slug)},'confidential','h');`);
     const creator = await newCreator();
     const res = await creator.client.from("kb_documents").select("title").eq("workspace", other.slug);
     expect(res.error).toBeNull();
-    defect(() => expect(res.data ?? []).toHaveLength(0));
+    expect(res.data ?? []).toHaveLength(0);
+    const tag = randomUUID();
+    sql(`insert into public.kb_documents(source_type,source_ref,title,workspace,content,content_hash) values
+      ('mission_brief',${q(tag + "-g")},'Global ${tag}',null,'g','h'),
+      ('mission_brief',${q(tag + "-id")},'Own by id ${tag}',${q(DEMO_WORKSPACE)},'o','h'),
+      ('mission_brief',${q(tag + "-slug")},'Own by slug ${tag}','demo','s','h');`);
+    const mine = await creator.client.from("kb_documents").select("title").like("title", `%${tag}`);
+    expect((mine.data ?? []).map(r => r.title).sort()).toEqual([`Global ${tag}`, `Own by id ${tag}`, `Own by slug ${tag}`]);
   });
 
   knownBug("F-048", "a creator cannot forge an 'assistant' message in their chat history", async () => {

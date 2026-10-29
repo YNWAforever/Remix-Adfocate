@@ -34,6 +34,8 @@ const REMEDIATION_CAPABILITIES = [
   "grant-removed:authenticated.public.settle_mission_reward_handoff(uuid,uuid,uuid,uuid)",
   "grant-removed:anon.public.settle_mission_reward_handoff(uuid,uuid,uuid,uuid)",
   "grant-removed:public.public.settle_mission_reward_handoff(uuid,uuid,uuid,uuid)",
+  "policy:public.kb_documents.kb_documents_read",
+  "policy:public.kb_chunks.kb_chunks_read",
 ];
 
 describe("release preflight", () => {

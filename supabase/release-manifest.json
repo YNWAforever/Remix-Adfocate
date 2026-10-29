@@ -1470,6 +1470,22 @@
       ],
       "transactionExpectation": "transactional",
       "replayExpectation": "migration_history_noop"
+    },
+    {
+      "version": "20261029150000",
+      "name": "kb_workspace_scope",
+      "path": "supabase/migrations/20261029150000_kb_workspace_scope.sql",
+      "sha256": "a14e2b6160ef324b1eed28625630901d1f2a2feff7317a35a272e5eeaee463ee",
+      "phase": "assistant_requests",
+      "dependsOn": [
+        "20261022171843"
+      ],
+      "capabilities": [
+        "policy:public.kb_documents.kb_documents_read",
+        "policy:public.kb_chunks.kb_chunks_read"
+      ],
+      "transactionExpectation": "transactional",
+      "replayExpectation": "migration_history_noop"
     }
   ]
 }

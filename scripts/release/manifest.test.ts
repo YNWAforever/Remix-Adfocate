@@ -75,6 +75,7 @@ const REVIEWED_FILES = [
   "20261029120000_application_reward_contract.sql",
   "20261029130000_reward_settlement.sql",
   "20261029140000_correction_notification.sql",
+  "20261029150000_kb_workspace_scope.sql",
 ] as const;
 
 // Pinned by checksum in manifest.ts, so the fixture copies the repository's real bytes instead of
