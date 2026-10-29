@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { isStaleEdit, staleEdit } from "./adminMissions.js";
 import { serviceClient } from "../lib/supabase.js";
 import {
   type CampaignInput, type CampaignRecord, validateCampaign, validateEdit,
@@ -78,11 +79,17 @@ adminCampaignRoutes.patch("/campaigns/:id", async (c) => {
   const { ok, errors } = validateEdit(existing as unknown as CampaignRecord, patch, hasEngagement);
   if (!ok) return c.json({ error: "請修正欄位", code: "validation", fields: errors }, 422);
   const updates = { ...pickEditable(patch), updated_at: new Date().toISOString() };
-  const { data, error } = await svc.from("campaigns").update(updates).eq("id", id).select(CAMPAIGN_COLS).single();
+  // Optimistic lock: the update only applies to the version the editor loaded.
+  const expected = (patch as { expected_updated_at?: unknown }).expected_updated_at;
+  if (isStaleEdit(expected, (existing as unknown as { updated_at: string }).updated_at)) return staleEdit(c);
+  let update = svc.from("campaigns").update(updates).eq("id", id);
+  if (typeof expected === "string" && expected) update = update.eq("updated_at", expected);
+  const { data, error } = await update.select(CAMPAIGN_COLS).maybeSingle();
   if (error) {
     if (error.code === "23505") return c.json({ error: "Slug 已被使用", code: "validation", fields: { slug: "重複" } }, 422);
     return c.json({ error: error.message, code: "db_error" }, 500);
   }
+  if (!data) return staleEdit(c);
   return c.json({ campaign: data });
 });
 
@@ -95,10 +102,12 @@ adminCampaignRoutes.post("/campaigns/:id/publish", async (c) => {
   if ((existing as unknown as CampaignRecord).status !== "draft") return c.json({ error: "wrong_state", code: "conflict" }, 409);
   const { ok, errors } = validateCampaign(existing as unknown as CampaignInput, "publish");
   if (!ok) return c.json({ error: "未符合發佈條件", code: "validation", fields: errors }, 422);
+  // Conditional on draft so a double submit cannot publish twice or broadcast twice.
   const { data, error } = await svc.from("campaigns")
     .update({ status: "active", published_at: new Date().toISOString(), updated_at: new Date().toISOString() })
-    .eq("id", id).select(CAMPAIGN_COLS).single();
+    .eq("id", id).eq("status", "draft").select(CAMPAIGN_COLS).maybeSingle();
   if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  if (!data) return c.json({ error: "wrong_state", code: "conflict" }, 409);
   await notifyCampaignStarted(c.req.param("id"));   // best-effort; never throws
   return c.json({ campaign: data });
 });

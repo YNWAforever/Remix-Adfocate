@@ -974,7 +974,8 @@ export type MissionDraftInput = {
   reference_links?: string[];
   deliverable_templates?: MissionDeliverableTemplateInput[];
 } & Partial<MissionWorkflowPolicyInput>;
-export type MissionPatch = Partial<MissionDraftInput>;
+/** `expected_updated_at` is the version being edited; a newer server copy answers 409 STALE_EDIT. */
+export type MissionPatch = Partial<MissionDraftInput> & { expected_updated_at?: string };
 
 export const adminMissionKeys = {
   workspaces: ["admin-workspaces"] as const,
@@ -1138,8 +1139,9 @@ export type AdminCampaign = {
   completion_bonus_points: number;
   completion_bonus_xp: number;
   prize_tiers: CampaignPrizeTier[];
+  updated_at?: string;
 };
-export type CampaignDraftInput = Omit<AdminCampaign, "id" | "status"> & { workspace_id: string };
+export type CampaignDraftInput = Omit<AdminCampaign, "id" | "status" | "updated_at"> & { workspace_id: string };
 
 export type AdminCampaignMission = {
   mission_id: string;
@@ -1160,7 +1162,7 @@ export function fetchCampaign(id: string) {
 export function createCampaign(body: Partial<CampaignDraftInput>) {
   return adminFetch<{ campaign: AdminCampaign }>("/admin/campaigns", { method: "POST", body: JSON.stringify(body) });
 }
-export function updateCampaign(id: string, patch: Partial<CampaignDraftInput>) {
+export function updateCampaign(id: string, patch: Partial<CampaignDraftInput> & { expected_updated_at?: string }) {
   return adminFetch<{ campaign: AdminCampaign }>(`/admin/campaigns/${id}`, { method: "PATCH", body: JSON.stringify(patch) });
 }
 export function publishCampaign(id: string) {

@@ -1,5 +1,5 @@
 // server/routes/adminMissions.ts
-import { Hono } from "hono";
+import { Hono, type Context } from "hono";
 import { serviceClient } from "../lib/supabase.js";
 import {
   type MissionInput, type MissionRecord, validateMission, validateEdit,
@@ -48,6 +48,16 @@ type PersistMissionWorkflowAuthoringInput = {
   policy: MissionWorkflowPolicyInput;
   templates: MissionDeliverableTemplateInput[];
 };
+
+/** True when the client sent the version it edited and the row has changed since. */
+export function isStaleEdit(expected: unknown, current: string | null | undefined): boolean {
+  if (typeof expected !== "string" || !expected || !current) return false;
+  return Date.parse(expected) !== Date.parse(current);
+}
+
+export function staleEdit(c: Context) {
+  return c.json({ error: "此項目已被其他人更新，請重新載入後再儲存。 / This was changed by someone else. Reload, then save again.", code: "STALE_EDIT" }, 409);
+}
 
 export function persistMissionWorkflowAuthoring(
   svc: MissionWorkflowRpcClient,
@@ -208,6 +218,10 @@ adminMissionRoutes.patch("/missions/:id", async (c) => {
   if ((existing as unknown as { status: string }).status === "closed") {
     return c.json({ error: "已關閉的任務不可編輯", code: "invalid_transition" }, 409);
   }
+  // Optimistic lock: an editor saving over a newer version gets a conflict, not a silent overwrite.
+  if (isStaleEdit((patch as { expected_updated_at?: unknown }).expected_updated_at, (existing as unknown as { updated_at: string }).updated_at)) {
+    return staleEdit(c);
+  }
 
   const { count, error: cErr } = await countEngaged(svc, id);
   if (cErr) return c.json({ error: cErr.message, code: "db_error" }, 500);
@@ -265,9 +279,11 @@ adminMissionRoutes.post("/missions/:id/publish", async (c) => {
   if (!workflow.ok) return c.json({ error: "validation_failed", code: "validation", fields: workflow.errors }, 422);
 
   const now = new Date().toISOString();
+  // Conditional on the status read above, so a double submit cannot publish twice.
   const { data, error: uErr } = await svc.from("missions")
-    .update({ status: "active", published_at: now, updated_at: now }).eq("id", id).select(MISSION_COLS).single();
+    .update({ status: "active", published_at: now, updated_at: now }).eq("id", id).eq("status", "draft").select(MISSION_COLS).maybeSingle();
   if (uErr) return c.json({ error: uErr.message, code: "db_error" }, 500);
+  if (!data) return c.json({ error: "只有草稿可以發佈", code: "invalid_transition" }, 409);
   return c.json({ mission: data });
 });
 
@@ -281,8 +297,9 @@ adminMissionRoutes.post("/missions/:id/close", async (c) => {
 
   const now = new Date().toISOString();
   const { data, error: uErr } = await svc.from("missions")
-    .update({ status: "closed", closed_at: now, updated_at: now }).eq("id", id).select(MISSION_COLS).single();
+    .update({ status: "closed", closed_at: now, updated_at: now }).eq("id", id).eq("status", "active").select(MISSION_COLS).maybeSingle();
   if (uErr) return c.json({ error: uErr.message, code: "db_error" }, 500);
+  if (!data) return c.json({ error: "只有進行中的任務可以關閉", code: "invalid_transition" }, 409);
   return c.json({ mission: data });
 });
 

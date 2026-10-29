@@ -2,7 +2,6 @@
 // stale admin edits.
 import { describe, expect, it } from "vitest";
 import { randomUUID } from "node:crypto";
-import { defect, knownBug } from "../support/bug";
 import { api, balances, joinAndSubmit, newCreator, newMission, newStaff, sql, q, VALID_URLS } from "../support/fixture";
 
 describe("creator double actions", () => {
@@ -88,13 +87,37 @@ describe("two operators on the same item", () => {
     expect(late.body.code).toBe("wrong_state");
   });
 
-  knownBug("F-022", "a stale mission edit is rejected instead of silently overwriting a newer one", async () => {
+  it("[F-022 fixed] a stale mission edit is rejected instead of silently overwriting a newer one", async () => {
     const admin = await newStaff("workspace_admin");
     const m = newMission({ status: "draft" });
     const original = sql(`select updated_at from public.missions where id=${q(m.id)};`);
     const first = await api("PATCH", `/admin/missions/${m.id}`, { jwt: admin.jwt, ws: null, body: { title: "Edit from tab A" } });
     expect(first.status, JSON.stringify(first.body)).toBe(200);
     const stale = await api("PATCH", `/admin/missions/${m.id}`, { jwt: admin.jwt, ws: null, body: { title: "Edit from tab B", updated_at: original, expected_updated_at: original } });
-    defect(() => expect(stale.status).toBe(409));
+    expect(stale.status).toBe(409);
+    expect(stale.body.code).toBe("STALE_EDIT");
+    expect(sql(`select title from public.missions where id=${q(m.id)};`)).toBe("Edit from tab A");
+    // A save based on the current version still succeeds.
+    const current = sql(`select updated_at from public.missions where id=${q(m.id)};`);
+    const fresh = await api("PATCH", `/admin/missions/${m.id}`, { jwt: admin.jwt, ws: null, body: { title: "Edit from tab B", expected_updated_at: current } });
+    expect(fresh.status, JSON.stringify(fresh.body)).toBe(200);
+  });
+
+  it("[F-022 fixed] stale campaign edits conflict and a double publish broadcasts once", async () => {
+    const admin = await newStaff("workspace_admin");
+    const slug = `review-camp-${randomUUID().slice(0, 6)}`;
+    const id = sql(`insert into public.campaigns(workspace_id,slug,title,status,starts_at,ends_at,goal_metric,goal_target)
+      values ('00000000-0000-0000-0000-0000000000aa',${q(slug)},'Review campaign','draft',now(),now()+interval '30 days','approved_submissions',5) returning id;`);
+    sql(`update public.campaigns set completion_bonus_points=50 where id=${q(id)};`);
+    const original = sql(`select updated_at from public.campaigns where id=${q(id)};`);
+    const a = await api("PATCH", `/admin/campaigns/${id}`, { jwt: admin.jwt, ws: null, body: { title: "Tab A", expected_updated_at: original } });
+    expect(a.status, JSON.stringify(a.body)).toBe(200);
+    const b = await api("PATCH", `/admin/campaigns/${id}`, { jwt: admin.jwt, ws: null, body: { title: "Tab B", expected_updated_at: original } });
+    expect(b.status).toBe(409);
+    expect(sql(`select title from public.campaigns where id=${q(id)};`)).toBe("Tab A");
+    const creator = await newCreator();
+    const pubs = await Promise.all([1, 2, 3].map(() => api("POST", `/admin/campaigns/${id}/publish`, { jwt: admin.jwt, ws: null })));
+    expect(pubs.filter(r => r.status === 200), JSON.stringify(pubs.map(r => [r.status, r.body]))).toHaveLength(1);
+    expect(Number(sql(`select count(*) from public.notifications where user_id=${q(creator.id)} and type='campaign_started';`))).toBeLessThanOrEqual(1);
   });
 });

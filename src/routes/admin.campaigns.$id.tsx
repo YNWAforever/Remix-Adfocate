@@ -79,7 +79,7 @@ function EditCampaign() {
   };
 
   const save = useMutation({
-    mutationFn: (patch: Partial<CampaignDraftInput>) => updateCampaign(id, patch),
+    mutationFn: (patch: Partial<CampaignDraftInput>) => updateCampaign(id, { ...patch, expected_updated_at: campaign?.updated_at }),
     onSuccess: invalidate,
     onError: onErr,
   });

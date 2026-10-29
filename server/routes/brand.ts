@@ -151,8 +151,9 @@ guarded.post("/missions/:id/publish", async (c) => {
 
   const now = new Date().toISOString();
   const { data, error: uErr } = await uc.from("missions")
-    .update({ status: "active", published_at: now, updated_at: now }).eq("id", id).select(MISSION_COLS).single();
+    .update({ status: "active", published_at: now, updated_at: now }).eq("id", id).eq("status", "draft").select(MISSION_COLS).maybeSingle();
   if (uErr) return c.json({ error: uErr.message, code: "db_error" }, 500);
+  if (!data) return c.json({ error: "只有草稿可以發佈", code: "invalid_transition" }, 409);
   return c.json({ mission: data });
 });
 
@@ -166,8 +167,9 @@ guarded.post("/missions/:id/close", async (c) => {
 
   const now = new Date().toISOString();
   const { data, error: uErr } = await uc.from("missions")
-    .update({ status: "closed", closed_at: now, updated_at: now }).eq("id", id).select(MISSION_COLS).single();
+    .update({ status: "closed", closed_at: now, updated_at: now }).eq("id", id).eq("status", "active").select(MISSION_COLS).maybeSingle();
   if (uErr) return c.json({ error: uErr.message, code: "db_error" }, 500);
+  if (!data) return c.json({ error: "只有進行中的任務可以關閉", code: "invalid_transition" }, 409);
   return c.json({ mission: data });
 });
 

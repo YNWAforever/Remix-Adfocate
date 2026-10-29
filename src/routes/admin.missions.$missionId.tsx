@@ -22,7 +22,7 @@ function EditMission() {
   });
   useEffect(() => { if (q.error instanceof AdminAuthError) reportAuthError(q.error); }, [q.error, reportAuthError]);
   const update = useMutation({
-    mutationFn: (body: MissionDraftInput) => updateMission(missionId, body),
+    mutationFn: (body: MissionDraftInput) => updateMission(missionId, { ...body, expected_updated_at: q.data?.mission.updated_at }),
     onSuccess: () => { editorNavigation.saved(); return navigate({ to: "/admin/missions" }); },
   });
   const [tab, setTab] = useState<"edit" | "manage">(
