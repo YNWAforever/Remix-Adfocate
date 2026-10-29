@@ -71,6 +71,7 @@ const REVIEWED_FILES = [
   "20261028155000_legacy_evidence_review_validity.sql",
   "20261029000000_assistant_reservation_claim.sql",
   "20261029100000_brand_write_hardening.sql",
+  "20261029110000_legacy_decision_audit.sql",
 ] as const;
 
 // Pinned by checksum in manifest.ts, so the fixture copies the repository's real bytes instead of
@@ -178,6 +179,7 @@ describe("release migration manifest", () => {
     expect(manifest.migrations.find((migration) => migration.version === "20261025194402")?.phase).toBe("redemption");
     expect(manifest.migrations.find((migration) => migration.version === "20261029000000")?.phase).toBe("assistant_requests");
     expect(manifest.migrations.find((migration) => migration.version === "20261029100000")?.phase).toBe("staff_access");
+    expect(manifest.migrations.find((migration) => migration.version === "20261029110000")?.phase).toBe("legacy_evidence");
     expect(manifest.migrations[0].dependsOn).toEqual([]);
     expect(manifest.migrations[1].dependsOn).toEqual(["20260715163350"]);
     expect(

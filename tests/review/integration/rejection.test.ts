@@ -17,7 +17,7 @@ describe("operator rejects / requests changes; creator sees reason and recovers"
     expect(sql(`select status from public.mission_submissions where id=${q(sid)};`)).toBe("submitted");
   });
 
-  knownBug("F-004", "approve/reject records the acting operator in an audit trail", async () => {
+  it("[F-004 fixed] approve/reject records the acting operator in an audit trail", async () => {
     const creator = await newCreator();
     const reviewer = await newStaff("reviewer");
     const m = newMission();
@@ -25,7 +25,11 @@ describe("operator rejects / requests changes; creator sees reason and recovers"
     const res = await api("POST", `/admin/submissions/${sid}/reject`, { jwt: reviewer.jwt, ws: null, body: { notes: "Off brief" } });
     expect(res.status).toBe(200);
     const audited = sql(`select count(*) from public.operator_audit_events where operator_id=${q(reviewer.id)};`);
-    defect(() => expect(Number(audited)).toBeGreaterThan(0));
+    expect(Number(audited)).toBe(1);
+    expect(sql(`select event_type||'|'||actor_label from public.operator_audit_events where operator_id=${q(reviewer.id)};`)).toBe(`submission.rejected|${reviewer.email}`);
+    // An idempotent replay adds no second audit row.
+    await api("POST", `/admin/submissions/${sid}/reject`, { jwt: reviewer.jwt, ws: null, body: { notes: "Off brief" } });
+    expect(Number(sql(`select count(*) from public.operator_audit_events where operator_id=${q(reviewer.id)};`))).toBe(1);
   });
 
   it("rejection notifies the creator and keeps the reviewer note on the row", async () => {

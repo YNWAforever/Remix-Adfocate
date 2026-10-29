@@ -1110,6 +1110,18 @@ const REVIEWED_MIGRATIONS = [
     ],
     transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
   },
+  {
+    version: "20261029110000", name: "legacy_decision_audit", phase: "legacy_evidence",
+    dependsOn: ["20261028155000"],
+    capabilities: [
+      "function:public.decide_legacy_submission",
+      "grant:service_role.public.decide_legacy_submission(uuid,uuid,uuid,text,text,smallint)",
+      "grant-removed:authenticated.public.decide_legacy_submission(uuid,uuid,uuid,text,text,smallint)",
+      "grant-removed:anon.public.decide_legacy_submission(uuid,uuid,uuid,text,text,smallint)",
+      "grant-removed:public.public.decide_legacy_submission(uuid,uuid,uuid,text,text,smallint)",
+    ],
+    transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
+  },
 ] as const satisfies readonly ReviewedMigration[];
 
 const NON_RELEASE_TIMESTAMP_MIGRATIONS = new Set([

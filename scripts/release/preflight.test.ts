@@ -18,6 +18,11 @@ const REMEDIATION_CAPABILITIES = [
   "constraint:public.missions.missions_quota_filled_nonneg",
   "constraint:public.campaigns.campaigns_bonus_nonneg",
   "constraint:public.campaigns.campaigns_goal_target_positive",
+  "function:public.decide_legacy_submission",
+  "grant:service_role.public.decide_legacy_submission(uuid,uuid,uuid,text,text,smallint)",
+  "grant-removed:authenticated.public.decide_legacy_submission(uuid,uuid,uuid,text,text,smallint)",
+  "grant-removed:anon.public.decide_legacy_submission(uuid,uuid,uuid,text,text,smallint)",
+  "grant-removed:public.public.decide_legacy_submission(uuid,uuid,uuid,text,text,smallint)",
 ];
 
 describe("release preflight", () => {

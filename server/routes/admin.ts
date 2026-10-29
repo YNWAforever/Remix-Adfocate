@@ -192,10 +192,11 @@ adminRoutes.post("/submissions/:id/approve", async (c) => {
   if (!evidence.data.sql_valid || !validateSubmissionEvidence(evidence.data.content_urls).ok) return c.json({
     error: "Stored work URLs are invalid. Request correction before approval.", code: "invalid_evidence",
   }, 400);
-  const { data, error } = await svc.rpc("approve_submission", {
-    p_submission: c.req.param("id"),
-    p_notes: notes,
-    p_quality_rating: rating,
+  // Audited wrapper: same engine, plus the acting operator in operator_audit_events.
+  const scope = c.get("authorizedWorkspace");
+  const { data, error } = await svc.rpc("decide_legacy_submission", {
+    p_workspace: scope.workspaceId, p_operator: scope.userId, p_submission: c.req.param("id"),
+    p_decision: "approve", p_notes: notes, p_quality_rating: rating,
   });
   if (error) return legacyDecisionError(c, error);
   await persistScores((data as { creator_id: string }).creator_id);
@@ -241,6 +242,8 @@ adminRoutes.post("/submissions/:id/request-correction", async (c) => {
 function legacyDecisionError(c: Context, error: { message: string }) {
   if (error.message === "wrong_state") return c.json({ error: "此提交已由其他營運人員處理，請重新整理。 / This submission was already decided. Refresh the queue.", code: "wrong_state" }, 409);
   if (error.message === "not_found") return c.json({ error: "Not found", code: "not_found" }, 404);
+  if (error.message === "FORBIDDEN") return c.json({ error: "This action requires an assigned staff capability.", code: "FORBIDDEN" }, 403);
+  if (error.message === "rejection_reason_required" || error.message === "rejection_reason_too_long") return c.json({ error: "請填寫 1-500 字的拒絕原因 / A rejection reason of 1-500 characters is required", code: error.message }, 400);
   if (error.message === "insufficient_budget") return c.json({ error: "工作空間預算不足，請先增值。 / The workspace budget cannot cover this reward. Top up the budget first.", code: "insufficient_budget" }, 409);
   if (error.message === "bad_rating") return c.json({ error: "quality_rating must be an integer 1-5", code: "bad_rating" }, 400);
   return dbError(c, error, "rpc_error", 500);
@@ -253,7 +256,11 @@ adminRoutes.post("/submissions/:id/reject", async (c) => {
   if (!notes) return c.json({ error: "請填寫拒絕原因 / A rejection reason is required", code: "rejection_reason_required" }, 400);
   if ([...notes].length > 500) return c.json({ error: "原因上限為 500 字 / Limit: 500 characters", code: "rejection_reason_too_long" }, 400);
   const svc = serviceClient();
-  const { data, error } = await svc.rpc("reject_submission", { p_submission: c.req.param("id"), p_notes: notes });
+  const scope = c.get("authorizedWorkspace");
+  const { data, error } = await svc.rpc("decide_legacy_submission", {
+    p_workspace: scope.workspaceId, p_operator: scope.userId, p_submission: c.req.param("id"),
+    p_decision: "reject", p_notes: notes, p_quality_rating: null,
+  });
   if (error) return legacyDecisionError(c, error);
   await persistScores((data as { creator_id: string }).creator_id);
   return c.json(data);

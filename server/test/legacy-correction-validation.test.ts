@@ -88,7 +88,7 @@ it("still approves evidence accepted by both parsers", async () => {
     method: "POST", headers: { Authorization: "Bearer offline-transport", "X-Workspace-Slug": "owned", "Content-Type": "application/json" }, body: "{}",
   });
   expect(response.status).toBe(200);
-  expect(h.rpc).toHaveBeenCalledWith("approve_submission", expect.objectContaining({ p_submission: submission }));
+  expect(h.rpc).toHaveBeenCalledWith("decide_legacy_submission", expect.objectContaining({ p_submission: submission, p_decision: "approve", p_operator: expect.any(String) }));
 });
 it("replays a saved receipt after valid replacement evidence and a newer revision were stored", async () => {
   h.receipt = true; h.revision = 5;
