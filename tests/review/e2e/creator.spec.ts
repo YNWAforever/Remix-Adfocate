@@ -1,6 +1,5 @@
 // Creator-facing browser journeys against the local stack (Asia/Hong_Kong, en-HK).
 import { expect, test, type Page } from "@playwright/test";
-import { defect, knownBug } from "./bug";
 import { api, joinAndSubmit, newCreator, newMission, newStaff, newUser, type Actor } from "../support/fixture";
 
 async function signIn(page: Page, actor: Actor) {
@@ -84,13 +83,14 @@ test("[F-018 fixed] the 'visit guide' link during onboarding opens the guide, an
   await expect(page).toHaveURL(/\/login/);
 });
 
-knownBug("F-029", "the wallet never shows HK$0.00 while earnings are still loading", async ({ page }) => {
+test("[F-029 fixed] the wallet never shows HK$0.00 while earnings are still loading", async ({ page }) => {
   const creator = await newCreator();
   await signIn(page, creator);
   await page.route("**/api/wallet/earnings", async route => { await new Promise(r => setTimeout(r, 4000)); await route.continue(); });
   await page.goto("/wallet");
   await page.waitForTimeout(1000);
-  await defect(() => expect(page.getByText("HK$0.00")).toHaveCount(0, { timeout: 500 }));
+  await expect(page.getByText("HK$0.00")).toHaveCount(0);
+  await expect(page.getByText("HK$0.00").first()).toBeVisible({ timeout: 10000 }); // real zero balance once loaded
 });
 
 test("[F-026 fixed] campaign detail shows not-found (not an endless spinner) when the API fails", async ({ page }) => {

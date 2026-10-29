@@ -280,6 +280,8 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.wallet.earningsAvailable": "Cash credits (paid by Fimmick finance)",
     "app.wallet.earningsPending": "Pending earnings",
     "app.wallet.earningsError": "Failed to load earnings",
+    "app.wallet.earningsHistoryError": "Failed to load cash credit history",
+    "app.wallet.earningsHistoryEmpty": "No cash credits yet",
 
     // ── app: redemption ───────────────────────────────────────
     "app.redemption.pageTitle": "Redeem Points",
@@ -1795,6 +1797,8 @@ export const dict: Record<Locale, Record<string, string>> = {
     "app.wallet.earningsAvailable": "現金獎賞（由 Fimmick 財務部發放）",
     "app.wallet.earningsPending": "待審批收益",
     "app.wallet.earningsError": "收益載入失敗",
+    "app.wallet.earningsHistoryError": "收益記錄載入失敗",
+    "app.wallet.earningsHistoryEmpty": "暫未有現金獎賞記錄",
 
     // ── app: redemption ───────────────────────────────────────
     "app.redemption.pageTitle": "積分兌換",
