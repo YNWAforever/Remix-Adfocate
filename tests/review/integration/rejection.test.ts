@@ -5,13 +5,16 @@ import { randomUUID } from "node:crypto";
 import { api, joinAndSubmit, newCreator, newMission, newStaff, notificationTypes, sql, q, VALID_URLS } from "../support/fixture";
 
 describe("operator rejects / requests changes; creator sees reason and recovers", () => {
-  knownBug("F-004", "reject without a reason is refused (400)", async () => {
+  it("[F-004 fixed] reject without a reason is refused (400)", async () => {
     const creator = await newCreator();
     const reviewer = await newStaff("reviewer");
     const m = newMission();
     const sid = await joinAndSubmit(creator, m.slug);
     const res = await api("POST", `/admin/submissions/${sid}/reject`, { jwt: reviewer.jwt, ws: null, body: {} });
-    defect(() => expect(res.status).toBe(400));
+    expect(res.status).toBe(400);
+    const blank = await api("POST", `/admin/submissions/${sid}/reject`, { jwt: reviewer.jwt, ws: null, body: { notes: "   " } });
+    expect(blank.status).toBe(400);
+    expect(sql(`select status from public.mission_submissions where id=${q(sid)};`)).toBe("submitted");
   });
 
   knownBug("F-004", "approve/reject records the acting operator in an audit trail", async () => {

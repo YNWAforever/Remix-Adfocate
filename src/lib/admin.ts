@@ -865,10 +865,10 @@ export function requestLegacyEvidenceCorrection(id: string, body: { note: string
     body: JSON.stringify({ note: body.note, request_id: body.requestId, expected_revision: body.expectedRevision }) });
 }
 
-export function rejectSubmission(id: string, notes?: string) {
+export function rejectSubmission(id: string, notes: string) {
   return adminFetch(`/admin/submissions/${id}/reject`, {
     method: "POST",
-    body: JSON.stringify(notes ? { notes } : {}),
+    body: JSON.stringify({ notes }),
   });
 }
 

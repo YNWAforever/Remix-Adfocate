@@ -77,14 +77,15 @@ describe("two operators on the same item", () => {
     expect(balances(c.id).points - before).toBe(status === "approved" ? 100 : 0);
   });
 
-  knownBug("F-004", "the losing operator in an approve/reject race is told the item changed (409), not a raw 400 RPC message", async () => {
+  it("[F-004 fixed] the losing operator in an approve/reject race is told the item changed (409), not a raw 400 RPC message", async () => {
     const c = await newCreator();
     const [r1, r2] = await Promise.all([newStaff("reviewer"), newStaff("reviewer")]);
     const m = newMission();
     const sid = await joinAndSubmit(c, m.slug);
     await api("POST", `/admin/submissions/${sid}/approve`, { jwt: r1.jwt, ws: null, body: {} });
     const late = await api("POST", `/admin/submissions/${sid}/reject`, { jwt: r2.jwt, ws: null, body: { notes: "late" } });
-    defect(() => expect(late.status).toBe(409));
+    expect(late.status).toBe(409);
+    expect(late.body.code).toBe("wrong_state");
   });
 
   knownBug("F-022", "a stale mission edit is rejected instead of silently overwriting a newer one", async () => {

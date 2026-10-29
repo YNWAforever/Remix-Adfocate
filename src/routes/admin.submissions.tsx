@@ -71,7 +71,7 @@ function SubmissionCard({ submission, onDone }: { submission: Submission; onDone
     mutationFn: () => approveSubmission(submission.id, { notes: notes || undefined, rating: rating ? Number(rating) : undefined }),
     onSuccess: onDone,
   });
-  const reject = useMutation({ mutationFn: () => rejectSubmission(submission.id, notes || undefined), onSuccess: onDone });
+  const reject = useMutation({ mutationFn: () => rejectSubmission(submission.id, notes.trim()), onSuccess: onDone });
   const busy = approve.isPending || reject.isPending || correction.isPending;
   const evidence = validateSubmissionEvidence(submission.content_urls);
   const validEvidence = evidence.ok && submission.legacy_evidence_sql_valid !== false;
@@ -104,7 +104,7 @@ function SubmissionCard({ submission, onDone }: { submission: Submission; onDone
         </select>
         <input aria-label={t("app.admin.submissionsNotesLabel")} value={notes} onChange={(e) => setNotes(e.target.value)} placeholder={t("app.admin.submissionsNotesPlaceholder")} className="h-9 min-w-0 flex-1 rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-2 text-sm" />
         <button aria-label={t("app.admin.submissionsApprove")} disabled={busy || !validEvidence} onClick={() => { if (validEvidence) approve.mutate(); }} className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 font-heading font-bold">{t("app.admin.submissionsApprove")}</button>
-        <button aria-label={t("app.admin.submissionsDecline")} disabled={busy} onClick={() => reject.mutate()} className="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 font-heading font-bold">{t("app.admin.submissionsDecline")}</button>
+        <button aria-label={t("app.admin.submissionsDecline")} disabled={busy || !notes.trim()} onClick={() => { if (window.confirm(t("app.admin.submissionsDeclineConfirm"))) reject.mutate(); }} className="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 font-heading font-bold">{t("app.admin.submissionsDecline")}</button>
       </div>
     </div>
   );

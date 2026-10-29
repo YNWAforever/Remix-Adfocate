@@ -1,4 +1,4 @@
-import { Hono } from "hono";
+import { Hono, type Context } from "hono";
 import { createHash } from "node:crypto";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { adminOperatorCrmRoutes } from "./adminOperatorCrm.js";
@@ -196,7 +196,7 @@ adminRoutes.post("/submissions/:id/approve", async (c) => {
     p_notes: notes,
     p_quality_rating: rating,
   });
-  if (error) return c.json({ error: error.message, code: "rpc_error" }, 400);
+  if (error) return legacyDecisionError(c, error);
   await persistScores((data as { creator_id: string }).creator_id);
   return c.json(data);
 });
@@ -235,11 +235,23 @@ adminRoutes.post("/submissions/:id/request-correction", async (c) => {
   }
   return c.json(result.data);
 });
+// A concurrent decision by another operator surfaces as wrong_state: report it as a
+// conflict so the loser refreshes instead of seeing a raw RPC message.
+function legacyDecisionError(c: Context, error: { message: string }) {
+  if (error.message === "wrong_state") return c.json({ error: "此提交已由其他營運人員處理，請重新整理。 / This submission was already decided. Refresh the queue.", code: "wrong_state" }, 409);
+  if (error.message === "not_found") return c.json({ error: "Not found", code: "not_found" }, 404);
+  return c.json({ error: error.message, code: "rpc_error" }, 400);
+}
+
 adminRoutes.post("/submissions/:id/reject", async (c) => {
-  const notes = (await c.req.json<{ notes?: string }>().catch(() => ({}) as { notes?: string })).notes ?? null;
+  const body = await c.req.json<{ notes?: unknown }>().catch(() => ({}) as { notes?: unknown });
+  const notes = typeof body?.notes === "string" ? body.notes.trim() : "";
+  // The creator only learns why their work was not accepted from this note.
+  if (!notes) return c.json({ error: "請填寫拒絕原因 / A rejection reason is required", code: "rejection_reason_required" }, 400);
+  if ([...notes].length > 500) return c.json({ error: "原因上限為 500 字 / Limit: 500 characters", code: "rejection_reason_too_long" }, 400);
   const svc = serviceClient();
   const { data, error } = await svc.rpc("reject_submission", { p_submission: c.req.param("id"), p_notes: notes });
-  if (error) return c.json({ error: error.message, code: "rpc_error" }, 400);
+  if (error) return legacyDecisionError(c, error);
   await persistScores((data as { creator_id: string }).creator_id);
   return c.json(data);
 });

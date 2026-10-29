@@ -37,7 +37,9 @@ export function MissionManage({ missionId }: { missionId: string }) {
   const accept = useMutation({ mutationFn: (id: string) => acceptApplication(id), onSuccess: invalidate, onError: onErr });
   const decline = useMutation({ mutationFn: (id: string) => declineApplication(id), onSuccess: invalidate, onError: onErr });
   const approve = useMutation({ mutationFn: (id: string) => approveSubmission(id, {}), onSuccess: invalidate, onError: onErr });
-  const reject = useMutation({ mutationFn: (id: string) => rejectSubmission(id), onSuccess: invalidate, onError: onErr });
+  const reject = useMutation({ mutationFn: (v: { id: string; notes: string }) => rejectSubmission(v.id, v.notes), onSuccess: invalidate, onError: onErr });
+  // The reason is shown to the creator; cancelling or leaving it empty keeps the submission pending.
+  const askReason = () => window.prompt("退回原因（Creator 會看到） / Reason (shown to the creator)")?.trim() ?? "";
 
   if (q.isLoading) return <p className="text-sm">載入中…</p>;
   if (!q.data) return <p className="text-sm text-red-600">找不到任務活動。</p>;
@@ -71,7 +73,7 @@ export function MissionManage({ missionId }: { missionId: string }) {
             <span>{row.creators.display_name}</span>
             <span className="flex gap-2">
               <button type="button" className={`${btn} bg-[var(--color-acid)]`} onClick={() => approve.mutate(row.id)} disabled={approve.isPending}>批准</button>
-              <button type="button" className={`${btn} bg-white`} onClick={() => reject.mutate(row.id)} disabled={reject.isPending}>退回</button>
+              <button type="button" className={`${btn} bg-white`} onClick={() => { const notes = askReason(); if (notes) reject.mutate({ id: row.id, notes }); }} disabled={reject.isPending}>退回</button>
             </span>
           </div>
         ))}

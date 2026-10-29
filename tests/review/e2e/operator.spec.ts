@@ -23,18 +23,23 @@ test("reviewer sees a newly submitted item in the legacy queue and can approve i
   await expect.poll(() => sql(`select status from public.mission_submissions where id=${q(sid)};`)).toBe("approved");
 });
 
-knownBug("F-004", "declining a submission in the UI asks for a reason / confirmation before it is final", async ({ page }) => {
+test("[F-004 fixed] declining in the UI needs a reason and a confirmation", async ({ page }) => {
   const creator = await newCreator();
   const reviewer = await newStaff("reviewer");
   const m = newMission();
   const sid = await joinAndSubmit(creator, m.slug);
   await injectSession(page, reviewer);
   await page.goto(`/admin/submissions?submission_id=${sid}`);
-  page.on("dialog", d => void d.dismiss()); // a native confirm, if any, is dismissed
-  await page.getByRole("button", { name: /decline|拒絕/i }).first().click();
-  await page.waitForTimeout(2000);
-  const status = sql(`select status from public.mission_submissions where id=${q(sid)};`);
-  await defect(() => expect(status).toBe("submitted"));
+  const decline = page.getByRole("button", { name: /decline|拒絕/i }).first();
+  await expect(decline).toBeDisabled();
+  await page.getByLabel(/review notes|審批備註/i).first().fill("Lighting too dark");
+  page.once("dialog", d => void d.dismiss());
+  await decline.click();
+  await page.waitForTimeout(1000);
+  expect(sql(`select status from public.mission_submissions where id=${q(sid)};`)).toBe("submitted");
+  page.once("dialog", d => void d.accept());
+  await decline.click();
+  await expect.poll(() => sql(`select status from public.mission_submissions where id=${q(sid)};`)).toBe("rejected");
 });
 
 knownBug("F-016", "a finance_viewer opening /admin lands on a page they are allowed to use", async ({ page }) => {
