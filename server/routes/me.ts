@@ -83,11 +83,14 @@ meBootstrap.post("/bootstrap", async (c) => {
   }
 
   // First-login detection: did a creator row already exist?
-  const { data: existing } = await svc.from("creators").select("id").eq("id", u.user.id).maybeSingle();
+  const { data: existing, error: existingErr } = await svc.from("creators").select("id").eq("id", u.user.id).maybeSingle();
+  if (existingErr) return dbError(c, existingErr, "bootstrap_incomplete", 503);
   const created = !existing;
 
   // ignoreDuplicates → an existing row is never overwritten; only first insert sets these.
-  await svc.from("creators").upsert(
+  // Every write is idempotent, so a failure answers 503 and the client simply retries: a
+  // creator without balance rows would otherwise fail later at approval or redemption.
+  const creatorRow = await svc.from("creators").upsert(
     {
       id: u.user.id,
       workspace_id: ws.id,
@@ -97,14 +100,17 @@ meBootstrap.post("/bootstrap", async (c) => {
     },
     { onConflict: "id", ignoreDuplicates: true },
   );
-  await svc.from("point_balances").upsert(
+  if (creatorRow.error) return dbError(c, creatorRow.error, "bootstrap_incomplete", 503);
+  const points = await svc.from("point_balances").upsert(
     { creator_id: u.user.id, workspace_id: ws.id, balance: 0 },
     { onConflict: "creator_id,workspace_id", ignoreDuplicates: true },
   );
-  await svc.from("earnings_balances").upsert(
+  if (points.error) return dbError(c, points.error, "bootstrap_incomplete", 503);
+  const earnings = await svc.from("earnings_balances").upsert(
     { creator_id: u.user.id, workspace_id: ws.id, available: 0 },
     { onConflict: "creator_id,workspace_id", ignoreDuplicates: true },
   );
+  if (earnings.error) return dbError(c, earnings.error, "bootstrap_incomplete", 503);
 
   return c.json({ created });
 });

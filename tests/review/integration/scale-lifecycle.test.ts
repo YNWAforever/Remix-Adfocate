@@ -147,7 +147,7 @@ describe("failure mid-flow", () => {
     expect(JSON.stringify(bad.body)).not.toMatch(/uuid|syntax|relation|column|function/i);
   });
 
-  knownBug("F-021", "bootstrap reports failure when a balance row cannot be created", async () => {
+  it("[F-021 fixed] bootstrap reports failure when a balance row cannot be created, and a retry completes it", async () => {
     const { newUser } = await import("../support/fixture");
     const u = await newUser("bootstrap-fail");
     // Simulate a transient failure of the earnings_balances upsert for this user only.
@@ -158,10 +158,14 @@ describe("failure mid-flow", () => {
       const res = await api("POST", "/me/bootstrap", { jwt: u.jwt, body: { slug: "demo" }, ws: null });
       const hasRow = Number(sql(`select count(*) from public.earnings_balances where creator_id=${q(u.id)};`));
       expect(hasRow).toBe(0);
-      defect(() => expect(res.status).toBeGreaterThanOrEqual(500));
+      expect(res.status).toBe(503);
+      expect(res.body.code).toBe("bootstrap_incomplete");
     } finally {
       sql(`drop trigger if exists review_block_earnings on public.earnings_balances; drop function if exists public.review_block_earnings();`);
     }
+    const retry = await api("POST", "/me/bootstrap", { jwt: u.jwt, body: { slug: "demo" }, ws: null });
+    expect(retry.status).toBe(200);
+    expect(Number(sql(`select count(*) from public.earnings_balances where creator_id=${q(u.id)};`))).toBe(1);
   });
 });
 
