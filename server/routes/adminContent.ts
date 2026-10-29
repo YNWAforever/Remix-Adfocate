@@ -9,6 +9,7 @@ import {
   slugify, uniqueSlug, isAllowedImageUrl,
 } from "../lib/contentAuthoring.js";
 import { dbError } from "../lib/httpErrors.js";
+import { CONTENT_MEDIA_MAX_BYTES, checkContentMedia } from "../lib/contentMedia.js";
 
 export const adminContentRoutes = new Hono<AdminEnv>();
 
@@ -151,10 +152,17 @@ adminContentRoutes.post("/content/media", async (c) => {
   const form = await c.req.parseBody();
   const file = form["file"];
   if (!(file instanceof File)) return c.json({ error: "no file", code: "validation_error" }, 422);
-  const ext = (file.name.split(".").pop() ?? "bin").toLowerCase();
-  const path = `images/${crypto.randomUUID()}.${ext}`;
+  if (file.size > CONTENT_MEDIA_MAX_BYTES) return c.json({ error: "圖片上限 5 MB / Images must be 5 MB or smaller", code: "media_too_large" }, 413);
+  const bytes = new Uint8Array(await file.arrayBuffer());
+  const check = checkContentMedia(bytes);
+  if (!check.ok) {
+    const status = check.code === "media_too_large" ? 413 : 415;
+    return c.json({ error: "只接受 PNG、JPEG、GIF 或 WebP 圖片 / Only PNG, JPEG, GIF or WebP images are accepted", code: check.code }, status);
+  }
+  // Type and extension come from the file's bytes, never from the uploaded name or header.
+  const path = `images/${crypto.randomUUID()}.${check.ext}`;
   const svc = serviceClient();
-  const { error } = await svc.storage.from("content-media").upload(path, await file.arrayBuffer(), { contentType: file.type, upsert: false });
+  const { error } = await svc.storage.from("content-media").upload(path, bytes, { contentType: check.contentType, upsert: false });
   if (error) return dbError(c, error, "db_error", 500);
   const { data } = svc.storage.from("content-media").getPublicUrl(path);
   return c.json({ url: data.publicUrl });

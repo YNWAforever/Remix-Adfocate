@@ -113,14 +113,22 @@ describe("admin forms", () => {
     expect([200, 201, 400, 422]).toContain(xss.status);
   });
 
-  knownBug("F-014", "content media upload refuses HTML files", async () => {
+  it("[F-014 fixed] content media upload refuses HTML/SVG and accepts a real PNG", async () => {
     const editor = await contentEditor();
     const { createApp } = await import("../../../server/app.js");
     const form = new FormData();
     form.append("file", new File(["<script>alert(1)</script>"], "evil.html", { type: "text/html" }));
     const res = await createApp().app.request("http://local/api/admin/content/media", { method: "POST", body: form, headers: { Authorization: `Bearer ${editor.jwt}` } });
-    expect(res.status).not.toBe(403); // the editor really is authorised; the gap is validation
-    defect(() => expect(res.status).toBeGreaterThanOrEqual(400));
+    expect(res.status).toBe(415);
+    const svg = new FormData();
+    svg.append("file", new File(['<svg xmlns="http://www.w3.org/2000/svg" onload="alert(1)"/>'], "logo.png", { type: "image/png" }));
+    const spoofed = await createApp().app.request("http://local/api/admin/content/media", { method: "POST", body: svg, headers: { Authorization: `Bearer ${editor.jwt}` } });
+    expect(spoofed.status).toBe(415);
+    const png = new FormData();
+    png.append("file", new File([new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, ...new Array(24).fill(0)])], "evil.html", { type: "text/html" }));
+    const ok = await createApp().app.request("http://local/api/admin/content/media", { method: "POST", body: png, headers: { Authorization: `Bearer ${editor.jwt}` } });
+    expect(ok.status).toBe(200);
+    expect((await ok.json()).url).toMatch(/\.png$/);
   });
 
   it("application decline reason is capped at 500 characters (Chinese counted by code point)", async () => {
