@@ -11,14 +11,14 @@ const walk = (dir: string): string[] => readdirSync(dir, { withFileTypes: true }
   d.isDirectory() ? walk(join(dir, d.name)) : [join(dir, d.name)]);
 
 describe("deployment contract", () => {
-  knownBug("F-001", "the Vercel entry (api/index.ts) exports every HTTP method the Hono routes use", () => {
+  it("[F-001 fixed] the Vercel entry (api/index.ts) exports every HTTP method the Hono routes use", () => {
     const used = new Set<string>();
     for (const file of walk("server/routes").filter(f => f.endsWith(".ts") && !f.includes(".test."))) {
       for (const m of read(file).matchAll(/\.(get|post|put|patch|delete)\(\s*[`"']/g)) used.add(m[1].toUpperCase());
     }
     expect(used.has("PATCH")).toBe(true); // routes really use PATCH (draft autosave, admin edits)
     const exported = new Set([...read("api/index.ts").matchAll(/export const (GET|POST|PUT|PATCH|DELETE|OPTIONS)\b/g)].map(m => m[1]));
-    defect(() => expect([...used].filter(m => !exported.has(m))).toEqual([]));
+    expect([...used].filter(m => !exported.has(m))).toEqual([]);
   });
 
   it("every client PATCH call targets a server PATCH route (so F-001 affects real screens)", () => {
