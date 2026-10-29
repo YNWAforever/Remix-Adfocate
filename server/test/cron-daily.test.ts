@@ -23,13 +23,14 @@ describe("cron /daily", () => {
   });
   it("runs all three tasks and returns their counts with no errors", async () => {
     rpcMock.mockImplementation((name: string) => Promise.resolve({
-      data: name === "content_publish_scheduled" ? 3 : name === "snapshot_campaign_leaderboards" ? 5 : 2,
+      data: name === "content_publish_scheduled" ? 3 : name === "snapshot_campaign_leaderboards" ? 5 : name === "emit_active_mission_deadline_notifications" ? 4 : 2,
       error: null,
     }));
     const res = await authed();
     expect(res.status).toBe(200);
-    const body = await res.json() as { published: number; snapshotted: number; campaignsClosed: number; errors: string[] };
-    expect(body).toEqual({ published: 3, snapshotted: 5, campaignsClosed: 2, errors: [] });
+    const body = await res.json() as { published: number; snapshotted: number; campaignsClosed: number; deadlineReminders: number; errors: string[] };
+    expect(body).toEqual({ published: 3, snapshotted: 5, campaignsClosed: 2, deadlineReminders: 4, errors: [] });
+    expect(rpcMock).toHaveBeenCalledWith("emit_active_mission_deadline_notifications");
     // snapshot must be called before close (capture final pre-close ranks)
     const order = rpcMock.mock.calls.map((c) => c[0]);
     expect(order.indexOf("snapshot_campaign_leaderboards")).toBeLessThan(order.indexOf("close_due_campaigns"));
@@ -46,5 +47,17 @@ describe("cron /daily", () => {
     expect(body.snapshotted).toBe(1);
     expect(body.campaignsClosed).toBeNull();
     expect(body.errors.some((e) => e.startsWith("close:"))).toBe(true);
+  });
+  it("isolates a failing deadline-reminder task (HTTP 200, error recorded)", async () => {
+    rpcMock.mockImplementation((name: string) =>
+      name === "emit_active_mission_deadline_notifications"
+        ? Promise.resolve({ data: null, error: { message: "boom" } })
+        : Promise.resolve({ data: 1, error: null }));
+    const res = await authed();
+    expect(res.status).toBe(200);
+    const body = await res.json() as { deadlineReminders: number | null; campaignsClosed: number | null; errors: string[] };
+    expect(body.deadlineReminders).toBeNull();
+    expect(body.campaignsClosed).toBe(1);
+    expect(body.errors.some((e) => e.startsWith("deadlines:"))).toBe(true);
   });
 });

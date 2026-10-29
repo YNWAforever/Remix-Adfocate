@@ -29,10 +29,10 @@ describe("deployment contract", () => {
 });
 
 describe("notifications and settlement wiring", () => {
-  knownBug("F-012", "the daily cron calls emit_active_mission_deadline_notifications", () => {
+  it("[F-012 fixed] the daily cron calls emit_active_mission_deadline_notifications", () => {
     const cron = read("server/routes/cron.ts");
     expect(cron).toContain("/daily");
-    defect(() => expect(cron).toContain("emit_active_mission_deadline_notifications"));
+    expect(cron).toContain("emit_active_mission_deadline_notifications");
   });
 
   knownBug("F-007", "wallet 'pending' includes active-mission pending reward hand-offs", () => {

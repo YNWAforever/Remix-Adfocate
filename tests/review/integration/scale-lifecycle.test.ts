@@ -185,9 +185,10 @@ describe("notifications and scheduled jobs", () => {
     expect(ok.body.errors).toEqual([]);
   });
 
-  knownBug("F-012", "the daily cron emits active-mission deadline reminders", async () => {
+  it("[F-012 fixed] the daily cron emits active-mission deadline reminders", async () => {
     const ok = await api("GET", "/cron/daily", { ws: null, headers: { Authorization: `Bearer ${process.env.CRON_SECRET}` } });
     expect(ok.status).toBe(200);
-    defect(() => expect(Object.keys(ok.body)).toEqual(expect.arrayContaining([expect.stringMatching(/deadline/i)])));
+    expect(ok.body.errors).toEqual([]);
+    expect(typeof ok.body.deadlineReminders).toBe("number");
   });
 });
