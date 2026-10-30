@@ -8,7 +8,13 @@ Ordering principle: **unblock money and operations, then close privacy and compl
 > **Progress (Phase 5, 2026-10-29):**
 > - **Done:** Q1, Q2 (read-time masking; the bootstrap default is unchanged), Q3, Q4, Q5, Q6 (landing; the financial-KPI gating is still open), Q7, Q8, Q9, Q10, Q11 (code; bucket limits still open), Q12, L1, L9, and the code parts of L3 (reason, 409, confirmation) and F-028.
 > - **New:** F-053 was found and fixed.
-> - **Not started:** everything marked 🗄️, plus Q13–Q15, L7, L8 (tracker), L12, L13, L14.
+>
+> **Progress (migration batch, 2026-10-30):**
+> - **Done:** L2, L3, L4, L5, L6, L10, L11, with migrations `20261029100000` to `20261029180000`.
+> - L6 goes beyond the minimum: deletion is self-service from the profile page, with a JSON data export.
+> - Each migration is registered in the release manifest. A clean `supabase db reset` replays all 87 migrations, and all suites pass afterwards.
+> - **Before production:** apply the migrations with the normal release process (`release:check`, then preflight against the target). F-003 brand flows now need the service-role key in the API environment, which is already required.
+> - **Not started:** Q13–Q15, L7, L8 (tracker), L12, L13, L14, F-010 resubmission, F-017 suspend/reinstate, and the Medium and Low items in sections 3–4.
 
 ## 1. Quick wins (each under a day; about 4–5 dev-days in total)
 

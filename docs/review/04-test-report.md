@@ -189,3 +189,38 @@ After adding the tests: `npm run lint` → 0 errors, the 4 pre-existing warnings
 Each fixed `knownBug` in `tests/review/` was converted to a normal test labelled `[F-xx fixed]`. The 12 that remain still reproduce, and all need a migration or a new feature: F-003 ×2, F-004 (audit), F-007 ×2, F-009, F-010 (resubmit), F-012 (correction notification), F-017, F-038, F-047, F-048.
 
 One test-harness change was needed. `server/test/legacy-correction-validation.test.ts` uses a hand-written Supabase mock, which gained `.range()` for the paged queue reads (F-046). The real client is covered by the 250/1,100-row integration tests.
+
+## 8. Migration batch re-run (2026-10-30)
+
+Run against a **fresh** local database: `supabase db reset` replayed all 87 migrations, including the 9 new ones (`20261029100000` to `20261029180000`).
+
+| Suite | After code-only fixes | After migration batch |
+|---|---|---|
+| `npm run lint` | 0 errors, 4 warnings | 0 errors, 4 warnings (unchanged, pre-existing) |
+| `npm run type-check` | ✅ | ✅ |
+| `npm run build` | ✅ | ✅ |
+| `npm test` (unit/component) | 2,420 passed | **2,423 passed**, 0 failed |
+| `npm run release:check` | ✅ | ✅ (9 new migrations registered, phase `privacy_compliance` added) |
+| Declared capabilities vs database | – | **62 of 62 present** |
+| Review: static and integration | 71 passed (12 known bugs) | **77 passed (2 known bugs)** |
+| Review: Playwright | 12 passed | **14 passed** |
+
+**New integration tests:**
+- `tests/review/integration/reward-settlement.test.ts` (F-007: settle, idempotent replay, role and budget checks)
+- `tests/review/integration/privacy.test.ts` (F-008)
+
+**New browser tests:**
+- the F-008 consent dialog;
+- the F-009 export and deletion journey from the profile page.
+
+**Component test:** `src/components/ConsentGate.test.tsx`.
+
+The 2 known bugs that still reproduce are F-010 (resubmission after rejection) and F-017 (suspend/reinstate).
+
+The review total grew with the new integration tests. F-009's deletion probe and its known-bug test were merged into one fixed test.
+
+**Existing tests that changed with the new behaviour (no assertion weakened):**
+- The legacy decision unit tests now expect the `decide_legacy_submission` RPC.
+- The reward hand-off projection tests include `settledAt`.
+- The analytics status filters include `settled`.
+- The release tests list the new capabilities in a separate `REMEDIATION_CAPABILITIES` array, so the existing pinned counts are unchanged.

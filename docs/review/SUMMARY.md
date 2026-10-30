@@ -6,7 +6,7 @@
 - Baseline gates.
 - **80 new scenario tests** (Vitest and Playwright) against a disposable local Supabase stack.
 
-Details: `00-actors` · `01-journeys` · `02-findings` (52 findings) · `03-scorecard` · `04-test-report` · `05-roadmap`.
+Details: `00-actors` · `01-journeys` · `02-findings` (53 findings) · `03-scorecard` · `04-test-report` · `05-roadmap`.
 
 ## Readiness
 
@@ -32,6 +32,23 @@ Details: `00-actors` · `01-journeys` · `02-findings` (52 findings) · `03-scor
 | Operators | 🟠 **Amber** | **Fixed:** the queue past 250 items, edits in production, stale-edit and double-publish protection, a required reject reason with a 409 on races, no raw DB errors, role-aware landing, and safe media uploads. **Still open:** an audit row on legacy approve/reject (F-004), brands writing directly to the database (F-003), suspend/reinstate (F-017), an error tracker, and a staff-role UI (F-015). |
 
 Risks 1, 2 and 4 below are fixed. Risks 3, 6 and 9 are partly fixed. Risks 5, 7, 8 and 10 are open. **Next step:** approve the migration batch (F-003, F-004 audit, F-007/F-038, F-008, F-009, F-012, F-047/F-048). F-005 (CI integration) and F-049 (production database grants) also need owner input.
+
+## Status after the migration batch (2026-10-30)
+
+9 more commits, each with a reviewed migration, land on top of the code-only fixes. All suites pass on a database rebuilt from scratch: 2,423 unit tests, 77 review tests and 14 browser tests, and the build and `release:check` pass.
+
+| Actor | Rating | Why |
+|---|---|---|
+| Creators | 🟠 **Amber** (public launch still blocked by payouts) | **Fixed:** active-mission rewards are captured on accept and settled into the ledger (F-038/F-007). Terms and Privacy (PICS) acceptance is recorded with marketing opt-in (F-008). Self-service data export and account deletion by anonymisation (F-009). A notification when work is returned for correction (F-012). **Still open:** the payout feature itself (F-006, a product decision first), resubmission after rejection (F-010), and legal review of the policy text. |
+| Operators | 🟢 **Green for the internal pilot** · 🟠 Amber at scale | **Fixed:** brand direct DB writes and negative rewards (F-003); the operator and audit row on every legacy approve/reject (F-004); a "Mark as settled" step for reward hand-offs; KB and assistant-history isolation (F-047/F-048). **Still open:** suspend/reinstate (F-017), an error tracker (F-032), a staff-role UI (F-015), and CI for the integration suite (F-005). |
+
+Of the top 10 risks below, 1, 2, 4, 5, 6 and 7 are fixed, and 3 and 9 are partly fixed. 8 (CI) and 10 (production grants, F-049) need owner access.
+
+**Next steps:**
+- Run the release preflight and apply the migrations to staging.
+- Verify production grants (F-049).
+- Decide the payout process (L14).
+- Approve F-010 resubmission and F-017 suspend as the next batch.
 
 ## Top 10 risks
 

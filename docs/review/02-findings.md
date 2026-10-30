@@ -8,9 +8,13 @@ How to read this table:
 - **Step** refers to the step IDs in `01-journeys.md` (C = creator, O = operator, B = brand, H = handoff).
 - Migration paths are under `supabase/migrations/`. Long timestamped filenames are shortened to their date prefix where unambiguous.
 
-## Phase 5 fix status (2026-10-29)
+## Phase 5 fix status (2026-10-30)
 
-18 commits on `claude/practical-planck-89f88d`, one per finding. Each was verified with lint, typecheck, the full unit suite (now 2,420 tests) and the review suite. Phase 5 was limited to **code-only** changes; anything needing a schema migration is still open (🗄️).
+27 fix commits on `claude/practical-planck-89f88d`, one per finding, in two rounds:
+- **Code-only round** (18 commits, approved with "approve fixes").
+- **Migration batch** (9 commits, approved with "approve the migration batch"). It adds 9 migrations, `20261029100000` to `20261029180000`. Each is registered in the release manifest (`npm run release:check` passes), and their 62 declared capabilities were checked against the database.
+
+Every commit was verified with lint, typecheck, the full unit suite (2,423 tests) and the review suite. The final state was also checked with `supabase db reset` (all 87 migrations replayed from scratch), followed by the full suites, `npm run build` and all 14 browser tests.
 
 **Fixed (12):**
 
@@ -29,18 +33,34 @@ How to read this table:
 | F-014 | `b9fc62e` | CMS media is limited to PNG, JPEG, GIF and WebP (checked by magic bytes) and 5 MB. |
 | F-028 | `de9da4c`, `068259a` | Profile fields are bounded, and malformed JSON returns 400. Other write routes still lack schema validation (see N7). |
 
-**Partly fixed (6):**
+**Fixed by the migration batch (9):**
+
+| Finding | Commit | Migration | What changed |
+|---|---|---|---|
+| F-003 | `fa1137f` | `20261029100000` | Removes brand JWT insert/delete on missions, campaigns and campaign links, and update of mission status. Adds non-negative reward CHECKs (NOT VALID, so legacy rows cannot fail the deploy). Brand create, publish, close and delete go through the API, scoped to the brand's workspace. Cash-reward missions need staff to publish (403 `staff_approval_required`). |
+| F-004 | `08f5c57`, `1be6e86` | `20261029110000` | `decide_legacy_submission` checks the operator's review role, requires a reason on reject, and writes an `operator_audit_events` row only on a real status change. |
+| F-038 | `19c4dd0` | `20261029120000` | Accepting an application freezes the reward contract, so an accepted applicant's mission can complete without a manual backfill. |
+| F-007 | `cdafebb` | `20261029130000` | Adds a `pending → settled` transition. `settle_mission_reward_handoff` (workspace admins only, idempotent) credits the frozen points, cash and XP, debits an enforced budget, notifies the creator and audits the action. The admin queue has "Mark as settled", and wallet *pending* includes hand-offs. |
+| F-012 | `7602de1`, `a720bb2` | `20261029140000` | Adds the `submission_correction_requested` notification, emitted when work is returned for correction. |
+| F-047 | `a5f5d5b` | `20261029150000` | Knowledge-base documents and chunks are readable only when global or in the caller's own workspace. The assistant retrieval path inherits this. |
+| F-048 | `ba93102` | `20261029160000` | Assistant history is read-only to creators. Only the SECURITY DEFINER RPCs write it. |
+| F-008 | `307abc6` | `20261029170000` | Append-only `creator_consents`. A blocking Terms and Privacy (PICS) dialog appears for any creator without a current acceptance, and asks again when a document version is bumped. Marketing opt-in is on the profile. |
+| F-009 | `ac7ea6c` | `20261029180000` | "Download my data" (JSON export) and "Delete my account" with typed confirmation. Deletion **anonymises** the account: profile, social accounts, portfolio, passports, notifications and assistant text are removed or scrubbed, avatar files are deleted, and the email and phone are released, with sign-in banned. Ledgers and review history stay under the pseudonymous id. A hard delete is blocked by RESTRICT references and append-only history. |
+
+**Partly fixed (4):**
 
 | Finding | Commit | Done | Still open |
 |---|---|---|---|
 | F-006 | `08cd4a7` | Copy no longer promises withdrawals. | The payout feature itself. |
-| F-004 | `08f5c57` | Reason required, confirmation step, 409 on races. | Operator id and audit row inside the RPC (🗄️). |
 | F-032 | `068259a` | No raw DB text reaches clients; global `onError`; structured logs. | An external error tracker and alerting. |
-| F-012 | `7602de1` | The daily cron sends deadline reminders. | A notification type for correction requests (🗄️). |
-| F-010 | `9a16898` | Reason shown, honest "closed" copy, notification title fixed. | Resubmission after rejection (🗄️). |
+| F-010 | `9a16898` | Reason shown, honest "closed" copy, notification title fixed. | Resubmission after rejection: a product decision on attempt limits, then a migration. |
 | F-016 | `cfdd1f0` | Each role lands on a page it can open. | Hiding financial KPIs from reviewers. |
 
-**Still open, with tests that keep reproducing them:** F-003, F-004 (audit), F-007 ×2, F-009, F-010 (resubmit), F-012 (correction), F-017, F-038, F-047, F-048. Each needs a migration or a new feature.
+**Still open, with tests that keep reproducing them:** F-010 (resubmit) and F-017 (suspend). The test runner identity (F-005) and the production ACL check (F-049) need access I don't have. The remaining Medium and Low findings are in the register below and the roadmap.
+
+**Assumptions:**
+- F-008: the Terms and Privacy pages need **legal review** of their text. I only wired the acceptance flow and the version check.
+- F-009: anonymisation rather than hard delete is an engineering choice. Confirm with whoever owns PDPO compliance. Pending cash hand-offs are not voided automatically on deletion.
 
 ## Summary by severity
 
