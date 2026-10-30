@@ -25,6 +25,7 @@ import { academyLessonsRoutes } from "./routes/academyLessons.js";
 import { brandRoutes } from "./routes/brand.js";
 import { campaignRoutes } from "./routes/campaigns.js";
 import { activeMissionRoutes } from "./routes/activeMissions.js";
+import { studioRoutes } from "./routes/studio.js";
 
 export type Env = {
   Variables: { userId: string; workspaceId: string; jwt: string };
@@ -66,6 +67,7 @@ export function createApp() {
   guarded.route("/notifications", notificationRoutes);
   guarded.route("/copilot", copilotRoutes);
   guarded.route("/assistant", assistantRoutes());
+  guarded.route("/studio", studioRoutes);
   guarded.route("/redemption", redemptionRoutes);
   guarded.route("/social", socialRoutes);
   guarded.route("/workspace", workspaceRoutes);

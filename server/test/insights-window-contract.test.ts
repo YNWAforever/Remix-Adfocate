@@ -10,7 +10,7 @@ vi.mock("../lib/supabase",()=>({serviceClient:()=>({from:(table:string)=>{
 }})}));
 import { adminInsightsRoutes } from "../routes/adminInsights";
 beforeEach(()=>{h.fail=false;h.tables=[];vi.useFakeTimers({toFake:["Date"]});vi.setSystemTime(new Date("2026-10-23T10:00:00Z"));});
-const app=new Hono<AdminEnv>().use("*",async(c,next)=>{c.set("authorizedWorkspace",{workspaceId:"owned"} as never);await next();}).route("/admin",adminInsightsRoutes);
+const app=new Hono<AdminEnv>().use("*",async(c,next)=>{c.set("authorizedWorkspace",{workspaceId:"owned"} as never);c.set("workspaceAccess",{role:"operator",capabilities:["creator.read","reward.read"],revision:1});await next();}).route("/admin",adminInsightsRoutes);
 it("D17 Insights pages past the Data API cap and derives credits from the ledger",async()=>{
  const response=await app.request("/admin/insights?window=7&workspace=owned");expect(response.status).toBe(200);const {insights}=await response.json();
  expect(insights.levels[0].count).toBe(1201);expect(insights.kpis.pointsIssued.value).toBe(17);expect(h.tables).toContain("point_transactions");vi.useRealTimers();

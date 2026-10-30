@@ -1,7 +1,9 @@
-import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useRouterState } from "@tanstack/react-router";
 import { MarketingHeader } from "@/components/marketing/MarketingHeader";
 import { Footer } from "@/components/marketing/Footer";
 import { useI18n } from "@/lib/i18n";
+import { STUDIO_SHELL } from "@/lib/features";
+import { StudioPublicShell } from "@/components/studio/StudioPublic";
 
 export const Route = createFileRoute("/_site")({
   component: SiteLayout,
@@ -10,6 +12,7 @@ export const Route = createFileRoute("/_site")({
 
 function SiteLayout() {
   const { lang } = useI18n();
+  if (STUDIO_SHELL) return <StudioSiteContent/>;
   return (
     <div className="min-h-screen bg-[var(--color-paper)] text-[var(--color-ink)]">
       <MarketingHeader />
@@ -25,6 +28,12 @@ function SiteLayout() {
       <Footer />
     </div>
   );
+}
+
+function StudioSiteContent() {
+  const { lang } = useI18n();
+  const path = useRouterState({ select: state => state.location.pathname });
+  return <StudioPublicShell>{!["/", "/creators", "/brands"].includes(path) && <p role="note" className="s-notice">{lang === "en" ? "Product preview: profiles, statistics and earnings are illustrative. Pending rewards are not payments. Contact forms do not send or save data." : "產品預覽：履歷、統計及收入例子僅供示範。待處理獎勵不等於付款；聯絡表格不會發送或儲存資料。"}</p>}<Outlet/></StudioPublicShell>;
 }
 
 function SiteError() {

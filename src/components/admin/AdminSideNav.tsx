@@ -4,6 +4,7 @@ import { useI18n } from "@/lib/i18n";
 import { ADMIN_NAV_GROUPS, type AdminNavItem } from "./adminNavItems";
 import { useAdminQueueCounts } from "./useAdminQueueCounts";
 import { useStaffAccess, canOpenStaffPage } from "./StaffAccessContext";
+import { STUDIO_SHELL } from "@/lib/features";
 
 const ITEM =
   "flex items-center gap-3 rounded-[var(--radius)] border-2 border-transparent px-3 py-2 font-heading text-sm font-semibold text-[var(--color-soft-ink)]";
@@ -33,9 +34,10 @@ export function AdminSideNav({ mobile = false, onNavigate }: { mobile?: boolean;
 
   return (
     <nav aria-label={t("app.admin.title")} className={mobile ? MOBILE : DESKTOP}>
-      {home?<Link to={home} className="mb-2 px-3 font-display text-xl font-bold" onClick={onNavigate}>
+      {STUDIO_SHELL && <Link to="/admin" className="s-btn" onClick={onNavigate}>✦ KOCmax · {t("app.admin.title")}</Link>}
+      {!STUDIO_SHELL && (home?<Link to={home} className="mb-2 px-3 font-display text-xl font-bold" onClick={onNavigate}>
         {t("app.admin.brand")}
-      </Link>:<span className="mb-2 px-3 font-display text-xl font-bold">{t("app.admin.brand")}</span>}
+      </Link>:<span className="mb-2 px-3 font-display text-xl font-bold">{t("app.admin.brand")}</span>)}
       {groups.map((group) => (
         <div key={group.labelKey} className="mt-3 first:mt-0">
           <p className="px-3 pb-1 font-mono text-[10px] uppercase tracking-wider text-[var(--color-soft-ink)]">

@@ -79,6 +79,7 @@ const REVIEWED_FILES = [
   "20261029160000_assistant_history_readonly.sql",
   "20261029170000_creator_consents.sql",
   "20261029180000_creator_account_deletion.sql",
+  "20261030195424_creator_studio_private_artifacts.sql",
 ] as const;
 
 // Pinned by checksum in manifest.ts, so the fixture copies the repository's real bytes instead of

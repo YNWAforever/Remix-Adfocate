@@ -59,11 +59,20 @@ export function assistantRoutes(testProvider?: AssistantProvider) {
     const client = makeUserClient(c.get("jwt"));
     const store = serviceClient();
     const workspaceId = c.get("workspaceId");
+    let studio: Awaited<ReturnType<typeof import("../lib/studio/assistantContext.js").loadStudioContext>>;
+    if (process.env.STUDIO_THREADS === "true" && input.conversationId) {
+      try { studio = await (await import("../lib/studio/assistantContext.js")).loadStudioContext(store,client,c.get("userId"),workspaceId,input.conversationId); }
+      catch { return c.json({code:"studio_unavailable",error:"Studio context or history unavailable"},503); }
+    }
     const identity = { p_workspace: workspaceId, p_creator: c.get("userId"), p_request: input.requestId };
     const reserved = await store.rpc("reserve_assistant_request", { ...identity, p_message: input.message,
-      p_locale: input.locale, p_conversation: input.conversationId ?? null, p_context_version: "r1" });
+      p_locale: input.locale, p_conversation: input.conversationId ?? null, p_context_version: studio?.contextVersion ?? "r1" });
     if (reserved.error) {
       const code = reserved.error.message;
+      if(studio && code === "IDEMPOTENCY_CONFLICT") {
+        const recovered=await store.rpc("resolve_studio_request_context",{...identity,p_message:input.message,p_locale:input.locale,p_conversation:input.conversationId,p_context_version:studio.contextVersion});
+        if(!recovered.error && recovered.data) return c.json(recovered.data);
+      }
       if (["RATE_LIMITED", "REQUEST_INFLIGHT"].includes(code)) return c.json({ error: "Please wait before retrying this request", code }, 429);
       if (code === "IDEMPOTENCY_CONFLICT") return c.json({ error: "Request payload changed; compare the existing request", code }, 409);
       if (code === "not_found" || code === "FORBIDDEN") return c.json({ error: "Conversation not found", code: "not_found" }, 404);
@@ -72,8 +81,8 @@ export function assistantRoutes(testProvider?: AssistantProvider) {
     if (reserved.data?.action === "replay") return c.json(reserved.data.result);
     if (reserved.data?.action !== "reserved") return c.json({ request_id: input.requestId, persistence: "unknown", code: "request_pending" }, 202);
 
-    let history: ChatMessage[] = [];
-    if (input.conversationId) {
+    let history: ChatMessage[] = studio?.history ?? [];
+    if (input.conversationId && !studio) {
       const prior = await client.from("assistant_messages").select("role, content")
         .eq("conversation_id", input.conversationId).order("created_at", { ascending: false })
         .order("turn_order", { ascending: false }).limit(20);
@@ -87,7 +96,7 @@ export function assistantRoutes(testProvider?: AssistantProvider) {
     let result;
     try {
       result = await withProviderDeadline((signal) => runAssistant(client,
-        { query: input.message, locale: input.locale, workspace: workspaceId, history },
+        { query: input.message, locale: input.locale, workspace: workspaceId, history, studioContext:studio?.context },
         { ...(testProvider ? { provider: testProvider } : {}), signal }));
     } catch {
       await markUnknown();

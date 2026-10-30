@@ -20,7 +20,12 @@ export default defineConfig({
     {
       name: "local-hono-api",
       apply: "serve",
+      transformIndexHtml(html) {
+        return process.env.VITE_STUDIO_FIXTURE === "true"
+          ? html.replace('/src/main.tsx', '/src/studio-preview.tsx') : html;
+      },
       async configureServer(server) {
+        if (process.env.VITE_STUDIO_FIXTURE === "true") return;
         const [{ createApp }, { createViteApiMiddleware }] = await Promise.all([
           import("./server/app.js"),
           import("./server/devApi.js"),

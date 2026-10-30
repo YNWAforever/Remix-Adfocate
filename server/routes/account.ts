@@ -48,6 +48,17 @@ accountRoutes.get("/export", async (c) => {
     messages: (messages.data as unknown as Message[]).filter((m) => m.conversation_id === conv.id)
       .map(({ role, content, created_at }) => ({ role, content, created_at })),
   }));
+  // Additive schema may not yet be installed while the old surface is active.
+  // Missing studio tables are tolerated only when the feature is disabled.
+  for (const table of ["studio_threads", "studio_sources", "studio_briefs", "studio_shares", "studio_commands", "studio_badges"]) {
+    const result = await fetchAllPages((from, to) => svc.from(table).select("*").eq("creator_id", userId)
+      .order(table === "studio_commands" ? "request_id" : "id").range(from, to));
+    if (result.error) {
+      if (process.env.STUDIO_THREADS !== "true" && "code" in result.error && ["42P01", "PGRST205"].includes(String(result.error.code))) continue;
+      return dbError(c, result.error, "export_unavailable", 503);
+    }
+    out[table] = result.data;
+  }
   c.header("Content-Disposition", `attachment; filename="adfocate-data-${new Date().toISOString().slice(0, 10)}.json"`);
   return c.json(out);
 });

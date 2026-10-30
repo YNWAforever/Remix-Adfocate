@@ -25,6 +25,8 @@ import { legacyActivationServices, localized } from "@/data/legacyAdfocateConten
 import { useI18n } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/lib/supabase";
+import { STUDIO_SHELL } from "@/lib/features";
+import { StudioPublicHome } from "@/components/studio/StudioPublic";
 
 function InstagramIcon({ className }: { className?: string }) {
   return (
@@ -50,7 +52,7 @@ export const Route = createFileRoute("/_site/")({
     const { data } = await supabase.auth.getSession();
     if (data.session) throw redirect({ to: "/home" });
   },
-  component: Home,
+  component: STUDIO_SHELL ? StudioPublicHome : Home,
 });
 
 const levelPillClass: Record<string, string> = {

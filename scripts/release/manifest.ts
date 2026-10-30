@@ -1215,6 +1215,26 @@ const REVIEWED_MIGRATIONS = [
     ],
     transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
   },
+  {
+    version: "20261030195424", name: "creator_studio_private_artifacts", phase: "assistant_requests",
+    dependsOn: ["20261029160000", "20261029180000", "20260720033542", "20261023124149"],
+    capabilities: [
+      "column:public.missions.public_preview_enabled",
+      ...["studio_threads", "studio_sources", "studio_briefs", "studio_shares", "studio_commands", "studio_badges"].flatMap(table => [
+        `table:public.${table}`, `rls:public.${table}`, `policy:public.${table}.studio_owner_read`,
+        `grant:authenticated.public.${table}(select)`, `grant-removed:authenticated.public.${table}(insert)`,
+        `grant-removed:authenticated.public.${table}(update)`, `grant-removed:authenticated.public.${table}(delete)`,
+      ]),
+      "function:public.studio_command", "grant:service_role.public.studio_command(uuid,uuid,uuid,text,jsonb)",
+      "grant-removed:authenticated.public.studio_command(uuid,uuid,uuid,text,jsonb)",
+      "grant-removed:anon.public.studio_command(uuid,uuid,uuid,text,jsonb)",
+      "grant-removed:public.public.studio_command(uuid,uuid,uuid,text,jsonb)",
+      "function:public.resolve_studio_request_context", "grant:service_role.public.resolve_studio_request_context(uuid,uuid,uuid,text,text,uuid,text)",
+      ...["authenticated", "anon", "public"].map(role => `grant-removed:${role}.public.resolve_studio_request_context(uuid,uuid,uuid,text,text,uuid,text)`),
+      "trigger:public.mission_pending_rewards.studio_settlement_badge", "trigger:public.mission_submissions.studio_legacy_badge", "trigger:public.creators.studio_account_cleanup",
+    ],
+    transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
+  },
 ] as const satisfies readonly ReviewedMigration[];
 
 const NON_RELEASE_TIMESTAMP_MIGRATIONS = new Set([

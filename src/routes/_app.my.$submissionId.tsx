@@ -34,6 +34,8 @@ import {
   type CreateProofEvidenceGrantInput,
 } from "@/lib/queries/activeMission";
 import { supabase } from "@/lib/supabase";
+import { STUDIO_SHELL } from "@/lib/features";
+import { StudioProgress } from "@/components/studio/StudioPrimitives";
 
 type CreatorWorkspaceSearch = { item?: string };
 
@@ -333,6 +335,7 @@ export function CreatorMissionWorkspace() {
 
   return (
     <main className="mx-auto w-full max-w-6xl space-y-5 p-4 pb-8 sm:p-6">
+      {STUDIO_SHELL && <StudioProgress state={workspace.workflow.state} reward={workspace.pendingReward?.status} />}
       <WorkspaceHeader workspace={workspace} nextAction={nextAction} onPrimaryAction={(action) => {
 
         if (action.workItemId) selectItem(action.workItemId);

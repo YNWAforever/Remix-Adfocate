@@ -1,4 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { STUDIO_SHELL } from "@/lib/features";
+import { StudioPublicHome } from "@/components/studio/StudioPublic";
 import { useMemo, useState } from "react";
 import { Sparkles, Check, ArrowRight, Users, BarChart3, Target } from "lucide-react";
 import {
@@ -13,7 +15,7 @@ import { legacyActivationServices, localized } from "@/data/legacyAdfocateConten
 import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/_site/brands")({
-  component: BrandsPage,
+  component: STUDIO_SHELL ? () => <StudioPublicHome audience="brand"/> : BrandsPage,
 });
 
 function BrandsPage() {

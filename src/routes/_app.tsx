@@ -12,6 +12,8 @@ import { LevelUpModal } from "@/components/LevelUpModal";
 import { NotificationToaster } from "@/components/NotificationToaster";
 import { ConsentGate } from "@/components/ConsentGate";
 import { useI18n } from "@/lib/i18n";
+import { STUDIO_SHELL } from "@/lib/features";
+import { StudioShell } from "@/components/studio/StudioShell";
 
 export const Route = createFileRoute("/_app")({
   beforeLoad: async ({ location, context }) => {
@@ -62,6 +64,7 @@ function Layout() {
   const path = useRouterState({ select: (s) => s.location.pathname });
   useEffect(() => { if (ws.data?.theme) applyTheme(ws.data.theme); }, [ws.data]);
   const showNav = !(path === "/login" || path.startsWith("/auth/") || path.startsWith("/onboarding"));
+  if (STUDIO_SHELL && showNav) return <><StudioShell><Outlet/></StudioShell><LevelUpModal/><ConsentGate enabled/><NotificationToaster/></>;
   return (
     // pb-36 (not pb-20) reserves room for both the fixed BottomNav (~64px) and the
     // AssistantLauncher FAB stacked above it (bottom-20 + 56px tall) so the FAB never

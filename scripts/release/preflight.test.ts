@@ -63,6 +63,19 @@ const REMEDIATION_CAPABILITIES = [
   "grant-removed:public.public.anonymize_creator_account(uuid)",
 ];
 
+const STUDIO_CAPABILITIES = [
+  "column:public.missions.public_preview_enabled",
+  ...["studio_threads","studio_sources","studio_briefs","studio_shares","studio_commands","studio_badges"].flatMap(table=>[
+    `table:public.${table}`,`rls:public.${table}`,`policy:public.${table}.studio_owner_read`,
+    `grant:authenticated.public.${table}(select)`,...(["insert","update","delete"].map(action=>`grant-removed:authenticated.public.${table}(${action})`)),
+  ]),
+  "function:public.studio_command","grant:service_role.public.studio_command(uuid,uuid,uuid,text,jsonb)",
+  ...["authenticated","anon","public"].map(role=>`grant-removed:${role}.public.studio_command(uuid,uuid,uuid,text,jsonb)`),
+  "function:public.resolve_studio_request_context","grant:service_role.public.resolve_studio_request_context(uuid,uuid,uuid,text,text,uuid,text)",
+  ...["authenticated","anon","public"].map(role=>`grant-removed:${role}.public.resolve_studio_request_context(uuid,uuid,uuid,text,text,uuid,text)`),
+  "trigger:public.mission_pending_rewards.studio_settlement_badge","trigger:public.mission_submissions.studio_legacy_badge","trigger:public.creators.studio_account_cleanup",
+];
+
 describe("release preflight", () => {
   it("does not claim a removed grant is safe from dump text alone", async () => {
     async function check(schema: string) {
@@ -101,7 +114,9 @@ describe("release preflight", () => {
     // Retain the 617 prior contracts and the three explicit claim denials, plus the review
     // remediation contracts (2026-10-29) listed in REMEDIATION_CAPABILITIES.
     expect(capabilities).toEqual(expect.arrayContaining(REMEDIATION_CAPABILITIES));
-    expect(capabilities.filter((capability) => !REMEDIATION_CAPABILITIES.includes(capability))).toHaveLength(620);
+    expect(capabilities).toEqual(expect.arrayContaining(STUDIO_CAPABILITIES));
+    expect(STUDIO_CAPABILITIES).toHaveLength(56);
+    expect(capabilities.filter((capability) => !REMEDIATION_CAPABILITIES.includes(capability) && !STUDIO_CAPABILITIES.includes(capability))).toHaveLength(620);
     const claimDenials = ["authenticated", "anon", "public"].map(role => `grant-removed:${role}.public.claim_assistant_request(uuid,uuid,uuid)`);
     expect(capabilities).toEqual(expect.arrayContaining(claimDenials));
     const reviewValidityCapabilities = [
@@ -144,8 +159,8 @@ describe("release preflight", () => {
       "grant-removed:public.public.get_legacy_correction_evidence(uuid,uuid)",
     ];
     expect(capabilities).toEqual(expect.arrayContaining(repairCapabilities));
-    expect(capabilities.filter((capability) => ![...repairCapabilities, ...reviewValidityCapabilities, ...claimDenials, ...REMEDIATION_CAPABILITIES].includes(capability))).toHaveLength(598);
-    expect(capabilities.filter((capability) => ![...applicationCapabilities, ...redemptionCapabilities, ...repairCapabilities, ...reviewValidityCapabilities, ...claimDenials, ...REMEDIATION_CAPABILITIES].includes(capability))).toHaveLength(587);
+    expect(capabilities.filter((capability) => ![...repairCapabilities, ...reviewValidityCapabilities, ...claimDenials, ...REMEDIATION_CAPABILITIES, ...STUDIO_CAPABILITIES].includes(capability))).toHaveLength(598);
+    expect(capabilities.filter((capability) => ![...applicationCapabilities, ...redemptionCapabilities, ...repairCapabilities, ...reviewValidityCapabilities, ...claimDenials, ...REMEDIATION_CAPABILITIES, ...STUDIO_CAPABILITIES].includes(capability))).toHaveLength(587);
     expect(capabilities.filter((capability) => !hasCapabilityValidator(capability))).toEqual([]);
   });
 
