@@ -1,8 +1,8 @@
 // src/routes/admin.missions.$missionId.tsx
 import { createFileRoute, useNavigate, useParams } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ComponentProps } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { AdminAuthError, adminMissionKeys, fetchAdminMission, updateMission, type MissionDraftInput } from "@/lib/admin";
+import { AdminAuthError, adminMissionKeys, fetchAdminMission, updateMission, type AdminMission, type MissionDraftInput } from "@/lib/admin";
 import { useAdminAuth } from "@/components/admin/AdminAuthContext";
 import { MissionEditor } from "@/components/admin/MissionEditor";
 import { MissionManage } from "@/components/admin/MissionManage";
@@ -22,7 +22,9 @@ function EditMission() {
   });
   useEffect(() => { if (q.error instanceof AdminAuthError) reportAuthError(q.error); }, [q.error, reportAuthError]);
   const update = useMutation({
-    mutationFn: (body: MissionDraftInput) => updateMission(missionId, { ...body, expected_updated_at: q.data?.mission.updated_at }),
+    // The version must be the one the form was filled from, not the latest refetch (F-022).
+    mutationFn: ({ body, version }: { body: MissionDraftInput; version: string }) =>
+      updateMission(missionId, { ...body, expected_updated_at: version }),
     onSuccess: () => { editorNavigation.saved(); return navigate({ to: "/admin/missions" }); },
   });
   const [tab, setTab] = useState<"edit" | "manage">(
@@ -51,11 +53,19 @@ function EditMission() {
         <button type="button" className={`${tabBtn} ${tab === "manage" ? "bg-[var(--color-acid)]" : "bg-white"}`} onClick={() => selectTab("manage")}>管理</button>
       </div>
       {tab === "edit" ? (
-        <MissionEditor key={m.id} mode="edit" initial={m} engaged={engaged} saving={update.isPending} onDirtyChange={editorNavigation.changed}
-          onSave={(body) => update.mutateAsync(body)} />
+        <VersionedMissionEditor key={m.id} initial={m} engaged={engaged} saving={update.isPending} onDirtyChange={editorNavigation.changed}
+          onSave={(body, version) => update.mutateAsync({ body, version })} />
       ) : (
         <MissionManage missionId={missionId} />
       )}
     </div>
   );
+}
+
+/** MissionEditor reads `initial` once at mount; pin the matching version for the same lifetime. */
+function VersionedMissionEditor({ initial, onSave, ...rest }: Omit<ComponentProps<typeof MissionEditor>, "mode" | "onSave"> & {
+  initial: AdminMission; onSave: (body: MissionDraftInput, version: string) => Promise<unknown>;
+}) {
+  const [version] = useState(initial.updated_at);
+  return <MissionEditor mode="edit" initial={initial} {...rest} onSave={(body) => onSave(body, version)} />;
 }
