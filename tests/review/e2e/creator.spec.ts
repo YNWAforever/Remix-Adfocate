@@ -135,3 +135,19 @@ test("[F-008 fixed] a new account must accept the Terms and Privacy Policy befor
   await page.reload();
   await expect(page.getByRole("dialog", { name: /before you continue/i })).toHaveCount(0);
 });
+
+test("[F-009 fixed] a creator can download their data and delete their account from the profile page", async ({ page }) => {
+  const creator = await newCreator();
+  await signIn(page, creator);
+  await page.goto("/profile");
+  const download = page.waitForEvent("download");
+  await page.getByRole("button", { name: "Download my data" }).click();
+  expect((await download).suggestedFilename()).toBe("adfocate-data.json");
+  await page.getByRole("button", { name: "Delete my account" }).click();
+  const confirm = page.getByRole("button", { name: "Permanently delete" });
+  await expect(confirm).toBeDisabled();
+  await page.getByLabel("Type DELETE to confirm").fill("DELETE");
+  await confirm.click();
+  await expect(page).toHaveURL(/\/login/);
+  expect((await api("GET", "/me/consents", { jwt: creator.jwt })).status).toBe(401);
+});

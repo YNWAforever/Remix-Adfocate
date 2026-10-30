@@ -84,19 +84,32 @@ describe("account lifecycle", () => {
     defect(() => expect(res.status).toBe(403));
   });
 
-  knownBug("F-009", "deleting a creator account who has redeemed a gift succeeds (anonymise, keep ledgers)", async () => {
+  it("[F-009 fixed] a creator can export their data, then delete (anonymise) the account while ledgers survive", async () => {
     const c = await newCreator();
     const gift = sql(`insert into public.redemption_gifts(workspace_id,name,points_cost,stock_qty,stock_remaining,gift_type,status) values ('00000000-0000-0000-0000-0000000000aa','Review voucher',10,1,1,'digital','available') returning id;`);
     sql(`insert into public.redemption_codes(gift_id,workspace_id,code,status,issued_to,issued_at) values (${q(gift)},'00000000-0000-0000-0000-0000000000aa','DEL-1','issued',${q(c.id)},now());`);
-    const del = await service.auth.admin.deleteUser(c.id);
-    defect(() => expect(del.error).toBeNull());
-  });
+    await api("PUT", "/me/profile", { jwt: c.jwt, body: { display_name: "陳大文" } });
 
-  it("there is no self-service account deletion or data export endpoint (probe)", async () => {
-    const c = await newCreator();
-    for (const [method, path] of [["DELETE", "/me"], ["POST", "/me/delete"], ["GET", "/me/export"]] as const) {
-      expect((await api(method, path, { jwt: c.jwt })).status, path).toBe(404);
-    }
+    const exported = await api("GET", "/me/export", { jwt: c.jwt });
+    expect(exported.status).toBe(200);
+    expect(exported.body.account.email).toBe(c.email);
+    expect(exported.body.profile.display_name).toBe("陳大文");
+    expect(Array.isArray(exported.body.points)).toBe(true);
+
+    expect((await api("POST", "/me/delete", { jwt: c.jwt, body: {} })).status).toBe(400);
+    const del = await api("POST", "/me/delete", { jwt: c.jwt, body: { confirm: "DELETE" } });
+    expect(del.status, JSON.stringify(del.body)).toBe(200);
+
+    expect(sql(`select display_name||'|'||status||'|'||coalesce(phone,'-') from public.creators where id=${q(c.id)};`)).toBe("Deleted KOC|deleted|-");
+    expect(Number(sql(`select count(*) from public.point_transactions where creator_id=${q(c.id)};`))).toBeGreaterThan(0); // welcome bonus kept
+    expect(sql(`select issued_to from public.redemption_codes where code='DEL-1' and gift_id=${q(gift)};`)).toBe(c.id);
+    const auth = await service.auth.admin.getUserById(c.id);
+    expect(auth.data.user?.email).not.toBe(c.email);
+    // The old access token and password stop working; a retry with the old token is refused.
+    expect((await api("GET", "/me", { jwt: c.jwt })).status).toBe(401);
+    const relogin = await c.client.auth.signInWithPassword({ email: c.email, password: c.password });
+    expect(relogin.error).not.toBeNull();
+    expect((await api("POST", "/me/delete", { jwt: c.jwt, body: { confirm: "DELETE" } })).status).toBe(401);
   });
 
   it("an expired/revoked session is rejected by creator and operator APIs", async () => {

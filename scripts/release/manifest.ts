@@ -1201,6 +1201,20 @@ const REVIEWED_MIGRATIONS = [
     ],
     transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
   },
+  {
+    version: "20261029180000", name: "creator_account_deletion", phase: "privacy_compliance",
+    dependsOn: ["20261029170000"],
+    capabilities: [
+      "column:public.creators.deleted_at",
+      "constraint:public.creators.creators_status_chk",
+      "function:public.anonymize_creator_account",
+      "grant:service_role.public.anonymize_creator_account(uuid)",
+      "grant-removed:authenticated.public.anonymize_creator_account(uuid)",
+      "grant-removed:anon.public.anonymize_creator_account(uuid)",
+      "grant-removed:public.public.anonymize_creator_account(uuid)",
+    ],
+    transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
+  },
 ] as const satisfies readonly ReviewedMigration[];
 
 const NON_RELEASE_TIMESTAMP_MIGRATIONS = new Set([

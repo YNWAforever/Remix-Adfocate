@@ -54,6 +54,13 @@ const REMEDIATION_CAPABILITIES = [
   "grant-removed:authenticated.public.creator_consents(insert)",
   "grant-removed:anon.public.creator_consents(select)",
   "grant:service_role.public.creator_consents(insert)",
+  "column:public.creators.deleted_at",
+  "constraint:public.creators.creators_status_chk",
+  "function:public.anonymize_creator_account",
+  "grant:service_role.public.anonymize_creator_account(uuid)",
+  "grant-removed:authenticated.public.anonymize_creator_account(uuid)",
+  "grant-removed:anon.public.anonymize_creator_account(uuid)",
+  "grant-removed:public.public.anonymize_creator_account(uuid)",
 ];
 
 describe("release preflight", () => {

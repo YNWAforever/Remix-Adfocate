@@ -1530,6 +1530,27 @@
       ],
       "transactionExpectation": "transactional",
       "replayExpectation": "migration_history_noop"
+    },
+    {
+      "version": "20261029180000",
+      "name": "creator_account_deletion",
+      "path": "supabase/migrations/20261029180000_creator_account_deletion.sql",
+      "sha256": "d38fd33510a1b5d1960f34673ce2d647fe32b2f7da4813c94f6ad05ce17d143a",
+      "phase": "privacy_compliance",
+      "dependsOn": [
+        "20261029170000"
+      ],
+      "capabilities": [
+        "column:public.creators.deleted_at",
+        "constraint:public.creators.creators_status_chk",
+        "function:public.anonymize_creator_account",
+        "grant:service_role.public.anonymize_creator_account(uuid)",
+        "grant-removed:authenticated.public.anonymize_creator_account(uuid)",
+        "grant-removed:anon.public.anonymize_creator_account(uuid)",
+        "grant-removed:public.public.anonymize_creator_account(uuid)"
+      ],
+      "transactionExpectation": "transactional",
+      "replayExpectation": "migration_history_noop"
     }
   ]
 }

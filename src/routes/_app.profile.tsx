@@ -3,6 +3,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { CreatorProfileMediaPanel } from "@/components/CreatorProfileMediaPanel";
 import { MarketingConsentToggle } from "@/components/ConsentGate";
+import { AccountDataControls } from "@/components/AccountDataControls";
 import { FilterPillsMulti } from "@/components/FilterPills";
 import { IdentityHeader } from "@/components/IdentityHeader";
 import { LangToggle } from "@/components/LangToggle";
@@ -257,6 +258,9 @@ function Profile() {
       )}
       <section className={`${CARD} p-5`}>
         <MarketingConsentToggle />
+      </section>
+      <section className={`${CARD} p-5`}>
+        <AccountDataControls />
       </section>
     </div>
   );
