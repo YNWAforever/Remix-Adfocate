@@ -178,10 +178,10 @@ suite("creator passport", () => {
     try {
       const res = await req("/me/passport", c.jwt);
       expect(res.status).toBe(500);
-      expect(await res.json()).toMatchObject({
-        error: "social accounts exploded",
-        code: "db_error",
-      });
+      const body = await res.json();
+      // F-032: the code is kept, but raw database text never reaches the client.
+      expect(body).toMatchObject({ code: "db_error" });
+      expect(JSON.stringify(body)).not.toContain("social accounts exploded");
     } finally {
       failingSocialAccountReads.delete(c.userId);
     }
