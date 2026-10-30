@@ -130,6 +130,36 @@ describe("integration test launcher", () => {
     expect(runner.integrationFiles.filter((file: string) => file === "server/test/reward-handoffs.test.ts")).toHaveLength(1);
   });
 
+  it("arms capability fixtures only for the verified local Supabase project", () => {
+    expect(runner.localSupabaseProjectId()).toBe("adfocate-2");
+    const local = harness();
+    const identity = JSON.parse(local.processRef.env.INTEGRATION_TARGET_IDENTITY_JSON as string);
+    identity.projectId = "adfocate-2";
+    local.processRef.env.INTEGRATION_TARGET_IDENTITY_JSON = JSON.stringify(identity);
+    runner.launchIntegrationTests({
+      processRef: local.processRef,
+      spawnImpl: local.spawnImpl,
+      verifyIdentityImpl: () => identity,
+    });
+    const withFixtures = expect.objectContaining({
+      env: expect.objectContaining({ INTEGRATION_CAPABILITY_FIXTURES: "1" }),
+    });
+    expect(importMocks.spawnSync).toHaveBeenCalledWith(expect.any(String), expect.any(Array), withFixtures);
+    expect(local.spawnImpl).toHaveBeenCalledWith(expect.any(String), expect.any(Array), withFixtures);
+
+    const other = harness();
+    runner.launchIntegrationTests({
+      processRef: other.processRef,
+      spawnImpl: other.spawnImpl,
+      verifyIdentityImpl: () => ({ projectId: "synthetic-project" }),
+    });
+    expect(other.spawnImpl).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.any(Array),
+      expect.objectContaining({ env: expect.not.objectContaining({ INTEGRATION_CAPABILITY_FIXTURES: expect.anything() }) }),
+    );
+  });
+
   it("spawns local Vitest with the exact environment and preserves numeric exit codes", () => {
     const h = harness();
     runner.launchIntegrationTests({ processRef: h.processRef, spawnImpl: h.spawnImpl, verifyIdentityImpl: () => {} });
@@ -246,4 +276,118 @@ describe('new pristine global campaign job identity',()=>{
   const inspect=(c:string,a:string[])=>a[0]==='network'?{status:0,stdout:JSON.stringify(network)}:h.inspect(c,a);
   expect(()=>runner.verifyIntegrationIdentity(h.env,inspect,[])).toThrow(/pristine/i);
  });
+});
+
+function localGrantHarness(projectId = "adfocate-2", existingRole = "", failSql = false) {
+  const networkId = "c".repeat(64);
+  const api = {
+    id: "a".repeat(64), image: "sha256:synthetic-api", running: true, project: projectId,
+    ports: { "8000/tcp": [{ HostIp: "127.0.0.1", HostPort: "54321" }] },
+    networks: { ci: { NetworkID: networkId } }, mounts: [],
+  };
+  const database = {
+    ...api, id: "b".repeat(64), image: "sha256:synthetic-db", ports: {},
+    networks: { ci: { NetworkID: networkId } },
+  };
+  const identity = {
+    disposable: true,
+    ownerAuthorization: "GitHub Actions YNWAforever/Remix-Adfocate/actions/runs/40755337706/attempts/2: disposable integration job",
+    runId: "40755337706-2", projectId, proxy: "none", apiPort: 54321,
+    apiContainerId: api.id, databaseContainerId: database.id,
+    apiImageId: api.image, databaseImageId: database.image, networkId,
+  };
+  const env: Record<string, string> = {
+    SUPABASE_URL: "http://127.0.0.1:54321", SUPABASE_ANON_KEY: "synthetic-anon",
+    SUPABASE_SERVICE_KEY: "synthetic-service", INTEGRATION_TARGET_IDENTITY_JSON: JSON.stringify(identity),
+  };
+  const queries: string[] = [];
+  const inspect = vi.fn((_command: string, args: string[], options?: { input?: string }) => {
+    if (args[0] === "exec") {
+      queries.push(String(options?.input ?? ""));
+      if (failSql) return { status: 1, stdout: "", stderr: "STAFF_TARGET_NOT_ELIGIBLE\n" };
+      if (String(options?.input ?? "").startsWith("select role")) return { status: 0, stdout: existingRole ? `${existingRole}\n` : "\n" };
+      return { status: 0, stdout: "{}\n" };
+    }
+    return { status: 0, stdout: JSON.stringify(args.at(-1) === api.id ? api : database) };
+  });
+  return { api, database, env, identity, inspect, queries };
+}
+
+const grantUser = "11111111-1111-4111-8111-111111111111";
+const grantWorkspace = "00000000-0000-0000-0000-0000000000aa";
+
+describe("verified local fixture staff grants", () => {
+  it("bootstraps a workspace role only on the verified database container", () => {
+    const h = localGrantHarness();
+    expect(runner.bootstrapVerifiedLocalStaffGrant(h.env, { userId: grantUser, workspaceId: grantWorkspace, role: "workspace_admin" }, h.inspect)).toBe("granted");
+    expect(h.queries).toHaveLength(2);
+    expect(h.queries[0]).toContain("staff_workspace_roles");
+    expect(h.queries[1]).toContain("private.bootstrap_staff_access");
+    expect(h.queries[1]).toContain("'workspace_admin'");
+    expect(h.queries[1]).toContain(`'${grantWorkspace}'`);
+    expect(h.queries.join("\n")).not.toContain("synthetic-service");
+    const execs = h.inspect.mock.calls.filter(([, args]) => args[0] === "exec");
+    expect(execs).toHaveLength(2);
+    expect(execs.every(([, args]) => args[2] === h.database.id && !args.includes("supabase_db_adfocate-2"))).toBe(true);
+  });
+
+  it("bootstraps a platform content editor with a null workspace", () => {
+    const h = localGrantHarness();
+    expect(runner.bootstrapVerifiedLocalStaffGrant(h.env, { userId: grantUser, workspaceId: null, role: "content_editor" }, h.inspect)).toBe("granted");
+    expect(h.queries[0]).toContain("staff_platform_roles");
+    expect(h.queries[1]).toContain(",null,");
+    expect(h.queries[1]).toContain("'content_editor'");
+  });
+
+  it("does not rewrite an identical active grant", () => {
+    const h = localGrantHarness("adfocate-2", "operator");
+    expect(runner.bootstrapVerifiedLocalStaffGrant(h.env, { userId: grantUser, workspaceId: grantWorkspace, role: "operator" }, h.inspect)).toBe("exists");
+    expect(h.queries).toHaveLength(1);
+    expect(h.queries[0]).not.toContain("bootstrap_staff_access");
+  });
+
+  it("refuses to promote an existing fixture role", () => {
+    const h = localGrantHarness("adfocate-2", "reviewer");
+    expect(() => runner.bootstrapVerifiedLocalStaffGrant(h.env, { userId: grantUser, workspaceId: grantWorkspace, role: "operator" }, h.inspect)).toThrow(/no implicit promotion/);
+    expect(h.queries).toHaveLength(1);
+  });
+
+  it.each(["other-local", "adfocate-r1-empty-20261023"])("refuses %s before SQL", (projectId) => {
+    const h = localGrantHarness(projectId);
+    expect(() => runner.bootstrapVerifiedLocalStaffGrant(h.env, { userId: grantUser, workspaceId: grantWorkspace, role: "operator" }, h.inspect)).toThrow(/Unapproved fixture project/);
+    expect(h.queries).toEqual([]);
+  });
+
+  it("refuses the retired shaped target before SQL", () => {
+    const h = localGrantHarness("adfocate-r1-shaped-20261023");
+    expect(() => runner.bootstrapVerifiedLocalStaffGrant(h.env, { userId: grantUser, workspaceId: grantWorkspace, role: "operator" }, h.inspect)).toThrow(/retired|forensics/);
+    expect(h.queries).toEqual([]);
+    expect(h.inspect).not.toHaveBeenCalled();
+  });
+
+  it("refuses identity drift before SQL", () => {
+    const h = localGrantHarness();
+    h.api.image = "sha256:replacement";
+    expect(() => runner.bootstrapVerifiedLocalStaffGrant(h.env, { userId: grantUser, workspaceId: grantWorkspace, role: "operator" }, h.inspect)).toThrow(/identity mismatch/);
+    expect(h.queries).toEqual([]);
+  });
+
+  it("refuses a pristine receipt before SQL", () => {
+    const h = localGrantHarness();
+    h.env.INTEGRATION_PRISTINE_TARGET_JSON = "{}";
+    expect(() => runner.bootstrapVerifiedLocalStaffGrant(h.env, { userId: grantUser, workspaceId: grantWorkspace, role: "operator" }, h.inspect)).toThrow(/pristine/i);
+    expect(h.inspect).not.toHaveBeenCalled();
+  });
+
+  it("does not exec when the fixture id is not exact", () => {
+    const h = localGrantHarness();
+    expect(() => runner.bootstrapVerifiedLocalStaffGrant(h.env, { userId: "not-a-uuid", workspaceId: grantWorkspace, role: "operator" }, h.inspect)).toThrow(/Invalid exact fixture grant/);
+    expect(h.inspect).not.toHaveBeenCalled();
+  });
+
+  it("surfaces a database failure without a second statement", () => {
+    const h = localGrantHarness("adfocate-2", "", true);
+    expect(() => runner.bootstrapVerifiedLocalStaffGrant(h.env, { userId: grantUser, workspaceId: grantWorkspace, role: "operator" }, h.inspect)).toThrow(/STAFF_TARGET_NOT_ELIGIBLE/);
+    expect(h.queries).toHaveLength(1);
+  });
 });

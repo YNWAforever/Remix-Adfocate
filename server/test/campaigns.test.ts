@@ -250,7 +250,12 @@ suite("campaigns — insufficient budget", () => {
     a = await makeCreator(fixtureName("camp-ins-a@test.local"), 0);
     b = await makeCreator(fixtureName("camp-ins-b@test.local"), 0);
   });
-  afterAll(cleanup);
+  afterAll(async () => {
+    // The test leaves DEMO_WS enforced with a zero balance; later suites (e.g. wallet approval)
+    // share DEMO_WS and expect the unenforced default, so restore it.
+    await svc().rpc("set_workspace_budget_enforcement", { p_workspace: DEMO_WS, p_enforced: false });
+    await cleanup();
+  });
 
   it("rolls back the entire settlement; top-up + re-settle pays only unpaid winners", async () => {
     const m1 = await makeMission({ slug: fixtureName("test-ins-m1") });

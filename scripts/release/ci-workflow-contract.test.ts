@@ -21,4 +21,14 @@ describe("CI integration toolchain", () => {
     expect(integration).toContain('with: { version: "2.110.0" }');
     expect(integration).not.toContain("version: latest");
   });
+
+  it("provides a verified target identity on a loopback-bound network before integration runs", () => {
+    const integration = integrationJob();
+    expect(integration).toContain("com.docker.network.bridge.host_binding_ipv4=127.0.0.1");
+    expect(integration).toContain('supabase start --network-id "adfocate-ci-${{ github.run_id }}-${{ github.run_attempt }}"');
+    const capture = 'node scripts/ci-integration-target.mjs >> "$GITHUB_ENV"';
+    expect(integration).toContain(capture);
+    expect(integration.indexOf(capture)).toBeGreaterThan(integration.indexOf('echo "SUPABASE_SERVICE_KEY='));
+    expect(integration.indexOf(capture)).toBeLessThan(integration.indexOf("npm run test:integration"));
+  });
 });
