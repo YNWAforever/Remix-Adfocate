@@ -26,8 +26,10 @@ export const workspaceAuth: MiddlewareHandler<Env> = async (c, next) => {
   if (!creator) {
     return c.json({ error: "Creator not in workspace", code: "forbidden" }, 403);
   }
-  // A deleted (anonymised) account's still-unexpired access token must not keep working.
-  if ((creator as { status?: string }).status === "deleted") {
+  // A deleted (anonymised) account's still-unexpired access token must not keep working, except
+  // to retry the deletion itself so a partly failed cleanup can complete.
+  const finishingDeletion = c.req.method === "POST" && c.req.path.endsWith("/me/delete");
+  if ((creator as { status?: string }).status === "deleted" && !finishingDeletion) {
     return c.json({ error: "Account deleted", code: "account_deleted" }, 401);
   }
 

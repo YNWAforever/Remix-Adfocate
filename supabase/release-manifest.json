@@ -1535,7 +1535,7 @@
       "version": "20261029180000",
       "name": "creator_account_deletion",
       "path": "supabase/migrations/20261029180000_creator_account_deletion.sql",
-      "sha256": "d38fd33510a1b5d1960f34673ce2d647fe32b2f7da4813c94f6ad05ce17d143a",
+      "sha256": "3963fc91322af0bf9878664f5ab53b0a88195c71b7bd8ea7f2ce3f2b2d1562f4",
       "phase": "privacy_compliance",
       "dependsOn": [
         "20261029170000"

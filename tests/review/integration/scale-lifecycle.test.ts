@@ -2,7 +2,7 @@
 // failure mid-flow, and notification / cron behaviour.
 import { describe, expect, it } from "vitest";
 import { defect, knownBug } from "../support/bug";
-import { api, joinAndSubmit, newCreator, newMission, newStaff, newWorkspace, service, sql, q } from "../support/fixture";
+import { api, joinAndSubmit, newCreator, newMission, newStaff, newWorkspace, service, sql, q, DEMO_WORKSPACE } from "../support/fixture";
 
 /** Seed N synthetic creators each with one `submitted` legacy submission in a fresh workspace. */
 function seedQueue(workspaceId: string, missionId: string, n: number) {
@@ -109,7 +109,34 @@ describe("account lifecycle", () => {
     expect((await api("GET", "/me", { jwt: c.jwt })).status).toBe(401);
     const relogin = await c.client.auth.signInWithPassword({ email: c.email, password: c.password });
     expect(relogin.error).not.toBeNull();
-    expect((await api("POST", "/me/delete", { jwt: c.jwt, body: { confirm: "DELETE" } })).status).toBe(401);
+    // Retrying a completed deletion is an idempotent replay; it never restores the identity.
+    expect((await api("POST", "/me/delete", { jwt: c.jwt, body: { confirm: "DELETE" } })).status).toBe(200);
+    expect((await service.auth.admin.getUserById(c.id)).data.user?.email).toBe(`deleted-${c.id}@deleted.invalid`);
+  });
+
+  it("[F-009 fixed] a deletion that failed after anonymisation can be retried to finish the cleanup", async () => {
+    const c = await newCreator();
+    sql(`select public.anonymize_creator_account(${q(c.id)});`); // DB step committed, auth step never ran
+    expect((await api("GET", "/me", { jwt: c.jwt })).status).toBe(401);
+    const retry = await api("POST", "/me/delete", { jwt: c.jwt, body: { confirm: "DELETE" } });
+    expect(retry.status, JSON.stringify(retry.body)).toBe(200);
+    expect((await service.auth.admin.getUserById(c.id)).data.user?.email).toBe(`deleted-${c.id}@deleted.invalid`);
+  });
+
+  it("[F-009 fixed] deletion scrubs assistant request receipts, and the export is never truncated at 1,000 rows", async () => {
+    const c = await newCreator();
+    sql(`insert into public.notifications(user_id,workspace_id,type,data)
+         select ${q(c.id)},'${DEMO_WORKSPACE}','level_up','{}'::jsonb from generate_series(1,1100);`);
+    const exported = await api("GET", "/me/export", { jwt: c.jwt });
+    expect(exported.status).toBe(200);
+    expect(exported.body.notifications.length).toBeGreaterThanOrEqual(1100);
+
+    const conv = sql(`insert into public.assistant_conversations(creator_id,workspace) values (${q(c.id)},'demo') returning id;`);
+    sql(`insert into public.assistant_requests(creator_id,workspace_id,request_id,payload_hash,message,locale,context_version,conversation_id,state,lease_until,result)
+         values (${q(c.id)},'${DEMO_WORKSPACE}',gen_random_uuid(),'h','my phone is 91234567','en','v1',${q(conv)},'saved',now(),
+                 jsonb_build_object('answer','call 91234567','request_id','r'));`);
+    expect((await api("POST", "/me/delete", { jwt: c.jwt, body: { confirm: "DELETE" } })).status).toBe(200);
+    expect(sql(`select message||'|'||(result->>'answer') from public.assistant_requests where creator_id=${q(c.id)};`)).toBe("[deleted]|[deleted]");
   });
 
   it("an expired/revoked session is rejected by creator and operator APIs", async () => {

@@ -3,6 +3,7 @@ import type { Env } from "../app.js";
 import { serviceClient } from "../lib/supabase.js";
 import { dbError } from "../lib/httpErrors.js";
 import { PROFILE_MEDIA_BUCKET } from "../lib/profileMedia/types.js";
+import { fetchAllPages } from "../lib/queryPaging.js";
 
 // F-009: self-service data export and account deletion (anonymisation).
 export const accountRoutes = new Hono<Env>();
@@ -24,17 +25,29 @@ accountRoutes.get("/export", async (c) => {
   const svc = serviceClient();
   const userId = c.get("userId");
   const out: Record<string, unknown> = { exportedAt: new Date().toISOString(), creatorId: userId };
+  // Every collection is read in pages: PostgREST caps a response at max_rows, and a silently
+  // truncated export would look complete.
   for (const [label, table, column, select] of EXPORT_TABLES) {
-    const { data, error } = await svc.from(table).select(select).eq(column, userId);
+    const { data, error } = await fetchAllPages((from, to) =>
+      svc.from(table).select(select).eq(column, userId).order("id").range(from, to));
     if (error) return dbError(c, error, "export_unavailable", 503);
-    out[label] = label === "profile" ? (data?.[0] ?? null) : (data ?? []);
+    out[label] = label === "profile" ? (data[0] ?? null) : data;
   }
   const { data: authUser } = await svc.auth.admin.getUserById(userId);
   out.account = { email: authUser?.user?.email ?? null, phone: authUser?.user?.phone || null, createdAt: authUser?.user?.created_at ?? null };
-  const conversations = await svc.from("assistant_conversations")
-    .select("id, started_at, messages:assistant_messages(role, content, created_at)").eq("creator_id", userId);
+  const conversations = await fetchAllPages((from, to) => svc.from("assistant_conversations")
+    .select("id, started_at").eq("creator_id", userId).order("id").range(from, to));
   if (conversations.error) return dbError(c, conversations.error, "export_unavailable", 503);
-  out.assistantConversations = conversations.data ?? [];
+  const messages = await fetchAllPages((from, to) => svc.from("assistant_messages")
+    .select("conversation_id, role, content, created_at, assistant_conversations!inner(creator_id)")
+    .eq("assistant_conversations.creator_id", userId).order("id").range(from, to));
+  if (messages.error) return dbError(c, messages.error, "export_unavailable", 503);
+  type Message = { conversation_id: string; role: string; content: string; created_at: string };
+  out.assistantConversations = (conversations.data as Array<{ id: string; started_at: string }>).map((conv) => ({
+    ...conv,
+    messages: (messages.data as unknown as Message[]).filter((m) => m.conversation_id === conv.id)
+      .map(({ role, content, created_at }) => ({ role, content, created_at })),
+  }));
   c.header("Content-Disposition", `attachment; filename="adfocate-data-${new Date().toISOString().slice(0, 10)}.json"`);
   return c.json(out);
 });
@@ -61,17 +74,18 @@ accountRoutes.post("/delete", async (c) => {
     if (removed.error) return dbError(c, removed.error, "deletion_incomplete", 503);
   }
 
-  // Release the email/phone and block sign-in; the access token in hand stops working because
-  // workspaceAuth refuses deleted creators.
-  const auth = await svc.auth.admin.updateUserById(userId, {
-    email: `deleted-${userId}@deleted.invalid`, email_confirm: true,
-    user_metadata: {}, ban_duration: "876000h",
-  });
-  if (auth.error) return dbError(c, auth.error, "deletion_incomplete", 503);
+  // Release the phone, then the email, and block sign-in last: until the ban lands, a retry with
+  // the same token can finish whatever step failed (workspaceAuth lets deleted accounts reach
+  // only this route).
   const { data: user } = await svc.auth.admin.getUserById(userId);
   if (user?.user?.phone) {
     const phone = await svc.auth.admin.updateUserById(userId, { phone: "" });
     if (phone.error) return dbError(c, phone.error, "deletion_incomplete", 503);
   }
+  const auth = await svc.auth.admin.updateUserById(userId, {
+    email: `deleted-${userId}@deleted.invalid`, email_confirm: true,
+    user_metadata: {}, ban_duration: "876000h",
+  });
+  if (auth.error) return dbError(c, auth.error, "deletion_incomplete", 503);
   return c.json({ deleted: true });
 });

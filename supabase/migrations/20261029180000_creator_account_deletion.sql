@@ -35,8 +35,12 @@ begin
   delete from public.campaign_participants where creator_id = p_creator;
   delete from public.mission_shortlists where creator_id = p_creator;
   -- Conversations are referenced by request receipts, so their free text is scrubbed instead.
-  update public.assistant_messages set content = '[deleted]'
+  update public.assistant_messages set content = '[deleted]', tool_calls = '[]'::jsonb
     where conversation_id in (select id from public.assistant_conversations where creator_id = p_creator);
+  -- Request receipts keep their ids and states for audit, but not the prompt or the answer.
+  update public.assistant_requests set message = '[deleted]',
+    result = case when result ? 'answer' then jsonb_set(result, '{answer}', '"[deleted]"') else result end
+    where creator_id = p_creator;
 
   return jsonb_build_object('creator_id', p_creator, 'deleted_at', v_creator.deleted_at, 'replay', false);
 end;
