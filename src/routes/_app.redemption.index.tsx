@@ -16,11 +16,12 @@ function Redemption() {
   const { t } = useI18n();
   const [category, setCategory] = useState<string>("全部");
   const balance = useBalance();
+  const currentBalance = balance.isError ? undefined : balance.data;
   const gifts = useGifts(category === "全部" ? undefined : category);
   return (
     <div className="mx-auto w-full max-w-lg space-y-4 p-4 lg:max-w-5xl">
-      <PointsBalanceCard balance={balance.data?.balance ?? 0} availableTo={balance.data?.available_to} loading={balance.isLoading} />
-      {balance.isError && <p className="text-sm text-[var(--color-magenta)]">{t("common.balanceError")}</p>}
+      <PointsBalanceCard balance={currentBalance?.balance} availableTo={currentBalance?.available_to} loading={balance.isLoading} />
+      {balance.isError && <div role="alert" className="space-y-2 text-sm text-[var(--color-magenta)]"><p>{t("common.balanceError")}</p><button type="button" className="underline" onClick={() => void balance.refetch()}>{t("common.retry")}</button></div>}
       <div className="flex items-center justify-between">
         <h1 className="font-display text-2xl font-bold">{t("app.redemption.pageTitle")}</h1>
         <Link to="/redemption/history" className="text-sm font-bold text-[var(--color-magenta)]">{t("app.redemption.historyLabel")}</Link>
@@ -39,7 +40,7 @@ function Redemption() {
       {!gifts.isLoading && !gifts.isError && (gifts.data?.length ?? 0) > 0 && (
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
           {gifts.data!.map((g) => (
-            <RedeemGiftCard key={g.id} gift={g} balance={balance.data?.balance ?? 0} />
+            <RedeemGiftCard key={g.id} gift={g} balance={currentBalance?.balance} />
           ))}
         </div>
       )}

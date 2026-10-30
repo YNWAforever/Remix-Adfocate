@@ -2,6 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCampaigns, type Campaign } from "@/lib/queries/kocmax";
 import { useI18n } from "@/lib/i18n";
 import { RequestFeedback, useCanShowPreviousData } from "@/components/RequestFeedback";
+import { formatCreatorDate } from "@/lib/creatorFormatting";
+import { Flag } from "lucide-react";
 
 export const Route = createFileRoute("/_app/campaigns/")({ component: CampaignsList });
 
@@ -37,6 +39,7 @@ function CampaignsList() {
 }
 
 function CampaignSection({ title, items }: { title: string; items: Campaign[] }) {
+  const { lang } = useI18n();
   if (!items.length) return null;
   return (
     <section className="space-y-3">
@@ -46,10 +49,11 @@ function CampaignSection({ title, items }: { title: string; items: Campaign[] })
           key={c.slug}
           to="/campaigns/$slug"
           params={{ slug: c.slug }}
-          className="block rounded-xl border p-4 hover:bg-muted/50 transition-colors"
+          className="s-campaign-card block rounded-xl border p-4 hover:bg-muted/50 transition-colors"
         >
+          <Flag className="s-card-illustration" size={26} aria-hidden />
           <div className="font-semibold">{c.title}</div>
-          <div className="text-xs text-muted-foreground mt-1">{c.ends_at}</div>
+          <div className="text-xs text-muted-foreground mt-1">{formatCreatorDate(c.ends_at, lang) ?? c.ends_at}</div>
         </Link>
       ))}
     </section>

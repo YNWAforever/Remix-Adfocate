@@ -2,8 +2,10 @@ import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { ChevronDown } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
+import { STUDIO_SHELL } from "@/lib/features";
+import { StudioExplore } from "@/components/studio/StudioExplore";
 
-export const Route = createFileRoute("/_app/explore")({ component: Explore });
+export const Route = createFileRoute("/_app/explore")({ component: () => STUDIO_SHELL ? <StudioExplore /> : <Explore /> });
 
 function Explore() {
   const { t } = useI18n();

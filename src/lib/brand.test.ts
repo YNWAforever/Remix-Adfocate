@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { fetchBrandResources, fetchBrandResource, brandKeys, BrandAuthError } from "./brand";
 import { supabase } from "@/lib/supabase";
+import { canShowPreviousData } from "@/components/RequestFeedback";
 
 vi.mock("@/lib/supabase", () => ({
   supabase: { auth: { getSession: vi.fn() } },
@@ -44,5 +45,16 @@ describe("brand resources client", () => {
   it("throws BrandAuthError on 403", async () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("{}", { status: 403 }));
     await expect(fetchBrandResources()).rejects.toBeInstanceOf(BrandAuthError);
+  });
+  it.each([401, 403])("marks %s as an access denial so cached private data is hidden", async (status) => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("{}", { status }));
+    const error = await fetchBrandResources().catch(error => error);
+    expect(error).toBeInstanceOf(BrandAuthError);
+    expect(error.status).toBe(status);
+    expect(canShowPreviousData(error)).toBe(false);
+  });
+  it("preserves a conflict status for the retained-input feedback", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response(JSON.stringify({error:"Updated",code:"stale_revision"}), {status:409}));
+    await expect(fetchBrandResources()).rejects.toMatchObject({status:409,code:"stale_revision"});
   });
 });

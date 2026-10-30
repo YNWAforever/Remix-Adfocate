@@ -1,3 +1,4 @@
+import { Sprout } from "@/components/studio/StudioPrimitives";
 import { useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { supabase } from "@/lib/supabase";
@@ -47,7 +48,7 @@ function AuthShell({ children }: { children: React.ReactNode }) {
   const { lang, setLang } = useI18n();
   const tx = (en: string, zh: string) => (lang === "en" ? en : zh);
   return (
-    <div className={`${STUDIO_SHELL ? "studio " : ""}relative flex min-h-screen items-center justify-center overflow-hidden bg-[var(--color-paper)] px-4 py-10`}>
+    <div className={`${STUDIO_SHELL ? "studio s-auth " : ""}relative flex min-h-screen items-center justify-center overflow-hidden bg-[var(--color-paper)] px-4 py-10`}>
       <div
         aria-hidden
         className="dot-pattern pointer-events-none absolute inset-0 z-0 opacity-30"
@@ -66,7 +67,7 @@ function AuthShell({ children }: { children: React.ReactNode }) {
             EN · 繁
           </button>
         </div>
-        <div className="pastel-card p-6 sm:p-8">{children}</div>
+        <div className="pastel-card p-6 sm:p-8">{STUDIO_SHELL && <div className="s-auth-art"><Sprout small /><p>{tx("A little space for your next big idea.", "給下一個靈感，一點成長空間。")}</p></div>}{children}</div>
       </div>
     </div>
   );

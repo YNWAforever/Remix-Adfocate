@@ -1,3 +1,5 @@
+import { RequestFeedback, useCanShowPreviousData } from "@/components/RequestFeedback";
+import { formatCreatorDate } from "@/lib/creatorFormatting";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -15,13 +17,14 @@ const STATUSES = ["", "draft", "active", "closed"] as const;
 const STATUS_LABEL: Record<string, string> = { "": "全部", draft: "草稿", active: "進行中", closed: "已關閉" };
 
 function BrandMissionsList() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const { reportAuthError } = useBrandAuth();
   const qc = useQueryClient();
   const navigate = useNavigate();
   const [status, setStatus] = useState("");
 
   const list = useQuery({ queryKey: brandKeys.missions(status), queryFn: () => fetchBrandMissions(status), retry: false });
+  const data = useCanShowPreviousData(list, brandKeys.missions(status)) ? list.data : undefined;
   useEffect(() => {
     if (list.error instanceof BrandAuthError) reportAuthError(list.error);
   }, [list.error, reportAuthError]);
@@ -37,6 +40,8 @@ function BrandMissionsList() {
 
   return (
     <div className="space-y-4">
+      <h1>{t("app.brand.navMissions")}</h1>
+      <RequestFeedback error={list.error} stale={Boolean(data)} retry={() => void list.refetch()} />
       <div className="flex flex-wrap items-center gap-2">
         <select aria-label="狀態" value={status} onChange={(e) => setStatus(e.target.value)} className="h-9 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white px-2 text-sm">
           {STATUSES.map((s) => <option key={s} value={s}>{STATUS_LABEL[s]}</option>)}
@@ -45,10 +50,10 @@ function BrandMissionsList() {
       </div>
 
       {list.isLoading ? <p className="text-sm">載入中…</p> : null}
-      {list.data?.missions.length === 0 ? <p className="text-sm text-[var(--color-soft-ink)]">尚未有任務。</p> : null}
+      {data?.missions.length === 0 ? <p className="text-sm text-[var(--color-soft-ink)]">尚未有任務。</p> : null}
 
       <div className="space-y-3">
-        {list.data?.missions.map((m: BrandMission) => (
+        {data?.missions.map((m: BrandMission) => (
           <div key={m.id} className="flex flex-wrap items-center justify-between gap-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3">
             <div className="min-w-0 space-y-1">
               <div className="flex flex-wrap items-center gap-2">
@@ -56,7 +61,7 @@ function BrandMissionsList() {
                 <span className="rounded-full border-2 border-[var(--color-ink)] px-2 py-0.5 text-xs font-bold">{STATUS_LABEL[m.status] ?? m.status}</span>
                 <span className="rounded-full border-2 border-[var(--color-ink)] bg-white px-2 py-0.5 text-xs">{m.mission_type}</span>
               </div>
-              <p className="text-xs text-[var(--color-soft-ink)]">{m.slug} · {m.points_reward} 分{m.cash_reward ? ` / $${m.cash_reward}` : ""} · {m.filled}/{m.quota} · {m.deadline ?? "無截止"}</p>
+              <p className="text-xs text-[var(--color-soft-ink)]">{m.slug} · {m.points_reward} 分{m.cash_reward ? ` / $${m.cash_reward}` : ""} · {m.filled}/{m.quota} · {formatCreatorDate(m.deadline, lang) ?? "無截止"}</p>
             </div>
             <div className="flex shrink-0 flex-wrap gap-2">
               <button onClick={() => navigate({ to: "/brand/missions/$missionId", params: { missionId: m.id } })} className="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 font-heading font-bold">編輯</button>

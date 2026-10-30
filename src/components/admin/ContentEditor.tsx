@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Markdown } from "@/components/Markdown";
+import { RequestFeedback, canShowPreviousData, useCanShowPreviousData } from "@/components/RequestFeedback";
 import {
   getAdminContent, createContent, updateContent, contentAction,
   listCategories, uploadContentImage, contentKeys, type AdminContentRow,
@@ -47,6 +48,10 @@ export function ContentEditor({ id }: { id: string }) {
     mutationFn: (a: "publish" | "unpublish" | "archive") => contentAction(id, a),
     onSuccess: ({ item }) => { setForm(item); qc.invalidateQueries({ queryKey: ["admin", "content"] }); },
   });
+  const accessDenial = [save.error, act.error].find(error => !canShowPreviousData(error));
+  const mutationError = accessDenial ?? (act.submittedAt > save.submittedAt ? act.error : save.error);
+  const canShow = useCanShowPreviousData(existing, contentKeys.adminItem(id), mutationError);
+  const busy = save.isPending || act.isPending;
 
   async function onImage(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]; if (!file) return;
@@ -54,9 +59,16 @@ export function ContentEditor({ id }: { id: string }) {
     set({ body_zh: `${form.body_zh ?? ""}\n\n![](${url})` });
   }
 
+  if (!isNew && (!existing.data || !canShow)) return <div>
+    {existing.isLoading && <p role="status">載入中… Loading…</p>}
+    <RequestFeedback error={accessDenial ?? existing.error ?? mutationError} retry={() => void existing.refetch()} />
+  </div>;
+
   return (
     <div className="grid gap-4 lg:grid-cols-[1fr_240px]">
       <div className="space-y-3">
+        <RequestFeedback error={existing.error} stale={Boolean(existing.data)} retry={() => void existing.refetch()} />
+        <RequestFeedback error={mutationError} />
         <div className="flex items-center gap-2">
           <button onClick={() => setLang("zh")} className={`rounded-full border-2 border-[var(--color-ink)] px-3 text-sm ${lang === "zh" ? "bg-[var(--color-ink)] text-white" : ""}`}>中文</button>
           <button onClick={() => setLang("en")} className={`rounded-full border-2 border-[var(--color-ink)] px-3 text-sm ${lang === "en" ? "bg-[var(--color-ink)] text-white" : ""}`}>EN</button>
@@ -91,9 +103,9 @@ export function ContentEditor({ id }: { id: string }) {
         {form.cover_image_url && <img src={form.cover_image_url} alt="" className="rounded border-2 border-[var(--color-ink)]" />}
         <label className="block text-xs uppercase">Insert body image<input type="file" accept="image/*" onChange={onImage} className="mt-1 block w-full text-xs" /></label>
         <label className="flex items-center gap-2 text-xs uppercase"><input type="checkbox" checked={!!form.pinned} onChange={(e) => set({ pinned: e.target.checked, pinned_rank: e.target.checked ? 0 : null })} /> Pin to feed</label>
-        <button onClick={() => save.mutate()} className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-acid)] p-2 font-bold">Save</button>
-        {!isNew && form.status !== "published" && <button onClick={() => act.mutate("publish")} className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 font-bold">Publish</button>}
-        {!isNew && form.status === "published" && <button onClick={() => act.mutate("archive")} className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm">Archive</button>}
+        <button disabled={busy} onClick={() => save.mutate()} className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-acid)] p-2 font-bold">Save</button>
+        {!isNew && form.status !== "published" && <button disabled={busy} onClick={() => act.mutate("publish")} className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 font-bold">Publish</button>}
+        {!isNew && form.status === "published" && <button disabled={busy} onClick={() => act.mutate("archive")} className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm">Archive</button>}
       </aside>
     </div>
   );
