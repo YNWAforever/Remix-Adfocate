@@ -1,8 +1,9 @@
 import { Clock } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
+import { formatCreatorDate } from "@/lib/creatorFormatting";
 
 export function PointsBalanceCard({ balance, availableTo, loading = false }: { balance: number; availableTo?: string | null; loading?: boolean }) {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   return (
     <section className="wallet-card rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-ink)] p-6 text-[var(--color-paper)]">
       <p className="font-mono text-xs uppercase tracking-wide opacity-80">{t("app.wallet.balanceLabel")}</p>
@@ -13,7 +14,7 @@ export function PointsBalanceCard({ balance, availableTo, loading = false }: { b
       )}
       {availableTo && (
         <p className="mt-2 flex items-center gap-1 text-xs opacity-80">
-          <Clock size={14} aria-hidden /> {t("app.wallet.expiry", { date: availableTo.slice(0, 10) })}
+          <Clock size={14} aria-hidden /> {t("app.wallet.expiry", { date: formatCreatorDate(availableTo, lang) ?? availableTo })}
         </p>
       )}
     </section>

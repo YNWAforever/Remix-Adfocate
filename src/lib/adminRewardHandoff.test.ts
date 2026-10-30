@@ -352,7 +352,7 @@ describe("admin reward handoff client", () => {
 
   it("models the exact creator pending-reward projection separately from admin data", () => {
     type CreatorKeys = "id" | "status" | "reward" | "processingWindowDays"
-      | "targetAt" | "createdAt" | "cancelledAt" | "decisionState";
+      | "targetAt" | "createdAt" | "cancelledAt" | "settledAt" | "decisionState";
     const pending = {
       id: null,
       status: "pending" as const,

@@ -20,6 +20,7 @@ import {
 import { deriveCreatorActivation } from "@/lib/creatorActivation";
 import { trackActivationEvent } from "@/lib/activationAnalytics";
 import { useI18n } from "@/lib/i18n";
+import { supabase } from "@/lib/supabase";
 import { safeCreatorReturn } from "@/lib/authFeedback";
 
 export const Route = createFileRoute("/_app/onboarding")({ component: Wizard,
@@ -44,6 +45,11 @@ function sameValues(left: string[] | Handles, right: string[] | Handles): boolea
 function Wizard() {
   const { t, lang } = useI18n();
   const queryClient = useQueryClient();
+  async function signOut() {
+    await supabase.auth.signOut();
+    queryClient.clear();
+    window.location.assign("/login");
+  }
   const me = useMe();
   const status = useOnboardingStatus();
   const recommended = useRecommendedMissions();
@@ -308,6 +314,7 @@ function Wizard() {
       onBack={goBack}
       onDiscardAndBack={discardAndBack}
       onCancelDiscard={() => undefined}
+      onSignOut={() => void signOut()}
     >
       <fieldset disabled={saveState === "saving"} className="min-w-0 space-y-3">
       {error ? <p id="onboarding-save-error" role="alert" className="text-sm text-[var(--color-magenta)]">{error}</p> : null}

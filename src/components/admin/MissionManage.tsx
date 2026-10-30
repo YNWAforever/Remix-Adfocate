@@ -34,10 +34,14 @@ export function MissionManage({ missionId }: { missionId: string }) {
     window.alert(e instanceof AdminRequestError ? e.message : "操作失敗");
   };
 
+  // Decline and return both require a reason the creator will see; cancelling or leaving it
+  // empty leaves the item pending.
+  const askReason = () => window.prompt("原因（Creator 會看到） / Reason (shown to the creator)")?.trim() ?? "";
+
   const accept = useMutation({ mutationFn: (id: string) => acceptApplication(id), onSuccess: invalidate, onError: onErr });
-  const decline = useMutation({ mutationFn: (id: string) => declineApplication(id), onSuccess: invalidate, onError: onErr });
+  const decline = useMutation({ mutationFn: (v: { id: string; notes: string }) => declineApplication(v.id, v.notes), onSuccess: invalidate, onError: onErr });
   const approve = useMutation({ mutationFn: (id: string) => approveSubmission(id, {}), onSuccess: invalidate, onError: onErr });
-  const reject = useMutation({ mutationFn: (id: string) => rejectSubmission(id), onSuccess: invalidate, onError: onErr });
+  const reject = useMutation({ mutationFn: (v: { id: string; notes: string }) => rejectSubmission(v.id, v.notes), onSuccess: invalidate, onError: onErr });
 
   if (q.isLoading) return <p className="text-sm">載入中…</p>;
   if (!q.data) return <p className="text-sm text-red-600">找不到任務活動。</p>;
@@ -58,7 +62,7 @@ export function MissionManage({ missionId }: { missionId: string }) {
             <span>{row.creators.display_name}</span>
             <span className="flex gap-2">
               <button type="button" className={`${btn} bg-[var(--color-acid)]`} onClick={() => accept.mutate(row.id)} disabled={accept.isPending}>接受</button>
-              <button type="button" className={`${btn} bg-white`} onClick={() => decline.mutate(row.id)} disabled={decline.isPending}>拒絕</button>
+              <button type="button" className={`${btn} bg-white`} onClick={() => { const notes = askReason(); if (notes) decline.mutate({ id: row.id, notes }); }} disabled={decline.isPending}>拒絕</button>
             </span>
           </div>
         ))}
@@ -71,7 +75,7 @@ export function MissionManage({ missionId }: { missionId: string }) {
             <span>{row.creators.display_name}</span>
             <span className="flex gap-2">
               <button type="button" className={`${btn} bg-[var(--color-acid)]`} onClick={() => approve.mutate(row.id)} disabled={approve.isPending}>批准</button>
-              <button type="button" className={`${btn} bg-white`} onClick={() => reject.mutate(row.id)} disabled={reject.isPending}>退回</button>
+              <button type="button" className={`${btn} bg-white`} onClick={() => { const notes = askReason(); if (notes) reject.mutate({ id: row.id, notes }); }} disabled={reject.isPending}>退回</button>
             </span>
           </div>
         ))}

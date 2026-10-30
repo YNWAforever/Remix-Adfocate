@@ -3,6 +3,7 @@ import type { Context } from "hono";
 import type { Env } from "../app.js";
 import { makeUserClient } from "../lib/supabase.js";
 import type { PostgrestError } from "@supabase/supabase-js";
+import { dbError } from "../lib/httpErrors.js";
 
 export const redemptionRoutes = new Hono<Env>();
 
@@ -14,7 +15,7 @@ function rpcError(c: Context<Env>, error: PostgrestError) {
   const msg = error.message ?? "";
   if (msg === "not_found") return c.json({ error: msg, code: msg }, 404);
   if (RPC_409.has(msg)) return c.json({ error: msg, code: msg }, 409);
-  return c.json({ error: msg || "rpc error", code: "db_error" }, 500);
+  return dbError(c, { message: msg }, "db_error", 500);
 }
 
 redemptionRoutes.get("/gifts", async (c) => {
@@ -27,7 +28,7 @@ redemptionRoutes.get("/gifts", async (c) => {
     .order("points_cost", { ascending: true });
   if (category && category !== "全部") q = q.eq("category", category);
   const { data, error } = await q;
-  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  if (error) return dbError(c, error, "db_error", 500);
   return c.json({ gifts: data });
 });
 
@@ -55,6 +56,6 @@ redemptionRoutes.get("/history", async (c) => {
     .select("id, code, points_spent, status, created_at, redemption_gifts(name)")
     .eq("creator_id", c.get("userId"))
     .order("created_at", { ascending: false });
-  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  if (error) return dbError(c, error, "db_error", 500);
   return c.json({ redemptions: data ?? [] });
 });

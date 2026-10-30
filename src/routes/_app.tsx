@@ -10,6 +10,7 @@ import { SideNav } from "@/components/SideNav";
 import { AssistantLauncher } from "@/components/assistant/AssistantLauncher";
 import { LevelUpModal } from "@/components/LevelUpModal";
 import { NotificationToaster } from "@/components/NotificationToaster";
+import { ConsentGate } from "@/components/ConsentGate";
 import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/_app")({
@@ -18,6 +19,9 @@ export const Route = createFileRoute("/_app")({
     const { data } = await supabase.auth.getSession();
     const isAuthRoute = location.pathname === "/login" || location.pathname.startsWith("/auth/");
     const isOnboardingRoute = location.pathname.startsWith("/onboarding");
+    // Onboarding links to the creator guide and profile; let creators open them mid-setup
+    // instead of bouncing straight back (every other app page stays gated).
+    const isOnboardingSafeRoute = location.pathname.startsWith("/guide") || location.pathname === "/profile";
 
     // Onboarding requires a session too — only the login/callback routes are
     // reachable unauthenticated (else a typed /onboarding URL bypasses auth).
@@ -26,7 +30,7 @@ export const Route = createFileRoute("/_app")({
     }
 
     // Onboarding gate (defence in depth). Cached read → no per-navigation round-trip.
-    if (data.session && !isAuthRoute && !isOnboardingRoute) {
+    if (data.session && !isAuthRoute && !isOnboardingRoute && !isOnboardingSafeRoute) {
       let me: Me | undefined;
       try {
         me = await context.queryClient.ensureQueryData({
@@ -75,6 +79,7 @@ function Layout() {
       {showNav && <SideNav />}
       <main id="main"><Outlet /></main>
       <LevelUpModal />
+      <ConsentGate enabled={!(path === "/login" || path.startsWith("/auth/"))} />
       {showNav && <BottomNav />}
       {showNav && <AssistantLauncher />}
       {showNav && <NotificationToaster />}

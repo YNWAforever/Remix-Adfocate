@@ -805,6 +805,7 @@ integrationSuite(integrationSuiteName, () => {
       "decisionState",
       "processingWindowDays",
       "reward",
+      "settledAt",
       "status",
       "targetAt",
     ]);

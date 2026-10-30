@@ -1,16 +1,30 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import { useCampaign, useCampaignLeaderboard } from "@/lib/queries/kocmax";
 import { useI18n } from "@/lib/i18n";
+import { ApiError } from "@/lib/api";
+import { formatCreatorDate } from "@/lib/creatorFormatting";
 
 export const Route = createFileRoute("/_app/campaigns/$slug")({ component: CampaignDetail });
 
 function CampaignDetail() {
   const { slug } = Route.useParams();
-  const { t } = useI18n();
-  const { data, isLoading } = useCampaign(slug);
+  const { t, lang } = useI18n();
+  const { data, isLoading, isError, error, refetch } = useCampaign(slug);
   const { data: board = [] } = useCampaignLeaderboard(slug);
 
-  if (isLoading || !data) return <div className="p-4 text-muted-foreground">…</div>;
+  if (isLoading) return <div role="status" className="p-4 text-muted-foreground">{t("common.loading")}</div>;
+  if (isError || !data) {
+    const notFound = error instanceof ApiError && error.status === 404;
+    return (
+      <div role="alert" className="mx-auto max-w-3xl space-y-3 p-4">
+        <p>{t(notFound ? "app.campaigns.notFound" : "common.loadFailed")}</p>
+        <div className="flex gap-3 text-sm font-semibold underline underline-offset-4">
+          {!notFound && <button type="button" onClick={() => void refetch()}>{t("common.retry")}</button>}
+          <Link to="/campaigns">{t("app.campaigns.backToList")}</Link>
+        </div>
+      </div>
+    );
+  }
 
   const { campaign, missions, my_progress } = data;
   const pct = Math.min(
@@ -27,7 +41,7 @@ function CampaignDetail() {
           <p className="text-sm text-muted-foreground">{campaign.description}</p>
         )}
         <p className="text-xs text-muted-foreground">
-          {t("app.campaigns.endsIn")}: {campaign.ends_at}
+          {t("app.campaigns.endsIn")}: {formatCreatorDate(campaign.ends_at, lang) ?? campaign.ends_at}
         </p>
       </header>
 

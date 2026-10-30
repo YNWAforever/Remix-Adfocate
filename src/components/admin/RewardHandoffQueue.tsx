@@ -22,6 +22,8 @@ type Props = {
   hasMore?: boolean;
   loadingMore?: boolean;
   onLoadMore?: () => Promise<void>;
+  /** Credits a pending hand-off to the creator's balances (shown to reward.settings only). */
+  onSettle?: (item: RewardHandoffQueueItem) => Promise<void>;
 };
 
 const FIELD =
@@ -91,6 +93,7 @@ function RewardHandoffQueueWorkspace({
   hasMore = false,
   loadingMore = false,
   onLoadMore,
+  onSettle,
 }: Props) {
   const { lang, localeReady, t } = useI18n();
   const access=useStaffAccess(),canEditSettings=!access||access.can("reward.settings");
@@ -183,8 +186,27 @@ function RewardHandoffQueueWorkspace({
   function status(item: RewardHandoffQueueItem) {
     return t(item.status === "cancelled"
       ? "app.admin.rewardHandoff.status.cancelled"
-      : "app.admin.rewardHandoff.status.pending");
+      : item.status === "settled"
+        ? "app.admin.rewardHandoff.status.settled"
+        : "app.admin.rewardHandoff.status.pending");
   }
+
+  const [settling, setSettling] = useState<string | null>(null);
+  const [settleError, setSettleError] = useState<string | null>(null);
+  async function confirmSettle(item: RewardHandoffQueueItem) {
+    if (!onSettle || settling) return;
+    if (!window.confirm(t("app.admin.rewardHandoff.settleConfirm", { reward: renderReward(item) }))) return;
+    setSettling(item.id); setSettleError(null);
+    try { await onSettle(item); }
+    catch (error) { setSettleError(error instanceof Error ? error.message : t("app.admin.rewardHandoff.settleError")); }
+    finally { setSettling(null); }
+  }
+  const settleButton = (item: RewardHandoffQueueItem) => canEditSettings && onSettle && item.status === "pending" ? (
+    <button type="button" disabled={settling !== null} onClick={() => void confirmSettle(item)}
+      className="mt-2 inline-flex rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 font-heading text-xs font-bold disabled:opacity-60">
+      {settling === item.id ? t("common.processing") : t("app.admin.rewardHandoff.settle")}
+    </button>
+  ) : null;
 
   const groups = [
     { key: "target", title: t("app.admin.rewardHandoff.targetDates"), rows: targeted },
@@ -312,6 +334,7 @@ function RewardHandoffQueueWorkspace({
           >
             <option value="pending">{t("app.admin.rewardHandoff.status.pending")}</option>
             <option value="cancelled">{t("app.admin.rewardHandoff.status.cancelled")}</option>
+            <option value="settled">{t("app.admin.rewardHandoff.status.settled")}</option>
           </select>
         </label>
         <button
@@ -329,6 +352,7 @@ function RewardHandoffQueueWorkspace({
         </p>
       ) : (
         <div className="min-w-0 space-y-6">
+          {settleError ? <p role="alert" className="text-sm font-bold text-red-700">{settleError}</p> : null}
           {groups.map((group) => (
             <section key={group.key} aria-labelledby={"reward-group-" + group.key}>
               <h3 id={"reward-group-" + group.key} className="font-heading text-lg font-bold">
@@ -368,6 +392,7 @@ function RewardHandoffQueueWorkspace({
                     >
                       {t("app.admin.rewardHandoff.timeline")}
                     </Link> : null}
+                    {settleButton(item)}
                   </article>
                 ))}
               </div>
@@ -401,6 +426,7 @@ function RewardHandoffQueueWorkspace({
                           >
                             {t("app.admin.rewardHandoff.timeline")}
                           </Link> : null}
+                          {settleButton(item)}
                         </td>
                       </tr>
                     ))}

@@ -1,0 +1,144 @@
+// Scenario: invalid / hostile input — oversized, wrong types, XSS, Unicode / Chinese text,
+// on creator and admin forms; plus the public passport privacy leak.
+import { describe, expect, it } from "vitest";
+import { randomUUID } from "node:crypto";
+import { api, newCreator, newMission, newUser, sql, q } from "../support/fixture";
+
+const XSS = `<img src=x onerror="alert(document.cookie)"><script>alert(1)</script>`;
+
+describe("creator inputs", () => {
+  it("Chinese, emoji and mixed-script display names round-trip intact", async () => {
+    const c = await newCreator();
+    const name = "陳大文 Tai Man 🌸 小紅書KOC";
+    const put = await api("PUT", "/me/profile", { jwt: c.jwt, body: { display_name: name } });
+    expect(put.status).toBe(200);
+    const me = await api("GET", "/me", { jwt: c.jwt });
+    expect(JSON.stringify(me.body)).toContain(name);
+  });
+
+  it("XSS payloads are stored as inert text and returned as JSON strings (rendering relies on React escaping)", async () => {
+    const c = await newCreator();
+    const put = await api("PUT", "/me/profile", { jwt: c.jwt, body: { display_name: `<img src=x onerror="alert(1)">` } });
+    expect(put.status).toBe(200);
+    const me = await api("GET", "/me", { jwt: c.jwt });
+    expect(typeof me.body).toBe("object"); // JSON, never HTML
+  });
+
+  it("[F-028 fixed] a 100,000-character display name is rejected", async () => {
+    const c = await newCreator();
+    const put = await api("PUT", "/me/profile", { jwt: c.jwt, body: { display_name: "長".repeat(100_000) } });
+    expect(put.status).toBe(400);
+    expect(put.body.field).toBe("display_name");
+  });
+
+  it("[F-028 fixed via F-032] malformed JSON on submit returns 400, not 500", async () => {
+    const c = await newCreator();
+    const m = newMission();
+    await api("POST", `/missions/${m.slug}/join`, { jwt: c.jwt });
+    const { createApp } = await import("../../../server/app.js");
+    const res = await createApp().app.request("http://local/api/missions/" + m.slug + "/submit", {
+      method: "PUT", body: "{not json", headers: { Authorization: `Bearer ${c.jwt}`, "X-Workspace-Slug": "demo", "Content-Type": "application/json" },
+    });
+    expect(res.status).toBe(400);
+  });
+
+  it("evidence URLs: javascript:, credentials, empty and non-URL values are rejected", async () => {
+    const c = await newCreator();
+    const m = newMission();
+    await api("POST", `/missions/${m.slug}/join`, { jwt: c.jwt });
+    for (const bad of [["javascript:alert(1)"], ["https://user:pass@instagram.com/p/x"], [""], ["not a url"], []]) {
+      const res = await api("PUT", `/missions/${m.slug}/submit`, { jwt: c.jwt, body: { content_urls: bad } });
+      expect(res.status, JSON.stringify(bad)).toBeGreaterThanOrEqual(400);
+      expect(res.status).toBeLessThan(500);
+    }
+  });
+
+  it("avatar upload grant rejects SVG/HTML types and files over 5 MB", async () => {
+    const c = await newCreator();
+    const svg = await api("POST", "/me/profile-media/avatar-upload", { jwt: c.jwt, body: { fileName: "a.svg", contentType: "image/svg+xml", sizeBytes: 1000 } });
+    expect(svg.status).toBeGreaterThanOrEqual(400);
+    const html = await api("POST", "/me/profile-media/avatar-upload", { jwt: c.jwt, body: { fileName: "a.html", contentType: "text/html", sizeBytes: 1000 } });
+    expect(html.status).toBeGreaterThanOrEqual(400);
+    const big = await api("POST", "/me/profile-media/avatar-upload", { jwt: c.jwt, body: { fileName: "a.png", contentType: "image/png", sizeBytes: 50 * 1024 * 1024 } });
+    expect(big.status).toBeGreaterThanOrEqual(400);
+  });
+
+  it("portfolio links reject non-http(s) schemes", async () => {
+    const c = await newCreator();
+    const res = await api("POST", "/me/profile-media/portfolio", { jwt: c.jwt, body: { platform: "instagram", url: "javascript:alert(1)", title: "x" } });
+    expect(res.status).toBeGreaterThanOrEqual(400);
+  });
+});
+
+describe("public passport privacy", () => {
+  it("[F-002 fixed] a shared passport never exposes the creator's email address", async () => {
+    const c = await newCreator(); // display_name defaults to the sign-up email (server/routes/me.ts:75)
+    const share = await api("POST", "/me/passport/share", { jwt: c.jwt });
+    expect(share.status, JSON.stringify(share.body)).toBe(200);
+    const token = (share.body.token ?? share.body.share?.token ?? share.body.url?.split("/").pop()) as string;
+    expect(token).toBeTruthy();
+    const pub = await api("GET", `/public/passports/${token}`, { ws: null });
+    expect(pub.status).toBe(200);
+    expect(JSON.stringify(pub.body)).not.toContain(c.email);
+    expect(pub.body.creator.displayName).toMatch(/^KOC [0-9A-F]{4}$/);
+  });
+});
+
+describe("public passport keeps chosen names", () => {
+  it("a creator-chosen display name (Chinese) is shown unchanged", async () => {
+    const c = await newCreator();
+    await api("PUT", "/me/profile", { jwt: c.jwt, body: { display_name: "陳大文 KOC" } });
+    const share = await api("POST", "/me/passport/share", { jwt: c.jwt });
+    const token = (share.body.token ?? share.body.share?.token ?? share.body.url?.split("/").pop()) as string;
+    const pub = await api("GET", `/public/passports/${token}`, { ws: null });
+    expect(pub.body.creator.displayName).toBe("陳大文 KOC");
+  });
+});
+
+describe("admin forms", () => {
+  async function contentEditor() {
+    const u = await newUser("content-editor");
+    sql(`insert into public.staff_users(user_id,email,active) values (${q(u.id)},${q(u.email)},true);
+         select private.bootstrap_staff_access(${q(u.id)},null,${q(u.id)},'content_editor',true,0,${q(randomUUID())},'review fixture','review-local-disposable');`);
+    return u;
+  }
+
+  it("admin mission create rejects negative rewards and XSS-only titles are stored as text", async () => {
+    const { newStaff } = await import("../support/fixture");
+    const admin = await newStaff("workspace_admin");
+    const neg = await api("POST", "/admin/missions", { jwt: admin.jwt, ws: null, body: { title: "Neg", points_reward: -100, cash_reward: -5, mission_type: "ugc", access_type: "open" } });
+    expect(neg.status).toBeGreaterThanOrEqual(400);
+    expect(neg.status).toBeLessThan(500);
+    const xss = await api("POST", "/admin/missions", { jwt: admin.jwt, ws: null, body: { title: XSS, mission_type: "ugc", access_type: "open", points_reward: 10 } });
+    expect([200, 201, 400, 422]).toContain(xss.status);
+  });
+
+  it("[F-014 fixed] content media upload refuses HTML/SVG and accepts a real PNG", async () => {
+    const editor = await contentEditor();
+    const { createApp } = await import("../../../server/app.js");
+    const form = new FormData();
+    form.append("file", new File(["<script>alert(1)</script>"], "evil.html", { type: "text/html" }));
+    const res = await createApp().app.request("http://local/api/admin/content/media", { method: "POST", body: form, headers: { Authorization: `Bearer ${editor.jwt}` } });
+    expect(res.status).toBe(415);
+    const svg = new FormData();
+    svg.append("file", new File(['<svg xmlns="http://www.w3.org/2000/svg" onload="alert(1)"/>'], "logo.png", { type: "image/png" }));
+    const spoofed = await createApp().app.request("http://local/api/admin/content/media", { method: "POST", body: svg, headers: { Authorization: `Bearer ${editor.jwt}` } });
+    expect(spoofed.status).toBe(415);
+    const png = new FormData();
+    png.append("file", new File([new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, ...new Array(24).fill(0)])], "evil.html", { type: "text/html" }));
+    const ok = await createApp().app.request("http://local/api/admin/content/media", { method: "POST", body: png, headers: { Authorization: `Bearer ${editor.jwt}` } });
+    expect(ok.status).toBe(200);
+    expect((await ok.json()).url).toMatch(/\.png$/);
+  });
+
+  it("application decline reason is capped at 500 characters (Chinese counted by code point)", async () => {
+    const { newStaff } = await import("../support/fixture");
+    const op = await newStaff("operator");
+    const c = await newCreator();
+    const m = newMission({ access: "application" });
+    await api("POST", `/missions/${m.slug}/apply`, { jwt: c.jwt });
+    const id = sql(`select id from public.mission_submissions where mission_id=${q(m.id)};`);
+    const res = await api("POST", `/admin/applications/${id}/decline`, { jwt: op.jwt, ws: null, body: { notes: "拒".repeat(501) } });
+    expect(res.status).toBe(400);
+  });
+});

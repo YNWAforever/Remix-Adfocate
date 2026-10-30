@@ -3,11 +3,12 @@ import { useRedemptions } from "@/lib/queries/kocmax";
 import { SkeletonCard } from "@/components/SkeletonCard";
 import { useI18n } from "@/lib/i18n";
 import { RequestFeedback, useCanShowPreviousData } from "@/components/RequestFeedback";
+import { formatCreatorDate } from "@/lib/creatorFormatting";
 
 export const Route = createFileRoute("/_app/redemption/history")({ component: RedemptionHistory });
 
 function RedemptionHistory() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const q = useRedemptions();
   const records = useCanShowPreviousData(q, ["redemptions"]) ? q.data : undefined;
   return (
@@ -26,7 +27,7 @@ function RedemptionHistory() {
               <span className="font-display font-bold text-[var(--color-magenta)]">-{r.points_spent}</span>
             </div>
             <p className="mt-1 font-mono text-sm">{t("app.redemption.codeLabel", { code: r.code ?? "—" })}</p>
-            <p className="text-xs text-[var(--color-soft-ink)]">{r.created_at.slice(0, 10)}</p>
+            <p className="text-xs text-[var(--color-soft-ink)]">{formatCreatorDate(r.created_at, lang)}</p>
           </li>
         ))}
         {!q.isLoading && !q.isError && records?.length === 0 && (

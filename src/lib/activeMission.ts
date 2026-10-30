@@ -11,7 +11,7 @@ export type WorkflowState =
   | "cancelled"
   | "expired";
 
-export type RewardHandoffStatus = "pending" | "cancelled";
+export type RewardHandoffStatus = "pending" | "cancelled" | "settled";
 
 export type RewardContract = {
   id: string;
@@ -57,6 +57,7 @@ export type CreatorPendingReward = {
   targetAt: string | null;
   createdAt: string;
   cancelledAt: string | null;
+  settledAt?: string | null;
   decisionState: Readonly<{ kind: "approved" | "cancelled"; decidedAt: string }>;
 };
 

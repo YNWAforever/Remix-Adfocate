@@ -114,7 +114,9 @@ suite("public passport privacy", () => {
     const publicRes = await app.request(`/api/public/passports/${token}`);
     expect(publicRes.status).toBe(200);
     const body = await publicRes.json();
-    expect(body.creator.displayName).toBe(fixtureName("public-passport@test.local"));
+    // F-002: a contact-shaped display name (here the sign-up email) is masked on the public page.
+    expect(body.creator.displayName).not.toBe(fixtureName("public-passport@test.local"));
+    expect(JSON.stringify(body)).not.toContain(fixtureName("public-passport@test.local"));
     expect(body.badges).not.toContain("social_linked");
     expect(body.socialTrustBadges).toContain("social_scan_connected");
     expect(JSON.stringify(body)).not.toContain("secretcreator");

@@ -5,6 +5,7 @@ import { DraftEditor } from "@/components/active-mission/DraftEditor";
 import { FulfillmentCard } from "@/components/active-mission/FulfillmentCard";
 import { ProofAttemptHistory } from "@/components/active-mission/ProofAttemptHistory";
 import { RewardPendingCard } from "@/components/active-mission/RewardPendingCard";
+import { RewardSettledCard } from "@/components/active-mission/RewardSettledCard";
 import { ProofSubmissionForm, type ProofEvidenceAsset } from "@/components/active-mission/ProofSubmissionForm";
 import { PublicationInstructions } from "@/components/active-mission/PublicationInstructions";
 import { VersionTimeline } from "@/components/active-mission/VersionTimeline";
@@ -371,11 +372,15 @@ export function CreatorMissionWorkspace() {
                 versions={activeItem.versions ?? []}
                 events={workspace.events.filter((event) => !event.workItemId || event.workItemId === activeItem.id)}
               />
-              <RewardPendingCard
-                missionTitle={workspace.mission.title}
-                pendingReward={pendingReward}
-                supportHref={`/contact?topic=reward-pending&submission=${encodeURIComponent(submissionId)}`}
-              />
+              {pendingReward.status === "settled" ? (
+                <RewardSettledCard missionTitle={workspace.mission.title} pendingReward={pendingReward} />
+              ) : (
+                <RewardPendingCard
+                  missionTitle={workspace.mission.title}
+                  pendingReward={pendingReward}
+                  supportHref={`/contact?topic=reward-pending&submission=${encodeURIComponent(submissionId)}`}
+                />
+              )}
             </>
           ) : publicationWorkItemId ? (
             publicationQuery.isLoading ? (

@@ -1,10 +1,11 @@
-import { Hono } from "hono";
+import { Hono, type Context } from "hono";
 import { createHash } from "node:crypto";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { adminOperatorCrmRoutes } from "./adminOperatorCrm.js";
 import { adminMissionRoutes } from "./adminMissions.js";
 import { makeUserClient, serviceClient } from "../lib/supabase.js";
 import { enrichAdminMissionRows } from "../lib/operatorCrm/repo.js";
+import { fetchAllPages } from "../lib/queryPaging.js";
 import { persistScores } from "../lib/persistScores.js";
 import { shapeEngagedRoster, type EngagedSubmissionRow } from "../lib/engagedRoster.js";
 import { markVerified } from "../lib/social/repo.js";
@@ -22,6 +23,7 @@ import { validateSubmissionEvidence } from "../../src/lib/submissionEvidence.js"
 import { requireCapability, requirePlatformCapability, staffRouteRequirement, StaffCapabilityError } from "../lib/staffCapabilities.js";
 import { adminStaffAccessRoutes } from "./adminStaffAccess.js";
 import { staffMissionAssistRoutes } from "./assistant.js";
+import { dbError } from "../lib/httpErrors.js";
 
 /** Operator/brand admin endpoints. B3a: real per-staff Google login (staff_users),
  *  with the legacy shared secret kept as a one-release break-glass fallback (removed in B3b). */
@@ -150,21 +152,25 @@ adminRoutes.get("/submissions", async (c) => {
   if (submissionId && !/^[0-9a-f-]{36}$/i.test(submissionId)) return c.json({ error: "Invalid submission", code: "bad_request" }, 400);
   const ws = c.req.query("workspace");
   const svc = serviceClient();
-  let q = svc
-    .from("mission_submissions")
-    .select(
-      "id, mission_id, status, content_urls, evidence_revision, legacy_evidence_sql_valid, submitted_at, created_at, creator_id, creators!inner(display_name), missions!inner(slug, title, points_reward)",
-    );
-  q = submissionId ? q.eq("id", submissionId) : q.eq("status", status);
-  if (ws) q = q.eq("missions.workspace_id", ws);
-  const { data, error } = await q.order("submitted_at", { ascending: true });
-  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  const query = () => {
+    let q = svc
+      .from("mission_submissions")
+      .select(
+        "id, mission_id, status, content_urls, evidence_revision, legacy_evidence_sql_valid, submitted_at, created_at, creator_id, creators!inner(display_name), missions!inner(slug, title, points_reward)",
+      );
+    q = submissionId ? q.eq("id", submissionId) : q.eq("status", status);
+    if (ws) q = q.eq("missions.workspace_id", ws);
+    return q.order("submitted_at", { ascending: true }).order("id");
+  };
+  // Paged: a single read is capped at max_rows (1000) and would silently truncate the queue.
+  const { data, error } = await fetchAllPages((from, to) => query().range(from, to));
+  if (error) return dbError(c, error, "db_error", 500);
   if (submissionId && !data?.length) return c.json({ error: "Not found", code: "not_found" }, 404);
   try {
     return c.json({ submissions: await enrichAdminMissionRows(svc, data ?? []) });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Failed to enrich submissions";
-    return c.json({ error: message, code: "db_error" }, 500);
+    return dbError(c, { message }, "db_error", 500);
   }
 });
 
@@ -186,12 +192,13 @@ adminRoutes.post("/submissions/:id/approve", async (c) => {
   if (!evidence.data.sql_valid || !validateSubmissionEvidence(evidence.data.content_urls).ok) return c.json({
     error: "Stored work URLs are invalid. Request correction before approval.", code: "invalid_evidence",
   }, 400);
-  const { data, error } = await svc.rpc("approve_submission", {
-    p_submission: c.req.param("id"),
-    p_notes: notes,
-    p_quality_rating: rating,
+  // Audited wrapper: same engine, plus the acting operator in operator_audit_events.
+  const scope = c.get("authorizedWorkspace");
+  const { data, error } = await svc.rpc("decide_legacy_submission", {
+    p_workspace: scope.workspaceId, p_operator: scope.userId, p_submission: c.req.param("id"),
+    p_decision: "approve", p_notes: notes, p_quality_rating: rating,
   });
-  if (error) return c.json({ error: error.message, code: "rpc_error" }, 400);
+  if (error) return legacyDecisionError(c, error);
   await persistScores((data as { creator_id: string }).creator_id);
   return c.json(data);
 });
@@ -230,11 +237,31 @@ adminRoutes.post("/submissions/:id/request-correction", async (c) => {
   }
   return c.json(result.data);
 });
+// A concurrent decision by another operator surfaces as wrong_state: report it as a
+// conflict so the loser refreshes instead of seeing a raw RPC message.
+function legacyDecisionError(c: Context, error: { message: string }) {
+  if (error.message === "wrong_state") return c.json({ error: "此提交已由其他營運人員處理，請重新整理。 / This submission was already decided. Refresh the queue.", code: "wrong_state" }, 409);
+  if (error.message === "not_found") return c.json({ error: "Not found", code: "not_found" }, 404);
+  if (error.message === "FORBIDDEN") return c.json({ error: "This action requires an assigned staff capability.", code: "FORBIDDEN" }, 403);
+  if (error.message === "rejection_reason_required" || error.message === "rejection_reason_too_long") return c.json({ error: "請填寫 1-500 字的拒絕原因 / A rejection reason of 1-500 characters is required", code: error.message }, 400);
+  if (error.message === "insufficient_budget") return c.json({ error: "工作空間預算不足，請先增值。 / The workspace budget cannot cover this reward. Top up the budget first.", code: "insufficient_budget" }, 409);
+  if (error.message === "bad_rating") return c.json({ error: "quality_rating must be an integer 1-5", code: "bad_rating" }, 400);
+  return dbError(c, error, "rpc_error", 500);
+}
+
 adminRoutes.post("/submissions/:id/reject", async (c) => {
-  const notes = (await c.req.json<{ notes?: string }>().catch(() => ({}) as { notes?: string })).notes ?? null;
+  const body = await c.req.json<{ notes?: unknown }>().catch(() => ({}) as { notes?: unknown });
+  const notes = typeof body?.notes === "string" ? body.notes.trim() : "";
+  // The creator only learns why their work was not accepted from this note.
+  if (!notes) return c.json({ error: "請填寫拒絕原因 / A rejection reason is required", code: "rejection_reason_required" }, 400);
+  if ([...notes].length > 500) return c.json({ error: "原因上限為 500 字 / Limit: 500 characters", code: "rejection_reason_too_long" }, 400);
   const svc = serviceClient();
-  const { data, error } = await svc.rpc("reject_submission", { p_submission: c.req.param("id"), p_notes: notes });
-  if (error) return c.json({ error: error.message, code: "rpc_error" }, 400);
+  const scope = c.get("authorizedWorkspace");
+  const { data, error } = await svc.rpc("decide_legacy_submission", {
+    p_workspace: scope.workspaceId, p_operator: scope.userId, p_submission: c.req.param("id"),
+    p_decision: "reject", p_notes: notes, p_quality_rating: null,
+  });
+  if (error) return legacyDecisionError(c, error);
   await persistScores((data as { creator_id: string }).creator_id);
   return c.json(data);
 });
@@ -244,18 +271,21 @@ adminRoutes.post("/submissions/:id/reject", async (c) => {
 adminRoutes.get("/applications", async (c) => {
   const ws = c.req.query("workspace");
   const svc = serviceClient();
-  let q = svc
-    .from("mission_submissions")
-    .select("id, mission_id, created_at, creator_id, creators!inner(display_name), missions!inner(slug, title, points_reward)")
-    .eq("status", "applied");
-  if (ws) q = q.eq("missions.workspace_id", ws);
-  const { data, error } = await q.order("created_at", { ascending: true });
-  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  const query = () => {
+    let q = svc
+      .from("mission_submissions")
+      .select("id, mission_id, created_at, creator_id, creators!inner(display_name), missions!inner(slug, title, points_reward)")
+      .eq("status", "applied");
+    if (ws) q = q.eq("missions.workspace_id", ws);
+    return q.order("created_at", { ascending: true }).order("id");
+  };
+  const { data, error } = await fetchAllPages((from, to) => query().range(from, to));
+  if (error) return dbError(c, error, "db_error", 500);
   try {
     return c.json({ applications: await enrichAdminMissionRows(svc, data ?? []) });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Failed to enrich applications";
-    return c.json({ error: message, code: "db_error" }, 500);
+    return dbError(c, { message }, "db_error", 500);
   }
 });
 
@@ -266,15 +296,18 @@ adminRoutes.get("/applications", async (c) => {
 adminRoutes.get("/engaged", async (c) => {
   const ws = c.req.query("workspace");
   const svc = serviceClient();
-  let q = svc
-    .from("mission_submissions")
-    .select(
-      "id, mission_id, creator_id, status, points_awarded, created_at, submitted_at, reviewed_at, review_deadline, creators!inner(id, display_name, avatar_url, level, xp), missions!inner(slug, title)",
-    )
-    .in("status", ["joined", "submitted", "under_review", "approved"]);
-  if (ws) q = q.eq("missions.workspace_id", ws);
-  const { data, error } = await q.order("created_at", { ascending: true });
-  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  const query = () => {
+    let q = svc
+      .from("mission_submissions")
+      .select(
+        "id, mission_id, creator_id, status, points_awarded, created_at, submitted_at, reviewed_at, review_deadline, creators!inner(id, display_name, avatar_url, level, xp), missions!inner(slug, title)",
+      )
+      .in("status", ["joined", "submitted", "under_review", "approved"]);
+    if (ws) q = q.eq("missions.workspace_id", ws);
+    return q.order("created_at", { ascending: true }).order("id");
+  };
+  const { data, error } = await fetchAllPages((from, to) => query().range(from, to));
+  if (error) return dbError(c, error, "db_error", 500);
   return c.json({ creators: shapeEngagedRoster((data ?? []) as unknown as EngagedSubmissionRow[]) });
 });
 
@@ -368,7 +401,7 @@ adminRoutes.post("/gifts/:id/codes", async (c) => {
     .select("id, workspace_id, stock_remaining")
     .eq("id", giftId)
     .maybeSingle();
-  if (gErr) return c.json({ error: gErr.message, code: "db_error" }, 500);
+  if (gErr) return dbError(c, gErr, "db_error", 500);
   if (!g) return c.json({ error: "not_found", code: "not_found" }, 404);
 
   const rows = codes.map((code) => ({ gift_id: giftId, workspace_id: g.workspace_id, code }));
@@ -376,7 +409,7 @@ adminRoutes.post("/gifts/:id/codes", async (c) => {
   if (insErr) {
     // 23505 = unique_violation: a code already exists in this gift's pool.
     if (insErr.code === "23505") return c.json({ error: "duplicate codes", code: "duplicate_codes" }, 409);
-    return c.json({ error: insErr.message, code: "db_error" }, 500);
+    return dbError(c, insErr, "db_error", 500);
   }
 
   // Bump stock by the batch size (single operator → no contention on this read-modify-write).
@@ -384,6 +417,6 @@ adminRoutes.post("/gifts/:id/codes", async (c) => {
     .from("redemption_gifts")
     .update({ stock_remaining: (g.stock_remaining ?? 0) + codes.length })
     .eq("id", giftId);
-  if (updErr) return c.json({ error: updErr.message, code: "db_error" }, 500);
+  if (updErr) return dbError(c, updErr, "db_error", 500);
   return c.json({ added: codes.length });
 });

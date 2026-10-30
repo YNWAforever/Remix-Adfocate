@@ -1,14 +1,14 @@
 import { CheckCircle2, XCircle, Gift, TrendingUp, UserCheck, UserX, Trophy, Award, Bell, Megaphone, type LucideIcon } from "lucide-react";
 
 export type NotificationType =
-  | "submission_approved" | "submission_rejected" | "redemption_ready"
+  | "submission_approved" | "submission_rejected" | "submission_correction_requested" | "redemption_ready"
   | "level_up" | "application_accepted" | "application_declined"
   | "campaign_goal_reached" | "campaign_prize_awarded" | "campaign_started"
   | "mission_product_shipped" | "mission_receipt_required"
   | "mission_revision_requested" | "mission_draft_approved" | "mission_approved_to_publish"
   | "mission_deadline_approaching" | "mission_deadline_overdue"
   | "mission_publication_correction_requested" | "mission_publication_verified"
-  | "mission_reward_pending" | "mission_reward_pending_cancelled";
+  | "mission_reward_pending" | "mission_reward_pending_cancelled" | "mission_reward_settled";
 
 export type NotificationRow = {
   id: string;
@@ -45,6 +45,8 @@ const ICONS: Record<NotificationType, LucideIcon> = {
   mission_publication_verified: CheckCircle2,
   mission_reward_pending: Bell,
   mission_reward_pending_cancelled: XCircle,
+  mission_reward_settled: CheckCircle2,
+  submission_correction_requested: Bell,
 };
 
 export function iconFor(type: NotificationType): LucideIcon {
@@ -99,7 +101,8 @@ function hrefFor(row: NotificationRow): string {
     case "mission_publication_correction_requested":
     case "mission_publication_verified":
     case "mission_reward_pending":
-    case "mission_reward_pending_cancelled": {
+    case "mission_reward_pending_cancelled":
+    case "mission_reward_settled": {
       const submissionId = row.data.submission_id;
       return typeof submissionId === "string" && submissionId
         ? `/my/${submissionId}`

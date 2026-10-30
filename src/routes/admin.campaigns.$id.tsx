@@ -1,6 +1,6 @@
 // src/routes/admin.campaigns.$id.tsx
 import { createFileRoute, useParams } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   AdminAuthError, AdminRequestError, adminKeys, attachCampaignMission, closeCampaign,
@@ -49,6 +49,8 @@ function EditCampaign() {
   const [tierError, setTierError] = useState<string | null>(null);
   const [missionId, setMissionId] = useState("");
   const [hydratedFor, setHydratedFor] = useState<string | null>(null);
+  // Version of the copy the form fields hold. A background refetch must not advance it (F-022).
+  const [editVersion, setEditVersion] = useState<string | undefined>(undefined);
 
   const campaign = q.data?.campaign;
   useEffect(() => {
@@ -62,10 +64,19 @@ function EditCampaign() {
     setBonusPoints(campaign.completion_bonus_points ?? 0);
     setBonusXp(campaign.completion_bonus_xp ?? 0);
     setTiers(fromPrizeTiers(campaign.prize_tiers ?? []));
+    setEditVersion(campaign.updated_at);
     setHydratedFor(campaign.id);
   }, [campaign, hydratedFor]);
 
-  const invalidate = () => {
+  // This editor's own publish/close/settle/attach changes the version too; adopt the refetched one.
+  const adoptNextVersion = useRef(false);
+  useEffect(() => {
+    if (!adoptNextVersion.current || !campaign) return;
+    adoptNextVersion.current = false;
+    setEditVersion(campaign.updated_at);
+  }, [campaign]);
+  const invalidate = (adoptVersion = true) => {
+    adoptNextVersion.current = adoptVersion;
     qc.invalidateQueries({ queryKey: adminKeys.campaignDetail(id) });
     qc.invalidateQueries({ queryKey: ["admin-campaigns"] });
   };
@@ -79,19 +90,19 @@ function EditCampaign() {
   };
 
   const save = useMutation({
-    mutationFn: (patch: Partial<CampaignDraftInput>) => updateCampaign(id, patch),
-    onSuccess: invalidate,
+    mutationFn: (patch: Partial<CampaignDraftInput>) => updateCampaign(id, { ...patch, expected_updated_at: editVersion }),
+    onSuccess: (res) => { setEditVersion(res.campaign.updated_at); invalidate(false); },
     onError: onErr,
   });
-  const publish = useMutation({ mutationFn: () => publishCampaign(id), onSuccess: invalidate, onError: onErr });
-  const close = useMutation({ mutationFn: () => closeCampaign(id), onSuccess: invalidate, onError: onErr });
-  const settle = useMutation({ mutationFn: () => settleCampaign(id), onSuccess: invalidate, onError: onErr });
+  const publish = useMutation({ mutationFn: () => publishCampaign(id), onSuccess: () => invalidate(), onError: onErr });
+  const close = useMutation({ mutationFn: () => closeCampaign(id), onSuccess: () => invalidate(), onError: onErr });
+  const settle = useMutation({ mutationFn: () => settleCampaign(id), onSuccess: () => invalidate(), onError: onErr });
   const attach = useMutation({
     mutationFn: (mid: string) => attachCampaignMission(id, mid),
     onSuccess: () => { setMissionId(""); invalidate(); },
     onError: onErr,
   });
-  const detach = useMutation({ mutationFn: (mid: string) => detachCampaignMission(id, mid), onSuccess: invalidate, onError: onErr });
+  const detach = useMutation({ mutationFn: (mid: string) => detachCampaignMission(id, mid), onSuccess: () => invalidate(), onError: onErr });
 
   if (q.isLoading) return <p className="text-sm">載入中…</p>;
   if (!campaign) return <p className="text-sm text-red-600">找不到挑戰。</p>;

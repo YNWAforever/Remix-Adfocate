@@ -19,12 +19,18 @@ export const workspaceAuth: MiddlewareHandler<Env> = async (c, next) => {
   // Resolve workspace by slug and verify the creator belongs to it.
   const { data: creator } = await supabase
     .from("creators")
-    .select("id, workspace_id, workspaces!creators_workspace_id_fkey!inner(slug)")
+    .select("id, workspace_id, status, workspaces!creators_workspace_id_fkey!inner(slug)")
     .eq("workspaces.slug", slug)
     .single();
 
   if (!creator) {
     return c.json({ error: "Creator not in workspace", code: "forbidden" }, 403);
+  }
+  // A deleted (anonymised) account's still-unexpired access token must not keep working, except
+  // to retry the deletion itself so a partly failed cleanup can complete.
+  const finishingDeletion = c.req.method === "POST" && c.req.path.endsWith("/me/delete");
+  if ((creator as { status?: string }).status === "deleted" && !finishingDeletion) {
+    return c.json({ error: "Account deleted", code: "account_deleted" }, 401);
   }
 
   c.set("jwt", jwt);

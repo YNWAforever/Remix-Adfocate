@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { serviceClient } from "../lib/supabase.js";
 import type { AdminEnv } from "../lib/staffAuth.js";
+import { dbError } from "../lib/httpErrors.js";
 
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 const DAY_MS = 86_400_000;
@@ -21,7 +22,7 @@ adminBrandInviteRoutes.post("/brand-invites", async (c) => {
     invited_by_staff: c.var.staff.userId,
     expires_at: new Date(Date.now() + 7 * DAY_MS).toISOString(),
   });
-  if (insErr) return c.json({ error: insErr.message, code: "db_error" }, 500);
+  if (insErr) return dbError(c, insErr, "db_error", 500);
 
   // Send the magic-link (Supabase's configured email). Best-effort: the invite row is the
   // authorization; if email send fails the brand can still request a link at /brand/login.

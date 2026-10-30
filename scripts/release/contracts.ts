@@ -7,7 +7,8 @@ export type ReleasePhase =
   | "assistant_requests"
   | "academy_learning"
   | "staff_access"
-  | "redemption";
+  | "redemption"
+  | "privacy_compliance";
 
 export interface ReleaseMigration {
   readonly version: string;

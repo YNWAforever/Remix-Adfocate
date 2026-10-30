@@ -3,6 +3,66 @@ import { resolve } from "node:path";
 import { describe, expect, it, vi } from "vitest";
 import { hasCapabilityValidator, runPreflight, runPreflightCli } from "./preflight";
 
+// Contracts added by the 2026-10-29 end-to-end review remediation (docs/review/).
+const REMEDIATION_CAPABILITIES = [
+  "grant-removed:authenticated.public.missions(insert)",
+  "grant-removed:authenticated.public.missions(delete)",
+  "grant-removed:authenticated.public.campaigns(insert)",
+  "grant-removed:authenticated.public.campaigns(delete)",
+  "grant-removed:authenticated.public.campaign_missions(insert)",
+  "grant-removed:authenticated.public.campaign_missions(update)",
+  "grant-removed:authenticated.public.campaign_missions(delete)",
+  "constraint:public.missions.missions_points_reward_nonneg",
+  "constraint:public.missions.missions_cash_reward_nonneg",
+  "constraint:public.missions.missions_cpm_nonneg",
+  "constraint:public.missions.missions_quota_filled_nonneg",
+  "constraint:public.campaigns.campaigns_bonus_nonneg",
+  "constraint:public.campaigns.campaigns_goal_target_positive",
+  "function:public.decide_legacy_submission",
+  "grant:service_role.public.decide_legacy_submission(uuid,uuid,uuid,text,text,smallint)",
+  "grant-removed:authenticated.public.decide_legacy_submission(uuid,uuid,uuid,text,text,smallint)",
+  "grant-removed:anon.public.decide_legacy_submission(uuid,uuid,uuid,text,text,smallint)",
+  "grant-removed:public.public.decide_legacy_submission(uuid,uuid,uuid,text,text,smallint)",
+  "column:public.mission_pending_rewards.settled_at",
+  "column:public.mission_pending_rewards.settled_by",
+  "column:public.mission_pending_rewards.settlement_idempotency_key",
+  "constraint:public.mission_pending_rewards.mission_pending_rewards_settlement_check",
+  "index:public.point_transactions.point_transactions_mission_reward_uniq",
+  "index:public.earnings_transactions.earnings_transactions_mission_reward_uniq",
+  "function:public.settle_mission_reward_handoff",
+  "grant:service_role.public.settle_mission_reward_handoff(uuid,uuid,uuid,uuid)",
+  "grant-removed:authenticated.public.settle_mission_reward_handoff(uuid,uuid,uuid,uuid)",
+  "grant-removed:anon.public.settle_mission_reward_handoff(uuid,uuid,uuid,uuid)",
+  "grant-removed:public.public.settle_mission_reward_handoff(uuid,uuid,uuid,uuid)",
+  "policy:public.kb_documents.kb_documents_read",
+  "policy:public.kb_chunks.kb_chunks_read",
+  "grant-removed:authenticated.public.assistant_conversations(insert)",
+  "grant-removed:authenticated.public.assistant_conversations(update)",
+  "grant-removed:authenticated.public.assistant_conversations(delete)",
+  "grant-removed:authenticated.public.assistant_messages(insert)",
+  "grant-removed:authenticated.public.assistant_messages(update)",
+  "grant-removed:authenticated.public.assistant_messages(delete)",
+  "policy:public.assistant_conversations.conv_self",
+  "policy:public.assistant_messages.msg_self",
+  "table:public.creator_consents",
+  "rls:public.creator_consents",
+  "index:public.creator_consents.creator_consents_creator_document_idx",
+  "policy:public.creator_consents.creator_consents_self_read",
+  "trigger:public.creator_consents.creator_consents_append_only",
+  "function:private.creator_consents_append_only",
+  "grant:authenticated.public.creator_consents(select)",
+  "grant-removed:authenticated.public.creator_consents(insert)",
+  "grant-removed:anon.public.creator_consents(select)",
+  "grant:service_role.public.creator_consents(insert)",
+  "column:public.creators.deleted_at",
+  "constraint:public.creators.creators_status_chk",
+  "function:public.anonymize_creator_account",
+  "grant:service_role.public.anonymize_creator_account(uuid)",
+  "grant-removed:authenticated.public.anonymize_creator_account(uuid)",
+  "grant-removed:anon.public.anonymize_creator_account(uuid)",
+  "grant-removed:public.public.anonymize_creator_account(uuid)",
+];
+
 describe("release preflight", () => {
   it("does not claim a removed grant is safe from dump text alone", async () => {
     async function check(schema: string) {
@@ -38,8 +98,10 @@ describe("release preflight", () => {
       ...new Set(manifest.migrations.flatMap((migration) => migration.capabilities)),
     ];
 
-    // Retain the 617 prior contracts and the three explicit claim denials.
-    expect(capabilities).toHaveLength(620);
+    // Retain the 617 prior contracts and the three explicit claim denials, plus the review
+    // remediation contracts (2026-10-29) listed in REMEDIATION_CAPABILITIES.
+    expect(capabilities).toEqual(expect.arrayContaining(REMEDIATION_CAPABILITIES));
+    expect(capabilities.filter((capability) => !REMEDIATION_CAPABILITIES.includes(capability))).toHaveLength(620);
     const claimDenials = ["authenticated", "anon", "public"].map(role => `grant-removed:${role}.public.claim_assistant_request(uuid,uuid,uuid)`);
     expect(capabilities).toEqual(expect.arrayContaining(claimDenials));
     const reviewValidityCapabilities = [
@@ -82,8 +144,8 @@ describe("release preflight", () => {
       "grant-removed:public.public.get_legacy_correction_evidence(uuid,uuid)",
     ];
     expect(capabilities).toEqual(expect.arrayContaining(repairCapabilities));
-    expect(capabilities.filter((capability) => ![...repairCapabilities, ...reviewValidityCapabilities, ...claimDenials].includes(capability))).toHaveLength(598);
-    expect(capabilities.filter((capability) => ![...applicationCapabilities, ...redemptionCapabilities, ...repairCapabilities, ...reviewValidityCapabilities, ...claimDenials].includes(capability))).toHaveLength(587);
+    expect(capabilities.filter((capability) => ![...repairCapabilities, ...reviewValidityCapabilities, ...claimDenials, ...REMEDIATION_CAPABILITIES].includes(capability))).toHaveLength(598);
+    expect(capabilities.filter((capability) => ![...applicationCapabilities, ...redemptionCapabilities, ...repairCapabilities, ...reviewValidityCapabilities, ...claimDenials, ...REMEDIATION_CAPABILITIES].includes(capability))).toHaveLength(587);
     expect(capabilities.filter((capability) => !hasCapabilityValidator(capability))).toEqual([]);
   });
 

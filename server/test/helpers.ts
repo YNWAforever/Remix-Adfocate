@@ -3,7 +3,7 @@ import { createOwnedFixtureFetch, fixtureOwnership, ownsFixtureId, captureFixtur
 import { randomUUID } from "node:crypto";
 import { isDeepStrictEqual } from "node:util";
 // @ts-expect-error Executable ESM identity verifier has no declaration file.
-import { verifyIntegrationIdentity } from "../../scripts/run-integration-tests.mjs";
+import { bootstrapVerifiedLocalStaffGrant, localSupabaseProjectId, verifyIntegrationIdentity } from "../../scripts/run-integration-tests.mjs";
 
 const fixtureIds = { users: new Set<string>(), missions: new Set<string>(), gifts: new Set<string>(), workspaces: new Set<string>() };
 let checkedIdentity: {runId:string} | null = null;
@@ -143,7 +143,10 @@ export async function makeStaff(email: string, workspaceId?: string) {
   if (error) throw error;
   const userId = created.user.id;
   fixtureIds.users.add(userId);
-  await service().from("staff_users").insert({ user_id: userId, email });
+  const staffInsert = await service().from("staff_users").insert({ user_id: userId, email }).select("user_id").single();
+  if (staffInsert.error || staffInsert.data?.user_id !== userId) throw staffInsert.error ?? new Error("staff fixture was not created");
+  // Capability grants accept only staff IDs created by this fixture process.
+  captureFixtureRows("staff_users", { user_id: userId });
   if (workspaceId) {
     const membership = await service().from("brand_users").insert({ user_id: userId,
       workspace_id: workspaceId, email, active: true, role: "member" });
@@ -158,21 +161,30 @@ export async function makeStaff(email: string, workspaceId?: string) {
   return { userId, email, jwt: session.session!.access_token };
 }
 
-/** Explicit D19 fixture grants only. Never applies to arbitrary staff or real memberships. */
+/** Explicit fixture grants for approved disposable targets only.
+ *  Shaped/empty keep the D19 owner path. The verified local Supabase project
+ *  (CI `supabase start`) re-checks identity, then uses the same bootstrap function.
+ *  Never applies to arbitrary staff or real memberships. */
 export async function grantStaffFixture(userId:string,workspaceId:string|null,role:"workspace_admin"|"operator"|"reviewer"|"finance_viewer"|"content_editor") {
   if(process.env.INTEGRATION_CAPABILITY_FIXTURES!=="1")return;
   if(!ownsFixtureId("staff_users",userId))throw new Error("Staff subject is not an exact owned fixture ID");
   const identity=JSON.parse(process.env.INTEGRATION_TARGET_IDENTITY_JSON??"{}");
   const kind=identity.projectId==="adfocate-r1-shaped-20261023"?"shaped":identity.projectId==="adfocate-r1-empty-20261023"?"empty":null;
-  if(!kind)throw new Error("Unapproved fixture project");
-  // @ts-expect-error Native ESM identity helper.
-  const target=(await import("../../scripts/audit/local-targets.mjs")).verifiedTarget(kind);
-  if(!isDeepStrictEqual(identity,target.identity))throw new Error("Fixture grant target drift");
-  if(!/^[a-f0-9-]{36}$/i.test(userId)||workspaceId&&!/^[a-f0-9-]{36}$/i.test(workspaceId)||!["workspace_admin","operator","reviewer","finance_viewer","content_editor"].includes(role))throw new Error("Invalid exact fixture grant");
-  const existing=target.sql(workspaceId?`select role from public.staff_workspace_roles where user_id='${userId}' and workspace_id='${workspaceId}' and active;`:`select role from public.staff_platform_roles where user_id='${userId}' and role='content_editor' and active;`);
-  if(existing){if(existing!==role)throw new Error("Existing fixture grant differs; no implicit promotion");return;}
-  target.sql(`select private.bootstrap_staff_access('${userId}',${workspaceId?`'${workspaceId}'`:'null'},'${userId}','${role}',true,0,'${randomUUID()}','Explicit D19 business integration actor','D19 owned disposable test attestation');`);
-  captureFixtureRows(workspaceId?"staff_workspace_roles":"staff_platform_roles",{user_id:userId});
+  if(kind){
+    // @ts-expect-error Native ESM identity helper.
+    const target=(await import("../../scripts/audit/local-targets.mjs")).verifiedTarget(kind);
+    if(!isDeepStrictEqual(identity,target.identity))throw new Error("Fixture grant target drift");
+    if(!/^[a-f0-9-]{36}$/i.test(userId)||workspaceId&&!/^[a-f0-9-]{36}$/i.test(workspaceId)||!["workspace_admin","operator","reviewer","finance_viewer","content_editor"].includes(role))throw new Error("Invalid exact fixture grant");
+    const existing=target.sql(workspaceId?`select role from public.staff_workspace_roles where user_id='${userId}' and workspace_id='${workspaceId}' and active;`:`select role from public.staff_platform_roles where user_id='${userId}' and role='content_editor' and active;`);
+    if(existing){if(existing!==role)throw new Error("Existing fixture grant differs; no implicit promotion");return;}
+    target.sql(`select private.bootstrap_staff_access('${userId}',${workspaceId?`'${workspaceId}'`:'null'},'${userId}','${role}',true,0,'${randomUUID()}','Explicit D19 business integration actor','D19 owned disposable test attestation');`);
+    captureFixtureRows(workspaceId?"staff_workspace_roles":"staff_platform_roles",{user_id:userId});
+    return;
+  }
+  if(identity.projectId!==localSupabaseProjectId())throw new Error("Unapproved fixture project");
+  if(bootstrapVerifiedLocalStaffGrant(process.env,{userId,workspaceId,role})==="granted"){
+    captureFixtureRows(workspaceId?"staff_workspace_roles":"staff_platform_roles",{user_id:userId});
+  }
 }
 
 let brandWsSeq = 0;

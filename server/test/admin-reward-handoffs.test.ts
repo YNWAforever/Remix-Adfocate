@@ -667,10 +667,25 @@ describe("reward handoff service boundaries", () => {
       targetAt: "2026-08-07T10:00:00.000Z",
       createdAt: "2026-07-31T10:00:00.000Z",
       cancelledAt: null,
+      settledAt: null,
       decisionState: { kind: "approved", decidedAt: "2026-07-31T10:00:00.000Z" },
     });
     expect(JSON.stringify(projection)).not.toMatch(
       /reason|actor|idempotency|requestHash|primaryUrl|proofUrl|signedUrl/i,
     );
+  });
+
+  it("accepts a settled creator projection with its settlement time (F-007)", () => {
+    const projection = normalizeCreatorRewardHandoffProjection({
+      reward: { pointsAmount: 500, cashAmount: 125, currency: "HKD", xpAmount: 0 },
+      status: "settled",
+      processingWindowDays: 7,
+      targetAt: null,
+      createdAt: "2026-07-31T10:00:00.000Z",
+      cancelledAt: null,
+      settledAt: "2026-08-02T10:00:00.000Z",
+      decisionState: { kind: "approved", decidedAt: "2026-07-31T10:00:00.000Z" },
+    });
+    expect(projection).toMatchObject({ status: "settled", settledAt: "2026-08-02T10:00:00.000Z" });
   });
 });

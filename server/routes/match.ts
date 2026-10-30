@@ -5,6 +5,7 @@ import { countTerminal, reliabilityFor, brandSafetyFor, contentFor } from "../li
 import { filterCandidates, scoreMissions, rankMissions, type MatchMission, type MatchCreator } from "../lib/missionMatch.js";
 import { enhanceRationales } from "../lib/llm.js";
 import { MISSION_LIST_SELECT, serializeMission } from "../lib/missionDecision.js";
+import { dbError } from "../lib/httpErrors.js";
 
 export const matchRoutes = new Hono<Env>();
 
@@ -35,10 +36,10 @@ matchRoutes.get("/", async (c) => {
         .eq("access_type", "open"),
       supabase.from("creator_social_accounts").select("id").eq("creator_id",userId).eq("owner_verified",true).limit(1),
     ]);
-  if (cErr) return c.json({ error: cErr.message, code: "db_error" }, 500);
-  if (sErr) return c.json({ error: sErr.message, code: "db_error" }, 500);
-  if (mErr) return c.json({ error: mErr.message, code: "db_error" }, 500);
-  if (verificationError) return c.json({ error: verificationError.message, code: "db_error" }, 500);
+  if (cErr) return dbError(c, cErr, "db_error", 500);
+  if (sErr) return dbError(c, sErr, "db_error", 500);
+  if (mErr) return dbError(c, mErr, "db_error", 500);
+  if (verificationError) return dbError(c, verificationError, "db_error", 500);
 
   // Live readiness from the caller's own submissions (single source of truth — reuse passport fns).
   const statuses = (subs ?? []).map((s) => s.status as string);

@@ -144,6 +144,18 @@ export function createAdminRewardHandoffRoutes(
       return routeError(context, error);
     }
   });
+  // F-007: a workspace admin settles a pending hand-off; the frozen reward is credited to the
+  // creator's ledgers in one transaction. Idempotency-Key makes retries exact replays.
+  routes.post("/reward-handoffs/:pendingRewardId/settle", async (context) => {
+    try {
+      const request = requestContext(context, identity);
+      const pendingRewardId = validateUuid(context.req.param("pendingRewardId"), "pendingRewardId");
+      const key = validateUuid(idempotencyKey(context), "Idempotency-Key");
+      return context.json({ pendingReward: await repository().settleRewardHandoff({ ...request, pendingRewardId, idempotencyKey: key }) });
+    } catch (error) {
+      return routeError(context, error);
+    }
+  });
   routes.put("/reward-handoffs/settings", async (context) => {
     try {
       const request = requestContext(context, identity);

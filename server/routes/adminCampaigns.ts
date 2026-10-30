@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { isStaleEdit, staleEdit } from "./adminMissions.js";
 import { serviceClient } from "../lib/supabase.js";
 import {
   type CampaignInput, type CampaignRecord, validateCampaign, validateEdit,
@@ -6,6 +7,7 @@ import {
 } from "../lib/campaignAuthoring.js";
 import { shapeLeaderboard } from "../lib/campaignLeaderboard.js";
 import { notifyCampaignStarted } from "../lib/notifyCampaignStarted.js";
+import { dbError } from "../lib/httpErrors.js";
 
 export const adminCampaignRoutes = new Hono();
 
@@ -34,7 +36,7 @@ adminCampaignRoutes.get("/campaigns", async (c) => {
   if (workspace) q = q.eq("workspace_id", workspace);
   if (status) q = q.eq("status", status);
   const { data, error } = await q;
-  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  if (error) return dbError(c, error, "db_error", 500);
   return c.json({ campaigns: data ?? [] });
 });
 
@@ -43,7 +45,7 @@ adminCampaignRoutes.get("/campaigns/:id", async (c) => {
   const svc = serviceClient();
   const { data: campaign, error } = await svc.from("campaigns").select(CAMPAIGN_COLS)
     .eq("id", c.req.param("id")).maybeSingle();
-  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  if (error) return dbError(c, error, "db_error", 500);
   if (!campaign) return c.json({ error: "not_found", code: "not_found" }, 404);
   const row = campaign as unknown as { id: string };
   const { data: missions } = await svc.from("campaign_missions")
@@ -61,7 +63,7 @@ adminCampaignRoutes.post("/campaigns", async (c) => {
   const { data, error } = await serviceClient().from("campaigns").insert(insert).select(CAMPAIGN_COLS).single();
   if (error) {
     if (error.code === "23505") return c.json({ error: "Slug 已被使用", code: "validation", fields: { slug: "重複" } }, 422);
-    return c.json({ error: error.message, code: "db_error" }, 500);
+    return dbError(c, error, "db_error", 500);
   }
   return c.json({ campaign: data }, 201);
 });
@@ -72,17 +74,23 @@ adminCampaignRoutes.patch("/campaigns/:id", async (c) => {
   const patch = await c.req.json<CampaignInput>().catch(() => ({}) as CampaignInput);
   const svc = serviceClient();
   const { data: existing, error: exErr } = await svc.from("campaigns").select(CAMPAIGN_COLS).eq("id", id).maybeSingle();
-  if (exErr) return c.json({ error: exErr.message, code: "db_error" }, 500);
+  if (exErr) return dbError(c, exErr, "db_error", 500);
   if (!existing) return c.json({ error: "not_found", code: "not_found" }, 404);
   const hasEngagement = (await participantCount(svc, id)) > 0;
   const { ok, errors } = validateEdit(existing as unknown as CampaignRecord, patch, hasEngagement);
   if (!ok) return c.json({ error: "請修正欄位", code: "validation", fields: errors }, 422);
   const updates = { ...pickEditable(patch), updated_at: new Date().toISOString() };
-  const { data, error } = await svc.from("campaigns").update(updates).eq("id", id).select(CAMPAIGN_COLS).single();
+  // Optimistic lock: the update only applies to the version the editor loaded.
+  const expected = (patch as { expected_updated_at?: unknown }).expected_updated_at;
+  if (isStaleEdit(expected, (existing as unknown as { updated_at: string }).updated_at)) return staleEdit(c);
+  let update = svc.from("campaigns").update(updates).eq("id", id);
+  if (typeof expected === "string" && expected) update = update.eq("updated_at", expected);
+  const { data, error } = await update.select(CAMPAIGN_COLS).maybeSingle();
   if (error) {
     if (error.code === "23505") return c.json({ error: "Slug 已被使用", code: "validation", fields: { slug: "重複" } }, 422);
-    return c.json({ error: error.message, code: "db_error" }, 500);
+    return dbError(c, error, "db_error", 500);
   }
+  if (!data) return staleEdit(c);
   return c.json({ campaign: data });
 });
 
@@ -95,10 +103,12 @@ adminCampaignRoutes.post("/campaigns/:id/publish", async (c) => {
   if ((existing as unknown as CampaignRecord).status !== "draft") return c.json({ error: "wrong_state", code: "conflict" }, 409);
   const { ok, errors } = validateCampaign(existing as unknown as CampaignInput, "publish");
   if (!ok) return c.json({ error: "未符合發佈條件", code: "validation", fields: errors }, 422);
+  // Conditional on draft so a double submit cannot publish twice or broadcast twice.
   const { data, error } = await svc.from("campaigns")
     .update({ status: "active", published_at: new Date().toISOString(), updated_at: new Date().toISOString() })
-    .eq("id", id).select(CAMPAIGN_COLS).single();
-  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+    .eq("id", id).eq("status", "draft").select(CAMPAIGN_COLS).maybeSingle();
+  if (error) return dbError(c, error, "db_error", 500);
+  if (!data) return c.json({ error: "wrong_state", code: "conflict" }, 409);
   await notifyCampaignStarted(c.req.param("id"));   // best-effort; never throws
   return c.json({ campaign: data });
 });
@@ -119,7 +129,7 @@ adminCampaignRoutes.post("/campaigns/:id/missions", async (c) => {
     .insert({ campaign_id: id, mission_id, workspace_id: campaign.workspace_id });
   if (error) {
     if (error.code === "23505") return c.json({ error: "此任務已連結到進行中的挑戰", code: "conflict" }, 409);
-    return c.json({ error: error.message, code: "db_error" }, 500);
+    return dbError(c, error, "db_error", 500);
   }
   return c.json({ ok: true }, 201);
 });
@@ -133,7 +143,7 @@ adminCampaignRoutes.delete("/campaigns/:id/missions/:missionId", async (c) => {
   }
   const { error } = await svc.from("campaign_missions").update({ removed_at: new Date().toISOString() })
     .eq("campaign_id", c.req.param("id")).eq("mission_id", c.req.param("missionId")).is("removed_at", null);
-  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  if (error) return dbError(c, error, "db_error", 500);
   return c.json({ ok: true });
 });
 
@@ -143,7 +153,7 @@ function mapRpcError(c: import("hono").Context, msg: string) {
   if (msg.includes("invalid_prize_tiers")) return c.json({ error: "獎品階級無效", code: "validation" }, 422);
   if (msg.includes("wrong_state")) return c.json({ error: "狀態不符", code: "conflict" }, 409);
   if (msg.includes("not_found")) return c.json({ error: "not_found", code: "not_found" }, 404);
-  return c.json({ error: msg, code: "db_error" }, 500);
+  return dbError(c, { message: msg }, "db_error", 500);
 }
 
 adminCampaignRoutes.post("/campaigns/:id/close", async (c) => {
@@ -162,7 +172,7 @@ adminCampaignRoutes.post("/campaigns/:id/settle", async (c) => {
 adminCampaignRoutes.get("/campaigns/:id/leaderboard", async (c) => {
   const svc = serviceClient();
   const { data: ranked, error } = await svc.rpc("rank_campaign", { p_campaign: c.req.param("id") });
-  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  if (error) return dbError(c, error, "db_error", 500);
   const ids = (ranked ?? []).map((r: { creator_id: string }) => r.creator_id);
   const { data: profiles } = ids.length
     ? await svc.from("creators").select("id, display_name, avatar_url, level").in("id", ids)

@@ -218,6 +218,13 @@ describe("Mission detail writes", () => {
     expect(screen.queryByText("申請任務")).not.toBeInTheDocument();
   });
 
+  it("shows the reviewer's reason and a closed outcome for a rejected submission", () => {
+    hoisted.my.data = [{ id: "s1", status: "rejected", content_urls: ["https://ig.com/p/x"], review_notes: "畫面太暗，請重拍", points_awarded: 0, created_at: "", missions: { slug: "m1", title: "美容試用", points_reward: 300, mission_type: "ugc" } }];
+    renderDetail();
+    expect(screen.getByText(/畫面太暗，請重拍/)).toBeInTheDocument();
+    expect(screen.getByText(/不能再為此任務重新提交/)).toBeInTheDocument();
+  });
+
   it("reveals the hook generator panel when the CTA is clicked", () => {
     renderDetail();
     expect(screen.queryByText("HOOK_PANEL")).not.toBeInTheDocument();

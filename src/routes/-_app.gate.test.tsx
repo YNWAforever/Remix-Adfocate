@@ -54,4 +54,14 @@ describe("_app gate beforeLoad", () => {
     expect(signOut).not.toHaveBeenCalled();
     expect(isRedirect(thrown)).toBe(false);
   });
+  it("lets a creator mid-onboarding open the guide and profile, but still gates other pages", async () => {
+    getSession.mockResolvedValue({ data: { session: { access_token: "ok" } } });
+    const qc = { ensureQueryData: vi.fn().mockResolvedValue({ onboarding_completed: false }), removeQueries: vi.fn() };
+    await expect(run("/guide", qc)).resolves.toBeUndefined();
+    await expect(run("/guide/track/basics", qc)).resolves.toBeUndefined();
+    await expect(run("/profile", qc)).resolves.toBeUndefined();
+    let thrown: unknown;
+    try { await run("/home", qc); } catch (e) { thrown = e; }
+    expect(isRedirect(thrown)).toBe(true);
+  });
 });

@@ -1,6 +1,7 @@
 import { useId, useState } from "react";
 import type { MissionFulfillment } from "@/lib/activeMission";
 import { useI18n } from "@/lib/i18n";
+import { formatHongKongDateTime } from "@/lib/creatorFormatting";
 
 type FulfillmentCardProps = {
   fulfillment: MissionFulfillment | null;
@@ -15,8 +16,7 @@ const STATUS_KEYS: Record<MissionFulfillment["status"], string> = {
 };
 
 function dateLabel(value: string, locale: string): string {
-  const parsed = new Date(value);
-  return Number.isNaN(parsed.getTime()) ? value : new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeStyle: "short", timeZone: "UTC" }).format(parsed);
+  return formatHongKongDateTime(value, locale);
 }
 
 export function FulfillmentCard({ fulfillment, onConfirmReceipt, isConfirming = false }: FulfillmentCardProps) {

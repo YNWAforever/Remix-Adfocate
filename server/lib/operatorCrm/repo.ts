@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { getProfileMedia } from "../profileMedia/repo.js";
+import { chunk } from "../queryPaging.js";
 import { lastActivityAt, nonEmptyText, projectReviewStatus, summarizeSocialAccounts } from "./serializers.js";
 import type {
   CreatorQueueFilters,
@@ -274,23 +275,29 @@ export async function enrichAdminMissionRows<
   if (rows.length === 0) return [];
 
   const creatorIds = [...new Set(rows.map((row) => row.creator_id))];
-  const missionIds = [...new Set(rows.map((row) => row.mission_id))];
+  const missionIds = new Set(rows.map((row) => row.mission_id));
 
-  const { data: reviews, error: reviewError } = await supabase
-    .from("creator_review_statuses")
-    .select("creator_id, status, risk_level")
-    .in("creator_id", creatorIds);
-  if (reviewError) throw new OperatorCrmError("db_error", reviewError.message);
+  // Batched: one `in.(...)` with every id overflows the URL limit at ~250 rows.
+  const reviews: Array<Record<string, unknown>> = [];
+  const shortlists: Array<Record<string, unknown>> = [];
+  for (const ids of chunk(creatorIds)) {
+    const { data, error: reviewError } = await supabase
+      .from("creator_review_statuses")
+      .select("creator_id, status, risk_level")
+      .in("creator_id", ids);
+    if (reviewError) throw new OperatorCrmError("db_error", reviewError.message);
+    reviews.push(...(data ?? []));
 
-  const { data: shortlists, error: shortlistError } = await supabase
-    .from("mission_shortlists")
-    .select("creator_id, mission_id, status")
-    .in("creator_id", creatorIds)
-    .in("mission_id", missionIds);
-  if (shortlistError) throw new OperatorCrmError("db_error", shortlistError.message);
+    const { data: listed, error: shortlistError } = await supabase
+      .from("mission_shortlists")
+      .select("creator_id, mission_id, status")
+      .in("creator_id", ids);
+    if (shortlistError) throw new OperatorCrmError("db_error", shortlistError.message);
+    shortlists.push(...(listed ?? []).filter((row) => missionIds.has(row.mission_id as string)));
+  }
 
-  const reviewByCreator = new Map((reviews ?? []).map((row) => [row.creator_id as string, row]));
-  const shortlistByPair = new Map((shortlists ?? []).map((row) => [`${row.mission_id}:${row.creator_id}`, row]));
+  const reviewByCreator = new Map(reviews.map((row) => [row.creator_id as string, row]));
+  const shortlistByPair = new Map(shortlists.map((row) => [`${row.mission_id}:${row.creator_id}`, row]));
 
   return rows.map((row) => {
     const review = reviewByCreator.get(row.creator_id);

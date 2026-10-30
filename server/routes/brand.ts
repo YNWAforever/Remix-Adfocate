@@ -5,6 +5,7 @@ import { requireBrand, acceptBrandInvite, type BrandEnv } from "../lib/brandAuth
 import { type MissionInput, type MissionRecord, validateMission, validateEdit } from "../lib/missionAuthoring.js";
 import { MISSION_COLS, EDITABLE_COLS, hkToday, countEngaged, normalizeBriefForWrite } from "./adminMissions.js";
 import { brandResourcesRoutes } from "./brandResources.js";
+import { dbError } from "../lib/httpErrors.js";
 
 /** Brand self-serve portal API. Brands authenticate as real Supabase users; mission reads/writes
  *  run through makeUserClient(jwt) so Postgres RLS (migration 0023) enforces workspace isolation —
@@ -62,14 +63,14 @@ guarded.get("/missions", async (c) => {
     .select(LIST_COLS).eq("workspace_id", b.workspaceId).order("created_at", { ascending: false });
   if (status) q = q.eq("status", status);
   const { data, error } = await q;
-  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  if (error) return dbError(c, error, "db_error", 500);
   return c.json({ missions: data ?? [] });
 });
 
 guarded.get("/missions/:id", async (c) => {
   const { data, error } = await makeUserClient(bearer(c)).from("missions")
     .select(MISSION_COLS).eq("id", c.req.param("id")).maybeSingle();
-  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  if (error) return dbError(c, error, "db_error", 500);
   if (!data) return c.json({ error: "not_found", code: "not_found" }, 404);
   return c.json({ mission: data });
 });
@@ -93,10 +94,12 @@ guarded.post("/missions", async (c) => {
     effort: input.effort ?? null, status: "draft",
     ...normalizeBriefForWrite(input),
   };
-  const { data, error } = await makeUserClient(bearer(c)).from("missions").insert(insert).select(MISSION_COLS).single();
+  // Browser JWTs have no INSERT on missions (F-003); the API writes after validating and
+  // forcing workspace_id from the brand identity.
+  const { data, error } = await serviceClient().from("missions").insert(insert).select(MISSION_COLS).single();
   if (error) {
     if (error.code === "23505") return c.json({ error: "Slug 已被使用", code: "validation", fields: { slug: "此 workspace 已有相同 slug 的任務" } }, 422);
-    return c.json({ error: error.message, code: "db_error" }, 500);
+    return dbError(c, error, "db_error", 500);
   }
   return c.json({ mission: data }, 201);
 });
@@ -108,7 +111,7 @@ guarded.put("/missions/:id", async (c) => {
 
   // RLS-scoped read: a cross-workspace id is invisible → 404 (the isolation guarantee).
   const { data: existing, error: exErr } = await uc.from("missions").select(MISSION_COLS).eq("id", id).maybeSingle();
-  if (exErr) return c.json({ error: exErr.message, code: "db_error" }, 500);
+  if (exErr) return dbError(c, exErr, "db_error", 500);
   if (!existing) return c.json({ error: "not_found", code: "not_found" }, 404);
   if ((existing as unknown as { status: string }).status === "closed") {
     return c.json({ error: "已關閉的任務不可編輯", code: "invalid_transition" }, 409);
@@ -117,7 +120,7 @@ guarded.put("/missions/:id", async (c) => {
   // Engagement count via serviceClient (mission_submissions has no brand RLS policy); the mission
   // is already confirmed to belong to this brand by the RLS read above.
   const { count, error: cErr } = await countEngaged(serviceClient(), id);
-  if (cErr) return c.json({ error: cErr.message, code: "db_error" }, 500);
+  if (cErr) return dbError(c, cErr, "db_error", 500);
   const engaged = ((existing as unknown as { filled: number | null }).filled ?? 0) > 0 || (count ?? 0) > 0;
 
   const { ok, errors } = validateEdit(existing as unknown as MissionRecord, patch, engaged);
@@ -133,7 +136,7 @@ guarded.put("/missions/:id", async (c) => {
   const { data, error } = await uc.from("missions").update(updates).eq("id", id).select(MISSION_COLS).single();
   if (error) {
     if (error.code === "23505") return c.json({ error: "Slug 已被使用", code: "validation", fields: { slug: "此 workspace 已有相同 slug 的任務" } }, 422);
-    return c.json({ error: error.message, code: "db_error" }, 500);
+    return dbError(c, error, "db_error", 500);
   }
   return c.json({ mission: data });
 });
@@ -142,17 +145,24 @@ guarded.post("/missions/:id/publish", async (c) => {
   const id = c.req.param("id");
   const uc = makeUserClient(bearer(c));
   const { data: m, error } = await uc.from("missions").select(MISSION_COLS).eq("id", id).maybeSingle();
-  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  if (error) return dbError(c, error, "db_error", 500);
   if (!m) return c.json({ error: "not_found", code: "not_found" }, 404);
   if ((m as unknown as { status: string }).status !== "draft") return c.json({ error: "只有草稿可以發佈", code: "invalid_transition" }, 409);
 
   const { ok, errors } = validateMission(m as unknown as MissionInput, "publish", hkToday());
   if (!ok) return c.json({ error: "發佈前請完成必填欄位", code: "validation", fields: errors }, 422);
+  // Cash-paying missions create a real liability, so a staff operator publishes them.
+  const cash = m as unknown as { cash_reward: number | null; cpm_rate: number | null };
+  if (Number(cash.cash_reward ?? 0) > 0 || Number(cash.cpm_rate ?? 0) > 0) {
+    return c.json({ error: "現金獎勵任務需由 Fimmick 營運團隊審核發佈 / Missions with cash rewards are published by Fimmick staff after review.", code: "staff_approval_required" }, 403);
+  }
 
   const now = new Date().toISOString();
-  const { data, error: uErr } = await uc.from("missions")
-    .update({ status: "active", published_at: now, updated_at: now }).eq("id", id).select(MISSION_COLS).single();
-  if (uErr) return c.json({ error: uErr.message, code: "db_error" }, 500);
+  const { data, error: uErr } = await serviceClient().from("missions")
+    .update({ status: "active", published_at: now, updated_at: now })
+    .eq("id", id).eq("workspace_id", c.var.brand.workspaceId).eq("status", "draft").select(MISSION_COLS).maybeSingle();
+  if (uErr) return dbError(c, uErr, "db_error", 500);
+  if (!data) return c.json({ error: "只有草稿可以發佈", code: "invalid_transition" }, 409);
   return c.json({ mission: data });
 });
 
@@ -160,14 +170,16 @@ guarded.post("/missions/:id/close", async (c) => {
   const id = c.req.param("id");
   const uc = makeUserClient(bearer(c));
   const { data: m, error } = await uc.from("missions").select("id, status").eq("id", id).maybeSingle();
-  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  if (error) return dbError(c, error, "db_error", 500);
   if (!m) return c.json({ error: "not_found", code: "not_found" }, 404);
   if ((m as { status: string }).status !== "active") return c.json({ error: "只有進行中的任務可以關閉", code: "invalid_transition" }, 409);
 
   const now = new Date().toISOString();
-  const { data, error: uErr } = await uc.from("missions")
-    .update({ status: "closed", closed_at: now, updated_at: now }).eq("id", id).select(MISSION_COLS).single();
-  if (uErr) return c.json({ error: uErr.message, code: "db_error" }, 500);
+  const { data, error: uErr } = await serviceClient().from("missions")
+    .update({ status: "closed", closed_at: now, updated_at: now })
+    .eq("id", id).eq("workspace_id", c.var.brand.workspaceId).eq("status", "active").select(MISSION_COLS).maybeSingle();
+  if (uErr) return dbError(c, uErr, "db_error", 500);
+  if (!data) return c.json({ error: "只有進行中的任務可以關閉", code: "invalid_transition" }, 409);
   return c.json({ mission: data });
 });
 
@@ -175,18 +187,20 @@ guarded.delete("/missions/:id", async (c) => {
   const id = c.req.param("id");
   const uc = makeUserClient(bearer(c));
   const { data: m, error } = await uc.from("missions").select("id, status").eq("id", id).maybeSingle();
-  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  if (error) return dbError(c, error, "db_error", 500);
   if (!m) return c.json({ error: "not_found", code: "not_found" }, 404);
   if ((m as { status: string }).status !== "draft") return c.json({ error: "只有草稿可以刪除", code: "invalid_transition" }, 409);
 
   const { count, error: cErr } = await serviceClient().from("mission_submissions").select("id", { count: "exact", head: true }).eq("mission_id", id);
-  if (cErr) return c.json({ error: cErr.message, code: "db_error" }, 500);
+  if (cErr) return dbError(c, cErr, "db_error", 500);
   if ((count ?? 0) > 0) return c.json({ error: "已有報名紀錄的草稿不可刪除", code: "invalid_transition" }, 409);
 
-  // RLS delete policy additionally requires role='owner'; a member's delete affects 0 rows → 403.
-  const { data: del, error: dErr } = await uc.from("missions").delete().eq("id", id).select("id");
-  if (dErr) return c.json({ error: dErr.message, code: "db_error" }, 500);
-  if (!del || del.length === 0) return c.json({ error: "只有擁有者可以刪除任務", code: "forbidden" }, 403);
+  // Only brand owners delete, and only drafts in their own workspace (browser JWTs have no DELETE).
+  if (c.var.brand.role !== "owner") return c.json({ error: "只有擁有者可以刪除任務", code: "forbidden" }, 403);
+  const { data: del, error: dErr } = await serviceClient().from("missions").delete()
+    .eq("id", id).eq("workspace_id", c.var.brand.workspaceId).eq("status", "draft").select("id");
+  if (dErr) return dbError(c, dErr, "db_error", 500);
+  if (!del || del.length === 0) return c.json({ error: "只有草稿可以刪除", code: "invalid_transition" }, 409);
   return c.json({ ok: true });
 });
 

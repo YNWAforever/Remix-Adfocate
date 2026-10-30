@@ -6,6 +6,7 @@ import type { Context } from "hono";
 import type { Env } from "../app.js";
 import { makeUserClient } from "../lib/supabase.js";
 import type { PostgrestError } from "@supabase/supabase-js";
+import { dbError } from "../lib/httpErrors.js";
 
 export const missionRoutes = new Hono<Env>();
 export const MY_MISSIONS_SELECT =
@@ -81,7 +82,7 @@ function rpcError(c: Context<Env>, error: Pick<PostgrestError, "message">) {
   if (msg === "invalid_evidence") return c.json({ error: "Use complete HTTP(S) work URLs without credentials", code: "invalid_evidence" }, 400);
   if (msg === "not_found") return c.json({ error: msg, code: msg }, 404);
   if (RPC_409.has(msg)) return c.json({ error: msg, code: msg }, 409);
-  return c.json({ error: msg || "rpc error", code: "db_error" }, 500);
+  return dbError(c, { message: msg }, "db_error", 500);
 }
 
 missionRoutes.get("/", async (c) => {
@@ -95,7 +96,7 @@ missionRoutes.get("/", async (c) => {
     .order("created_at", { ascending: false });
   if (category && category !== ALL_CATEGORY) q = q.in("category", missionCategoryValues(category));
   const { data, error } = await q;
-  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  if (error) return dbError(c, error, "db_error", 500);
 
   // Annotate each mission with the caller's submission status (or null).
   const { data: subs, error: statusError } = await supabase
@@ -103,7 +104,7 @@ missionRoutes.get("/", async (c) => {
     .select("mission_id, status")
     .eq("creator_id", c.get("userId"))
     .eq("workspace_id", c.get("workspaceId"));
-  if (statusError) return c.json({ error: statusError.message, code: "db_error" }, 500);
+  if (statusError) return dbError(c, statusError, "db_error", 500);
   const byId = new Map((subs ?? []).map((s) => [s.mission_id, s.status]));
   const missions = (data ?? []).map((m) => ({ ...serializeMission(m), my_status: byId.get(m.id) ?? null }));
   return c.json({ missions });
@@ -118,7 +119,7 @@ missionRoutes.get("/my", async (c) => {
     c.get("userId"),
     status,
   );
-  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  if (error) return dbError(c, error, "db_error", 500);
   const submissions = (data ?? []).map((value) => {
     const row = value as typeof value & {
       mission_workflows?: { id: string } | Array<{ id: string }> | null;
@@ -144,7 +145,7 @@ missionRoutes.get("/:slug", async (c) => {
     .eq("slug", c.req.param("slug"))
     .eq("status", "active")            // B1: draft/closed → 404 for creators
     .maybeSingle();
-  if (error) return c.json({ error: error.message, code: "db_error" }, 500);
+  if (error) return dbError(c, error, "db_error", 500);
   if (!data) return c.json({ error: "Not found", code: "not_found" }, 404);
   // Flatten the joined brand name to a top-level `brand`; drop the nested object.
   return c.json(serializeMission(data));
@@ -159,7 +160,7 @@ missionRoutes.post("/:slug/join", async (c) => {
     c.req.param("slug"),
     true,
   );
-  if (mErr) return c.json({ error: mErr.message, code: "db_error" }, 500);
+  if (mErr) return dbError(c, mErr, "db_error", 500);
   if (!m) return c.json({ error: "not_found", code: "not_found" }, 404);
 
   const result = await joinMissionWithWorkflowRecovery(
@@ -181,7 +182,7 @@ missionRoutes.put("/:slug/submit", async (c) => {
     c.get("workspaceId"),
     c.req.param("slug"),
   );
-  if (mErr) return c.json({ error: mErr.message, code: "db_error" }, 500);
+  if (mErr) return dbError(c, mErr, "db_error", 500);
   if (!m) return c.json({ error: "not_found", code: "not_found" }, 404);
 
   const result = await submitMissionForMode(supabase, m, body);
@@ -199,7 +200,7 @@ missionRoutes.post("/:slug/apply", async (c) => {
     .eq("workspace_id", c.get("workspaceId"))
     .eq("slug", c.req.param("slug"))
     .maybeSingle();
-  if (mErr) return c.json({ error: mErr.message, code: "db_error" }, 500);
+  if (mErr) return dbError(c, mErr, "db_error", 500);
   if (!m) return c.json({ error: "not_found", code: "not_found" }, 404);
 
   const { data, error } = await supabase.rpc("apply_mission", { p_mission: m.id });

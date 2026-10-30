@@ -12,3 +12,4 @@ coverage
 .codex-tmp
 playwright-report
 test-results
+.review-tmp/

@@ -21,7 +21,7 @@ vi.mock("../lib/supabase", () => ({
     const read = { table, columns: "", filters: {} as Record<string, unknown> }; h.reads.push(read);
     const query = { select(columns: string) { read.columns = columns; return query; },
       eq(key: string, value: unknown) { read.filters[key] = value; return query; },
-      order() { return query; }, in() { return query; },
+      order() { return query; }, in() { return query; }, range() { return query; },
       then(resolve: (result: unknown) => unknown) {
         return Promise.resolve({ data: table === "mission_submissions" ? [{ id: submission, mission_id: "mission", creator_id: "creator", content_urls: h.urls, legacy_evidence_sql_valid: h.sqlValid }] : [], error: null }).then(resolve);
       },
@@ -88,7 +88,7 @@ it("still approves evidence accepted by both parsers", async () => {
     method: "POST", headers: { Authorization: "Bearer offline-transport", "X-Workspace-Slug": "owned", "Content-Type": "application/json" }, body: "{}",
   });
   expect(response.status).toBe(200);
-  expect(h.rpc).toHaveBeenCalledWith("approve_submission", expect.objectContaining({ p_submission: submission }));
+  expect(h.rpc).toHaveBeenCalledWith("decide_legacy_submission", expect.objectContaining({ p_submission: submission, p_decision: "approve", p_operator: expect.any(String) }));
 });
 it("replays a saved receipt after valid replacement evidence and a newer revision were stored", async () => {
   h.receipt = true; h.revision = 5;

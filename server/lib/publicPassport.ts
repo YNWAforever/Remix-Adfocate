@@ -1,3 +1,4 @@
+import { publicDisplayName } from "./campaignLeaderboard.js";
 import { buildPassport } from "./passport.js";
 import type { PublicProfileHighlight } from "./profileMedia/types.js";
 import { effectiveSocialHandles, publicSocialTrustBadges } from "./social/passportSocial.js";
@@ -121,7 +122,8 @@ export async function getPublicPassportByToken(token: string): Promise<PublicPas
 
   return {
     creator: {
-      displayName: creatorRow.display_name ?? "KOC",
+      // Bootstrap defaults display_name to the sign-up email/phone; never expose it publicly.
+      displayName: publicDisplayName(creatorRow.display_name, creatorRow.id) || "KOC",
       avatarUrl: snapshotRow?.avatar_url ?? null,
       level: passport.level,
       xp: passport.xp,

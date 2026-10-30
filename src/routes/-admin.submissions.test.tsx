@@ -37,4 +37,26 @@ describe("admin submissions tab", () => {
     fireEvent.click(screen.getByLabelText("批准"));
     await waitFor(() => expect(h.approveSubmission).toHaveBeenCalledWith("s1", { notes: undefined, rating: 5 }));
   });
+
+  it("requires a reason and a confirmation before declining", async () => {
+    h.fetchSubmissions.mockResolvedValue({
+      submissions: [{
+        id: "s1", creator_id: "c1", status: "submitted", content_urls: ["https://ig.com/p/x"], submitted_at: null,
+        creators: { display_name: "Amy" }, missions: { slug: "m1", title: "夏日面膜", points_reward: 100 },
+      }],
+    });
+    h.rejectSubmission.mockResolvedValue({});
+    const confirm = vi.spyOn(window, "confirm");
+    r();
+    await screen.findByText("Amy");
+    expect(screen.getByLabelText("拒絕")).toBeDisabled();
+    fireEvent.change(screen.getByLabelText("審批備註"), { target: { value: "  畫面太暗  " } });
+    confirm.mockReturnValueOnce(false);
+    fireEvent.click(screen.getByLabelText("拒絕"));
+    expect(h.rejectSubmission).not.toHaveBeenCalled();
+    confirm.mockReturnValueOnce(true);
+    fireEvent.click(screen.getByLabelText("拒絕"));
+    await waitFor(() => expect(h.rejectSubmission).toHaveBeenCalledWith("s1", "畫面太暗"));
+    confirm.mockRestore();
+  });
 });
