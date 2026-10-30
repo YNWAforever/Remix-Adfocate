@@ -1,7 +1,9 @@
 import { spawn, spawnSync } from "node:child_process";
-import { resolve } from "node:path";
+import { randomUUID } from "node:crypto";
+import { readFileSync } from "node:fs";
+import { dirname, resolve } from "node:path";
 import process from "node:process";
-import { URL, pathToFileURL } from "node:url";
+import { URL, fileURLToPath, pathToFileURL } from "node:url";
 import { isDeepStrictEqual } from "node:util";
 
 export const publicationProofPreflightFile = "server/test/publication-proof-asset-grant-live.test.ts";
@@ -182,6 +184,52 @@ export function verifyIntegrationIdentity(env, inspect = spawnSync, ownedCampaig
   return identity;
 }
 
+const STAFF_FIXTURE_ROLES = ["workspace_admin", "operator", "reviewer", "finance_viewer", "content_editor"];
+const FIXTURE_UUID = /^[a-f0-9]{8}-(?:[a-f0-9]{4}-){3}[a-f0-9]{12}$/i;
+
+/** project_id from this repo's Supabase config. Resolved from the module path, not cwd. */
+export function localSupabaseProjectId() {
+  const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+  const projectId = /^project_id\s*=\s*"([^"]+)"/m.exec(readFileSync(resolve(root, "supabase/config.toml"), "utf8"))?.[1];
+  if (!/^[a-zA-Z0-9_-]+$/.test(projectId ?? "")) throw new Error("local Supabase project_id is required");
+  return projectId;
+}
+
+/**
+ * Owner-bootstrap one explicit fixture role on the verified local Supabase project.
+ * Re-checks container identity before any SQL. Shaped, empty, and pristine targets are refused.
+ * Returns "granted" when a new row is written and "exists" when that exact role is already active.
+ */
+export function bootstrapVerifiedLocalStaffGrant(env, grant, inspect = spawnSync) {
+  const userId = grant?.userId;
+  const workspaceId = grant?.workspaceId ?? null;
+  const role = grant?.role;
+  if (!FIXTURE_UUID.test(userId ?? "") || (workspaceId && !FIXTURE_UUID.test(workspaceId)) || !STAFF_FIXTURE_ROLES.includes(role)) {
+    throw new Error("Invalid exact fixture grant");
+  }
+  const identity = verifyIntegrationIdentity(env, inspect);
+  if (identity.projectId !== localSupabaseProjectId()) throw new Error("Unapproved fixture project");
+  const run = (query) => {
+    const result = inspect("docker", ["exec", "-i", identity.databaseContainerId, "psql", "-X", "-q", "-A", "-t", "-v", "ON_ERROR_STOP=1", "-U", "postgres", "-d", "postgres"], {
+      encoding: "utf8", timeout: 20000, input: query,
+    });
+    if (result.status !== 0 || result.error) {
+      const detail = String(result.stderr ?? result.error?.message ?? "").replace(/\s+/g, " ").trim().slice(0, 300);
+      throw new Error(detail ? `verified local staff grant failed: ${detail}` : "verified local staff grant failed");
+    }
+    return String(result.stdout ?? "").trim();
+  };
+  const existing = run(workspaceId
+    ? `select role from public.staff_workspace_roles where user_id='${userId}' and workspace_id='${workspaceId}' and active;`
+    : `select role from public.staff_platform_roles where user_id='${userId}' and role='content_editor' and active;`);
+  if (existing) {
+    if (existing !== role) throw new Error("Existing fixture grant differs; no implicit promotion");
+    return "exists";
+  }
+  run(`select private.bootstrap_staff_access('${userId}',${workspaceId ? `'${workspaceId}'` : "null"},'${userId}','${role}',true,0,'${randomUUID()}','Explicit CI disposable integration actor','CI verified disposable integration target');`);
+  return "granted";
+}
+
 export function launchIntegrationTests({
   processRef = process,
   spawnImpl = spawn,
@@ -189,8 +237,12 @@ export function launchIntegrationTests({
   verifyIdentityImpl = verifyIntegrationIdentity,
 } = {}) {
   assertIntegrationEnvironment(processRef.env);
-  verifyIdentityImpl(processRef.env, spawnSyncImpl);
+  const identity = verifyIdentityImpl(processRef.env, spawnSyncImpl);
   const env = { ...processRef.env, RUN_INTEGRATION: "1", INTEGRATION_RUNNER: "1" };
+  // Fresh `supabase start` has staff identity but no seeded capabilities. Admin business
+  // routes require an explicit role. Arm fixture grants only after the verified identity
+  // is this repo's local project. Shaped, empty, and pristine targets keep their own runners.
+  if (identity?.projectId === localSupabaseProjectId()) env.INTEGRATION_CAPABILITY_FIXTURES = "1";
   const preflight = spawnSyncImpl(
     processRef.execPath,
     [vitest, "run", "--no-file-parallelism", publicationProofPreflightFile],

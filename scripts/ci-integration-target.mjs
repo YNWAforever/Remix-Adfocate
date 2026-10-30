@@ -1,9 +1,8 @@
 import { spawnSync } from "node:child_process";
-import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import process from "node:process";
 import { URL, pathToFileURL } from "node:url";
-import { verifyIntegrationIdentity } from "./run-integration-tests.mjs";
+import { localSupabaseProjectId, verifyIntegrationIdentity } from "./run-integration-tests.mjs";
 
 // CI owns the disposable stack on its fresh hosted runner. Capture physical
 // identities from that stack; never synthesize container/image/network IDs.
@@ -40,7 +39,6 @@ export function captureCiIntegrationIdentity(env, projectId, inspect = spawnSync
 }
 
 if (process.argv[1] && pathToFileURL(resolve(process.argv[1])).href === import.meta.url) {
-  const projectId = /^project_id\s*=\s*"([^"]+)"/m.exec(readFileSync("supabase/config.toml", "utf8"))?.[1];
-  const identity = captureCiIntegrationIdentity(process.env, projectId);
+  const identity = captureCiIntegrationIdentity(process.env, localSupabaseProjectId());
   process.stdout.write(`INTEGRATION_TARGET_IDENTITY_JSON=${JSON.stringify(identity)}\n`);
 }
