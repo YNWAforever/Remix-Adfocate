@@ -29,7 +29,11 @@ export function buildSharedCaption(sections: StudioSection[], sources: StudioSou
       if (!source || source.revoked_at) throw new Error("SOURCE_UNAVAILABLE");
       if (!source.shareable) throw new Error("SOURCE_PRIVATE");
       const time = new Date(Date.parse(source.observed_at) + 8 * 60 * 60 * 1000).toISOString().slice(0,16).replace("T", " ");
-      return `\n來源：${source.title} · ${source.platform} · ${time} HKT · HK / 繁中 · 未驗證${source.url ? ` · ${source.url}` : ""}\n問題：${source.question}`;
+      const coverage = source.integration
+        ? source.integration.coverage.region && source.integration.coverage.language ? `${source.integration.coverage.region} / ${source.integration.coverage.language}` : "地區／語言未驗證"
+        : "HK / 繁中";
+      const provenance = source.integration ? ` · 模擬資料 · 來源版本 ${source.integration.source_version}${source.integration.coverage.partial ? " · 部分資料" : ""}` : "";
+      return `\n來源：${source.title} · ${source.platform} · ${time} HKT · ${coverage} · 未驗證${provenance}${source.url ? ` · ${source.url}` : ""}\n問題：${source.question}`;
     });
     return section.text + citations.join("");
   }).join("\n\n");
@@ -52,4 +56,23 @@ export function sourceInput(input: Record<string, unknown>): Omit<StudioSource, 
   if (!["manual", "public", "private"].includes(String(input.kind))) throw new Error("INVALID_SOURCE");
   return { title: text("title", 160), content: text("content", 8000), question: text("question", 500), platform: text("platform", 80), observed_at,
     url, kind: input.kind as StudioSource["kind"], shareable: input.shareable === true, region: "HK", language: "zh-Hant", status: "unverified" };
+}
+
+/** A revoked provider source cannot reappear in cached output previews. Original text remains editable locally. */
+export function redactRevokedIntegrationOutputs<T extends { sources: StudioSource[]; briefs: Array<{ sections: StudioSection[] }>; messages: unknown[] }>(detail: T): T {
+  const revoked = new Set(detail.sources.filter(source => source.integration && source.revoked_at).map(source => source.id));
+  if (!revoked.size) return detail;
+  // The legacy message DTO has no source lineage. Conservatively quarantine older
+  // assistant replies, but never discard the creator's input or safe later turns.
+  // Invalid timestamps fail closed; generation checks reject late provider replies.
+  const revokedAt = Math.max(...detail.sources.filter(source => revoked.has(source.id)).map(source => Date.parse(source.revoked_at!) || Infinity));
+  return { ...detail,
+    sources: detail.sources.map(source => revoked.has(source.id) ? { ...source, content: "來源已撤銷；請重新確認權限。" } : source),
+    briefs: detail.briefs.map(brief => ({ ...brief, sections: brief.sections.map(section => section.sourceIds.some(id => revoked.has(id)) ? { ...section, text: "這段使用了已撤銷的來源，暫停顯示與分享。" } : section) })),
+    messages: detail.messages.filter(message => {
+      if (!message || typeof message !== "object") return false;
+      const value = message as { role?: string; created_at?: string };
+      return value.role === "user" || (value.role === "assistant" && typeof value.created_at === "string" && Date.parse(value.created_at) > revokedAt);
+    }),
+  };
 }

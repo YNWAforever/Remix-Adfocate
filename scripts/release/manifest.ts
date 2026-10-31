@@ -1235,6 +1235,46 @@ const REVIEWED_MIGRATIONS = [
     ],
     transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
   },
+  {
+    version: "20261031120000", name: "creator_integrations", phase: "privacy_compliance",
+    dependsOn: ["20261030195424"],
+    capabilities: [
+      ...["integration_connections", "integration_resources", "integration_snapshots", "integration_events", "integration_sync_runs"].flatMap(table => [
+        `table:public.${table}`, `rls:public.${table}`, `policy:public.${table}.integration_owner_read`,
+        `grant:authenticated.public.${table}(select)`,
+        ...["insert", "update", "delete"].map(operation => `grant-removed:authenticated.public.${table}(${operation})`),
+      ]),
+      ...["integration_credentials", "integration_oauth_states", "integration_commands"].map(table => `table:private.${table}`),
+      ...["integration_hash", "integration_keys", "integration_envelope", "integration_cached_resources", "integration_immutable_snapshot", "integration_connection", "integration_foundation_command"].map(name => `function:private.${name}`),
+      "trigger:public.integration_snapshots.integration_immutable_snapshot",
+    ],
+    transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
+  },
+  {
+    version: "20261031121000", name: "studio_integration_evidence", phase: "assistant_requests",
+    dependsOn: ["20261031120000", "20261030195424"],
+    capabilities: [
+      "column:public.studio_sources.integration", "column:public.studio_sources.integration_connection_id", "column:public.studio_sources.integration_resource_id", "column:public.studio_sources.integration_snapshot_id",
+      "constraint:public.studio_sources.studio_source_coverage", "constraint:public.studio_sources.studio_source_integration_fk",
+      "column:public.studio_shares.integration_receipt", "table:private.integration_use_permits",
+      "function:private.integration_source", "function:private.integration_evidence_command", "function:private.studio_command_stage3", "function:public.studio_command",
+      "grant:service_role.public.studio_command(uuid,uuid,uuid,text,jsonb)",
+      ...["authenticated", "anon", "public"].map(role => `grant-removed:${role}.public.studio_command(uuid,uuid,uuid,text,jsonb)`),
+    ],
+    transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
+  },
+  {
+    version: "20261031122000", name: "integration_privacy_cleanup", phase: "privacy_compliance",
+    dependsOn: ["20261031121000"],
+    capabilities: [
+      ...["integration_invalidate", "integration_purge", "integration_privacy_command", "integration_account_cleanup", "save_assistant_turn_stage3", "get_assistant_request_stage3"].map(name => `function:private.${name}`),
+      "function:public.integration_command", "function:public.save_assistant_turn", "function:public.get_assistant_request",
+      "trigger:public.creators.integration_account_cleanup",
+      "grant:service_role.public.integration_command(uuid,uuid,uuid,text,jsonb)",
+      ...["authenticated", "anon", "public"].map(role => `grant-removed:${role}.public.integration_command(uuid,uuid,uuid,text,jsonb)`),
+    ],
+    transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
+  },
 ] as const satisfies readonly ReviewedMigration[];
 
 const NON_RELEASE_TIMESTAMP_MIGRATIONS = new Set([

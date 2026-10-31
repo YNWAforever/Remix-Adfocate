@@ -76,6 +76,28 @@ const STUDIO_CAPABILITIES = [
   "trigger:public.mission_pending_rewards.studio_settlement_badge","trigger:public.mission_submissions.studio_legacy_badge","trigger:public.creators.studio_account_cleanup",
 ];
 
+// New contracts from the three reviewed Stage 4 migrations. Existing Studio/assistant
+// RPC redeclarations remain in their original baseline rather than being excluded twice.
+const INTEGRATION_CAPABILITIES = [
+  ...["integration_connections", "integration_resources", "integration_snapshots", "integration_events", "integration_sync_runs"].flatMap(table => [
+    `table:public.${table}`, `rls:public.${table}`, `policy:public.${table}.integration_owner_read`,
+    `grant:authenticated.public.${table}(select)`,
+    ...["insert", "update", "delete"].map(action => `grant-removed:authenticated.public.${table}(${action})`),
+  ]),
+  ...["integration_credentials", "integration_oauth_states", "integration_commands", "integration_use_permits"].map(table => `table:private.${table}`),
+  ...["integration_hash", "integration_keys", "integration_envelope", "integration_cached_resources", "integration_immutable_snapshot", "integration_connection", "integration_foundation_command",
+    "integration_source", "integration_evidence_command", "studio_command_stage3", "integration_invalidate", "integration_purge", "integration_privacy_command", "integration_account_cleanup", "save_assistant_turn_stage3", "get_assistant_request_stage3"].map(name => `function:private.${name}`),
+  "trigger:public.integration_snapshots.integration_immutable_snapshot",
+  ...["integration", "integration_connection_id", "integration_resource_id", "integration_snapshot_id"].map(column => `column:public.studio_sources.${column}`),
+  "constraint:public.studio_sources.studio_source_coverage",
+  "constraint:public.studio_sources.studio_source_integration_fk",
+  "column:public.studio_shares.integration_receipt",
+  "trigger:public.creators.integration_account_cleanup",
+  "function:public.integration_command",
+  "grant:service_role.public.integration_command(uuid,uuid,uuid,text,jsonb)",
+  ...["authenticated", "anon", "public"].map(role => `grant-removed:${role}.public.integration_command(uuid,uuid,uuid,text,jsonb)`),
+];
+
 describe("release preflight", () => {
   it("does not claim a removed grant is safe from dump text alone", async () => {
     async function check(schema: string) {
@@ -111,12 +133,15 @@ describe("release preflight", () => {
       ...new Set(manifest.migrations.flatMap((migration) => migration.capabilities)),
     ];
 
-    // Retain the 617 prior contracts and the three explicit claim denials, plus the review
-    // remediation contracts (2026-10-29) listed in REMEDIATION_CAPABILITIES.
+    // Preserve the prior baseline independently of the explicit review, Studio and
+    // integration additions; a missing old contract must still fail these counts.
     expect(capabilities).toEqual(expect.arrayContaining(REMEDIATION_CAPABILITIES));
     expect(capabilities).toEqual(expect.arrayContaining(STUDIO_CAPABILITIES));
+    expect(capabilities).toEqual(expect.arrayContaining(INTEGRATION_CAPABILITIES));
     expect(STUDIO_CAPABILITIES).toHaveLength(56);
-    expect(capabilities.filter((capability) => !REMEDIATION_CAPABILITIES.includes(capability) && !STUDIO_CAPABILITIES.includes(capability))).toHaveLength(620);
+    expect(INTEGRATION_CAPABILITIES).toHaveLength(69);
+    expect(new Set(INTEGRATION_CAPABILITIES).size).toBe(69);
+    expect(capabilities.filter((capability) => ![...REMEDIATION_CAPABILITIES, ...STUDIO_CAPABILITIES, ...INTEGRATION_CAPABILITIES].includes(capability))).toHaveLength(620);
     const claimDenials = ["authenticated", "anon", "public"].map(role => `grant-removed:${role}.public.claim_assistant_request(uuid,uuid,uuid)`);
     expect(capabilities).toEqual(expect.arrayContaining(claimDenials));
     const reviewValidityCapabilities = [
@@ -159,9 +184,40 @@ describe("release preflight", () => {
       "grant-removed:public.public.get_legacy_correction_evidence(uuid,uuid)",
     ];
     expect(capabilities).toEqual(expect.arrayContaining(repairCapabilities));
-    expect(capabilities.filter((capability) => ![...repairCapabilities, ...reviewValidityCapabilities, ...claimDenials, ...REMEDIATION_CAPABILITIES, ...STUDIO_CAPABILITIES].includes(capability))).toHaveLength(598);
-    expect(capabilities.filter((capability) => ![...applicationCapabilities, ...redemptionCapabilities, ...repairCapabilities, ...reviewValidityCapabilities, ...claimDenials, ...REMEDIATION_CAPABILITIES, ...STUDIO_CAPABILITIES].includes(capability))).toHaveLength(587);
+    expect(capabilities.filter((capability) => ![...repairCapabilities, ...reviewValidityCapabilities, ...claimDenials, ...REMEDIATION_CAPABILITIES, ...STUDIO_CAPABILITIES, ...INTEGRATION_CAPABILITIES].includes(capability))).toHaveLength(598);
+    expect(capabilities.filter((capability) => ![...applicationCapabilities, ...redemptionCapabilities, ...repairCapabilities, ...reviewValidityCapabilities, ...claimDenials, ...REMEDIATION_CAPABILITIES, ...STUDIO_CAPABILITIES, ...INTEGRATION_CAPABILITIES].includes(capability))).toHaveLength(587);
     expect(capabilities.filter((capability) => !hasCapabilityValidator(capability))).toEqual([]);
+  });
+
+  it("pins the integration migration catalogue and keeps its command RPCs unavailable to browser roles", () => {
+    const manifest = JSON.parse(readFileSync("supabase/release-manifest.json", "utf8")) as {
+      migrations: Array<{ version: string; name: string; capabilities: string[] }>;
+    };
+    const versions = ["20261031120000", "20261031121000", "20261031122000"];
+    const migrations = manifest.migrations.filter(migration => versions.includes(migration.version));
+    expect(migrations.map(({ version, name }) => ({ version, name }))).toEqual([
+      { version: "20261031120000", name: "creator_integrations" },
+      { version: "20261031121000", name: "studio_integration_evidence" },
+      { version: "20261031122000", name: "integration_privacy_cleanup" },
+    ]);
+    const prior = new Set(manifest.migrations.filter(migration => !versions.includes(migration.version)).flatMap(migration => migration.capabilities));
+    const declared = [...new Set(migrations.flatMap(migration => migration.capabilities))];
+    expect(INTEGRATION_CAPABILITIES.filter(capability => prior.has(capability))).toEqual([]);
+    expect(declared.filter(capability => !prior.has(capability)).sort()).toEqual([...INTEGRATION_CAPABILITIES].sort());
+    const redeclared = [
+      "function:public.studio_command", "function:public.save_assistant_turn", "function:public.get_assistant_request",
+      "grant:service_role.public.studio_command(uuid,uuid,uuid,text,jsonb)",
+      ...["authenticated", "anon", "public"].map(role => `grant-removed:${role}.public.studio_command(uuid,uuid,uuid,text,jsonb)`),
+    ];
+    expect([...declared].sort()).toEqual([...INTEGRATION_CAPABILITIES, ...redeclared].sort());
+    for (const rpc of ["integration_command", "studio_command"]) {
+      const signature = `public.${rpc}(uuid,uuid,uuid,text,jsonb)`;
+      expect(declared).toContain(`grant:service_role.${signature}`);
+      for (const role of ["authenticated", "anon", "public"]) {
+        expect(declared).toContain(`grant-removed:${role}.${signature}`);
+        expect(declared).not.toContain(`grant:${role}.${signature}`);
+      }
+    }
   });
 
   it("matches every declared capability kind against its bound schema object", async () => {

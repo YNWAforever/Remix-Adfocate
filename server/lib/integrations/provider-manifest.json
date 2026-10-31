@@ -1,0 +1,28 @@
+{
+  "mode": "mock",
+  "sampleOnly": true,
+  "liveApiVersion": null,
+  "liveAcceptance": "not_evaluated_requires_stage_4D_approval",
+  "instagram": {
+    "login": "instagram_login",
+    "scopes": ["instagram_business_basic", "instagram_business_manage_insights"],
+    "contractVersion": "mock-insights-v1",
+    "candidateMetrics": ["reach", "views", "likes", "saves"],
+    "days": 30,
+    "mediaLimit": 50,
+    "cooldownMinutes": 60,
+    "reference": "https://developers.facebook.com/documentation/instagram-platform/insights",
+    "checkedAt": "2026-10-31",
+    "coverage": "unknown; example values are not Hong Kong audience evidence"
+  },
+  "google_drive": {
+    "scopes": ["https://www.googleapis.com/auth/drive.file"],
+    "scopeIncludesWrite": true,
+    "applicationContentOperations": ["read_selected"],
+    "maxFiles": 5,
+    "maxFileBytes": 5242880,
+    "maxExcerptCharacters": 8000,
+    "fileParsing": "mock_extracted_text_only",
+    "reference": "https://developers.google.com/workspace/drive/api/guides/api-specific-auth"
+  }
+}

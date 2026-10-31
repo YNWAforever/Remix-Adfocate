@@ -4,6 +4,7 @@ import { serviceClient } from "../lib/supabase.js";
 import { dbError } from "../lib/httpErrors.js";
 import { PROFILE_MEDIA_BUCKET } from "../lib/profileMedia/types.js";
 import { fetchAllPages } from "../lib/queryPaging.js";
+import { exportIntegrationData, stopAccountIntegrations } from "../lib/integrations/lifecycle.js";
 
 // F-009: self-service data export and account deletion (anonymisation).
 export const accountRoutes = new Hono<Env>();
@@ -59,6 +60,8 @@ accountRoutes.get("/export", async (c) => {
     }
     out[table] = result.data;
   }
+  try { Object.assign(out, await exportIntegrationData(svc, {creatorId:userId,workspaceId:c.get("workspaceId")}, process.env.INTEGRATIONS_ENABLED === "true")); }
+  catch { return c.json({error:"資料匯出暫未完成，請稍後重試。",code:"export_unavailable"},503); }
   c.header("Content-Disposition", `attachment; filename="adfocate-data-${new Date().toISOString().slice(0, 10)}.json"`);
   return c.json(out);
 });
@@ -74,6 +77,8 @@ accountRoutes.post("/delete", async (c) => {
   const svc = serviceClient();
   const userId = c.get("userId");
 
+  try { await stopAccountIntegrations(svc, {creatorId:userId,workspaceId:c.get("workspaceId")}, process.env.INTEGRATIONS_ENABLED === "true"); }
+  catch { return c.json({error:"資料連接清理尚未完成，可以重試刪除。",code:"deletion_incomplete"},503); }
   const anonymised = await svc.rpc("anonymize_creator_account", { p_creator: userId });
   if (anonymised.error) return dbError(c, anonymised.error, "deletion_unavailable", 503);
 

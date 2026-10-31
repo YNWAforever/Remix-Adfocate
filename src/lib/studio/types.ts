@@ -1,6 +1,7 @@
+import type { IntegrationSourceMetadata } from "../integrations/types";
 export type StudioTopic = "missions" | "creation" | "performance" | "rewards";
 export type StudioSection = { id: string; text: string; sourceIds: string[] };
-export type StudioSource = { id: string; thread_id: string; title: string; content: string; url: string | null; kind: "manual" | "public" | "private"; shareable: boolean; question: string; platform: string; region: "HK"; language: "zh-Hant"; observed_at: string; revoked_at: string | null; status: "unverified" };
+export type StudioSource = { id: string; thread_id: string; title: string; content: string; url: string | null; kind: "manual" | "public" | "private"; shareable: boolean; question: string; platform: string; region: string | null; language: string | null; observed_at: string; revoked_at: string | null; status: "unverified"; integration?: IntegrationSourceMetadata | null };
 export type StudioThread = { id: string; title: string; initial_prompt?: string | null; topic: StudioTopic; mission_id: string | null; conversation_id: string; revision: number; created_at: string };
 export type StudioBrief = { id: string; thread_id: string; version: number; sections: StudioSection[]; created_at: string };
 export type StudioShare = { id: string; brief_id: string; submission_id: string; work_item_id: string; section_ids: string[]; draft_revision: number; created_at: string };

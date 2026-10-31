@@ -6,7 +6,8 @@ import { journeyFixture, previewMe, previewSpent, previewScreens } from "./studi
 import type { Session, AuthChangeEvent } from "@supabase/supabase-js";
 import type { ActiveMissionWorkspace, WorkflowState, WorkItemState } from "../lib/activeMission";
 import type { StudioDetail, StudioSection } from "../lib/studio/types";
-import { buildSharedCaption, sourceInput } from "../lib/studio/policy";
+import { buildSharedCaption, sourceInput, redactRevokedIntegrationOutputs } from "../lib/studio/policy";
+import { createIntegrationPreview } from "./studioIntegrationPreview";
 import { ROLE_CAPABILITIES, staffRouteRequirement, type StaffWorkspaceRole } from "../../server/lib/staffCapabilities";
 
 const id = (n: number) => `00000000-0000-4000-8000-${String(n).padStart(12,"0")}`;
@@ -18,6 +19,7 @@ const savedRole = sessionStorage.getItem("kocmax-local-preview-role");
 let role: Role = previewRoles.includes(savedRole as Role) ? savedRole as Role : "visitor";
 let scenario = "normal";
 const threads: StudioDetail[] = [], receipts = new Map<string,{fingerprint:string;result:unknown}>();
+const integrationPreview = createIntegrationPreview({ workspaceId: ws, creatorId: creator }, () => threads, () => receipts.clear());
 const callbacks = new Set<(event:AuthChangeEvent, session:Session|null)=>void>();
 const mission = { id:missionId,slug:"tea-story",title:"一杯茶的日常故事",description:"拍攝一段 30 秒短片，分享真實試飲感受。",category:"food",mission_type:"ugc",access_type:"open",points_reward:400,cash_reward:0,required_level:"L0",deliverables:["30 秒短片"],requirements:["真實體驗","標示合作關係"],platforms:["instagram"],effort:"low",brand:"茶日和（示例）",deadline,quota:20,filled:3,status:"active",my_status:"joined",creator_workflow_mode:"active_workspace" };
 const workspace:ActiveMissionWorkspace = {
@@ -33,7 +35,7 @@ const fail = (code:string,status=409) => result({code,error:code},status);
 const currentItem = () => workspace.workItems[0];
 const settled = () => workspace.pendingReward?.status==="settled";
 
-function studioCommand(body:Record<string,unknown>):Response {
+async function studioCommand(body:Record<string,unknown>):Promise<Response> {
   const p=body.payload as Record<string,unknown>, action=String(body.action), request=String(body.requestId), fingerprint=JSON.stringify(body.payload)+action;
   const prior=receipts.get(request);if(prior)return prior.fingerprint===fingerprint?result({result:prior.result}):fail("IDEMPOTENCY_CONFLICT");
   let value:unknown;
@@ -43,8 +45,9 @@ function studioCommand(body:Record<string,unknown>):Response {
   } else {
     const detail=threads.find(t=>t.thread.id===p.threadId);if(!detail)return fail("NOT_FOUND",404);
     if(detail.thread.revision!==p.revision)return fail("WORKFLOW_STALE");
+    await integrationPreview.authorizeCommand(action, p);
     if(action==="add_source") { const source={...sourceInput(p),id:crypto.randomUUID(),thread_id:detail.thread.id,revoked_at:null};detail.sources.push(source);value=source; }
-    else if(action==="revoke_source") {const source=detail.sources.find(s=>s.id===p.sourceId);if(!source)return fail("NOT_FOUND",404);source.revoked_at=now;source.shareable=false;value=source;}
+    else if(action==="revoke_source") {const source=detail.sources.find(s=>s.id===p.sourceId);if(!source)return fail("NOT_FOUND",404);if(source.integration){integrationPreview.revokeSource(source.id);source.integration.model_allowed=false;source.integration.availability="revoked";detail.messages=[];}source.revoked_at=now;source.shareable=false;value=source;}
     else if(action==="save_brief") {const brief={id:crypto.randomUUID(),thread_id:detail.thread.id,version:detail.briefs.length+1,sections:structuredClone(p.sections as StudioSection[]),created_at:now};detail.briefs.unshift(brief);value=brief;}
     else if(action==="share_brief") {
       const brief=detail.briefs[0], draft=currentItem().draft;
@@ -73,6 +76,7 @@ async function dispatchFixture(input:RequestInfo|URL,init?:RequestInit):Promise<
     if(requirement.kind==="deny" || (requirement.kind==="platform" && role!=="content_editor") || (requirement.kind==="workspace" && !requirement.anyOf.some(cap=>capabilities.includes(cap))))return fail("STAFF_CAPABILITY_REQUIRED",403);
   }
   if(path.startsWith("/brand/") && role!=="brand")return fail("NOT_BRAND",403);
+  if(path.startsWith("/me/integrations")) { if(role!=="creator")return fail("CREATOR_PREVIEW_REQUIRED",403); return (await integrationPreview.handle(path,method,body))??fail("NOT_FOUND",404); }
   if(path==="/me")return result({...previewMe,onboarding_completed:role!=="new_creator"||previewMe.onboarding_completed});
   if(path==="/me/consents")return result({required:{terms:"2026-01",privacy:"2026-01"},needsAcceptance:false,marketing:{granted:false,recordedAt:null}});
   if(path==="/me/bootstrap")return result({created:false});
@@ -86,14 +90,17 @@ async function dispatchFixture(input:RequestInfo|URL,init?:RequestInit):Promise<
   if(path===`/missions/${mission.slug}`)return result(mission);
   if(path==="/studio/badges")return result({badges:settled()?[{id:id(90),badge_key:"first_verified_creation"}]:[]});
   if(path==="/studio/threads")return result({threads:threads.map(t=>t.thread),nextPage:null});
-  if(path.startsWith("/studio/threads/"))return result(threads.find(t=>t.thread.id===path.split("/").at(-1))??{});
-  if(path==="/studio/commands") {try{return studioCommand(body);}catch(error){return fail(error instanceof Error?error.message:"INVALID_INPUT",400);}}
+  if(path.startsWith("/studio/threads/")){const detail=threads.find(t=>t.thread.id===path.split("/").at(-1));return detail?result(redactRevokedIntegrationOutputs(detail)):fail("NOT_FOUND",404);}
+  if(path==="/studio/commands") {try{return await studioCommand(body);}catch(error){return fail(error instanceof Error?error.message:"INVALID_INPUT",400);}}
   if(path==="/assistant/chat") {
     const detail=threads.find(t=>t.thread.conversation_id===body.conversation_id);if(!detail)return fail("NOT_FOUND",404);
     const key=String(body.client_request_id), prior=receipts.get(key);if(prior)return result(prior.result);
-    const answer="【本機示例回覆】可以先拍一段真實試飲感受：開場交代問題，中段呈現份量與味道，結尾清楚標示合作關係。請先加入來源，再另開私人 Brief。社交成效未連接／未驗證；這段建議未提交任務，也未發放積分。";
-    detail.messages.push({id:crypto.randomUUID(),role:"user",content:String(body.message),created_at:now},{id:crypto.randomUUID(),role:"assistant",content:answer,created_at:now});
-    const reply={conversation_id:detail.thread.conversation_id,answer,persistence:"saved",citations:[],limitations:["local_fixture"]};receipts.set(key,{fingerprint:String(body.message),result:reply});return result(reply);
+    let sources: Awaited<ReturnType<typeof integrationPreview.modelSources>>;
+    try { sources=await integrationPreview.modelSources(detail,key); } catch { return fail("SOURCE_PERMISSION_REQUIRED",403); }
+    const answer=sources.length ? `【模擬回覆 · 未驗證】問題：${String(body.message)}\n${sources.map(source=>`${source.title}：${source.content.slice(0,500)}\n來源：${source.platform} · ${source.integration?.source_version} · ${source.observed_at} · 地區／語言未驗證`).join("\n\n")}\n建議將觀察轉為真實體驗的拍攝方向；以上只是示例，不代表香港市場實測。保存後仍需逐段確認接收者與分享權。` : "【本機示例回覆】可以先拍一段真實試飲感受：開場交代問題，中段呈現份量與味道，結尾清楚標示合作關係。請先加入來源，再另開私人 Brief。社交成效未連接／未驗證；這段建議未提交任務，也未發放積分。";
+    const messageTime = new Date().toISOString();
+    detail.messages.push({id:crypto.randomUUID(),role:"user",content:String(body.message),created_at:messageTime},{id:crypto.randomUUID(),role:"assistant",content:answer,created_at:messageTime});
+    const reply={conversation_id:detail.thread.conversation_id,answer,persistence:"saved",citations:sources.map(source=>({id:source.id,title:source.title,source:"integration_mock_unverified"})),limitations:["local_fixture"]};receipts.set(key,{fingerprint:String(body.message),result:reply});return result(reply);
   }
   if(path.startsWith("/assistant/requests/"))return result(receipts.get(path.split("/").at(-1)!)?.result??{persistence:"unknown"});
   if(path===`/my-missions/${sub}/workspace`)return result(workspace);

@@ -3,6 +3,8 @@ import type { Env } from "../app.js";
 import { serviceClient } from "../lib/supabase.js";
 import { sourceInput } from "../../src/lib/studio/policy.js";
 import { dbError } from "../lib/httpErrors.js";
+import { authorizeStudioCommand, redactRevokedIntegrationOutputs } from "../lib/integrations/evidence.js";
+import { IntegrationError } from "../lib/integrations/policy.js";
 
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 export const studioRoutes = new Hono<Env>();
@@ -34,8 +36,8 @@ studioRoutes.get("/threads/:id", async c => {
   ]);
   const error = [sources, briefs, shares, messages].find(result => result.error)?.error;
   if (error) return dbError(c, error, "studio_unavailable", 503);
-  return c.json({ thread: thread.data, sources: sources.data, briefs: briefs.data, shares: shares.data, messages: messages.data?.reverse(),
-    limits: { sources: 100, versions: 20, messages: 100 } });
+  return c.json(redactRevokedIntegrationOutputs({ thread: thread.data, sources: sources.data ?? [], briefs: briefs.data ?? [], shares: shares.data, messages: messages.data?.reverse() ?? [],
+    limits: { sources: 100, versions: 20, messages: 100 } }));
 });
 studioRoutes.get("/badges", async c => {
   const result = await serviceClient().from("studio_badges").select("id,badge_key,policy_version,source_event,created_at")
@@ -52,12 +54,14 @@ studioRoutes.post("/commands", async c => {
     if (!uuid.test(input.requestId) || !["create_thread", "add_source", "revoke_source", "save_brief", "share_brief"].includes(input.action) || !input.payload || Array.isArray(input.payload) || typeof input.payload !== "object") throw new Error();
     if (input.action === "add_source") input.payload = { ...input.payload, ...sourceInput(input.payload) };
   } catch { return c.json({ code: "INVALID_INPUT", error: "請檢查內容與來源權限" }, 400); }
+  try { await authorizeStudioCommand(serviceClient(), {creatorId:c.get("userId"),workspaceId:c.get("workspaceId")}, input.action, input.payload); }
+  catch(error) { const known=error instanceof IntegrationError?error:new IntegrationError("SOURCE_UNAVAILABLE",503);return c.json({code:known.code,error:"來源權限尚未確認，請保留草稿並重新檢查。"},known.status as 400|403|404|409|503); }
   const result = await serviceClient().rpc("studio_command", { p_workspace: c.get("workspaceId"), p_creator: c.get("userId"), p_request: input.requestId, p_action: input.action, p_payload: input.payload });
   if (result.error) {
     const code = result.error.message;
     if (["WORKFLOW_STALE", "STALE_BRIEF", "IDEMPOTENCY_CONFLICT", "WRONG_STATE"].includes(code)) return c.json({ code, error: "版本已變更，請保留草稿並重新確認" }, 409);
     if (code === "NOT_FOUND") return c.json({ code, error: "找不到這份內容" }, 404);
-    if (["SOURCE_PRIVATE", "SOURCE_UNAVAILABLE", "SOURCE_LINEAGE_REQUIRED"].includes(code)) return c.json({ code, error: "來源未獲分享授權或已撤銷，請重新整理相關段落" }, 403);
+    if (["SOURCE_PRIVATE", "SOURCE_UNAVAILABLE", "SOURCE_LINEAGE_REQUIRED", "SOURCE_PERMISSION_REQUIRED", "MODEL_CONSENT_REQUIRED"].includes(code)) return c.json({ code, error: "來源未獲分享授權或已撤銷，請重新整理相關段落" }, 403);
     if (["INVALID_INPUT", "INVALID_SELECTION", "INVALID_ACTION", "INVALID_SOURCE", "UNSUPPORTED_COVERAGE", "SOURCE_LIMIT"].includes(code) || ["22P02", "23514", "23502"].includes(result.error.code)) return c.json({ code: "INVALID_INPUT", error: "請檢查內容、項目及來源（每個討論最多 100 項來源）" }, 400);
     return dbError(c, result.error, "studio_unavailable", 503);
   }

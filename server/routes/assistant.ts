@@ -7,6 +7,7 @@ import type { ChatMessage } from "../lib/llm.js";
 import { AssistError, parseAssistContext, type AssistPrincipal } from "../lib/assistant/contextPolicy.js";
 import type { AdminEnv } from "../lib/staffAuth.js";
 import { requireCapability } from "../lib/staffCapabilities.js";
+import { authorizeIntegrationSources } from "../lib/integrations/evidence.js";
 
 /** D20 is offline only. No request flag, env variable or configured gateway key enables this provider. */
 async function missionAssist(body: unknown, principal: AssistPrincipal, getClient: typeof serviceClient, provider?: AssistantProvider) {
@@ -95,6 +96,7 @@ export function assistantRoutes(testProvider?: AssistantProvider) {
     const markUnknown = async () => { try { await store.rpc("mark_assistant_request_unknown", identity); } catch { /* Outcome remains unknown; never regenerate automatically. */ } };
     let result;
     try {
+      if(studio?.integrationSources?.length) await authorizeIntegrationSources({creatorId:c.get("userId"),workspaceId},studio.integrationSources,"model",{requestId:input.requestId});
       result = await withProviderDeadline((signal) => runAssistant(client,
         { query: input.message, locale: input.locale, workspace: workspaceId, history, studioContext:studio?.context },
         { ...(testProvider ? { provider: testProvider } : {}), signal }));
@@ -103,13 +105,22 @@ export function assistantRoutes(testProvider?: AssistantProvider) {
       return c.json({ error: "Generation outcome is unknown. Check this request before starting another", code: "provider_outcome_unknown", request_id: input.requestId, persistence: "unknown" }, 503);
     }
     try {
+      if(studio?.integrationSources?.length) {
+        await authorizeIntegrationSources({creatorId:c.get("userId"),workspaceId},studio.integrationSources,"read");
+        const current = await (await import("../lib/studio/assistantContext.js")).loadStudioContext(store,client,c.get("userId"),workspaceId,input.conversationId!);
+        if(current?.contextVersion !== studio.contextVersion) {
+          await markUnknown();return c.json({code:"studio_context_changed",persistence:"failed",generation:"completed_discarded",request_id:input.requestId,error:"來源已變更，已停止保存回覆。輸入仍保留。"},409);
+        }
+      }
       const saved = await store.rpc("save_assistant_turn", { ...identity, p_answer: result.answer, p_citations: result.citations });
       if (!saved.error && saved.data?.persistence === "saved") return c.json(saved.data);
       await markUnknown();
+      if(studio?.integrationSources?.length) return c.json({code:"studio_context_changed",persistence:"failed",request_id:input.requestId,error:"來源或儲存權限已變更，已停止返回衍生回覆。"},409);
       return c.json({ ...result, conversation_id: input.conversationId ?? null, request_id: input.requestId,
         persistence: saved.error?.code && /^(22|23|P0)/.test(saved.error.code) ? "failed" : "unknown" });
     } catch {
       await markUnknown();
+      if(studio?.integrationSources?.length) return c.json({code:"studio_context_changed",persistence:"failed",request_id:input.requestId,error:"來源權限尚未確認；沒有保存或返回衍生回覆。"},409);
       return c.json({ ...result, conversation_id: input.conversationId ?? null, request_id: input.requestId, persistence: "unknown" });
     }
   });

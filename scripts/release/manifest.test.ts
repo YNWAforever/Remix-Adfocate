@@ -80,6 +80,9 @@ const REVIEWED_FILES = [
   "20261029170000_creator_consents.sql",
   "20261029180000_creator_account_deletion.sql",
   "20261030195424_creator_studio_private_artifacts.sql",
+  "20261031120000_creator_integrations.sql",
+  "20261031121000_studio_integration_evidence.sql",
+  "20261031122000_integration_privacy_cleanup.sql",
 ] as const;
 
 // Pinned by checksum in manifest.ts, so the fixture copies the repository's real bytes instead of
@@ -150,6 +153,18 @@ async function fixture(
 }
 
 describe("release migration manifest", () => {
+  it("keeps the integration dependency chain and service-only write boundary explicit", async () => {
+    const manifest = await buildManifest(resolve("."));
+    const integration = manifest.migrations.filter(item => item.version.startsWith("2026103112"));
+    expect(integration.map(item => item.version)).toEqual(["20261031120000", "20261031121000", "20261031122000"]);
+    expect(integration[1].dependsOn).toContain(integration[0].version);
+    expect(integration[2].dependsOn).toContain(integration[1].version);
+    expect(integration[2].capabilities).toEqual(expect.arrayContaining([
+      "function:public.integration_command", "grant:service_role.public.integration_command(uuid,uuid,uuid,text,jsonb)",
+      "grant-removed:authenticated.public.integration_command(uuid,uuid,uuid,text,jsonb)",
+      "trigger:public.creators.integration_account_cleanup",
+    ]));
+  });
   it("classifies the redemption receipt contract without dropping ACL or uniqueness checks", async () => {
     const manifest = await buildManifest(resolve("."));
     const migration = manifest.migrations.find((item) => item.version === "20261025194402");

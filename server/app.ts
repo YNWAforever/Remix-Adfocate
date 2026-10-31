@@ -26,6 +26,7 @@ import { brandRoutes } from "./routes/brand.js";
 import { campaignRoutes } from "./routes/campaigns.js";
 import { activeMissionRoutes } from "./routes/activeMissions.js";
 import { studioRoutes } from "./routes/studio.js";
+import { integrationRoutes } from "./routes/integrations.js";
 
 export type Env = {
   Variables: { userId: string; workspaceId: string; jwt: string };
@@ -57,6 +58,7 @@ export function createApp() {
   guarded.route("/me", meRoutes);
   guarded.route("/me/profile-media", profileMediaRoutes);
   guarded.route("/me/consents", consentRoutes);
+  guarded.route("/me/integrations", integrationRoutes());
   guarded.route("/me", accountRoutes);
   guarded.route("/onboarding", onboardingRoutes);
   guarded.route("/wallet", walletRoutes);
