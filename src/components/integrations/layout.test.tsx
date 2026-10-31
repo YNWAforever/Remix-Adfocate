@@ -30,8 +30,8 @@ function mount(children: ReactNode) {
   vi.mocked(apiFetch).mockResolvedValue({ resources: [source] });
   return render(<QueryClientProvider client={client}><div className="studio"><div className="s-content">{children}</div></div></QueryClientProvider>);
 }
-async function snapshot(width: number) {
-  await page.setViewportSize({ width, height: 900 });
+async function snapshot(width: number, height = 900) {
+  await page.setViewportSize({ width, height });
   await page.setContent(`<html><head><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'"><style>body{margin:0} ${studioCss}\n${integrationCss}</style></head><body>${document.body.innerHTML}</body></html>`);
 }
 async function expectNoOverflowAndTouchTargets() {
@@ -52,7 +52,7 @@ describe.skipIf(!executablePath)("offline responsive integration components", ()
   afterEach(() => { cleanup(); clients.splice(0).forEach(client => client.clear()); });
   afterAll(async () => { await browser?.close(); });
 
-  it.each([320,390,1440])("fits all eight provider cards with 44px actions at %ipx", async width => {
+  it.each([320,390,430,768,1024,1440])("fits all eight provider cards with 44px actions at %ipx", async width => {
     mount(<Connections />); await snapshot(width);
     await expectNoOverflowAndTouchTargets();
     const columns = await page.locator(".i-grid").evaluate(node => getComputedStyle(node).gridTemplateColumns.split(" ").length);
@@ -60,7 +60,7 @@ describe.skipIf(!executablePath)("offline responsive integration components", ()
     expect(await page.locator(".i-card,.i-later").count()).toBe(8);
   });
 
-  it.each([320,390,1440])("contains full consent scopes and dialog actions at %ipx", async width => {
+  it.each([320,390,430,768,1024,1440])("contains full consent scopes and dialog actions at %ipx", async width => {
     render(<ConnectionConsent request={{ state: "mock", provider: "google_drive", scopes: drive.scopes, expiresAt: drive.expiresAt, sampleOnly: true }} busy={false} error={null} onCancel={() => {}} onComplete={() => {}} />);
     await snapshot(width); await expectNoOverflowAndTouchTargets();
     const rect = await page.locator('[role="dialog"]').boundingBox();
@@ -69,12 +69,34 @@ describe.skipIf(!executablePath)("offline responsive integration components", ()
     expect(await page.locator(".i-button").first().evaluate(node => getComputedStyle(node).transitionDuration)).toBe("0s");
   });
 
-  it.each([320,390,1440])("keeps evidence fields and metrics inside the narrow panel at %ipx", async width => {
+  it.each([320,390,430,768,1024,1440])("keeps evidence fields and metrics inside the narrow panel at %ipx", async width => {
     mount(<div style={{ maxWidth: 300 }}><IntegrationSourcePanel threadId="thread-1" revision={3} onImported={() => {}} /></div>);
     await screen.findByRole("checkbox", { name: /A long mock document/ });
     fireEvent.click(screen.getByText("Source, excerpt & rights"));
     await waitFor(() => expect(screen.getByText("Mock excerpt")).toBeVisible());
     await snapshot(width); await expectNoOverflowAndTouchTargets();
     expect(await page.locator(".i-metrics").evaluate(node => getComputedStyle(node).gridTemplateColumns.split(" ").length)).toBe(2);
+  });
+
+  it.each([320,390,430,768,1024,1440])("fits D0 boundaries and expanded proposed scopes at %ipx", async width => {
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false } } }); clients.push(client);
+    client.setQueryData(integrationKeys.list(), { mode: "live_pilot", pilot: { stage: "D0", externalAccess: false }, connections: [{ ...drive, status: "revoked", providerRevocation: "pending" }] });
+    render(<QueryClientProvider client={client}><div className="studio"><div className="s-content"><Connections /></div></div></QueryClientProvider>);
+    document.querySelectorAll("details").forEach(details => { details.open = true; });
+    await snapshot(width); await expectNoOverflowAndTouchTargets();
+    expect(await page.getByRole("note", { name: "D0 offline verification" }).count()).toBe(1);
+    expect(await page.getByRole("button", { name: "Live Google Drive connection unavailable in D0" }).isDisabled()).toBe(true);
+    expect(await page.getByText("openid", { exact: true }).count()).toBe(1);
+  });
+
+  it.each([320,390,430,768,1024,1440])("keeps dialog actions reachable in a reduced-height viewport at %ipx", async width => {
+    render(<ConnectionConsent request={{ state: "mock", provider: "google_drive", scopes: [...drive.scopes, "openid"], expiresAt: drive.expiresAt, sampleOnly: true }} busy={false} error={null} onCancel={() => {}} onComplete={() => {}} />);
+    await snapshot(width, 360); await expectNoOverflowAndTouchTargets();
+    const action = page.getByRole("button", { name: "Allow mock connection" });
+    await action.focus();
+    const box = await action.boundingBox();
+    expect(box!.y).toBeGreaterThanOrEqual(0);
+    expect(box!.y + box!.height).toBeLessThanOrEqual(360);
+    expect(await page.locator('[role="dialog"]').evaluate(node => getComputedStyle(node).overflowY)).toBe("auto");
   });
 });

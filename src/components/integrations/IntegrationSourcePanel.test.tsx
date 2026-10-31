@@ -139,3 +139,40 @@ it("shows a missing metric separately from a real zero without inventing coverag
   expect(screen.getByText("—")).toBeVisible();
   expect(screen.getByText(/Missing · Insufficient sample/)).toBeVisible();
 });
+
+it("removes the previous creator's question, selection and open Picker on actor change", async () => {
+  const { client } = mount();
+  fireEvent.click(await screen.findByRole("checkbox", { name: /Sample brief/ }));
+  fireEvent.change(screen.getByRole("textbox", { name: /Question for these sources/ }), { target: { value: "synthetic private draft" } });
+  fireEvent.click(screen.getByRole("checkbox", { name: /Allow AI processing/ }));
+  fireEvent.click(screen.getByRole("button", { name: "Choose mock Drive files" }));
+  await screen.findByRole("dialog");
+  fetchMock.mockResolvedValue({ mode: "mock", connections: [] });
+  await act(async () => { client.setQueryData(["me"], { id: "creator-b" }); });
+  expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  expect(screen.getByRole("textbox", { name: /Question for these sources/ })).toHaveValue("");
+  expect(screen.getByRole("checkbox", { name: /Allow AI processing/ })).not.toBeChecked();
+  expect(screen.queryByText("Mock creative brief")).not.toBeInTheDocument();
+});
+
+it("shows API measurement and media selection periods separately from sample-only provenance", async () => {
+  mount({ ...source, evidence: { apiVersion: "fixture-v1", endpoint: "sample-media/insights", measurementPeriod: "lifetime", selectionPeriod: { start: "2026-10-01", end: "2026-10-31" } } });
+  await screen.findByRole("checkbox", { name: /Sample brief/ });
+  fireEvent.click(screen.getByText("Source, excerpt & rights"));
+  expect(screen.getByText("fixture-v1")).toBeVisible();
+  expect(screen.getByText("lifetime")).toBeVisible();
+  expect(screen.getByText("2026-10-01 — 2026-10-31")).toBeVisible();
+  expect(screen.getByText(/Lifetime is not the last 30 days/)).toBeVisible();
+  expect(screen.getByText(/Mock private data/)).toBeVisible();
+});
+
+it("keeps the creator's question during a D0 stop but cannot reuse cached source contents", async () => {
+  const { client } = mount();
+  fireEvent.click(await screen.findByRole("checkbox", { name: /Sample brief/ }));
+  fireEvent.change(screen.getByRole("textbox", { name: /Question for these sources/ }), { target: { value: "Keep my own question" } });
+  act(() => { client.setQueryData(integrationKeys.list(), { mode: "live_pilot", pilot: { stage: "D0", externalAccess: false }, connections: [connection] }); });
+  expect(screen.getByRole("note", { name: "D0 offline verification" })).toBeVisible();
+  expect(screen.getByRole("textbox", { name: /Question for these sources/ })).toHaveValue("Keep my own question");
+  expect(screen.queryByRole("checkbox", { name: /Sample brief/ })).not.toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "Import mock sources privately" })).toBeDisabled();
+});

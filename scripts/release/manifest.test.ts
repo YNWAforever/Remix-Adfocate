@@ -83,6 +83,7 @@ const REVIEWED_FILES = [
   "20261031120000_creator_integrations.sql",
   "20261031121000_studio_integration_evidence.sql",
   "20261031122000_integration_privacy_cleanup.sql",
+  "20261031123000_integration_pilot_persistence.sql",
 ] as const;
 
 // Pinned by checksum in manifest.ts, so the fixture copies the repository's real bytes instead of
@@ -156,7 +157,7 @@ describe("release migration manifest", () => {
   it("keeps the integration dependency chain and service-only write boundary explicit", async () => {
     const manifest = await buildManifest(resolve("."));
     const integration = manifest.migrations.filter(item => item.version.startsWith("2026103112"));
-    expect(integration.map(item => item.version)).toEqual(["20261031120000", "20261031121000", "20261031122000"]);
+    expect(integration.map(item => item.version)).toEqual(["20261031120000", "20261031121000", "20261031122000", "20261031123000"]);
     expect(integration[1].dependsOn).toContain(integration[0].version);
     expect(integration[2].dependsOn).toContain(integration[1].version);
     expect(integration[2].capabilities).toEqual(expect.arrayContaining([

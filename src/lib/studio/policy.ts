@@ -32,7 +32,7 @@ export function buildSharedCaption(sections: StudioSection[], sources: StudioSou
       const coverage = source.integration
         ? source.integration.coverage.region && source.integration.coverage.language ? `${source.integration.coverage.region} / ${source.integration.coverage.language}` : "地區／語言未驗證"
         : "HK / 繁中";
-      const provenance = source.integration ? ` · 模擬資料 · 來源版本 ${source.integration.source_version}${source.integration.coverage.partial ? " · 部分資料" : ""}` : "";
+      const provenance = source.integration ? ` · ${source.integration.sample_only ? "模擬資料" : "平台來源"} · 來源版本 ${source.integration.source_version}${source.integration.evidence ? ` · API ${source.integration.evidence.apiVersion} · ${source.integration.evidence.measurementPeriod}` : ""}${source.integration.coverage.partial ? " · 部分資料" : ""}` : "";
       return `\n來源：${source.title} · ${source.platform} · ${time} HKT · ${coverage} · 未驗證${provenance}${source.url ? ` · ${source.url}` : ""}\n問題：${source.question}`;
     });
     return section.text + citations.join("");

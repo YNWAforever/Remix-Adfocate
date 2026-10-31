@@ -3,19 +3,23 @@ export type ProviderId = "instagram" | "google_drive";
 export type IntegrationStatus = "connected" | "partial" | "reauth_required" | "revoked";
 export type Availability = "available" | "missing" | "unsupported" | "stale" | "revoked" | "rate_limited";
 export type EvidenceValue = { value: number | null; availability: Availability; reason: string | null };
+export type IntegrationEvidence = {
+  apiVersion: string; endpoint: string; measurementPeriod: string;
+  selectionPeriod?: { start: string; end: string }; permalink?: string;
+};
 export type IntegrationConnection = {
   id: string; provider: ProviderId; label: string; status: IntegrationStatus;
   scopes: string[]; generation: number; lastSyncAt: string | null; expiresAt: string;
-  lastError: string | null; sampleOnly: true; providerRevocation: "not_requested" | "revoked" | "pending" | "manual_action";
+  lastError: string | null; sampleOnly: boolean; providerRevocation: "not_requested" | "revoked" | "pending" | "manual_action";
 };
 export type IntegrationResource = {
   id: string; connectionId: string; externalId: string; title: string; mimeType: string;
   version: string; selected: boolean; canDownload: boolean; rights: "owned" | "licensed" | "unknown";
   availability: Availability; excerpt: string | null; metrics: Record<string, EvidenceValue>;
   observedAt: string; fetchedAt: string; coverage: { region: string | null; language: string | null; partial: boolean };
-  sampleOnly: true;
+  sampleOnly: boolean; evidence?: IntegrationEvidence;
 };
-export type IntegrationList = { mode: "mock" | "disabled"; connections: IntegrationConnection[] };
+export type IntegrationList = { mode: "mock" | "disabled" | "live_pilot"; connections: IntegrationConnection[]; pilot?: {stage:"D0";externalAccess:false;reason?:string} };
 export type StartConnection = { state: string; expiresAt: string; provider: ProviderId; scopes: string[]; sampleOnly: true };
 export type IntegrationImport = {
   threadId: string; revision: number; resourceIds: string[]; question: string;
@@ -24,6 +28,6 @@ export type IntegrationImport = {
 export type IntegrationSourceMetadata = {
   connection_id: string; snapshot_id: string; resource_id: string; generation: number;
   source_version: string; content_hash: string; model_allowed: boolean;
-  provenance: ProviderId; availability: Availability; sample_only: true;
+  provenance: ProviderId; availability: Availability; sample_only: boolean; evidence?: IntegrationEvidence;
   coverage: { region: string | null; language: string | null; partial: boolean };
 };

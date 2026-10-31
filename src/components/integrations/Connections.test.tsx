@@ -30,6 +30,65 @@ beforeEach(() => { fetchMock.mockReset(); });
 afterEach(() => { cleanup(); clients.splice(0).forEach(client => client.clear()); });
 
 describe("mock connection journeys", () => {
+  it("shows D0 boundaries and proposed live scopes without offering a real connection", async () => {
+    fetchMock.mockResolvedValue({ mode: "live_pilot", pilot: { stage: "D0", externalAccess: false }, connections: [] });
+    mount();
+    expect(await screen.findByRole("note", { name: "D0 offline verification" })).toHaveTextContent(/sample data only/i);
+    const card = screen.getByRole("region", { name: /Google Drive/ });
+    fireEvent.click(within(card).getByText("Proposed live pilot permissions"));
+    expect(card).toHaveTextContent("https://www.googleapis.com/auth/drive.file");
+    expect(card).toHaveTextContent("openid");
+    expect(card).toHaveTextContent(/stable account identifier/);
+    expect(card).toHaveTextContent(/create and modify/);
+    expect(within(card).getByRole("button", { name: "Live Google Drive connection unavailable in D0" })).toBeDisabled();
+    expect(card).not.toHaveTextContent(/Mock skill ready|Connected live/);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("keeps a live-shaped account inert in D0 without mislabelling it as a connected mock", async () => {
+    fetchMock.mockResolvedValue({ mode: "live_pilot", pilot: { stage: "D0", externalAccess: false }, connections: [{ ...drive, sampleOnly: false, label: "Boundary fixture" }] });
+    mount();
+    const card = await screen.findByRole("region", { name: "Google Drive offline pilot" });
+    expect(card).toHaveTextContent("Offline · live access disabled");
+    expect(card).not.toHaveTextContent("Mock skill ready");
+    expect(within(card).queryByRole("button", { name: "Choose mock Drive files" })).not.toBeInTheDocument();
+    for (const button of within(card).getAllByRole("button")) expect(button).toBeDisabled();
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("keeps sample revoke and purge available when the reading switch is off", async () => {
+    fetchMock.mockImplementation(async path => path.endsWith("/revoke")
+      ? { local: "revoked", provider: "pending" } : { mode: "disabled", connections: [drive] });
+    mount();
+    fireEvent.click(await screen.findByRole("button", { name: "Revoke mock Google Drive" }));
+    await waitFor(() => expect(fetchMock.mock.calls.some(([path]) => path.endsWith("/revoke"))).toBe(true));
+    await waitFor(() => expect(screen.getByRole("button", { name: /Delete imported content/ })).toBeEnabled());
+    expect(screen.queryByRole("button", { name: "Choose mock Drive files" })).not.toBeInTheDocument();
+  });
+
+  it.each(["pending", "manual_action", "not_requested"] as const)("does not reconnect while platform revocation is unresolved (%s)", async providerRevocation => {
+    fetchMock.mockResolvedValue({ mode: "mock", connections: [{ ...drive, status: "revoked", providerRevocation }] });
+    mount();
+    expect(await screen.findByText(/Resolve platform revocation before reconnecting/)).toBeVisible();
+    expect(screen.getByRole("button", { name: "Connect mock Google Drive" })).toBeDisabled();
+    expect(screen.getByText(/same Google project/)).toHaveTextContent(/other workspaces/);
+    expect(screen.getByRole("button", { name: "Revoke mock Google Drive" })).toBeEnabled();
+  });
+
+  it("closes private consent immediately when the authenticated creator changes", async () => {
+    fetchMock.mockImplementation(async path => path.endsWith("/start")
+      ? { state: "mock-state", provider: "google_drive", scopes: drive.scopes, sampleOnly: true, expiresAt: drive.expiresAt }
+      : { mode: "mock", connections: [] });
+    const { client } = mount();
+    const connect = await screen.findByRole("button", { name: "Connect mock Google Drive" });
+    await waitFor(() => expect(connect).toBeEnabled());
+    fireEvent.click(connect);
+    await screen.findByRole("dialog");
+    const { act } = await import("@testing-library/react");
+    act(() => { client.setQueryData(["me"], { id: "another-creator" }); });
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+
   it("keeps basic missions and six later providers when the feature endpoint is absent", async () => {
     fetchMock.mockRejectedValue(new ApiError(404, "NOT_FOUND", "off"));
     mount();

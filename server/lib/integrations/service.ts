@@ -1,41 +1,48 @@
 import type { StudioSource } from "../../../src/lib/studio/types.js";
 import type { IntegrationImport, IntegrationResource, IntegrationConnection, StartConnection } from "../../../src/lib/integrations/types.js";
-import { CredentialVault, digest, type EncryptedEnvelope } from "./credentials.js";
+import { digest, type EncryptedEnvelope } from "./credentials.js";
+import type { CredentialStore } from "./keyProvider.js";
+import { RepositoryRefreshLease } from "./refreshLease.js";
 import { normalizeDriveFile } from "./googleDrive.js";
 import { boundedText, CONSENT_VERSION, hasScopes, IntegrationError, requiredScopes, requireRequestId, validateReturnPath, validateSelection } from "./policy.js";
 import type { Actor, ConnectionRecord, IntegrationProvider, IntegrationRecord, IntegrationRepository, ProviderGrant, ProviderId, ProviderSnapshot, ResourceRecord, SourceUse, UsePermit } from "./types.js";
 
 export function connectionDTO(row: ConnectionRecord): IntegrationConnection {
-  return { id: row.id, provider: row.provider, label: row.label, status: row.status, scopes: [...row.scopes], generation: row.generation, lastSyncAt: row.lastSyncAt, expiresAt: row.expiresAt, lastError: row.lastError, sampleOnly: true, providerRevocation: row.providerRevocation };
+  return { id: row.id, provider: row.provider, label: row.label, status: row.status, scopes: [...row.scopes], generation: row.generation, lastSyncAt: row.lastSyncAt, expiresAt: row.expiresAt, lastError: row.lastError, sampleOnly: row.sampleOnly, providerRevocation: row.providerRevocation };
 }
 export function resourceDTO(row: ResourceRecord): IntegrationResource {
-  return { id: row.id, connectionId: row.connectionId, externalId: row.externalId, title: row.title, mimeType: row.mimeType, version: row.version, selected: row.selected, canDownload: row.canDownload, rights: row.rights, availability: row.availability, excerpt: row.excerpt, metrics: row.metrics, observedAt: row.observedAt, fetchedAt: row.fetchedAt, coverage: row.coverage, sampleOnly: true };
+  return { id: row.id, connectionId: row.connectionId, externalId: row.externalId, title: row.title, mimeType: row.mimeType, version: row.version, selected: row.selected, canDownload: row.canDownload, rights: row.rights, availability: row.availability, excerpt: row.excerpt, metrics: row.metrics, observedAt: row.observedAt, fetchedAt: row.fetchedAt, coverage: row.coverage, sampleOnly: row.sampleOnly, ...(row.evidence ? {evidence:row.evidence} : {}) };
 }
 const refKey = (row: ConnectionRecord) => `${row.workspaceId}:${row.creatorId}:${row.provider}:${row.id}:${row.generation}`;
 const PROVIDER_TIMEOUT_MS = 30_000;
 
-/** All provider operations are injectable; this stage accepts mock providers only. */
+/** Protocol adapters can be rehearsed with fixture transports; D0 cannot accept network adapters. */
 export class IntegrationService {
   private refreshes = new Map<string, Promise<ProviderGrant>>();
   private controllers = new Map<string, Set<AbortController>>();
-  constructor(private repo: IntegrationRepository, private providers: Record<ProviderId, IntegrationProvider>, private vault: CredentialVault, private clock: () => Date = () => new Date()) {
-    if (Object.values(providers).some(provider => provider.mode !== "mock")) throw new IntegrationError("LIVE_PROVIDER_DISABLED", 503);
+  private lease: RepositoryRefreshLease | undefined;
+  constructor(private repo: IntegrationRepository, private providers: Record<ProviderId, IntegrationProvider>, private vault: CredentialStore, private clock: () => Date = () => new Date(), private options: {offlineAdapters?:boolean;refreshLease?:RepositoryRefreshLease} = {}) {
+    if (Object.values(providers).some(provider => provider.mode !== "mock" && !(options.offlineAdapters && provider.mode === "live_pilot" && provider.sampleOnly === true))) throw new IntegrationError("LIVE_PROVIDER_DISABLED", 503);
+    this.lease=options.refreshLease ?? (Object.values(providers).some(provider=>provider.mode==="live_pilot") ? new RepositoryRefreshLease(repo,crypto.randomUUID()) : undefined);
   }
   async list(actor: Actor) { return (await this.repo.list(actor)).map(connectionDTO); }
   private async owned(actor: Actor, id: string, generation?: number, active = true): Promise<ConnectionRecord> {
     const row = await this.repo.connection(actor, id);
     if (!row || row.creatorId !== actor.creatorId || row.workspaceId !== actor.workspaceId) throw new IntegrationError("NOT_FOUND", 404);
+    if (active && row.sampleOnly !== true) throw new IntegrationError("LIVE_PROVIDER_DISABLED",503);
     if ((generation !== undefined && row.generation !== generation) || (active && row.status === "revoked")) throw new IntegrationError("STALE_CONNECTION", 409);
     if (active && row.status === "reauth_required") throw new IntegrationError("REAUTH_REQUIRED", 403);
     return row;
   }
   async beginConnection(actor: Actor, provider: ProviderId, sessionBinding: string, returnPath: string): Promise<StartConnection> {
+    if (this.providers[provider].mode !== "mock") throw new IntegrationError("OAUTH_REQUIRED",409);
     const state = `${crypto.randomUUID()}${crypto.randomUUID()}`, expiresAt = new Date(this.clock().getTime() + 600000).toISOString();
     const existing = (await this.repo.list(actor)).find(row => row.provider === provider);
     await this.repo.command(actor, crypto.randomUUID(), "start", { stateHash: await digest(state), sessionHash: await digest(sessionBinding), provider, expiresAt, returnPath: validateReturnPath(returnPath), expectedGeneration: existing?.generation ?? 0 });
     return { state, expiresAt, provider, scopes: requiredScopes(provider), sampleOnly: true };
   }
   async completeConnection(actor: Actor, provider: ProviderId, sessionBinding: string, code: string, state: string): Promise<IntegrationConnection> {
+    if (this.providers[provider].mode !== "mock") throw new IntegrationError("OAUTH_REQUIRED",409);
     if (typeof state !== "string" || state.length > 200) throw new IntegrationError("OAUTH_STATE_INVALID", 403);
     const claimed = await this.repo.command(actor, crypto.randomUUID(), "consume_state", { stateHash: await digest(state), sessionHash: await digest(sessionBinding), provider });
     const grant = await this.providers[provider].authorize(code, actor, this.clock());
@@ -48,13 +55,26 @@ export class IntegrationService {
     const result = await this.repo.command(actor, crypto.randomUUID(), "connect", { connection, credential, expectedGeneration: claimed.expectedGeneration });
     return connectionDTO(result.connection as ConnectionRecord);
   }
+  /** Only a verified server OAuth exchange supplies this grant; HTTP bodies never do. */
+  async acceptAuthorizedGrant(actor:Actor,provider:ProviderId,grant:ProviderGrant,expectedGeneration:number):Promise<IntegrationConnection> {
+    if(!this.options.offlineAdapters||this.providers[provider].mode!=="live_pilot"||this.providers[provider].sampleOnly!==true)throw new IntegrationError("LIVE_PROVIDER_DISABLED",503);
+    if(!Number.isSafeInteger(expectedGeneration)||expectedGeneration<0||typeof grant.subject!=="string"||!grant.subject||grant.subject.length>255||!Array.isArray(grant.scopes)
+      ||grant.scopes.some(scope=>!requiredScopes(provider,"live_pilot").includes(scope))||!Number.isFinite(Date.parse(grant.expiresAt))||Date.parse(grant.expiresAt)<=this.clock().getTime())throw new IntegrationError("OAUTH_IDENTITY_INVALID",403);
+    const existing=(await this.repo.list(actor)).find(row=>row.provider===provider);
+    if(existing&&["pending","manual_action"].includes(existing.providerRevocation))throw new IntegrationError("REVOCATION_PENDING",409);
+    const connection:ConnectionRecord={...actor,id:existing?.id??crypto.randomUUID(),provider,subject:grant.subject,label:boundedText(grant.label,160),generation:expectedGeneration+1,
+      scopes:[...grant.scopes],status:hasScopes(provider,grant.scopes,"live_pilot")?"connected":"partial",expiresAt:grant.expiresAt,lastSyncAt:null,lastError:null,
+      sampleOnly:true,providerRevocation:"not_requested",consentVersion:"kocmax-integrations-offline-adapter-2026-10-31"};
+    const result=await this.repo.command(actor,crypto.randomUUID(),"connect",{connection,credential:await this.vault.seal(grant,refKey(connection)),expectedGeneration});
+    return connectionDTO(result.connection as ConnectionRecord);
+  }
   private async requireReauthentication(row: ConnectionRecord): Promise<never> {
     // The generation guard must win over a late failure from an older grant.
     await this.repo.command({ creatorId: row.creatorId, workspaceId: row.workspaceId }, crypto.randomUUID(), "reauth", { id: row.id, generation: row.generation });
     throw new IntegrationError("REAUTH_REQUIRED", 403);
   }
   private async grant(row: ConnectionRecord): Promise<ProviderGrant> {
-    if (!hasScopes(row.provider, row.scopes)) throw new IntegrationError("SCOPE_REQUIRED", 403);
+    if (!hasScopes(row.provider, row.scopes,this.providers[row.provider].mode)) throw new IntegrationError("SCOPE_REQUIRED", 403);
     const actor = { creatorId: row.creatorId, workspaceId: row.workspaceId };
     const { credential } = await this.repo.command(actor, crypto.randomUUID(), "credentials", { id: row.id, generation: row.generation });
     let grant: ProviderGrant;
@@ -64,6 +84,29 @@ export class IntegrationService {
     } catch { return this.requireReauthentication(row); }
     await this.owned(actor, row.id, row.generation);
     if (Date.parse(grant.expiresAt) > this.clock().getTime() + 30000) return grant;
+    if(this.lease) {
+      const lease=await this.lease.acquire(actor,row.id,row.generation,60);
+      if(lease.status==="busy")throw new IntegrationError("REFRESH_BUSY",409);
+      if(lease.status!=="acquired")throw new IntegrationError("REAUTH_REQUIRED",403);
+      try {
+        const current=await this.vault.open<ProviderGrant>(lease.credential,refKey(row));
+        let refreshed=current;
+        if(Date.parse(current.expiresAt)<=this.clock().getTime()+30000) {
+          let timer:ReturnType<typeof setTimeout>|undefined;
+          try { refreshed=await Promise.race([this.providers[row.provider].refresh(current,this.clock()),new Promise<never>((_,reject)=>{timer=setTimeout(()=>reject(new IntegrationError("REAUTH_REQUIRED",403)),PROVIDER_TIMEOUT_MS);})]); }
+          finally {clearTimeout(timer);}
+        }
+        if(refreshed.subject!==row.subject||refreshed.grantProject!==current.grantProject||!hasScopes(row.provider,refreshed.scopes,this.providers[row.provider].mode)
+          ||refreshed.scopes.some(scope=>!requiredScopes(row.provider,this.providers[row.provider].mode).includes(scope))||!(Date.parse(refreshed.expiresAt)>this.clock().getTime()))throw new IntegrationError("REAUTH_REQUIRED",403);
+        await this.owned(actor,row.id,row.generation);
+        await this.lease.commit(actor,row.id,row.generation,lease,await this.vault.seal(refreshed,refKey(row)),refreshed.expiresAt);
+        return refreshed;
+      } catch(error) {
+        await this.lease.abandon(actor,row.id,row.generation,lease).catch(()=>undefined);
+        if(error instanceof IntegrationError&&["STALE_CONNECTION","NOT_FOUND"].includes(error.code))throw error;
+        throw new IntegrationError("REAUTH_REQUIRED",403);
+      }
+    }
     const key = refKey(row);
     if (!this.refreshes.has(key)) this.refreshes.set(key, (async () => {
       let refreshed: ProviderGrant;
@@ -115,7 +158,7 @@ export class IntegrationService {
   async syncConnection(actor: Actor, id: string, requestId: string): Promise<{ status: "completed" | "partial"; resources: IntegrationResource[] }> {
     requireRequestId(requestId); const row = await this.owned(actor, id);
     if (row.provider !== "instagram") throw new IntegrationError("SELECT_FILES_FIRST");
-    if (!hasScopes(row.provider, row.scopes)) throw new IntegrationError("SCOPE_REQUIRED", 403);
+    if (!hasScopes(row.provider, row.scopes,this.providers[row.provider].mode)) throw new IntegrationError("SCOPE_REQUIRED", 403);
     const reservation = await this.repo.command(actor, requestId, "reserve_sync", { id, generation: row.generation });
     if (reservation.action === "replay") {
       const result = reservation.result as { status: "completed" | "partial"; resources: ResourceRecord[] };
@@ -131,7 +174,7 @@ export class IntegrationService {
       const partial = inWindow.length > 50 || inWindow.length !== snapshots.length || snapshots.some(value => value.coverage.partial);
       const resources: ResourceRecord[] = selected.map(snapshot => ({ ...actor, id: identities.find(value => value.externalId === snapshot.resourceId)?.id ?? crypto.randomUUID(), connectionId: id, externalId: snapshot.resourceId,
         title: snapshot.title, mimeType: "application/instagram-insights", version: snapshot.sourceVersion, selected: true, canDownload: true, rights: "owned", generation: row.generation,
-        contentHash: snapshot.contentHash, availability: "available", excerpt: snapshot.excerpt, metrics: snapshot.metrics, observedAt: snapshot.observedAt, fetchedAt: snapshot.fetchedAt, coverage: { ...snapshot.coverage, partial }, sizeBytes: 0, sampleOnly: true }));
+        contentHash: snapshot.contentHash, availability: "available", excerpt: snapshot.excerpt, metrics: snapshot.metrics, observedAt: snapshot.observedAt, fetchedAt: snapshot.fetchedAt, coverage: { ...snapshot.coverage, partial }, sizeBytes: 0, sampleOnly: true, ...(snapshot.evidence?{evidence:snapshot.evidence}:{}) }));
       await this.owned(actor, id, row.generation);
       const result = await this.repo.command(actor, crypto.randomUUID(), "resources", { id, generation: row.generation, resources, lastSyncAt: this.clock().toISOString() });
       const complete = { status: partial ? "partial" as const : "completed" as const, resources: result.resources as ResourceRecord[] };
@@ -149,16 +192,27 @@ export class IntegrationService {
     const files = await this.providers.google_drive.files(row, await this.grant(row)); await this.owned(actor, id, row.generation);
     return { sampleOnly: true as const, files: files.map(file => ({ id: file.externalId, title: file.title, mimeType: file.mimeType, rights: file.rights, canDownload: file.canDownload })) };
   }
+  /** Dedicated no-store channel only, never returned in normal connection DTOs or queries. */
+  async pickerAccessGrant(actor:Actor,id:string,generation:number){
+    const row=await this.owned(actor,id,generation);
+    if(!this.options.offlineAdapters||row.provider!=="google_drive"||this.providers.google_drive.mode!=="live_pilot")throw new IntegrationError("PILOT_APPROVAL_REQUIRED",503);
+    const grant=await this.grant(row);await this.owned(actor,id,generation);
+    return {accessToken:grant.accessToken,expiresAt:grant.expiresAt,scopes:[...grant.scopes]};
+  }
   async registerSelectedFiles(actor: Actor, id: string, fileIds: string[], requestId: string) {
     validateSelection(fileIds); requireRequestId(requestId); const row = await this.owned(actor, id);
     if (row.provider !== "google_drive") throw new IntegrationError("INVALID_PROVIDER");
     const grant = await this.grant(row), identities = await this.repo.resourceIdentities(actor, id, fileIds), resources: ResourceRecord[] = [];
-    for (const externalId of fileIds) {
-      const file = await this.providers.google_drive.file(row, grant, externalId), snapshot = await normalizeDriveFile(file, this.clock());
+    const provider = this.providers.google_drive;
+    const files = provider.selectedFiles ? await provider.selectedFiles(row,grant,[...fileIds]) : await Promise.all(fileIds.map(externalId=>provider.file(row,grant,externalId)));
+    if(files.length!==fileIds.length || new Set(files.map(file=>file.externalId)).size!==fileIds.length || files.some(file=>!fileIds.includes(file.externalId))) throw new IntegrationError("INVALID_SELECTION");
+    for (const file of files) {
+      const externalId=file.externalId, snapshot = await normalizeDriveFile(file, this.clock());
       resources.push({ ...actor, id: identities.find(value => value.externalId === externalId)?.id ?? crypto.randomUUID(), connectionId: id, externalId,
         title: file.title, mimeType: file.mimeType, version: file.version, selected: true, canDownload: file.canDownload, rights: file.rights, generation: row.generation,
         contentHash: snapshot.contentHash, availability: "available", excerpt: snapshot.excerpt, metrics: {}, observedAt: snapshot.observedAt, fetchedAt: snapshot.fetchedAt,
-        coverage: snapshot.coverage, sizeBytes: file.sizeBytes, sampleOnly: true });
+        coverage: snapshot.coverage, sizeBytes: file.sizeBytes, sampleOnly: true,
+        ...(provider.mode==="live_pilot"?{evidence:{apiVersion:"v3",endpoint:"drive/v3/files",measurementPeriod:"document_version"}}:{}) });
     }
     await this.owned(actor, id, row.generation);
     const result = await this.repo.command(actor, requestId, "resources", { id, generation: row.generation, resources, intent: { fileIds } });

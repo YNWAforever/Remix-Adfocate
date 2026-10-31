@@ -1,6 +1,8 @@
 import type { StudioSource } from "../../../src/lib/studio/types.js";
-import { IntegrationError, SYNC_COOLDOWN_MS } from "./policy.js";
+import { IntegrationError, SYNC_COOLDOWN_MS, validateReturnPath } from "./policy.js";
 import type { Actor, ConnectionRecord, IntegrationRecord, IntegrationRepository, ResourceRecord } from "./types.js";
+import type { OAuthCallbackBuffer, OAuthStateLookup } from "./repo.js";
+import type { EncryptedEnvelope } from "./credentials.js";
 
 type MemoryHooks = {
   importSources?: (actor: Actor, payload: IntegrationRecord, sources: StudioSource[]) => void;
@@ -10,6 +12,25 @@ type MemoryHooks = {
 const owner = (actor: Actor) => `${actor.workspaceId}:${actor.creatorId}`;
 const copy = <T>(value: T): T => structuredClone(value);
 const same = (row: Actor, actor: Actor) => owner(row) === owner(actor);
+type PilotBinding = Actor & { id: string; connectionId: string; generation: number; provider: string; grantKey: string; apiVersion: string; activated: boolean };
+type PilotOAuth = { secret: EncryptedEnvelope | null; ticketHash?: string; code?: EncryptedEnvelope | null; ticketExpiresAt?: number; completed?: boolean };
+const hashPattern = /^[a-f0-9]{64}$/;
+function envelope(value: unknown): value is EncryptedEnvelope {
+  if (!value || typeof value !== "object") return false;
+  const row = value as Record<string, unknown>;
+  return Object.keys(row).length === 3 && ["keyId", "iv", "ciphertext"].every(key => typeof row[key] === "string" && !!row[key]) && JSON.stringify(row).length <= 16384;
+}
+function safeEvidence(value: unknown): boolean {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+  const row = value as IntegrationRecord;
+  if (Object.keys(row).some(key => !["apiVersion", "endpoint", "measurementPeriod", "selectionPeriod", "permalink"].includes(key)) || ["apiVersion", "endpoint", "measurementPeriod"].some(key => typeof row[key] !== "string" || !String(row[key]).length || String(row[key]).length > 300)) return false;
+  if (row.permalink !== undefined && (typeof row.permalink !== "string" || row.permalink.length > 2000 || !row.permalink.startsWith("https://"))) return false;
+  if (row.selectionPeriod !== undefined) {
+    const period = row.selectionPeriod as IntegrationRecord;
+    if (!period || typeof period !== "object" || Object.keys(period).some(key => !["start", "end"].includes(key)) || ["start", "end"].some(key => typeof period[key] !== "string" || !Number.isFinite(Date.parse(String(period[key]))))) return false;
+  }
+  return true;
+}
 
 /** In-process repository for local examples/tests only; not used by the production entry. */
 export class MemoryIntegrationRepository implements IntegrationRepository {
@@ -23,6 +44,13 @@ export class MemoryIntegrationRepository implements IntegrationRepository {
   private runs = new Map<string, { fingerprint: string; connectionId: string; generation: number; result: IntegrationRecord | null }>();
   private sourceRows = new Map<string, { actor: Actor; source: StudioSource }>();
   private permits = new Map<string, { actor: Actor; sourceId: string; use: string; fingerprint: string; generation: number; expiresAt: number }>();
+  private pilotBindings = new Map<string, PilotBinding>();
+  private pilotGrants = new Map<string, "active" | "pending" | "manual_action" | "confirmed">();
+  private pilotOAuth = new Map<string, PilotOAuth>();
+  private credentialVersions = new Map<string, number>();
+  private refreshLeases = new Map<string, { leaseId: string; generation: number; credentialVersion: number; expiresAt: number }>();
+  private pilotQueue: Promise<unknown> = Promise.resolve();
+  private maintenanceLeases = new Map<string, { leaseId: string; expiresAt: number }>();
   constructor(private clock: () => Date = () => new Date(), private hooks: MemoryHooks = {}) {}
   async list(actor: Actor) { return copy([...this.connections.values()].filter(row => same(row, actor))); }
   async connection(actor: Actor, id: string) { const row = this.connections.get(id); return row && same(row, actor) ? copy(row) : null; }
@@ -51,7 +79,170 @@ export class MemoryIntegrationRepository implements IntegrationRepository {
     if (row.source.integration) { row.source.integration.model_allowed = false; row.source.integration.availability = "revoked"; }
     for (const [id, permit] of this.permits) if (same(permit.actor, actor) && permit.sourceId === sourceId) this.permits.delete(id);
   }
+  private exclusive<T>(run: () => Promise<T>): Promise<T> {
+    const task = this.pilotQueue.then(run);
+    this.pilotQueue = task.catch(() => undefined);
+    return task;
+  }
+  private currentBinding(row: ConnectionRecord) {
+    return [...this.pilotBindings.values()].find(b => b.connectionId === row.id && b.generation === (row.status === "revoked" ? row.generation - 1 : row.generation) && b.activated);
+  }
+  private pilotMetadata(binding?: PilotBinding) {
+    return { sampleOnly: !binding, mode: binding ? "live_pilot" : "mock", acquisitionMethod: binding ? "provider_api" : "mock", apiVersion: binding?.apiVersion ?? null, claimVerification: "unverified" };
+  }
+  async lookupOAuthState(stateHash: string, provider: string): Promise<OAuthStateLookup> {
+    const state = this.states.get(stateHash), secret = this.pilotOAuth.get(stateHash);
+    const current = [...this.connections.values()].find(row => state && same(row, state.actor) && row.provider === provider);
+    if (!state || !secret?.secret || secret.completed || state.used || state.provider !== provider || Date.parse(state.expiresAt) <= this.clock().getTime() || (current?.generation ?? 0) !== state.expectedGeneration) throw new IntegrationError("OAUTH_STATE_INVALID", 403);
+    return { actor: copy(state.actor), expectedGeneration: state.expectedGeneration, returnPath: state.returnPath, expiresAt: state.expiresAt };
+  }
+  async bufferOAuthCallback(input: OAuthCallbackBuffer): Promise<{ stored: true }> {
+    return this.exclusive(async () => {
+      await this.lookupOAuthState(input.stateHash, input.provider);
+      const state = this.states.get(input.stateHash)!, row = this.pilotOAuth.get(input.stateHash)!;
+      const expiry = Date.parse(input.expiresAt), now = this.clock().getTime();
+      if (!hashPattern.test(input.ticketHash) || !envelope(input.code) || !Number.isFinite(expiry) || expiry <= now || expiry > now + 300000 || [...this.pilotOAuth.values()].some(value => value.ticketHash === input.ticketHash)) throw new IntegrationError("OAUTH_STATE_INVALID", 403);
+      state.used = true; Object.assign(row, { ticketHash: input.ticketHash, code: copy(input.code), ticketExpiresAt: Math.min(expiry, Date.parse(state.expiresAt)) });
+      return { stored: true };
+    });
+  }
   async command(actor: Actor, requestId: string, action: string, p: IntegrationRecord): Promise<IntegrationRecord> {
+    return this.exclusive(() => this.pilotCommand(actor, requestId, action, p));
+  }
+  private async pilotCommand(actor: Actor, requestId: string, action: string, p: IntegrationRecord): Promise<IntegrationRecord> {
+    const now = this.clock().getTime();
+    if (action === "pilot_bind") {
+      const existing = [...this.connections.values()].find(row => same(row, actor) && row.provider === p.provider);
+      if ((existing?.generation ?? 0) + 1 !== p.generation || (existing && existing.id !== p.id)) throw new IntegrationError("STALE_CONNECTION", 409);
+      if (!["google_drive", "instagram"].includes(String(p.provider)) || !hashPattern.test(String(p.subjectHash)) || !/^https:\/\/[a-zA-Z0-9.-]+(:[0-9]+)?$/.test(String(p.origin)) || ["environmentId", "databaseProjectId", "providerProjectId", "apiVersion"].some(key => typeof p[key] !== "string" || !String(p[key]).length || String(p[key]).length > 160)) throw new IntegrationError("INVALID_INPUT");
+      const grantKey = JSON.stringify([p.provider, p.providerProjectId, p.subjectHash]);
+      if (["pending", "manual_action"].includes(this.pilotGrants.get(grantKey) ?? "")) throw new IntegrationError("REVOCATION_PENDING", 409);
+      if ([...this.pilotBindings.values()].some(b => b.connectionId === p.id && b.generation === p.generation)) throw new IntegrationError("IDEMPOTENCY_CONFLICT", 409);
+      const binding: PilotBinding = { ...actor, id: crypto.randomUUID(), connectionId: String(p.id), generation: Number(p.generation), provider: String(p.provider), grantKey, apiVersion: String(p.apiVersion), activated: false };
+      this.pilotBindings.set(binding.id, binding); if (!this.pilotGrants.has(grantKey)) this.pilotGrants.set(grantKey, "active");
+      return { bindingId: binding.id };
+    }
+    if (action === "oauth_start") {
+      const expiry = Date.parse(String(p.expiresAt));
+      const current = [...this.connections.values()].find(row => same(row, actor) && row.provider === p.provider);
+      if (!hashPattern.test(String(p.stateHash)) || !hashPattern.test(String(p.sessionHash)) || !envelope(p.secret) || !Number.isFinite(expiry) || expiry <= now || expiry > now + 600000 || typeof p.returnPath !== "string" || p.returnPath.length > 2048 || validateReturnPath(p.returnPath) !== p.returnPath || !["instagram", "google_drive"].includes(String(p.provider))) throw new IntegrationError("INVALID_INPUT");
+      if (p.expectedGeneration !== (current?.generation ?? 0)) throw new IntegrationError("STALE_CONNECTION", 409);
+      if (this.states.has(String(p.stateHash))) throw new IntegrationError("IDEMPOTENCY_CONFLICT", 409);
+      await this.commandStage4abc(actor, requestId, "start", p);
+      this.pilotOAuth.set(String(p.stateHash), { secret: copy(p.secret) }); return {};
+    }
+    if (action === "oauth_consume" || action === "oauth_complete") {
+      const pair = action === "oauth_complete" ? [...this.pilotOAuth].find(([, value]) => value.ticketHash === p.ticketHash) : [String(p.stateHash), this.pilotOAuth.get(String(p.stateHash))] as const;
+      const stateHash = pair?.[0], value = pair?.[1], state = stateHash ? this.states.get(stateHash) : undefined;
+      const current = [...this.connections.values()].find(row => same(row, actor) && row.provider === p.provider);
+      if (!stateHash || !value?.secret || value.completed || !state || !same(state.actor, actor) || state.provider !== p.provider || Date.parse(state.expiresAt) <= now || state.expectedGeneration !== (current?.generation ?? 0)
+        || (state.sessionHash !== p.sessionHash && !(action === "oauth_complete" && p.allowRelogin === true)) || (action === "oauth_complete" ? !value.code || (value.ticketExpiresAt ?? 0) <= now : state.used || !!value.ticketHash)) throw new IntegrationError("OAUTH_STATE_INVALID", 403);
+      const result = { stateHash, expectedGeneration: state.expectedGeneration, returnPath: state.returnPath, secret: copy(value.secret), ...(action === "oauth_complete" ? { code: copy(value.code) } : {}) };
+      state.used = true; value.secret = null; value.code = null; value.completed = true; return result;
+    }
+    if (["refresh_acquire", "refresh_commit", "refresh_abandon"].includes(action)) {
+      if (action !== "refresh_acquire" && (typeof p.leaseId !== "string" || !/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(p.leaseId)
+        || !Number.isInteger(p.credentialVersion) || Number(p.credentialVersion) < 1 || Number(p.credentialVersion) > 2147483647)) throw new IntegrationError("INVALID_INPUT");
+      const row = this.owned(actor, p.id, p.generation), lease = this.refreshLeases.get(row.id), version = this.credentialVersions.get(row.id) ?? 1;
+      const requireReauth = () => { row.status = "reauth_required"; row.lastError = "REAUTH_REQUIRED"; this.credentials.delete(row.id); this.refreshLeases.delete(row.id); return { status: "reauth_required" }; };
+      if (!this.credentials.has(row.id)) throw new IntegrationError("REAUTH_REQUIRED", 403);
+      if (action === "refresh_acquire") {
+        const seconds = p.leaseSeconds ?? 30;
+        if (!Number.isInteger(seconds) || Number(seconds) < 1 || Number(seconds) > 60 || typeof p.holderId !== "string" || !p.holderId.length || p.holderId.length > 160) throw new IntegrationError("INVALID_INPUT");
+        if (lease) return lease.expiresAt > now ? { status: "busy" } : requireReauth();
+        const next = { leaseId: crypto.randomUUID(), generation: row.generation, credentialVersion: version, expiresAt: now + Number(seconds) * 1000 };
+        this.refreshLeases.set(row.id, next);
+        return { status: "acquired", leaseId: next.leaseId, credentialVersion: version, credential: copy(this.credentials.get(row.id)), expiresAt: new Date(next.expiresAt).toISOString() };
+      }
+      if (!lease || lease.leaseId !== p.leaseId || lease.credentialVersion !== p.credentialVersion || lease.credentialVersion !== version || lease.generation !== row.generation || (action === "refresh_commit" && lease.expiresAt <= now)) throw new IntegrationError("REFRESH_LEASE_STALE", 409);
+      if (action === "refresh_abandon") return requireReauth();
+      if (!envelope(p.credential) || !Number.isFinite(Date.parse(String(p.expiresAt))) || Date.parse(String(p.expiresAt)) <= now) throw new IntegrationError("INVALID_INPUT");
+      this.credentials.set(row.id, copy(p.credential)); this.credentialVersions.set(row.id, version + 1); this.refreshLeases.delete(row.id); row.expiresAt = String(p.expiresAt);
+      return { credentialVersion: version + 1 };
+    }
+    if (action === "maintenance_acquire") {
+      const prior = this.maintenanceLeases.get(owner(actor));
+      if (prior && prior.expiresAt > now) return { status: "busy" };
+      const seconds = p.leaseSeconds ?? 30;
+      if (!Number.isInteger(seconds) || Number(seconds) < 1 || Number(seconds) > 60) throw new IntegrationError("INVALID_INPUT");
+      const next = { leaseId: crypto.randomUUID(), expiresAt: now + Number(seconds) * 1000 }; this.maintenanceLeases.set(owner(actor), next);
+      return { status: "acquired", leaseId: next.leaseId, expiresAt: new Date(next.expiresAt).toISOString() };
+    }
+    if (action === "maintenance") {
+      const count = p.batchSize ?? 50, dryRun = p.dryRun !== false, lease = this.maintenanceLeases.get(owner(actor));
+      if (!Number.isInteger(count) || Number(count) < 1 || Number(count) > 100) throw new IntegrationError("INVALID_INPUT");
+      if (!dryRun && (!lease || lease.leaseId !== p.leaseId || lease.expiresAt <= now)) throw new IntegrationError("MAINTENANCE_LEASE_REQUIRED", 409);
+      const candidates = [...this.resourceRows.values()].filter(row => same(row, actor) && ![...this.sourceRows.values()].some(s => s.source.integration?.resource_id === row.id) && (Date.parse(row.fetchedAt) <= now - 30 * 86400000 || (this.revokedAt.has(row.connectionId) && this.revokedAt.get(row.connectionId)! <= now - 86400000)));
+      const expiredCredentials = [...this.connections.values()].filter(row => same(row, actor) && row.status === "revoked" && row.providerRevocation === "pending" && (this.revokedAt.get(row.id) ?? now) <= now - 86400000 && this.credentials.has(row.id));
+      const expiredStates = [...this.states].filter(([, state]) => same(state.actor, actor) && Date.parse(state.expiresAt) <= now);
+      if (!dryRun) {
+        for (const row of candidates.slice(0, Number(count))) { this.resourceRows.delete(row.id); }
+        if (candidates.length) { for (const key of this.receipts.keys()) if (key.startsWith(`${owner(actor)}:`)) this.receipts.delete(key); for (const key of this.runs.keys()) if (key.startsWith(`${owner(actor)}:`)) this.runs.delete(key); }
+        for (const row of expiredCredentials.slice(0, Number(count))) { this.credentials.delete(row.id); row.providerRevocation = "manual_action"; const binding = this.currentBinding(row); if (binding) this.pilotGrants.set(binding.grantKey, "manual_action"); }
+        for (const [key] of expiredStates.slice(0, Number(count))) { this.states.delete(key); this.pilotOAuth.delete(key); }
+      }
+      const owned = [...this.connections.values()].filter(row => same(row, actor));
+      return { dryRun, counts: { snapshots: Math.min(candidates.length, Number(count)), credentials: Math.min(expiredCredentials.length, Number(count)), states: Math.min(expiredStates.length, Number(count)), permits: 0, events: 0 }, hasMore: Math.max(candidates.length, expiredCredentials.length, expiredStates.length) > Number(count), pendingRevocations: owned.filter(row => row.providerRevocation === "pending").length, manualAction: owned.filter(row => row.providerRevocation === "manual_action").length };
+    }
+    if (action === "connect") {
+      const data = p.connection as ConnectionRecord;
+      const prior = [...this.connections.values()].find(row => same(row, actor) && row.provider === data.provider), previous = prior && this.currentBinding(prior);
+      if (previous && ["pending", "manual_action"].includes(this.pilotGrants.get(previous.grantKey) ?? "")) throw new IntegrationError("REVOCATION_PENDING", 409);
+      const binding = this.pilotBindings.get(String(p.bindingId));
+      if (data.sampleOnly === false && (!binding || !same(binding, actor) || binding.connectionId !== data.id || binding.generation !== data.generation || binding.provider !== data.provider)) throw new IntegrationError("PILOT_BINDING_REQUIRED", 403);
+      if (binding && ["pending", "manual_action"].includes(this.pilotGrants.get(binding.grantKey) ?? "")) throw new IntegrationError("REVOCATION_PENDING", 409);
+      const result = await this.commandStage4abc(actor, requestId, action, { ...p, connection: { ...data, ...this.pilotMetadata(data.sampleOnly === false ? binding : undefined) } });
+      if (data.sampleOnly === false && binding) { binding.activated = true; this.pilotGrants.set(binding.grantKey, "active"); }
+      const id = (result.connection as ConnectionRecord).id; this.credentialVersions.set(id, 1); this.refreshLeases.delete(id); return result;
+    }
+    if (action === "resources") {
+      const row = this.owned(actor, p.id, p.generation), binding = this.currentBinding(row);
+      if (!Array.isArray(p.resources) || p.resources.some(value => (value as ResourceRecord).sampleOnly !== !binding)) throw new IntegrationError("PILOT_BINDING_REQUIRED", 403);
+      if (p.resources.some(value => value.evidence !== undefined && !safeEvidence(value.evidence))) throw new IntegrationError("INVALID_INPUT");
+      p = { ...p, resources: p.resources.map(value => ({ ...value, ...this.pilotMetadata(binding) })) };
+    }
+    if (action === "update_credentials") {
+      const row = this.owned(actor, p.id, p.generation);
+      if (this.currentBinding(row) || this.refreshLeases.has(row.id)) throw new IntegrationError("REFRESH_LEASE_REQUIRED", 409);
+    }
+    if (["revoke", "purge", "revoke_result"].includes(action)) {
+      // Legacy validation remains first, including malformed-generation handling.
+      if (action === "revoke_result" && (!Number.isInteger(p.generation) || Number(p.generation) < 1)) throw new IntegrationError("INVALID_INPUT");
+      const row = this.owned(actor, p.id, undefined, false), binding = this.currentBinding(row);
+      if (binding && row.provider === "google_drive") {
+        const receiptKey = `${owner(actor)}:${requestId}`, fingerprint = JSON.stringify({ action, p }), cached = this.receipts.get(receiptKey);
+        if (cached) {
+          if (cached.fingerprint !== fingerprint) throw new IntegrationError("IDEMPOTENCY_CONFLICT", 409);
+          if (action !== "purge" && (cached.result.connection as ConnectionRecord)?.generation !== row.generation) throw new IntegrationError("STALE_CONNECTION", 409);
+          return copy(cached.result);
+        }
+        if (action !== "purge") this.owned(actor, p.id, p.generation, false);
+        // Local cleanup of an old grant must leave subsequent peer grants and leases intact.
+        if (row.status === "revoked" && action !== "revoke_result") {
+          const result = await this.commandStage4abc(actor, requestId, action, p); this.invalidatePilotState(row); return result;
+        }
+        if (action === "revoke_result" && (row.status !== "revoked" || !["pending", "revoked", "manual_action"].includes(String(p.provider)))) throw new IntegrationError("STALE_CONNECTION", 409);
+        if (action === "revoke_result" && row.providerRevocation === "revoked") return { connection: copy(row) };
+        for (const peer of this.connections.values()) if (this.currentBinding(peer)?.grantKey === binding.grantKey) {
+          if (action === "revoke_result" && peer.status === "revoked") await this.commandStage4abc(peer, crypto.randomUUID(), action, { id: peer.id, generation: peer.generation, provider: p.provider });
+          else if (action !== "revoke_result" && peer.status !== "revoked") await this.commandStage4abc(peer, crypto.randomUUID(), "revoke", { id: peer.id, generation: peer.generation });
+          this.invalidatePilotState(peer);
+        }
+        this.pilotGrants.set(binding.grantKey, action === "revoke_result" ? (p.provider === "revoked" ? "confirmed" : p.provider === "pending" ? "pending" : "manual_action") : this.pilotGrants.get(binding.grantKey) === "confirmed" ? "confirmed" : "pending");
+        const result = action === "purge" ? await this.commandStage4abc(actor, requestId, action, { ...p, generation: row.generation }) : { connection: copy(row) };
+        this.receipts.set(receiptKey, { fingerprint, result: copy(result) }); return result;
+      }
+      const result = await this.commandStage4abc(actor, requestId, action, p); this.invalidatePilotState(row); return result;
+    }
+    return this.commandStage4abc(actor, requestId, action, p);
+  }
+  private invalidatePilotState(row: ConnectionRecord) {
+    this.refreshLeases.delete(row.id);
+    for (const [key, state] of this.states) if (same(state.actor, row) && state.provider === row.provider) {
+      state.used = true; const pilot = this.pilotOAuth.get(key); if (pilot) { pilot.secret = null; pilot.code = null; pilot.completed = true; }
+    }
+  }
+  private async commandStage4abc(actor: Actor, requestId: string, action: string, p: IntegrationRecord): Promise<IntegrationRecord> {
     const key = `${owner(actor)}:${requestId}`, fingerprint = JSON.stringify({ action, p: action === "resources" && p.intent ? { id: p.id, generation: p.generation, intent: p.intent } : p });
     if (["resources", "import", "credentials", "update_credentials", "reserve_sync", "finish_sync"].includes(action)) this.owned(actor, p.id, p.generation);
     if (action === "reauth") {
@@ -123,7 +314,8 @@ export class MemoryIntegrationRepository implements IntegrationRepository {
       const revokedSources: string[] = [];
       for (const value of values) {
         const previous = this.resourceRows.get(value.id);
-        const snapshotId = previous?.contentHash === value.contentHash && previous.version === value.version && previous.rights === value.rights && previous.generation === connection.generation ? previous.snapshotId : crypto.randomUUID();
+        const sameObservation = !value.evidence || (previous && Date.parse(previous.fetchedAt) === Date.parse(value.fetchedAt) && JSON.stringify(previous.evidence) === JSON.stringify(value.evidence));
+        const snapshotId = sameObservation && previous?.contentHash === value.contentHash && previous.version === value.version && previous.rights === value.rights && previous.generation === connection.generation ? previous.snapshotId : crypto.randomUUID();
         if (previous && same(previous, actor) && previous.rights !== value.rights) {
           for (const { source, actor: sourceActor } of this.sourceRows.values()) if (same(sourceActor, actor) && source.integration?.connection_id === connection.id && source.integration.resource_id === value.id && !source.revoked_at) {
             this.revokeSource(actor, source.id); revokedSources.push(source.id);
@@ -144,7 +336,7 @@ export class MemoryIntegrationRepository implements IntegrationRepository {
         const existing = [...this.sourceRows.values()].find(row => same(row.actor, actor) && !row.source.revoked_at && row.source.thread_id === p.threadId && row.source.integration?.snapshot_id === resource.snapshotId);
         if (existing) return copy(existing.source);
         const source: StudioSource = { id: crypto.randomUUID(), thread_id: String(p.threadId), title: resource.title, content: p.processingRights === true ? [...(resource.excerpt ?? "資料不足／未驗證")].slice(0, 8000).join("") : "僅保留來源資料及權限提示；未確認內容處理權利。", url: null, kind: "private", shareable: p.processingRights === true && p.shareRights === true && resource.rights !== "unknown", question: String(p.question), platform: connection.provider === "instagram" ? "Instagram（模擬）" : "Google Drive（模擬）", region: resource.coverage.region, language: resource.coverage.language, observed_at: resource.observedAt, revoked_at: null, status: "unverified",
-          integration: { connection_id: connection.id, snapshot_id: resource.snapshotId!, resource_id: resource.id, generation: connection.generation, source_version: resource.version, content_hash: resource.contentHash, model_allowed: p.modelConsent === true && p.processingRights === true && resource.rights !== "unknown", provenance: connection.provider, availability: resource.availability, sample_only: true, coverage: copy(resource.coverage) } };
+          integration: { connection_id: connection.id, snapshot_id: resource.snapshotId!, resource_id: resource.id, generation: connection.generation, source_version: resource.version, content_hash: resource.contentHash, model_allowed: p.modelConsent === true && p.processingRights === true && resource.rights !== "unknown", provenance: connection.provider, availability: resource.availability, sample_only: resource.sampleOnly, coverage: copy(resource.coverage), ...(resource.evidence ? { evidence: copy(resource.evidence) } : {}) } };
         return source;
       });
       this.hooks.importSources?.(actor, p, sources);

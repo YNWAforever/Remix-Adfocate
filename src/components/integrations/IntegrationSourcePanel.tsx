@@ -1,8 +1,8 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { useStudioText } from "@/components/studio/StudioPrimitives";
-import { canReadConnection, useConnections, useIntegrationCommand, useIntegrationResources } from "@/lib/integrations/queries";
+import { canReadConnection, useConnections, useIntegrationCommand, useIntegrationIdentity, useIntegrationResources } from "@/lib/integrations/queries";
 import type { Availability, IntegrationResource } from "@/lib/integrations/types";
-import { IntegrationError, MockBadge } from "./ConnectionConsent";
+import { D0Notice, IntegrationError, IntegrationModeBadge } from "./ConnectionConsent";
 import { DriveSourcePicker } from "./DriveSourcePicker";
 import "./integrations.css";
 
@@ -17,6 +17,13 @@ function ResourceDetails({ resource }: { resource: IntegrationResource }) {
   return <details className="i-details"><summary>{tx("來源、摘錄與權限", "Source, excerpt & rights")}</summary>
     <dl className="i-facts">
       <div><dt>{tx("來源版本", "Source version")}</dt><dd>{resource.version}</dd></div>
+      <div><dt>{tx("文件／媒體參照", "File / media reference")}</dt><dd>{resource.externalId}</dd></div>
+      {resource.evidence && <>
+        <div><dt>{tx("API 版本", "API version")}</dt><dd>{resource.evidence.apiVersion}</dd></div>
+        <div><dt>{tx("取得方法", "Acquisition endpoint")}</dt><dd>{resource.evidence.endpoint}</dd></div>
+        <div><dt>{tx("指標期間", "Measurement period")}</dt><dd>{resource.evidence.measurementPeriod}</dd></div>
+        {resource.evidence.selectionPeriod && <div><dt>{tx("媒體挑選期間", "Media selection period")}</dt><dd>{resource.evidence.selectionPeriod.start} — {resource.evidence.selectionPeriod.end}</dd></div>}
+      </>}
       <div><dt>{tx("資料狀態", "Availability")}</dt><dd>{availability(resource.availability)}</dd></div>
       <div><dt>{tx("觀察時間", "Observed")}</dt><dd><time dateTime={resource.observedAt}>{resource.observedAt}</time></dd></div>
       <div><dt>{tx("擷取時間", "Fetched")}</dt><dd><time dateTime={resource.fetchedAt}>{resource.fetchedAt}</time></dd></div>
@@ -25,6 +32,7 @@ function ResourceDetails({ resource }: { resource: IntegrationResource }) {
       <div><dt>{tx("權利", "Rights")}</dt><dd>{resource.rights === "owned" ? tx("本人擁有", "Owned") : resource.rights === "licensed" ? tx("已獲授權", "Licensed") : tx("轉分享權未知", "Sharing rights unknown")}</dd></div>
     </dl>
     <p className="i-note">{resource.coverage.partial ? tx("部分資料 · 結論未驗證", "Partial coverage · conclusions unverified") : tx("結論未驗證；來源出處不代表任務已核實。", "Conclusions unverified; provenance does not verify mission completion.")}</p>
+    {resource.evidence && <small>{tx("媒體挑選期間與指標統計期間不同。lifetime 不是近 30 日新增表現；觸及人數不能相加當作去重受眾。", "Media selection and metric measurement periods differ. Lifetime is not the last 30 days' incremental performance; reach cannot be summed as a deduplicated audience.")}</small>}
     {Object.keys(resource.metrics).length > 0 && <dl className="i-metrics">{Object.entries(resource.metrics).map(([name, metric]) => <div key={name}><dt>{metricNames[name] ?? name}</dt><dd>{metric.value === null ? "—" : metric.value}<small>{availability(metric.availability)}{metric.reason ? ` · ${metric.reason}` : ""}</small></dd></div>)}</dl>}
     {resource.excerpt && resource.availability === "available" && <blockquote className="i-excerpt">{resource.excerpt}</blockquote>}
     <small>{tx("模擬私人資料，不是香港或繁中市場的實測證據。", "Mock private data, not measured evidence of a Hong Kong or Traditional Chinese market.")}</small>
@@ -33,7 +41,8 @@ function ResourceDetails({ resource }: { resource: IntegrationResource }) {
 
 export function IntegrationSourcePanel(props: Props) {
   // Thread changes never carry source selection, questions or rights into another thread.
-  return <SourceForm key={props.threadId} {...props} />;
+  const identity = useIntegrationIdentity();
+  return <SourceForm key={`${identity}:${props.threadId}`} {...props} />;
 }
 
 function SourceForm({ threadId, revision, onImported }: Props) {
@@ -65,13 +74,15 @@ function SourceForm({ threadId, revision, onImported }: Props) {
   const consent = rights.scope === consentScope ? rights : { modelConsent: false, processingRights: false, shareRights: false };
   const shareAllowed = selected.length > 0 && selected.every(item => item.rights === "owned" || item.rights === "licensed");
   const [picker, setPicker] = useState(false), [notice, setNotice] = useState("");
+  useEffect(() => { if (!ready) setPicker(false); }, [ready]);
   const alive = useRef(true);
   useEffect(() => { alive.current = true; return () => { alive.current = false; }; }, []);
   const id = useId();
   const valid = ready && !resourcesQuery.isError && !resourcesQuery.isFetching && !command.isPending && selected.length > 0 && selected.length <= 5 && question.trim().length > 0 && question.length <= 500 && (!consent.modelConsent || consent.processingRights);
   const setRight = (key: "modelConsent" | "processingRights" | "shareRights", value: boolean) => setRights({ ...consent, scope: consentScope, [key]: value });
   return <section className="integration-ui i-source-panel" aria-labelledby={`${id}-heading`}>
-    <div className="i-row"><span aria-hidden className="i-provider-icon">🌱</span><MockBadge /></div>
+    <div className="i-row"><span aria-hidden className="i-provider-icon">🌱</span><IntegrationModeBadge mode={query.data?.mode} /></div>
+    {(query.data?.pilot?.stage === "D0" || query.data?.mode === "live_pilot") && <D0Notice />}
     <div><h3 id={`${id}-heading`}>{tx("把來源放進這個討論", "Bring sources into this discussion")}</h3><p>{tx("挑選、看清權利，再決定用途。來源預設只屬於你。", "Choose sources, review their rights, then decide their use. Sources are private by default.")}</p></div>
     {query.isPending && <p role="status">{tx("正在查看模擬連接…", "Checking mock connections…")}</p>}
     {query.isError && <IntegrationError error={query.error} onRetry={() => void query.refetch()} />}
@@ -120,6 +131,6 @@ function SourceForm({ threadId, revision, onImported }: Props) {
         setNotice(tx("模擬來源已私下加入本討論，尚未分享。", "Mock sources added privately to this discussion; nothing has been shared.")); onImported();
       } });
     }}>{command.isPending ? tx("正在私人匯入…", "Importing privately…") : tx("私人匯入模擬來源", "Import mock sources privately")}</button>
-    {picker && connection && <DriveSourcePicker key={`${connection.id}:${connection.generation}`} connection={connection} onCancel={() => setPicker(false)} onSelected={() => setPicker(false)} />}
+    {picker && connection && ready && <DriveSourcePicker key={`${connection.id}:${connection.generation}`} connection={connection} onCancel={() => setPicker(false)} onSelected={() => setPicker(false)} />}
   </section>;
 }

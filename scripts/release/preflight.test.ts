@@ -98,6 +98,20 @@ const INTEGRATION_CAPABILITIES = [
   ...["authenticated", "anon", "public"].map(role => `grant-removed:${role}.public.integration_command(uuid,uuid,uuid,text,jsonb)`),
 ];
 
+// D0 additions are counted independently; none replaces an earlier release contract.
+const PILOT_CAPABILITIES = [
+  ...["integration_pilot_grants", "integration_pilot_bindings", "integration_pilot_oauth", "integration_refresh_leases", "integration_pilot_evidence", "integration_pilot_tombstones", "integration_pilot_maintenance", "integration_pilot_notices"].flatMap(table => [`table:private.${table}`, `rls:private.${table}`]),
+  "column:private.integration_credentials.credential_version", "column:private.integration_pilot_bindings.notice_invalidated_at",
+  "constraint:private.integration_oauth_states.integration_oauth_states_return_path_check",
+  ...["integration_pilot_return_path", "integration_pilot_metadata", "integration_pilot_provenance", "integration_pilot_tombstone", "integration_command_stage4abc", "integration_pilot_restore_candidates", "integration_pilot_maintenance_command", "integration_notice_binding_guard"].map(name => `function:private.${name}`),
+  ...[["integration_connections", "integration_pilot_connection_provenance"], ["integration_resources", "integration_pilot_resource_provenance"], ["integration_snapshots", "integration_pilot_snapshot_provenance"], ["studio_sources", "integration_pilot_source_provenance"], ["integration_connections", "integration_pilot_tombstone"], ["creators", "integration_pilot_account_tombstone"]].map(([table, name]) => `trigger:public.${table}.${name}`),
+  "trigger:private.integration_pilot_bindings.integration_notice_binding_guard",
+  ...[["integration_oauth_lookup", "text,text"], ["integration_oauth_callback", "text,text,text,jsonb,timestamptz"], ["integration_provider_notice", "text,text,text,text"]].flatMap(([name, signature]) => [
+    `function:public.${name}`, `grant:service_role.public.${name}(${signature})`,
+    ...["authenticated", "anon", "public"].map(role => `grant-removed:${role}.public.${name}(${signature})`),
+  ]),
+];
+
 describe("release preflight", () => {
   it("does not claim a removed grant is safe from dump text alone", async () => {
     async function check(schema: string) {
@@ -138,10 +152,13 @@ describe("release preflight", () => {
     expect(capabilities).toEqual(expect.arrayContaining(REMEDIATION_CAPABILITIES));
     expect(capabilities).toEqual(expect.arrayContaining(STUDIO_CAPABILITIES));
     expect(capabilities).toEqual(expect.arrayContaining(INTEGRATION_CAPABILITIES));
+    expect(capabilities).toEqual(expect.arrayContaining(PILOT_CAPABILITIES));
+    expect(PILOT_CAPABILITIES).toHaveLength(49);
+    expect(new Set(PILOT_CAPABILITIES).size).toBe(49);
     expect(STUDIO_CAPABILITIES).toHaveLength(56);
     expect(INTEGRATION_CAPABILITIES).toHaveLength(69);
     expect(new Set(INTEGRATION_CAPABILITIES).size).toBe(69);
-    expect(capabilities.filter((capability) => ![...REMEDIATION_CAPABILITIES, ...STUDIO_CAPABILITIES, ...INTEGRATION_CAPABILITIES].includes(capability))).toHaveLength(620);
+    expect(capabilities.filter((capability) => ![...REMEDIATION_CAPABILITIES, ...STUDIO_CAPABILITIES, ...INTEGRATION_CAPABILITIES, ...PILOT_CAPABILITIES].includes(capability))).toHaveLength(620);
     const claimDenials = ["authenticated", "anon", "public"].map(role => `grant-removed:${role}.public.claim_assistant_request(uuid,uuid,uuid)`);
     expect(capabilities).toEqual(expect.arrayContaining(claimDenials));
     const reviewValidityCapabilities = [
@@ -184,9 +201,17 @@ describe("release preflight", () => {
       "grant-removed:public.public.get_legacy_correction_evidence(uuid,uuid)",
     ];
     expect(capabilities).toEqual(expect.arrayContaining(repairCapabilities));
-    expect(capabilities.filter((capability) => ![...repairCapabilities, ...reviewValidityCapabilities, ...claimDenials, ...REMEDIATION_CAPABILITIES, ...STUDIO_CAPABILITIES, ...INTEGRATION_CAPABILITIES].includes(capability))).toHaveLength(598);
-    expect(capabilities.filter((capability) => ![...applicationCapabilities, ...redemptionCapabilities, ...repairCapabilities, ...reviewValidityCapabilities, ...claimDenials, ...REMEDIATION_CAPABILITIES, ...STUDIO_CAPABILITIES, ...INTEGRATION_CAPABILITIES].includes(capability))).toHaveLength(587);
+    expect(capabilities.filter((capability) => ![...repairCapabilities, ...reviewValidityCapabilities, ...claimDenials, ...REMEDIATION_CAPABILITIES, ...STUDIO_CAPABILITIES, ...INTEGRATION_CAPABILITIES, ...PILOT_CAPABILITIES].includes(capability))).toHaveLength(598);
+    expect(capabilities.filter((capability) => ![...applicationCapabilities, ...redemptionCapabilities, ...repairCapabilities, ...reviewValidityCapabilities, ...claimDenials, ...REMEDIATION_CAPABILITIES, ...STUDIO_CAPABILITIES, ...INTEGRATION_CAPABILITIES, ...PILOT_CAPABILITIES].includes(capability))).toHaveLength(587);
     expect(capabilities.filter((capability) => !hasCapabilityValidator(capability))).toEqual([]);
+  });
+
+  it("pins every D0 capability independently of the unchanged 4A-C catalogue",()=>{
+    const manifest=JSON.parse(readFileSync("supabase/release-manifest.json","utf8")) as {migrations:Array<{version:string;capabilities:string[]}>};
+    const pilot=manifest.migrations.find(m=>m.version==="20261031123000");
+    expect(pilot?.capabilities.slice().sort()).toEqual(PILOT_CAPABILITIES.slice().sort());
+    const previous=new Set(manifest.migrations.filter(m=>m.version!=="20261031123000").flatMap(m=>m.capabilities));
+    expect(PILOT_CAPABILITIES.filter(capability=>previous.has(capability))).toEqual([]);
   });
 
   it("pins the integration migration catalogue and keeps its command RPCs unavailable to browser roles", () => {

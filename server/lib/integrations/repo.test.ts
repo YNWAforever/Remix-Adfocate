@@ -24,3 +24,24 @@ it("maps reauthentication failures without leaking a database diagnostic", () =>
   expect(() => databaseFailure({ message: "REAUTH_REQUIRED" })).toThrow(expect.objectContaining({ code: "REAUTH_REQUIRED", status: 403 }));
   expect(() => databaseFailure({ message: "secret database detail" })).toThrow(expect.objectContaining({ code: "INTEGRATIONS_UNAVAILABLE", status: 503 }));
 });
+
+it("uses service-only callback RPCs without an actor supplied by callback input", async () => {
+  const rpc = vi.fn().mockResolvedValue({ data: { stored: true }, error: null });
+  const repo = new SupabaseIntegrationRepository({ rpc } as unknown as Pick<SupabaseClient, "from" | "rpc">);
+  const input = { stateHash: "a".repeat(64), provider: "google_drive", ticketHash: "b".repeat(64), code: { keyId: "fixture", iv: "fixture", ciphertext: "ENCRYPTED" }, expiresAt: "2099-01-01T00:00:00Z" };
+  await repo.lookupOAuthState(input.stateHash, input.provider);
+  await repo.bufferOAuthCallback(input);
+  expect(rpc.mock.calls).toEqual([
+    ["integration_oauth_lookup", { p_state_hash: input.stateHash, p_provider: input.provider }],
+    ["integration_oauth_callback", { p_state_hash: input.stateHash, p_provider: input.provider, p_ticket_hash: input.ticketHash, p_code: input.code, p_expires_at: input.expiresAt }],
+  ]);
+  expect(() => databaseFailure({ message: "REFRESH_LEASE_STALE" })).toThrow(expect.objectContaining({ code: "REFRESH_LEASE_STALE", status: 409 }));
+});
+
+it("passes only the verified notice mapping and receipt to the atomic RPC", async () => {
+  const rpc = vi.fn().mockResolvedValue({ data: { confirmationCode: "a".repeat(32), status: "completed" }, error: null });
+  const repo = new SupabaseIntegrationRepository({ rpc } as unknown as Pick<SupabaseClient, "from" | "rpc">);
+  const input = { providerProjectId: "fixture-app", subjectHash: "b".repeat(64), receiptHash: "c".repeat(64), kind: "deletion" as const };
+  expect(await repo.applyProviderNotice(input)).toEqual({ confirmationCode: "a".repeat(32), status: "completed" });
+  expect(rpc).toHaveBeenCalledWith("integration_provider_notice", { p_provider_project_id: input.providerProjectId, p_subject_hash: input.subjectHash, p_receipt_hash: input.receiptHash, p_kind: input.kind });
+});

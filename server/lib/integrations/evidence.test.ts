@@ -49,6 +49,13 @@ describe("provider source permission and evidence lineage",()=>{
     const source=await imported(true,true);const caption=buildSharedCaption([{id:"one",text:"拍攝方向",sourceIds:[source.id]}],[source],["one"]);
     expect(caption).toContain("模擬");expect(caption).toContain("地區／語言未驗證");expect(caption).not.toContain("HK / 繁中");
   });
+  it("keeps provider origin distinct from sample data and task verification",async()=>{
+    const source=await imported(true,true);
+    source.integration={...source.integration!,sample_only:false,evidence:{apiVersion:"v26.0",endpoint:"media/insights",measurementPeriod:"lifetime"}};
+    const caption=buildSharedCaption([{id:"one",text:"拍攝方向",sourceIds:[source.id]}],[source],["one"]);
+    expect(caption).not.toContain("模擬資料");expect(caption).toContain("平台來源");
+    expect(caption).toContain("v26.0");expect(caption).toContain("lifetime");expect(caption).toContain("未驗證");
+  });
   it("revokes saved source use and purge clears private cached derivatives",async()=>{
     const source=await imported(true,true);await service.revokeConnection(actor,connectionId,crypto.randomUUID());
     await expect(service.authorizeSources(actor,[source.id],"model")).rejects.toThrow("SOURCE_UNAVAILABLE");

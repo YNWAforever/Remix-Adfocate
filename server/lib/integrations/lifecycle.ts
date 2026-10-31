@@ -2,14 +2,14 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { fetchAllPages } from "../queryPaging.js";
 import { IntegrationError } from "./policy.js";
 import { SupabaseIntegrationRepository } from "./repo.js";
-import type { Actor } from "./types.js";
+import type { Actor, IntegrationRepository } from "./types.js";
 import { connectionDTO } from "./service.js";
 import type { ConnectionRecord } from "./types.js";
 
 const TABLES = ["integration_connections", "integration_resources", "integration_snapshots", "integration_sync_runs", "integration_events"];
 function scrubCredentials(value: unknown): unknown {
   if (Array.isArray(value)) return value.map(scrubCredentials);
-  if (value && typeof value === "object") return Object.fromEntries(Object.entries(value).filter(([key]) => !/^(access_?token|refresh_?token|ciphertext|credential|credentials|stateHash|sessionHash|authorization)$/i.test(key)).map(([key, item]) => [key, scrubCredentials(item)]));
+  if (value && typeof value === "object") return Object.fromEntries(Object.entries(value).filter(([key]) => !/^(access_?token|refresh_?token|ciphertext|credential|credentials|state_?hash|session_?hash|ticket_?hash|code_?verifier|nonce|secret|code|authorization|subject_?hash|provider_?project_?id|grant_?key)$/i.test(key)).map(([key, item]) => [key, scrubCredentials(item)]));
   return value;
 }
 const missingTable = (error: unknown) => error && typeof error === "object" && "code" in error && ["42P01", "PGRST205"].includes(String(error.code));
@@ -38,4 +38,18 @@ export async function stopAccountIntegrations(client: Pick<SupabaseClient, "from
   if (result.error) { if (!enabled && missingTable(result.error)) return; throw new IntegrationError("DELETION_INCOMPLETE", 503); }
   const repo = new SupabaseIntegrationRepository(client);
   for (const row of result.data ?? []) if (row.status !== "revoked") await repo.command(actor, crypto.randomUUID(), "revoke", { id: row.id, generation: row.generation });
+}
+
+export type MaintenanceCounts = { snapshots: number; credentials: number; states: number; permits: number; events: number };
+export type MaintenanceResult = { dryRun: boolean; counts: MaintenanceCounts; hasMore: boolean; pendingRevocations: number; manualAction: number };
+/** No remote clients or provider operations are created here. SQL owns wall-clock and batching. */
+export async function inspectIntegrationMaintenance(repo: IntegrationRepository, actor: Actor, batchSize = 50): Promise<MaintenanceResult> {
+  return await repo.command(actor, crypto.randomUUID(), "maintenance", { dryRun: true, batchSize }) as MaintenanceResult;
+}
+export async function runIntegrationMaintenanceBatch(repo: IntegrationRepository, actor: Actor, leaseId: string, batchSize = 50): Promise<MaintenanceResult> {
+  return await repo.command(actor, crypto.randomUUID(), "maintenance", { dryRun: false, leaseId, batchSize }) as MaintenanceResult;
+}
+/** An offline-callable algorithm; D1 must quarantine the restored target before invoking. */
+export async function replayIntegrationTombstones(repo: IntegrationRepository, actor: Actor, batchSize = 50): Promise<{ replayed: number; complete: boolean }> {
+  return await repo.command(actor, crypto.randomUUID(), "restore_replay", { batchSize }) as { replayed: number; complete: boolean };
 }

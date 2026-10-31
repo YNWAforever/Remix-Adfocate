@@ -12,6 +12,10 @@ describe("integration policy", () => {
     expect(requiredScopes("instagram")).toEqual(["instagram_business_basic","instagram_business_manage_insights"]);
     expect(requiredScopes("google_drive")).toEqual(["https://www.googleapis.com/auth/drive.file"]);
   });
+  it("keeps the live pilot identity scope separate from mock consent", () => {
+    expect(requiredScopes("google_drive","live_pilot")).toEqual(["https://www.googleapis.com/auth/drive.file","openid"]);
+    expect(requiredScopes("google_drive")).not.toContain("openid");
+  });
   it("blocks external return URLs and preserves only safe studio routes", () => {
     for (const path of ["//evil.test", "https://evil.test", "/\\evil.test", "/connections%2f%2fevil", "/admin"]) expect(validateReturnPath(path)).toBe("/connections");
     expect(validateReturnPath("/studio?thread=abc")).toBe("/studio?thread=abc");

@@ -27,6 +27,7 @@ import { campaignRoutes } from "./routes/campaigns.js";
 import { activeMissionRoutes } from "./routes/activeMissions.js";
 import { studioRoutes } from "./routes/studio.js";
 import { integrationRoutes } from "./routes/integrations.js";
+import { integrationOAuthCallbacks, integrationOAuthRoutes } from "./routes/integrationOAuth.js";
 
 export type Env = {
   Variables: { userId: string; workspaceId: string; jwt: string };
@@ -52,6 +53,8 @@ export function createApp() {
   app.route("/brand", brandRoutes);
   app.route("/public", publicRoutes);
   app.route("/cron", cronRoutes);
+  // D0: these surfaces remain inactive; no real coordinator/client is constructed.
+  app.route("/integration-oauth", integrationOAuthCallbacks());
 
   const guarded = new Hono<Env>();
   guarded.use("*", workspaceAuth);
@@ -59,6 +62,7 @@ export function createApp() {
   guarded.route("/me/profile-media", profileMediaRoutes);
   guarded.route("/me/consents", consentRoutes);
   guarded.route("/me/integrations", integrationRoutes());
+  guarded.route("/me/integration-oauth", integrationOAuthRoutes());
   guarded.route("/me", accountRoutes);
   guarded.route("/onboarding", onboardingRoutes);
   guarded.route("/wallet", walletRoutes);

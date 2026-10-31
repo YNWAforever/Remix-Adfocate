@@ -1,10 +1,16 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { IntegrationError } from "./policy.js";
 import type { Actor, ConnectionRecord, IntegrationRecord, IntegrationRepository, ResourceRecord } from "./types.js";
+import type { EncryptedEnvelope } from "./credentials.js";
+
+export type OAuthStateLookup = { actor: Actor; expectedGeneration: number; returnPath: string; expiresAt: string };
+export type OAuthCallbackBuffer = { stateHash: string; provider: string; ticketHash: string; code: EncryptedEnvelope; expiresAt: string };
+export type ProviderNoticeInput = { providerProjectId: string; subjectHash: string; receiptHash: string; kind: "deauthorization" | "deletion" };
+export type ProviderNoticeResult = { confirmationCode: string; status: "pending" | "completed" };
 
 const statusFor = (code: string) => /NOT_FOUND/.test(code) ? 404 : /RATE_LIMITED/.test(code) ? 429 : /STALE|CHANGED|CONFLICT|PENDING/.test(code) ? 409 : /PRIVATE|UNAVAILABLE|CONSENT|SCOPE|PERMISSION|OAUTH_STATE|REAUTH_REQUIRED/.test(code) ? 403 : 400;
 export function databaseFailure(error: {message?: string}): never {
-  const code = error.message?.match(/^(NOT_FOUND|INVALID_INPUT|INVALID_SELECTION|INVALID_ACTION|INTEGRATIONS_DISABLED|OAUTH_STATE_INVALID|REAUTH_REQUIRED|STALE_CONNECTION|SCOPE_REQUIRED|SOURCE_UNAVAILABLE|SOURCE_PRIVATE|SOURCE_CHANGED|SOURCE_PERMISSION_REQUIRED|MODEL_CONSENT_REQUIRED|WORKFLOW_STALE|IDEMPOTENCY_CONFLICT|RATE_LIMITED|SYNC_PENDING|ACCOUNT_CHANGE_REQUIRES_REVOCATION|SOURCE_LIMIT)$/)?.[0];
+  const code = error.message?.match(/^(NOT_FOUND|INVALID_INPUT|INVALID_SELECTION|INVALID_ACTION|INTEGRATIONS_DISABLED|OAUTH_STATE_INVALID|REAUTH_REQUIRED|STALE_CONNECTION|SCOPE_REQUIRED|SOURCE_UNAVAILABLE|SOURCE_PRIVATE|SOURCE_CHANGED|SOURCE_PERMISSION_REQUIRED|MODEL_CONSENT_REQUIRED|WORKFLOW_STALE|IDEMPOTENCY_CONFLICT|RATE_LIMITED|SYNC_PENDING|ACCOUNT_CHANGE_REQUIRES_REVOCATION|SOURCE_LIMIT|PILOT_BINDING_REQUIRED|REFRESH_LEASE_STALE|REFRESH_LEASE_REQUIRED|REVOCATION_PENDING|RESTORE_PENDING|MAINTENANCE_LEASE_REQUIRED)$/)?.[0];
   throw new IntegrationError(code ?? "INTEGRATIONS_UNAVAILABLE", code ? statusFor(code) : 503);
 }
 export class SupabaseIntegrationRepository implements IntegrationRepository {
@@ -44,5 +50,22 @@ export class SupabaseIntegrationRepository implements IntegrationRepository {
     const result = await this.client.rpc("integration_command", { p_workspace: actor.workspaceId, p_creator: actor.creatorId, p_request: requestId, p_action: action, p_payload: payload });
     if (result.error) databaseFailure(result.error);
     return result.data as IntegrationRecord;
+  }
+  /** Service-only lookup: never expose this result from the public callback route. */
+  async lookupOAuthState(stateHash: string, provider: string): Promise<OAuthStateLookup> {
+    const result = await this.client.rpc("integration_oauth_lookup", { p_state_hash: stateHash, p_provider: provider });
+    if (result.error) databaseFailure(result.error);
+    return result.data as OAuthStateLookup;
+  }
+  async bufferOAuthCallback(input: OAuthCallbackBuffer): Promise<{ stored: true }> {
+    const result = await this.client.rpc("integration_oauth_callback", { p_state_hash: input.stateHash, p_provider: input.provider, p_ticket_hash: input.ticketHash, p_code: input.code, p_expires_at: input.expiresAt });
+    if (result.error) databaseFailure(result.error);
+    return result.data as { stored: true };
+  }
+  /** Call only after signature verification and explicit product-specific identity mapping. */
+  async applyProviderNotice(input: ProviderNoticeInput): Promise<ProviderNoticeResult> {
+    const result = await this.client.rpc("integration_provider_notice", { p_provider_project_id: input.providerProjectId, p_subject_hash: input.subjectHash, p_receipt_hash: input.receiptHash, p_kind: input.kind });
+    if (result.error) databaseFailure(result.error);
+    return result.data as ProviderNoticeResult;
   }
 }

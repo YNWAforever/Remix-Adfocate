@@ -1,0 +1,18 @@
+id,area,offline_evidence,live_status,remaining_gate
+A01,Environment,Target comparison and default-off route guards PASS,NOT RUN,D1 approved target and observed egress
+A02,OAuth,State ticket PKCE nonce identity scope route contracts PASS,NOT RUN,Two platform OAuth and real browser return
+A03,Credentials,Encrypted persistence key rotation lease CAS and two service instances PASS,NOT RUN,Two real DB connections and host secret lifecycle
+A04,Instagram,Versioned metric media pagination missing-versus-zero fixtures PASS,NOT RUN,Owned professional accounts and raw API comparison
+A05,Drive,Selected-only metadata-before-after parser limits fake Picker PASS,NOT RUN,Real Picker identity ACL and provider files
+A06,Isolation,Actor workspace generation SQL grants and repository rejection PASS,NOT RUN,Ordinary JWT PostgREST RLS positive and negative cases
+A07,Consent,Private defaults unknown rights model/share denial and IAB preview PASS,NOT RUN,Approved live content and versioned per-purpose consent
+A08,Races,Lease fencing stale generation cache and assistant flag-off regressions PASS,NOT RUN,Two-process true DB and delayed real provider cases
+A09,Revocation,Grant coordination pending/manual UI signed notice and receipt replay PASS,NOT RUN,Confirmed IG revoke protocol account mapping and platform-side revoke
+A10,Failure,Bounded timeout retry circuit partial results and preserved input PASS,NOT RUN,Live success/error timestamps and provider restrictions
+A11,Evidence,Version endpoint time period immutable observations and private Brief PASS,NOT RUN,Real traceable source and approved mission copy
+A12,Missions and rewards,485 active-mission tests passed with 46 existing skips,NOT RUN,Isolated fixture ledger before/after and no cash redemption
+A13,Privacy operations,Local export tombstone retention maintenance and restore contracts PASS,NOT RUN,Real scheduler cleanup complete log and quarantined target restore
+A14,Devices,30 six-width layout cases plus IAB mobile/desktop journeys PASS,NOT RUN,Real iOS Android desktop OAuth Picker keyboard and assistive technology
+A15,Existing journeys,Full local suite and preserved authoritative workflow regressions PASS,NOT RUN,Named live role journeys and isolated mutations
+A16,Expiry,Controlled-clock expiry refresh reauth and disabled switch guards PASS,NOT RUN,At least eight natural days and actual token lifecycle
+A17,Optional AI,Provider-source external-model boundary and Studio-history guard PASS,NOT RUN,D3 separate model processor region retention and source approval

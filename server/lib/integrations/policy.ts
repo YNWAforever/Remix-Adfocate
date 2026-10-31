@@ -10,10 +10,10 @@ export const SYNC_COOLDOWN_MS = 60 * 60 * 1000;
 export function integrationMode(env: Record<string, string | undefined>): "mock" | "disabled" {
   return env.NODE_ENV !== "production" && env.INTEGRATIONS_ENABLED === "true" && env.INTEGRATIONS_MODE === "mock" ? "mock" : "disabled";
 }
-export function requiredScopes(provider: ProviderId): string[] {
-  return provider === "instagram" ? ["instagram_business_basic", "instagram_business_manage_insights"] : ["https://www.googleapis.com/auth/drive.file"];
+export function requiredScopes(provider: ProviderId, mode: "mock" | "live_pilot" = "mock"): string[] {
+  return provider === "instagram" ? ["instagram_business_basic", "instagram_business_manage_insights"] : ["https://www.googleapis.com/auth/drive.file", ...(mode === "live_pilot" ? ["openid"] : [])];
 }
-export function hasScopes(provider: ProviderId, scopes: string[]) { return requiredScopes(provider).every(scope => scopes.includes(scope)); }
+export function hasScopes(provider: ProviderId, scopes: string[], mode: "mock" | "live_pilot" = "mock") { return requiredScopes(provider,mode).every(scope => scopes.includes(scope)); }
 export function validateProvider(value: unknown): ProviderId {
   if (value !== "instagram" && value !== "google_drive") throw new IntegrationError("INVALID_PROVIDER");
   return value;

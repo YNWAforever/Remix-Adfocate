@@ -35,11 +35,18 @@ export async function runAssistant(
 ): Promise<AssistantResult> {
   if (input.studioContext) {
     const scoped = input.studioContext;
-    // The mock-only integration phase cannot activate a real model connection.
-    if (scoped.sources.some(source=>source.integration?.sample_only) && !deps.provider) return {
-      answer: input.locale === "en" ? `[Local mock proposal] For ${scoped.title}, open with the audience's question, show your honest experience, and include the collaboration disclosure. The selected example sources are unverified; review the cited brief before sharing.` : `【本機模擬建議】為「${scoped.title}」先用觀眾的問題開場，再呈現真實體驗與細節，最後清楚標示合作關係。已選示例來源僅供整理，成效與地區仍未驗證；保存私人 Brief 後，逐段核對分享權。`,
-      citations: scoped.sources.map(source=>({title:source.title,sourceType:source.integration?"integration_mock_unverified":"manual_unverified",sourceRef:source.id})),limitations:["mock_provider_data","proposal_only","unverified_coverage"],
-    };
+    // D0/D2 account reading is not D3 model-processing approval, including live-shaped data.
+    // Keep the established manual-source assistant path unchanged below.
+    if (scoped.sources.some(source=>source.integration)) {
+      const allSamples=scoped.sources.filter(source=>source.integration).every(source=>source.integration!.sample_only);
+      return {
+        answer: allSamples
+          ? input.locale === "en" ? `[Local mock proposal] For ${scoped.title}, open with the audience's question, show your honest experience, and include the collaboration disclosure. The selected example sources are unverified; review the cited brief before sharing.` : `【本機模擬建議】為「${scoped.title}」先用觀眾的問題開場，再呈現真實體驗與細節，最後清楚標示合作關係。已選示例來源僅供整理，成效與地區仍未驗證；保存私人 Brief 後，逐段核對分享權。`
+          : input.locale === "en" ? "[Private outline · no AI processing] Review your selected sources, add your own creative direction and check each citation before saving or sharing. External AI use has not been approved." : "【私人整理提綱・未使用 AI】先核對已選來源，加入自己的創作方向，再檢查每段引用後保存或分享。外部 AI 用途尚未批准。",
+        citations: scoped.sources.map(source=>({title:source.title,sourceType:source.integration?(source.integration.sample_only?"integration_mock_unverified":"integration_provider_unverified"):"manual_unverified",sourceRef:source.id})),
+        limitations:[...(allSamples?["mock_provider_data"]:[]),"external_model_not_approved","proposal_only","unverified_coverage"],
+      };
+    }
     const provider = deps.provider ?? liveProvider;
     // History is server-scoped to the same immutable evidence basis. It helps follow-ups,
     // but prior suggestions are not verified evidence or permission to execute actions.

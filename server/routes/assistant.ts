@@ -61,8 +61,20 @@ export function assistantRoutes(testProvider?: AssistantProvider) {
     const store = serviceClient();
     const workspaceId = c.get("workspaceId");
     let studio: Awaited<ReturnType<typeof import("../lib/studio/assistantContext.js").loadStudioContext>>;
-    if (process.env.STUDIO_THREADS === "true" && input.conversationId) {
-      try { studio = await (await import("../lib/studio/assistantContext.js")).loadStudioContext(store,client,c.get("userId"),workspaceId,input.conversationId); }
+    if (input.conversationId) {
+      try {
+        if (process.env.STUDIO_THREADS === "true") {
+          studio = await (await import("../lib/studio/assistantContext.js")).loadStudioContext(store,client,c.get("userId"),workspaceId,input.conversationId);
+        } else {
+          // Disabling Studio must not reclassify its retained private history as general chat.
+          // Classify before reading history, reserving a request or calling any model.
+          const thread = await store.from("studio_threads").select("id").eq("conversation_id",input.conversationId)
+            .eq("creator_id",c.get("userId")).eq("workspace_id",workspaceId).maybeSingle();
+          if (thread.error) throw new Error("studio_unavailable");
+          if (thread.data) return c.json({ code:"studio_disabled", error:"Studio assistance is disabled. Your input is retained.",
+            request_id:input.requestId, persistence:"not_saved", generation:"not_started" },503);
+        }
+      }
       catch { return c.json({code:"studio_unavailable",error:"Studio context or history unavailable"},503); }
     }
     const identity = { p_workspace: workspaceId, p_creator: c.get("userId"), p_request: input.requestId };

@@ -1,10 +1,11 @@
 import { act, cleanup, renderHook, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { ReactNode } from "react";
+import { StrictMode, type ReactNode } from "react";
 import { ApiError, apiFetch } from "@/lib/api";
+import { useMe } from "@/lib/queries/kocmax";
 import type { IntegrationConnection, IntegrationResource } from "./types";
-import { integrationKeys, useConnections, useIntegrationCommand, useIntegrationResources } from "./queries";
+import { integrationKeys, useConnections, useDrivePicker, useIntegrationCommand, useIntegrationResources } from "./queries";
 
 vi.mock("@/lib/api", async original => ({ ...await original<object>(), apiFetch: vi.fn() }));
 const fetchMock = vi.mocked(apiFetch);
@@ -21,6 +22,90 @@ beforeEach(() => { fetchMock.mockReset(); });
 afterEach(() => { cleanup(); clients.splice(0).forEach(client => client.clear()); });
 
 describe("private integration queries", () => {
+  it.each(["late fixture response", "abort rejection"])("loads D0 on the initial StrictMode creator mount despite a cancelled %s", async outcome => {
+    let resolveOwner!: (value: unknown) => void;
+    const pendingOwner = new Promise(resolve => { resolveOwner = resolve; });
+    const requests: { signal: AbortSignal; resolve: (value: unknown) => void; reject: (reason: unknown) => void }[] = [];
+    fetchMock.mockImplementation(async (path, init) => {
+      if (path === "/me") return pendingOwner;
+      if (path === "/me/integrations") return new Promise((resolve, reject) => {
+        requests.push({ signal: init!.signal as AbortSignal, resolve, reject });
+      });
+      throw new Error(`Unexpected ${path}`);
+    });
+    const { client } = setup(); client.removeQueries();
+    function CreatorMount({ children }: { children: ReactNode }) {
+      const me = useMe();
+      return me.data ? children : null;
+    }
+    const wrapper = ({ children }: { children: ReactNode }) => <StrictMode><QueryClientProvider client={client}><CreatorMount>{children}</CreatorMount></QueryClientProvider></StrictMode>;
+    const view = renderHook(() => useConnections(), { wrapper });
+    await act(async () => { resolveOwner({ id: "creator-a" }); });
+    await waitFor(() => expect(requests).toHaveLength(2));
+    expect(requests[0].signal.aborted).toBe(true);
+    expect(requests[1].signal.aborted).toBe(false);
+    const pilot = { stage: "D0", externalAccess: false };
+    const response = { mode: "live_pilot", pilot, connections: [] };
+    await act(async () => {
+      if (outcome === "late fixture response") requests[0].resolve(response);
+      else requests[0].reject(new DOMException("Cancelled", "AbortError"));
+    });
+    await act(async () => { requests[1].resolve(response); });
+    await waitFor(() => expect(view.result.current.data).toEqual(response));
+    expect(view.result.current.isError).toBe(false);
+    expect(client.getQueryState(integrationKeys.list("creator-a"))?.status).toBe("success");
+    expect(requests).toHaveLength(2);
+  });
+
+  it("retains the D0 disclosure while fencing private reads and non-lifecycle commands", async () => {
+    const pilot = { stage: "D0", externalAccess: false };
+    fetchMock.mockResolvedValue({ mode: "live_pilot", pilot, connections: [connection] });
+    const { client, wrapper } = setup(); client.removeQueries();
+    const view = renderHook(() => useConnections(), { wrapper });
+    await waitFor(() => expect(view.result.current.data?.mode).toBe("live_pilot"));
+    expect(view.result.current.data).toMatchObject({ pilot });
+    fetchMock.mockClear();
+    const reads = renderHook(() => ({ resources: useIntegrationResources(connection), picker: useDrivePicker(connection), command: useIntegrationCommand() }), { wrapper });
+    await act(async () => {
+      await reads.result.current.resources.refetch().catch(() => {});
+      await reads.result.current.picker.refetch().catch(() => {});
+      await reads.result.current.command.mutateAsync({ action: "start", provider: "google_drive" }).catch(() => {});
+    });
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(reads.result.current.resources.data).toBeUndefined();
+    expect(reads.result.current.picker.data).toBeUndefined();
+    expect(client.getQueryData(integrationKeys.list())).toMatchObject({ mode: "live_pilot", pilot });
+  });
+
+  it("blocks in-progress revocation and never starts new consent against the same provider", async () => {
+    const { client, wrapper } = setup();
+    client.setQueryData(integrationKeys.list(), { mode: "mock", connections: [{ ...connection, status: "revoked", providerRevocation: "pending" }] });
+    const { result } = renderHook(() => useIntegrationCommand(), { wrapper });
+    let failure: unknown;
+    await act(async () => { failure = await result.current.mutateAsync({ action: "start", provider: "google_drive" }).catch(error => error); });
+    expect(failure).toMatchObject({ code: "REVOCATION_PENDING" });
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("cannot refetch using a stale connection object after its cached generation was revoked", async () => {
+    const { client, wrapper } = setup();
+    client.setQueryData(integrationKeys.list(), { mode: "mock", connections: [{ ...connection, status: "revoked", generation: 2, providerRevocation: "revoked" }] });
+    const { result } = renderHook(() => useIntegrationResources(connection), { wrapper });
+    await act(async () => { await result.current.refetch(); });
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(result.current.data).toBeUndefined();
+  });
+
+  it("rejects live resources slipped into a mock response and erases its private cache", async () => {
+    fetchMock.mockResolvedValue({ resources: [{ ...resource, sampleOnly: false }] });
+    const { client, wrapper } = setup();
+    client.setQueryData(integrationKeys.resources(connection), { resources: [resource] });
+    const { result } = renderHook(() => useIntegrationResources(connection), { wrapper });
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(result.current.data).toBeUndefined();
+    expect(JSON.stringify(client.getQueryData(integrationKeys.resources(connection)))).not.toContain("PRIVATE");
+  });
+
   it("erases a rejected private result and cannot restore it after a later 503 or remount", async () => {
     fetchMock.mockResolvedValueOnce({ resources: [resource] })
       .mockRejectedValueOnce(new ApiError(403, "SOURCE_UNAVAILABLE", "denied"))
@@ -143,7 +228,7 @@ describe("private integration queries", () => {
     const partial = { ...connection, provider: "instagram" as const, status: "partial" as const, scopes: ["instagram_business_basic"] };
     renderHook(() => useIntegrationResources(partial), { wrapper });
     expect(fetchMock).not.toHaveBeenCalled();
-    client.setQueryData(integrationKeys.list(), { mode: "mock", connections: [{ ...connection, status: "revoked" }] });
+    act(() => { client.setQueryData(integrationKeys.list(), { mode: "mock", connections: [{ ...connection, status: "revoked" }] }); });
     const { result } = renderHook(() => useIntegrationCommand(), { wrapper });
     await act(async () => { await result.current.mutateAsync({ action: "sync", connectionId: connection.id, requestId: "no-sync" }).catch(() => {}); });
     expect(fetchMock).not.toHaveBeenCalled();

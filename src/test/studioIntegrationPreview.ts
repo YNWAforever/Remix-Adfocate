@@ -5,12 +5,28 @@ import { createMockProviders } from "../../server/lib/integrations/mockProviders
 import { IntegrationError } from "../../server/lib/integrations/policy";
 import { IntegrationService } from "../../server/lib/integrations/service";
 import type { Actor, IntegrationRecord, ProviderId } from "../../server/lib/integrations/types";
-import type { IntegrationImport } from "../lib/integrations/types";
+import type { IntegrationConnection, IntegrationImport } from "../lib/integrations/types";
 import type { StudioDetail, StudioSection } from "../lib/studio/types";
 import { redactRevokedIntegrationOutputs } from "../lib/studio/policy";
 
 const response = (value: unknown, status = 200) => new Response(JSON.stringify(value), { status, headers: { "Content-Type": "application/json", "Cache-Control": "private, no-store" } });
-export function createIntegrationPreview(actor: Actor, threads: () => StudioDetail[], clearReceipts: () => void) {
+export type IntegrationPreviewScenario = "mock" | "d0" | "d0-pending" | "d0-reauth" | "d0-manual-action" | "d0-reconnect";
+export function integrationPreviewScenario(search: string): IntegrationPreviewScenario {
+  const value = new URLSearchParams(search).get("integrationPreview");
+  return value === null ? "mock" : ["mock", "d0", "d0-pending", "d0-reauth", "d0-manual-action", "d0-reconnect"].includes(value) ? value as IntegrationPreviewScenario : "d0";
+}
+export function createIntegrationPreview(actor: Actor, threads: () => StudioDetail[], clearReceipts: () => void, options: { scenario?: IntegrationPreviewScenario } = {}) {
+  // The existing DEV-only preview entry point already installs this adapter. A query
+  // parameter selects an explicitly synthetic fixture; it cannot enable a provider.
+  const scenario = options.scenario ?? integrationPreviewScenario(typeof window === "undefined" ? "" : window.location.search);
+  const pilot = { stage: "D0", externalAccess: false, reason: "Offline sample preview; no live provider or external model" } as const;
+  let fixture: IntegrationConnection | null = ["d0-pending", "d0-reauth", "d0-manual-action", "d0-reconnect"].includes(scenario) ? {
+    id: "d0-sample-drive", provider: "google_drive", label: "D0 sample account · synthetic", sampleOnly: true,
+    status: scenario === "d0-reauth" ? "reauth_required" : "revoked",
+    providerRevocation: scenario === "d0-pending" ? "pending" : scenario === "d0-manual-action" ? "manual_action" : scenario === "d0-reconnect" ? "revoked" : "not_requested",
+    scopes: ["https://www.googleapis.com/auth/drive.file"], generation: 2, lastSyncAt: null,
+    expiresAt: scenario === "d0-reauth" ? "2020-01-01T00:00:00Z" : "2099-01-01T00:00:00Z", lastError: null,
+  } : null;
   const thread = (id: unknown) => {
     const detail = threads().find(value => value.thread.id === id);
     if (!detail) throw new IntegrationError("NOT_FOUND", 404);
@@ -52,9 +68,23 @@ export function createIntegrationPreview(actor: Actor, threads: () => StudioDeta
       if (!path.startsWith("/me/integrations")) return null;
       try {
         const parts = path.slice("/me/integrations".length).split("/").filter(Boolean), [id, action] = parts;
-        if (!parts.length && method === "GET") return response({ mode: "mock", connections: await service.list(actor) });
+        if (!parts.length && method === "GET") return response({ mode: scenario === "d0" ? "live_pilot" : "mock", pilot, connections: fixture ? [fixture] : await service.list(actor) });
+        if (scenario === "d0") return response({ code: "D0_EXTERNAL_ACCESS_DISABLED" }, 403);
+        if (fixture && id === "google_drive" && ["start", "complete"].includes(action) && fixture.providerRevocation !== "revoked" && fixture.status === "revoked") return response({ code: "REVOCATION_PENDING" }, 409);
+        if (fixture && id === fixture.id) {
+          if (method === "POST" && action === "revoke") {
+            fixture = { ...fixture, status: "revoked", generation: fixture.generation + 1, providerRevocation: "revoked" };
+            clearReceipts(); return response({ local: "revoked", provider: "revoked" });
+          }
+          if (method === "POST" && action === "purge") { fixture = null; clearReceipts(); return response({ state: "complete" }); }
+          return response({ code: "SOURCE_UNAVAILABLE" }, 403);
+        }
         if (["instagram", "google_drive"].includes(id) && action === "start" && method === "POST") return response(await service.beginConnection(actor, id as ProviderId, "local-preview-session", String(body.returnPath ?? "/connections")));
-        if (["instagram", "google_drive"].includes(id) && action === "complete" && method === "POST") return response({ connection: await service.completeConnection(actor, id as ProviderId, "local-preview-session", String(body.code), String(body.state)) });
+        if (["instagram", "google_drive"].includes(id) && action === "complete" && method === "POST") {
+          const connection = await service.completeConnection(actor, id as ProviderId, "local-preview-session", String(body.code), String(body.state));
+          if (connection.provider === fixture?.provider) fixture = null;
+          return response({ connection });
+        }
         if (action === "resources" && method === "GET") return response({ resources: await service.resources(actor, id) });
         if (action === "picker" && method === "GET") return response(await service.picker(actor, id));
         if (method !== "POST") throw new IntegrationError("NOT_FOUND", 404);

@@ -42,6 +42,22 @@ function useOwnerId() {
   }), [client]);
   return useSyncExternalStore(subscribe, () => currentOwner(client), () => currentOwner(client));
 }
+export function useIntegrationIdentity() {
+  const owner = useOwnerId();
+  return JSON.stringify([getWorkspaceSlug(), owner]);
+}
+function useIntegrationListSnapshot(owner: string) {
+  const client = useQueryClient();
+  const key = integrationKeys.list(owner), identity = JSON.stringify(key);
+  const subscribe = useCallback((notify: () => void) => client.getQueryCache().subscribe(event => {
+    if (JSON.stringify(event.query.queryKey) === identity) notify();
+  }), [client, identity]);
+  return useSyncExternalStore(subscribe, () => client.getQueryData<IntegrationList>(key), () => client.getQueryData<IntegrationList>(key));
+}
+export const revocationUnresolved = (connection?: IntegrationConnection) => Boolean(connection && (
+  connection.providerRevocation === "pending" || connection.providerRevocation === "manual_action"
+  || (connection.status === "revoked" && connection.providerRevocation !== "revoked")
+));
 const featureOff = (error: unknown) => error instanceof ApiError && (error.status === 404 || error.code === "INTEGRATIONS_DISABLED");
 const refreshStudio = (client: QueryClient) => client.invalidateQueries({ queryKey: ["studio"] });
 
@@ -59,8 +75,13 @@ export function canReadConnection(connection?: IntegrationConnection) {
   const required = connection?.provider === "instagram"
     ? ["instagram_business_basic", "instagram_business_manage_insights"]
     : ["https://www.googleapis.com/auth/drive.file"];
-  return Boolean(connection?.sampleOnly && (connection.status === "connected" || connection.status === "partial")
+  return Boolean(connection?.sampleOnly === true && connection.providerRevocation === "not_requested" && (connection.status === "connected" || connection.status === "partial")
     && Date.parse(connection.expiresAt) > Date.now() && required.every(scope => connection.scopes.includes(scope)));
+}
+
+function currentSampleConnection(list: IntegrationList | undefined, connection: IntegrationConnection | undefined) {
+  const current = list?.connections.find(item => item.id === connection?.id);
+  return Boolean(list?.mode === "mock" && current?.generation === connection?.generation && canReadConnection(current) && canReadConnection(connection));
 }
 
 export function useConnections() {
@@ -75,19 +96,21 @@ export function useConnections() {
       try {
         result = await apiFetch<IntegrationList>("/me/integrations", { signal });
       } catch (error) {
-        if (started !== epoch(client) || currentOwner(client) !== owner || getWorkspaceSlug() !== workspace) throw stale();
+        // StrictMode can start a replacement before the cancelled request settles.
+        // Cancelled work must not clear caches or fence that replacement.
+        if (signal.aborted || started !== epoch(client) || currentOwner(client) !== owner || getWorkspaceSlug() !== workspace) throw stale();
         clearPrivate(client, undefined, undefined, owner);
         client.setQueryData(key, { mode: "disabled", connections: [] });
         if (featureOff(error)) return { mode: "disabled", connections: [] };
         throw error;
       }
-      if (started !== epoch(client) || currentOwner(client) !== owner || getWorkspaceSlug() !== workspace) throw stale();
+      if (signal.aborted || started !== epoch(client) || currentOwner(client) !== owner || getWorkspaceSlug() !== workspace) throw stale();
       // This UI never enables a real provider, even if a server is misconfigured.
       if (result.mode !== "mock") {
         clearPrivate(client);
-        return { mode: "disabled", connections: result.connections.filter(item => item.sampleOnly === true) };
+        return { ...result, mode: result.mode === "live_pilot" ? "live_pilot" : "disabled", connections: result.connections };
       }
-      return { mode: "mock", connections: result.connections.filter(item => item.sampleOnly === true) };
+      return { ...result, mode: "mock", connections: result.connections.filter(item => item.sampleOnly === true) };
     },
     retry: false, refetchOnWindowFocus: false, refetchOnReconnect: false,
     staleTime: query => query.state.data?.mode === "disabled" ? Infinity : 30_000,
@@ -98,29 +121,36 @@ export function useConnections() {
 function usePrivateQuery<T>(connection: IntegrationConnection | undefined, kind: "resources" | "picker", enabled: boolean) {
   const client = useQueryClient();
   const owner = useOwnerId(), workspace = getWorkspaceSlug();
+  const list = useIntegrationListSnapshot(owner);
+  const allowed = enabled && currentSampleConnection(list, connection);
   const key = integrationKeys[kind](connection ?? { id: "none", generation: 0 }, owner);
   const query = useQuery({
     queryKey: key,
-    enabled: Boolean(enabled && canReadConnection(connection)),
+    enabled: allowed,
     queryFn: async ({ signal }): Promise<T> => {
+      // refetch() can bypass React Query's enabled option. Recheck here as well.
+      if (!enabled || !currentSampleConnection(client.getQueryData<IntegrationList>(integrationKeys.list(owner)), connection)) {
+        throw new ApiError(403, "D0_EXTERNAL_ACCESS_DISABLED", "Only offline sample reads are available");
+      }
       const started = epoch(client);
       let result: T;
       try {
         result = await apiFetch<T>(`/me/integrations/${encodeURIComponent(connection!.id)}/${kind}`, { signal });
         if (kind === "picker" && (result as PickerResult).sampleOnly !== true) throw new ApiError(403, "MOCK_ONLY", "Mock only");
+        if (kind === "resources" && (result as { resources: IntegrationResource[] }).resources.some(item => item.sampleOnly !== true || item.connectionId !== connection!.id)) throw new ApiError(403, "MOCK_ONLY", "Mock only");
       } catch (error) {
         if (started !== epoch(client) || currentOwner(client) !== owner || getWorkspaceSlug() !== workspace) throw stale();
         clearPrivate(client, connection!.id, key, owner);
         void refreshStudio(client);
         throw error;
       }
-      if (started !== epoch(client) || currentOwner(client) !== owner || getWorkspaceSlug() !== workspace) throw stale();
+      if (started !== epoch(client) || currentOwner(client) !== owner || getWorkspaceSlug() !== workspace || !currentSampleConnection(client.getQueryData<IntegrationList>(integrationKeys.list(owner)), connection)) throw stale();
       return result;
     },
     retry: false, refetchOnWindowFocus: false, refetchOnReconnect: false,
     staleTime: 0,
   });
-  return { ...query, data: query.isError || !canReadConnection(connection) || !enabled ? undefined : query.data };
+  return { ...query, data: query.isError || !allowed ? undefined : query.data };
 }
 
 export const useIntegrationResources = (connection?: IntegrationConnection, enabled = true) => usePrivateQuery<{ resources: IntegrationResource[] }>(connection, "resources", enabled);
@@ -146,8 +176,16 @@ export function useIntegrationCommand() {
     mutationFn: async (command: IntegrationCommand): Promise<IntegrationCommandResult> => {
       const lifecycle = command.action === "revoke" || command.action === "purge";
       if (owner !== currentOwner(client) || workspace !== getWorkspaceSlug()) throw stale();
-      if (!lifecycle && client.getQueryData<IntegrationList>(listKey)?.mode !== "mock") {
+      const list = client.getQueryData<IntegrationList>(listKey);
+      if (list?.mode === "live_pilot" && !lifecycle) throw new ApiError(403, "D0_EXTERNAL_ACCESS_DISABLED", "External access disabled");
+      if (!lifecycle && list?.mode !== "mock") {
         throw new ApiError(404, "INTEGRATIONS_DISABLED", "Mock connections unavailable");
+      }
+      if ((command.action === "start" || command.action === "complete") && revocationUnresolved(list?.connections.find(item => item.provider === command.provider))) {
+        throw new ApiError(409, "REVOCATION_PENDING", "Resolve revocation before reconnecting");
+      }
+      if ("connectionId" in command && list?.connections.find(item => item.id === command.connectionId)?.sampleOnly !== true) {
+        throw new ApiError(403, "D0_EXTERNAL_ACCESS_DISABLED", "External access disabled");
       }
       if (!lifecycle && "connectionId" in command && !canReadConnection(client.getQueryData<IntegrationList>(listKey)?.connections.find(item => item.id === command.connectionId))) {
         throw new ApiError(403, "SOURCE_UNAVAILABLE", "Connection access unavailable");
@@ -167,7 +205,7 @@ export function useIntegrationCommand() {
     },
     onSuccess: async (result, command) => {
       if ("connection" in result) {
-        client.setQueryData<IntegrationList>(listKey, previous => ({ mode: "mock", connections: [
+        client.setQueryData<IntegrationList>(listKey, previous => ({ ...previous, mode: "mock", connections: [
           ...(previous?.connections.filter(item => item.provider !== result.connection.provider) ?? []), result.connection,
         ] }));
       }

@@ -1275,6 +1275,23 @@ const REVIEWED_MIGRATIONS = [
     ],
     transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
   },
+  {
+    version: "20261031123000", name: "integration_pilot_persistence", phase: "privacy_compliance",
+    dependsOn: ["20261031122000"],
+    capabilities: [
+      ...["integration_pilot_grants", "integration_pilot_bindings", "integration_pilot_oauth", "integration_refresh_leases", "integration_pilot_evidence", "integration_pilot_tombstones", "integration_pilot_maintenance", "integration_pilot_notices"].flatMap(table => [`table:private.${table}`, `rls:private.${table}`]),
+      "column:private.integration_credentials.credential_version", "column:private.integration_pilot_bindings.notice_invalidated_at",
+      "constraint:private.integration_oauth_states.integration_oauth_states_return_path_check",
+      ...["integration_pilot_return_path", "integration_pilot_metadata", "integration_pilot_provenance", "integration_pilot_tombstone", "integration_command_stage4abc", "integration_pilot_restore_candidates", "integration_pilot_maintenance_command", "integration_notice_binding_guard"].map(name => `function:private.${name}`),
+      ...[["integration_connections", "integration_pilot_connection_provenance"], ["integration_resources", "integration_pilot_resource_provenance"], ["integration_snapshots", "integration_pilot_snapshot_provenance"], ["studio_sources", "integration_pilot_source_provenance"], ["integration_connections", "integration_pilot_tombstone"], ["creators", "integration_pilot_account_tombstone"]].map(([table, name]) => `trigger:public.${table}.${name}`),
+      "trigger:private.integration_pilot_bindings.integration_notice_binding_guard",
+      ...[["integration_oauth_lookup", "text,text"], ["integration_oauth_callback", "text,text,text,jsonb,timestamptz"], ["integration_provider_notice", "text,text,text,text"]].flatMap(([name, signature]) => [
+        `function:public.${name}`, `grant:service_role.public.${name}(${signature})`,
+        ...["authenticated", "anon", "public"].map(role => `grant-removed:${role}.public.${name}(${signature})`),
+      ]),
+    ],
+    transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
+  },
 ] as const satisfies readonly ReviewedMigration[];
 
 const NON_RELEASE_TIMESTAMP_MIGRATIONS = new Set([
