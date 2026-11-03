@@ -118,6 +118,23 @@ describe("direct mission edit route", () => {
     expect(screen.getByRole("button", { name: "管理" })).toBeInTheDocument();
   });
 
+  it.each([
+    ["bare direct URL", "/admin/missions/m1", ""],
+    ["workspace slug URL", "/admin/missions/m1?ws=owned", "owned"],
+  ] as const)("opens the authorized editor from a %s after access resolves", async (_case, url, requestedWorkspace) => {
+    window.history.replaceState(null, "", url);
+    let resolveAccess!: (value: { access: StaffAccessSnapshot }) => void;
+    routeApi.access.mockImplementationOnce(() => new Promise((resolve) => { resolveAccess = resolve; }));
+    renderEditMission();
+    await waitFor(() => expect(routeApi.access).toHaveBeenCalledWith(requestedWorkspace));
+    expect(screen.queryByLabelText("標題")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /儲存/ })).not.toBeInTheDocument();
+
+    await act(async () => { resolveAccess({ access: staffAccess("workspace_admin") }); });
+    expect(await screen.findByLabelText("標題")).toHaveValue("任務");
+    expect(screen.getByRole("button", { name: /儲存/ })).toBeInTheDocument();
+  });
+
   it("shows an unavailable state and retry after access discovery fails", async () => {
     routeApi.access.mockRejectedValueOnce(new Error("access unavailable"));
     renderEditMission();

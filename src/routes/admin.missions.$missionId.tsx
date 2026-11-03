@@ -34,9 +34,11 @@ function EditMission() {
   const [tab, setTab] = useState<"edit" | "manage">(
     typeof window !== "undefined" && new URLSearchParams(window.location.search).get("tab") === "manage" ? "manage" : "edit",
   );
-  const editorIdentity = staff?.userId && workspace ? JSON.stringify([staff.userId, workspace, missionId]) : null;
-  const matchingWorkspace = access?.access?.workspace?.id === workspace;
-  const matchingMission = !q.data || q.data.mission.workspace_id === workspace;
+  const editorIdentity = staff?.userId ? JSON.stringify([staff.userId, workspace, missionId]) : null;
+  const resolvedWorkspace = access?.access?.workspace;
+  const matchingWorkspace = Boolean(resolvedWorkspace
+    && (!workspace || workspace === resolvedWorkspace.id || workspace === resolvedWorkspace.slug));
+  const matchingMission = !q.data || q.data.mission.workspace_id === resolvedWorkspace?.id;
   const canManage = Boolean(authed && editorIdentity && access?.access && !access.loading && !access.error
     && matchingWorkspace && matchingMission && access.can("mission.manage"));
   const denied = Boolean(authed && access?.access && !access.loading && !access.error
