@@ -18,7 +18,7 @@ const STATUS_LABEL: Record<string, string> = { "": "全部", draft: "草稿", ac
 
 function BrandMissionsList() {
   const { t, lang } = useI18n();
-  const { reportAuthError } = useBrandAuth();
+  const { brand, reportAuthError } = useBrandAuth();
   const qc = useQueryClient();
   const navigate = useNavigate();
   const [status, setStatus] = useState("");
@@ -67,7 +67,7 @@ function BrandMissionsList() {
               <button onClick={() => navigate({ to: "/brand/missions/$missionId", params: { missionId: m.id } })} className="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 font-heading font-bold">編輯</button>
               {m.status === "draft" ? <button disabled={publish.isPending} onClick={() => publish.mutate(m.id)} className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 font-heading font-bold">發佈</button> : null}
               {m.status === "active" ? <button disabled={close.isPending} onClick={() => { if (window.confirm("關閉此任務？將停止新報名。")) close.mutate(m.id); }} className="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 font-heading font-bold">關閉</button> : null}
-              {m.status === "draft" ? <button disabled={remove.isPending} onClick={() => { if (window.confirm("刪除此草稿？")) remove.mutate(m.id); }} className="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 font-heading font-bold">刪除</button> : null}
+              {brand.role === "owner" && m.status === "draft" ? <button disabled={remove.isPending} onClick={() => { if (window.confirm("刪除此草稿？")) remove.mutate(m.id); }} className="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 font-heading font-bold">刪除</button> : null}
             </div>
           </div>
         ))}
