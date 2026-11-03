@@ -11,6 +11,12 @@ vi.mock("@tanstack/react-router", async (i) => ({
   useNavigate: () => vi.fn(),
 }));
 vi.mock("@/components/admin/AdminAuthContext", () => ({ useAdminAuth: () => ({ authed: true, reportAuthError: vi.fn() }) }));
+vi.mock("@/components/admin/StaffAccessContext", () => ({
+  useStaffAccess: () => ({
+    access: { workspace: { id: "w1", slug: "w1", role: "workspace_admin", capabilities: ["mission.manage"], revision: 1 }, platformCapabilities: [], scopeStatus: null },
+    loading: false, error: null, refresh: vi.fn(), can: (capability: string) => capability === "mission.manage",
+  }),
+}));
 vi.mock("@/components/admin/useMissionEditorNavigation", () => ({
   useMissionEditorNavigation: () => ({ saved: vi.fn(), changed: vi.fn(), confirmDiscard: () => true }),
 }));

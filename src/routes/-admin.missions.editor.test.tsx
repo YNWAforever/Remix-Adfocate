@@ -1,12 +1,36 @@
 // src/routes/-admin.missions.editor.test.tsx
 import type React from "react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MissionEditor } from "@/components/admin/MissionEditor";
 import { AdminRequestError } from "@/lib/admin";
-import type { AdminMission } from "@/lib/admin";
+import type { AdminMission, StaffAccessSnapshot } from "@/lib/admin";
 import { dict } from "@/lib/i18n.dict";
 import { I18nProvider } from "@/lib/i18n";
+import { AdminAuthContext } from "@/components/admin/AdminAuthContext";
+import { AdminWorkspaceProvider } from "@/components/admin/AdminWorkspaceContext";
+import { StaffAccessProvider } from "@/components/admin/StaffAccessContext";
+
+const routeApi = vi.hoisted(() => ({ access: vi.fn(), mission: vi.fn(), update: vi.fn(), navigate: vi.fn() }));
+vi.mock("@tanstack/react-router", async (original) => ({
+  ...(await original<object>()),
+  createFileRoute: () => (options: unknown) => options,
+  useParams: () => ({ missionId: "m1" }),
+  useNavigate: () => routeApi.navigate,
+  Link: ({ to, children }: { to: string; children: React.ReactNode }) => <a href={to}>{children}</a>,
+}));
+vi.mock("@/lib/admin", async (original) => ({
+  ...(await original<object>()),
+  fetchStaffAccess: routeApi.access,
+  fetchAdminMission: routeApi.mission,
+  updateMission: routeApi.update,
+}));
+vi.mock("@/components/admin/useMissionEditorNavigation", () => ({
+  useMissionEditorNavigation: () => ({ changed: vi.fn(), saved: vi.fn(), confirmDiscard: () => true }),
+}));
+
+import { Route as EditMissionRoute } from "./admin.missions.$missionId";
 
 vi.mock("@/lib/missionCategories", () => ({ MISSION_CATEGORIES: ["美容", "餐飲"], ALL_CATEGORY: "全部" }));
 
@@ -28,6 +52,86 @@ const renderLocalizedEditor = (locale: "en" | "zh", props: EditorProps) => {
   window.localStorage.setItem("lang", locale);
   return render(<I18nProvider><MissionEditor {...props} /></I18nProvider>);
 };
+
+const staffAccess = (role: "operator" | "workspace_admin"): StaffAccessSnapshot => ({
+  workspace: {
+    id: "w1", slug: "owned", role, revision: 1,
+    capabilities: role === "workspace_admin" ? ["mission.manage"] : ["creator.read"],
+  },
+  platformCapabilities: [], scopeStatus: null,
+});
+
+function renderEditMission(withAccessProvider = true) {
+  const Component = (EditMissionRoute as unknown as { component: React.ComponentType }).component;
+  const route = withAccessProvider
+    ? <AdminWorkspaceProvider><StaffAccessProvider><Component /></StaffAccessProvider></AdminWorkspaceProvider>
+    : <Component />;
+  return render(
+    <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
+      <AdminAuthContext.Provider value={{ authed: true, staff: { userId: "staff", email: "staff@example.test" }, reportAuthError: vi.fn() }}>
+        {route}
+      </AdminAuthContext.Provider>
+    </QueryClientProvider>,
+  );
+}
+
+describe("direct mission edit route", () => {
+  beforeEach(() => {
+    routeApi.access.mockReset();
+    routeApi.mission.mockReset();
+    routeApi.update.mockReset();
+    routeApi.navigate.mockReset();
+    routeApi.mission.mockResolvedValue({ mission: { ...active, status: "draft", updated_at: "v1" } });
+    window.sessionStorage.clear();
+    window.history.replaceState(null, "", "/admin/missions/m1?ws=w1");
+  });
+
+  it("keeps direct-route edit controls hidden while staff access is unresolved", async () => {
+    routeApi.access.mockImplementation(() => new Promise(() => {}));
+    renderEditMission();
+    await waitFor(() => expect(routeApi.mission).toHaveBeenCalledOnce());
+    await act(async () => {});
+    expect(screen.queryByLabelText("標題")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /儲存/ })).not.toBeInTheDocument();
+  });
+
+  it("denies an operator who opens the mission edit URL directly", async () => {
+    routeApi.access.mockResolvedValue({ access: staffAccess("operator") });
+    renderEditMission();
+    const returnLink = await screen.findByRole("link", { name: "返回管理首頁" });
+    expect(screen.queryByLabelText("標題")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /儲存/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "管理" })).not.toBeInTheDocument();
+    expect(returnLink).toHaveAttribute("href", "/admin");
+  });
+
+  it("shows the editor to a workspace admin with mission.manage", async () => {
+    routeApi.access.mockResolvedValue({ access: staffAccess("workspace_admin") });
+    renderEditMission();
+    expect(await screen.findByLabelText("標題")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /儲存/ })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "管理" })).toBeInTheDocument();
+  });
+
+  it("shows an unavailable state and retry after access discovery fails", async () => {
+    routeApi.access.mockRejectedValueOnce(new Error("access unavailable"));
+    renderEditMission();
+    await waitFor(() => expect(routeApi.mission).toHaveBeenCalledOnce());
+    await act(async () => {});
+    expect(screen.queryByLabelText("標題")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /儲存/ })).not.toBeInTheDocument();
+    expect(await screen.findByRole("alert")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "重試權限檢查" })).toBeInTheDocument();
+  });
+
+  it("does not render the editor when the staff access provider is missing", async () => {
+    renderEditMission(false);
+    await waitFor(() => expect(routeApi.mission).toHaveBeenCalledOnce());
+    await act(async () => {});
+    expect(screen.queryByLabelText("標題")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /儲存/ })).not.toBeInTheDocument();
+  });
+});
 
 function addDeliverable(locale: "en" | "zh" = "zh") {
   fireEvent.change(screen.getByLabelText(dict[locale]["app.admin.missionEditor.workflow"]), { target: { value: "active_workspace" } });

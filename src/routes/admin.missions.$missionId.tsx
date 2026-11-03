@@ -1,9 +1,10 @@
 // src/routes/admin.missions.$missionId.tsx
-import { createFileRoute, useNavigate, useParams } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, useParams } from "@tanstack/react-router";
 import { useEffect, useState, type ComponentProps } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AdminAuthError, adminMissionKeys, fetchAdminMission, updateMission, type AdminMission, type MissionDraftInput } from "@/lib/admin";
 import { useAdminAuth } from "@/components/admin/AdminAuthContext";
+import { useStaffAccess } from "@/components/admin/StaffAccessContext";
 import { MissionEditor } from "@/components/admin/MissionEditor";
 import { MissionManage } from "@/components/admin/MissionManage";
 import { useMissionEditorNavigation } from "@/components/admin/useMissionEditorNavigation";
@@ -13,6 +14,7 @@ export const Route = createFileRoute("/admin/missions/$missionId")({ component: 
 function EditMission() {
   const { missionId } = useParams({ from: "/admin/missions/$missionId" });
   const { authed, reportAuthError } = useAdminAuth();
+  const access = useStaffAccess();
   const navigate = useNavigate();
   const editorNavigation = useMissionEditorNavigation();
   const q = useQuery({
@@ -40,6 +42,20 @@ function EditMission() {
     window.history.replaceState(null, "", url.toString());
   };
 
+  if (!access) return <p role="alert" className="text-sm text-red-600">無法確認任務權限。</p>;
+  if (access.loading) return <p role="status" className="text-sm">正在確認任務權限…</p>;
+  if (access.error || !access.access) return (
+    <div role="alert" className="space-y-2 text-sm text-red-600">
+      <p>任務權限暫時無法確認。</p>
+      <button type="button" className="underline" onClick={() => void access.refresh()}>重試權限檢查</button>
+    </div>
+  );
+  if (!access.can("mission.manage")) return (
+    <div role="alert" className="space-y-2 text-sm">
+      <p>你沒有編輯此任務的權限。</p>
+      <Link to="/admin" className="underline">返回管理首頁</Link>
+    </div>
+  );
   if (q.isLoading) return <p className="text-sm">載入中…</p>;
   if (!q.data) return <p className="text-sm text-red-600">找不到任務。</p>;
   const m = q.data.mission;
