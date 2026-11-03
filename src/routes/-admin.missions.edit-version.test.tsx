@@ -10,7 +10,8 @@ vi.mock("@tanstack/react-router", async (i) => ({
   useParams: () => ({ missionId: "m1" }),
   useNavigate: () => vi.fn(),
 }));
-vi.mock("@/components/admin/AdminAuthContext", () => ({ useAdminAuth: () => ({ authed: true, reportAuthError: vi.fn() }) }));
+vi.mock("@/components/admin/AdminAuthContext", () => ({ useAdminAuth: () => ({ authed: true, staff: { userId: "staff", email: "staff@example.test" }, reportAuthError: vi.fn() }) }));
+vi.mock("@/components/admin/AdminWorkspaceContext", () => ({ useAdminWorkspace: () => ({ workspace: "w1" }) }));
 vi.mock("@/components/admin/StaffAccessContext", () => ({
   useStaffAccess: () => ({
     access: { workspace: { id: "w1", slug: "w1", role: "workspace_admin", capabilities: ["mission.manage"], revision: 1 }, platformCapabilities: [], scopeStatus: null },
@@ -35,7 +36,7 @@ import { Route } from "./admin.missions.$missionId";
 
 describe("mission editor optimistic locking (F-022)", () => {
   it("saves against the version the editor was mounted with, not a later refetch", async () => {
-    const mission = (updated_at: string) => ({ mission: { id: "m1", title: "任務", filled: 0, status: "draft", updated_at } });
+    const mission = (updated_at: string) => ({ mission: { id: "m1", workspace_id: "w1", title: "任務", filled: 0, status: "draft", updated_at } });
     h.fetchAdminMission.mockResolvedValueOnce(mission("v1")).mockResolvedValue(mission("v2"));
     h.updateMission.mockResolvedValue({});
     const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
