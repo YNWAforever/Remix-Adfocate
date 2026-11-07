@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { MockNativeJourney, type DemoReviewDecision, type DemoRevocation, type DemoAccountKey } from "@/lib/creatorGrowth/mockNativeJourney";
 import { createMockReviewSummary } from "@/lib/creatorGrowth/mockReviewSummary";
 import { PublishPreview, type PublishPreviewModel } from "./PublishPreview";
@@ -38,7 +38,7 @@ function MockNativePilotSession({ownerKey}:{ownerKey:string}){
   const [revocation,setRevocation]=useState<DemoRevocation|null>(null);
   const scenarioControl=useRef<HTMLSelectElement>(null),errorNotice=useRef<HTMLParagraphElement>(null),revokedNotice=useRef<HTMLDivElement>(null);
   const [focusRequest,setFocusRequest]=useState<{target:"scenario"|"error"|"revoked"}|null>(null);
-  useEffect(()=>{
+  useLayoutEffect(()=>{
     if(!focusRequest)return;
     const target=focusRequest.target==="scenario"?scenarioControl.current:focusRequest.target==="error"?errorNotice.current:revokedNotice.current;
     target?.focus();

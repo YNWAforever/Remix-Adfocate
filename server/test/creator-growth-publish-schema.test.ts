@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { createHash, randomUUID } from "node:crypto";
 import type { PGlite } from "@electric-sql/pglite";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
@@ -613,6 +613,10 @@ describe("publish migration and fresh Supabase adapters in PGlite", () => {
         "creator_publish_approvals_owner_expiry",
         "creator_publish_intents_revision",
       ]),
+    );
+    await mkdir(
+      ".superpowers/sdd/2026-11-04-kocmax-instagram-publishing-pilot/task-3-results",
+      { recursive: true },
     );
     await writeFile(
       ".superpowers/sdd/2026-11-04-kocmax-instagram-publishing-pilot/task-3-results/index-catalog.json",

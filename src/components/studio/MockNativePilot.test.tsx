@@ -58,8 +58,18 @@ describe("development mock native pilot",()=>{
     render(<MockNativePilot ownerKey="owner-a"/>);
     fireEvent.change(screen.getByLabelText("示例圖片格式"),{target:{value:format}});
     fireEvent.change(screen.getByLabelText("原生流程示例情境"),{target:{value:scenario}});
+    const insertedFocus=scenario==="conversion_error"?new Promise<boolean>(resolve=>{
+      const observer=new MutationObserver(()=>{
+        const alert=document.querySelector("[role='alert']");
+        if(!(alert instanceof HTMLElement))return;
+        observer.disconnect();
+        resolve(document.activeElement===alert);
+      });
+      observer.observe(document.body,{childList:true,subtree:true});
+    }):null;
     fireEvent.click(screen.getByRole("button",{name:"轉換示例圖片"}));
     if(scenario==="conversion_error"){
+      expect(await insertedFocus).toBe(true);
       await screen.findByRole("alert");expect(screen.getByRole("alert")).toHaveFocus();expect(prepareSyntheticJpeg).not.toHaveBeenCalled();
       expect(screen.getByRole("button",{name:"轉換示例圖片"})).toBeDisabled();
     }else{
