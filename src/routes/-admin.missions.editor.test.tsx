@@ -68,7 +68,7 @@ function renderEditMission(withAccessProvider = true, withWorkspaceSwitch = fals
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   const tree = (staffId: string) => (
     <QueryClientProvider client={client}>
-      <AdminAuthContext.Provider value={{ authed: true, staff: { userId: staffId, email: `${staffId}@example.test` }, reportAuthError: vi.fn() }}>
+      <AdminAuthContext.Provider value={{ authed: true, staff: { userId: staffId, email: `${staffId}@example.test` }, signOut: vi.fn(async () => {}), reportAuthError: vi.fn() }}>
         <AdminWorkspaceProvider>
           {withWorkspaceSwitch && <WorkspaceChangeButton />}
           {withAccessProvider ? <StaffAccessProvider><Component /></StaffAccessProvider> : <Component />}

@@ -1,0 +1,25 @@
+{
+  "status": "APPLIED_AND_READ_ONLY_POSTCONDITIONS_PASSED",
+  "applicationReceipt": "application-receipt.json",
+  "backupVerificationReceipt": "backup-verification-receipt.json",
+  "appliedMigrationVersion": "20261031201901",
+  "targetProject": "mhkoayftiuojxlrkollf",
+  "branch": "codex/kocmax-studio-stages-1-2",
+  "head": "5c60020091e8e6fee934b61c498bf7518944c433",
+  "userApproval": "Good, approve the reviewed SQL changes. Apply them to the existing Remix-Adfocate database on the same branch, preserve all functions and fixes, and verify mobile and desktop. Don’t deploy or create real connections yet.",
+  "reviewedPacketManifestSha256": "7a55e74fcf7462e2e842c9a1c324cb5c3299bb14f49c779b2001ae119db44b8e",
+  "reviewedPayloadSha256": "c879b204d9b2928c6426b641262096fff23ef1a1b49b33a8f2003afd5ee9dbff",
+  "applySqlSha256": "9cbecbf1b4b68c476ed8d996f8f3d1c61408e46986584c22ab0111788cd9e5a5",
+  "migrationName": "kocmax_studio_shared_review_c879b204",
+  "originalDataColumnsProtected": 400,
+  "originalTablesProtected": 39,
+  "historyPolicy": "One new named migration; preserve 14 previous entries. Never claim the 62 raw source files were applied unmodified.",
+  "excluded": [
+    "deployment",
+    "real Instagram/Drive connections",
+    "persistent browser fixture",
+    "Auth account creation",
+    "pilot enablement",
+    "old history rewriting"
+  ]
+}

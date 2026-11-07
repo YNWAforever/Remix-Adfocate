@@ -103,7 +103,7 @@
 
 ### Task 6: Private persistence proposal and permission contract
 
-**Files:** Create `server/lib/creatorGrowth/repository.ts`, `memoryRepository.ts`, `supabaseRepository.ts`, `repository.test.ts`; prepare `supabase/migrations/20261104010000_kocmax_creator_growth_private.sql`, `server/test/creator-growth-schema.test.ts`, `docs/review/kocmax-stage-5/creator-growth-sql-review.md`. Never change an applied migration.
+**Files:** Create `server/lib/creatorGrowth/repository.ts`, `memoryRepository.ts`, `supabaseRepository.ts`, `repository.test.ts`; prepare the CLI-allocated `supabase/migrations/20261103215321_kocmax_creator_growth_private.sql`, `server/test/creator-growth-schema.test.ts`, `docs/review/kocmax-stage-5/creator-growth-sql-review.md`. Never change an applied migration.
 
 **Interfaces:** `GrowthRepository` methods `putAsset(owner, asset)`, `getAssetBytes(owner, assetId): Promise<Uint8Array>`, `saveAnalysis(owner, result)`, `saveSkillInvocation(owner, invocation)`, `getPrivateDraft(owner, id)`, `purgeOwner(owner)`; `owner={workspaceId, creatorId}` always comes from current server session, not the browser or model. `getAssetBytes` is server-internal and never enters a browser DTO. Supabase implementation requires both owner predicates and RLS; memory implementation mirrors them for offline tests.
 

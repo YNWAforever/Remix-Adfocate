@@ -1,0 +1,18 @@
+{
+  "recordedAtUtc": "2026-11-01T15:07:13.2362460Z",
+  "status": "LOCAL_KEY_INPUT_REJECTED_BEFORE_WORKER",
+  "execSession": 81186,
+  "code": "SERVER_KEY_REQUIRED",
+  "newPilotRunCreated": false,
+  "workerStarted": false,
+  "authAccountsCreated": 0,
+  "fixturesCreated": 0,
+  "realLoginTests": "NOT_RUN",
+  "mobileDesktopPermissionTests": "NOT_RUN",
+  "cleanup": "NOT_REQUIRED_NO_FIXTURES",
+  "deployments": 0,
+  "instagramConnections": 0,
+  "driveConnections": 0,
+  "inputContentRecorded": false,
+  "recovery": "v3 keeps invalid input editable and explains the required server key type"
+}

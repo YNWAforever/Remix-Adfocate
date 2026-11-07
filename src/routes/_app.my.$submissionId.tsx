@@ -8,6 +8,7 @@ import { RewardPendingCard } from "@/components/active-mission/RewardPendingCard
 import { RewardSettledCard } from "@/components/active-mission/RewardSettledCard";
 import { ProofSubmissionForm, type ProofEvidenceAsset } from "@/components/active-mission/ProofSubmissionForm";
 import { PublicationInstructions } from "@/components/active-mission/PublicationInstructions";
+import { MissionPublishEntryHost } from "@/components/active-mission/MissionPublishEntry";
 import { VersionTimeline } from "@/components/active-mission/VersionTimeline";
 import { WorkspaceHeader } from "@/components/active-mission/WorkspaceHeader";
 import { deriveNextAction, type PublicationProofAttemptView } from "@/lib/activeMission";
@@ -102,6 +103,7 @@ export function CreatorMissionWorkspace() {
   const instructionAnalyticsRef = useRef(new Set<string>());
   const proofFormAnalyticsRef = useRef(new Set<string>());
   const editorRef = useRef<HTMLDivElement>(null);
+  const proofTargetRef = useRef<HTMLDivElement>(null);
   const workspace = workspaceQuery.data;
   const pendingReward = workspace?.pendingReward ?? null;
   const rewardExperience = workspace
@@ -396,6 +398,7 @@ export function CreatorMissionWorkspace() {
             ) : (
               <>
                 <PublicationInstructions publication={publication} />
+                <MissionPublishEntryHost submissionId={submissionId} item={activeItem} publication={publication} onReturnToProof={()=>proofTargetRef.current?.focus()}/>
                 {publication.state === "proof_submitted" || publication.state === "proof_under_review" ? (
                   <p role="status" className="rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-paper)] p-4 font-semibold">
                     {t("app.activeMission.publication.reviewing")}
@@ -437,6 +440,7 @@ export function CreatorMissionWorkspace() {
                   </section>
                 ) : null}
                 {showPublicationForm ? (
+                  <div ref={proofTargetRef} tabIndex={-1} aria-label={t("app.activeMission.publication.status.ready")}>
                   <ProofSubmissionForm
                     key={publication.workItemId}
                     publication={publication}
@@ -456,6 +460,7 @@ export function CreatorMissionWorkspace() {
                       return result;
                     }}
                   />
+                  </div>
                 ) : null}
                 <ProofAttemptHistory publication={publication} />
               </>

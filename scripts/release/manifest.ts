@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { readdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
+import { CREATOR_GROWTH_CAPABILITIES, CREATOR_PUBLISH_CAPABILITIES } from "./creator-private-capabilities";
 import type {
   ReleaseManifest,
   ReleaseMigration,
@@ -1290,6 +1291,34 @@ const REVIEWED_MIGRATIONS = [
         ...["authenticated", "anon", "public"].map(role => `grant-removed:${role}.public.${name}(${signature})`),
       ]),
     ],
+    transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
+  },
+  {
+    version: "20261101075946", name: "kocmax_auth_permission_boundary", phase: "staff_access",
+    dependsOn: ["20261023124149", "20261029100000"],
+    capabilities: [
+      "function:private.brand_staff_mission_write_allowed",
+      "grant:authenticated.private.brand_staff_mission_write_allowed(uuid)",
+      ...["anon", "public", "service_role"].map(role => `grant-removed:${role}.private.brand_staff_mission_write_allowed(uuid)`),
+      "function:public.bootstrap_creator_account",
+      "grant:service_role.public.bootstrap_creator_account(uuid,uuid,text,text,text)",
+      ...["authenticated", "anon", "public"].map(role => `grant-removed:${role}.public.bootstrap_creator_account(uuid,uuid,text,text,text)`),
+      ...["insert", "update", "delete"].map(operation => `policy:public.missions.missions_staff_${operation}_boundary`),
+    ],
+    transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
+  },
+  // Inventory/checksum classification only: these private preparation contracts do
+  // not authorize provider activation, SQL application, or a production release.
+  {
+    version: "20261103215321", name: "kocmax_creator_growth_private", phase: "privacy_compliance",
+    dependsOn: ["20261030195424", "20261031123000", "20261101075946"],
+    capabilities: CREATOR_GROWTH_CAPABILITIES,
+    transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
+  },
+  {
+    version: "20261104134202", name: "kocmax_publish_intents", phase: "privacy_compliance",
+    dependsOn: ["20261103215321", "20261031123000"],
+    capabilities: CREATOR_PUBLISH_CAPABILITIES,
     transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
   },
 ] as const satisfies readonly ReviewedMigration[];

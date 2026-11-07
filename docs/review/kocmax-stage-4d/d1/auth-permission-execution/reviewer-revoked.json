@@ -1,0 +1,15 @@
+{
+  "status": "REVIEWER_REVOKED",
+  "caseRunId": "01db1d1f-23a5-4b83-9d25-8da8cddabc63",
+  "projectRef": "mhkoayftiuojxlrkollf",
+  "runId": "5f694251-c6eb-4f5f-a281-25e91db81c04",
+  "sqlSha256": "ae276f3dfc22539b48e482dceb1aeab8de2774c75f32816fe58665bfef8b7b8d",
+  "alias": "S-R",
+  "authId": "ff86250c-e600-4841-bf36-329f5bf180aa",
+  "workspaceId": "00391df1-e411-4a82-a317-4a73bb293f89",
+  "role": "reviewer",
+  "active": false,
+  "previousRevision": 1,
+  "revision": 2,
+  "requestId": "9bab8dad-bc41-565a-940d-adffb6f660fd"
+}

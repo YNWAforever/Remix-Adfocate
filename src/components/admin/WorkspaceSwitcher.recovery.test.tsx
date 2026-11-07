@@ -26,7 +26,7 @@ afterEach(() => {
 
 it("recovers a stale workspace selector through current access without discarding the mounted draft", async () => {
   render(<QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
-    <AdminAuthContext.Provider value={{ authed: true, staff: { userId: "staff", email: "synthetic@example.test" }, reportAuthError: vi.fn() }}>
+    <AdminAuthContext.Provider value={{ authed: true, staff: { userId: "staff", email: "synthetic@example.test" }, signOut: vi.fn(async () => {}), reportAuthError: vi.fn() }}>
       <AdminWorkspaceProvider><StaffAccessProvider><WorkspaceSwitcher /><input aria-label="Unsent draft" defaultValue="Draft kept" /></StaffAccessProvider></AdminWorkspaceProvider>
     </AdminAuthContext.Provider>
   </QueryClientProvider>);

@@ -1,0 +1,72 @@
+{
+  "recordedAtUtc": "2026-11-01T15:21:24.7897350Z",
+  "launcherSha256": "23a37e45db26af86d8e3d9f5ccc16162ea6252d6f9efcd207fb9eb2f7d887a5d",
+  "elevated": false,
+  "cases": [
+    {
+      "name": "new directory and file are private without audit privileges",
+      "status": "PASS"
+    },
+    {
+      "name": "populated private root can be reused without rewriting ACL or contents",
+      "status": "PASS"
+    },
+    {
+      "name": "empty current-user leftover is repaired and reverified",
+      "status": "PASS"
+    },
+    {
+      "name": "populated nonprivate directory is refused without mutation",
+      "status": "PASS"
+    },
+    {
+      "name": "regular file is refused without mutation",
+      "status": "PASS"
+    },
+    {
+      "name": "direct junction is rejected without touching its target",
+      "status": "PASS"
+    },
+    {
+      "name": "nonexistent descendant under a junction is rejected before creation",
+      "status": "PASS"
+    },
+    {
+      "name": "short password-like input is rejected before closing the form",
+      "status": "PASS"
+    },
+    {
+      "name": "publishable key is refused for server use",
+      "status": "PASS"
+    },
+    {
+      "name": "modern secret-key shape is accepted for later server verification",
+      "status": "PASS"
+    },
+    {
+      "name": "legacy server-key shape accepted for later verification",
+      "status": "PASS"
+    },
+    {
+      "name": "legacy anon key refused",
+      "status": "PASS"
+    },
+    {
+      "name": "legacy other-project key refused",
+      "status": "PASS"
+    },
+    {
+      "name": "malformed token returns an allowlisted code without echoing input",
+      "status": "PASS"
+    },
+    {
+      "name": "multiple Node installations resolve to one runnable executable",
+      "status": "PASS"
+    }
+  ],
+  "passed": 15,
+  "failed": 0,
+  "syntheticPathsCleaned": true,
+  "networkCalls": 0,
+  "credentialInput": false
+}

@@ -1,0 +1,511 @@
+{
+  "version": 1,
+  "branch": "codex/kocmax-studio-stages-1-2",
+  "baseHead": "e491e2dd30f42090458eacb82777d45b67275627",
+  "generatedAt": "2026-11-07T18:12:20.630Z",
+  "executionAllowed": false,
+  "status": "HOLD",
+  "scope": "Offline Native wiring, P5.0 intake and zero-post candidate review; no live execution approval",
+  "artifacts": [
+    {
+      "name": "artifact1",
+      "path": ".superpowers/sdd/2026-11-06-kocmax-real-instagram-controlled-pilot/continuation-preservation.json",
+      "sha256": "00ca4ca5b1e77cdbb34401b2b01861eef2028b353c0bc7aaf042ec882d8decf8"
+    },
+    {
+      "name": "artifact2",
+      "path": ".superpowers/sdd/2026-11-06-kocmax-real-instagram-controlled-pilot/frozen-bundle-boundary.log",
+      "sha256": "35b1c0c9bab23a6c62a21de1be0c9a516534a15e3bbe4595a0ea60f59f76ffb6"
+    },
+    {
+      "name": "artifact3",
+      "path": ".superpowers/sdd/2026-11-06-kocmax-real-instagram-controlled-pilot/frozen-native-regression.log",
+      "sha256": "da1c9f0e0ffa8cee2a3831af3b8baa609438c06b3d6fc646658108955b000548"
+    },
+    {
+      "name": "artifact4",
+      "path": ".superpowers/sdd/2026-11-06-kocmax-real-instagram-controlled-pilot/p5-0-checks.log",
+      "sha256": "5c6574b97910939085727994eaa80070c638a484be6911f48fd7d796ca82d7f0"
+    },
+    {
+      "name": "artifact5",
+      "path": ".superpowers/sdd/2026-11-06-kocmax-real-instagram-controlled-pilot/p5-0-preservation.json",
+      "sha256": "226ce69e0edf262fca010a6b95bf9debf014882d2e3631eb10e319f1413f5a7a"
+    },
+    {
+      "name": "artifact6",
+      "path": ".superpowers/sdd/2026-11-06-kocmax-real-instagram-controlled-pilot/progress.md",
+      "sha256": "fa8367343ab4cc44034a37fae6141efdba763de3087a93da5766fa1eef8974f9"
+    },
+    {
+      "name": "artifact7",
+      "path": "docs/review/kocmax-controlled-pilot/asset-attachment-changes.sql",
+      "sha256": "23f3f3aff526a52e8c6fa7286230344444f1f201902c1a0da994b8c9cb4a9f6a"
+    },
+    {
+      "name": "artifact8",
+      "path": "docs/review/kocmax-controlled-pilot/asset-attachment-rollback.sql",
+      "sha256": "84a67e9c78a420ea3e10b553216b6c1ce6a366ea467b735f5411c6cc2899995a"
+    },
+    {
+      "name": "artifact9",
+      "path": "docs/review/kocmax-controlled-pilot/changes.sql",
+      "sha256": "2328dbb41a86ce093b8d6295d24813c16cf96d58d361b970a85ea282323bfbee"
+    },
+    {
+      "name": "artifact10",
+      "path": "docs/review/kocmax-controlled-pilot/job-cleanup-changes.sql",
+      "sha256": "e303198df105e25d513e7829ed685c2604188467c3d444c712dc5375ecccdadf"
+    },
+    {
+      "name": "artifact11",
+      "path": "docs/review/kocmax-controlled-pilot/job-cleanup-rollback.sql",
+      "sha256": "dd30e820b8e1b12d8acd45d4cf667f6b3e09282b58a45fc44486eca3668d0971"
+    },
+    {
+      "name": "artifact12",
+      "path": "docs/review/kocmax-controlled-pilot/media-storage-changes.sql",
+      "sha256": "4e321fad455e1829c72bbecfc4547cbcba6dbaf70a41568a25074b5199414916"
+    },
+    {
+      "name": "artifact13",
+      "path": "docs/review/kocmax-controlled-pilot/media-storage-rollback.sql",
+      "sha256": "619a0a798d2bc5ddd6bf892938f53d841f3555963dc2eb0b0bd1bb746e65ac73"
+    },
+    {
+      "name": "artifact14",
+      "path": "docs/review/kocmax-controlled-pilot/native-offline-bundle.sql",
+      "sha256": "05c268bdd175e07efb23d60e49a23d0c46d1769dadd6bf96357ebca259d5725b"
+    },
+    {
+      "name": "artifact15",
+      "path": "docs/review/kocmax-controlled-pilot/native-offline-rollback.sql",
+      "sha256": "89eff8ab00c42a9e8eecd842f70deeab267ac7afc34b1d7ae1959677923689a1"
+    },
+    {
+      "name": "artifact16",
+      "path": "docs/review/kocmax-controlled-pilot/native-offline-wiring.md",
+      "sha256": "3544b3f8eaaf2a1771a06d6ab219b35ddf1d2bf4afc78826f2bd7f4f969ad56e"
+    },
+    {
+      "name": "artifact17",
+      "path": "docs/review/kocmax-controlled-pilot/offline-implementation-status.md",
+      "sha256": "4abc6220fa99589dd69aeeed73fbce4eb4f8aeb4462ac4b25df0bc3ef2a5fcd5"
+    },
+    {
+      "name": "artifact18",
+      "path": "docs/review/kocmax-controlled-pilot/p5-0-owner-intake.md",
+      "sha256": "a21d4a3b2c7a679d3eaf14d8fda18b38bc81f57913d8dd905ef30b85580715ad"
+    },
+    {
+      "name": "artifact19",
+      "path": "docs/review/kocmax-controlled-pilot/p5-0-readiness.md",
+      "sha256": "215b4c89ec5ad20f9cb0b30df32d2f0291e58bc19eb5ca73a3b9a95fd1763d0e"
+    },
+    {
+      "name": "artifact20",
+      "path": "docs/review/kocmax-controlled-pilot/provider-changes.sql",
+      "sha256": "03874a2c14796772123199d570e3fe728e89473d03d682593c1291402879bf9e"
+    },
+    {
+      "name": "artifact21",
+      "path": "docs/review/kocmax-controlled-pilot/provider-retention-changes.sql",
+      "sha256": "bccb0693881f93fd895fe551d60cb5d94306d4719130cb5c51ed1fd1ce0ccb8a"
+    },
+    {
+      "name": "artifact22",
+      "path": "docs/review/kocmax-controlled-pilot/provider-retention-rollback.sql",
+      "sha256": "d4fd7995f101095d007c6b8861a4da824b2301bd6f1934bc70c3fb54236e4971"
+    },
+    {
+      "name": "artifact23",
+      "path": "docs/review/kocmax-controlled-pilot/provider-rollback.sql",
+      "sha256": "55279bf5ba85cf8d3d13f242ba1e13d965819fa65f14c11433eacdd9b10e2c0c"
+    },
+    {
+      "name": "artifact24",
+      "path": "docs/review/kocmax-controlled-pilot/provider-schema-review.md",
+      "sha256": "4e27c354349bf620db9f65aa87718cebcfee5a408d09d8c85baeb2ff80c4d981"
+    },
+    {
+      "name": "artifact25",
+      "path": "docs/review/kocmax-controlled-pilot/real-account-matrix.md",
+      "sha256": "539fa968f8014fc07ba0cdd7e4c0b494bf43fa93721764b3fc67f8492ddc3e20"
+    },
+    {
+      "name": "artifact26",
+      "path": "docs/review/kocmax-controlled-pilot/real-launch-approval-package.md",
+      "sha256": "c1783fc938a846a67c46ffa55c9571d7d37981d43a7227dfe984b4e8ea0ccbc0"
+    },
+    {
+      "name": "artifact27",
+      "path": "docs/review/kocmax-controlled-pilot/real-pilot-acceptance-matrix.md",
+      "sha256": "c8f21e441b4c9dac6bfc164f106c6242e785cbea9646cfac4231c92a1daac409"
+    },
+    {
+      "name": "artifact28",
+      "path": "docs/review/kocmax-controlled-pilot/real-protocol-contract.md",
+      "sha256": "4aac01a5a6b06256c628d07b4a3453bd4b9e61f7a3aec243d3f8c9ecdcf78f80"
+    },
+    {
+      "name": "artifact29",
+      "path": "docs/review/kocmax-controlled-pilot/receipt-storage-changes.sql",
+      "sha256": "f838b67d2ce741aaa6c26f56114dbab62ed60067ab59a0bc9fa929e63a000a05"
+    },
+    {
+      "name": "artifact30",
+      "path": "docs/review/kocmax-controlled-pilot/receipt-storage-rollback.sql",
+      "sha256": "0d627ab68d3dfce4bd431c9e8587b732d92f56a8b1fb9109f5d0f42c676d8c12"
+    },
+    {
+      "name": "artifact31",
+      "path": "docs/review/kocmax-controlled-pilot/rollback.sql",
+      "sha256": "2d98674bb0a8cc9b4e76b61faffc07f9207892aae804af217fb4de7a3c6e38c7"
+    },
+    {
+      "name": "artifact32",
+      "path": "docs/superpowers/plans/2026-11-07-kocmax-p5-controlled-pilot-launch.md",
+      "sha256": "36be07b1286234aeb93edeaadb9fc3b0525f14ae94a8efc7dc3509918ace7dd6"
+    },
+    {
+      "name": "artifact33",
+      "path": "scripts/integrations/controlled-pilot-artifacts.test.ts",
+      "sha256": "3c128fa02af8da82bad50aa25748c08a66e726d5462350214e62ddb721b62de5"
+    },
+    {
+      "name": "artifact34",
+      "path": "scripts/integrations/controlled-pilot-artifacts.ts",
+      "sha256": "d10bdd9c487b685ba89e3982cf6235ddd694cf75eac1f931e838a183d260a930"
+    },
+    {
+      "name": "artifact35",
+      "path": "server/app.ts",
+      "sha256": "4af80aee885a6c6f2a4e2eac0544e7d66ebb3d9bbd8ef8bb57f7eb1ec7a955ca"
+    },
+    {
+      "name": "artifact36",
+      "path": "server/lib/creatorGrowth/missionProofHandoff.test.ts",
+      "sha256": "7b422e5a2333564b6ca1fbf161bb3e74e368bde4eb79acd613629aa67b6789c5"
+    },
+    {
+      "name": "artifact37",
+      "path": "server/lib/creatorGrowth/missionProofHandoff.ts",
+      "sha256": "37f93e3051d3e69f2644c80c6275764f665a033dd0a506df004fbfd452bc73ab"
+    },
+    {
+      "name": "artifact38",
+      "path": "server/lib/creatorGrowth/pilot/jobStore.test.ts",
+      "sha256": "df311839a2bea7cddd0d7dbd4e85d1f7b773e1cdacab11f47083ff34e7dd4efd"
+    },
+    {
+      "name": "artifact39",
+      "path": "server/lib/creatorGrowth/pilot/jobStore.ts",
+      "sha256": "4e034c89b769101c4c8530751cc6191e7703d9619cae7327b41c0d471c2be239"
+    },
+    {
+      "name": "artifact40",
+      "path": "server/lib/creatorGrowth/pilot/liveComposition.test.ts",
+      "sha256": "ccd0d50436ffd70f751aba5ee85c60365aa7b06f9cc79e29e1e0e6f051654124"
+    },
+    {
+      "name": "artifact41",
+      "path": "server/lib/creatorGrowth/pilot/liveComposition.ts",
+      "sha256": "b7e253144e55033aaebb4f1fc6d7dd0c67dc4ed6e767f97b0b437fc171e8b4e7"
+    },
+    {
+      "name": "artifact42",
+      "path": "server/lib/creatorGrowth/pilot/missionBinding.ts",
+      "sha256": "cbce5e7b7a459426ff3c07f3f5f8fe8dd2b23b5aec214e3266f5b3c7085c3b7e"
+    },
+    {
+      "name": "artifact43",
+      "path": "server/lib/creatorGrowth/pilot/nativeApplication.test.ts",
+      "sha256": "4b245d601db364630514bcb483d4ce24c1b23f6bcd2cc9ed2521a62e605953c0"
+    },
+    {
+      "name": "artifact44",
+      "path": "server/lib/creatorGrowth/pilot/nativeApplication.ts",
+      "sha256": "faa344d9aa8f346f18386e1d094ae0f73c253a1597b4e8528ae4813862da8076"
+    },
+    {
+      "name": "artifact45",
+      "path": "server/lib/creatorGrowth/pilot/nativeHttpTransport.test.ts",
+      "sha256": "655cbdb84a15fa90eadcd14ea1fea4efc668e2239d2faa065614ee3ec7ba1fd1"
+    },
+    {
+      "name": "artifact46",
+      "path": "server/lib/creatorGrowth/pilot/nativeHttpTransport.ts",
+      "sha256": "8d4909882e86be4fa2f95c92921c168d1c0583493d8c9d49de24220e560f8ae1"
+    },
+    {
+      "name": "artifact47",
+      "path": "server/lib/creatorGrowth/pilot/nativeMediaLease.test.ts",
+      "sha256": "c30d44e53c50134e1291d9558e3f0e3cb80be6ea2cb533d7f4e28e257b5f9b34"
+    },
+    {
+      "name": "artifact48",
+      "path": "server/lib/creatorGrowth/pilot/nativeMediaLease.ts",
+      "sha256": "8916ae3c56a52fd046004892d0da3ccbca41ae3a9f4e0e7ae044ead7c4590cf8"
+    },
+    {
+      "name": "artifact49",
+      "path": "server/lib/creatorGrowth/pilot/nativePipeline.test.ts",
+      "sha256": "8cc252704351d688498dee4f642e10a30a26282f6efc55ebb16745510920d0a1"
+    },
+    {
+      "name": "artifact50",
+      "path": "server/lib/creatorGrowth/pilot/nativePipeline.ts",
+      "sha256": "b201bdf88a1c64dcc762b5bba75f2c251340ecc442da97a5f710879eea3379f5"
+    },
+    {
+      "name": "artifact51",
+      "path": "server/lib/creatorGrowth/pilot/nativePublisher.test.ts",
+      "sha256": "e63e1649256542f8c714847b8f97f2b434c7d61f3515fabc79ee09f716e01663"
+    },
+    {
+      "name": "artifact52",
+      "path": "server/lib/creatorGrowth/pilot/nativePublisher.ts",
+      "sha256": "c907f4e9d996f7aa2d69dd578fb4da3243843cd7f503c09c5d47391407d8c449"
+    },
+    {
+      "name": "artifact53",
+      "path": "server/lib/creatorGrowth/pilot/originalJourney.ts",
+      "sha256": "462431db3d713736606fbd0731578f503f5edbd9035ad79c38202e6ca15bb905"
+    },
+    {
+      "name": "artifact54",
+      "path": "server/lib/creatorGrowth/pilot/providerSource.test.ts",
+      "sha256": "a67c83679534bf6a0f0352d1c7fb991695995a9717cef3db257630d9ea007f77"
+    },
+    {
+      "name": "artifact55",
+      "path": "server/lib/creatorGrowth/pilot/providerSource.ts",
+      "sha256": "7ecf5c6c6e05be6aa9c602c4a69e3f9c44fdd4dda769973c746be6c60033b91f"
+    },
+    {
+      "name": "artifact56",
+      "path": "server/lib/creatorGrowth/pilot/receiptStore.test.ts",
+      "sha256": "86a99779b05647a99e579c2300128a0e05ad64dc73292d29b563c077d41dcc99"
+    },
+    {
+      "name": "artifact57",
+      "path": "server/lib/creatorGrowth/pilot/receiptStore.ts",
+      "sha256": "c8146a09675f0de9988fadc243e82ff26d527920471c287ab49e4e0554ca4714"
+    },
+    {
+      "name": "artifact58",
+      "path": "server/lib/creatorGrowth/pilot/sqlMediaStorage.test.ts",
+      "sha256": "59b17fa091e0a8dbfb5cc263832e07af8261e6c9d42dbc19b3c3ebfda41ece52"
+    },
+    {
+      "name": "artifact59",
+      "path": "server/lib/creatorGrowth/pilot/sqlMediaStorage.ts",
+      "sha256": "595492ea2c15b4f744bb8a319c1a80a9034a5d5c69b0472a5abfc12f87993d00"
+    },
+    {
+      "name": "artifact60",
+      "path": "server/lib/creatorGrowth/pilot/worker.test.ts",
+      "sha256": "1a3d10fbe93ad450651832a79f205726d48e9dc8070c6de516c5272f74eb1c7a"
+    },
+    {
+      "name": "artifact61",
+      "path": "server/lib/creatorGrowth/pilot/worker.ts",
+      "sha256": "08a391c734c04bdeadf9fbf68168a2af5aa48856b51dc62856233085a7a9d165"
+    },
+    {
+      "name": "artifact62",
+      "path": "server/lib/creatorGrowth/publishRepo.ts",
+      "sha256": "5f59e80388db9f186952423f65f7103e51f9896094bd3bfee1e1f09bed765c55"
+    },
+    {
+      "name": "artifact63",
+      "path": "server/routes/creatorPilot.test.ts",
+      "sha256": "f3033ae61c57ef86870264b7952343a3202369296c786ed147c5ce5ca3a244c1"
+    },
+    {
+      "name": "artifact64",
+      "path": "server/routes/creatorPilot.ts",
+      "sha256": "355c1a508b470023d21f06232e4f16a3737776bbd840aaf8532dbebb295b6f53"
+    },
+    {
+      "name": "artifact65",
+      "path": "server/test/controlled-pilot-native-bundle.test.ts",
+      "sha256": "32452ea8c52c2f5672fb039fa88202e30a11d0852177e21b4ebf5881aef57756"
+    },
+    {
+      "name": "artifact66",
+      "path": "server/test/controlled-pilot-provider-schema.test.ts",
+      "sha256": "cca9737b02b883870686158d1e95719f0a4a393ece00e573d77273f36c720e45"
+    },
+    {
+      "name": "artifact67",
+      "path": "server/test/controlled-pilot-upload-parity.test.ts",
+      "sha256": "f9ec01eeaf702e5aa496c3a6d5214b775be522a156ddef015716cec7b5a2d14a"
+    },
+    {
+      "name": "artifact68",
+      "path": "docs/review/kocmax-controlled-pilot/p5-0-configuration-change-review.md",
+      "sha256": "686c288a7761087db414d3a310806aaef02329abab70e4126f9cb096038bed7e"
+    },
+    {
+      "name": "artifact69",
+      "path": ".superpowers/sdd/2026-11-06-kocmax-real-instagram-controlled-pilot/p5-0-config-checks.log",
+      "sha256": "d01fa3f21c3cc80956f30b3e11af6d9c92879b2723d918d4fe704f1e742c38ef"
+    },
+    {
+      "name": "artifact70",
+      "path": "docs/review/kocmax-controlled-pilot/shared-callback-mock-evidence.md",
+      "sha256": "0865cfca98c6db7a2743991c295df9d6a61c83c26406d22935ebcb0a36f32fe2"
+    },
+    {
+      "name": "artifact71",
+      "path": "server/lib/creatorGrowth/pilot/sharedCallbackMock.ts",
+      "sha256": "8e0e6d4bc30469c6f30197f633d65af5610fe912f5f37e2713acea484f730b38"
+    },
+    {
+      "name": "artifact72",
+      "path": "server/lib/creatorGrowth/pilot/sharedCallbackMock.test.ts",
+      "sha256": "faa8a2acc512a5a01e1e14b355bae4b60ea476b61afc59fc0b336fce2c2f4082"
+    },
+    {
+      "name": "artifact73",
+      "path": ".superpowers/sdd/2026-11-06-kocmax-real-instagram-controlled-pilot/shared-callback-red.log",
+      "sha256": "e9af99e935e72c0854513b91e028c1b9293c4392ee58c0f7154ca19f3116fa02"
+    },
+    {
+      "name": "artifact74",
+      "path": ".superpowers/sdd/2026-11-06-kocmax-real-instagram-controlled-pilot/shared-callback-regression.log",
+      "sha256": "d327dee34ce94318c54337eed0cb4960c75effeb7db95d1ecd36364d6176f065"
+    },
+    {
+      "name": "artifact75",
+      "path": ".superpowers/sdd/2026-11-06-kocmax-real-instagram-controlled-pilot/shared-callback-types.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "artifact76",
+      "path": ".superpowers/sdd/2026-11-06-kocmax-real-instagram-controlled-pilot/shared-callback-lint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "artifact77",
+      "path": "server/lib/creatorGrowth/pilot/durableCallbackMock.ts",
+      "sha256": "a03e78802260a5883d78dfb852793560f3a51d56a1024151f0252840c30014f6"
+    },
+    {
+      "name": "artifact78",
+      "path": "server/lib/creatorGrowth/pilot/durableCallbackMock.test.ts",
+      "sha256": "3a4ca2522ea418b0c985ee541cd8cb36d707e6e259755988a3308448939d360a"
+    },
+    {
+      "name": "artifact79",
+      "path": "docs/review/kocmax-controlled-pilot/durable-callback-mock-evidence.md",
+      "sha256": "f707750e19ca35b81c980be1910887f69e3894674aaee99b04938788fef24941"
+    },
+    {
+      "name": "artifact80",
+      "path": ".superpowers/sdd/2026-11-06-kocmax-real-instagram-controlled-pilot/durable-callback-red.log",
+      "sha256": "7d14f7d0b9ded92f276ab001bfad7c0b8a745a165f31006c6ab60d406ea9701d"
+    },
+    {
+      "name": "artifact81",
+      "path": ".superpowers/sdd/2026-11-06-kocmax-real-instagram-controlled-pilot/durable-callback-green.log",
+      "sha256": "6af9a2e68498aab05012139fed7277812c20939100ca113bf0265d6c1d16b568"
+    },
+    {
+      "name": "artifact82",
+      "path": ".superpowers/sdd/2026-11-06-kocmax-real-instagram-controlled-pilot/durable-callback-regression.log",
+      "sha256": "c92489514cb498a06c8b5c4def5f3f4ab9c3b820f947916ab2f6d8c4e3327ff4"
+    },
+    {
+      "name": "artifact83",
+      "path": ".superpowers/sdd/2026-11-06-kocmax-real-instagram-controlled-pilot/durable-callback-lint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "artifact84",
+      "path": ".superpowers/sdd/2026-11-06-kocmax-real-instagram-controlled-pilot/durable-callback-types.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "artifact85",
+      "path": "server/lib/creatorGrowth/pilot/callbackReconciliationMock.test.ts",
+      "sha256": "622567700577a51bd543b03873354bb775219c7e2242a57761c224a8669d0870"
+    },
+    {
+      "name": "artifact86",
+      "path": "docs/review/kocmax-controlled-pilot/callback-reconciliation-mock-evidence.md",
+      "sha256": "2f9c37cc995c4761089de19fcb98c227625cd1465436fa12794b798ed4e409ad"
+    },
+    {
+      "name": "artifact87",
+      "path": ".superpowers/sdd/2026-11-06-kocmax-real-instagram-controlled-pilot/reconciliation-red.log",
+      "sha256": "f284909c72355842f7dd343ab3a72ea463f988dea07f2e19c50ed8d1bedd918b"
+    },
+    {
+      "name": "artifact88",
+      "path": ".superpowers/sdd/2026-11-06-kocmax-real-instagram-controlled-pilot/reconciliation-green.log",
+      "sha256": "602ad907ae1ece6f63175046611c0d6e1d13acb4816d9572a6d76b7604783b45"
+    },
+    {
+      "name": "artifact89",
+      "path": ".superpowers/sdd/2026-11-06-kocmax-real-instagram-controlled-pilot/reconciliation-regression.log",
+      "sha256": "4e76b39a6af286379f958863cbd13812b902c41976a9f5142e6033c88ed56617"
+    },
+    {
+      "name": "artifact90",
+      "path": ".superpowers/sdd/2026-11-06-kocmax-real-instagram-controlled-pilot/reconciliation-types.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "artifact91",
+      "path": ".superpowers/sdd/2026-11-06-kocmax-real-instagram-controlled-pilot/reconciliation-lint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "artifact92",
+      "path": "docs/review/kocmax-controlled-pilot/callback-corrections-mock-evidence.md",
+      "sha256": "21a8b0b2362ea088835d749f677e7ed311ec10dc777049085c3e5f2208d75e59"
+    },
+    {
+      "name": "artifact93",
+      "path": ".superpowers/sdd/2026-11-06-kocmax-real-instagram-controlled-pilot/corrections-red.log",
+      "sha256": "1a71e3ed53837f4f4c9ac835a1850b7bb98497f1b901e645a154ed4646e9a9e1"
+    },
+    {
+      "name": "artifact94",
+      "path": ".superpowers/sdd/2026-11-06-kocmax-real-instagram-controlled-pilot/corrections-green.log",
+      "sha256": "50a21729fd440d814232c8696dc7d2c022af878dda73161f4bf0c62836bbd499"
+    },
+    {
+      "name": "artifact95",
+      "path": ".superpowers/sdd/2026-11-06-kocmax-real-instagram-controlled-pilot/corrections-regression.log",
+      "sha256": "fe34934ef0feb752b3df3e4f997e3c723ce24e2fccd526e45d4bed5526184c93"
+    },
+    {
+      "name": "artifact96",
+      "path": ".superpowers/sdd/2026-11-06-kocmax-real-instagram-controlled-pilot/corrections-types.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "artifact97",
+      "path": ".superpowers/sdd/2026-11-06-kocmax-real-instagram-controlled-pilot/corrections-lint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "artifact98",
+      "path": "server/lib/creatorGrowth/pilot/reviewerPermissionsMock.ts",
+      "sha256": "6becd189e0241c3dafedce3759b563d112e97c27ef0f7ad909223efb201620e3"
+    },
+    {
+      "name": "artifact99",
+      "path": "server/lib/creatorGrowth/pilot/reviewerPermissionsMock.test.ts",
+      "sha256": "559b45e134d2a91b5386022f338d59ecd54531ebc788fd9191c4b240e2fb6913"
+    },
+    {
+      "name": "artifact100",
+      "path": "docs/review/kocmax-controlled-pilot/reviewer-permissions-mock-evidence.md",
+      "sha256": "411f3531a7762a8f5024c44a5464b057aaa3b3093a7e2d862bca2bd270c9b6e0"
+    }
+  ]
+}

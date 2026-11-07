@@ -1,0 +1,26 @@
+{
+  "status": "OFFLINE_EXAMPLES_ONLY_NOT_IMPORTED",
+  "realProviderRequests": false,
+  "credentials": null,
+  "instagram": [
+    {"id":"ig-not-connected","connection":"not_connected","expectedLabel":"未連接","reach":null,"views":null,"region":null,"language":null,"expectedPoints":0},
+    {"id":"ig-partial-example","sampleOnly":true,"connection":"partial","postId":"example-ig-01","caption":"香港茶飲短片：示例內容","metrics":{"reach":{"value":null,"availability":"missing","reason":"not_returned"}},"coverage":{"region":null,"language":null,"partial":true},"expectedLabel":"示例／未驗證","expectedPoints":0},
+    {"id":"ig-revoked","sampleOnly":true,"connection":"revoked","generationBefore":1,"generationAfter":2,"expected":"old generation reads/imports refused; no automatic reconnect","expectedPoints":0}
+  ],
+  "googleDrive": [
+    {"id":"drive-brief-text","sampleOnly":true,"externalId":"example-drive-brief-01","title":"茶飲短片拍攝筆記.txt","mimeType":"text/plain","version":"v1","selected":true,"canDownload":true,"rights":"owned","availability":"available","content":"開場：展示茶杯。中段：示範沖泡。結尾：提出下午茶選擇問題。內容純屬示例，未經市場驗證。","coverage":{"region":null,"language":null,"partial":true},"privacy":"private","shareConsent":false},
+    {"id":"drive-rights-unknown","sampleOnly":true,"externalId":"example-drive-brief-02","title":"權限未確認的示例.txt","mimeType":"text/plain","version":"v1","selected":true,"canDownload":true,"rights":"unknown","availability":"available","expected":"require rights confirmation before processing or sharing"},
+    {"id":"drive-cannot-download","sampleOnly":true,"externalId":"example-drive-brief-03","title":"不可下載的示例.pdf","mimeType":"application/pdf","selected":true,"canDownload":false,"availability":"unavailable","expected":"do not create content snapshot; show unavailable"},
+    {"id":"drive-stale-version","sampleOnly":true,"externalId":"example-drive-brief-01","versionBefore":"v1","versionAfter":"v2","expected":"old source permit cannot save or share a new brief"},
+    {"id":"drive-deleted","sampleOnly":true,"externalId":"example-drive-brief-01","availability":"deleted","expected":"quarantine dependent private evidence; no fabricated zero values"},
+    {"id":"drive-sixth-selection","sampleOnly":true,"selectedCount":6,"expected":"selection limit rejected before read"}
+  ],
+  "commonAssertions": [
+    "No connection/import/chat/retry grants points or XP",
+    "No region or language substitution when coverage is missing",
+    "A private source is not visible to peer, operator, brand or another workspace",
+    "Sharing requires item-level source permission and current source generation",
+    "No OAuth, Picker token, external AI, publication or mail is performed"
+  ],
+  "testStatus": "Prepared vectors only. These provider cases were not run against real APIs and are not seeded by 30-fixture-transaction.sql."
+}

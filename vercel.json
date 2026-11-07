@@ -1,4 +1,10 @@
 {
+  "headers": [
+    { "source": "/integration-deletion/:path*", "headers": [
+      { "key": "Referrer-Policy", "value": "no-referrer" },
+      { "key": "X-Robots-Tag", "value": "noindex, nofollow" }
+    ] }
+  ],
   "crons": [
     { "path": "/api/cron/social-refresh", "schedule": "0 3 * * 1" },
     { "path": "/api/cron/daily", "schedule": "0 0 * * *" }

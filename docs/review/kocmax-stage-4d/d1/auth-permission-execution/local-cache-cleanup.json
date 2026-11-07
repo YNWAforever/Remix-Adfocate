@@ -1,0 +1,9 @@
+{
+  "recordedAtUtc": "2026-11-01T18:44:21.8111841Z",
+  "removedExactOwnedCaches": [
+    "vite-cache-A",
+    "vite-cache-B"
+  ],
+  "testPasswordFileExists": false,
+  "retained": "Private ownership journal and startup-failure evidence; no backup directories touched."
+}

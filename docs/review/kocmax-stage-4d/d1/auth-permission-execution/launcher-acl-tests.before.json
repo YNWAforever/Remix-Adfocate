@@ -1,0 +1,43 @@
+{
+  "recordedAtUtc": "2026-11-01T13:58:13.3297006Z",
+  "launcherSha256": "1a4f7834b05d5505e661966278570e4dd3e02fd32872843502a583c36424ce5e",
+  "elevated": false,
+  "cases": [
+    {
+      "name": "new directory and file are private without audit privileges",
+      "status": "PASS"
+    },
+    {
+      "name": "populated private root can be reused without rewriting ACL or contents",
+      "status": "FAIL",
+      "error": "The process does not possess the 'SeSecurityPrivilege' privilege which is required for this operation."
+    },
+    {
+      "name": "empty current-user leftover is repaired and reverified",
+      "status": "PASS"
+    },
+    {
+      "name": "populated nonprivate directory is refused without mutation",
+      "status": "FAIL",
+      "error": "Unsafe existing path was accepted."
+    },
+    {
+      "name": "regular file is refused without mutation",
+      "status": "PASS"
+    },
+    {
+      "name": "direct junction is rejected without touching its target",
+      "status": "PASS"
+    },
+    {
+      "name": "nonexistent descendant under a junction is rejected before creation",
+      "status": "FAIL",
+      "error": "Junction ancestor of nonexistent path was accepted."
+    }
+  ],
+  "passed": 4,
+  "failed": 3,
+  "syntheticPathsCleaned": true,
+  "networkCalls": 0,
+  "credentialInput": false
+}

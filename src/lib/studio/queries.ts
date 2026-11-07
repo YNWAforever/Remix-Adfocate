@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api";
 import type { StudioDetail, StudioThread } from "./types";
 export const studioKeys = { threads: ["studio", "threads"] as const, detail: (id: string) => ["studio", "thread", id] as const };
-export function useStudioThreads(page = 0) { return useQuery({ queryKey: [...studioKeys.threads, page], queryFn: () => apiFetch<{ threads: StudioThread[]; nextPage: number | null }>(`/studio/threads?page=${page}`) }); }
+export function useStudioThreads(page = 0, enabled = true) { return useQuery({ queryKey: [...studioKeys.threads, page], queryFn: () => apiFetch<{ threads: StudioThread[]; nextPage: number | null }>(`/studio/threads?page=${page}`), enabled }); }
 export function useStudioThread(id: string) { return useQuery({ queryKey: studioKeys.detail(id), queryFn: () => apiFetch<StudioDetail>(`/studio/threads/${id}`), enabled: Boolean(id) }); }
 export type StudioCommand = { action: "create_thread" | "add_source" | "revoke_source" | "save_brief" | "share_brief"; requestId: string; payload: Record<string, unknown> };
 export function useStudioCommand<T>() {

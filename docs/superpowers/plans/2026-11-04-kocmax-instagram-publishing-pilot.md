@@ -10,6 +10,12 @@
 
 **Spec:** [Approved Instagram growth Studio design](../specs/2026-11-03-kocmax-instagram-growth-studio-design.md), §§4, 6–10. Depends on [UI/session reliability](2026-11-04-kocmax-ui-session-reliability.md) and [offline image/skills](2026-11-04-kocmax-image-growth-offline.md).
 
+## Current execution boundary — 2026-11-04
+
+The current session instruction supersedes the commit steps below: all work after `e491e2d` remains unstaged and uncommitted on the existing branch. No deployment, real connection, provider/model call, public media hosting or application of either new migration is authorized. The numbered steps remain the original plan; the authoritative completed-versus-blocked ledger is [Stage5 status](../../review/kocmax-stage-5/STATUS.md).
+
+Tasks2–5 and8 have accepted offline implementations and independent reviews, including durable publish-claim history, current-session confirmation, original mission proof delegation and the client/application transport correction. Nine synthetic personas were checked at390/1440; this is not nine live accounts. Tasks1,6,7 preserve their proven offline checks while the actual Instagram protocol, image supplier rights and vision processor remain blocked. Task9 has a [blocked readiness record](../../review/kocmax-stage-5/instagram-pilot-approval.md) and a [NOT RUN execution record](../../review/kocmax-stage-5/instagram-pilot-execution.md); neither is approval to execute. Current sample publication receipts cannot submit mission proof or award rewards.
+
 ## Global Constraints
 
 - Same branch; preserve D1/Auth/RLS fixes and all visitor/creator/brand/operator functions. Record the dirty baseline; stage only new task hunks, especially in already modified files such as `server/app.ts`. Audit every staged diff before commit. No deploy or real Instagram/Drive connection from plan approval.
@@ -35,7 +41,7 @@
 | --- | --- | --- |
 | Instagram contract | Modify `server/lib/integrations/providers/instagramLive.ts`, `policy.ts`, `metaNotice.ts`, `oauth.ts` only after a reviewed protocol diff; extend their tests; create `docs/review/kocmax-stage-5/instagram-protocol-manifest.md` | Document correct Instagram Login host/token/subject/permissions/revoke/notice contract; fail closed when unknown |
 | Publish policy | Create `server/lib/creatorGrowth/publishPolicy.ts`, `.test.ts` | Personal vs Active mission eligibility, approved version, disclosure and exact preview fingerprint |
-| Intent store | Create `server/lib/creatorGrowth/publishRepo.ts`, `publishRepo.test.ts`, migration `supabase/migrations/20261104020000_kocmax_publish_intents.sql`, schema test and SQL review packet | One durable intent per content version; owner isolation, idempotency, state transitions |
+| Intent store | Create `server/lib/creatorGrowth/publishRepo.ts`, `publishRepo.test.ts`, CLI-allocated migration `supabase/migrations/20261104134202_kocmax_publish_intents.sql`, schema test and SQL review packet | One durable intent per content version; owner isolation, idempotency, state transitions |
 | Provider and service | Create `server/lib/creatorGrowth/instagramPublisher.ts`, `publishService.ts`, `mediaLease.ts` and tests | Mock-first container/status/publish/reconcile and optional short-lived media fetch |
 | API and UI | Create `server/routes/creatorGrowthPublish.ts`, `src/components/studio/PublishPreview.tsx`, `PublishStatus.tsx`, `src/lib/creatorGrowth/publishQueries.ts` with tests; modify `server/app.ts` and Studio workspace | Human preview/confirm and honest receipt/unknown state |
 | Public image provider | Extend `server/lib/creatorGrowth/publicImageProvider.ts` and tests after rights review | Bounded, own-account RapidAPI image retrieval with separate provenance |
@@ -68,7 +74,7 @@
 
 ### Task 3: Durable intent and owner-scoped status, SQL prepared only
 
-**Files:** Create `server/lib/creatorGrowth/publishRepo.ts`, `publishRepo.test.ts`, `supabase/migrations/20261104020000_kocmax_publish_intents.sql`, `server/test/creator-growth-publish-schema.test.ts`, `docs/review/kocmax-stage-5/instagram-publish-sql-review.md`.
+**Files:** Create `server/lib/creatorGrowth/publishRepo.ts`, `publishRepo.test.ts`, CLI-allocated `supabase/migrations/20261104134202_kocmax_publish_intents.sql`, `server/test/creator-growth-publish-schema.test.ts`, `docs/review/kocmax-stage-5/instagram-publish-sql-review.md`.
 
 **Interfaces:** `type PublishState = "private_draft" | "asset_validated" | "preview_ready" | "creator_approved" | "container_preparing" | "provider_processing" | "publish_requested" | "published" | "failed" | "outcome_unknown" | "cancelled" | "invalidated"`; `type PublishIntent = {id: string; owner: {workspaceId: string; creatorId: string}; connectionId: string; grantGeneration: number; requestId: string; fingerprint: string; state: PublishState; providerContainerId?: string; providerMediaId?: string; sanitizedReceipt?: Record<string, unknown>}`. `PublishRepository.reserve(actor, draft, fingerprint, requestId): Promise<PublishIntent>` returns the same intent for the same request/content, conflict for different content; `transition(intentId, expectedState, nextState, receipt?): Promise<PublishIntent>`; `getOwned(actor, intentId): Promise<PublishIntent>`; `stopByConnection(connectionId, generation): Promise<void>`.
 

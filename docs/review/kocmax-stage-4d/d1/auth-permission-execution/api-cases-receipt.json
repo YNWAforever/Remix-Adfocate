@@ -1,0 +1,1851 @@
+{
+  "status": "API_RLS_CASES_PASSED_CLEANUP_PENDING",
+  "projectRef": "mhkoayftiuojxlrkollf",
+  "runId": "5f694251-c6eb-4f5f-a281-25e91db81c04",
+  "caseRunId": "01db1d1f-23a5-4b83-9d25-8da8cddabc63",
+  "startedAt": "2026-11-01T15:51:08.981Z",
+  "sqlSha256": "ae276f3dfc22539b48e482dceb1aeab8de2774c75f32816fe58665bfef8b7b8d",
+  "manifestSha256": "32e41e0aa7febd55bb75516779bca8ac5ce62e796e28ee3a503e1a9a414aaab1",
+  "sourceHashes": {
+    "server/routes/me.ts": "9e3515ac7177371a6c14b8f6e483cc5371d03e496f14f4d9658ea3724c9296f8",
+    "server/lib/brandAuth.ts": "1318514b0a6047d2cf46104e2357154226bf623a3b79f57d09721fcad3304970",
+    "server/routes/brand.ts": "170d98a524ec4014b3b22a869ccdb142c23639c759aba656088615bf0884af86"
+  },
+  "prerequisiteEvidence": "PARENT_APPLICATION_AND_SEED_RECEIPTS_PLUS_LOCAL_SOURCE_HASHES",
+  "accounts": [
+    {
+      "alias": "C-A",
+      "authId": "6c88b77f-a273-4ed4-b48f-099ad792efc7"
+    },
+    {
+      "alias": "C-P",
+      "authId": "1cf3cd31-79ba-463d-8631-2528a34d68a4"
+    },
+    {
+      "alias": "C-B",
+      "authId": "f06df842-931b-4e45-b74f-0ea9c2944159"
+    },
+    {
+      "alias": "S-A",
+      "authId": "d854b3e8-85dd-4d97-89aa-f59c93e2d1ee"
+    },
+    {
+      "alias": "S-O",
+      "authId": "4c1e5d4b-ac1d-4930-b245-1e4efe28de20"
+    },
+    {
+      "alias": "S-R",
+      "authId": "ff86250c-e600-4841-bf36-329f5bf180aa"
+    },
+    {
+      "alias": "S-F",
+      "authId": "e43cdb67-63b7-4946-836d-7333624a1842"
+    },
+    {
+      "alias": "B-A",
+      "authId": "faf3de5a-e961-4d29-b825-5f5abfe5438e"
+    },
+    {
+      "alias": "U-X",
+      "authId": "6a3bd66a-6fd4-4e24-9e56-d51d4246d833"
+    }
+  ],
+  "workspaces": [
+    {
+      "alias": "A",
+      "id": "00391df1-e411-4a82-a317-4a73bb293f89",
+      "slug": "kocmax-auth-5f694251-c6eb-4f5f-a281-25e91db81c04-a"
+    },
+    {
+      "alias": "B",
+      "id": "5d92d267-1b2a-4f19-97bd-3c80f1f3b213",
+      "slug": "kocmax-auth-5f694251-c6eb-4f5f-a281-25e91db81c04-b"
+    }
+  ],
+  "cases": [
+    {
+      "name": "password_auth:C-A",
+      "actor": "C-A",
+      "status": "PASS"
+    },
+    {
+      "name": "password_auth:C-P",
+      "actor": "C-P",
+      "status": "PASS"
+    },
+    {
+      "name": "password_auth:C-B",
+      "actor": "C-B",
+      "status": "PASS"
+    },
+    {
+      "name": "password_auth:S-A",
+      "actor": "S-A",
+      "status": "PASS"
+    },
+    {
+      "name": "password_auth:S-O",
+      "actor": "S-O",
+      "status": "PASS"
+    },
+    {
+      "name": "password_auth:S-R",
+      "actor": "S-R",
+      "status": "PASS"
+    },
+    {
+      "name": "password_auth:S-F",
+      "actor": "S-F",
+      "status": "PASS"
+    },
+    {
+      "name": "password_auth:B-A",
+      "actor": "B-A",
+      "status": "PASS"
+    },
+    {
+      "name": "password_auth:U-X",
+      "actor": "U-X",
+      "status": "PASS"
+    },
+    {
+      "name": "auth_only:creators",
+      "actor": "U-X",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "auth_only:point_balances",
+      "actor": "U-X",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "auth_only:earnings_balances",
+      "actor": "U-X",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "auth_only:GET_me",
+      "actor": "U-X",
+      "status": "PASS",
+      "httpStatus": 403
+    },
+    {
+      "name": "auth_only:admin",
+      "actor": "U-X",
+      "status": "PASS",
+      "httpStatus": 403
+    },
+    {
+      "name": "auth_only:brand",
+      "actor": "U-X",
+      "status": "PASS",
+      "httpStatus": 403
+    },
+    {
+      "name": "bootstrap:first",
+      "actor": "C-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "bootstrap:first",
+      "actor": "C-P",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "bootstrap:first",
+      "actor": "C-B",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "bootstrap:first",
+      "actor": "S-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "bootstrap:first",
+      "actor": "S-O",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "bootstrap:first",
+      "actor": "S-R",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "bootstrap:first",
+      "actor": "S-F",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "bootstrap:first",
+      "actor": "B-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "bootstrap:first",
+      "actor": "U-X",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "bootstrap:repeat",
+      "actor": "C-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "before_wrong_workspace:point_balances",
+      "actor": "C-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "before_wrong_workspace:earnings_balances",
+      "actor": "C-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "bootstrap:B_server",
+      "actor": "C-A",
+      "status": "PASS",
+      "httpStatus": 404
+    },
+    {
+      "name": "after_wrong_workspace_no_extra_balance:point_balances",
+      "actor": "C-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "after_wrong_workspace_no_extra_balance:earnings_balances",
+      "actor": "C-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "own:GET_me",
+      "actor": "C-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "own:creator",
+      "actor": "C-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "own:GET_me",
+      "actor": "C-P",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "own:creator",
+      "actor": "C-P",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "own:GET_me",
+      "actor": "C-B",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "own:creator",
+      "actor": "C-B",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "own:GET_me",
+      "actor": "S-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "own:creator",
+      "actor": "S-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "own:GET_me",
+      "actor": "S-O",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "own:creator",
+      "actor": "S-O",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "own:GET_me",
+      "actor": "S-R",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "own:creator",
+      "actor": "S-R",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "own:GET_me",
+      "actor": "S-F",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "own:creator",
+      "actor": "S-F",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "own:GET_me",
+      "actor": "B-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "own:creator",
+      "actor": "B-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "own:GET_me",
+      "actor": "U-X",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "own:creator",
+      "actor": "U-X",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "protected_creator:workspace_id",
+      "actor": "C-A",
+      "status": "PASS",
+      "httpStatus": 403
+    },
+    {
+      "name": "protected_creator:xp",
+      "actor": "C-A",
+      "status": "PASS",
+      "httpStatus": 403
+    },
+    {
+      "name": "protected_creator:unchanged",
+      "actor": "C-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "brand:create_one_draft",
+      "actor": "B-A",
+      "status": "PASS",
+      "httpStatus": 201
+    },
+    {
+      "name": "mission:draft_zero_private",
+      "actor": "B-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "brand:positive_API_edit",
+      "actor": "B-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "brand:positive_REST_PATCH_one",
+      "actor": "B-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "brand:positive_API_edit",
+      "actor": "S-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "brand:positive_REST_PATCH_one",
+      "actor": "S-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "limited_staff:S-O:POST:create",
+      "actor": "S-O",
+      "status": "PASS",
+      "httpStatus": 403
+    },
+    {
+      "name": "limited_staff:S-O:PUT:446802cb-4f6c-418d-967a-bf5f1cf63ea5",
+      "actor": "S-O",
+      "status": "PASS",
+      "httpStatus": 403
+    },
+    {
+      "name": "limited_staff:S-O:POST:publish",
+      "actor": "S-O",
+      "status": "PASS",
+      "httpStatus": 403
+    },
+    {
+      "name": "limited_staff:S-O:POST:close",
+      "actor": "S-O",
+      "status": "PASS",
+      "httpStatus": 403
+    },
+    {
+      "name": "limited_staff:S-O:DELETE:446802cb-4f6c-418d-967a-bf5f1cf63ea5",
+      "actor": "S-O",
+      "status": "PASS",
+      "httpStatus": 403
+    },
+    {
+      "name": "limited_staff:S-O:REST_PATCH",
+      "actor": "S-O",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "limited_staff:S-O:draft_unchanged",
+      "actor": "B-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "limited_staff:S-R:POST:create",
+      "actor": "S-R",
+      "status": "PASS",
+      "httpStatus": 403
+    },
+    {
+      "name": "limited_staff:S-R:PUT:446802cb-4f6c-418d-967a-bf5f1cf63ea5",
+      "actor": "S-R",
+      "status": "PASS",
+      "httpStatus": 403
+    },
+    {
+      "name": "limited_staff:S-R:POST:publish",
+      "actor": "S-R",
+      "status": "PASS",
+      "httpStatus": 403
+    },
+    {
+      "name": "limited_staff:S-R:POST:close",
+      "actor": "S-R",
+      "status": "PASS",
+      "httpStatus": 403
+    },
+    {
+      "name": "limited_staff:S-R:DELETE:446802cb-4f6c-418d-967a-bf5f1cf63ea5",
+      "actor": "S-R",
+      "status": "PASS",
+      "httpStatus": 403
+    },
+    {
+      "name": "limited_staff:S-R:REST_PATCH",
+      "actor": "S-R",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "limited_staff:S-R:draft_unchanged",
+      "actor": "B-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "limited_staff:S-F:POST:create",
+      "actor": "S-F",
+      "status": "PASS",
+      "httpStatus": 403
+    },
+    {
+      "name": "limited_staff:S-F:PUT:446802cb-4f6c-418d-967a-bf5f1cf63ea5",
+      "actor": "S-F",
+      "status": "PASS",
+      "httpStatus": 403
+    },
+    {
+      "name": "limited_staff:S-F:POST:publish",
+      "actor": "S-F",
+      "status": "PASS",
+      "httpStatus": 403
+    },
+    {
+      "name": "limited_staff:S-F:POST:close",
+      "actor": "S-F",
+      "status": "PASS",
+      "httpStatus": 403
+    },
+    {
+      "name": "limited_staff:S-F:DELETE:446802cb-4f6c-418d-967a-bf5f1cf63ea5",
+      "actor": "S-F",
+      "status": "PASS",
+      "httpStatus": 403
+    },
+    {
+      "name": "limited_staff:S-F:REST_PATCH",
+      "actor": "S-F",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "limited_staff:S-F:draft_unchanged",
+      "actor": "B-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "outsider:brand_API",
+      "actor": "C-B",
+      "status": "PASS",
+      "httpStatus": 403
+    },
+    {
+      "name": "outsider:REST_PATCH_zero",
+      "actor": "C-B",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:thread",
+      "actor": "C-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:source-1",
+      "actor": "C-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:source-2",
+      "actor": "C-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:brief",
+      "actor": "C-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:thread",
+      "actor": "C-P",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:source-1",
+      "actor": "C-P",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:brief",
+      "actor": "C-P",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:thread",
+      "actor": "C-B",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:source-1",
+      "actor": "C-B",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:brief",
+      "actor": "C-B",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:owner_detail",
+      "actor": "C-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:private_detail:C-A",
+      "actor": "C-P",
+      "status": "PASS",
+      "httpStatus": 404
+    },
+    {
+      "name": "studio:private_detail:C-A",
+      "actor": "C-B",
+      "status": "PASS",
+      "httpStatus": 404
+    },
+    {
+      "name": "studio:anonymous_detail:C-A",
+      "actor": null,
+      "status": "PASS",
+      "httpStatus": 401
+    },
+    {
+      "name": "studio:REST:studio_threads:C-A",
+      "actor": "C-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_threads:C-A",
+      "actor": "C-P",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_threads:C-A",
+      "actor": "C-B",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_threads:C-A",
+      "actor": "S-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_threads:C-A",
+      "actor": "S-O",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_threads:C-A",
+      "actor": "S-R",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_threads:C-A",
+      "actor": "S-F",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_threads:C-A",
+      "actor": "B-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_threads:C-A",
+      "actor": "U-X",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_threads:C-A",
+      "actor": null,
+      "status": "PASS",
+      "httpStatus": 401
+    },
+    {
+      "name": "studio:REST:studio_sources:C-A",
+      "actor": "C-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_sources:C-A",
+      "actor": "C-P",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_sources:C-A",
+      "actor": "C-B",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_sources:C-A",
+      "actor": "S-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_sources:C-A",
+      "actor": "S-O",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_sources:C-A",
+      "actor": "S-R",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_sources:C-A",
+      "actor": "S-F",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_sources:C-A",
+      "actor": "B-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_sources:C-A",
+      "actor": "U-X",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_sources:C-A",
+      "actor": null,
+      "status": "PASS",
+      "httpStatus": 401
+    },
+    {
+      "name": "studio:REST:studio_briefs:C-A",
+      "actor": "C-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_briefs:C-A",
+      "actor": "C-P",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_briefs:C-A",
+      "actor": "C-B",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_briefs:C-A",
+      "actor": "S-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_briefs:C-A",
+      "actor": "S-O",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_briefs:C-A",
+      "actor": "S-R",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_briefs:C-A",
+      "actor": "S-F",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_briefs:C-A",
+      "actor": "B-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_briefs:C-A",
+      "actor": "U-X",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_briefs:C-A",
+      "actor": null,
+      "status": "PASS",
+      "httpStatus": 401
+    },
+    {
+      "name": "studio:owner_detail",
+      "actor": "C-P",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:private_detail:C-P",
+      "actor": "C-A",
+      "status": "PASS",
+      "httpStatus": 404
+    },
+    {
+      "name": "studio:private_detail:C-P",
+      "actor": "C-B",
+      "status": "PASS",
+      "httpStatus": 404
+    },
+    {
+      "name": "studio:anonymous_detail:C-P",
+      "actor": null,
+      "status": "PASS",
+      "httpStatus": 401
+    },
+    {
+      "name": "studio:REST:studio_threads:C-P",
+      "actor": "C-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_threads:C-P",
+      "actor": "C-P",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_threads:C-P",
+      "actor": "C-B",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_threads:C-P",
+      "actor": "S-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_threads:C-P",
+      "actor": "S-O",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_threads:C-P",
+      "actor": "S-R",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_threads:C-P",
+      "actor": "S-F",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_threads:C-P",
+      "actor": "B-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_threads:C-P",
+      "actor": "U-X",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_threads:C-P",
+      "actor": null,
+      "status": "PASS",
+      "httpStatus": 401
+    },
+    {
+      "name": "studio:REST:studio_sources:C-P",
+      "actor": "C-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_sources:C-P",
+      "actor": "C-P",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_sources:C-P",
+      "actor": "C-B",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_sources:C-P",
+      "actor": "S-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_sources:C-P",
+      "actor": "S-O",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_sources:C-P",
+      "actor": "S-R",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_sources:C-P",
+      "actor": "S-F",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_sources:C-P",
+      "actor": "B-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_sources:C-P",
+      "actor": "U-X",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_sources:C-P",
+      "actor": null,
+      "status": "PASS",
+      "httpStatus": 401
+    },
+    {
+      "name": "studio:REST:studio_briefs:C-P",
+      "actor": "C-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_briefs:C-P",
+      "actor": "C-P",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_briefs:C-P",
+      "actor": "C-B",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_briefs:C-P",
+      "actor": "S-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_briefs:C-P",
+      "actor": "S-O",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_briefs:C-P",
+      "actor": "S-R",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_briefs:C-P",
+      "actor": "S-F",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_briefs:C-P",
+      "actor": "B-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_briefs:C-P",
+      "actor": "U-X",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_briefs:C-P",
+      "actor": null,
+      "status": "PASS",
+      "httpStatus": 401
+    },
+    {
+      "name": "studio:owner_detail",
+      "actor": "C-B",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:private_detail:C-B",
+      "actor": "C-A",
+      "status": "PASS",
+      "httpStatus": 404
+    },
+    {
+      "name": "studio:private_detail:C-B",
+      "actor": "C-P",
+      "status": "PASS",
+      "httpStatus": 404
+    },
+    {
+      "name": "studio:anonymous_detail:C-B",
+      "actor": null,
+      "status": "PASS",
+      "httpStatus": 401
+    },
+    {
+      "name": "studio:REST:studio_threads:C-B",
+      "actor": "C-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_threads:C-B",
+      "actor": "C-P",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_threads:C-B",
+      "actor": "C-B",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_threads:C-B",
+      "actor": "S-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_threads:C-B",
+      "actor": "S-O",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_threads:C-B",
+      "actor": "S-R",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_threads:C-B",
+      "actor": "S-F",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_threads:C-B",
+      "actor": "B-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_threads:C-B",
+      "actor": "U-X",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_threads:C-B",
+      "actor": null,
+      "status": "PASS",
+      "httpStatus": 401
+    },
+    {
+      "name": "studio:REST:studio_sources:C-B",
+      "actor": "C-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_sources:C-B",
+      "actor": "C-P",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_sources:C-B",
+      "actor": "C-B",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_sources:C-B",
+      "actor": "S-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_sources:C-B",
+      "actor": "S-O",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_sources:C-B",
+      "actor": "S-R",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_sources:C-B",
+      "actor": "S-F",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_sources:C-B",
+      "actor": "B-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_sources:C-B",
+      "actor": "U-X",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_sources:C-B",
+      "actor": null,
+      "status": "PASS",
+      "httpStatus": 401
+    },
+    {
+      "name": "studio:REST:studio_briefs:C-B",
+      "actor": "C-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_briefs:C-B",
+      "actor": "C-P",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_briefs:C-B",
+      "actor": "C-B",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_briefs:C-B",
+      "actor": "S-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_briefs:C-B",
+      "actor": "S-O",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_briefs:C-B",
+      "actor": "S-R",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_briefs:C-B",
+      "actor": "S-F",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_briefs:C-B",
+      "actor": "B-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_briefs:C-B",
+      "actor": "U-X",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "studio:REST:studio_briefs:C-B",
+      "actor": null,
+      "status": "PASS",
+      "httpStatus": 401
+    },
+    {
+      "name": "final_zero_balance:point_balances",
+      "actor": "C-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "final_zero_balance:earnings_balances",
+      "actor": "C-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "wallet:points_zero",
+      "actor": "C-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "wallet:earnings_zero",
+      "actor": "C-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "wallet:points_history_empty",
+      "actor": "C-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "wallet:earnings_history_empty",
+      "actor": "C-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "export:own_scopes_only",
+      "actor": "C-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "final_zero_balance:point_balances",
+      "actor": "C-P",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "final_zero_balance:earnings_balances",
+      "actor": "C-P",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "wallet:points_zero",
+      "actor": "C-P",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "wallet:earnings_zero",
+      "actor": "C-P",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "wallet:points_history_empty",
+      "actor": "C-P",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "wallet:earnings_history_empty",
+      "actor": "C-P",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "export:own_scopes_only",
+      "actor": "C-P",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "final_zero_balance:point_balances",
+      "actor": "C-B",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "final_zero_balance:earnings_balances",
+      "actor": "C-B",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "wallet:points_zero",
+      "actor": "C-B",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "wallet:earnings_zero",
+      "actor": "C-B",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "wallet:points_history_empty",
+      "actor": "C-B",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "wallet:earnings_history_empty",
+      "actor": "C-B",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "export:own_scopes_only",
+      "actor": "C-B",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "final_zero_balance:point_balances",
+      "actor": "S-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "final_zero_balance:earnings_balances",
+      "actor": "S-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "wallet:points_zero",
+      "actor": "S-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "wallet:earnings_zero",
+      "actor": "S-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "wallet:points_history_empty",
+      "actor": "S-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "wallet:earnings_history_empty",
+      "actor": "S-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "export:own_scopes_only",
+      "actor": "S-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "final_zero_balance:point_balances",
+      "actor": "S-O",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "final_zero_balance:earnings_balances",
+      "actor": "S-O",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "wallet:points_zero",
+      "actor": "S-O",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "wallet:earnings_zero",
+      "actor": "S-O",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "wallet:points_history_empty",
+      "actor": "S-O",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "wallet:earnings_history_empty",
+      "actor": "S-O",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "export:own_scopes_only",
+      "actor": "S-O",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "final_zero_balance:point_balances",
+      "actor": "S-R",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "final_zero_balance:earnings_balances",
+      "actor": "S-R",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "wallet:points_zero",
+      "actor": "S-R",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "wallet:earnings_zero",
+      "actor": "S-R",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "wallet:points_history_empty",
+      "actor": "S-R",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "wallet:earnings_history_empty",
+      "actor": "S-R",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "export:own_scopes_only",
+      "actor": "S-R",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "final_zero_balance:point_balances",
+      "actor": "S-F",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "final_zero_balance:earnings_balances",
+      "actor": "S-F",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "wallet:points_zero",
+      "actor": "S-F",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "wallet:earnings_zero",
+      "actor": "S-F",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "wallet:points_history_empty",
+      "actor": "S-F",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "wallet:earnings_history_empty",
+      "actor": "S-F",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "export:own_scopes_only",
+      "actor": "S-F",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "final_zero_balance:point_balances",
+      "actor": "B-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "final_zero_balance:earnings_balances",
+      "actor": "B-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "wallet:points_zero",
+      "actor": "B-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "wallet:earnings_zero",
+      "actor": "B-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "wallet:points_history_empty",
+      "actor": "B-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "wallet:earnings_history_empty",
+      "actor": "B-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "export:own_scopes_only",
+      "actor": "B-A",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "final_zero_balance:point_balances",
+      "actor": "U-X",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "final_zero_balance:earnings_balances",
+      "actor": "U-X",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "wallet:points_zero",
+      "actor": "U-X",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "wallet:earnings_zero",
+      "actor": "U-X",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "wallet:points_history_empty",
+      "actor": "U-X",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "wallet:earnings_history_empty",
+      "actor": "U-X",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "export:own_scopes_only",
+      "actor": "U-X",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "reviewer:before_scoped_access",
+      "actor": "S-R",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "stale_reviewer:scoped_read",
+      "actor": "S-R",
+      "status": "PASS",
+      "httpStatus": 403
+    },
+    {
+      "name": "stale_reviewer:admin_write",
+      "actor": "S-R",
+      "status": "PASS",
+      "httpStatus": 403
+    },
+    {
+      "name": "stale_reviewer:POST:create",
+      "actor": "S-R",
+      "status": "PASS",
+      "httpStatus": 403
+    },
+    {
+      "name": "stale_reviewer:PUT:446802cb-4f6c-418d-967a-bf5f1cf63ea5",
+      "actor": "S-R",
+      "status": "PASS",
+      "httpStatus": 403
+    },
+    {
+      "name": "stale_reviewer:POST:publish",
+      "actor": "S-R",
+      "status": "PASS",
+      "httpStatus": 403
+    },
+    {
+      "name": "stale_reviewer:POST:close",
+      "actor": "S-R",
+      "status": "PASS",
+      "httpStatus": 403
+    },
+    {
+      "name": "stale_reviewer:DELETE:446802cb-4f6c-418d-967a-bf5f1cf63ea5",
+      "actor": "S-R",
+      "status": "PASS",
+      "httpStatus": 403
+    },
+    {
+      "name": "stale_reviewer:REST_PATCH",
+      "actor": "S-R",
+      "status": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "stale_reviewer:draft_unchanged",
+      "actor": "B-A",
+      "status": "PASS",
+      "httpStatus": 200
+    }
+  ],
+  "intents": [
+    {
+      "action": "bootstrap",
+      "alias": "C-A"
+    },
+    {
+      "action": "bootstrap",
+      "alias": "C-P"
+    },
+    {
+      "action": "bootstrap",
+      "alias": "C-B"
+    },
+    {
+      "action": "bootstrap",
+      "alias": "S-A"
+    },
+    {
+      "action": "bootstrap",
+      "alias": "S-O"
+    },
+    {
+      "action": "bootstrap",
+      "alias": "S-R"
+    },
+    {
+      "action": "bootstrap",
+      "alias": "S-F"
+    },
+    {
+      "action": "bootstrap",
+      "alias": "B-A"
+    },
+    {
+      "action": "bootstrap",
+      "alias": "U-X"
+    },
+    {
+      "action": "create_draft_mission",
+      "actor": "B-A",
+      "workspaceId": "00391df1-e411-4a82-a317-4a73bb293f89",
+      "slug": "kocmax-auth-5f694251-c6eb-4f5f-a281-25e91db81c04-api-draft"
+    },
+    {
+      "action": "create_thread",
+      "alias": "C-A",
+      "requestId": "63523d56-247f-58d3-88b7-6c1818074d4c"
+    },
+    {
+      "action": "add_source",
+      "alias": "C-A",
+      "requestId": "87f25177-f8d0-58d8-b233-4e5cd4f459bb"
+    },
+    {
+      "action": "add_source",
+      "alias": "C-A",
+      "requestId": "7a265224-4dfa-5476-8b69-18614f43b682"
+    },
+    {
+      "action": "save_brief",
+      "alias": "C-A",
+      "requestId": "5327ba07-2bd5-55df-865b-3bcf991138e8"
+    },
+    {
+      "action": "create_thread",
+      "alias": "C-P",
+      "requestId": "10f57130-7a38-5719-a6c1-7414df44ea1c"
+    },
+    {
+      "action": "add_source",
+      "alias": "C-P",
+      "requestId": "d7a50145-5a65-5e83-9bc5-8754ec2675f1"
+    },
+    {
+      "action": "save_brief",
+      "alias": "C-P",
+      "requestId": "1f61c874-cdd3-5aad-af70-1e1284f83c0b"
+    },
+    {
+      "action": "create_thread",
+      "alias": "C-B",
+      "requestId": "6ac62455-bbe6-576c-af47-56ac6fabe904"
+    },
+    {
+      "action": "add_source",
+      "alias": "C-B",
+      "requestId": "4a295a18-c13f-5184-973e-df59be0503c9"
+    },
+    {
+      "action": "save_brief",
+      "alias": "C-B",
+      "requestId": "51fb2397-d7fe-5e91-9efc-067d6b63cbca"
+    }
+  ],
+  "missions": [
+    {
+      "id": "446802cb-4f6c-418d-967a-bf5f1cf63ea5",
+      "slug": "kocmax-auth-5f694251-c6eb-4f5f-a281-25e91db81c04-api-draft",
+      "workspaceId": "00391df1-e411-4a82-a317-4a73bb293f89"
+    }
+  ],
+  "studio": [
+    {
+      "step": "C-A:thread",
+      "requestId": "63523d56-247f-58d3-88b7-6c1818074d4c",
+      "id": "dd33088f-4b33-4d76-9811-978c40e5e070",
+      "actor": "C-A",
+      "validation": "PASS",
+      "conversationId": "e5c3325e-b603-4838-a2dd-4ed18b541fe6"
+    },
+    {
+      "step": "C-A:source-1",
+      "requestId": "87f25177-f8d0-58d8-b233-4e5cd4f459bb",
+      "id": "bb0d930d-d761-43c6-80f5-47c2beafc817",
+      "actor": "C-A",
+      "validation": "PASS",
+      "threadId": "dd33088f-4b33-4d76-9811-978c40e5e070"
+    },
+    {
+      "step": "C-A:source-2",
+      "requestId": "7a265224-4dfa-5476-8b69-18614f43b682",
+      "id": "2c5a3dca-15bf-4bb8-895f-3bc39aae29b9",
+      "actor": "C-A",
+      "validation": "PASS",
+      "threadId": "dd33088f-4b33-4d76-9811-978c40e5e070"
+    },
+    {
+      "step": "C-A:brief",
+      "requestId": "5327ba07-2bd5-55df-865b-3bcf991138e8",
+      "id": "ea7ea920-5e29-434a-9fc7-1399ec86a83e",
+      "actor": "C-A",
+      "validation": "PASS",
+      "threadId": "dd33088f-4b33-4d76-9811-978c40e5e070"
+    },
+    {
+      "step": "C-P:thread",
+      "requestId": "10f57130-7a38-5719-a6c1-7414df44ea1c",
+      "id": "5d78a882-cbd0-43f9-b6dd-33a7d0032667",
+      "actor": "C-P",
+      "validation": "PASS",
+      "conversationId": "1aaa4779-3f09-45df-8e87-145573b9673a"
+    },
+    {
+      "step": "C-P:source-1",
+      "requestId": "d7a50145-5a65-5e83-9bc5-8754ec2675f1",
+      "id": "c653e25b-366f-4f6e-9496-db681e1e9aca",
+      "actor": "C-P",
+      "validation": "PASS",
+      "threadId": "5d78a882-cbd0-43f9-b6dd-33a7d0032667"
+    },
+    {
+      "step": "C-P:brief",
+      "requestId": "1f61c874-cdd3-5aad-af70-1e1284f83c0b",
+      "id": "29d1601b-d9bd-4db7-bf35-f92fbf753850",
+      "actor": "C-P",
+      "validation": "PASS",
+      "threadId": "5d78a882-cbd0-43f9-b6dd-33a7d0032667"
+    },
+    {
+      "step": "C-B:thread",
+      "requestId": "6ac62455-bbe6-576c-af47-56ac6fabe904",
+      "id": "6b4e59a0-6ccf-42b2-a916-e5dfb706d1fc",
+      "actor": "C-B",
+      "validation": "PASS",
+      "conversationId": "ebdc6564-0e01-4a49-9d82-927ca59277aa"
+    },
+    {
+      "step": "C-B:source-1",
+      "requestId": "4a295a18-c13f-5184-973e-df59be0503c9",
+      "id": "6bd2d657-2d56-4953-848b-974f2b88f5a5",
+      "actor": "C-B",
+      "validation": "PASS",
+      "threadId": "6b4e59a0-6ccf-42b2-a916-e5dfb706d1fc"
+    },
+    {
+      "step": "C-B:brief",
+      "requestId": "51fb2397-d7fe-5e91-9efc-067d6b63cbca",
+      "id": "c2741d4b-080c-4aec-a5b0-c48e93e33ace",
+      "actor": "C-B",
+      "validation": "PASS",
+      "threadId": "6b4e59a0-6ccf-42b2-a916-e5dfb706d1fc"
+    }
+  ],
+  "notRun": [
+    "mobile_desktop_browser",
+    "signup_onboarding_acceptance",
+    "legal_consent_acceptance",
+    "native_Google_login",
+    "Storage",
+    "workflow_parent_fixtures",
+    "positive_join_XP",
+    "AI",
+    "providers",
+    "deployment",
+    "cleanup"
+  ],
+  "limitations": [
+    "No independent catalog verification of parent receipts.",
+    "No remote cleanup; parent must inspect exact returned IDs and ambiguous intents.",
+    "Own balance completeness relies on creator_id-only SELECT policies; parent owner inventory remains authoritative.",
+    "Export Auth account metadata may be null because the local worker blocks Auth-admin reads."
+  ],
+  "finishedAt": "2026-11-01T15:55:58.553Z"
+}

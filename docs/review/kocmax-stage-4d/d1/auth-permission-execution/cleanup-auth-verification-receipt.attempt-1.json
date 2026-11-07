@@ -1,0 +1,184 @@
+{
+  "status": "STOPPED_NOT_VERIFIED",
+  "projectRef": "mhkoayftiuojxlrkollf",
+  "runId": "5f694251-c6eb-4f5f-a281-25e91db81c04",
+  "verificationId": "58e0747e-2568-467d-93a5-96a4d9f1be55",
+  "apiCaseRunId": "01db1d1f-23a5-4b83-9d25-8da8cddabc63",
+  "apiCasesSha256": "25f81102f39da3748f5ea75ca2617dad83bd70bb1b7947fd32ba4f38907490d8",
+  "fixtureScopeSha256": "a6066defcccca54973846f0d11da583e59a923a3661cd10b3a1c3292aca3fa35",
+  "sqlSha256": "ae276f3dfc22539b48e482dceb1aeab8de2774c75f32816fe58665bfef8b7b8d",
+  "sourceHashes": {
+    "server/routes/me.ts": "9e3515ac7177371a6c14b8f6e483cc5371d03e496f14f4d9658ea3724c9296f8",
+    "server/lib/brandAuth.ts": "1318514b0a6047d2cf46104e2357154226bf623a3b79f57d09721fcad3304970",
+    "server/routes/brand.ts": "170d98a524ec4014b3b22a869ccdb142c23639c759aba656088615bf0884af86",
+    "server/routes/account.ts": "42867c57bdff07edf5521cc6742357c7868d516a284d0f7d80efd5ba645bac74",
+    "scripts/integrations/auth-pilot-local.mjs": "ba2d157230750495778922b5ccc6f15a8f635c79f53f1d36e3c576a25fdedfaf",
+    "scripts/integrations/auth-pilot-fixtures.mjs": "a17503f41ddc3c9195be76d04d490473803b2f770100f02d482163f400bce379",
+    "scripts/integrations/run-auth-pilot-cases.mjs": "17ff2bb4ff1b2ea459ecc70b6ba44534cf2747a543dd5ab89d9d19935fd3ad20"
+  },
+  "startedAt": "2026-11-01T17:18:16.916Z",
+  "accounts": [
+    {
+      "alias": "C-A",
+      "authId": "6c88b77f-a273-4ed4-b48f-099ad792efc7",
+      "workspaceAlias": "A",
+      "workspaceId": "00391df1-e411-4a82-a317-4a73bb293f89",
+      "login": "FRESH_PASSWORD_AND_GET_USER_VERIFIED",
+      "refresh": {
+        "status": "NOT_RUN"
+      },
+      "oldAccess": {
+        "authUser": {
+          "status": "NOT_RUN"
+        },
+        "studio": []
+      },
+      "originalAccessExpiresAt": "2026-11-01T18:18:18.000Z"
+    },
+    {
+      "alias": "C-P",
+      "authId": "1cf3cd31-79ba-463d-8631-2528a34d68a4",
+      "workspaceAlias": "A",
+      "workspaceId": "00391df1-e411-4a82-a317-4a73bb293f89",
+      "login": "FRESH_PASSWORD_AND_GET_USER_VERIFIED",
+      "refresh": {
+        "status": "NOT_RUN"
+      },
+      "oldAccess": {
+        "authUser": {
+          "status": "NOT_RUN"
+        },
+        "studio": []
+      },
+      "originalAccessExpiresAt": "2026-11-01T18:18:18.000Z"
+    },
+    {
+      "alias": "C-B",
+      "authId": "f06df842-931b-4e45-b74f-0ea9c2944159",
+      "workspaceAlias": "B",
+      "workspaceId": "5d92d267-1b2a-4f19-97bd-3c80f1f3b213",
+      "login": "FRESH_PASSWORD_AND_GET_USER_VERIFIED",
+      "refresh": {
+        "status": "NOT_RUN"
+      },
+      "oldAccess": {
+        "authUser": {
+          "status": "NOT_RUN"
+        },
+        "studio": []
+      },
+      "originalAccessExpiresAt": "2026-11-01T18:18:19.000Z"
+    },
+    {
+      "alias": "S-A",
+      "authId": "d854b3e8-85dd-4d97-89aa-f59c93e2d1ee",
+      "workspaceAlias": "A",
+      "workspaceId": "00391df1-e411-4a82-a317-4a73bb293f89",
+      "login": "FRESH_PASSWORD_AND_GET_USER_VERIFIED",
+      "refresh": {
+        "status": "NOT_RUN"
+      },
+      "oldAccess": {
+        "authUser": {
+          "status": "NOT_RUN"
+        },
+        "studio": []
+      },
+      "originalAccessExpiresAt": "2026-11-01T18:18:20.000Z"
+    },
+    {
+      "alias": "S-O",
+      "authId": "4c1e5d4b-ac1d-4930-b245-1e4efe28de20",
+      "workspaceAlias": "A",
+      "workspaceId": "00391df1-e411-4a82-a317-4a73bb293f89",
+      "login": "FRESH_PASSWORD_AND_GET_USER_VERIFIED",
+      "refresh": {
+        "status": "NOT_RUN"
+      },
+      "oldAccess": {
+        "authUser": {
+          "status": "NOT_RUN"
+        },
+        "studio": []
+      },
+      "originalAccessExpiresAt": "2026-11-01T18:18:20.000Z"
+    },
+    {
+      "alias": "S-R",
+      "authId": "ff86250c-e600-4841-bf36-329f5bf180aa",
+      "workspaceAlias": "A",
+      "workspaceId": "00391df1-e411-4a82-a317-4a73bb293f89",
+      "login": "FRESH_PASSWORD_AND_GET_USER_VERIFIED",
+      "refresh": {
+        "status": "NOT_RUN"
+      },
+      "oldAccess": {
+        "authUser": {
+          "status": "NOT_RUN"
+        },
+        "studio": []
+      },
+      "originalAccessExpiresAt": "2026-11-01T18:18:21.000Z"
+    },
+    {
+      "alias": "S-F",
+      "authId": "e43cdb67-63b7-4946-836d-7333624a1842",
+      "workspaceAlias": "A",
+      "workspaceId": "00391df1-e411-4a82-a317-4a73bb293f89",
+      "login": "FRESH_PASSWORD_AND_GET_USER_VERIFIED",
+      "refresh": {
+        "status": "NOT_RUN"
+      },
+      "oldAccess": {
+        "authUser": {
+          "status": "NOT_RUN"
+        },
+        "studio": []
+      },
+      "originalAccessExpiresAt": "2026-11-01T18:18:21.000Z"
+    },
+    {
+      "alias": "B-A",
+      "authId": "faf3de5a-e961-4d29-b825-5f5abfe5438e",
+      "workspaceAlias": "A",
+      "workspaceId": "00391df1-e411-4a82-a317-4a73bb293f89",
+      "login": "FRESH_PASSWORD_AND_GET_USER_VERIFIED",
+      "refresh": {
+        "status": "NOT_RUN"
+      },
+      "oldAccess": {
+        "authUser": {
+          "status": "NOT_RUN"
+        },
+        "studio": []
+      },
+      "originalAccessExpiresAt": "2026-11-01T18:18:21.000Z"
+    },
+    {
+      "alias": "U-X",
+      "authId": "6a3bd66a-6fd4-4e24-9e56-d51d4246d833",
+      "workspaceAlias": "A",
+      "workspaceId": "00391df1-e411-4a82-a317-4a73bb293f89",
+      "login": "FRESH_PASSWORD_AND_GET_USER_VERIFIED",
+      "refresh": {
+        "status": "NOT_RUN"
+      },
+      "oldAccess": {
+        "authUser": {
+          "status": "NOT_RUN"
+        },
+        "studio": []
+      },
+      "originalAccessExpiresAt": "2026-11-01T18:18:22.000Z"
+    }
+  ],
+  "accessJwtInvalidation": "NOT_ASSUMED_OR_PROVEN_BY_REFRESH_REJECTION",
+  "limitations": [
+    "Parent cleanup receipt is an attestation, not independent admin verification.",
+    "Old-token probes cover only own recorded IDs; no claim about other rows or complete deletion.",
+    "Empty REST results cannot distinguish removed rows from RLS filtering.",
+    "Reference clearing is not cryptographic memory erasure."
+  ],
+  "failureCode": "CLEANUP_BARRIER_TIMEOUT",
+  "finishedAt": "2026-11-01T17:48:22.303Z"
+}

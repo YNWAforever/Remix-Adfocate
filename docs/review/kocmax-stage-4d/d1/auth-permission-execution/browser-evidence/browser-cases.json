@@ -1,0 +1,1201 @@
+{
+  "status": "NINE_ACCOUNT_LOGIN_MATRIX_VERIFIED_WITH_LIMITS",
+  "projectRef": "mhkoayftiuojxlrkollf",
+  "runId": "5f694251-c6eb-4f5f-a281-25e91db81c04",
+  "startedAt": "2026-11-01T16:14:25.167Z",
+  "cases": [
+    {
+      "alias": "C-A",
+      "size": "desktop",
+      "journey": "login-home-gate",
+      "observedAt": "2026-11-01T16:14:31.581Z",
+      "url": "http://127.0.0.1:8784/home",
+      "metrics": {
+        "bodyWidth": 1434,
+        "documentWidth": 1434,
+        "height": 1000,
+        "width": 1440
+      },
+      "noHorizontalOverflow": true,
+      "checks": {
+        "realPasswordLogin": true,
+        "consentGateVisible": true,
+        "postConsentInteraction": "NOT_TESTED"
+      },
+      "screenshot": "C-A-desktop-login-home-gate.jpg",
+      "screenshotSha256": "e4e69a129ebf82932033aa9c799f365bb065a136da74d3901965a6fb7d4fa7ea",
+      "captureFileSource": "C:\\Users\\laich\\.codex\\visualizations\\2026\\10\\29\\01a1880d-a6f1-7ef1-9ec1-f853a3b65772\\auth-pilot-browser-evidence\\C-A-desktop-login-home-gate.png",
+      "originalCaptureFilename": "C-A-desktop-login-home-gate.png"
+    },
+    {
+      "alias": "C-A",
+      "size": "desktop",
+      "journey": "private-studio-render",
+      "observedAt": "2026-11-01T16:15:44.538Z",
+      "url": "http://127.0.0.1:8784/studio?thread=dd33088f-4b33-4d76-9811-978c40e5e070",
+      "metrics": {
+        "bodyWidth": 1434,
+        "documentWidth": 1434,
+        "height": 1000,
+        "width": 1440
+      },
+      "noHorizontalOverflow": true,
+      "checks": {
+        "ownThreadVisible": true,
+        "consentGateRetained": true,
+        "postConsentInteraction": "NOT_TESTED"
+      },
+      "screenshot": "C-A-desktop-private-studio-render.jpg",
+      "screenshotSha256": "8e5ec741f926a4e0368c53bcbe3f83319111bd57c05696a79f48ac982395713f",
+      "captureFileSource": "C:\\Users\\laich\\.codex\\visualizations\\2026\\10\\29\\01a1880d-a6f1-7ef1-9ec1-f853a3b65772\\auth-pilot-browser-evidence\\C-A-desktop-private-studio-render.png",
+      "originalCaptureFilename": "C-A-desktop-private-studio-render.png"
+    },
+    {
+      "alias": "C-A",
+      "size": "desktop",
+      "journey": "admin-denied",
+      "observedAt": "2026-11-01T16:17:05.039Z",
+      "url": "http://127.0.0.1:8784/admin",
+      "metrics": {
+        "bodyWidth": 1440,
+        "documentWidth": 1440,
+        "height": 1000,
+        "width": 1440
+      },
+      "noHorizontalOverflow": true,
+      "checks": {
+        "adminDenied": true
+      },
+      "screenshot": "C-A-desktop-admin-denied.jpg",
+      "screenshotSha256": "55fd4fcb74b63ef14b8860f5adb80f10fc5d013100a7d796f3af4d31ab881684",
+      "captureFileSource": "C:\\Users\\laich\\.codex\\visualizations\\2026\\10\\29\\01a1880d-a6f1-7ef1-9ec1-f853a3b65772\\auth-pilot-browser-evidence\\C-A-desktop-admin-denied.png",
+      "originalCaptureFilename": "C-A-desktop-admin-denied.png"
+    },
+    {
+      "alias": "C-P",
+      "size": "desktop",
+      "journey": "login-home-gate",
+      "observedAt": "2026-11-01T16:18:41.196Z",
+      "url": "http://127.0.0.1:8784/home",
+      "metrics": {
+        "bodyWidth": 1434,
+        "documentWidth": 1434,
+        "height": 1000,
+        "width": 1440
+      },
+      "noHorizontalOverflow": true,
+      "checks": {
+        "realPasswordLogin": true,
+        "consentGateVisible": true,
+        "ownHistoryVisible": true,
+        "previousAccountHistoryAbsent": true
+      },
+      "screenshot": "C-P-desktop-login-home-gate.jpg",
+      "screenshotSha256": "e996c035f8221c244e7a348d9da346cfc7aeb02de1eb7043f54d228a30d07755",
+      "captureFileSource": "C:\\Users\\laich\\.codex\\visualizations\\2026\\10\\29\\01a1880d-a6f1-7ef1-9ec1-f853a3b65772\\auth-pilot-browser-evidence\\C-P-desktop-login-home-gate.png",
+      "originalCaptureFilename": "C-P-desktop-login-home-gate.png"
+    },
+    {
+      "alias": "C-P",
+      "size": "desktop",
+      "journey": "same-workspace-private-denied",
+      "observedAt": "2026-11-01T16:19:17.337Z",
+      "url": "http://127.0.0.1:8784/studio?thread=dd33088f-4b33-4d76-9811-978c40e5e070",
+      "metrics": {
+        "bodyWidth": 1440,
+        "documentWidth": 1440,
+        "height": 1000,
+        "width": 1440
+      },
+      "noHorizontalOverflow": true,
+      "checks": {
+        "foreignThreadTitleAbsent": true,
+        "ownHistoryOnly": true,
+        "deniedStateVisible": false
+      },
+      "screenshot": "C-P-desktop-same-workspace-private-denied.jpg",
+      "screenshotSha256": "bf5e673a689c45c7c0021248ec0e012be9d2bb12507f55c802af7e0b2405724b",
+      "captureFileSource": "C:\\Users\\laich\\.codex\\visualizations\\2026\\10\\29\\01a1880d-a6f1-7ef1-9ec1-f853a3b65772\\auth-pilot-browser-evidence\\C-P-desktop-same-workspace-private-denied.png",
+      "originalCaptureFilename": "C-P-desktop-same-workspace-private-denied.png"
+    },
+    {
+      "alias": "S-A",
+      "size": "desktop",
+      "journey": "login-home-gate",
+      "observedAt": "2026-11-01T16:19:24.912Z",
+      "url": "http://127.0.0.1:8784/home",
+      "metrics": {
+        "bodyWidth": 1434,
+        "documentWidth": 1434,
+        "height": 1000,
+        "width": 1440
+      },
+      "noHorizontalOverflow": true,
+      "checks": {
+        "realPasswordLogin": true,
+        "consentGateVisible": true,
+        "postConsentInteraction": "NOT_TESTED"
+      },
+      "screenshot": "S-A-desktop-login-home-gate.jpg",
+      "screenshotSha256": "e26bce5bdfbe3246fc361b3da6d2318dc79fa42864f16dc4d2125edb33c785b9",
+      "captureFileSource": "C:\\Users\\laich\\.codex\\visualizations\\2026\\10\\29\\01a1880d-a6f1-7ef1-9ec1-f853a3b65772\\auth-pilot-browser-evidence\\S-A-desktop-login-home-gate.png",
+      "originalCaptureFilename": "S-A-desktop-login-home-gate.png"
+    },
+    {
+      "alias": "S-A",
+      "size": "desktop",
+      "journey": "admin-scope",
+      "observedAt": "2026-11-01T16:20:19.652Z",
+      "url": "http://127.0.0.1:8784/admin?ws=00391df1-e411-4a82-a317-4a73bb293f89",
+      "metrics": {
+        "bodyWidth": 1434,
+        "documentWidth": 1434,
+        "height": 1000,
+        "width": 1440
+      },
+      "noHorizontalOverflow": true,
+      "checks": {
+        "roleConfirmed": true,
+        "ownedWorkspaceOnly": true,
+        "missionManagementVisible": true
+      },
+      "screenshot": "S-A-desktop-admin-scope.jpg",
+      "screenshotSha256": "fd497e806c4007427ec7d1e8aefadb5c969a7971ebcb3f4548a2fa4ca40d07a5",
+      "captureFileSource": "C:\\Users\\laich\\.codex\\visualizations\\2026\\10\\29\\01a1880d-a6f1-7ef1-9ec1-f853a3b65772\\auth-pilot-browser-evidence\\S-A-desktop-admin-scope.png",
+      "originalCaptureFilename": "S-A-desktop-admin-scope.png"
+    },
+    {
+      "alias": "S-A",
+      "size": "desktop",
+      "journey": "owned-draft-management",
+      "observedAt": "2026-11-01T16:20:54.856Z",
+      "url": "http://127.0.0.1:8784/admin/missions",
+      "metrics": {
+        "bodyWidth": 1440,
+        "documentWidth": 1440,
+        "height": 1000,
+        "width": 1440
+      },
+      "noHorizontalOverflow": true,
+      "checks": {
+        "ownedDraftVisible": true,
+        "editAvailable": true,
+        "publishNotInvoked": true
+      },
+      "screenshot": "S-A-desktop-owned-draft-management.jpg",
+      "screenshotSha256": "d9fb4d3941b7af88105767b87d53706d425ab669818069d8d6f62c115ea55e24",
+      "captureFileSource": "C:\\Users\\laich\\.codex\\visualizations\\2026\\10\\29\\01a1880d-a6f1-7ef1-9ec1-f853a3b65772\\auth-pilot-browser-evidence\\S-A-desktop-owned-draft-management.png",
+      "originalCaptureFilename": "S-A-desktop-owned-draft-management.png"
+    },
+    {
+      "alias": "S-O",
+      "size": "desktop",
+      "journey": "login-home-gate",
+      "observedAt": "2026-11-01T16:21:02.307Z",
+      "url": "http://127.0.0.1:8784/home",
+      "metrics": {
+        "bodyWidth": 1434,
+        "documentWidth": 1434,
+        "height": 1000,
+        "width": 1440
+      },
+      "noHorizontalOverflow": true,
+      "checks": {
+        "realPasswordLogin": true,
+        "consentGateVisible": true,
+        "postConsentInteraction": "NOT_TESTED"
+      },
+      "screenshot": "S-O-desktop-login-home-gate.jpg",
+      "screenshotSha256": "e26bce5bdfbe3246fc361b3da6d2318dc79fa42864f16dc4d2125edb33c785b9",
+      "captureFileSource": "C:\\Users\\laich\\.codex\\visualizations\\2026\\10\\29\\01a1880d-a6f1-7ef1-9ec1-f853a3b65772\\auth-pilot-browser-evidence\\S-O-desktop-login-home-gate.png",
+      "originalCaptureFilename": "S-O-desktop-login-home-gate.png"
+    },
+    {
+      "alias": "S-O",
+      "size": "desktop",
+      "journey": "operator-scope",
+      "observedAt": "2026-11-01T16:21:31.571Z",
+      "url": "http://127.0.0.1:8784/admin?ws=00391df1-e411-4a82-a317-4a73bb293f89",
+      "metrics": {
+        "bodyWidth": 1434,
+        "documentWidth": 1434,
+        "height": 1000,
+        "width": 1440
+      },
+      "noHorizontalOverflow": true,
+      "checks": {
+        "roleConfirmed": true,
+        "reviewNavigationVisible": true,
+        "previousAdminMissionNavigationRemoved": true
+      },
+      "screenshot": "S-O-desktop-operator-scope.jpg",
+      "screenshotSha256": "38e7afef3cf87ea4922d58fece7a6afbcb02443111dad39d968841606c397f0d",
+      "captureFileSource": "C:\\Users\\laich\\.codex\\visualizations\\2026\\10\\29\\01a1880d-a6f1-7ef1-9ec1-f853a3b65772\\auth-pilot-browser-evidence\\S-O-desktop-operator-scope.png",
+      "originalCaptureFilename": "S-O-desktop-operator-scope.png"
+    },
+    {
+      "alias": "S-O",
+      "size": "desktop",
+      "journey": "mission-read-and-controls",
+      "observedAt": "2026-11-01T16:23:18.069Z",
+      "url": "http://127.0.0.1:8784/admin/missions?ws=00391df1-e411-4a82-a317-4a73bb293f89",
+      "metrics": {
+        "bodyWidth": 1440,
+        "documentWidth": 1440,
+        "height": 1000,
+        "width": 1440
+      },
+      "noHorizontalOverflow": true,
+      "checks": {
+        "ownedDraftReadable": true,
+        "managementNavigationHidden": true,
+        "writeControlsStillVisible": true,
+        "classification": "UI_PERMISSION_AFFORDANCE_FINDING_SERVER_WRITE_GUARD_VERIFIED_BY_API"
+      },
+      "screenshot": "S-O-desktop-mission-read-and-controls.jpg",
+      "screenshotSha256": "8e79545fed56039b60ada2fef106515dce195ee2a4fef65fd39aae93a7dacd8e",
+      "captureFileSource": "C:\\Users\\laich\\.codex\\visualizations\\2026\\10\\29\\01a1880d-a6f1-7ef1-9ec1-f853a3b65772\\auth-pilot-browser-evidence\\S-O-desktop-mission-read-and-controls.png",
+      "originalCaptureFilename": "S-O-desktop-mission-read-and-controls.png"
+    },
+    {
+      "alias": "S-O",
+      "size": "desktop",
+      "journey": "write-denied-input-preserved",
+      "observedAt": "2026-11-01T16:24:23.424Z",
+      "url": "http://127.0.0.1:8784/admin/missions/446802cb-4f6c-418d-967a-bf5f1cf63ea5",
+      "metrics": {
+        "bodyWidth": 1434,
+        "documentWidth": 1434,
+        "height": 1000,
+        "width": 1440
+      },
+      "noHorizontalOverflow": true,
+      "checks": {
+        "serverRoleDenialVisible": true,
+        "unchangedOwnedDraftOnly": true,
+        "editAffordanceFinding": true
+      },
+      "screenshot": "S-O-desktop-write-denied-input-preserved.jpg",
+      "screenshotSha256": "990369d7fa0fdec11ae9d7a81a5e95eb4b876086e88aad8a8b0ab2a76ad785ea",
+      "captureFileSource": "C:\\Users\\laich\\.codex\\visualizations\\2026\\10\\29\\01a1880d-a6f1-7ef1-9ec1-f853a3b65772\\auth-pilot-browser-evidence\\S-O-desktop-write-denied-input-preserved.png",
+      "originalCaptureFilename": "S-O-desktop-write-denied-input-preserved.png"
+    },
+    {
+      "alias": "S-R",
+      "size": "desktop",
+      "journey": "login-home-gate",
+      "observedAt": "2026-11-01T16:24:31.018Z",
+      "url": "http://127.0.0.1:8784/home",
+      "metrics": {
+        "bodyWidth": 1434,
+        "documentWidth": 1434,
+        "height": 1000,
+        "width": 1440
+      },
+      "noHorizontalOverflow": true,
+      "checks": {
+        "realPasswordLogin": true,
+        "consentGateVisible": true,
+        "postConsentInteraction": "NOT_TESTED"
+      },
+      "screenshot": "S-R-desktop-login-home-gate.jpg",
+      "screenshotSha256": "e26bce5bdfbe3246fc361b3da6d2318dc79fa42864f16dc4d2125edb33c785b9",
+      "captureFileSource": "C:\\Users\\laich\\.codex\\visualizations\\2026\\10\\29\\01a1880d-a6f1-7ef1-9ec1-f853a3b65772\\auth-pilot-browser-evidence\\S-R-desktop-login-home-gate.png",
+      "originalCaptureFilename": "S-R-desktop-login-home-gate.png"
+    },
+    {
+      "alias": "S-R",
+      "size": "desktop",
+      "journey": "revoked-reviewer-denied",
+      "observedAt": "2026-11-01T16:25:11.203Z",
+      "url": "http://127.0.0.1:8784/admin/submissions?ws=00391df1-e411-4a82-a317-4a73bb293f89",
+      "metrics": {
+        "bodyWidth": 1440,
+        "documentWidth": 1440,
+        "height": 1000,
+        "width": 1440
+      },
+      "noHorizontalOverflow": true,
+      "checks": {
+        "revokedRoleLabelVisible": true,
+        "workspaceAccessDenied": true,
+        "reviewNavigationRemoved": true
+      },
+      "screenshot": "S-R-desktop-revoked-reviewer-denied.jpg",
+      "screenshotSha256": "9d79476167a2e542638d0ad2c4e0509bab47bde84ab65d53c69a3acbc84cb879",
+      "captureFileSource": "C:\\Users\\laich\\.codex\\visualizations\\2026\\10\\29\\01a1880d-a6f1-7ef1-9ec1-f853a3b65772\\auth-pilot-browser-evidence\\S-R-desktop-revoked-reviewer-denied.png",
+      "originalCaptureFilename": "S-R-desktop-revoked-reviewer-denied.png"
+    },
+    {
+      "alias": "S-F",
+      "size": "desktop",
+      "journey": "login-home-gate",
+      "observedAt": "2026-11-01T16:25:18.999Z",
+      "url": "http://127.0.0.1:8784/home",
+      "metrics": {
+        "bodyWidth": 1434,
+        "documentWidth": 1434,
+        "height": 1000,
+        "width": 1440
+      },
+      "noHorizontalOverflow": true,
+      "checks": {
+        "realPasswordLogin": true,
+        "consentGateVisible": true,
+        "postConsentInteraction": "NOT_TESTED"
+      },
+      "screenshot": "S-F-desktop-login-home-gate.jpg",
+      "screenshotSha256": "e26bce5bdfbe3246fc361b3da6d2318dc79fa42864f16dc4d2125edb33c785b9",
+      "captureFileSource": "C:\\Users\\laich\\.codex\\visualizations\\2026\\10\\29\\01a1880d-a6f1-7ef1-9ec1-f853a3b65772\\auth-pilot-browser-evidence\\S-F-desktop-login-home-gate.png",
+      "originalCaptureFilename": "S-F-desktop-login-home-gate.png"
+    },
+    {
+      "alias": "S-F",
+      "size": "desktop",
+      "journey": "finance-read-only",
+      "observedAt": "2026-11-01T16:25:52.771Z",
+      "url": "http://127.0.0.1:8784/admin/reward-handoffs?status=pending&ws=00391df1-e411-4a82-a317-4a73bb293f89",
+      "metrics": {
+        "bodyWidth": 1440,
+        "documentWidth": 1440,
+        "height": 1000,
+        "width": 1440
+      },
+      "noHorizontalOverflow": true,
+      "checks": {
+        "roleConfirmed": true,
+        "readOnlyExplanationVisible": true,
+        "missionNavigationAbsent": true,
+        "reviewNavigationAbsent": true
+      },
+      "screenshot": "S-F-desktop-finance-read-only.jpg",
+      "screenshotSha256": "37dd36277c6fbdb40f65a100e79a864e814d639824d586cf25f29168840927e4",
+      "captureFileSource": "C:\\Users\\laich\\.codex\\visualizations\\2026\\10\\29\\01a1880d-a6f1-7ef1-9ec1-f853a3b65772\\auth-pilot-browser-evidence\\S-F-desktop-finance-read-only.png",
+      "originalCaptureFilename": "S-F-desktop-finance-read-only.png"
+    },
+    {
+      "alias": "B-A",
+      "size": "desktop",
+      "journey": "login-home-gate",
+      "observedAt": "2026-11-01T16:26:00.566Z",
+      "url": "http://127.0.0.1:8784/home",
+      "metrics": {
+        "bodyWidth": 1434,
+        "documentWidth": 1434,
+        "height": 1000,
+        "width": 1440
+      },
+      "noHorizontalOverflow": true,
+      "checks": {
+        "realPasswordLogin": true,
+        "consentGateVisible": true,
+        "postConsentInteraction": "NOT_TESTED"
+      },
+      "screenshot": "B-A-desktop-login-home-gate.jpg",
+      "screenshotSha256": "e26bce5bdfbe3246fc361b3da6d2318dc79fa42864f16dc4d2125edb33c785b9",
+      "captureFileSource": "C:\\Users\\laich\\.codex\\visualizations\\2026\\10\\29\\01a1880d-a6f1-7ef1-9ec1-f853a3b65772\\auth-pilot-browser-evidence\\B-A-desktop-login-home-gate.png",
+      "originalCaptureFilename": "B-A-desktop-login-home-gate.png"
+    },
+    {
+      "alias": "B-A",
+      "size": "desktop",
+      "journey": "brand-missions",
+      "observedAt": "2026-11-01T16:26:50.378Z",
+      "url": "http://127.0.0.1:8784/brand/missions",
+      "metrics": {
+        "bodyWidth": 1440,
+        "documentWidth": 1440,
+        "height": 1000,
+        "width": 1440
+      },
+      "noHorizontalOverflow": true,
+      "checks": {
+        "brandNavigationVisible": true,
+        "ownedDraftVisible": false,
+        "noPrivateCreatorBriefInBrandView": true,
+        "noMutationInvoked": true
+      },
+      "screenshot": "B-A-desktop-brand-missions.jpg",
+      "screenshotSha256": "a7c46d4c9ca95e446fb81f5cc4bdb38445e1e8678358fbff2cb059b14f7ef293",
+      "captureFileSource": "C:\\Users\\laich\\.codex\\visualizations\\2026\\10\\29\\01a1880d-a6f1-7ef1-9ec1-f853a3b65772\\auth-pilot-browser-evidence\\B-A-desktop-brand-missions.png",
+      "originalCaptureFilename": "B-A-desktop-brand-missions.png"
+    },
+    {
+      "alias": "B-A",
+      "size": "desktop",
+      "journey": "admin-denied",
+      "observedAt": "2026-11-01T16:27:30.717Z",
+      "url": "http://127.0.0.1:8784/admin",
+      "metrics": {
+        "bodyWidth": 1440,
+        "documentWidth": 1440,
+        "height": 1000,
+        "width": 1440
+      },
+      "noHorizontalOverflow": true,
+      "checks": {
+        "adminDenied": true
+      },
+      "screenshot": "B-A-desktop-admin-denied.jpg",
+      "screenshotSha256": "55fd4fcb74b63ef14b8860f5adb80f10fc5d013100a7d796f3af4d31ab881684",
+      "captureFileSource": "C:\\Users\\laich\\.codex\\visualizations\\2026\\10\\29\\01a1880d-a6f1-7ef1-9ec1-f853a3b65772\\auth-pilot-browser-evidence\\B-A-desktop-admin-denied.png",
+      "originalCaptureFilename": "B-A-desktop-admin-denied.png"
+    },
+    {
+      "alias": "C-B",
+      "size": "desktop",
+      "journey": "login-home-gate",
+      "observedAt": "2026-11-01T16:28:12.570Z",
+      "url": "http://127.0.0.1:8785/home",
+      "metrics": {
+        "bodyWidth": 1274,
+        "documentWidth": 1274,
+        "height": 720,
+        "width": 1280
+      },
+      "noHorizontalOverflow": true,
+      "checks": {
+        "realPasswordLogin": true,
+        "consentGateVisible": true,
+        "postConsentInteraction": "NOT_TESTED"
+      },
+      "screenshot": "C-B-desktop-login-home-gate.jpg",
+      "screenshotSha256": "a2d1afd3ab8a1532521488a978925d7fef8e9ff53b8e6b5ce85761cb84cba59c",
+      "captureFileSource": "C:\\Users\\laich\\.codex\\visualizations\\2026\\10\\29\\01a1880d-a6f1-7ef1-9ec1-f853a3b65772\\auth-pilot-browser-evidence\\C-B-desktop-login-home-gate.png",
+      "originalCaptureFilename": "C-B-desktop-login-home-gate.png"
+    },
+    {
+      "alias": "C-B",
+      "size": "desktop",
+      "journey": "login-home-gate-confirmed",
+      "observedAt": "2026-11-01T16:28:59.053Z",
+      "url": "http://127.0.0.1:8785/home",
+      "metrics": {
+        "bodyWidth": 1434,
+        "documentWidth": 1434,
+        "height": 1000,
+        "width": 1440
+      },
+      "noHorizontalOverflow": true,
+      "checks": {
+        "realPasswordLogin": true,
+        "exactDesktopViewport": true,
+        "ownWorkspaceBHistoryVisible": true,
+        "consentGateRetained": true
+      },
+      "screenshot": "C-B-desktop-login-home-gate-confirmed.jpg",
+      "screenshotSha256": "687c45d0b85fcc097240dec17b8ee8362723092f8c0ec3e97bb0abd87553ed4b",
+      "captureFileSource": "C:\\Users\\laich\\.codex\\visualizations\\2026\\10\\29\\01a1880d-a6f1-7ef1-9ec1-f853a3b65772\\auth-pilot-browser-evidence\\C-B-desktop-login-home-gate-confirmed.png",
+      "originalCaptureFilename": "C-B-desktop-login-home-gate-confirmed.png"
+    },
+    {
+      "alias": "C-B",
+      "size": "desktop",
+      "journey": "cross-workspace-private-denied",
+      "observedAt": "2026-11-01T16:29:39.937Z",
+      "url": "http://127.0.0.1:8785/studio?thread=dd33088f-4b33-4d76-9811-978c40e5e070",
+      "metrics": {
+        "bodyWidth": 1440,
+        "documentWidth": 1440,
+        "height": 1000,
+        "width": 1440
+      },
+      "noHorizontalOverflow": true,
+      "checks": {
+        "errorStatePresent": true,
+        "foreignPrivateTitleAbsent": true,
+        "ownHistoryVisible": true
+      },
+      "screenshot": "C-B-desktop-cross-workspace-private-denied.jpg",
+      "screenshotSha256": "9603ebfa15e8b1fcb510500233eb6d7b914bf678625ba78322f615b342af70e7",
+      "captureFileSource": "C:\\Users\\laich\\.codex\\visualizations\\2026\\10\\29\\01a1880d-a6f1-7ef1-9ec1-f853a3b65772\\auth-pilot-browser-evidence\\C-B-desktop-cross-workspace-private-denied.png",
+      "originalCaptureFilename": "C-B-desktop-cross-workspace-private-denied.png"
+    },
+    {
+      "alias": "U-X",
+      "size": "desktop",
+      "journey": "login-home-gate",
+      "observedAt": "2026-11-01T16:29:53.657Z",
+      "url": "http://127.0.0.1:8784/home",
+      "metrics": {
+        "bodyWidth": 1434,
+        "documentWidth": 1434,
+        "height": 1000,
+        "width": 1440
+      },
+      "noHorizontalOverflow": true,
+      "checks": {
+        "realPasswordLogin": true,
+        "consentGateVisible": true,
+        "postConsentInteraction": "NOT_TESTED"
+      },
+      "screenshot": "U-X-desktop-login-home-gate.jpg",
+      "screenshotSha256": "d4afd95d4423edf764c57ce8dcbaa51a32edb79a104ef833e81862415b08d4e7",
+      "captureFileSource": "C:\\Users\\laich\\.codex\\visualizations\\2026\\10\\29\\01a1880d-a6f1-7ef1-9ec1-f853a3b65772\\auth-pilot-browser-evidence\\U-X-desktop-login-home-gate.png",
+      "originalCaptureFilename": "U-X-desktop-login-home-gate.png"
+    },
+    {
+      "alias": "U-X",
+      "size": "desktop",
+      "journey": "admin-denied",
+      "observedAt": "2026-11-01T16:30:40.567Z",
+      "url": "http://127.0.0.1:8784/admin",
+      "metrics": {
+        "bodyWidth": 1440,
+        "documentWidth": 1440,
+        "height": 1000,
+        "width": 1440
+      },
+      "noHorizontalOverflow": true,
+      "checks": {
+        "ordinaryCreatorCannotBecomeStaff": true
+      },
+      "screenshot": "U-X-desktop-admin-denied.jpg",
+      "screenshotSha256": "55fd4fcb74b63ef14b8860f5adb80f10fc5d013100a7d796f3af4d31ab881684",
+      "captureFileSource": "C:\\Users\\laich\\.codex\\visualizations\\2026\\10\\29\\01a1880d-a6f1-7ef1-9ec1-f853a3b65772\\auth-pilot-browser-evidence\\U-X-desktop-admin-denied.png",
+      "originalCaptureFilename": "U-X-desktop-admin-denied.png"
+    },
+    {
+      "alias": "C-A",
+      "size": "mobile",
+      "journey": "login-home-gate",
+      "observedAt": "2026-11-01T16:33:46.082Z",
+      "url": "http://127.0.0.1:8784/home",
+      "metrics": {
+        "bodyWidth": 384,
+        "documentWidth": 384,
+        "height": 844,
+        "width": 390
+      },
+      "noHorizontalOverflow": true,
+      "checks": {
+        "realPasswordLogin": true,
+        "consentGateVisible": true,
+        "postConsentInteraction": "NOT_TESTED"
+      },
+      "screenshot": "C-A-mobile-login-home-gate.jpg",
+      "screenshotSha256": "3b12cbe5d52d1d64a7d7dcebc5935a5da51c12a10a39c165864b33901f1c716c",
+      "captureFileSource": "C:\\Users\\laich\\.codex\\visualizations\\2026\\10\\29\\01a1880d-a6f1-7ef1-9ec1-f853a3b65772\\auth-pilot-browser-evidence\\C-A-mobile-login-home-gate.png",
+      "originalCaptureFilename": "C-A-mobile-login-home-gate.png"
+    },
+    {
+      "alias": "C-A",
+      "size": "mobile",
+      "journey": "private-studio-render",
+      "observedAt": "2026-11-01T16:33:49.184Z",
+      "url": "http://127.0.0.1:8784/studio?thread=dd33088f-4b33-4d76-9811-978c40e5e070",
+      "metrics": {
+        "bodyWidth": 384,
+        "documentWidth": 384,
+        "height": 844,
+        "width": 390
+      },
+      "noHorizontalOverflow": true,
+      "checks": {
+        "ownThreadVisible": true,
+        "consentGateRetained": true,
+        "postConsentInteraction": "NOT_TESTED"
+      },
+      "screenshot": "C-A-mobile-private-studio-render.jpg",
+      "screenshotSha256": "38d74186c2fda217b5f9cc240d8a5825d0a47cb600a10316f3efbe9f5fbc514e",
+      "captureFileSource": "C:\\Users\\laich\\.codex\\visualizations\\2026\\10\\29\\01a1880d-a6f1-7ef1-9ec1-f853a3b65772\\auth-pilot-browser-evidence\\C-A-mobile-private-studio-render.png",
+      "originalCaptureFilename": "C-A-mobile-private-studio-render.png"
+    },
+    {
+      "alias": "C-P",
+      "size": "mobile",
+      "journey": "login-home-gate",
+      "observedAt": "2026-11-01T16:33:55.899Z",
+      "url": "http://127.0.0.1:8784/home",
+      "metrics": {
+        "bodyWidth": 384,
+        "documentWidth": 384,
+        "height": 844,
+        "width": 390
+      },
+      "noHorizontalOverflow": true,
+      "checks": {
+        "realPasswordLogin": true,
+        "consentGateVisible": true,
+        "postConsentInteraction": "NOT_TESTED"
+      },
+      "screenshot": "C-P-mobile-login-home-gate.jpg",
+      "screenshotSha256": "2761b3f63cde87773acc0ac045edaf1a7358439af3d78ce40410f157cec2b156",
+      "captureFileSource": "C:\\Users\\laich\\.codex\\visualizations\\2026\\10\\29\\01a1880d-a6f1-7ef1-9ec1-f853a3b65772\\auth-pilot-browser-evidence\\C-P-mobile-login-home-gate.png",
+      "originalCaptureFilename": "C-P-mobile-login-home-gate.png"
+    },
+    {
+      "alias": "C-P",
+      "size": "mobile",
+      "journey": "account-cache-isolation",
+      "observedAt": "2026-11-01T16:34:26.374Z",
+      "url": "http://127.0.0.1:8784/home",
+      "metrics": {
+        "bodyWidth": 384,
+        "documentWidth": 384,
+        "height": 844,
+        "width": 390
+      },
+      "noHorizontalOverflow": true,
+      "checks": {
+        "ownHistoryVisible": true,
+        "previousCreatorHistoryAbsent": true
+      },
+      "screenshot": "C-P-mobile-account-cache-isolation.jpg",
+      "screenshotSha256": "3b12cbe5d52d1d64a7d7dcebc5935a5da51c12a10a39c165864b33901f1c716c",
+      "captureFileSource": "C:\\Users\\laich\\.codex\\visualizations\\2026\\10\\29\\01a1880d-a6f1-7ef1-9ec1-f853a3b65772\\auth-pilot-browser-evidence\\C-P-mobile-account-cache-isolation.png",
+      "originalCaptureFilename": "C-P-mobile-account-cache-isolation.png"
+    },
+    {
+      "alias": "S-A",
+      "size": "mobile",
+      "journey": "login-home-gate",
+      "observedAt": "2026-11-01T16:34:32.379Z",
+      "url": "http://127.0.0.1:8784/home",
+      "metrics": {
+        "bodyWidth": 384,
+        "documentWidth": 384,
+        "height": 844,
+        "width": 390
+      },
+      "noHorizontalOverflow": true,
+      "checks": {
+        "realPasswordLogin": true,
+        "consentGateVisible": true,
+        "postConsentInteraction": "NOT_TESTED"
+      },
+      "screenshot": "S-A-mobile-login-home-gate.jpg",
+      "screenshotSha256": "51b3d6f6438facd8d9793c0eed8bef511c2fb52a30b0d0cb56cbe5c5aa90039e",
+      "captureFileSource": "C:\\Users\\laich\\.codex\\visualizations\\2026\\10\\29\\01a1880d-a6f1-7ef1-9ec1-f853a3b65772\\auth-pilot-browser-evidence\\S-A-mobile-login-home-gate.png",
+      "originalCaptureFilename": "S-A-mobile-login-home-gate.png"
+    },
+    {
+      "alias": "S-A",
+      "size": "mobile",
+      "journey": "admin-scope",
+      "observedAt": "2026-11-01T16:37:36.660Z",
+      "url": "http://127.0.0.1:8784/admin?ws=00391df1-e411-4a82-a317-4a73bb293f89",
+      "metrics": {
+        "bodyWidth": 384,
+        "documentWidth": 384,
+        "height": 844,
+        "width": 390
+      },
+      "noHorizontalOverflow": true,
+      "checks": {
+        "roleConfirmed": true,
+        "mobileNavigationButtonVisible": true
+      },
+      "screenshot": "S-A-mobile-admin-scope.jpg",
+      "screenshotSha256": "fa2bc83092e8c6a3d16198a3555bf01a8ffd85e42095ac9167a3b1ebe2ebb341",
+      "captureFileSource": "C:\\Users\\laich\\.codex\\visualizations\\2026\\10\\29\\01a1880d-a6f1-7ef1-9ec1-f853a3b65772\\auth-pilot-browser-evidence\\S-A-mobile-admin-scope.png",
+      "originalCaptureFilename": "S-A-mobile-admin-scope.png"
+    },
+    {
+      "alias": "S-A",
+      "size": "mobile",
+      "journey": "navigation-drawer",
+      "observedAt": "2026-11-01T16:40:45.112Z",
+      "url": "http://127.0.0.1:8784/admin?ws=00391df1-e411-4a82-a317-4a73bb293f89",
+      "metrics": {
+        "bodyWidth": 384,
+        "documentWidth": 384,
+        "height": 844,
+        "width": 390
+      },
+      "noHorizontalOverflow": true,
+      "checks": {
+        "drawerExpanded": true,
+        "missionNavigationVisible": true
+      },
+      "screenshot": "S-A-mobile-navigation-drawer.jpg",
+      "screenshotSha256": "9a63e66bd3b1907f4ea3f7cb48b3f155e39b1ea2fe1e92a25c818c7bfb14e499",
+      "captureFileSource": "C:\\Users\\laich\\.codex\\worktrees\\kocmax-studio\\Adfocate\\docs\\review\\kocmax-stage-4d\\d1\\auth-permission-execution\\browser-evidence\\S-A-mobile-navigation-drawer.png",
+      "originalCaptureFilename": "S-A-mobile-navigation-drawer.png"
+    },
+    {
+      "alias": "S-A",
+      "size": "mobile",
+      "journey": "owned-draft-management",
+      "observedAt": "2026-11-01T16:41:27.044Z",
+      "url": "http://127.0.0.1:8784/admin/missions?ws=00391df1-e411-4a82-a317-4a73bb293f89",
+      "metrics": {
+        "bodyWidth": 390,
+        "documentWidth": 390,
+        "height": 844,
+        "width": 390
+      },
+      "noHorizontalOverflow": true,
+      "checks": {
+        "ownedDraftReadable": true,
+        "managementActionsAvailable": true,
+        "noPublishOrRewardAction": true
+      },
+      "screenshot": "S-A-mobile-owned-draft-management.jpg",
+      "screenshotSha256": "04c8f00e3deef6b0fe4c9ab6129b036e949571f7ad08aa5f85b9eb409ecd0b38",
+      "captureFileSource": "C:\\Users\\laich\\.codex\\worktrees\\kocmax-studio\\Adfocate\\docs\\review\\kocmax-stage-4d\\d1\\auth-permission-execution\\browser-evidence\\S-A-mobile-owned-draft-management.png",
+      "originalCaptureFilename": "S-A-mobile-owned-draft-management.png"
+    },
+    {
+      "alias": "S-O",
+      "size": "mobile",
+      "journey": "login-home-gate",
+      "observedAt": "2026-11-01T16:41:36.218Z",
+      "url": "http://127.0.0.1:8784/home",
+      "metrics": {
+        "bodyWidth": 384,
+        "documentWidth": 384,
+        "height": 844,
+        "width": 390
+      },
+      "noHorizontalOverflow": true,
+      "checks": {
+        "realPasswordLogin": true,
+        "consentGateVisible": true,
+        "postConsentInteraction": "NOT_TESTED"
+      },
+      "screenshot": "S-O-mobile-login-home-gate.jpg",
+      "screenshotSha256": "2761b3f63cde87773acc0ac045edaf1a7358439af3d78ce40410f157cec2b156",
+      "captureFileSource": "C:\\Users\\laich\\.codex\\worktrees\\kocmax-studio\\Adfocate\\docs\\review\\kocmax-stage-4d\\d1\\auth-permission-execution\\browser-evidence\\S-O-mobile-login-home-gate.png",
+      "originalCaptureFilename": "S-O-mobile-login-home-gate.png"
+    },
+    {
+      "alias": "S-O",
+      "size": "mobile",
+      "journey": "operator-scope",
+      "observedAt": "2026-11-01T16:41:39.664Z",
+      "url": "http://127.0.0.1:8784/admin",
+      "metrics": {
+        "bodyWidth": 384,
+        "documentWidth": 384,
+        "height": 844,
+        "width": 390
+      },
+      "noHorizontalOverflow": true,
+      "checks": {
+        "roleConfirmed": true,
+        "missionManagementCardAbsent": true,
+        "reviewCardsVisible": true
+      },
+      "screenshot": "S-O-mobile-operator-scope.jpg",
+      "screenshotSha256": "268e667693b23858570c1a6459e99a9ab22a6ae954d48ee8c9973cab7b41476d",
+      "captureFileSource": "C:\\Users\\laich\\.codex\\worktrees\\kocmax-studio\\Adfocate\\docs\\review\\kocmax-stage-4d\\d1\\auth-permission-execution\\browser-evidence\\S-O-mobile-operator-scope.png",
+      "originalCaptureFilename": "S-O-mobile-operator-scope.png"
+    },
+    {
+      "alias": "S-R",
+      "size": "mobile",
+      "journey": "login-home-gate",
+      "observedAt": "2026-11-01T16:42:29.841Z",
+      "url": "http://127.0.0.1:8784/home",
+      "metrics": {
+        "bodyWidth": 384,
+        "documentWidth": 384,
+        "height": 844,
+        "width": 390
+      },
+      "noHorizontalOverflow": true,
+      "checks": {
+        "realPasswordLogin": true,
+        "consentGateVisible": true,
+        "postConsentInteraction": "NOT_TESTED"
+      },
+      "screenshot": "S-R-mobile-login-home-gate.jpg",
+      "screenshotSha256": "2761b3f63cde87773acc0ac045edaf1a7358439af3d78ce40410f157cec2b156",
+      "captureFileSource": "C:\\Users\\laich\\.codex\\worktrees\\kocmax-studio\\Adfocate\\docs\\review\\kocmax-stage-4d\\d1\\auth-permission-execution\\browser-evidence\\S-R-mobile-login-home-gate.png",
+      "originalCaptureFilename": "S-R-mobile-login-home-gate.png"
+    },
+    {
+      "alias": "S-R",
+      "size": "mobile",
+      "journey": "revoked-reviewer-denied",
+      "observedAt": "2026-11-01T16:42:33.980Z",
+      "url": "http://127.0.0.1:8784/admin/submissions?ws=00391df1-e411-4a82-a317-4a73bb293f89",
+      "metrics": {
+        "bodyWidth": 390,
+        "documentWidth": 390,
+        "height": 844,
+        "width": 390
+      },
+      "noHorizontalOverflow": true,
+      "checks": {
+        "revokedRoleLabelVisible": true,
+        "workspaceDenied": true
+      },
+      "screenshot": "S-R-mobile-revoked-reviewer-denied.jpg",
+      "screenshotSha256": "17ff0d92d710ae5b4ec1f126f0f5c510074efa7fce35a918ac3d0d2c44509748",
+      "captureFileSource": "C:\\Users\\laich\\.codex\\worktrees\\kocmax-studio\\Adfocate\\docs\\review\\kocmax-stage-4d\\d1\\auth-permission-execution\\browser-evidence\\S-R-mobile-revoked-reviewer-denied.png",
+      "originalCaptureFilename": "S-R-mobile-revoked-reviewer-denied.png"
+    },
+    {
+      "alias": "S-F",
+      "size": "mobile",
+      "journey": "login-home-gate",
+      "observedAt": "2026-11-01T16:42:41.336Z",
+      "url": "http://127.0.0.1:8784/home",
+      "metrics": {
+        "bodyWidth": 384,
+        "documentWidth": 384,
+        "height": 844,
+        "width": 390
+      },
+      "noHorizontalOverflow": true,
+      "checks": {
+        "realPasswordLogin": true,
+        "consentGateVisible": true,
+        "postConsentInteraction": "NOT_TESTED"
+      },
+      "screenshot": "S-F-mobile-login-home-gate.jpg",
+      "screenshotSha256": "2761b3f63cde87773acc0ac045edaf1a7358439af3d78ce40410f157cec2b156",
+      "captureFileSource": "C:\\Users\\laich\\.codex\\worktrees\\kocmax-studio\\Adfocate\\docs\\review\\kocmax-stage-4d\\d1\\auth-permission-execution\\browser-evidence\\S-F-mobile-login-home-gate.png",
+      "originalCaptureFilename": "S-F-mobile-login-home-gate.png"
+    },
+    {
+      "alias": "S-F",
+      "size": "mobile",
+      "journey": "finance-read-only",
+      "observedAt": "2026-11-01T16:42:44.812Z",
+      "url": "http://127.0.0.1:8784/admin/reward-handoffs?status=pending",
+      "metrics": {
+        "bodyWidth": 390,
+        "documentWidth": 390,
+        "height": 844,
+        "width": 390
+      },
+      "noHorizontalOverflow": true,
+      "checks": {
+        "roleConfirmed": true,
+        "readOnlyCopyVisible": false,
+        "missionNavigationAbsent": true
+      },
+      "screenshot": "S-F-mobile-finance-read-only.jpg",
+      "screenshotSha256": "4b25fbc1f9dd6fce838ac594fbc3d56b53c73961e772211ba32730b99f5a5aba",
+      "captureFileSource": "C:\\Users\\laich\\.codex\\worktrees\\kocmax-studio\\Adfocate\\docs\\review\\kocmax-stage-4d\\d1\\auth-permission-execution\\browser-evidence\\S-F-mobile-finance-read-only.png",
+      "originalCaptureFilename": "S-F-mobile-finance-read-only.png"
+    },
+    {
+      "alias": "S-F",
+      "size": "mobile",
+      "journey": "finance-read-only-confirmed",
+      "observedAt": "2026-11-01T16:43:37.047Z",
+      "url": "http://127.0.0.1:8784/admin/reward-handoffs?status=pending&ws=00391df1-e411-4a82-a317-4a73bb293f89",
+      "metrics": {
+        "bodyWidth": 384,
+        "documentWidth": 384,
+        "height": 844,
+        "width": 390
+      },
+      "noHorizontalOverflow": true,
+      "checks": {
+        "roleConfirmed": true,
+        "readOnlyCopyVisible": true,
+        "noSettlementActionInvoked": true
+      },
+      "screenshot": "S-F-mobile-finance-read-only-confirmed.jpg",
+      "screenshotSha256": "4cfda18259e8d1a69886bd4e6a5f6685cfa14a5eaaa5b5b1203f3d9cf20a01ee",
+      "captureFileSource": "C:\\Users\\laich\\.codex\\worktrees\\kocmax-studio\\Adfocate\\docs\\review\\kocmax-stage-4d\\d1\\auth-permission-execution\\browser-evidence\\S-F-mobile-finance-read-only-confirmed.png",
+      "originalCaptureFilename": "S-F-mobile-finance-read-only-confirmed.png"
+    },
+    {
+      "alias": "S-F",
+      "size": "mobile",
+      "journey": "signed-out-admin-denied",
+      "observedAt": "2026-11-01T16:52:56.741Z",
+      "url": "http://127.0.0.1:8784/admin",
+      "metrics": {
+        "bodyWidth": 390,
+        "documentWidth": 390,
+        "height": 844,
+        "width": 390
+      },
+      "noHorizontalOverflow": true,
+      "checks": {
+        "freshAdminRouteRequiresLogin": true,
+        "noGoogleLoginInvoked": true,
+        "priorViewDidNotVisiblyClearUntilNavigation": "UI_FOLLOWUP_FINDING"
+      },
+      "screenshot": "S-F-mobile-signed-out-admin-denied.jpg",
+      "screenshotSha256": "7bbf1942376415956b13cb5b121c2557bd47142bc42a9c97602ab6cc5fea5e52",
+      "captureFileSource": "C:\\Users\\laich\\.codex\\worktrees\\kocmax-studio\\Adfocate\\docs\\review\\kocmax-stage-4d\\d1\\auth-permission-execution\\browser-evidence\\S-F-mobile-signed-out-admin-denied.png",
+      "originalCaptureFilename": "S-F-mobile-signed-out-admin-denied.png"
+    },
+    {
+      "alias": "B-A",
+      "size": "mobile",
+      "journey": "login-home-gate",
+      "observedAt": "2026-11-01T16:54:12.398Z",
+      "url": "http://127.0.0.1:8784/home",
+      "metrics": {
+        "bodyWidth": 384,
+        "documentWidth": 384,
+        "height": 844,
+        "width": 390
+      },
+      "noHorizontalOverflow": true,
+      "checks": {
+        "realPasswordLogin": true,
+        "consentGateVisible": true,
+        "postConsentInteraction": "NOT_TESTED"
+      },
+      "screenshot": "B-A-mobile-login-home-gate.jpg",
+      "screenshotSha256": "dcb3d79cec0bd40de56ccbb4f0ec57d2d45bc496e979edc1257566e6cd97cb4d",
+      "captureFileSource": "C:\\Users\\laich\\.codex\\worktrees\\kocmax-studio\\Adfocate\\docs\\review\\kocmax-stage-4d\\d1\\auth-permission-execution\\browser-evidence\\B-A-mobile-login-home-gate.png",
+      "originalCaptureFilename": "B-A-mobile-login-home-gate.png"
+    },
+    {
+      "alias": "B-A",
+      "size": "mobile",
+      "journey": "brand-missions",
+      "observedAt": "2026-11-01T16:54:16.265Z",
+      "url": "http://127.0.0.1:8784/brand/missions",
+      "metrics": {
+        "bodyWidth": 390,
+        "documentWidth": 390,
+        "height": 844,
+        "width": 390
+      },
+      "noHorizontalOverflow": true,
+      "checks": {
+        "ownedDraftVisible": true,
+        "createNavigationVisible": true,
+        "noMutationInvoked": true
+      },
+      "screenshot": "B-A-mobile-brand-missions.jpg",
+      "screenshotSha256": "09362c2c0f3f0c880d979718f8fbed5266c881c0c2dedecd420432eda4a923ca",
+      "captureFileSource": "C:\\Users\\laich\\.codex\\worktrees\\kocmax-studio\\Adfocate\\docs\\review\\kocmax-stage-4d\\d1\\auth-permission-execution\\browser-evidence\\B-A-mobile-brand-missions.png",
+      "originalCaptureFilename": "B-A-mobile-brand-missions.png"
+    },
+    {
+      "alias": "B-A",
+      "size": "mobile",
+      "journey": "admin-denied",
+      "observedAt": "2026-11-01T16:54:50.980Z",
+      "url": "http://127.0.0.1:8784/admin",
+      "metrics": {
+        "bodyWidth": 390,
+        "documentWidth": 390,
+        "height": 844,
+        "width": 390
+      },
+      "noHorizontalOverflow": true,
+      "checks": {
+        "brandMemberIsNotStaff": true
+      },
+      "screenshot": "B-A-mobile-admin-denied.jpg",
+      "screenshotSha256": "83daa6e3bdded948e25d0934a361a277367ca88d6464909589c2c96e7a77d0ce",
+      "captureFileSource": "C:\\Users\\laich\\.codex\\worktrees\\kocmax-studio\\Adfocate\\docs\\review\\kocmax-stage-4d\\d1\\auth-permission-execution\\browser-evidence\\B-A-mobile-admin-denied.png",
+      "originalCaptureFilename": "B-A-mobile-admin-denied.png"
+    },
+    {
+      "alias": "B-A",
+      "size": "desktop",
+      "journey": "brand-missions-confirmed",
+      "observedAt": "2026-11-01T16:54:54.788Z",
+      "url": "http://127.0.0.1:8784/brand/missions",
+      "metrics": {
+        "bodyWidth": 1440,
+        "documentWidth": 1440,
+        "height": 1000,
+        "width": 1440
+      },
+      "noHorizontalOverflow": true,
+      "checks": {
+        "ownedDraftVisible": true,
+        "brandNavigationVisible": true,
+        "previousSelectorMismatchResolved": true,
+        "noMutationInvoked": true
+      },
+      "screenshot": "B-A-desktop-brand-missions-confirmed.jpg",
+      "screenshotSha256": "a7c46d4c9ca95e446fb81f5cc4bdb38445e1e8678358fbff2cb059b14f7ef293",
+      "captureFileSource": "C:\\Users\\laich\\.codex\\worktrees\\kocmax-studio\\Adfocate\\docs\\review\\kocmax-stage-4d\\d1\\auth-permission-execution\\browser-evidence\\B-A-desktop-brand-missions-confirmed.png",
+      "originalCaptureFilename": "B-A-desktop-brand-missions-confirmed.png"
+    },
+    {
+      "alias": "U-X",
+      "size": "mobile",
+      "journey": "login-home-gate",
+      "observedAt": "2026-11-01T16:56:37.271Z",
+      "url": "http://127.0.0.1:8784/home",
+      "metrics": {
+        "bodyWidth": 384,
+        "documentWidth": 384,
+        "height": 844,
+        "width": 390
+      },
+      "noHorizontalOverflow": true,
+      "checks": {
+        "realPasswordLogin": true,
+        "consentGateVisible": true,
+        "ordinaryCreatorAfterBootstrap": true,
+        "postConsentInteraction": "NOT_TESTED"
+      },
+      "screenshot": "U-X-mobile-login-home-gate.jpg",
+      "screenshotSha256": "dcb3d79cec0bd40de56ccbb4f0ec57d2d45bc496e979edc1257566e6cd97cb4d",
+      "captureFileSource": "C:\\Users\\laich\\.codex\\worktrees\\kocmax-studio\\Adfocate\\docs\\review\\kocmax-stage-4d\\d1\\auth-permission-execution\\browser-evidence\\U-X-mobile-login-home-gate.png",
+      "originalCaptureFilename": "U-X-mobile-login-home-gate.png"
+    },
+    {
+      "alias": "C-B",
+      "size": "mobile",
+      "journey": "login-home-gate",
+      "observedAt": "2026-11-01T16:58:06.547Z",
+      "url": "http://127.0.0.1:8785/home",
+      "metrics": {
+        "bodyWidth": 384,
+        "documentWidth": 384,
+        "height": 844,
+        "width": 390
+      },
+      "noHorizontalOverflow": true,
+      "checks": {
+        "realPasswordLogin": true,
+        "consentGateVisible": true,
+        "workspaceB": true,
+        "postConsentInteraction": "NOT_TESTED"
+      },
+      "screenshot": "C-B-mobile-login-home-gate.jpg",
+      "screenshotSha256": "c8708bed221b65bb4ef9457db9fa881f6ee7f192d8ec38f547d4b2c467c8fc8a",
+      "captureFileSource": "C:\\Users\\laich\\.codex\\worktrees\\kocmax-studio\\Adfocate\\docs\\review\\kocmax-stage-4d\\d1\\auth-permission-execution\\browser-evidence\\C-B-mobile-login-home-gate.png",
+      "originalCaptureFilename": "C-B-mobile-login-home-gate.png"
+    },
+    {
+      "alias": "C-B",
+      "size": "mobile",
+      "journey": "cross-workspace-private-denied",
+      "observedAt": "2026-11-01T16:58:10.511Z",
+      "url": "http://127.0.0.1:8785/studio?thread=dd33088f-4b33-4d76-9811-978c40e5e070",
+      "metrics": {
+        "bodyWidth": 390,
+        "documentWidth": 390,
+        "height": 844,
+        "width": 390
+      },
+      "noHorizontalOverflow": true,
+      "checks": {
+        "errorStatePresent": false,
+        "foreignPrivateTitleAbsent": true,
+        "ownHistoryVisible": true
+      },
+      "screenshot": "C-B-mobile-cross-workspace-private-denied.jpg",
+      "screenshotSha256": "9495a132303103b0fbd725e87c08eeddaa95871a734aecbc3f29e5d6459d5031",
+      "captureFileSource": "C:\\Users\\laich\\.codex\\worktrees\\kocmax-studio\\Adfocate\\docs\\review\\kocmax-stage-4d\\d1\\auth-permission-execution\\browser-evidence\\C-B-mobile-cross-workspace-private-denied.png",
+      "originalCaptureFilename": "C-B-mobile-cross-workspace-private-denied.png"
+    },
+    {
+      "alias": "U-X",
+      "size": "mobile",
+      "journey": "admin-denied",
+      "observedAt": "2026-11-01T16:58:16.712Z",
+      "url": "http://127.0.0.1:8784/admin",
+      "metrics": {
+        "bodyWidth": 390,
+        "documentWidth": 390,
+        "height": 844,
+        "width": 390
+      },
+      "noHorizontalOverflow": true,
+      "checks": {
+        "ordinaryCreatorCannotBecomeStaff": true
+      },
+      "screenshot": "U-X-mobile-admin-denied.jpg",
+      "screenshotSha256": "83daa6e3bdded948e25d0934a361a277367ca88d6464909589c2c96e7a77d0ce",
+      "captureFileSource": "C:\\Users\\laich\\.codex\\worktrees\\kocmax-studio\\Adfocate\\docs\\review\\kocmax-stage-4d\\d1\\auth-permission-execution\\browser-evidence\\U-X-mobile-admin-denied.png",
+      "originalCaptureFilename": "U-X-mobile-admin-denied.png"
+    },
+    {
+      "alias": "C-B",
+      "size": "mobile",
+      "journey": "cross-workspace-private-denied-confirmed",
+      "observedAt": "2026-11-01T17:01:58.949Z",
+      "url": "http://127.0.0.1:8785/studio?thread=dd33088f-4b33-4d76-9811-978c40e5e070",
+      "metrics": {
+        "bodyWidth": 390,
+        "documentWidth": 390,
+        "height": 844,
+        "width": 390
+      },
+      "noHorizontalOverflow": true,
+      "checks": {
+        "ownHistoryVisible": false,
+        "foreignPrivateTitleAbsent": true,
+        "errorStatePresent": false,
+        "assertionSource": "FRESH_ACCESSIBILITY_STATE"
+      },
+      "screenshot": "C-B-mobile-cross-workspace-private-denied-confirmed.jpg",
+      "screenshotSha256": "caaa28224ca3c57f599ff8075b0a83d120fa78835439502e535c7b1138a7087e",
+      "captureFileSource": "C:\\Users\\laich\\.codex\\worktrees\\kocmax-studio\\Adfocate\\docs\\review\\kocmax-stage-4d\\d1\\auth-permission-execution\\browser-evidence\\C-B-mobile-cross-workspace-private-denied-confirmed.png",
+      "originalCaptureFilename": "C-B-mobile-cross-workspace-private-denied-confirmed.png"
+    },
+    {
+      "alias": "C-B",
+      "size": "desktop",
+      "journey": "login-exact-desktop-confirmed",
+      "observedAt": "2026-11-01T17:14:39.121Z",
+      "url": "http://127.0.0.1:8785/home",
+      "metrics": {
+        "bodyWidth": 1434,
+        "documentWidth": 1434,
+        "height": 1000,
+        "width": 1440
+      },
+      "noHorizontalOverflow": true,
+      "checks": {
+        "realPasswordLogin": true,
+        "viewportVerifiedBeforeSubmission": true,
+        "consentGateRetained": true,
+        "postConsentInteraction": "NOT_TESTED"
+      },
+      "screenshot": "C-B-desktop-login-exact-desktop-confirmed.jpg",
+      "screenshotSha256": "e6b959290e7af763177137b9be278f0b57ec7d5dbb7330866813fa1afd7986ba",
+      "captureFileSource": "C:\\Users\\laich\\.codex\\worktrees\\kocmax-studio\\Adfocate\\docs\\review\\kocmax-stage-4d\\d1\\auth-permission-execution\\browser-evidence\\C-B-desktop-login-exact-desktop-confirmed.png",
+      "originalCaptureFilename": "C-B-desktop-login-exact-desktop-confirmed.png"
+    }
+  ],
+  "limits": [
+    "No legal consent accepted or fabricated.",
+    "Synthetic completion fields only; onboarding and welcome bonus not exercised.",
+    "Creator post-consent interaction remains outside acceptance.",
+    "Captures exist in both the initial app-tree directory and the later artifact directory. The persistent capture helper retained its original directory; each delivered image records its actual source and hash."
+  ],
+  "artifactRoot": "C:\\Users\\laich\\.codex\\worktrees\\kocmax-studio\\Adfocate\\docs\\review\\kocmax-stage-4d\\d1\\auth-permission-execution\\browser-evidence",
+  "finishedAt": "2026-11-01T17:14:40.175Z",
+  "loginMatrix": {
+    "desktop": [
+      "C-A",
+      "C-P",
+      "C-B",
+      "S-A",
+      "S-O",
+      "S-R",
+      "S-F",
+      "B-A",
+      "U-X"
+    ],
+    "mobile": [
+      "C-A",
+      "C-P",
+      "C-B",
+      "S-A",
+      "S-O",
+      "S-R",
+      "S-F",
+      "B-A",
+      "U-X"
+    ]
+  },
+  "horizontalOverflowCases": [],
+  "findings": [
+    "Creator post-consent interaction not tested; consent gate retained and no acceptance recorded.",
+    "Restricted operator sees edit controls; actual unchanged-save attempt was denied and input preserved.",
+    "One staff logout left its old view until navigation; a fresh protected route required login.",
+    "Early loading/text-selector/AX-diff observations are retained; confirmed followups supersede them, never all-observation PASS.",
+    "Development reload/capture timing affected some UI observations. The staff-logout display observation is a follow-up item, not an established authorization bypass."
+  ],
+  "captureArtifactRoot": "C:/Users/laich/.codex/visualizations/2026/10/29/01a1880d-a6f1-7ef1-9ec1-f853a3b65772/auth-pilot-browser-evidence",
+  "acceptance": {
+    "passwordLogin": "NINE_ACCOUNTS_BOTH_VIEWPORTS_VERIFIED",
+    "geometry": "NO_HORIZONTAL_OVERFLOW_OBSERVED",
+    "creatorPostConsentInteraction": "NOT_TESTED_CONSENT_GATE_RETAINED",
+    "observations": "Includes initial loading/selector observations and explicit confirmed followups; not every recorded boolean is a passing assertion."
+  }
+}

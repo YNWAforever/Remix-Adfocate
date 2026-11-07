@@ -1,0 +1,20 @@
+{
+  "status": "PASSED",
+  "projectRef": "mhkoayftiuojxlrkollf",
+  "runId": "5f694251-c6eb-4f5f-a281-25e91db81c04",
+  "sqlSha256": "ae276f3dfc22539b48e482dceb1aeab8de2774c75f32816fe58665bfef8b7b8d",
+  "preparedManifestSha256": "32e41e0aa7febd55bb75516779bca8ac5ce62e796e28ee3a503e1a9a414aaab1",
+  "observedAt": "2026-11-01T15:02:29.773095Z",
+  "transactionReadOnly": true,
+  "rowSecurityOff": true,
+  "sqlApplied": true,
+  "backupRestoreVerified": true,
+  "originalDataUnchanged": true,
+  "authUserTriggers": 0,
+  "reservedEmailCollisions": [],
+  "reservedWorkspaceCollisions": 0,
+  "applicationReceipt": "application-receipt.json",
+  "restoreReceipt": "checkpoint-restore.json",
+  "sourceDigestBeforeAndAfterSql": "ec4e20dce8d53c695122c2f3c1551abb",
+  "readonlyObservation": "readonly-observation-20261101T150229Z.json"
+}

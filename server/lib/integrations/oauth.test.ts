@@ -62,4 +62,38 @@ describe("server OAuth handoff with no network",()=>{
     providers.google_drive={...providers.google_drive,mode:"live_pilot",sampleOnly:false};
     expect(()=>new OAuthCoordinator(store,new CredentialVault(new Uint8Array(32).fill(3),"fixture-key"),providers,configs,vi.fn(),()=>now)).toThrow("LIVE_PROVIDER_DISABLED");
   });
+  it.each(["code=x&code=y", "error=access_denied&error=other", "code=x&iss=https://accounts.google.com&iss=other", "code=x&error=access_denied"])("rejects ambiguous callback parameters %s before consuming state",async query=>{
+    const {coordinator,authorize}=setup(),begin=await coordinator.begin(actor,"google_drive","session","/studio",0);
+    const state=new URL(begin.authorizationUrl).searchParams.get("state")!;
+    await expect(coordinator.callback("google_drive",new URL(`${configs.google_drive.redirectUri}?state=${state}&${query}`))).rejects.toThrow("OAUTH_STATE_INVALID");
+    await expect(coordinator.callback("google_drive",new URL(`${configs.google_drive.redirectUri}?state=${state}&code=fixture-code`))).resolves.toMatchObject({ticket:expect.any(String)});
+    expect(authorize).not.toHaveBeenCalled();
+  });
+  it("rejects state replay, another actor and an unconfirmed new session before exchanging",async()=>{
+    const {coordinator,authorize,persist}=setup(),begin=await coordinator.begin(actor,"google_drive","session","/studio?thread=own",0);
+    const state=new URL(begin.authorizationUrl).searchParams.get("state")!;
+    const url=new URL(`${configs.google_drive.redirectUri}?state=${state}&code=fixture-code`);
+    const callback=await coordinator.callback("google_drive",url);
+    await expect(coordinator.callback("google_drive",url)).rejects.toThrow("OAUTH_STATE_INVALID");
+    for(const who of [{...actor,creatorId:"other"},{...actor,workspaceId:"other"}])await expect(coordinator.complete(who,"google_drive","new-session",callback.ticket,true)).rejects.toThrow("OAUTH_STATE_INVALID");
+    await expect(coordinator.complete(actor,"google_drive","new-session",callback.ticket,false)).rejects.toThrow("OAUTH_STATE_INVALID");
+    expect(authorize).not.toHaveBeenCalled();expect(persist).not.toHaveBeenCalled();
+    await expect(coordinator.complete(actor,"google_drive","new-session",callback.ticket,true)).resolves.toMatchObject({returnPath:"/studio?thread=own"});
+    expect(persist).toHaveBeenCalledTimes(1);
+  });
+  it("expires a completion ticket after five minutes even while the ten-minute state is current",async()=>{
+    const {coordinator,authorize,persist}=setup(),begin=await coordinator.begin(actor,"google_drive","session","/studio",0);
+    const state=new URL(begin.authorizationUrl).searchParams.get("state")!;
+    const callback=await coordinator.callback("google_drive",new URL(`${configs.google_drive.redirectUri}?state=${state}&code=fixture-code`));
+    now=new Date(now.getTime()+5*60*1000);
+    await expect(coordinator.complete(actor,"google_drive","session",callback.ticket,false)).rejects.toThrow("OAUTH_STATE_INVALID");
+    expect(authorize).not.toHaveBeenCalled();expect(persist).not.toHaveBeenCalled();
+  });
+  it("does not invent Instagram PKCE or nonce support in its offline authorization fixture",async()=>{
+    const providers=createMockProviders();providers.instagram={...providers.instagram,mode:"live_pilot",sampleOnly:true};
+    const coordinator=new OAuthCoordinator(store,new CredentialVault(new Uint8Array(32).fill(3),"fixture-key"),providers,configs,vi.fn(),()=>now);
+    const url=new URL((await coordinator.begin(actor,"instagram","session","/studio",0)).authorizationUrl);
+    expect(url.searchParams.get("scope")).toBe("instagram_business_basic,instagram_business_manage_insights");
+    for(const key of ["code_challenge","code_challenge_method","nonce"])expect(url.searchParams.has(key)).toBe(false);
+  });
 });

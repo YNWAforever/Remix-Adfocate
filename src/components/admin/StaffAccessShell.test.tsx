@@ -13,7 +13,7 @@ import {AdminAuthContext} from "./AdminAuthContext";
 import {RewardHandoffQueue} from "./RewardHandoffQueue";
 import {ReviewActionPanel} from "../operator/ReviewActionPanel";
 const finance={workspace:{id:"owned",slug:"owned",role:"finance_viewer",capabilities:["reward.read"],revision:1},platformCapabilities:[],scopeStatus:null};
-function show(children:ReactNode=<input aria-label="Retained draft" defaultValue="Draft text" />){const client=new QueryClient({defaultOptions:{queries:{retry:false}}});return render(<QueryClientProvider client={client}><AdminAuthContext.Provider value={{authed:true,staff:{userId:"staff",email:"owned@example.invalid"},reportAuthError:vi.fn()}}><AdminShell>{children}</AdminShell></AdminAuthContext.Provider></QueryClientProvider>);}
+function show(children:ReactNode=<input aria-label="Retained draft" defaultValue="Draft text" />){const client=new QueryClient({defaultOptions:{queries:{retry:false}}});return render(<QueryClientProvider client={client}><AdminAuthContext.Provider value={{authed:true,staff:{userId:"staff",email:"owned@example.invalid"},signOut:vi.fn(async()=>{}),reportAuthError:vi.fn()}}><AdminShell>{children}</AdminShell></AdminAuthContext.Provider></QueryClientProvider>);}
 beforeEach(()=>{vi.clearAllMocks();h.access.mockResolvedValue({access:finance});h.apps.mockResolvedValue({applications:[]});h.subs.mockResolvedValue({submissions:[]});h.workspaces.mockResolvedValue({workspaces:[{id:"owned",slug:"owned",name:"Owned workspace"}]});});
 it("D18 finance navigation exposes handoffs and does not prefetch review queues",async()=>{
  show();await screen.findByLabelText("Staff role");expect(screen.getByRole("link",{name:"app.admin.tabRewardHandoffs"})).toBeVisible();

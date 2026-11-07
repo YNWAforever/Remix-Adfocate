@@ -1,0 +1,10 @@
+{
+  "schema": "kocmax.mock-review.v1",
+  "sampleOnly": true,
+  "awarded": false,
+  "warning": "SYNTHETIC EXAMPLE ONLY — not official evidence or authorization",
+  "decision": "verified",
+  "caption": "今天練習把一個小靈感，變成一份完整作品。🌱",
+  "imageSha256": "ec5b489619422fb1b11fddda09c6c2ccfc58ec439cfad16936a482879763d1c4",
+  "mediaId": "91000000000000001"
+}

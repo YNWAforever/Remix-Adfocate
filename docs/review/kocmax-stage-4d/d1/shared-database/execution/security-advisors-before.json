@@ -1,0 +1,356 @@
+{
+  "capturedFor": "APPROVED_SHARED_DATABASE_APPLY",
+  "targetProject": "mhkoayftiuojxlrkollf",
+  "result": {
+    "result": {
+      "lints": [
+        {
+          "name": "rls_enabled_no_policy",
+          "title": "RLS Enabled No Policy",
+          "level": "INFO",
+          "facing": "EXTERNAL",
+          "categories": [
+            "SECURITY"
+          ],
+          "description": "Detects cases where row level security (RLS) has been enabled on a table but no RLS policies have been created.",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy",
+          "count": 7,
+          "findings": [
+            {
+              "detail": "Table \\`public.brand_invites\\` has RLS enabled, but no policies exist",
+              "metadata": {
+                "name": "brand_invites",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.042Z"
+            },
+            {
+              "detail": "Table \\`public.campaign_rank_snapshots\\` has RLS enabled, but no policies exist",
+              "metadata": {
+                "name": "campaign_rank_snapshots",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.042Z"
+            },
+            {
+              "detail": "Table \\`public.creator_review_notes\\` has RLS enabled, but no policies exist",
+              "metadata": {
+                "name": "creator_review_notes",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.042Z"
+            },
+            {
+              "detail": "Table \\`public.creator_review_statuses\\` has RLS enabled, but no policies exist",
+              "metadata": {
+                "name": "creator_review_statuses",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.042Z"
+            },
+            {
+              "detail": "Table \\`public.mission_shortlists\\` has RLS enabled, but no policies exist",
+              "metadata": {
+                "name": "mission_shortlists",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.042Z"
+            },
+            {
+              "detail": "Table \\`public.operator_audit_events\\` has RLS enabled, but no policies exist",
+              "metadata": {
+                "name": "operator_audit_events",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.042Z"
+            },
+            {
+              "detail": "Table \\`public.staff_users\\` has RLS enabled, but no policies exist",
+              "metadata": {
+                "name": "staff_users",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.042Z"
+            }
+          ]
+        },
+        {
+          "name": "function_search_path_mutable",
+          "title": "Function Search Path Mutable",
+          "level": "WARN",
+          "facing": "EXTERNAL",
+          "categories": [
+            "SECURITY"
+          ],
+          "description": "Detects functions where the search_path parameter is not set.",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0011_function_search_path_mutable",
+          "count": 2,
+          "findings": [
+            {
+              "detail": "Function \\`public.match_kb_chunks\\` has a role mutable search_path",
+              "metadata": {
+                "name": "match_kb_chunks",
+                "type": "function",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.042Z"
+            },
+            {
+              "detail": "Function \\`public.content_touch_updated_at\\` has a role mutable search_path",
+              "metadata": {
+                "name": "content_touch_updated_at",
+                "type": "function",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.042Z"
+            }
+          ]
+        },
+        {
+          "name": "extension_in_public",
+          "title": "Extension in Public",
+          "level": "WARN",
+          "facing": "EXTERNAL",
+          "categories": [
+            "SECURITY"
+          ],
+          "description": "Detects extensions installed in the \\`public\\` schema.",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0014_extension_in_public",
+          "count": 1,
+          "findings": [
+            {
+              "detail": "Extension \\`vector\\` is installed in the public schema. Move it to another schema.",
+              "metadata": {
+                "name": "vector",
+                "type": "extension",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.042Z"
+            }
+          ]
+        },
+        {
+          "name": "anon_security_definer_function_executable",
+          "title": "Public Can Execute SECURITY DEFINER Function",
+          "level": "WARN",
+          "facing": "EXTERNAL",
+          "categories": [
+            "SECURITY"
+          ],
+          "description": "Detects `SECURITY DEFINER` functions that are callable without signing in. Revoke `EXECUTE`, switch the function to `SECURITY INVOKER`, or move it out of your exposed API schema if it is not meant to be public.",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0028_anon_security_definer_function_executable",
+          "count": 5,
+          "findings": [
+            {
+              "detail": "Function `public.campaign_progress_on_approval()` can be executed by the `anon` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/campaign_progress_on_approval`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+              "metadata": {
+                "name": "campaign_progress_on_approval",
+                "schema": "public",
+                "language": "plpgsql",
+                "arguments": "",
+                "security_definer": true
+              },
+              "observed_at": "2026-10-31T15:47:06.042Z"
+            },
+            {
+              "detail": "Function `public.notify_on_level_up()` can be executed by the `anon` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/notify_on_level_up`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+              "metadata": {
+                "name": "notify_on_level_up",
+                "schema": "public",
+                "language": "plpgsql",
+                "arguments": "",
+                "security_definer": true
+              },
+              "observed_at": "2026-10-31T15:47:06.042Z"
+            },
+            {
+              "detail": "Function `public.notify_on_redemption()` can be executed by the `anon` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/notify_on_redemption`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+              "metadata": {
+                "name": "notify_on_redemption",
+                "schema": "public",
+                "language": "plpgsql",
+                "arguments": "",
+                "security_definer": true
+              },
+              "observed_at": "2026-10-31T15:47:06.042Z"
+            },
+            {
+              "detail": "Function `public.notify_on_submission_change()` can be executed by the `anon` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/notify_on_submission_change`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+              "metadata": {
+                "name": "notify_on_submission_change",
+                "schema": "public",
+                "language": "plpgsql",
+                "arguments": "",
+                "security_definer": true
+              },
+              "observed_at": "2026-10-31T15:47:06.042Z"
+            },
+            {
+              "detail": "Function `public.rls_auto_enable()` can be executed by the `anon` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/rls_auto_enable`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+              "metadata": {
+                "name": "rls_auto_enable",
+                "schema": "public",
+                "language": "plpgsql",
+                "arguments": "",
+                "security_definer": true
+              },
+              "observed_at": "2026-10-31T15:47:06.042Z"
+            }
+          ]
+        },
+        {
+          "name": "authenticated_security_definer_function_executable",
+          "title": "Signed-In Users Can Execute SECURITY DEFINER Function",
+          "level": "WARN",
+          "facing": "EXTERNAL",
+          "categories": [
+            "SECURITY"
+          ],
+          "description": "Detects `SECURITY DEFINER` functions that are callable by signed-in users. Revoke `EXECUTE`, switch the function to `SECURITY INVOKER`, or move it out of your exposed API schema if signed-in users should not call it.",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable",
+          "count": 10,
+          "findings": [
+            {
+              "detail": "Function `public.apply_mission(p_mission uuid)` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/apply_mission`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+              "metadata": {
+                "name": "apply_mission",
+                "schema": "public",
+                "language": "plpgsql",
+                "arguments": "p_mission uuid",
+                "security_definer": true
+              },
+              "observed_at": "2026-10-31T15:47:06.042Z"
+            },
+            {
+              "detail": "Function `public.campaign_progress_on_approval()` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/campaign_progress_on_approval`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+              "metadata": {
+                "name": "campaign_progress_on_approval",
+                "schema": "public",
+                "language": "plpgsql",
+                "arguments": "",
+                "security_definer": true
+              },
+              "observed_at": "2026-10-31T15:47:06.042Z"
+            },
+            {
+              "detail": "Function `public.content_increment_views(p_slug text)` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/content_increment_views`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+              "metadata": {
+                "name": "content_increment_views",
+                "schema": "public",
+                "language": "sql",
+                "arguments": "p_slug text",
+                "security_definer": true
+              },
+              "observed_at": "2026-10-31T15:47:06.042Z"
+            },
+            {
+              "detail": "Function `public.join_mission(p_mission uuid)` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/join_mission`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+              "metadata": {
+                "name": "join_mission",
+                "schema": "public",
+                "language": "plpgsql",
+                "arguments": "p_mission uuid",
+                "security_definer": true
+              },
+              "observed_at": "2026-10-31T15:47:06.042Z"
+            },
+            {
+              "detail": "Function `public.notify_on_level_up()` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/notify_on_level_up`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+              "metadata": {
+                "name": "notify_on_level_up",
+                "schema": "public",
+                "language": "plpgsql",
+                "arguments": "",
+                "security_definer": true
+              },
+              "observed_at": "2026-10-31T15:47:06.042Z"
+            },
+            {
+              "detail": "Function `public.notify_on_redemption()` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/notify_on_redemption`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+              "metadata": {
+                "name": "notify_on_redemption",
+                "schema": "public",
+                "language": "plpgsql",
+                "arguments": "",
+                "security_definer": true
+              },
+              "observed_at": "2026-10-31T15:47:06.042Z"
+            },
+            {
+              "detail": "Function `public.notify_on_submission_change()` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/notify_on_submission_change`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+              "metadata": {
+                "name": "notify_on_submission_change",
+                "schema": "public",
+                "language": "plpgsql",
+                "arguments": "",
+                "security_definer": true
+              },
+              "observed_at": "2026-10-31T15:47:06.042Z"
+            },
+            {
+              "detail": "Function `public.redeem_gift(p_gift uuid)` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/redeem_gift`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+              "metadata": {
+                "name": "redeem_gift",
+                "schema": "public",
+                "language": "plpgsql",
+                "arguments": "p_gift uuid",
+                "security_definer": true
+              },
+              "observed_at": "2026-10-31T15:47:06.042Z"
+            },
+            {
+              "detail": "Function `public.rls_auto_enable()` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/rls_auto_enable`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+              "metadata": {
+                "name": "rls_auto_enable",
+                "schema": "public",
+                "language": "plpgsql",
+                "arguments": "",
+                "security_definer": true
+              },
+              "observed_at": "2026-10-31T15:47:06.042Z"
+            },
+            {
+              "detail": "Function `public.submit_mission(p_mission uuid, p_urls text[], p_data jsonb)` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/submit_mission`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+              "metadata": {
+                "name": "submit_mission",
+                "schema": "public",
+                "language": "plpgsql",
+                "arguments": "p_mission uuid, p_urls text[], p_data jsonb",
+                "security_definer": true
+              },
+              "observed_at": "2026-10-31T15:47:06.042Z"
+            }
+          ]
+        },
+        {
+          "name": "auth_leaked_password_protection",
+          "title": "Leaked Password Protection Disabled",
+          "level": "WARN",
+          "facing": "EXTERNAL",
+          "categories": [
+            "SECURITY"
+          ],
+          "description": "Leaked password protection is currently disabled.",
+          "remediation": "https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection",
+          "count": 1,
+          "findings": [
+            {
+              "detail": "Supabase Auth prevents the use of compromised passwords by checking against HaveIBeenPwned.org. Enable this feature to enhance security.",
+              "metadata": {
+                "type": "auth",
+                "entity": "Auth"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

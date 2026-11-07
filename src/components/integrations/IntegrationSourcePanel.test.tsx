@@ -8,14 +8,15 @@ import { IntegrationSourcePanel } from "./IntegrationSourcePanel";
 import { integrationKeys } from "@/lib/integrations/queries";
 
 vi.mock("@/lib/api", async original => ({ ...await original<object>(), apiFetch: vi.fn() }));
+vi.mock("@tanstack/react-router",()=>({Link:({children,to}:{children:React.ReactNode;to:string})=><a href={to}>{children}</a>}));
 const fetchMock = vi.mocked(apiFetch);
 const clients: QueryClient[] = [];
 const connection: IntegrationConnection = { id: "drive-1", provider: "google_drive", label: "Mock Drive", status: "connected", scopes: ["https://www.googleapis.com/auth/drive.file"], generation: 1, lastSyncAt: null, expiresAt: "2099-01-01T00:00:00Z", lastError: null, sampleOnly: true, providerRevocation: "not_requested" };
 const source: IntegrationResource = { id: "r1", connectionId: "drive-1", externalId: "doc1", title: "Sample brief", mimeType: "text/plain", version: "v1", selected: true, canDownload: true, rights: "owned", availability: "available", excerpt: "Mock creative brief", metrics: {}, observedAt: "2026-10-30T00:00:00Z", fetchedAt: "2026-10-31T00:00:00Z", coverage: { region: null, language: null, partial: true }, sampleOnly: true };
-function mount(resource = source) {
+function mount(resource = source, account = connection) {
   localStorage.setItem("lang", "en");
   fetchMock.mockImplementation(async path => {
-    if (path === "/me/integrations") return { mode: "mock", connections: [connection] };
+    if (path === "/me/integrations") return { mode: "mock", connections: [account] };
     if (path.endsWith("/resources")) return { resources: [resource] };
     if (path.endsWith("/import")) return { sources: [] };
     if (path.endsWith("/picker")) return { sampleOnly: true, files: [
@@ -27,11 +28,47 @@ function mount(resource = source) {
   });
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } }); clients.push(client);
   const imported = vi.fn();
-  const wrap = (threadId: string, revision = 3) => <QueryClientProvider client={client}><I18nProvider><IntegrationSourcePanel threadId={threadId} revision={revision} onImported={imported} /></I18nProvider></QueryClientProvider>;
-  return { imported, client, wrap, ...render(wrap("thread-1")) };
+  const loginRequired = vi.fn();
+  const wrap = (threadId: string, revision = 3) => <QueryClientProvider client={client}><I18nProvider><IntegrationSourcePanel threadId={threadId} revision={revision} onImported={imported} onLoginRequired={loginRequired} /></I18nProvider></QueryClientProvider>;
+  return { imported, loginRequired, client, wrap, ...render(wrap("thread-1")) };
 }
 beforeEach(() => { fetchMock.mockReset(); });
 afterEach(() => { cleanup(); clients.splice(0).forEach(client => client.clear()); });
+
+it.each(["list","resources"])("hides cached source data after %s 401 and stays hidden after transient refetch",async target=>{
+  const view=mount();
+  await screen.findByRole("checkbox",{name:/Sample brief/});
+  fireEvent.change(screen.getByRole("textbox",{name:/Question for these sources/}),{target:{value:"PRIVATE_QUESTION"}});
+  const previous=fetchMock.getMockImplementation()!;
+  const matches=(path:string)=>target==="list"?path==="/me/integrations":path.endsWith("/resources");
+  fetchMock.mockImplementation(async(path,init)=>{if(matches(path))throw new ApiError(401,"no_auth","PRIVATE_ERROR");return previous(path,init);});
+  await act(async()=>{await view.client.invalidateQueries({queryKey:target==="list"?integrationKeys.list():integrationKeys.resources(connection)});});
+  await screen.findByRole("link",{name:"Go to sign in"});
+  expect(view.loginRequired).toHaveBeenCalledTimes(1);
+  expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
+  expect(document.body).not.toHaveTextContent("Sample brief");
+  expect(document.body).not.toHaveTextContent("PRIVATE_ERROR");
+  fetchMock.mockImplementation(async(path,init)=>{if(matches(path))throw new ApiError(503,"offline","offline");return previous(path,init);});
+  await act(async()=>{await view.client.invalidateQueries({queryKey:integrationKeys.all});});
+  expect(screen.getByRole("link",{name:"Go to sign in"})).toBeVisible();
+  expect(view.loginRequired).toHaveBeenCalledTimes(1);
+});
+
+it.each(["import","sync"])("requires login on %s 401 without reporting success or replay",async action=>{
+  const view=mount(source,{...connection,provider:"instagram",scopes:["instagram_business_basic","instagram_business_manage_insights"]});
+  await screen.findByRole("checkbox",{name:/Sample brief/});
+  const previous=fetchMock.getMockImplementation()!;
+  fetchMock.mockImplementation(async(path,init)=>{if(path.endsWith('/'+action))throw new ApiError(401,"no_auth","PRIVATE_ERROR");return previous(path,init);});
+  if(action==="import") {
+    fireEvent.click(screen.getByRole("checkbox",{name:/Sample brief/}));
+    fireEvent.change(screen.getByRole("textbox",{name:/Question for these sources/}),{target:{value:"Which opening?"}});
+    fireEvent.click(screen.getByRole("button",{name:"Import mock sources privately"}));
+  } else fireEvent.click(screen.getByRole("button",{name:"Update mock insights"}));
+  await screen.findByRole("link",{name:"Go to sign in"});
+  expect(view.loginRequired).toHaveBeenCalledTimes(1);expect(view.imported).not.toHaveBeenCalled();
+  expect(fetchMock.mock.calls.filter(([path])=>path.endsWith('/'+action))).toHaveLength(1);
+  expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
+});
 
 it("imports privately with three independent unchecked rights choices and accurate unknown coverage", async () => {
   const { imported } = mount();
@@ -53,6 +90,29 @@ it("imports privately with three independent unchecked rights choices and accura
   await waitFor(() => expect(imported).toHaveBeenCalledOnce());
   const [, init] = fetchMock.mock.calls.find(([path]) => path.endsWith("/import"))!;
   expect(JSON.parse(init!.body as string)).toMatchObject({ threadId: "thread-1", revision: 3, resourceIds: ["r1"], question: "Which hook?", modelConsent: false, processingRights: false, shareRights: false });
+});
+it("does not report a late import success after resource401 recovery",async()=>{
+  const view=mount();
+  fireEvent.click(await screen.findByRole("checkbox",{name:/Sample brief/}));
+  fireEvent.change(screen.getByRole("textbox",{name:/Question for these sources/}),{target:{value:"Synthetic question"}});
+  let resolveImport!:(value:{sources:[]})=>void;
+  const pendingImport=new Promise<{sources:[]}>(resolve=>{resolveImport=resolve;});
+  const previous=fetchMock.getMockImplementation()!;
+  let denyResources=false;
+  fetchMock.mockImplementation(async(path,init)=>{
+    if(path.endsWith("/import"))return pendingImport;
+    if(denyResources && path.endsWith("/resources"))throw new ApiError(401,"no_auth","no_auth");
+    return previous(path,init);
+  });
+  fireEvent.click(screen.getByRole("button",{name:"Import mock sources privately"}));
+  await waitFor(()=>expect(fetchMock.mock.calls.some(([path])=>path.endsWith("/import"))).toBe(true));
+  denyResources=true;
+  await act(async()=>{await view.client.invalidateQueries({queryKey:integrationKeys.resources(connection)});});
+  await screen.findByRole("link",{name:"Go to sign in"});
+  await act(async()=>{resolveImport({sources:[]});await pendingImport;});
+  await waitFor(()=>expect(view.client.isMutating()).toBe(0));
+  expect(view.imported).not.toHaveBeenCalled();expect(view.loginRequired).toHaveBeenCalledTimes(1);
+  expect(screen.queryByText(/Mock sources added privately/)).not.toBeInTheDocument();
 });
 
 it("does not let download permission stand in for rights to share", async () => {

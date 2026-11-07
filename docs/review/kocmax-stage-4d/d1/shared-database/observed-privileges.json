@@ -1,0 +1,601 @@
+{
+  "columns": [
+    {
+      "acl": "{authenticated=a/postgres}",
+      "table": "creator_social_accounts",
+      "column": "creator_id",
+      "schema": "public"
+    },
+    {
+      "acl": "{authenticated=a/postgres}",
+      "table": "creator_social_accounts",
+      "column": "workspace_id",
+      "schema": "public"
+    },
+    {
+      "acl": "{authenticated=a/postgres}",
+      "table": "creator_social_accounts",
+      "column": "platform",
+      "schema": "public"
+    },
+    {
+      "acl": "{authenticated=aw/postgres}",
+      "table": "creator_social_accounts",
+      "column": "handle",
+      "schema": "public"
+    },
+    {
+      "acl": "{authenticated=aw/postgres}",
+      "table": "creator_social_accounts",
+      "column": "profile_url",
+      "schema": "public"
+    },
+    {
+      "acl": "{authenticated=w/postgres}",
+      "table": "creators",
+      "column": "display_name",
+      "schema": "public"
+    },
+    {
+      "acl": "{authenticated=w/postgres}",
+      "table": "creators",
+      "column": "avatar_url",
+      "schema": "public"
+    },
+    {
+      "acl": "{authenticated=w/postgres}",
+      "table": "creators",
+      "column": "categories",
+      "schema": "public"
+    },
+    {
+      "acl": "{authenticated=w/postgres}",
+      "table": "creators",
+      "column": "social_handles",
+      "schema": "public"
+    },
+    {
+      "acl": "{authenticated=w/postgres}",
+      "table": "creators",
+      "column": "onboarding_step",
+      "schema": "public"
+    },
+    {
+      "acl": "{authenticated=w/postgres}",
+      "table": "creators",
+      "column": "phone",
+      "schema": "public"
+    },
+    {
+      "acl": "{authenticated=w/postgres}",
+      "table": "creators",
+      "column": "level_seen",
+      "schema": "public"
+    },
+    {
+      "acl": "{authenticated=w/postgres}",
+      "table": "notifications",
+      "column": "read_at",
+      "schema": "public"
+    }
+  ],
+  "table_owners": [
+    {
+      "owner": "postgres",
+      "table": "academy_content",
+      "schema": "public",
+      "owner_is_executor": true
+    },
+    {
+      "owner": "postgres",
+      "table": "assistant_conversations",
+      "schema": "public",
+      "owner_is_executor": true
+    },
+    {
+      "owner": "postgres",
+      "table": "assistant_messages",
+      "schema": "public",
+      "owner_is_executor": true
+    },
+    {
+      "owner": "postgres",
+      "table": "brand_invites",
+      "schema": "public",
+      "owner_is_executor": true
+    },
+    {
+      "owner": "postgres",
+      "table": "brand_users",
+      "schema": "public",
+      "owner_is_executor": true
+    },
+    {
+      "owner": "postgres",
+      "table": "campaign_missions",
+      "schema": "public",
+      "owner_is_executor": true
+    },
+    {
+      "owner": "postgres",
+      "table": "campaign_participants",
+      "schema": "public",
+      "owner_is_executor": true
+    },
+    {
+      "owner": "postgres",
+      "table": "campaign_rank_snapshots",
+      "schema": "public",
+      "owner_is_executor": true
+    },
+    {
+      "owner": "postgres",
+      "table": "campaigns",
+      "schema": "public",
+      "owner_is_executor": true
+    },
+    {
+      "owner": "postgres",
+      "table": "content_categories",
+      "schema": "public",
+      "owner_is_executor": true
+    },
+    {
+      "owner": "postgres",
+      "table": "content_item_tags",
+      "schema": "public",
+      "owner_is_executor": true
+    },
+    {
+      "owner": "postgres",
+      "table": "content_items",
+      "schema": "public",
+      "owner_is_executor": true
+    },
+    {
+      "owner": "postgres",
+      "table": "content_tags",
+      "schema": "public",
+      "owner_is_executor": true
+    },
+    {
+      "owner": "postgres",
+      "table": "creator_portfolio_links",
+      "schema": "public",
+      "owner_is_executor": true
+    },
+    {
+      "owner": "postgres",
+      "table": "creator_public_passports",
+      "schema": "public",
+      "owner_is_executor": true
+    },
+    {
+      "owner": "postgres",
+      "table": "creator_public_profile_snapshots",
+      "schema": "public",
+      "owner_is_executor": true
+    },
+    {
+      "owner": "postgres",
+      "table": "creator_review_notes",
+      "schema": "public",
+      "owner_is_executor": true
+    },
+    {
+      "owner": "postgres",
+      "table": "creator_review_statuses",
+      "schema": "public",
+      "owner_is_executor": true
+    },
+    {
+      "owner": "postgres",
+      "table": "creator_social_accounts",
+      "schema": "public",
+      "owner_is_executor": true
+    },
+    {
+      "owner": "postgres",
+      "table": "creator_social_scan_snapshots",
+      "schema": "public",
+      "owner_is_executor": true
+    },
+    {
+      "owner": "postgres",
+      "table": "creators",
+      "schema": "public",
+      "owner_is_executor": true
+    },
+    {
+      "owner": "postgres",
+      "table": "earnings_balances",
+      "schema": "public",
+      "owner_is_executor": true
+    },
+    {
+      "owner": "postgres",
+      "table": "earnings_transactions",
+      "schema": "public",
+      "owner_is_executor": true
+    },
+    {
+      "owner": "postgres",
+      "table": "kb_chunks",
+      "schema": "public",
+      "owner_is_executor": true
+    },
+    {
+      "owner": "postgres",
+      "table": "kb_documents",
+      "schema": "public",
+      "owner_is_executor": true
+    },
+    {
+      "owner": "postgres",
+      "table": "mission_shortlists",
+      "schema": "public",
+      "owner_is_executor": true
+    },
+    {
+      "owner": "postgres",
+      "table": "mission_submissions",
+      "schema": "public",
+      "owner_is_executor": true
+    },
+    {
+      "owner": "postgres",
+      "table": "missions",
+      "schema": "public",
+      "owner_is_executor": true
+    },
+    {
+      "owner": "postgres",
+      "table": "notifications",
+      "schema": "public",
+      "owner_is_executor": true
+    },
+    {
+      "owner": "postgres",
+      "table": "operator_audit_events",
+      "schema": "public",
+      "owner_is_executor": true
+    },
+    {
+      "owner": "postgres",
+      "table": "point_balances",
+      "schema": "public",
+      "owner_is_executor": true
+    },
+    {
+      "owner": "postgres",
+      "table": "point_transactions",
+      "schema": "public",
+      "owner_is_executor": true
+    },
+    {
+      "owner": "postgres",
+      "table": "redemption_codes",
+      "schema": "public",
+      "owner_is_executor": true
+    },
+    {
+      "owner": "postgres",
+      "table": "redemption_gifts",
+      "schema": "public",
+      "owner_is_executor": true
+    },
+    {
+      "owner": "postgres",
+      "table": "redemptions",
+      "schema": "public",
+      "owner_is_executor": true
+    },
+    {
+      "owner": "postgres",
+      "table": "staff_users",
+      "schema": "public",
+      "owner_is_executor": true
+    },
+    {
+      "owner": "postgres",
+      "table": "workspace_budget_transactions",
+      "schema": "public",
+      "owner_is_executor": true
+    },
+    {
+      "owner": "postgres",
+      "table": "workspace_budgets",
+      "schema": "public",
+      "owner_is_executor": true
+    },
+    {
+      "owner": "postgres",
+      "table": "workspaces",
+      "schema": "public",
+      "owner_is_executor": true
+    }
+  ],
+  "api_memberships": [],
+  "function_owners": [
+    {
+      "name": "creator_is_trusted",
+      "owner": "postgres",
+      "schema": "private",
+      "identity_args": "p_creator uuid",
+      "owner_is_executor": true
+    },
+    {
+      "name": "current_workspace_id",
+      "owner": "postgres",
+      "schema": "private",
+      "identity_args": "",
+      "owner_is_executor": true
+    },
+    {
+      "name": "enforce_creator_portfolio_highlight_limit",
+      "owner": "postgres",
+      "schema": "private",
+      "identity_args": "",
+      "owner_is_executor": true
+    },
+    {
+      "name": "is_valid_public_http_url",
+      "owner": "postgres",
+      "schema": "private",
+      "identity_args": "value text",
+      "owner_is_executor": true
+    },
+    {
+      "name": "is_valid_public_profile_highlights",
+      "owner": "postgres",
+      "schema": "private",
+      "identity_args": "value jsonb",
+      "owner_is_executor": true
+    },
+    {
+      "name": "touch_creator_profile_media_updated_at",
+      "owner": "postgres",
+      "schema": "private",
+      "identity_args": "",
+      "owner_is_executor": true
+    },
+    {
+      "name": "touch_creator_social_accounts_updated_at",
+      "owner": "postgres",
+      "schema": "private",
+      "identity_args": "",
+      "owner_is_executor": true
+    },
+    {
+      "name": "touch_operator_crm_updated_at",
+      "owner": "postgres",
+      "schema": "private",
+      "identity_args": "",
+      "owner_is_executor": true
+    },
+    {
+      "name": "uuid_lock_key",
+      "owner": "postgres",
+      "schema": "private",
+      "identity_args": "value uuid",
+      "owner_is_executor": true
+    },
+    {
+      "name": "validate_mission_shortlist_workspace",
+      "owner": "postgres",
+      "schema": "private",
+      "identity_args": "",
+      "owner_is_executor": true
+    },
+    {
+      "name": "accept_application",
+      "owner": "postgres",
+      "schema": "public",
+      "identity_args": "p_submission uuid",
+      "owner_is_executor": true
+    },
+    {
+      "name": "apply_mission",
+      "owner": "postgres",
+      "schema": "public",
+      "identity_args": "p_mission uuid",
+      "owner_is_executor": true
+    },
+    {
+      "name": "approve_submission",
+      "owner": "postgres",
+      "schema": "public",
+      "identity_args": "p_submission uuid, p_notes text, p_quality_rating smallint",
+      "owner_is_executor": true
+    },
+    {
+      "name": "award_welcome_bonus",
+      "owner": "postgres",
+      "schema": "public",
+      "identity_args": "p_creator uuid",
+      "owner_is_executor": true
+    },
+    {
+      "name": "broadcast_campaign_started",
+      "owner": "postgres",
+      "schema": "public",
+      "identity_args": "p_campaign uuid, p_creator_ids uuid[]",
+      "owner_is_executor": true
+    },
+    {
+      "name": "campaign_progress_on_approval",
+      "owner": "postgres",
+      "schema": "public",
+      "identity_args": "",
+      "owner_is_executor": true
+    },
+    {
+      "name": "close_campaign",
+      "owner": "postgres",
+      "schema": "public",
+      "identity_args": "p_campaign uuid",
+      "owner_is_executor": true
+    },
+    {
+      "name": "close_due_campaigns",
+      "owner": "postgres",
+      "schema": "public",
+      "identity_args": "",
+      "owner_is_executor": true
+    },
+    {
+      "name": "content_increment_views",
+      "owner": "postgres",
+      "schema": "public",
+      "identity_args": "p_slug text",
+      "owner_is_executor": true
+    },
+    {
+      "name": "content_publish_scheduled",
+      "owner": "postgres",
+      "schema": "public",
+      "identity_args": "",
+      "owner_is_executor": true
+    },
+    {
+      "name": "content_touch_updated_at",
+      "owner": "postgres",
+      "schema": "public",
+      "identity_args": "",
+      "owner_is_executor": true
+    },
+    {
+      "name": "credit_workspace_budget",
+      "owner": "postgres",
+      "schema": "public",
+      "identity_args": "p_workspace uuid, p_delta numeric, p_type text, p_description text",
+      "owner_is_executor": true
+    },
+    {
+      "name": "decline_application",
+      "owner": "postgres",
+      "schema": "public",
+      "identity_args": "p_submission uuid, p_notes text",
+      "owner_is_executor": true
+    },
+    {
+      "name": "grant_campaign_completion_bonus",
+      "owner": "postgres",
+      "schema": "public",
+      "identity_args": "p_campaign uuid, p_creator uuid",
+      "owner_is_executor": true
+    },
+    {
+      "name": "join_mission",
+      "owner": "postgres",
+      "schema": "public",
+      "identity_args": "p_mission uuid",
+      "owner_is_executor": true
+    },
+    {
+      "name": "level_for_xp",
+      "owner": "postgres",
+      "schema": "public",
+      "identity_args": "p_xp integer",
+      "owner_is_executor": true
+    },
+    {
+      "name": "level_ordinal",
+      "owner": "postgres",
+      "schema": "public",
+      "identity_args": "p_level text",
+      "owner_is_executor": true
+    },
+    {
+      "name": "match_kb_chunks",
+      "owner": "postgres",
+      "schema": "public",
+      "identity_args": "query_embedding vector, match_count integer, filter_locale text, filter_workspace text",
+      "owner_is_executor": true
+    },
+    {
+      "name": "notify_on_level_up",
+      "owner": "postgres",
+      "schema": "public",
+      "identity_args": "",
+      "owner_is_executor": true
+    },
+    {
+      "name": "notify_on_redemption",
+      "owner": "postgres",
+      "schema": "public",
+      "identity_args": "",
+      "owner_is_executor": true
+    },
+    {
+      "name": "notify_on_submission_change",
+      "owner": "postgres",
+      "schema": "public",
+      "identity_args": "",
+      "owner_is_executor": true
+    },
+    {
+      "name": "rank_campaign",
+      "owner": "postgres",
+      "schema": "public",
+      "identity_args": "p_campaign uuid",
+      "owner_is_executor": true
+    },
+    {
+      "name": "redeem_gift",
+      "owner": "postgres",
+      "schema": "public",
+      "identity_args": "p_gift uuid",
+      "owner_is_executor": true
+    },
+    {
+      "name": "reject_submission",
+      "owner": "postgres",
+      "schema": "public",
+      "identity_args": "p_submission uuid, p_notes text",
+      "owner_is_executor": true
+    },
+    {
+      "name": "rls_auto_enable",
+      "owner": "postgres",
+      "schema": "public",
+      "identity_args": "",
+      "owner_is_executor": true
+    },
+    {
+      "name": "set_level_from_xp",
+      "owner": "postgres",
+      "schema": "public",
+      "identity_args": "",
+      "owner_is_executor": true
+    },
+    {
+      "name": "set_workspace_budget_enforcement",
+      "owner": "postgres",
+      "schema": "public",
+      "identity_args": "p_workspace uuid, p_enforced boolean",
+      "owner_is_executor": true
+    },
+    {
+      "name": "settle_campaign",
+      "owner": "postgres",
+      "schema": "public",
+      "identity_args": "p_campaign uuid",
+      "owner_is_executor": true
+    },
+    {
+      "name": "snapshot_campaign_leaderboards",
+      "owner": "postgres",
+      "schema": "public",
+      "identity_args": "",
+      "owner_is_executor": true
+    },
+    {
+      "name": "submit_mission",
+      "owner": "postgres",
+      "schema": "public",
+      "identity_args": "p_mission uuid, p_urls text[], p_data jsonb",
+      "owner_is_executor": true
+    }
+  ]
+}

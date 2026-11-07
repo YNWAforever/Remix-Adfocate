@@ -2,6 +2,18 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it, vi } from "vitest";
 import { hasCapabilityValidator, runPreflight, runPreflightCli } from "./preflight";
+import { CREATOR_GROWTH_CAPABILITIES, CREATOR_PUBLISH_CAPABILITIES } from "./creator-private-capabilities";
+
+const AUTH_BOUNDARY_CAPABILITIES = [
+  "function:private.brand_staff_mission_write_allowed",
+  "grant:authenticated.private.brand_staff_mission_write_allowed(uuid)",
+  ...["anon", "public", "service_role"].map(role => `grant-removed:${role}.private.brand_staff_mission_write_allowed(uuid)`),
+  "function:public.bootstrap_creator_account",
+  "grant:service_role.public.bootstrap_creator_account(uuid,uuid,text,text,text)",
+  ...["authenticated", "anon", "public"].map(role => `grant-removed:${role}.public.bootstrap_creator_account(uuid,uuid,text,text,text)`),
+  ...["insert", "update", "delete"].map(operation => `policy:public.missions.missions_staff_${operation}_boundary`),
+];
+const PRIVATE_PREPARATION_CAPABILITIES = [...AUTH_BOUNDARY_CAPABILITIES, ...CREATOR_GROWTH_CAPABILITIES, ...CREATOR_PUBLISH_CAPABILITIES];
 
 // Contracts added by the 2026-10-29 end-to-end review remediation (docs/review/).
 const REMEDIATION_CAPABILITIES = [
@@ -113,6 +125,30 @@ const PILOT_CAPABILITIES = [
 ];
 
 describe("release preflight", () => {
+  it("keeps private preparation ACL denials unverifiable without catalog evidence and rejects leaked grants", async () => {
+    const denials = [
+      ...["public", "anon", "authenticated", "service_role"].map(role => ({
+        capability: `grant-removed:${role}.private.creator_publish_intents(select)`,
+        sql: `GRANT SELECT ON TABLE private.creator_publish_intents TO ${role};`,
+      })),
+      ...["public", "anon", "authenticated"].map(role => ({
+        capability: `grant-removed:${role}.public.creator_publish_command(uuid,uuid,text,jsonb,timestamptz)`,
+        sql: `GRANT EXECUTE ON FUNCTION public.creator_publish_command(uuid,uuid,text,jsonb,timestamptz) TO ${role};`,
+      })),
+    ];
+    for (const { capability, sql } of denials) {
+      expect(CREATOR_PUBLISH_CAPABILITIES).toContain(capability);
+      for (const [schema, expected] of [["", "unverifiable"], [sql, "divergent"]]) {
+        const report = await runPreflight({ databaseUrl: "postgresql://synthetic", projectRef: "disposable", manifestDigest: "a".repeat(64),
+          expectedCapabilities: [capability], now: new Date("2026-11-06") }, {
+          run: vi.fn().mockResolvedValue({ code: 0, stdout: "", stderr: "" }), readFile: vi.fn().mockResolvedValue(schema),
+          rm: vi.fn(), tempFile: () => "synthetic.sql",
+        });
+        expect(report.capabilities[0].status, capability).toBe(expected);
+      }
+    }
+  });
+
   it("does not claim a removed grant is safe from dump text alone", async () => {
     async function check(schema: string) {
       return runPreflight({ databaseUrl: "postgresql://synthetic", projectRef: "disposable", manifestDigest: "a".repeat(64),
@@ -153,12 +189,17 @@ describe("release preflight", () => {
     expect(capabilities).toEqual(expect.arrayContaining(STUDIO_CAPABILITIES));
     expect(capabilities).toEqual(expect.arrayContaining(INTEGRATION_CAPABILITIES));
     expect(capabilities).toEqual(expect.arrayContaining(PILOT_CAPABILITIES));
+    expect(capabilities).toEqual(expect.arrayContaining(PRIVATE_PREPARATION_CAPABILITIES));
+    expect(AUTH_BOUNDARY_CAPABILITIES).toHaveLength(13);
+    expect(CREATOR_GROWTH_CAPABILITIES).toHaveLength(405);
+    expect(CREATOR_PUBLISH_CAPABILITIES).toHaveLength(120);
+    expect(new Set(PRIVATE_PREPARATION_CAPABILITIES).size).toBe(PRIVATE_PREPARATION_CAPABILITIES.length);
     expect(PILOT_CAPABILITIES).toHaveLength(49);
     expect(new Set(PILOT_CAPABILITIES).size).toBe(49);
     expect(STUDIO_CAPABILITIES).toHaveLength(56);
     expect(INTEGRATION_CAPABILITIES).toHaveLength(69);
     expect(new Set(INTEGRATION_CAPABILITIES).size).toBe(69);
-    expect(capabilities.filter((capability) => ![...REMEDIATION_CAPABILITIES, ...STUDIO_CAPABILITIES, ...INTEGRATION_CAPABILITIES, ...PILOT_CAPABILITIES].includes(capability))).toHaveLength(620);
+    expect(capabilities.filter((capability) => ![...REMEDIATION_CAPABILITIES, ...STUDIO_CAPABILITIES, ...INTEGRATION_CAPABILITIES, ...PILOT_CAPABILITIES, ...PRIVATE_PREPARATION_CAPABILITIES].includes(capability))).toHaveLength(620);
     const claimDenials = ["authenticated", "anon", "public"].map(role => `grant-removed:${role}.public.claim_assistant_request(uuid,uuid,uuid)`);
     expect(capabilities).toEqual(expect.arrayContaining(claimDenials));
     const reviewValidityCapabilities = [
@@ -201,8 +242,8 @@ describe("release preflight", () => {
       "grant-removed:public.public.get_legacy_correction_evidence(uuid,uuid)",
     ];
     expect(capabilities).toEqual(expect.arrayContaining(repairCapabilities));
-    expect(capabilities.filter((capability) => ![...repairCapabilities, ...reviewValidityCapabilities, ...claimDenials, ...REMEDIATION_CAPABILITIES, ...STUDIO_CAPABILITIES, ...INTEGRATION_CAPABILITIES, ...PILOT_CAPABILITIES].includes(capability))).toHaveLength(598);
-    expect(capabilities.filter((capability) => ![...applicationCapabilities, ...redemptionCapabilities, ...repairCapabilities, ...reviewValidityCapabilities, ...claimDenials, ...REMEDIATION_CAPABILITIES, ...STUDIO_CAPABILITIES, ...INTEGRATION_CAPABILITIES, ...PILOT_CAPABILITIES].includes(capability))).toHaveLength(587);
+    expect(capabilities.filter((capability) => ![...repairCapabilities, ...reviewValidityCapabilities, ...claimDenials, ...REMEDIATION_CAPABILITIES, ...STUDIO_CAPABILITIES, ...INTEGRATION_CAPABILITIES, ...PILOT_CAPABILITIES, ...PRIVATE_PREPARATION_CAPABILITIES].includes(capability))).toHaveLength(598);
+    expect(capabilities.filter((capability) => ![...applicationCapabilities, ...redemptionCapabilities, ...repairCapabilities, ...reviewValidityCapabilities, ...claimDenials, ...REMEDIATION_CAPABILITIES, ...STUDIO_CAPABILITIES, ...INTEGRATION_CAPABILITIES, ...PILOT_CAPABILITIES, ...PRIVATE_PREPARATION_CAPABILITIES].includes(capability))).toHaveLength(587);
     expect(capabilities.filter((capability) => !hasCapabilityValidator(capability))).toEqual([]);
   });
 

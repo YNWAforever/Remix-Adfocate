@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { ReactNode } from "react";
@@ -6,6 +6,7 @@ import { ApiError, apiFetch } from "@/lib/api";
 import { I18nProvider } from "@/lib/i18n";
 import type { IntegrationConnection } from "@/lib/integrations/types";
 import { Route } from "@/routes/_app.connections";
+import { integrationKeys } from "@/lib/integrations/queries";
 
 vi.mock("@/lib/api", async original => ({ ...await original<object>(), apiFetch: vi.fn() }));
 vi.mock("@tanstack/react-router", async original => ({
@@ -19,10 +20,11 @@ const drive: IntegrationConnection = {
   lastSyncAt: null, expiresAt: "2099-10-31T00:00:00Z", lastError: null,
   sampleOnly: true, providerRevocation: "not_requested",
 };
-function mount(lang = "en") {
+function mount(lang = "en", owner?: string) {
   localStorage.setItem("lang", lang);
   const client = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } });
   clients.push(client);
+  if (owner) client.setQueryData(["me"], { id: owner });
   const Page = Route.options.component as () => ReactNode;
   return { client, ...render(<QueryClientProvider client={client}><I18nProvider><Page /></I18nProvider></QueryClientProvider>) };
 }
@@ -30,6 +32,187 @@ beforeEach(() => { fetchMock.mockReset(); });
 afterEach(() => { cleanup(); clients.splice(0).forEach(client => client.clear()); });
 
 describe("mock connection journeys", () => {
+  it.each(["start", "complete", "sync", "revoke", "purge"].flatMap(action => [401, 503].map(status => ({ action, status }))))("ignores old creator $action failure $status after identity switch", async ({ action, status }) => {
+    let rejectStart!: (error: Error) => void;
+    const pending = new Promise((_, reject) => { rejectStart = reject; });
+    let nextCreator = false;
+    const ig = { ...drive, id: "old-ig", provider: "instagram", label: "OLD_ACCOUNT", scopes: ["instagram_business_basic", "instagram_business_manage_insights"] };
+    fetchMock.mockImplementation(async path => {
+      if (path === "/me/integrations") return { mode: "mock", connections: !nextCreator && ["sync", "revoke", "purge"].includes(action) ? [ig] : [] };
+      if (action === "complete" && path.endsWith("/start")) return { state: "old-state", provider: "instagram", scopes: ig.scopes, sampleOnly: true, expiresAt: drive.expiresAt };
+      return pending;
+    });
+    const { client } = mount("en", "creator-a");
+    const button = await screen.findByRole("button", { name: action === "sync" ? "Update mock insights" : action === "revoke" ? "Revoke mock Instagram" : action === "purge" ? "Delete imported content and derived drafts" : "Connect mock Instagram" });
+    await waitFor(() => expect(button).toBeEnabled());
+    fireEvent.click(button);
+    if (action === "purge") fireEvent.click(screen.getByRole("button", { name: "Confirm deletion" }));
+    if (action === "complete") fireEvent.click(within(await screen.findByRole("dialog")).getByRole("button", { name: "Allow mock connection" }));
+    await waitFor(() => expect(fetchMock.mock.calls.some(([path]) => path.endsWith(`/${action}`))).toBe(true));
+    nextCreator = true;
+    act(() => { client.setQueryData(["me"], { id: "creator-b" }); });
+    await waitFor(() => expect(client.getQueryData(integrationKeys.list("creator-b"))).toEqual({ mode: "mock", connections: [] }));
+    await act(async () => { rejectStart(new ApiError(status, "old_error", "OLD_PRIVATE_ERROR")); await pending.catch(() => undefined); });
+    await waitFor(() => expect(client.isMutating()).toBe(0));
+    expect(screen.getByRole("button", { name: "Connect mock Instagram" })).toBeEnabled();
+    expect(screen.queryByRole("link", { name: "Go to sign in" })).not.toBeInTheDocument();
+    expect(document.body).not.toHaveTextContent(/OLD_PRIVATE_ERROR|OLD_ACCOUNT|Imported mock content deleted/);
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(client.getQueryData(integrationKeys.list("creator-b"))).toEqual({ mode: "mock", connections: [] });
+    expect(fetchMock.mock.calls.filter(([, init]) => init?.method === "POST")).toHaveLength(action === "complete" ? 2 : 1);
+  });
+  it.each(["start", "complete", "sync", "revoke", "purge"])("isolates delayed %s from the next creator", async action => {
+    let resolveOperation!: (value: unknown) => void;
+    const pending = new Promise(resolve => { resolveOperation = resolve; });
+    let nextCreator = false;
+    const ig = { ...drive, id: "old-ig", provider: "instagram" as const, label: "OLD_PRIVATE_ACCOUNT", scopes: ["instagram_business_basic", "instagram_business_manage_insights"] };
+    const consent = { state: "old-consent", provider: "instagram", scopes: ig.scopes, sampleOnly: true, expiresAt: drive.expiresAt };
+    fetchMock.mockImplementation(async path => {
+      if (path === "/me/integrations") return { mode: "mock", connections: !nextCreator && ["sync", "revoke", "purge"].includes(action) ? [ig] : [] };
+      if (action === "complete" && path.endsWith("/start")) return consent;
+      return pending;
+    });
+    const { client } = mount("en", "creator-a");
+    const trigger = await screen.findByRole("button", { name: action === "sync" ? "Update mock insights" : action === "revoke" ? "Revoke mock Instagram" : action === "purge" ? "Delete imported content and derived drafts" : "Connect mock Instagram" });
+    await waitFor(() => expect(trigger).toBeEnabled());
+    fireEvent.click(trigger);
+    if (action === "purge") fireEvent.click(screen.getByRole("button", { name: "Confirm deletion" }));
+    if (action === "complete") {
+      const dialog = await screen.findByRole("dialog");
+      fireEvent.click(within(dialog).getByRole("button", { name: "Allow mock connection" }));
+    }
+    await waitFor(() => expect(fetchMock.mock.calls.filter(([path]) => path.endsWith(`/${action}`))).toHaveLength(1));
+    nextCreator = true;
+    act(() => { client.setQueryData(["me"], { id: "next-creator" }); });
+    await waitFor(() => expect(client.getQueryData(integrationKeys.list("next-creator"))).toEqual({ mode: "mock", connections: [] }));
+    const originalAccountList = client.getQueryData(integrationKeys.list("creator-a"));
+    await act(async () => {
+      resolveOperation(action === "start" ? consent : action === "complete" ? { connection: ig } : action === "revoke" ? { local: "revoked", provider: "revoked" } : action === "purge" ? { state: "complete" } : { resources: [], status: "completed" });
+      await pending;
+    });
+    await waitFor(() => expect(client.isMutating()).toBe(0));
+    expect(client.getMutationCache().getAll().at(-1)?.state.error).toMatchObject({ code: "STALE_CONNECTION" });
+    expect(client.getQueryData(integrationKeys.list("creator-a"))).toEqual(originalAccountList);
+    expect(client.getQueryData(integrationKeys.list("next-creator"))).toEqual({ mode: "mock", connections: [] });
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(document.body).not.toHaveTextContent(/OLD_PRIVATE_ACCOUNT|Mock data updated|old-consent|Imported mock content deleted/);
+    expect(screen.getByRole("button", { name: "Connect mock Instagram" })).toBeEnabled();
+    expect(fetchMock.mock.calls.filter(([path]) => path.endsWith(`/${action}`))).toHaveLength(1);
+  });
+
+  it("settles a delayed start after ordinary unmount without reopening consent", async () => {
+    let resolveStart!: (value: unknown) => void;
+    const pending = new Promise(resolve => { resolveStart = resolve; });
+    fetchMock.mockImplementation(async path => path.endsWith("/start") ? pending : { mode: "mock", connections: [] });
+    const { client, unmount, container } = mount();
+    const trigger = await screen.findByRole("button", { name: "Connect mock Instagram" });
+    await waitFor(() => expect(trigger).toBeEnabled());
+    fireEvent.click(trigger);
+    await waitFor(() => expect(fetchMock.mock.calls.some(([path]) => path.endsWith("/start"))).toBe(true));
+    unmount();
+    await act(async () => {
+      resolveStart({ state: "late-consent", provider: "instagram", scopes: ["instagram_business_basic"], sampleOnly: true, expiresAt: drive.expiresAt });
+      await pending;
+    });
+    await waitFor(() => expect(client.isMutating()).toBe(0));
+    expect(client.getMutationCache().getAll().at(-1)?.state.status).toBe("success");
+    expect(container).toBeEmptyDOMElement();
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(fetchMock.mock.calls.filter(([, init]) => init?.method === "POST")).toHaveLength(1);
+  });
+
+  it("hides consent after complete401 without replaying the completion", async () => {
+    fetchMock.mockImplementation(async path => {
+      if (path === "/me/integrations") return { mode: "mock", connections: [] };
+      if (path.endsWith("/start")) return { state: "private-state", provider: "instagram", scopes: ["instagram_business_basic"], sampleOnly: true, expiresAt: drive.expiresAt };
+      throw new ApiError(401, "no_auth", "PRIVATE_COMPLETE_ERROR");
+    });
+    mount();
+    const connect = await screen.findByRole("button", { name: "Connect mock Instagram" });
+    await waitFor(() => expect(connect).toBeEnabled());
+    fireEvent.click(connect);
+    const dialog = await screen.findByRole("dialog");
+    fireEvent.click(within(dialog).getByRole("button", { name: "Allow mock connection" }));
+    expect(await screen.findByRole("link", { name: "Go to sign in" })).toHaveAttribute("href", "/login");
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(document.body).not.toHaveTextContent("PRIVATE_COMPLETE_ERROR");
+    expect(screen.queryByRole("button", { name: "Connect mock Instagram" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Connect mock Google Drive" })).not.toBeInTheDocument();
+    expect(fetchMock.mock.calls.filter(([path]) => path.endsWith("/complete"))).toHaveLength(1);
+  });
+
+  it.each(["start", "sync", "purge"])("does not restore account UI when delayed %s succeeds after list401", async action => {
+    let resolveOperation!: (value: unknown) => void;
+    const pending = new Promise(resolve => { resolveOperation = resolve; });
+    let expired = false;
+    const ig = { ...drive, id: "ig-race", provider: "instagram", label: "PRIVATE_RACE_ACCOUNT", scopes: ["instagram_business_basic", "instagram_business_manage_insights"] };
+    fetchMock.mockImplementation(async path => {
+      if (path === "/me/integrations") {
+        if (expired) throw new ApiError(401, "no_auth", "private diagnostic");
+        return { mode: "mock", connections: action === "start" ? [] : [ig] };
+      }
+      return pending;
+    });
+    const { client } = mount();
+    const button = await screen.findByRole("button", { name: action === "start" ? "Connect mock Instagram" : action === "sync" ? "Update mock insights" : "Delete imported content and derived drafts" });
+    await waitFor(() => expect(button).toBeEnabled());
+    fireEvent.click(button);
+    if (action === "purge") fireEvent.click(screen.getByRole("button", { name: "Confirm deletion" }));
+    await waitFor(() => expect(fetchMock.mock.calls.filter(([, init]) => init?.method === "POST")).toHaveLength(1));
+    expired = true;
+    await act(async () => { await client.invalidateQueries({ queryKey: integrationKeys.all }); });
+    await screen.findByRole("link", { name: "Go to sign in" });
+    await act(async () => {
+      resolveOperation(action === "start"
+        ? { state: "late-private-state", provider: "instagram", scopes: ig.scopes, sampleOnly: true, expiresAt: drive.expiresAt }
+        : action === "sync" ? { resources: [], status: "completed" } : { state: "complete" });
+      await pending;
+    });
+    expect(screen.getByRole("link", { name: "Go to sign in" })).toBeVisible();
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(document.body).not.toHaveTextContent(/PRIVATE_RACE_ACCOUNT|Mock data updated|Imported mock content deleted/);
+    expect(fetchMock.mock.calls.filter(([, init]) => init?.method === "POST")).toHaveLength(1);
+  });
+
+  it("hides cached accounts after list401 and does not uncover them after transient failure",async()=>{
+    fetchMock.mockResolvedValue({mode:"mock",connections:[drive]});
+    const {client}=mount();
+    await screen.findByText("Mock Drive");
+    fetchMock.mockRejectedValue(new ApiError(401,"no_auth","PRIVATE_ERROR"));
+    await act(async()=>{await client.invalidateQueries({queryKey:integrationKeys.all});});
+    await screen.findByRole("link",{name:"Go to sign in"});
+    expect(document.body).not.toHaveTextContent("Mock Drive");
+    expect(document.body).not.toHaveTextContent("PRIVATE_ERROR");
+    expect(screen.queryByRole("button",{name:"Revoke mock Google Drive"})).not.toBeInTheDocument();
+    fetchMock.mockRejectedValue(new ApiError(503,"offline","offline"));
+    await act(async()=>{await client.invalidateQueries({queryKey:integrationKeys.all});});
+    expect(screen.getByRole("link",{name:"Go to sign in"})).toHaveAttribute("href","/login");
+    expect(document.body).not.toHaveTextContent("Mock Drive");
+  });
+  it.each(["start","sync","revoke","purge"])("contains the account page after mock %s401 without replay or false completion",async action=>{
+    const ig={...drive,id:"ig-1",provider:"instagram",label:"PRIVATE_IG_ACCOUNT",scopes:["instagram_business_basic","instagram_business_manage_insights"]};
+    fetchMock.mockImplementation(async(path)=>{
+      if(path==="/me/integrations")return {mode:"mock",connections:action==="start"?[]:[ig]};
+      throw new ApiError(401,"no_auth","PRIVATE_ERROR");
+    });
+    mount();
+    if(action==="start") {
+      const button=await screen.findByRole("button",{name:"Connect mock Instagram"});
+      await waitFor(()=>expect(button).toBeEnabled());fireEvent.click(button);
+    }
+    else if(action==="sync")fireEvent.click(await screen.findByRole("button",{name:"Update mock insights"}));
+    else if(action==="revoke")fireEvent.click(await screen.findByRole("button",{name:"Revoke mock Instagram"}));
+    else {
+      fireEvent.click(await screen.findByRole("button",{name:"Delete imported content and derived drafts"}));
+      fireEvent.click(screen.getByRole("button",{name:"Confirm deletion"}));
+    }
+    await screen.findByRole("link",{name:"Go to sign in"});
+    expect(document.body).not.toHaveTextContent("PRIVATE_IG_ACCOUNT");
+    expect(document.body).not.toHaveTextContent("PRIVATE_ERROR");
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(fetchMock.mock.calls.filter(([,init])=>init?.method==="POST")).toHaveLength(1);
+    expect(document.body).not.toHaveTextContent("Imported mock content deleted.");
+  });
   it("shows D0 boundaries and proposed live scopes without offering a real connection", async () => {
     fetchMock.mockResolvedValue({ mode: "live_pilot", pilot: { stage: "D0", externalAccess: false }, connections: [] });
     mount();

@@ -1,12 +1,13 @@
 import { useEffect, useId, useRef, useState } from "react";
-import { useStudioText } from "@/components/studio/StudioPrimitives";
+import { StudioLoginRequired, useStudioText } from "@/components/studio/StudioPrimitives";
+import { ApiError } from "@/lib/api";
 import { canReadConnection, useConnections, useIntegrationCommand, useIntegrationIdentity, useIntegrationResources } from "@/lib/integrations/queries";
 import type { Availability, IntegrationResource } from "@/lib/integrations/types";
 import { D0Notice, IntegrationError, IntegrationModeBadge } from "./ConnectionConsent";
 import { DriveSourcePicker } from "./DriveSourcePicker";
 import "./integrations.css";
 
-type Props = { threadId: string; revision: number; onImported: () => void };
+type Props = { threadId: string; revision: number; onImported: () => void; onLoginRequired?: () => void };
 function ResourceDetails({ resource }: { resource: IntegrationResource }) {
   const tx = useStudioText();
   const availability = (value: Availability) => ({
@@ -45,7 +46,7 @@ export function IntegrationSourcePanel(props: Props) {
   return <SourceForm key={`${identity}:${props.threadId}`} {...props} />;
 }
 
-function SourceForm({ threadId, revision, onImported }: Props) {
+function SourceForm({ threadId, revision, onImported, onLoginRequired }: Props) {
   const tx = useStudioText(), query = useConnections(), command = useIntegrationCommand(), sync = useIntegrationCommand();
   const [connectionId, setConnectionId] = useState("");
   const connections = query.data?.connections ?? [];
@@ -78,8 +79,19 @@ function SourceForm({ threadId, revision, onImported }: Props) {
   const alive = useRef(true);
   useEffect(() => { alive.current = true; return () => { alive.current = false; }; }, []);
   const id = useId();
+  const [loginRequired, setLoginRequired] = useState(false);
+  const blocked = useRef(false);
+  const unauthorized = [query, resourcesQuery, command, sync].some(result => result.isError && result.error instanceof ApiError && result.error.status === 401);
+  useEffect(() => {
+    if (unauthorized && !blocked.current) {
+      blocked.current = true;
+      setLoginRequired(true);
+      onLoginRequired?.();
+    }
+  }, [unauthorized, onLoginRequired]);
   const valid = ready && !resourcesQuery.isError && !resourcesQuery.isFetching && !command.isPending && selected.length > 0 && selected.length <= 5 && question.trim().length > 0 && question.length <= 500 && (!consent.modelConsent || consent.processingRights);
   const setRight = (key: "modelConsent" | "processingRights" | "shareRights", value: boolean) => setRights({ ...consent, scope: consentScope, [key]: value });
+  if (unauthorized || loginRequired) return <StudioLoginRequired/>;
   return <section className="integration-ui i-source-panel" aria-labelledby={`${id}-heading`}>
     <div className="i-row"><span aria-hidden className="i-provider-icon">🌱</span><IntegrationModeBadge mode={query.data?.mode} /></div>
     {(query.data?.pilot?.stage === "D0" || query.data?.mode === "live_pilot") && <D0Notice />}
@@ -126,7 +138,7 @@ function SourceForm({ threadId, revision, onImported }: Props) {
         threadId, revision, resourceIds: selected.map(item => item.id), question: question.trim(), modelConsent: consent.modelConsent,
         processingRights: consent.processingRights, shareRights: shareAllowed && consent.shareRights, requestId: crypto.randomUUID(),
       } }, { onSuccess: () => {
-        if (!alive.current) return;
+        if (!alive.current || blocked.current) return;
         setSelection({ scope: "", keys: [] }); setRights({ scope: "", modelConsent: false, processingRights: false, shareRights: false });
         setNotice(tx("模擬來源已私下加入本討論，尚未分享。", "Mock sources added privately to this discussion; nothing has been shared.")); onImported();
       } });

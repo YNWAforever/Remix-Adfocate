@@ -1,0 +1,61 @@
+{
+  "status": "APPLIED_AND_READ_ONLY_POSTCONDITIONS_PASSED",
+  "projectRef": "mhkoayftiuojxlrkollf",
+  "projectName": "Remix-Adfocate",
+  "branch": "codex/kocmax-studio-stages-1-2",
+  "head": "5c60020091e8e6fee934b61c498bf7518944c433",
+  "authorization": "User explicitly approved the new SQL, restore verification, nine-account testing and cleanup on 2026-11-01.",
+  "sqlSha256": "ae276f3dfc22539b48e482dceb1aeab8de2774c75f32816fe58665bfef8b7b8d",
+  "sqlBytes": 6869,
+  "exactApprovedSqlVerifiedInMigrationHistory": true,
+  "targetIdentityVerified": true,
+  "restoreVerified": true,
+  "restoreReceipt": "checkpoint-restore.json",
+  "backupAttempt": "20261101T073819Z-4e90d939a7a144639faa6a720e0d1f6c",
+  "backupManifestSha256": "d2aca5cbffabed4b603e21bca84b02d75408e3bd3674a97871e47787e8ef93bb",
+  "migration": {
+    "version": "20261101075946",
+    "name": "kocmax_auth_permission_boundary",
+    "statementCount": 1,
+    "historyCountBefore": 15,
+    "historyCountAfter": 16,
+    "applyAttempts": 1,
+    "success": true
+  },
+  "applicationDataBeforeAndAfter": {
+    "tableCount": 94,
+    "rowCount": 110,
+    "opaqueDigest": "ec4e20dce8d53c695122c2f3c1551abb",
+    "unchanged": true
+  },
+  "postconditions": {
+    "newRestrictiveMissionPolicies": 3,
+    "applicationPoliciesBefore": 86,
+    "applicationPoliciesAfter": 89,
+    "privateBrandHelper": {
+      "securityDefiner": true,
+      "emptySearchPath": true,
+      "anonExecute": false,
+      "authenticatedExecute": true,
+      "serviceRoleExecute": false
+    },
+    "atomicBootstrap": {
+      "securityDefiner": true,
+      "emptySearchPath": true,
+      "anonExecute": false,
+      "authenticatedExecute": false,
+      "serviceRoleExecute": true
+    },
+    "authenticatedCanUpdateCreatorXpWorkspaceOrStatus": false,
+    "retainedDuplicateIndexes": 2
+  },
+  "boundariesAtApplication": {
+    "testAuthAccountsCreated": 0,
+    "persistentFixtureWrites": 0,
+    "deployments": 0,
+    "instagramConnections": 0,
+    "driveConnections": 0,
+    "indexChanges": 0,
+    "realLoginAndPermissionTests": "NOT_RUN_YET"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "recordedAtUtc": "2026-11-01T15:34:36.5234383Z",
+  "status": "V3_NODE_PROCESS_START_FAILED_BEFORE_PIPE",
+  "execSession": 40583,
+  "serverKeyShapeAccepted": true,
+  "serverKeyValidity": "NOT_VERIFIED",
+  "rootCause": "Get-Command returned two Node application paths; .Source array was converted into one invalid executable filename.",
+  "workerProcessStarted": false,
+  "userKeySentToWorker": false,
+  "userKeyPersisted": false,
+  "secretDisposedByLauncherFinally": true,
+  "authAccountsCreated": 0,
+  "fixturesCreated": 0,
+  "deployments": 0,
+  "instagramConnections": 0,
+  "driveConnections": 0,
+  "recovery": "v4 selects one executable and probes it before asking for a key; actual worker startup and SDK loading rehearsed offline."
+}

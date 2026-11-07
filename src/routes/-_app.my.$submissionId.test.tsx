@@ -4,6 +4,7 @@ import { StrictMode } from "react";
 import type { ActiveMissionWorkspace, MissionPublicationView } from "@/lib/activeMission";
 import { ApiError } from "@/lib/api";
 import { setActivationAnalyticsSink } from "@/lib/activationAnalytics";
+vi.mock("@/components/active-mission/MissionPublishEntry",()=>({MissionPublishEntryHost:({onReturnToProof}:{onReturnToProof:()=>void})=><button onClick={onReturnToProof}>Mock receipt return</button>}));
 
 const i18nMocks = vi.hoisted(() => ({ lang: "en" as "en" | "zh" }));
 
@@ -152,6 +153,13 @@ function renderRoute() {
 }
 
 describe("creator active mission workspace route", () => {
+  it("returns mock receipt to existing proof focus without submitting or uploading",()=>{
+    const approved=workspace();approved.workflow.state="approved_to_publish";approved.workItems[0].state="approved_to_publish";approved.workItems[0].approvedVersionId="version-3";
+    mocks.query.data=approved;mocks.publication.data=publication();renderRoute();
+    fireEvent.click(screen.getByRole("button",{name:"Mock receipt return"}));
+    expect(document.activeElement).toHaveAttribute("tabindex","-1");
+    expect(mocks.proofSubmit.mutateAsync).not.toHaveBeenCalled();expect(mocks.proofUpload).not.toHaveBeenCalled();
+  });
   beforeEach(() => {
     vi.clearAllMocks();
     i18nMocks.lang = "en";

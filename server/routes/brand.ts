@@ -1,7 +1,7 @@
 // server/routes/brand.ts
 import { Hono } from "hono";
 import { serviceClient, makeUserClient } from "../lib/supabase.js";
-import { requireBrand, acceptBrandInvite, type BrandEnv } from "../lib/brandAuth.js";
+import { requireBrand, requireBrandMissionWrite, acceptBrandInvite, type BrandEnv } from "../lib/brandAuth.js";
 import { type MissionInput, type MissionRecord, validateMission, validateEdit } from "../lib/missionAuthoring.js";
 import { MISSION_COLS, EDITABLE_COLS, hkToday, countEngaged, normalizeBriefForWrite } from "./adminMissions.js";
 import { brandResourcesRoutes } from "./brandResources.js";
@@ -48,6 +48,7 @@ brandRoutes.post("/accept", async (c) => {
 // --- Guarded brand API -----------------------------------------------------------------------
 const guarded = new Hono<BrandEnv>();
 guarded.use("*", requireBrand());
+guarded.use("*", requireBrandMissionWrite());
 guarded.route("/", brandResourcesRoutes);
 
 guarded.get("/me", async (c) => {

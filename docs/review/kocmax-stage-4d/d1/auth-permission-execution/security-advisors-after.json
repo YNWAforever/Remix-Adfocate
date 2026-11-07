@@ -1,0 +1,20 @@
+{
+  "projectRef": "mhkoayftiuojxlrkollf",
+  "observedAt": "2026-11-01T08:34:09.235Z",
+  "type": "security",
+  "status": "EXISTING_FINDINGS_REMAIN_OPEN",
+  "groups": {
+    "rls_enabled_no_policy": 28,
+    "function_search_path_mutable": 2,
+    "extension_in_public": 1,
+    "anon_security_definer_function_executable": 5,
+    "authenticated_security_definer_function_executable": 19,
+    "auth_leaked_password_protection": 1
+  },
+  "newFunctionAdvisoryObservation": "Neither newly added function appears in the public anon/authenticated definer warning lists.",
+  "protectedFunctionGrants": "Both newly added functions were independently checked in application-receipt.json.",
+  "limits": [
+    "The recorded security categories/counts match the earlier application snapshot; this is not an all-clear claim.",
+    "No unrelated advisory remediation or performance/index change was applied."
+  ]
+}

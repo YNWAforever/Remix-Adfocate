@@ -43,4 +43,16 @@ describe("inactive D0 OAuth surfaces",()=>{
     expect(value.status).toBe(200);expect(value.headers.get("cache-control")).toContain("no-store");
     expect(issue).toHaveBeenCalledWith({creatorId:"creator",workspaceId:"workspace"},"connection",2);
   });
+  it("binds an injected fixture's authenticated writes to the approved origin rather than the incoming host",async()=>{
+    const begin=vi.fn().mockResolvedValue({authorizationUrl:"fixture-only"});
+    const coordinator={begin} as unknown as OAuthCoordinator;
+    const app=new Hono<Env>();app.use("*",async(c,next)=>{c.set("userId","creator");c.set("workspaceId","workspace");c.set("jwt","session");await next();});
+    app.route("/api/me/integration-oauth",integrationOAuthRoutes({approvedOrigin:"https://pilot.example",getCoordinator:()=>coordinator,currentConnection:async()=>null}));
+    const response=await app.request("https://evil.example/api/me/integration-oauth/google_drive/start",{
+      method:"POST",headers:{Origin:"https://evil.example","X-Forwarded-Host":"pilot.example"},body:"{}",
+    });
+    expect(response.status).toBe(403);expect(begin).not.toHaveBeenCalled();
+    const allowed=await app.request("https://pilot.example/api/me/integration-oauth/google_drive/start",{method:"POST",headers:{Origin:"https://pilot.example"},body:"{}"});
+    expect(allowed.status).toBe(200);
+  });
 });

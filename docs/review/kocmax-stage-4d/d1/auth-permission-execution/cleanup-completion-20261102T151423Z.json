@@ -1,0 +1,76 @@
+{
+  "status": "APPROVED_TEST_CLEANUP_READBACK_VERIFIED",
+  "recordedAtUtc": "2026-11-02T15:14:23Z",
+  "projectRef": "mhkoayftiuojxlrkollf",
+  "branch": "codex/kocmax-studio-stages-1-2",
+  "head": "5c60020091e8e6fee934b61c498bf7518944c433",
+  "execution": {
+    "route": "User executed SQL in the signed-in Supabase Dashboard SQL Editor for Remix-Adfocate main PRODUCTION",
+    "userReportedResult": "NO_ERROR",
+    "reviewedFile": "cleanup-sessions-and-draft.recovery.sql",
+    "reviewedFileSha256": "52fb72281b45070a56eba878c8f8e6e5b768b7c9e69538fdf840393826b5fe5e",
+    "editorQueryBytesIndependentlyCaptured": false,
+    "agentExecutedDestructiveSql": false
+  },
+  "scopedPostcondition": {
+    "observedAtUtc": "2026-11-02T14:42:05.610864Z",
+    "exactOwnedAuthUsers": 9,
+    "bannedAnonymizedAuthUsers": 9,
+    "retainedAuthIdentities": 9,
+    "deletedCreatorProfilesRetained": 9,
+    "ownedOrExactSessions": 0,
+    "ownedOrExactRefreshTokens": 0,
+    "exactSessionAmrClaims": 0,
+    "exactMissionAnyState": 0,
+    "activeStaff": 0,
+    "activeBrandMemberships": 0,
+    "activeScopedRoles": 0,
+    "platformRoles": 0
+  },
+  "retainedAuditAndResidualCheck": {
+    "observedAtUtc": "2026-11-02T15:12:55.881589Z",
+    "workspacesRetained": 2,
+    "scopedRolesRetainedInactive": 4,
+    "staffRowsRetainedInactive": 4,
+    "brandRowsRetainedInactive": 5,
+    "studioThreads": 0,
+    "studioSources": 0,
+    "studioBriefs": 0,
+    "studioCommands": 0,
+    "studioShares": 0,
+    "studioBadges": 0,
+    "pilotPointTransactions": 0,
+    "pilotIntegrationConnections": 0
+  },
+  "schemaPreservation": {
+    "observedAtUtc": "2026-11-02T14:45:32.016405Z",
+    "migrationRows": 16,
+    "policyCount": 89,
+    "indexes": [
+      { "name": "creators_id_workspace_unique", "valid": true },
+      { "name": "integration_creator_workspace_key", "valid": true }
+    ]
+  },
+  "nonPilotReconciliation": {
+    "oldBaseline": { "tables": 129, "rows": 374, "digest": "ba4d59dfbe6044523379db917fe3c2b3" },
+    "offlineBackupRestoredBaselineMatches": true,
+    "liveAfterCleanup": { "tables": 129, "rows": 388, "digest": "ab2eab43d7fcfd1d377ea9e2ba0ee114" },
+    "strictOldDigestMatch": false,
+    "additionalRows": 14,
+    "newRowsClassified": "One nonpilot creator in a nonpilot workspace: 1 creator, 3 consents, 1 earnings balance, 1 point balance, 1 point transaction, 1 mission submission, 1 Auth session, 3 refresh tokens and 1 AMR claim; plus 1 storage.migrations row. All were created after the last matching baseline observation.",
+    "existingMissionChange": "One of six original missions changed only its filled field; its ID matches the new nonpilot submission's mission_id. Original mission IDs were retained.",
+    "existingAuthUserChange": "One of eight original Auth users changed updated_at, last_sign_in_at and recovery_sent_at after the baseline. Original Auth user IDs were retained; the cause of the recovery timestamp is not established.",
+    "coverageLimit": "Old rows in tables that also gained rows were not individually rehashed. The aggregate difference reflects concurrent nonpilot activity, so the old global digest is not claimed to match."
+  },
+  "priorAcceptance": {
+    "apiRlsCases": "265/265 PASS before cleanup",
+    "desktop": "Nine real account logins at 1440x1000 before ban",
+    "mobile": "Nine real account logins at 390x844 before ban",
+    "postCleanupRelogin": "NOT_RUN_BANNED_TEST_ACCOUNTS",
+    "refreshTokenReplay": "NOT_VERIFIED_PREVIOUS_BARRIER_TIMEOUT_RECEIPTS_PRESERVED",
+    "nativeCleanupWorker": "SESSION_REVOCATION_FAILED_RECEIPT_PRESERVED"
+  },
+  "productionDeployment": false,
+  "realInstagramConnection": false,
+  "realGoogleDriveConnection": false
+}

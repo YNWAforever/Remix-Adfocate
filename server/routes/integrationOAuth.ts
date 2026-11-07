@@ -7,6 +7,9 @@ import { pilotReadiness } from "../lib/integrations/pilotPolicy.js";
 import type { PickerTokenChannel } from "../lib/integrations/pickerToken.js";
 
 type OAuthDeps={
+  /** Trusted composition's fixed origin; never derive approval from Host/forwarded headers. */
+  approvedOrigin?:string;
+  /** Existing offline injection seam. D1 runtime returns null and installs no coordinator. */
   getCoordinator?:()=>OAuthCoordinator|null;
   currentConnection?:(actor:Actor,provider:ProviderId)=>Promise<{generation:number;providerRevocation:string}|null>;
   picker?:PickerTokenChannel;
@@ -43,6 +46,7 @@ export function integrationOAuthRoutes(deps:OAuthDeps={}){
   app.use("*",async(c,next)=>{
     safeHeaders(c);
     if(!c.get("userId")||!c.get("workspaceId")||!c.get("jwt"))return c.json({code:"no_auth",error:"請先登入"},401);
+    if(deps.approvedOrigin!==undefined&&new URL(c.req.url).origin!==deps.approvedOrigin)return c.json({code:"ORIGIN_DENIED"},403);
     const origin=c.req.header("Origin");
     if(c.req.method!=="GET"&&((origin&&origin!==new URL(c.req.url).origin)||c.req.header("Sec-Fetch-Site")==="cross-site"))return c.json({code:"ORIGIN_DENIED"},403);
     if(!deps.getCoordinator?.())return c.json({code:"PILOT_APPROVAL_REQUIRED",...pilotReadiness()},503);

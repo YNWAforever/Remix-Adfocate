@@ -1,0 +1,1 @@
+export function PilotReadinessCard(){return <aside className="s-card s-stack" aria-label="本機試點邀請" style={{margin:12,minWidth:0}}><h2>一起完成一份品牌作品 🌱</h2><p>本機演練已準備。真實 Instagram 權限、合作標籤及撤銷證據仍待驗證。</p><p>基本任務照常，不參與試點也能繼續創作。</p><a className="s-btn" style={{minHeight:44}} href="/my/00000000-0000-4000-8000-000000001931">開啟試點任務</a></aside>;}

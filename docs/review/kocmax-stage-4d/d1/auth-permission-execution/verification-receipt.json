@@ -1,0 +1,78 @@
+{
+  "status": "P0_OFFLINE_VERIFIED_PENDING_NEW_SQL_APPROVAL",
+  "recordedAtUtc": "2026-11-01T06:24:53.107Z",
+  "branch": "codex/kocmax-studio-stages-1-2",
+  "head": "5c60020091e8e6fee934b61c498bf7518944c433",
+  "dirtyWorktree": true,
+  "projectRef": "mhkoayftiuojxlrkollf",
+  "checks": {
+    "mockTestsPassed": 68,
+    "mockTestsFailed": 0,
+    "mockTestFiles": 5,
+    "typecheckExit": 0,
+    "targetedLintExit": 0,
+    "localPolicyChecks": 10,
+    "localAtomicChecks": 6,
+    "localNetworkAttempts": 0,
+    "independentReview": "NO_BLOCKING_FINDING_AFTER_ATOMIC_FIX"
+  },
+  "sqlReview": {
+    "file": "22-proposed-auth-boundary-apply.sql",
+    "bytes": 6869,
+    "sha256": "ae276f3dfc22539b48e482dceb1aeab8de2774c75f32816fe58665bfef8b7b8d",
+    "applied": false
+  },
+  "hostedReadOnly": {
+    "originalMigrationPresent": "20261031201901",
+    "candidateFunctionsPresent": 0,
+    "candidatePoliciesPresent": 0,
+    "retainedDuplicateIndexes": 2,
+    "creatorProtectedColumnUpdatesAllowed": false,
+    "activeBrandAndStaffOverlap": 0
+  },
+  "boundaries": {
+    "authAccountsCreated": 0,
+    "sharedFixtureWrites": 0,
+    "sharedSchemaChanges": 0,
+    "deployments": 0,
+    "instagramConnections": 0,
+    "driveConnections": 0,
+    "indexChanges": 0,
+    "realAuthTest": "NOT_RUN",
+    "mobileRealLogin": "NOT_RUN",
+    "desktopRealLogin": "NOT_RUN",
+    "positiveSharedJoin": "NOT_RUN_ADDS_10_XP",
+    "cleanupRuntime": "NOT_RUN_NO_IDENTITIES_CREATED"
+  },
+  "originalApprovedSqlSha256": "9cbecbf1b4b68c476ed8d996f8f3d1c61408e46986584c22ab0111788cd9e5a5",
+  "sourceFiles": [
+    {
+      "path": "server/routes/me.ts",
+      "sha256": "9e3515ac7177371a6c14b8f6e483cc5371d03e496f14f4d9658ea3724c9296f8"
+    },
+    {
+      "path": "server/lib/brandAuth.ts",
+      "sha256": "1318514b0a6047d2cf46104e2357154226bf623a3b79f57d09721fcad3304970"
+    },
+    {
+      "path": "server/routes/brand.ts",
+      "sha256": "170d98a524ec4014b3b22a869ccdb142c23639c759aba656088615bf0884af86"
+    },
+    {
+      "path": "server/test/bootstrap-workspace-boundary.test.ts",
+      "sha256": "3f1c2c7e1827ad62edfaae179a0864ba00306b19360c84666ad162a0fc3478d3"
+    },
+    {
+      "path": "server/test/brand-staff-write-boundary.test.ts",
+      "sha256": "6c1d5407ff76b4602b1fca1b335457bed08c2b5516ec05716bc2125d7ea2ded5"
+    },
+    {
+      "path": "scripts/integrations/rehearse-auth-permission-boundaries.mjs",
+      "sha256": "74de1c277f650664b70731f424098482d233dc645d006b1e6d01e1e4b6c7cae2"
+    },
+    {
+      "path": "scripts/integrations/check-atomic-bootstrap.mjs",
+      "sha256": "adb51b965a7607e2ee69ea5f1e77a5e5b59f6e18af22db6c83137faf8ca2af42"
+    }
+  ]
+}

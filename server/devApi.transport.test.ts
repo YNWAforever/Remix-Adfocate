@@ -1,67 +1,14 @@
-import {
-  createServer,
-  request as nodeRequest,
-  type IncomingHttpHeaders,
-  type RequestOptions,
-} from "node:http";
 import { Hono } from "hono";
 import { afterEach, describe, expect, it } from "vitest";
-import { createViteApiMiddleware } from "./devApi.js";
+import { openTestDevApi } from "./test/devApiTestTransport.js";
 
-const servers: ReturnType<typeof createServer>[] = [];
+const transports: Awaited<ReturnType<typeof openTestDevApi>>[] = [];
+afterEach(async () => { await Promise.all(transports.splice(0).map(transport => transport.close())); });
 
-afterEach(async () => {
-  await Promise.all(servers.splice(0).map((server) =>
-    new Promise<void>((resolve, reject) => {
-      server.closeAllConnections();
-      server.close((error) => error ? reject(error) : resolve());
-    })));
-});
-
-async function listen(handler: ReturnType<typeof createViteApiMiddleware>) {
-  const server = createServer((request, response) => {
-    handler(request, response, () => {
-      response.statusCode = 200;
-      response.setHeader("content-type", "text/html");
-      response.end("<!doctype html><title>SPA fallback</title>");
-    });
-  });
-  servers.push(server);
-  await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", resolve));
-  const address = server.address();
-  if (!address || typeof address === "string") throw new Error("missing test server address");
-  return `http://127.0.0.1:${address.port}`;
-}
-
-function rawRequest(
-  origin: string,
-  path: string,
-  options: RequestOptions & { body?: string } = {},
-) {
-  return new Promise<{
-    status: number | undefined;
-    statusMessage: string | undefined;
-    headers: IncomingHttpHeaders;
-    body: string;
-  }>((resolve, reject) => {
-    const request = nodeRequest(new URL(path, origin), options, (response) => {
-      const chunks: Buffer[] = [];
-      response.on("data", (chunk) => chunks.push(Buffer.from(chunk)));
-      response.on("end", () => resolve({
-        status: response.statusCode,
-        statusMessage: response.statusMessage,
-        headers: response.headers,
-        body: Buffer.concat(chunks).toString("utf8"),
-      }));
-    });
-    request.on("error", reject);
-    if (options.body) request.write(options.body);
-    request.end();
-  });
-}
-
-function delay(ms: number) {
-  return new Promise<null>((resolve) => setTimeout(() => resolve(null), ms));
+async function open(app: Parameters<typeof openTestDevApi>[0]) {
+  const transport = await openTestDevApi(app);
+  transports.push(transport);
+  return transport;
 }
 
 describe("Vite development API middleware transport contracts", () => {
@@ -69,12 +16,12 @@ describe("Vite development API middleware transport contracts", () => {
     const app = new Hono();
     app.all("/api", (context) => context.json({ route: "exact" }));
     app.all("/api/*", (context) => context.json({ route: "nested" }));
-    const origin = await listen(createViteApiMiddleware(app));
+    const transport = await open(app);
 
     const [exact, nested, lookalike] = await Promise.all([
-      rawRequest(origin, "/api"),
-      rawRequest(origin, "/api/health"),
-      rawRequest(origin, "/apix"),
+      transport.read("/api"),
+      transport.read("/api/health"),
+      transport.read("/apix"),
     ]);
 
     expect(exact.headers["content-type"]).toContain("application/json");
@@ -93,9 +40,9 @@ describe("Vite development API middleware transport contracts", () => {
       cookie: context.req.header("cookie"),
       body: await context.req.text(),
     }));
-    const origin = await listen(createViteApiMiddleware(app));
+    const transport = await open(app);
 
-    const response = await rawRequest(origin, "/api/echo?attempt=2&mode=review", {
+    const response = await transport.read("/api/echo?attempt=2&mode=review", {
       method: "POST",
       headers: {
         authorization: "Bearer local-fixture-token",
@@ -126,9 +73,9 @@ describe("Vite development API middleware transport contracts", () => {
         headers,
       });
     });
-    const origin = await listen(createViteApiMiddleware(app));
+    const transport = await open(app);
 
-    const response = await rawRequest(origin, "/api/cookies");
+    const response = await transport.read("/api/cookies");
 
     expect(response.status).toBe(207);
     expect(response.statusMessage).toBe("Bridge Accepted");
@@ -151,11 +98,11 @@ describe("Vite development API middleware transport contracts", () => {
           : new Response(null, { status: 204 });
       },
     };
-    const origin = await listen(createViteApiMiddleware(app));
+    const transport = await open(app);
 
     const [head, empty] = await Promise.all([
-      rawRequest(origin, "/api/head", { method: "HEAD" }),
-      rawRequest(origin, "/api/empty"),
+      transport.read("/api/head", { method: "HEAD" }),
+      transport.read("/api/empty"),
     ]);
 
     expect(head.status).toBe(202);
@@ -178,36 +125,33 @@ describe("Vite development API middleware transport contracts", () => {
         };
       },
     })));
-    const origin = await listen(createViteApiMiddleware(app));
-
-    const responsePromise = fetch(`${origin}/api/stream`);
-    const earlyResponse = await Promise.race([responsePromise, delay(300)]);
-    if (earlyResponse === null) {
+    const transport = await open(app);
+    let seeFirst!: (chunk: string) => void;
+    let responseFailed!: (error: Error) => void;
+    const firstChunk = new Promise<string>((resolve, reject) => { seeFirst = resolve; responseFailed = reject; });
+    const body = new Promise<string>((resolve, reject) => {
+      const request = transport.start("/api/stream", {}, response => {
+        const chunks: Buffer[] = [];
+        response.once("error", error => { responseFailed(error); reject(error); });
+        response.on("data", chunk => {
+          chunks.push(Buffer.from(chunk));
+          seeFirst(chunks[0].toString("utf8"));
+        });
+        response.once("end", () => resolve(Buffer.concat(chunks).toString("utf8")));
+      });
+      request.once("error", error => { responseFailed(error); reject(error); });
+      request.end();
+    });
+    try {
+      expect(await firstChunk).toBe("first-");
+    } finally {
       releaseTail();
-      await responsePromise;
+      expect(await body).toBe("first-second");
     }
-    expect(earlyResponse).not.toBeNull();
-    if (earlyResponse === null) return;
-
-    const reader = earlyResponse.body!.getReader();
-    const firstChunk = await Promise.race([reader.read(), delay(300)]);
-    expect(firstChunk).not.toBeNull();
-    if (firstChunk === null) {
-      releaseTail();
-      return;
-    }
-    expect(new TextDecoder().decode(firstChunk.value)).toBe("first-");
-
-    releaseTail();
-    const secondChunk = await reader.read();
-    expect(new TextDecoder().decode(secondChunk.value)).toBe("second");
-    expect((await reader.read()).done).toBe(true);
   });
 
   it("cancels the Fetch body when the client aborts", async () => {
     const encoder = new TextEncoder();
-    let closeBody = () => {};
-    let bodyClosed = false;
     let markCanceled = () => {};
     const canceled = new Promise<boolean>((resolve) => {
       markCanceled = () => resolve(true);
@@ -216,41 +160,25 @@ describe("Vite development API middleware transport contracts", () => {
     app.get("/api/cancel", () => new Response(new ReadableStream({
       start(controller) {
         controller.enqueue(encoder.encode("first"));
-        closeBody = () => {
-          if (bodyClosed) return;
-          bodyClosed = true;
-          controller.close();
-        };
       },
       cancel() {
-        bodyClosed = true;
         markCanceled();
       },
     })));
-    const origin = await listen(createViteApiMiddleware(app));
-    let destroyClient = () => {};
-    const firstChunk = new Promise<boolean>((resolve) => {
-      const request = nodeRequest(`${origin}/api/cancel`, (response) => {
-        response.once("data", () => {
+    const transport = await open(app);
+    const firstChunk = new Promise<string>((resolve, reject) => {
+      const request = transport.start("/api/cancel", {}, response => {
+        response.once("error", reject);
+        response.once("data", chunk => {
+          resolve(Buffer.from(chunk).toString("utf8"));
           response.destroy();
-          resolve(true);
         });
       });
-      request.on("error", () => resolve(false));
-      destroyClient = () => request.destroy();
+      request.once("error", reject);
       request.end();
     });
-
-    const receivedFirstChunk = await Promise.race([firstChunk, delay(300)]);
-    if (receivedFirstChunk === null) {
-      destroyClient();
-      closeBody();
-    }
-    const wasCanceled = await Promise.race([canceled, delay(300)]);
-    if (wasCanceled === null) closeBody();
-
-    expect(receivedFirstChunk).toBe(true);
-    expect(wasCanceled).toBe(true);
+    expect(await firstChunk).toBe("first");
+    expect(await canceled).toBe(true);
   });
 
   it("completes an app failure as JSON without hanging the Node response", async () => {
@@ -259,15 +187,8 @@ describe("Vite development API middleware transport contracts", () => {
         throw new Error("loopback failure");
       },
     };
-    const origin = await listen(createViteApiMiddleware(app));
-
-    const response = await Promise.race([
-      rawRequest(origin, "/api/failure"),
-      delay(300),
-    ]);
-
-    expect(response).not.toBeNull();
-    if (response === null) return;
+    const transport = await open(app);
+    const response = await transport.read("/api/failure");
     expect(response.status).toBe(500);
     expect(response.headers["content-type"]).toContain("application/json");
     expect(JSON.parse(response.body)).toEqual({ error: "loopback failure" });

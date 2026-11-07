@@ -1,0 +1,1038 @@
+{
+  "capturedFor": "APPROVED_SHARED_DATABASE_APPLY",
+  "targetProject": "mhkoayftiuojxlrkollf",
+  "result": {
+    "result": {
+      "lints": [
+        {
+          "name": "unindexed_foreign_keys",
+          "title": "Unindexed foreign keys",
+          "level": "INFO",
+          "facing": "EXTERNAL",
+          "categories": [
+            "PERFORMANCE"
+          ],
+          "description": "Identifies foreign key constraints without a covering index, which can impact database performance.",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "count": 33,
+          "findings": [
+            {
+              "detail": "Table \\`public.brand_invites\\` has a foreign key \\`brand_invites_invited_by_staff_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "brand_invites",
+                "type": "table",
+                "schema": "public",
+                "fkey_name": "brand_invites_invited_by_staff_fkey",
+                "fkey_columns": [
+                  6
+                ]
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.brand_invites\\` has a foreign key \\`brand_invites_workspace_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "brand_invites",
+                "type": "table",
+                "schema": "public",
+                "fkey_name": "brand_invites_workspace_id_fkey",
+                "fkey_columns": [
+                  3
+                ]
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.brand_users\\` has a foreign key \\`brand_users_workspace_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "brand_users",
+                "type": "table",
+                "schema": "public",
+                "fkey_name": "brand_users_workspace_id_fkey",
+                "fkey_columns": [
+                  2
+                ]
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.campaign_missions\\` has a foreign key \\`campaign_missions_workspace_id_campaign_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "campaign_missions",
+                "type": "table",
+                "schema": "public",
+                "fkey_name": "campaign_missions_workspace_id_campaign_id_fkey",
+                "fkey_columns": [
+                  3,
+                  1
+                ]
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.campaign_missions\\` has a foreign key \\`campaign_missions_workspace_id_mission_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "campaign_missions",
+                "type": "table",
+                "schema": "public",
+                "fkey_name": "campaign_missions_workspace_id_mission_id_fkey",
+                "fkey_columns": [
+                  3,
+                  2
+                ]
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.campaign_participants\\` has a foreign key \\`campaign_participants_creator_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "campaign_participants",
+                "type": "table",
+                "schema": "public",
+                "fkey_name": "campaign_participants_creator_id_fkey",
+                "fkey_columns": [
+                  3
+                ]
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.campaign_participants\\` has a foreign key \\`campaign_participants_workspace_id_campaign_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "campaign_participants",
+                "type": "table",
+                "schema": "public",
+                "fkey_name": "campaign_participants_workspace_id_campaign_id_fkey",
+                "fkey_columns": [
+                  4,
+                  2
+                ]
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.content_item_tags\\` has a foreign key \\`content_item_tags_tag_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "content_item_tags",
+                "type": "table",
+                "schema": "public",
+                "fkey_name": "content_item_tags_tag_id_fkey",
+                "fkey_columns": [
+                  2
+                ]
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.content_items\\` has a foreign key \\`content_items_workspace_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "content_items",
+                "type": "table",
+                "schema": "public",
+                "fkey_name": "content_items_workspace_id_fkey",
+                "fkey_columns": [
+                  14
+                ]
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.creator_portfolio_links\\` has a foreign key \\`creator_portfolio_links_creator_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "creator_portfolio_links",
+                "type": "table",
+                "schema": "public",
+                "fkey_name": "creator_portfolio_links_creator_id_fkey",
+                "fkey_columns": [
+                  2
+                ]
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.creator_public_profile_snapshots\\` has a foreign key \\`creator_public_profile_snapshots_creator_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "creator_public_profile_snapshots",
+                "type": "table",
+                "schema": "public",
+                "fkey_name": "creator_public_profile_snapshots_creator_id_fkey",
+                "fkey_columns": [
+                  1
+                ]
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.creator_public_profile_snapshots\\` has a foreign key \\`creator_public_profile_snapshots_published_by_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "creator_public_profile_snapshots",
+                "type": "table",
+                "schema": "public",
+                "fkey_name": "creator_public_profile_snapshots_published_by_fkey",
+                "fkey_columns": [
+                  6
+                ]
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.creator_review_notes\\` has a foreign key \\`creator_review_notes_creator_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "creator_review_notes",
+                "type": "table",
+                "schema": "public",
+                "fkey_name": "creator_review_notes_creator_id_fkey",
+                "fkey_columns": [
+                  2
+                ]
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.creator_review_statuses\\` has a foreign key \\`creator_review_statuses_creator_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "creator_review_statuses",
+                "type": "table",
+                "schema": "public",
+                "fkey_name": "creator_review_statuses_creator_id_fkey",
+                "fkey_columns": [
+                  2
+                ]
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.creator_social_accounts\\` has a foreign key \\`creator_social_accounts_workspace_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "creator_social_accounts",
+                "type": "table",
+                "schema": "public",
+                "fkey_name": "creator_social_accounts_workspace_id_fkey",
+                "fkey_columns": [
+                  3
+                ]
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.creators\\` has a foreign key \\`creators_referred_by_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "creators",
+                "type": "table",
+                "schema": "public",
+                "fkey_name": "creators_referred_by_fkey",
+                "fkey_columns": [
+                  15
+                ]
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.creators\\` has a foreign key \\`creators_workspace_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "creators",
+                "type": "table",
+                "schema": "public",
+                "fkey_name": "creators_workspace_id_fkey",
+                "fkey_columns": [
+                  2
+                ]
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.earnings_balances\\` has a foreign key \\`earnings_balances_workspace_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "earnings_balances",
+                "type": "table",
+                "schema": "public",
+                "fkey_name": "earnings_balances_workspace_id_fkey",
+                "fkey_columns": [
+                  3
+                ]
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.earnings_transactions\\` has a foreign key \\`earnings_transactions_workspace_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "earnings_transactions",
+                "type": "table",
+                "schema": "public",
+                "fkey_name": "earnings_transactions_workspace_id_fkey",
+                "fkey_columns": [
+                  3
+                ]
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.mission_shortlists\\` has a foreign key \\`mission_shortlists_creator_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "mission_shortlists",
+                "type": "table",
+                "schema": "public",
+                "fkey_name": "mission_shortlists_creator_id_fkey",
+                "fkey_columns": [
+                  3
+                ]
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.missions\\` has a foreign key \\`missions_created_by_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "missions",
+                "type": "table",
+                "schema": "public",
+                "fkey_name": "missions_created_by_fkey",
+                "fkey_columns": [
+                  26
+                ]
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.notifications\\` has a foreign key \\`notifications_workspace_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "notifications",
+                "type": "table",
+                "schema": "public",
+                "fkey_name": "notifications_workspace_id_fkey",
+                "fkey_columns": [
+                  3
+                ]
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.operator_audit_events\\` has a foreign key \\`operator_audit_events_creator_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "operator_audit_events",
+                "type": "table",
+                "schema": "public",
+                "fkey_name": "operator_audit_events_creator_id_fkey",
+                "fkey_columns": [
+                  8
+                ]
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.operator_audit_events\\` has a foreign key \\`operator_audit_events_mission_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "operator_audit_events",
+                "type": "table",
+                "schema": "public",
+                "fkey_name": "operator_audit_events_mission_id_fkey",
+                "fkey_columns": [
+                  9
+                ]
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.point_balances\\` has a foreign key \\`point_balances_workspace_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "point_balances",
+                "type": "table",
+                "schema": "public",
+                "fkey_name": "point_balances_workspace_id_fkey",
+                "fkey_columns": [
+                  3
+                ]
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.point_transactions\\` has a foreign key \\`point_transactions_creator_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "point_transactions",
+                "type": "table",
+                "schema": "public",
+                "fkey_name": "point_transactions_creator_id_fkey",
+                "fkey_columns": [
+                  2
+                ]
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.point_transactions\\` has a foreign key \\`point_transactions_workspace_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "point_transactions",
+                "type": "table",
+                "schema": "public",
+                "fkey_name": "point_transactions_workspace_id_fkey",
+                "fkey_columns": [
+                  3
+                ]
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.redemption_codes\\` has a foreign key \\`redemption_codes_issued_to_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "redemption_codes",
+                "type": "table",
+                "schema": "public",
+                "fkey_name": "redemption_codes_issued_to_fkey",
+                "fkey_columns": [
+                  6
+                ]
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.redemption_codes\\` has a foreign key \\`redemption_codes_workspace_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "redemption_codes",
+                "type": "table",
+                "schema": "public",
+                "fkey_name": "redemption_codes_workspace_id_fkey",
+                "fkey_columns": [
+                  3
+                ]
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.redemption_gifts\\` has a foreign key \\`redemption_gifts_workspace_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "redemption_gifts",
+                "type": "table",
+                "schema": "public",
+                "fkey_name": "redemption_gifts_workspace_id_fkey",
+                "fkey_columns": [
+                  2
+                ]
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.redemptions\\` has a foreign key \\`redemptions_code_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "redemptions",
+                "type": "table",
+                "schema": "public",
+                "fkey_name": "redemptions_code_id_fkey",
+                "fkey_columns": [
+                  5
+                ]
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.redemptions\\` has a foreign key \\`redemptions_gift_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "redemptions",
+                "type": "table",
+                "schema": "public",
+                "fkey_name": "redemptions_gift_id_fkey",
+                "fkey_columns": [
+                  4
+                ]
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.redemptions\\` has a foreign key \\`redemptions_workspace_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "redemptions",
+                "type": "table",
+                "schema": "public",
+                "fkey_name": "redemptions_workspace_id_fkey",
+                "fkey_columns": [
+                  3
+                ]
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            }
+          ]
+        },
+        {
+          "name": "auth_rls_initplan",
+          "title": "Auth RLS Initialization Plan",
+          "level": "WARN",
+          "facing": "EXTERNAL",
+          "categories": [
+            "PERFORMANCE"
+          ],
+          "description": "Detects if calls to \\`current_setting()\\` and \\`auth.<function>()\\` in RLS policies are being unnecessarily re-evaluated for each row",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0003_auth_rls_initplan",
+          "count": 43,
+          "findings": [
+            {
+              "detail": "Table \\`public.creators\\` has a row level security policy \\`creators_self\\` that re-evaluates current_setting() or auth.<function>() for each row. This produces suboptimal query performance at scale. Resolve the issue by replacing \\`auth.<function>()\\` with \\`(select auth.<function>())\\`. See [docs](https://supabase.com/docs/guides/database/postgres/row-level-security#call-functions-with-select) for more info.",
+              "metadata": {
+                "name": "creators",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.point_balances\\` has a row level security policy \\`balances_self\\` that re-evaluates current_setting() or auth.<function>() for each row. This produces suboptimal query performance at scale. Resolve the issue by replacing \\`auth.<function>()\\` with \\`(select auth.<function>())\\`. See [docs](https://supabase.com/docs/guides/database/postgres/row-level-security#call-functions-with-select) for more info.",
+              "metadata": {
+                "name": "point_balances",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.point_transactions\\` has a row level security policy \\`transactions_self\\` that re-evaluates current_setting() or auth.<function>() for each row. This produces suboptimal query performance at scale. Resolve the issue by replacing \\`auth.<function>()\\` with \\`(select auth.<function>())\\`. See [docs](https://supabase.com/docs/guides/database/postgres/row-level-security#call-functions-with-select) for more info.",
+              "metadata": {
+                "name": "point_transactions",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.creators\\` has a row level security policy \\`creators_self_update\\` that re-evaluates current_setting() or auth.<function>() for each row. This produces suboptimal query performance at scale. Resolve the issue by replacing \\`auth.<function>()\\` with \\`(select auth.<function>())\\`. See [docs](https://supabase.com/docs/guides/database/postgres/row-level-security#call-functions-with-select) for more info.",
+              "metadata": {
+                "name": "creators",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.mission_submissions\\` has a row level security policy \\`submissions_self\\` that re-evaluates current_setting() or auth.<function>() for each row. This produces suboptimal query performance at scale. Resolve the issue by replacing \\`auth.<function>()\\` with \\`(select auth.<function>())\\`. See [docs](https://supabase.com/docs/guides/database/postgres/row-level-security#call-functions-with-select) for more info.",
+              "metadata": {
+                "name": "mission_submissions",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.redemptions\\` has a row level security policy \\`redemptions_self\\` that re-evaluates current_setting() or auth.<function>() for each row. This produces suboptimal query performance at scale. Resolve the issue by replacing \\`auth.<function>()\\` with \\`(select auth.<function>())\\`. See [docs](https://supabase.com/docs/guides/database/postgres/row-level-security#call-functions-with-select) for more info.",
+              "metadata": {
+                "name": "redemptions",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.earnings_balances\\` has a row level security policy \\`earnings_bal_self\\` that re-evaluates current_setting() or auth.<function>() for each row. This produces suboptimal query performance at scale. Resolve the issue by replacing \\`auth.<function>()\\` with \\`(select auth.<function>())\\`. See [docs](https://supabase.com/docs/guides/database/postgres/row-level-security#call-functions-with-select) for more info.",
+              "metadata": {
+                "name": "earnings_balances",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.earnings_transactions\\` has a row level security policy \\`earnings_tx_self\\` that re-evaluates current_setting() or auth.<function>() for each row. This produces suboptimal query performance at scale. Resolve the issue by replacing \\`auth.<function>()\\` with \\`(select auth.<function>())\\`. See [docs](https://supabase.com/docs/guides/database/postgres/row-level-security#call-functions-with-select) for more info.",
+              "metadata": {
+                "name": "earnings_transactions",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.creator_social_accounts\\` has a row level security policy \\`creator_social_accounts_self_select\\` that re-evaluates current_setting() or auth.<function>() for each row. This produces suboptimal query performance at scale. Resolve the issue by replacing \\`auth.<function>()\\` with \\`(select auth.<function>())\\`. See [docs](https://supabase.com/docs/guides/database/postgres/row-level-security#call-functions-with-select) for more info.",
+              "metadata": {
+                "name": "creator_social_accounts",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.brand_users\\` has a row level security policy \\`brand_users_self_read\\` that re-evaluates current_setting() or auth.<function>() for each row. This produces suboptimal query performance at scale. Resolve the issue by replacing \\`auth.<function>()\\` with \\`(select auth.<function>())\\`. See [docs](https://supabase.com/docs/guides/database/postgres/row-level-security#call-functions-with-select) for more info.",
+              "metadata": {
+                "name": "brand_users",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.creator_social_accounts\\` has a row level security policy \\`creator_social_accounts_self_insert\\` that re-evaluates current_setting() or auth.<function>() for each row. This produces suboptimal query performance at scale. Resolve the issue by replacing \\`auth.<function>()\\` with \\`(select auth.<function>())\\`. See [docs](https://supabase.com/docs/guides/database/postgres/row-level-security#call-functions-with-select) for more info.",
+              "metadata": {
+                "name": "creator_social_accounts",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.creator_social_accounts\\` has a row level security policy \\`creator_social_accounts_self_update\\` that re-evaluates current_setting() or auth.<function>() for each row. This produces suboptimal query performance at scale. Resolve the issue by replacing \\`auth.<function>()\\` with \\`(select auth.<function>())\\`. See [docs](https://supabase.com/docs/guides/database/postgres/row-level-security#call-functions-with-select) for more info.",
+              "metadata": {
+                "name": "creator_social_accounts",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.creator_social_accounts\\` has a row level security policy \\`creator_social_accounts_self_delete\\` that re-evaluates current_setting() or auth.<function>() for each row. This produces suboptimal query performance at scale. Resolve the issue by replacing \\`auth.<function>()\\` with \\`(select auth.<function>())\\`. See [docs](https://supabase.com/docs/guides/database/postgres/row-level-security#call-functions-with-select) for more info.",
+              "metadata": {
+                "name": "creator_social_accounts",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.creator_social_scan_snapshots\\` has a row level security policy \\`creator_social_snapshots_self_select\\` that re-evaluates current_setting() or auth.<function>() for each row. This produces suboptimal query performance at scale. Resolve the issue by replacing \\`auth.<function>()\\` with \\`(select auth.<function>())\\`. See [docs](https://supabase.com/docs/guides/database/postgres/row-level-security#call-functions-with-select) for more info.",
+              "metadata": {
+                "name": "creator_social_scan_snapshots",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.creator_public_passports\\` has a row level security policy \\`creator_public_passports_self_select\\` that re-evaluates current_setting() or auth.<function>() for each row. This produces suboptimal query performance at scale. Resolve the issue by replacing \\`auth.<function>()\\` with \\`(select auth.<function>())\\`. See [docs](https://supabase.com/docs/guides/database/postgres/row-level-security#call-functions-with-select) for more info.",
+              "metadata": {
+                "name": "creator_public_passports",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.creator_public_passports\\` has a row level security policy \\`creator_public_passports_self_insert\\` that re-evaluates current_setting() or auth.<function>() for each row. This produces suboptimal query performance at scale. Resolve the issue by replacing \\`auth.<function>()\\` with \\`(select auth.<function>())\\`. See [docs](https://supabase.com/docs/guides/database/postgres/row-level-security#call-functions-with-select) for more info.",
+              "metadata": {
+                "name": "creator_public_passports",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.creator_public_passports\\` has a row level security policy \\`creator_public_passports_self_update\\` that re-evaluates current_setting() or auth.<function>() for each row. This produces suboptimal query performance at scale. Resolve the issue by replacing \\`auth.<function>()\\` with \\`(select auth.<function>())\\`. See [docs](https://supabase.com/docs/guides/database/postgres/row-level-security#call-functions-with-select) for more info.",
+              "metadata": {
+                "name": "creator_public_passports",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.creator_public_passports\\` has a row level security policy \\`creator_public_passports_self_delete\\` that re-evaluates current_setting() or auth.<function>() for each row. This produces suboptimal query performance at scale. Resolve the issue by replacing \\`auth.<function>()\\` with \\`(select auth.<function>())\\`. See [docs](https://supabase.com/docs/guides/database/postgres/row-level-security#call-functions-with-select) for more info.",
+              "metadata": {
+                "name": "creator_public_passports",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.creator_portfolio_links\\` has a row level security policy \\`creator_portfolio_links_self_select\\` that re-evaluates current_setting() or auth.<function>() for each row. This produces suboptimal query performance at scale. Resolve the issue by replacing \\`auth.<function>()\\` with \\`(select auth.<function>())\\`. See [docs](https://supabase.com/docs/guides/database/postgres/row-level-security#call-functions-with-select) for more info.",
+              "metadata": {
+                "name": "creator_portfolio_links",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.creator_portfolio_links\\` has a row level security policy \\`creator_portfolio_links_self_insert\\` that re-evaluates current_setting() or auth.<function>() for each row. This produces suboptimal query performance at scale. Resolve the issue by replacing \\`auth.<function>()\\` with \\`(select auth.<function>())\\`. See [docs](https://supabase.com/docs/guides/database/postgres/row-level-security#call-functions-with-select) for more info.",
+              "metadata": {
+                "name": "creator_portfolio_links",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.creator_portfolio_links\\` has a row level security policy \\`creator_portfolio_links_self_update\\` that re-evaluates current_setting() or auth.<function>() for each row. This produces suboptimal query performance at scale. Resolve the issue by replacing \\`auth.<function>()\\` with \\`(select auth.<function>())\\`. See [docs](https://supabase.com/docs/guides/database/postgres/row-level-security#call-functions-with-select) for more info.",
+              "metadata": {
+                "name": "creator_portfolio_links",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.creator_portfolio_links\\` has a row level security policy \\`creator_portfolio_links_self_delete\\` that re-evaluates current_setting() or auth.<function>() for each row. This produces suboptimal query performance at scale. Resolve the issue by replacing \\`auth.<function>()\\` with \\`(select auth.<function>())\\`. See [docs](https://supabase.com/docs/guides/database/postgres/row-level-security#call-functions-with-select) for more info.",
+              "metadata": {
+                "name": "creator_portfolio_links",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.creator_public_profile_snapshots\\` has a row level security policy \\`creator_public_profile_snapshots_self_select\\` that re-evaluates current_setting() or auth.<function>() for each row. This produces suboptimal query performance at scale. Resolve the issue by replacing \\`auth.<function>()\\` with \\`(select auth.<function>())\\`. See [docs](https://supabase.com/docs/guides/database/postgres/row-level-security#call-functions-with-select) for more info.",
+              "metadata": {
+                "name": "creator_public_profile_snapshots",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.assistant_conversations\\` has a row level security policy \\`conv_self\\` that re-evaluates current_setting() or auth.<function>() for each row. This produces suboptimal query performance at scale. Resolve the issue by replacing \\`auth.<function>()\\` with \\`(select auth.<function>())\\`. See [docs](https://supabase.com/docs/guides/database/postgres/row-level-security#call-functions-with-select) for more info.",
+              "metadata": {
+                "name": "assistant_conversations",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.assistant_messages\\` has a row level security policy \\`msg_self\\` that re-evaluates current_setting() or auth.<function>() for each row. This produces suboptimal query performance at scale. Resolve the issue by replacing \\`auth.<function>()\\` with \\`(select auth.<function>())\\`. See [docs](https://supabase.com/docs/guides/database/postgres/row-level-security#call-functions-with-select) for more info.",
+              "metadata": {
+                "name": "assistant_messages",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.notifications\\` has a row level security policy \\`notifications_self_read\\` that re-evaluates current_setting() or auth.<function>() for each row. This produces suboptimal query performance at scale. Resolve the issue by replacing \\`auth.<function>()\\` with \\`(select auth.<function>())\\`. See [docs](https://supabase.com/docs/guides/database/postgres/row-level-security#call-functions-with-select) for more info.",
+              "metadata": {
+                "name": "notifications",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.notifications\\` has a row level security policy \\`notifications_self_mark_read\\` that re-evaluates current_setting() or auth.<function>() for each row. This produces suboptimal query performance at scale. Resolve the issue by replacing \\`auth.<function>()\\` with \\`(select auth.<function>())\\`. See [docs](https://supabase.com/docs/guides/database/postgres/row-level-security#call-functions-with-select) for more info.",
+              "metadata": {
+                "name": "notifications",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.missions\\` has a row level security policy \\`missions_brand_select\\` that re-evaluates current_setting() or auth.<function>() for each row. This produces suboptimal query performance at scale. Resolve the issue by replacing \\`auth.<function>()\\` with \\`(select auth.<function>())\\`. See [docs](https://supabase.com/docs/guides/database/postgres/row-level-security#call-functions-with-select) for more info.",
+              "metadata": {
+                "name": "missions",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.missions\\` has a row level security policy \\`missions_brand_insert\\` that re-evaluates current_setting() or auth.<function>() for each row. This produces suboptimal query performance at scale. Resolve the issue by replacing \\`auth.<function>()\\` with \\`(select auth.<function>())\\`. See [docs](https://supabase.com/docs/guides/database/postgres/row-level-security#call-functions-with-select) for more info.",
+              "metadata": {
+                "name": "missions",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.missions\\` has a row level security policy \\`missions_brand_update\\` that re-evaluates current_setting() or auth.<function>() for each row. This produces suboptimal query performance at scale. Resolve the issue by replacing \\`auth.<function>()\\` with \\`(select auth.<function>())\\`. See [docs](https://supabase.com/docs/guides/database/postgres/row-level-security#call-functions-with-select) for more info.",
+              "metadata": {
+                "name": "missions",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.missions\\` has a row level security policy \\`missions_brand_delete\\` that re-evaluates current_setting() or auth.<function>() for each row. This produces suboptimal query performance at scale. Resolve the issue by replacing \\`auth.<function>()\\` with \\`(select auth.<function>())\\`. See [docs](https://supabase.com/docs/guides/database/postgres/row-level-security#call-functions-with-select) for more info.",
+              "metadata": {
+                "name": "missions",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.workspace_budgets\\` has a row level security policy \\`workspace_budgets_brand_read\\` that re-evaluates current_setting() or auth.<function>() for each row. This produces suboptimal query performance at scale. Resolve the issue by replacing \\`auth.<function>()\\` with \\`(select auth.<function>())\\`. See [docs](https://supabase.com/docs/guides/database/postgres/row-level-security#call-functions-with-select) for more info.",
+              "metadata": {
+                "name": "workspace_budgets",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.workspace_budget_transactions\\` has a row level security policy \\`wbt_brand_read\\` that re-evaluates current_setting() or auth.<function>() for each row. This produces suboptimal query performance at scale. Resolve the issue by replacing \\`auth.<function>()\\` with \\`(select auth.<function>())\\`. See [docs](https://supabase.com/docs/guides/database/postgres/row-level-security#call-functions-with-select) for more info.",
+              "metadata": {
+                "name": "workspace_budget_transactions",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.campaigns\\` has a row level security policy \\`campaigns_brand_select\\` that re-evaluates current_setting() or auth.<function>() for each row. This produces suboptimal query performance at scale. Resolve the issue by replacing \\`auth.<function>()\\` with \\`(select auth.<function>())\\`. See [docs](https://supabase.com/docs/guides/database/postgres/row-level-security#call-functions-with-select) for more info.",
+              "metadata": {
+                "name": "campaigns",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.campaigns\\` has a row level security policy \\`campaigns_brand_insert\\` that re-evaluates current_setting() or auth.<function>() for each row. This produces suboptimal query performance at scale. Resolve the issue by replacing \\`auth.<function>()\\` with \\`(select auth.<function>())\\`. See [docs](https://supabase.com/docs/guides/database/postgres/row-level-security#call-functions-with-select) for more info.",
+              "metadata": {
+                "name": "campaigns",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.campaigns\\` has a row level security policy \\`campaigns_brand_update\\` that re-evaluates current_setting() or auth.<function>() for each row. This produces suboptimal query performance at scale. Resolve the issue by replacing \\`auth.<function>()\\` with \\`(select auth.<function>())\\`. See [docs](https://supabase.com/docs/guides/database/postgres/row-level-security#call-functions-with-select) for more info.",
+              "metadata": {
+                "name": "campaigns",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.campaigns\\` has a row level security policy \\`campaigns_brand_delete\\` that re-evaluates current_setting() or auth.<function>() for each row. This produces suboptimal query performance at scale. Resolve the issue by replacing \\`auth.<function>()\\` with \\`(select auth.<function>())\\`. See [docs](https://supabase.com/docs/guides/database/postgres/row-level-security#call-functions-with-select) for more info.",
+              "metadata": {
+                "name": "campaigns",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.campaign_missions\\` has a row level security policy \\`campaign_missions_brand_select\\` that re-evaluates current_setting() or auth.<function>() for each row. This produces suboptimal query performance at scale. Resolve the issue by replacing \\`auth.<function>()\\` with \\`(select auth.<function>())\\`. See [docs](https://supabase.com/docs/guides/database/postgres/row-level-security#call-functions-with-select) for more info.",
+              "metadata": {
+                "name": "campaign_missions",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.campaign_missions\\` has a row level security policy \\`campaign_missions_brand_insert\\` that re-evaluates current_setting() or auth.<function>() for each row. This produces suboptimal query performance at scale. Resolve the issue by replacing \\`auth.<function>()\\` with \\`(select auth.<function>())\\`. See [docs](https://supabase.com/docs/guides/database/postgres/row-level-security#call-functions-with-select) for more info.",
+              "metadata": {
+                "name": "campaign_missions",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.campaign_missions\\` has a row level security policy \\`campaign_missions_brand_update\\` that re-evaluates current_setting() or auth.<function>() for each row. This produces suboptimal query performance at scale. Resolve the issue by replacing \\`auth.<function>()\\` with \\`(select auth.<function>())\\`. See [docs](https://supabase.com/docs/guides/database/postgres/row-level-security#call-functions-with-select) for more info.",
+              "metadata": {
+                "name": "campaign_missions",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.campaign_missions\\` has a row level security policy \\`campaign_missions_brand_delete\\` that re-evaluates current_setting() or auth.<function>() for each row. This produces suboptimal query performance at scale. Resolve the issue by replacing \\`auth.<function>()\\` with \\`(select auth.<function>())\\`. See [docs](https://supabase.com/docs/guides/database/postgres/row-level-security#call-functions-with-select) for more info.",
+              "metadata": {
+                "name": "campaign_missions",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.campaign_participants\\` has a row level security policy \\`campaign_participants_brand_select\\` that re-evaluates current_setting() or auth.<function>() for each row. This produces suboptimal query performance at scale. Resolve the issue by replacing \\`auth.<function>()\\` with \\`(select auth.<function>())\\`. See [docs](https://supabase.com/docs/guides/database/postgres/row-level-security#call-functions-with-select) for more info.",
+              "metadata": {
+                "name": "campaign_participants",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.campaign_participants\\` has a row level security policy \\`campaign_participants_self_read\\` that re-evaluates current_setting() or auth.<function>() for each row. This produces suboptimal query performance at scale. Resolve the issue by replacing \\`auth.<function>()\\` with \\`(select auth.<function>())\\`. See [docs](https://supabase.com/docs/guides/database/postgres/row-level-security#call-functions-with-select) for more info.",
+              "metadata": {
+                "name": "campaign_participants",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            }
+          ]
+        },
+        {
+          "name": "unused_index",
+          "title": "Unused Index",
+          "level": "INFO",
+          "facing": "EXTERNAL",
+          "categories": [
+            "PERFORMANCE"
+          ],
+          "description": "Detects if an index has never been used and may be a candidate for removal.",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "count": 15,
+          "findings": [
+            {
+              "detail": "Index \\`redemption_codes_pool_idx\\` on table \\`public.redemption_codes\\` has not been used",
+              "metadata": {
+                "name": "redemption_codes",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Index \\`creators_phone_idx\\` on table \\`public.creators\\` has not been used",
+              "metadata": {
+                "name": "creators",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Index \\`creator_review_statuses_status_idx\\` on table \\`public.creator_review_statuses\\` has not been used",
+              "metadata": {
+                "name": "creator_review_statuses",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Index \\`mission_shortlists_mission_idx\\` on table \\`public.mission_shortlists\\` has not been used",
+              "metadata": {
+                "name": "mission_shortlists",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Index \\`operator_audit_events_mission_idx\\` on table \\`public.operator_audit_events\\` has not been used",
+              "metadata": {
+                "name": "operator_audit_events",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Index \\`creator_portfolio_links_highlight_idx\\` on table \\`public.creator_portfolio_links\\` has not been used",
+              "metadata": {
+                "name": "creator_portfolio_links",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Index \\`kb_chunks_embedding_idx\\` on table \\`public.kb_chunks\\` has not been used",
+              "metadata": {
+                "name": "kb_chunks",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Index \\`assistant_conv_creator_idx\\` on table \\`public.assistant_conversations\\` has not been used",
+              "metadata": {
+                "name": "assistant_conversations",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Index \\`content_items_category_idx\\` on table \\`public.content_items\\` has not been used",
+              "metadata": {
+                "name": "content_items",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Index \\`content_items_pinned_idx\\` on table \\`public.content_items\\` has not been used",
+              "metadata": {
+                "name": "content_items",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Index \\`brand_invites_pending_email\\` on table \\`public.brand_invites\\` has not been used",
+              "metadata": {
+                "name": "brand_invites",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Index \\`wbt_workspace_created_idx\\` on table \\`public.workspace_budget_transactions\\` has not been used",
+              "metadata": {
+                "name": "workspace_budget_transactions",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Index \\`campaign_missions_campaign_idx\\` on table \\`public.campaign_missions\\` has not been used",
+              "metadata": {
+                "name": "campaign_missions",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Index \\`campaign_participants_campaign_idx\\` on table \\`public.campaign_participants\\` has not been used",
+              "metadata": {
+                "name": "campaign_participants",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Index \\`campaign_rank_snapshots_campaign_captured_idx\\` on table \\`public.campaign_rank_snapshots\\` has not been used",
+              "metadata": {
+                "name": "campaign_rank_snapshots",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            }
+          ]
+        },
+        {
+          "name": "multiple_permissive_policies",
+          "title": "Multiple Permissive Policies",
+          "level": "WARN",
+          "facing": "EXTERNAL",
+          "categories": [
+            "PERFORMANCE"
+          ],
+          "description": "Detects if multiple permissive row level security policies are present on a table for the same \\`role\\` and \\`action\\` (e.g. insert). Multiple permissive policies are suboptimal for performance as each policy must be executed for every relevant query.",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0006_multiple_permissive_policies",
+          "count": 2,
+          "findings": [
+            {
+              "detail": "Table \\`public.campaign_participants\\` has multiple permissive policies for role \\`authenticated\\` for action \\`SELECT\\`. Policies include \\`{campaign_participants_brand_select,campaign_participants_self_read}\\`",
+              "metadata": {
+                "name": "campaign_participants",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            },
+            {
+              "detail": "Table \\`public.missions\\` has multiple permissive policies for role \\`authenticated\\` for action \\`SELECT\\`. Policies include \\`{missions_brand_select,missions_workspace}\\`",
+              "metadata": {
+                "name": "missions",
+                "type": "table",
+                "schema": "public"
+              },
+              "observed_at": "2026-10-31T15:47:06.209Z"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

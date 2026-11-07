@@ -1,18 +1,28 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { ArrowRight, Send, Sparkles } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useBalance, useMe, useMissions } from "@/lib/queries/kocmax";
 import { progressToNext } from "@/lib/levels";
-import { apiFetch } from "@/lib/api";
+import { apiFetch, ApiError } from "@/lib/api";
 import { STUDIO_THREADS } from "@/lib/features";
 import { STUDIO_TEMPLATES } from "@/lib/studio/templates";
 import { useStudioCommand, useStudioThreads } from "@/lib/studio/queries";
 import type { StudioThread, StudioTopic } from "@/lib/studio/types";
-import { Sprout, StudioError, useStudioText } from "./StudioPrimitives";
+import type { GrowthSkillId } from "@/lib/creatorGrowth/skillManifest";
+import { GROWTH_SKILLS } from "@/lib/creatorGrowth/skillManifest";
+import { GrowthSkillCards } from "./GrowthSkillCards";
+import { Sprout, StudioError, StudioLoginRequired, useStudioText } from "./StudioPrimitives";
 
 export function StudioHome() {
   const tx = useStudioText(), me = useMe(), balance = useBalance();
+  const history = useStudioThreads(0, STUDIO_THREADS);
+  const [loginRequired, setLoginRequired] = useState(false);
+  const sessionQueries = STUDIO_THREADS ? [me, balance, history] : [me, balance];
+  const readLoginRequired = sessionQueries.some(query => query.isError && query.error instanceof ApiError && query.error.status === 401);
+  // A later refetch failure must not uncover cached data after a 401.
+  useEffect(() => { if (readLoginRequired) setLoginRequired(true); }, [readLoginRequired]);
+  if (loginRequired || readLoginRequired) return <StudioLoginRequired/>;
   const progress = me.data ? progressToNext(me.data.xp) : null;
   return <div className="s-stack"><section className="s-stats" aria-label={tx("你的成長紀錄", "Your progress")}>
     <div className="s-stat"><small>{tx("創作者等級", "Creator level")}</small><strong>🌱 {me.data?.level ?? "—"}</strong><small>{tx("按已核實成果成長", "Grow through verified work")}</small></div>
@@ -22,29 +32,68 @@ export function StudioHome() {
   </section>
   {me.isError && <StudioError onRetry={() => void me.refetch()}/>}
   <div className="s-home-grid"><div className="s-stack"><div className="s-between s-welcome"><div><span className="s-eyebrow">YOUR NEXT LITTLE WIN</span><h1>{tx("今天，想創作些甚麼？", "What will you create today?")}</h1><p>{tx("問一句，我們一起把靈感變成成果。", "Ask a question. Turn your idea into something real.")}</p></div><Sprout/></div>
-    {STUDIO_THREADS ? <StudioStarter/> : <div className="s-card"><h2>{tx("先挑一個任務開始", "Start with a mission")}</h2><p>{tx("工作室對話尚未開放，你仍可完成所有原有任務。", "Studio chat is not enabled yet. All missions remain available.")}</p><Link className="s-btn s-primary" to="/mission">{tx("找任務", "Find missions")}</Link></div>}
+    {STUDIO_THREADS ? <StudioStarter onLoginRequired={() => setLoginRequired(true)}/> : <div className="s-card"><h2>{tx("先挑一個任務開始", "Start with a mission")}</h2><p>{tx("工作室對話尚未開放，你仍可完成所有原有任務。", "Studio chat is not enabled yet. All missions remain available.")}</p><Link className="s-btn s-primary" to="/mission">{tx("找任務", "Find missions")}</Link></div>}
   </div><aside className="s-stack"><NextMissionCards/>{STUDIO_THREADS && <RecentThreads/>}<div className="s-card peach s-stack"><div className="s-row"><span className="s-task-icon">🎁</span><h3>{tx("下一份小獎賞", "Your next little reward")}</h3></div><p className="s-muted">{tx("清楚知道所需積分，再選喜歡的獎賞。沒有隨機抽獎。", "See the points needed and choose a reward. No random draws.")}</p><Link to="/redemption" className="s-btn">{tx("逛逛獎賞商店", "Explore rewards")}<ArrowRight size={16}/></Link></div></aside></div></div>;
 }
 
-export function StudioStarter() {
+export function StudioStarter({ onLoginRequired }: { onLoginRequired?: () => void } = {}) {
   const tx = useStudioText(), navigate = useNavigate(), missions = useMissions();
   const [prompt, setPrompt] = useState(""), [missionId, setMissionId] = useState(""), [topic, setTopic] = useState<StudioTopic>("creation");
+  const [selectedSkill, setSelectedSkill] = useState<GrowthSkillId | null>(null);
   const command = useStudioCommand<StudioThread>();
   const intent = useRef<{ fingerprint: string; id: string } | null>(null);
+  const [loginRequired, setLoginRequired] = useState(false);
   async function start(text = prompt, selectedTopic = topic) {
-    if (!text.trim() || command.isPending) return;
+    if (!text.trim() || command.isPending || loginRequired) return;
     const payload = { title: [...text.trim()].slice(0, 100).join(""), initialPrompt: text.trim(), topic: selectedTopic, missionId: missionId || null };
     const fingerprint = JSON.stringify(payload);
     if (intent.current && intent.current.fingerprint !== fingerprint) { intent.current = null; }
     intent.current ??= { fingerprint, id: crypto.randomUUID() };
     try { const response = await command.mutateAsync({ action: "create_thread", requestId: intent.current.id, payload });
-      void navigate({ to: "/studio", search: { thread: response.result.id } });
-    } catch { /* Preserve input and request UUID for an explicit retry. */ }
+      void navigate({ to: "/studio", search: { thread: response.result.id, ...(selectedSkill ? { skill: selectedSkill } : {}) } });
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 401) {
+        intent.current = null;
+        setLoginRequired(true);
+        onLoginRequired?.();
+      }
+      // Transient failures retain input and request UUID for an explicit retry.
+    }
   }
+  function chooseSkill(skillId: GrowthSkillId) {
+    const skill = GROWTH_SKILLS.find((candidate) => candidate.id === skillId);
+    if (!skill) return;
+    const prompts: Record<GrowthSkillId, [string, string]> = {
+      image_diagnosis: [
+        "幫我看這張圖，指出構圖、文字和可改善的地方。",
+        "Review this image for composition, visible text and improvements.",
+      ],
+      post_review: [
+        "幫我檢討這篇貼文；缺少的數字要清楚標示。",
+        "Review this post and clearly mark unavailable metrics.",
+      ],
+      next_caption: [
+        "根據這張圖，替我整理一篇真實、不誇大的下一篇文案。",
+        "Draft a truthful next-post caption from this image.",
+      ],
+      next_growth_step: [
+        "根據已確認的檢討，安排下一步可以實行的成長行動。",
+        "Turn confirmed findings into one practical next growth step.",
+      ],
+    };
+    setSelectedSkill(skillId);
+    setPrompt(tx(...prompts[skillId]));
+    setTopic(skillId === "post_review" || skillId === "next_growth_step" ? "performance" : "creation");
+    document.getElementById("studio-question")?.focus({ preventScroll: true });
+  }
+  const selected = GROWTH_SKILLS.find((skill) => skill.id === selectedSkill);
+  if (loginRequired) return <StudioLoginRequired/>;
   return <div className="s-stack"><form className="s-ask" onSubmit={e => { e.preventDefault(); void start(); }}><label htmlFor="studio-question" className="sr-only">{tx("想問甚麼？", "What would you like to ask?")}</label><textarea id="studio-question" value={prompt} maxLength={4000} onChange={e => setPrompt(e.target.value)} placeholder={tx("例如：幫我把這個試飲任務變成一段 30 秒短片…", "Help me turn this tasting mission into a 30-second video…")}/><div className="s-grid" style={{ marginBottom: 14 }}><label><small>{tx("任務上下文（可略過）", "Mission context (optional)")}</small><select value={missionId} onChange={e => setMissionId(e.target.value)}><option value="">{tx("先自由討論", "Start a free chat")}</option>{missions.data?.map(m => <option key={m.id} value={m.id}>{m.title}</option>)}</select></label><label><small>{tx("討論主題", "Topic")}</small><select value={topic} onChange={e => setTopic(e.target.value as StudioTopic)}><option value="creation">{tx("內容創作", "Creation")}</option><option value="missions">{tx("接任務", "Missions")}</option><option value="performance">{tx("成效檢討", "Performance")}</option><option value="rewards">{tx("積分與獎賞", "Rewards")}</option></select></label></div><div className="s-ask-footer"><small>🔒 {tx("討論預設私人", "Private by default")}</small><button className="s-btn s-primary" disabled={!prompt.trim() || command.isPending}><Send size={16}/>{command.isPending ? tx("準備中…", "Starting…") : tx("開始討論", "Start chatting")}</button></div></form>
     {command.isError && <StudioError>{tx("未確認建立成功。輸入已保留，再按開始會查看同一要求。", "Creation is not confirmed. Your input is retained; retry uses the same request.")}</StudioError>}
-    <div className="s-between"><h2>{tx("不知道從哪開始？挑一張卡", "Pick a starting point")}</h2><span className="s-tag">10 {tx("個靈感", "ideas")}</span></div>
-    <div className="s-grid">{STUDIO_TEMPLATES.map(card => <button key={card.id} className="s-task" disabled={command.isPending} onClick={() => { setPrompt(tx(...card.prompt)); setTopic(card.topic); document.getElementById("studio-question")?.focus(); }}><div className="s-task-icon" aria-hidden>{card.icon}</div><h3>{tx(...card.title)}</h3><p>{tx(...card.prompt)}</p><div className="s-row"><span className="s-tag ghost">{tx(...card.difficulty)}</span><span className="s-tag ghost">{card.minutes} {tx("分鐘", "min")}</span><span className="s-tag">{tx("積分按任務", "Mission points")}</span></div></button>)}</div><small>{tx("範本不另發分。任務卡上的獎勵須經核實及結算；時間為整理內容的估算。", "Templates do not award extra points. Mission rewards require verification and settlement. Times are planning estimates.")}</small></div>;
+    <GrowthSkillCards onChooseSkill={chooseSkill} selectedSkillId={selectedSkill} disabled={command.isPending}/>
+    {selected && <div className="s-growth-selection" aria-live="polite"><span className="s-tag">{tx("已選技能", "Selected skill")}</span><div><h3>{selected.titleZh}</h3><p>{tx("這張卡只會帶入目前這段討論；切換歷史討論不會沿用圖片、報告或草稿。", "This card applies only to the current chat. Images, reports and drafts do not follow you into another chat.")}</p></div><div className="s-growth-selection-actions"><span className="s-tag ghost">{selected.estimatedMinutes} {tx("分鐘", "min")}</span><button type="button" className="s-btn" onClick={() => setSelectedSkill(null)}>{tx("一般討論", "General chat")}</button></div></div>}
+    <div className="s-between"><h2>{tx("更多提問靈感", "More ways to begin")}</h2><span className="s-tag">10 {tx("個靈感", "ideas")}</span></div>
+    <div className="s-grid">{STUDIO_TEMPLATES.map(card => <button key={card.id} className="s-task" disabled={command.isPending} onClick={() => { setSelectedSkill(null); setPrompt(tx(...card.prompt)); setTopic(card.topic); document.getElementById("studio-question")?.focus(); }}><div className="s-task-icon" aria-hidden>{card.icon}</div><h3>{tx(...card.title)}</h3><p>{tx(...card.prompt)}</p><div className="s-row"><span className="s-tag ghost">{tx(...card.difficulty)}</span><span className="s-tag ghost">{card.minutes} {tx("分鐘", "min")}</span><span className="s-tag">{tx("積分按任務", "Mission points")}</span></div></button>)}</div><small>{tx("範本不另發分。任務卡上的獎勵須經核實及結算；時間為整理內容的估算。", "Templates do not award extra points. Mission rewards require verification and settlement. Times are planning estimates.")}</small></div>;
 }
 function NextMissionCards() {
   const tx = useStudioText(), missions = useMissions();

@@ -6,7 +6,7 @@ import type { StudioDetail } from "@/lib/studio/types";
 const h = vi.hoisted(() => ({ detail: null as StudioDetail | null }));
 vi.mock("@tanstack/react-router", () => ({ useBlocker: () => {}, Link: ({ children, to }: { children: ReactNode; to: string }) => <a href={to}>{children}</a> }));
 vi.mock("@/lib/i18n", () => ({ useI18n: () => ({ lang: "en" }) }));
-vi.mock("@/lib/queries/kocmax", () => ({ useAssistantChat: () => ({ isPending: false }), useMyMissions: () => ({ data: [] }) }));
+vi.mock("@/lib/queries/kocmax", () => ({ useAssistantChat: () => ({ isPending: false }), useMe: () => ({ data: { id: "creator-test" } }), useMyMissions: () => ({ data: [] }) }));
 vi.mock("@/lib/studio/queries", () => ({ studioKeys: {}, useStudioThreads: () => ({ data: { threads: [] } }), useStudioThread: () => ({ data: h.detail }), useStudioCommand: () => ({ isPending: false }) }));
 vi.mock("@tanstack/react-query", () => ({ useQueryClient: () => ({}), useQuery: () => ({}) }));
 vi.mock("@/components/integrations/IntegrationSourcePanel", () => ({ IntegrationSourcePanel: () => null }));

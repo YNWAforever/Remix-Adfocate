@@ -18,8 +18,8 @@ function AdminLayout() {
 
   return (
     <StaffAuthGate refreshKey={authRevision} onIdentityChange={clearIdentityCache}>
-      {(staff) => (
-        <AdminAuthContext.Provider value={{ authed: true, staff, reportAuthError }}>
+      {(staff, signOut) => (
+        <AdminAuthContext.Provider value={{ authed: true, staff, signOut, reportAuthError }}>
           <AdminWorkspaceProvider>
             <AdminShell><Outlet /></AdminShell>
           </AdminWorkspaceProvider>

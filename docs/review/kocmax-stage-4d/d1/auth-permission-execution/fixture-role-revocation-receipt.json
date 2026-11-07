@@ -1,0 +1,60 @@
+{
+  "status": "ROLES_REVOKED",
+  "projectRef": "mhkoayftiuojxlrkollf",
+  "runId": "5f694251-c6eb-4f5f-a281-25e91db81c04",
+  "verifiedAt": "2026-11-01T17:55:04.556462Z",
+  "accounts": [
+    {
+      "alias": "C-A",
+      "authId": "6c88b77f-a273-4ed4-b48f-099ad792efc7",
+      "workspaceAlias": "A"
+    },
+    {
+      "alias": "C-P",
+      "authId": "1cf3cd31-79ba-463d-8631-2528a34d68a4",
+      "workspaceAlias": "A"
+    },
+    {
+      "alias": "C-B",
+      "authId": "f06df842-931b-4e45-b74f-0ea9c2944159",
+      "workspaceAlias": "B"
+    },
+    {
+      "alias": "S-A",
+      "authId": "d854b3e8-85dd-4d97-89aa-f59c93e2d1ee",
+      "workspaceAlias": "A"
+    },
+    {
+      "alias": "S-O",
+      "authId": "4c1e5d4b-ac1d-4930-b245-1e4efe28de20",
+      "workspaceAlias": "A"
+    },
+    {
+      "alias": "S-R",
+      "authId": "ff86250c-e600-4841-bf36-329f5bf180aa",
+      "workspaceAlias": "A"
+    },
+    {
+      "alias": "S-F",
+      "authId": "e43cdb67-63b7-4946-836d-7333624a1842",
+      "workspaceAlias": "A"
+    },
+    {
+      "alias": "B-A",
+      "authId": "faf3de5a-e961-4d29-b825-5f5abfe5438e",
+      "workspaceAlias": "A"
+    },
+    {
+      "alias": "U-X",
+      "authId": "6a3bd66a-6fd4-4e24-9e56-d51d4246d833",
+      "workspaceAlias": "A"
+    }
+  ],
+  "postconditions": {
+    "newAuditedRevocations": 3,
+    "inactiveScopedRoles": 4,
+    "inactiveBrandMemberships": 5,
+    "inactiveStaff": 4
+  },
+  "draftMissionRemoval": "PENDING_CONNECTOR_CONFIRMATION_NOT_APPLIED"
+}

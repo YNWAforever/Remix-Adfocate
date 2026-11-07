@@ -26,14 +26,18 @@ import { brandRoutes } from "./routes/brand.js";
 import { campaignRoutes } from "./routes/campaigns.js";
 import { activeMissionRoutes } from "./routes/activeMissions.js";
 import { studioRoutes } from "./routes/studio.js";
+import { createCreatorGrowthRoutes } from "./routes/creatorGrowth.js";
+import { createCreatorGrowthPublishRoutes } from "./routes/creatorGrowthPublish.js";
+import { createCreatorPilotRoutes, type CreatorPilotRouteDependencies } from "./routes/creatorPilot.js";
 import { integrationRoutes } from "./routes/integrations.js";
 import { integrationOAuthCallbacks, integrationOAuthRoutes } from "./routes/integrationOAuth.js";
+import { integrationNoticeRoutes } from "./routes/integrationNotices.js";
 
 export type Env = {
   Variables: { userId: string; workspaceId: string; jwt: string };
 };
 
-export function createApp() {
+export function createApp(options: { creatorPilot?: CreatorPilotRouteDependencies } = {}) {
   const app = new Hono<Env>().basePath("/api");
   app.get("/health", (c) => c.json({ ok: true }));
   // Last resort for unhandled exceptions: structured log, generic JSON body. A malformed JSON
@@ -55,6 +59,8 @@ export function createApp() {
   app.route("/cron", cronRoutes);
   // D0: these surfaces remain inactive; no real coordinator/client is constructed.
   app.route("/integration-oauth", integrationOAuthCallbacks());
+  // No fixture dependencies or live receipt reader are installed in the original application.
+  app.route("/integration-notices", integrationNoticeRoutes());
 
   const guarded = new Hono<Env>();
   guarded.use("*", workspaceAuth);
@@ -74,6 +80,11 @@ export function createApp() {
   guarded.route("/copilot", copilotRoutes);
   guarded.route("/assistant", assistantRoutes());
   guarded.route("/studio", studioRoutes);
+  // Publication is separately guarded and disabled; no service/worker is installed.
+  guarded.route("/creator-growth/publish", createCreatorGrowthPublishRoutes());
+  // Explicit trusted server injection only; existing entrypoints pass no dependencies.
+  guarded.route("/creator-growth/pilot", createCreatorPilotRoutes(options.creatorPilot));
+  guarded.route("/creator-growth", createCreatorGrowthRoutes());
   guarded.route("/redemption", redemptionRoutes);
   guarded.route("/social", socialRoutes);
   guarded.route("/workspace", workspaceRoutes);
