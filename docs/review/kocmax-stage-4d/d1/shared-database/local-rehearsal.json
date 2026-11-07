@@ -1,0 +1,36 @@
+{
+  "mode": "LOCAL_IN_PROCESS_ONLY",
+  "selection": "exact-packaged-payload",
+  "payloadSha256": "c879b204d9b2928c6426b641262096fff23ef1a1b49b33a8f2003afd5ee9dbff",
+  "sourceFilesVerified": 62,
+  "checks": [
+    "full packet rejects missing review reference before mutation",
+    "injected final failure rolls back all projected DDL/functions/grants",
+    "exact 62-source payload, baseline routine repair, ACL overlay and final SQL assertions pass",
+    "all 39 existing application tables preserved; 55 new empty tables",
+    "private unverified brief; owner/peer/cross-workspace/anonymous policies; no financial/XP/badge award; fixture rolled back",
+    "extended existing-journey local fixture also rolled back",
+    "fixture missing approval rejected before writes",
+    "existing fixture ID collision rejected without upsert or deletion"
+  ],
+  "limitations": [
+    "in-process PGlite, not hosted PostgreSQL/Auth/RLS runtime acceptance",
+    "Auth claims and Storage schema/functions are local substitutes",
+    "kb_chunks.embedding uses text; vector index and match_kb_chunks are excluded",
+    "platform event triggers and owner/grantor identities are not reconstructed",
+    "no customer data copied; existing application tables start empty",
+    "target metadata/owner/version guards cannot pass against a local projection; only the exact payload after these guards is rehearsed",
+    "no browser, real JWT, HTTP API, two-connection races, Storage upload, provider or reward-settlement acceptance"
+  ],
+  "result": "LOCAL_DDL_AND_FIXTURE_PASSED",
+  "existingJourneys": [
+    "profile/onboarding seven permitted columns work; mixed XP update rejected atomically; other creator unchanged",
+    "social manual handle CRUD preserved; verification/workspace writes and cross-workspace read denied; no platform contact",
+    "service notification insertion and own acknowledgement work; content/delete/cross-user changes denied",
+    "brand authoring and membership checks work; direct lifecycle/campaign/history writes and protected service reads denied",
+    "authenticated/service highlighted portfolio CRUD, three-item limit and cross-user denial preserved without private schema USAGE"
+  ],
+  "networkAttempts": 0,
+  "recordedAtUtc": "2026-10-31T15:46:39.802Z",
+  "packetManifestSha256": "7a55e74fcf7462e2e842c9a1c324cb5c3299bb14f49c779b2001ae119db44b8e"
+}

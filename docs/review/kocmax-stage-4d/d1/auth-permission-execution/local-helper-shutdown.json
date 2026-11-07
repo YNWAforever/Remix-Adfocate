@@ -1,0 +1,18 @@
+{
+  "recordedAtUtc": "2026-11-01T18:18:24.8957555Z",
+  "status": "OWNED_LOCAL_HELPER_STOPPED_CREDENTIALS_REMOVED",
+  "ownedProcessIds": [
+    47520,
+    26536,
+    53236
+  ],
+  "pilotListenersRemaining": 0,
+  "testPasswordFileExists": false,
+  "removedControlArtifacts": [
+    "control.json",
+    "worker.lock"
+  ],
+  "serverKeyReadByParent": false,
+  "nativeCleanupWarningPreserved": true,
+  "authSessionRecovery": "Separate exact-owned SQL confirmation pending"
+}

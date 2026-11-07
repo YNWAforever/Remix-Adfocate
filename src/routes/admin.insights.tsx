@@ -42,10 +42,11 @@ function KpiCard({
   primary = false,
 }: {
   label: string;
-  metric: InsightsMetric;
+  metric: InsightsMetric | null;
   format: (n: number) => string;
   primary?: boolean;
 }) {
+  if (!metric) return null;
   if (primary) {
     return (
       <div className="wallet-card p-5">

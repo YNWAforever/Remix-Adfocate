@@ -16,8 +16,10 @@ import { LEVELS, levelIndex } from "@/lib/levels";
 import { useBalance } from "@/lib/queries/kocmax";
 import { useCreatorActivation } from "@/lib/useCreatorActivation";
 import { useRealtimeBalance } from "@/lib/useRealtimeBalance";
+import { STUDIO_SHELL } from "@/lib/features";
+import { StudioHome } from "@/components/studio/StudioHome";
 
-export const Route = createFileRoute("/_app/home")({ component: Home });
+export const Route = createFileRoute("/_app/home")({ component: STUDIO_SHELL ? StudioHome : Home });
 
 function Home() {
   const activation = useCreatorActivation();

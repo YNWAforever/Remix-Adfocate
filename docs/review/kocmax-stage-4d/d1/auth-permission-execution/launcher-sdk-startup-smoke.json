@@ -1,0 +1,17 @@
+{
+  "recordedAtUtc": "2026-11-01T15:32:14.579Z",
+  "status": "PASS_OFFLINE_SDK_CONSTRUCTION_ONLY",
+  "freshRealReadOnlyGate": true,
+  "syntheticKeyOnly": true,
+  "networkAndListenersBlocked": true,
+  "authActionsInvoked": 0,
+  "accountsCreated": 0,
+  "adapterMethods": [
+    "ban",
+    "create",
+    "get",
+    "login",
+    "revoke",
+    "verify"
+  ]
+}

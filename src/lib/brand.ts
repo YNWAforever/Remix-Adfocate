@@ -2,7 +2,13 @@ import { supabase } from "@/lib/supabase";
 import { AdminRequestError } from "@/lib/admin";
 import type { AdminMission, MissionDraftInput, MissionPatch } from "@/lib/admin";
 
-export class BrandAuthError extends Error {}
+export class BrandAuthError extends Error {
+  readonly status: number;
+  constructor(message: string) {
+    super(message);
+    this.status = message === "401" ? 401 : 403;
+  }
+}
 export type BrandMe = { email: string; workspaceId: string; workspaceName: string; role: "owner" | "member" };
 export type BrandMission = {
   id: string; slug: string; title: string; status: string; mission_type: string;
@@ -35,7 +41,7 @@ async function brandFetch<T>(path: string, init: RequestInit = {}): Promise<T> {
   if (res.status === 401 || res.status === 403) throw new BrandAuthError(String(res.status));
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
-    throw new AdminRequestError(body.error ?? res.statusText, body.code, body.fields);
+    throw new AdminRequestError(body.error ?? res.statusText, body.code, body.fields, res.status);
   }
   return res.json() as Promise<T>;
 }

@@ -1,0 +1,12 @@
+{
+  "recordedAtUtc": "2026-11-01T14:04:52.3464841Z",
+  "status": "STARTUP_ONLY_FOLDER_PRESERVED",
+  "archiveName": "5f694251-c6eb-4f5f-a281-25e91db81c04.startup-only-20261101T140452Z",
+  "controlSha256": "13f478b585c03d8fe216ed27ff473733950954819e32df9293d3c85b37ce11d9",
+  "privateAclVerified": true,
+  "existingHelperProcesses": 0,
+  "existingPilotListeners": 0,
+  "workerJournalFound": false,
+  "accountCredentialsFound": false,
+  "filesDeleted": 0
+}

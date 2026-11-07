@@ -1,0 +1,45 @@
+{
+  "status": "PREPARED_ONLY_NOT_INSERTED",
+  "runId": "c817e8f0-3cf0-461c-9c57-5e0715d5bfc8",
+  "mode": "single_transaction_always_rollback",
+  "targetProject": "mhkoayftiuojxlrkollf",
+  "authBindings": {
+    "creator_a": "REQUIRED_APPROVED_DEDICATED_AUTH_UUID",
+    "creator_peer": "REQUIRED_DISTINCT_APPROVED_DEDICATED_AUTH_UUID",
+    "creator_b": "REQUIRED_DISTINCT_APPROVED_DEDICATED_AUTH_UUID",
+    "operator_a": "REQUIRED_DISTINCT_APPROVED_DEDICATED_AUTH_UUID"
+  },
+  "authRules": ["No auth.users SQL inserts or updates", "No email invitations or existing-customer identities", "Each bound UUID must exist in Auth and be absent from creators/staff_users/brand_users before the transaction", "No passwords, tokens or session contents in this packet"],
+  "plannedIds": {
+    "workspace_a": "b2205cc1-972c-44aa-93d4-6b5d620a7301",
+    "workspace_b": "b2205cc1-972c-44aa-93d4-6b5d620a7302",
+    "mission": "b2205cc1-972c-44aa-93d4-6b5d620a7311",
+    "template": "b2205cc1-972c-44aa-93d4-6b5d620a7312",
+    "requirement": "b2205cc1-972c-44aa-93d4-6b5d620a7313",
+    "role_request": "b2205cc1-972c-44aa-93d4-6b5d620a7321"
+  },
+  "fixtureValues": {
+    "workspacePrefix": "kocmax-d1-review-c817e8f0",
+    "workspaceName": "KOCmax D1 本機式試點資料（測試後回滾）",
+    "missionTitle": "示例任務：香港茶飲短片 Brief",
+    "missionType": "ugc",
+    "status": "draft",
+    "publicPreviewEnabled": false,
+    "creatorWorkflowMode": "active_workspace",
+    "pointsReward": 10,
+    "cashReward": 0,
+    "rewardInventory": "none",
+    "platforms": ["instagram"],
+    "manualEvidence": "示例訪談問題：香港上班族如何選擇下午茶？此內容未經市場驗證。",
+    "region": "HK",
+    "language": "zh-Hant",
+    "evidenceStatus": "unverified",
+    "brief": "以 15 秒短片示範一杯茶飲的準備過程；避免未驗證的健康或成效聲稱。",
+    "providers": "mock only; no credentials, OAuth or Picker sessions",
+    "committedPointsCashXpBadges": "none; any later reward rehearsal must remain in the same rolled-back transaction"
+  },
+  "seedRowCaps": {"workspaces":2,"creators":3,"staff_users":1,"brand_users":1,"staff_workspace_roles":1,"staff_access_audit":1,"staff_access_commands":1,"missions":1,"mission_deliverable_templates":1,"mission_deliverable_requirements":1,"assistant_conversations":1,"studio_threads":1,"studio_sources":1,"studio_briefs":1,"studio_commands":3},
+  "serverGeneratedIds": "Collect command/request results within the same transaction; never use broad workspace cleanup as an ownership substitute",
+  "forbiddenWrites": ["auth.*", "real creator rows", "existing missions", "real redemption inventory", "provider credentials", "storage.objects", "supabase_migrations.schema_migrations"],
+  "cleanup": "ROLLBACK only. No shared-DB DELETE or TRUNCATE script. Persistent browser fixtures are a separate explicit approval scope."
+}

@@ -1,0 +1,8 @@
+{
+  "algorithm": "PostgreSQL md5 of canonical jsonb catalog, ordered aggregates",
+  "fingerprint": "9c71b106abb2ec07304e10772a871f9b",
+  "projectRef": "mhkoayftiuojxlrkollf",
+  "scope": "public/private catalog, ACLs and API roles. Not application rows or complete platform settings.",
+  "roleNamesMaskedInReadableSnapshot": true,
+  "readOnly": true
+}

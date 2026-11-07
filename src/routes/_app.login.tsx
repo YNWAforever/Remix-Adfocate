@@ -1,8 +1,10 @@
+import { Sprout } from "@/components/studio/StudioPrimitives";
 import { useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { supabase } from "@/lib/supabase";
 import { authRedirectUrl, finishAuth } from "@/lib/auth-flow";
-import { WHATSAPP_LOGIN, GOOGLE_LOGIN } from "@/lib/features";
+import { WHATSAPP_LOGIN, GOOGLE_LOGIN, STUDIO_SHELL } from "@/lib/features";
+import "@/components/studio/studio.css";
 import { useI18n } from "@/lib/i18n";
 import { trackActivationEvent } from "@/lib/activationAnalytics";
 import { classifyAuthError, type AuthFeedbackState } from "@/lib/authFeedback";
@@ -10,7 +12,7 @@ import { AuthFeedback } from "@/components/AuthFeedback";
 import { BoldValue } from "@/components/RichText";
 
 export const Route = createFileRoute("/_app/login")({ component: Login,
-  validateSearch: (search: Record<string, unknown>): { next?: string; ref?: string } => ({ next: typeof search.next === "string" ? search.next : undefined, ref: typeof search.ref === "string" ? search.ref : undefined }),
+  validateSearch: (search: Record<string, unknown>): { next?: string; ref?: string; mode?: "signup" } => ({ next: typeof search.next === "string" ? search.next : undefined, ref: typeof search.ref === "string" ? search.ref : undefined, mode: search.mode === "signup" ? "signup" : undefined }),
 });
 
 /** Fast local guard only; Supabase enforces its own minimum server-side. */
@@ -46,7 +48,7 @@ function AuthShell({ children }: { children: React.ReactNode }) {
   const { lang, setLang } = useI18n();
   const tx = (en: string, zh: string) => (lang === "en" ? en : zh);
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[var(--color-paper)] px-4 py-10">
+    <div className={`${STUDIO_SHELL ? "studio s-auth " : ""}relative flex min-h-screen items-center justify-center overflow-hidden bg-[var(--color-paper)] px-4 py-10`}>
       <div
         aria-hidden
         className="dot-pattern pointer-events-none absolute inset-0 z-0 opacity-30"
@@ -54,7 +56,7 @@ function AuthShell({ children }: { children: React.ReactNode }) {
       <div className="relative z-10 w-full max-w-md">
         <div className="mb-4 flex items-center justify-between">
           <span className="font-display text-xl font-bold tracking-tight text-[var(--color-ink)]">
-            Adfocate<span className="text-[var(--color-magenta)]">.</span>
+            {STUDIO_SHELL ? "KOCmax" : "Adfocate"}<span className="text-[var(--color-magenta)]">.</span>
           </span>
           <button
             type="button"
@@ -65,7 +67,7 @@ function AuthShell({ children }: { children: React.ReactNode }) {
             EN · 繁
           </button>
         </div>
-        <div className="pastel-card p-6 sm:p-8">{children}</div>
+        <div className="pastel-card p-6 sm:p-8">{STUDIO_SHELL && <div className="s-auth-art"><Sprout small /><p>{tx("A little space for your next big idea.", "給下一個靈感，一點成長空間。")}</p></div>}{children}</div>
       </div>
     </div>
   );
@@ -135,7 +137,7 @@ function Login() {
       <AuthShell>
         <span className="sticker">{tx("CREATOR ACCESS", "創作者登入")}</span>
         <h1 className="mt-4 font-display text-3xl font-bold text-[var(--color-ink)]">
-          {t("app.login.title")}
+          {STUDIO_SHELL ? (lang === "en" ? "Welcome to KOCmax" : "開始你的 KOCmax 旅程") : t("app.login.title")}
         </h1>
         <PasswordAuth />
       </AuthShell>
@@ -146,7 +148,7 @@ function Login() {
     <AuthShell>
       <span className="sticker">{tx("CREATOR ACCESS", "創作者登入")}</span>
       <h1 className="mt-4 font-display text-3xl font-bold text-[var(--color-ink)]">
-        {t("app.login.title")}
+        {STUDIO_SHELL ? (lang === "en" ? "Welcome to KOCmax" : "開始你的 KOCmax 旅程") : t("app.login.title")}
       </h1>
       {stage === "phone" ? (
         <form onSubmit={sendOtp} className="mt-4 space-y-3" aria-busy={busy}>
@@ -267,7 +269,7 @@ type PasswordMode = "signIn" | "signUp" | "forgot" | "magicLink";
 function PasswordAuth() {
   const { t, lang } = useI18n();
   const navigate = useNavigate();
-  const [mode, setMode] = useState<PasswordMode>("signIn");
+  const [mode, setMode] = useState<PasswordMode>(() => new URLSearchParams(window.location.search).get("mode") === "signup" ? "signUp" : "signIn");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [revealed, setRevealed] = useState(false);
@@ -331,7 +333,7 @@ function PasswordAuth() {
     }
     begin();
     try {
-      const { data, error } = await supabase.auth.signUp({ email: email.trim(), password });
+      const { data, error } = await supabase.auth.signUp({ email: email.trim(), password, options: { emailRedirectTo: authRedirectUrl("/auth/callback") } });
       if (error) {
         fail(error);
         return;
@@ -580,7 +582,7 @@ function PasswordAuth() {
           className="w-full rounded-full border-2 border-[var(--color-ink)] bg-white py-2 text-center text-sm font-bold text-[var(--color-ink)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--color-cyan)]/45 disabled:opacity-50"
         >
           {mode === "signIn"
-            ? t("app.login.switchToSignUp")
+            ? (STUDIO_SHELL ? (lang === "en" ? "New to KOCmax? Create an account" : "初次使用 KOCmax？建立帳戶") : t("app.login.switchToSignUp"))
             : mode === "signUp"
               ? t("app.login.switchToSignIn")
               : t("app.login.backToSignIn")}

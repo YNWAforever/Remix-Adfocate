@@ -4,9 +4,10 @@ import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import type { AdminEnv } from "../lib/staffAuth";
 
 type Row = Record<string, unknown>;
-const fixture = vi.hoisted(() => ({ rows: {} as Record<string, Row[]> }));
+const fixture = vi.hoisted(() => ({ rows: {} as Record<string, Row[]>, queried: [] as string[] }));
 // Substitute only the database transport; the route and metric calculations run unchanged.
 vi.mock("../lib/supabase", () => ({ serviceClient: () => ({ from(table: string) {
+  fixture.queried.push(table);
   const filters: Array<(row: Row) => boolean> = [];
   let first = 0, last = 999;
   const query = {
@@ -33,6 +34,7 @@ const app = new Hono<AdminEnv>().use("*", async (c, next) => {
 beforeEach(() => {
   vi.useFakeTimers({ toFake: ["Date"] });
   vi.setSystemTime(new Date("2026-10-23T10:00:00Z"));
+  fixture.queried = [];
   fixture.rows = {
     mission_work_items: ["before", "later"].map(id => ({ id, workspace_id: "owned", state: "approved_to_publish", required: true,
       deadline: null, created_at: "2026-10-21T00:00:00Z", workflow: { created_at: "2026-10-21T00:00:00Z" } })),
@@ -43,6 +45,16 @@ beforeEach(() => {
   };
 });
 afterEach(() => vi.useRealTimers());
+
+it("does not fetch or return financial metrics without a server-issued reward capability", async () => {
+  fixture.rows.point_transactions = [{ id:"private", workspace_id:"owned", type:"earn", delta:9999, created_at:"2026-10-21T10:00:00Z" }];
+  const response = await app.request("/admin/insights?window=7");
+  const { insights } = await response.json();
+  expect(insights.kpis.pointsIssued).toBeNull();
+  expect(insights.kpis.cashPaid).toBeNull();
+  expect(fixture.queried).not.toContain("point_transactions");
+  expect(fixture.queried).not.toContain("earnings_transactions");
+});
 
 it.each([
   ["approved_to_publish", "2026-10-22T16:00:00Z"],

@@ -7,3 +7,8 @@
  */
 export const WHATSAPP_LOGIN = import.meta.env.VITE_ENABLE_WHATSAPP === "true";
 export const GOOGLE_LOGIN = import.meta.env.VITE_ENABLE_GOOGLE === "true";
+
+// Additive studio rollout. These flags never enable providers or bypass auth.
+export const STUDIO_SHELL = import.meta.env.VITE_STUDIO_SHELL === "true";
+export const STUDIO_THREADS = STUDIO_SHELL && import.meta.env.VITE_STUDIO_THREADS === "true";
+export const PUBLIC_MISSION_PREVIEW = STUDIO_SHELL && import.meta.env.VITE_PUBLIC_MISSION_PREVIEW === "true";

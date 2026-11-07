@@ -1,0 +1,18 @@
+id,surface,viewport,scenario,observed_result,evidence_type
+J01,Connections shell off,390x844,Initial creator connection list,Loaded both mock cards without retry,PASS IAB fixture
+J02,Consent shell off,390x844,Google disclosure and Escape,Full write-capability disclosure visible and focus returned to opener,PASS IAB fixture screenshot mobile-consent.png
+J03,Picker shell off,390x844,Select then cancel then reopen,Selection reset to 0 of 5 and no import,PASS IAB fixture
+J04,Studio shell on,390x844,Task card and mission context,Independent private thread created and manual sources available without account,PASS IAB fixture
+J05,Source panel shell on,390x844,Question then Picker cancel,Question retained and consent checkboxes remain unchecked,PASS IAB fixture
+J06,Source panel shell on,390x844,Private import without processing consent,Source unverified and content limited to rights notice,PASS IAB fixture
+J07,Brief shell on,390x844,Save private version,Brief v1 private and no automatic mission submission,PASS IAB fixture
+J08,Brief shell on,390x844,Select private source paragraph for task,Alert explains rights and transfer button disabled,PASS IAB fixture
+J09,Brief shell on,1440x1000,Same saved private Brief,Desktop layout fits viewport and original mission progress remains,PASS IAB fixture screenshot desktop-private-brief.png
+J10,Connections and Studio,1440x1000,Revoke then return to evidence,Source marked revoked and expanded excerpt replaced by permission notice,PASS IAB fixture
+J11,D0 connections,1440x1000,Expand proposed Google scopes,drive.file write capability and openid sub explained and both real buttons disabled,PASS IAB fixture screenshot desktop-d0-connections.png
+J12,D0 connections,390x844,Mobile D0 landing,Visible offline boundary and no horizontal overflow,PASS IAB fixture screenshot mobile-d0-connections.png
+J13,Recovery,390x844,Pending revoke retry and reconnect,Reconnect blocked before resolution then fresh consent and 0 selected files,PASS IAB fixture
+J14,Recovery,1440x1000,Manual-action state,Local stop and manual provider action distinguished from confirmed revoke,PASS IAB fixture
+J15,Recovery,1440x1000,Expired authorization and Escape,Expired status clear and focus returns to reconnect button,PASS IAB fixture
+J16,Integration layouts,320/390/430/768/1024/1440,30 automated component DOM/CSS checks,No tested horizontal overflow or undersized targets and short dialogs reachable,PASS offline Chromium included in full suite
+J17,Native mobile OAuth and Picker,real iOS/Android,Real account and software keyboard,Not performed pending approved pilot,NOT RUN

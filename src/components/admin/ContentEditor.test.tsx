@@ -136,4 +136,40 @@ describe("ContentEditor — form seeding", () => {
 
     await waitFor(() => expect(title().value).toBe("第二篇"));
   });
+  it("shows a save conflict while preserving the unsaved title", async () => {
+    h.getAdminContent.mockResolvedValue({ item: row("c1", "指南") });
+    h.updateContent.mockRejectedValue(Object.assign(new Error("STALE_EDIT"), { status: 409 }));
+    r("c1");
+    await waitFor(() => expect(title().value).toBe("指南"));
+    fireEvent.change(title(), { target: { value: "我的未儲存文章" } });
+    fireEvent.click(screen.getByText("Save"));
+    expect(await screen.findByRole("alert")).toHaveTextContent("資料已更新");
+    expect(title().value).toBe("我的未儲存文章");
+  });
+  it("hides cached private content after access is revoked, including during a later outage", async () => {
+    h.getAdminContent.mockResolvedValue({ item: row("c1", "私人文章") });
+    const { qc } = r("c1", new QueryClient({ defaultOptions: { queries: { retry: false } } }));
+    await waitFor(() => expect(title().value).toBe("私人文章"));
+    h.getAdminContent.mockRejectedValue(Object.assign(new Error("denied"), { status: 403 }));
+    await act(async () => { await qc.refetchQueries({ queryKey: ["admin", "content", "c1"] }); });
+    await waitFor(() => expect(screen.queryByPlaceholderText("Title")).not.toBeInTheDocument());
+    h.getAdminContent.mockRejectedValue(Object.assign(new Error("unavailable"), { status: 503 }));
+    await act(async () => { await qc.refetchQueries({ queryKey: ["admin", "content", "c1"] }); });
+    expect(screen.queryByPlaceholderText("Title")).not.toBeInTheDocument();
+  });
+  it("does not let an older save conflict mask a later publish denial", async () => {
+    h.getAdminContent.mockResolvedValue({ item: row("c1", "私人文章") });
+    h.updateContent.mockRejectedValue(Object.assign(new Error("stale"), { status: 409 }));
+    h.contentAction.mockRejectedValue(Object.assign(new Error("denied"), { status: 403 }));
+    const { qc } = r("c1", new QueryClient({ defaultOptions: { queries: { retry: false } } }));
+    await waitFor(() => expect(title().value).toBe("私人文章"));
+    fireEvent.click(screen.getByText("Save"));
+    expect(await screen.findByRole("alert")).toHaveTextContent("資料已更新");
+    fireEvent.click(screen.getByText("Publish"));
+    await waitFor(() => expect(screen.queryByPlaceholderText("Title")).not.toBeInTheDocument());
+    expect(screen.getByRole("alert")).toHaveTextContent("權限不足");
+    h.getAdminContent.mockRejectedValue(Object.assign(new Error("unavailable"), { status: 503 }));
+    await act(async () => { await qc.refetchQueries({ queryKey: ["admin", "content", "c1"] }); });
+    expect(screen.queryByPlaceholderText("Title")).not.toBeInTheDocument();
+  });
 });

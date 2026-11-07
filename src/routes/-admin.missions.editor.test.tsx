@@ -1,12 +1,33 @@
 // src/routes/-admin.missions.editor.test.tsx
 import type React from "react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MissionEditor } from "@/components/admin/MissionEditor";
 import { AdminRequestError } from "@/lib/admin";
-import type { AdminMission } from "@/lib/admin";
+import type { AdminMission, StaffAccessSnapshot } from "@/lib/admin";
 import { dict } from "@/lib/i18n.dict";
 import { I18nProvider } from "@/lib/i18n";
+import { AdminAuthContext } from "@/components/admin/AdminAuthContext";
+import { AdminWorkspaceProvider, useAdminWorkspace } from "@/components/admin/AdminWorkspaceContext";
+import { StaffAccessProvider } from "@/components/admin/StaffAccessContext";
+
+const routeApi = vi.hoisted(() => ({ access: vi.fn(), mission: vi.fn(), update: vi.fn(), navigate: vi.fn() }));
+vi.mock("@tanstack/react-router", async (original) => ({
+  ...(await original<object>()),
+  createFileRoute: () => (options: unknown) => options,
+  useParams: () => ({ missionId: "m1" }),
+  useNavigate: () => routeApi.navigate,
+  useBlocker: () => undefined,
+  Link: ({ to, children }: { to: string; children: React.ReactNode }) => <a href={to}>{children}</a>,
+}));
+vi.mock("@/lib/admin", async (original) => ({
+  ...(await original<object>()),
+  fetchStaffAccess: routeApi.access,
+  fetchAdminMission: routeApi.mission,
+  updateMission: routeApi.update,
+}));
+import { Route as EditMissionRoute } from "./admin.missions.$missionId";
 
 vi.mock("@/lib/missionCategories", () => ({ MISSION_CATEGORIES: ["美容", "餐飲"], ALL_CATEGORY: "全部" }));
 
@@ -28,6 +49,193 @@ const renderLocalizedEditor = (locale: "en" | "zh", props: EditorProps) => {
   window.localStorage.setItem("lang", locale);
   return render(<I18nProvider><MissionEditor {...props} /></I18nProvider>);
 };
+
+const staffAccess = (role: "operator" | "workspace_admin", workspaceId = "w1"): StaffAccessSnapshot => ({
+  workspace: {
+    id: workspaceId, slug: workspaceId === "w1" ? "owned" : "other", role, revision: 1,
+    capabilities: role === "workspace_admin" ? ["mission.manage"] : ["creator.read"],
+  },
+  platformCapabilities: [], scopeStatus: null,
+});
+
+function WorkspaceChangeButton() {
+  const { setWorkspace } = useAdminWorkspace();
+  return <button type="button" onClick={() => setWorkspace("w2", "other")}>Switch test workspace</button>;
+}
+
+function renderEditMission(withAccessProvider = true, withWorkspaceSwitch = false) {
+  const Component = (EditMissionRoute as unknown as { component: React.ComponentType }).component;
+  const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  const tree = (staffId: string) => (
+    <QueryClientProvider client={client}>
+      <AdminAuthContext.Provider value={{ authed: true, staff: { userId: staffId, email: `${staffId}@example.test` }, signOut: vi.fn(async () => {}), reportAuthError: vi.fn() }}>
+        <AdminWorkspaceProvider>
+          {withWorkspaceSwitch && <WorkspaceChangeButton />}
+          {withAccessProvider ? <StaffAccessProvider><Component /></StaffAccessProvider> : <Component />}
+        </AdminWorkspaceProvider>
+      </AdminAuthContext.Provider>
+    </QueryClientProvider>
+  );
+  const view = render(tree("staff"));
+  return { ...view, switchStaff: (staffId: string) => view.rerender(tree(staffId)) };
+}
+
+describe("direct mission edit route", () => {
+  beforeEach(() => {
+    routeApi.access.mockReset();
+    routeApi.mission.mockReset();
+    routeApi.update.mockReset();
+    routeApi.navigate.mockReset();
+    routeApi.mission.mockResolvedValue({ mission: { ...active, status: "draft", updated_at: "v1" } });
+    window.sessionStorage.clear();
+    window.history.replaceState(null, "", "/admin/missions/m1?ws=w1");
+  });
+
+  it("keeps direct-route edit controls hidden while staff access is unresolved", async () => {
+    routeApi.access.mockImplementation(() => new Promise(() => {}));
+    renderEditMission();
+    await waitFor(() => expect(routeApi.mission).toHaveBeenCalledOnce());
+    await act(async () => {});
+    expect(screen.queryByLabelText("標題")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /儲存/ })).not.toBeInTheDocument();
+  });
+
+  it("denies an operator who opens the mission edit URL directly", async () => {
+    routeApi.access.mockResolvedValue({ access: staffAccess("operator") });
+    renderEditMission();
+    const returnLink = await screen.findByRole("link", { name: "返回管理首頁" });
+    expect(screen.queryByLabelText("標題")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /儲存/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "管理" })).not.toBeInTheDocument();
+    expect(returnLink).toHaveAttribute("href", "/admin");
+  });
+
+  it("shows the editor to a workspace admin with mission.manage", async () => {
+    routeApi.access.mockResolvedValue({ access: staffAccess("workspace_admin") });
+    renderEditMission();
+    expect(await screen.findByLabelText("標題")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /儲存/ })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "管理" })).toBeInTheDocument();
+  });
+
+  it.each([
+    ["bare direct URL", "/admin/missions/m1", ""],
+    ["workspace slug URL", "/admin/missions/m1?ws=owned", "owned"],
+  ] as const)("opens the authorized editor from a %s after access resolves", async (_case, url, requestedWorkspace) => {
+    window.history.replaceState(null, "", url);
+    let resolveAccess!: (value: { access: StaffAccessSnapshot }) => void;
+    routeApi.access.mockImplementationOnce(() => new Promise((resolve) => { resolveAccess = resolve; }));
+    renderEditMission();
+    await waitFor(() => expect(routeApi.access).toHaveBeenCalledWith(requestedWorkspace));
+    expect(screen.queryByLabelText("標題")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /儲存/ })).not.toBeInTheDocument();
+
+    await act(async () => { resolveAccess({ access: staffAccess("workspace_admin") }); });
+    expect(await screen.findByLabelText("標題")).toHaveValue("任務");
+    expect(screen.getByRole("button", { name: /儲存/ })).toBeInTheDocument();
+  });
+
+  it("shows an unavailable state and retry after access discovery fails", async () => {
+    routeApi.access.mockRejectedValueOnce(new Error("access unavailable"));
+    renderEditMission();
+    await waitFor(() => expect(routeApi.mission).toHaveBeenCalledOnce());
+    await act(async () => {});
+    expect(screen.queryByLabelText("標題")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /儲存/ })).not.toBeInTheDocument();
+    expect(await screen.findByRole("alert")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "重試權限檢查" })).toBeInTheDocument();
+  });
+
+  it("does not render the editor when the staff access provider is missing", async () => {
+    renderEditMission(false);
+    await waitFor(() => expect(routeApi.mission).toHaveBeenCalledOnce());
+    await act(async () => {});
+    expect(screen.queryByLabelText("標題")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /儲存/ })).not.toBeInTheDocument();
+  });
+
+  it("keeps an unsaved authorized draft through an access refresh error and retry", async () => {
+    routeApi.access
+      .mockResolvedValueOnce({ access: staffAccess("workspace_admin") })
+      .mockRejectedValueOnce(new Error("temporary access outage"))
+      .mockResolvedValueOnce({ access: staffAccess("workspace_admin") });
+    routeApi.update.mockResolvedValue({});
+    renderEditMission();
+    fireEvent.change(await screen.findByLabelText("標題"), { target: { value: "Unsent mission title" } });
+
+    await act(async () => { window.dispatchEvent(new Event("adfocate:staff-access-denied")); });
+    const retry = await screen.findByRole("button", { name: "重試權限檢查" });
+    expect(screen.getByLabelText("標題")).not.toBeVisible();
+    expect(screen.getByLabelText("標題")).toBeDisabled();
+    expect(screen.queryByRole("button", { name: /儲存/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "管理" })).not.toBeInTheDocument();
+    expect(routeApi.update).not.toHaveBeenCalled();
+
+    fireEvent.click(retry);
+    await waitFor(() => expect(screen.getByLabelText("標題")).toBeVisible());
+    expect(screen.getByLabelText("標題")).toHaveValue("Unsent mission title");
+
+    const confirm = vi.spyOn(window, "confirm").mockReturnValue(false);
+    try {
+      fireEvent.click(screen.getByRole("button", { name: "管理" }));
+      expect(confirm).toHaveBeenCalledOnce();
+      expect(screen.getByLabelText("標題")).toHaveValue("Unsent mission title");
+    } finally {
+      confirm.mockRestore();
+    }
+    fireEvent.click(screen.getByRole("button", { name: /儲存/ }));
+    await waitFor(() => expect(routeApi.update).toHaveBeenCalledWith("m1", expect.objectContaining({
+      title: "Unsent mission title", expected_updated_at: "v1",
+    })));
+  });
+
+  it("removes the editor when refreshed access genuinely denies mission.manage", async () => {
+    routeApi.access
+      .mockResolvedValueOnce({ access: staffAccess("workspace_admin") })
+      .mockResolvedValueOnce({ access: staffAccess("operator") });
+    renderEditMission();
+    fireEvent.change(await screen.findByLabelText("標題"), { target: { value: "Unsent mission title" } });
+
+    await act(async () => { window.dispatchEvent(new Event("adfocate:staff-access-denied")); });
+    expect(await screen.findByRole("link", { name: "返回管理首頁" })).toHaveAttribute("href", "/admin");
+    expect(screen.queryByLabelText("標題")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /儲存/, hidden: true })).not.toBeInTheDocument();
+    expect(routeApi.update).not.toHaveBeenCalled();
+  });
+
+  it("drops the previous staff member's private draft on an identity switch", async () => {
+    let resolveAccess!: (value: { access: StaffAccessSnapshot }) => void;
+    routeApi.access
+      .mockResolvedValueOnce({ access: staffAccess("workspace_admin") })
+      .mockImplementationOnce(() => new Promise((resolve) => { resolveAccess = resolve; }));
+    const view = renderEditMission();
+    fireEvent.change(await screen.findByLabelText("標題"), { target: { value: "Private draft from staff A" } });
+
+    view.switchStaff("staff-b");
+    expect(await screen.findByRole("status")).toBeInTheDocument();
+    expect(screen.queryByDisplayValue("Private draft from staff A")).not.toBeInTheDocument();
+
+    await act(async () => { resolveAccess({ access: staffAccess("workspace_admin") }); });
+    expect(await screen.findByLabelText("標題")).toHaveValue("任務");
+  });
+
+  it("drops the private draft and old mission editor when the workspace changes", async () => {
+    let resolveAccess!: (value: { access: StaffAccessSnapshot }) => void;
+    routeApi.access
+      .mockResolvedValueOnce({ access: staffAccess("workspace_admin") })
+      .mockImplementationOnce(() => new Promise((resolve) => { resolveAccess = resolve; }));
+    renderEditMission(true, true);
+    fireEvent.change(await screen.findByLabelText("標題"), { target: { value: "Private draft from workspace one" } });
+
+    fireEvent.click(screen.getByRole("button", { name: "Switch test workspace" }));
+    expect(await screen.findByRole("status")).toBeInTheDocument();
+    expect(screen.queryByDisplayValue("Private draft from workspace one")).not.toBeInTheDocument();
+
+    await act(async () => { resolveAccess({ access: staffAccess("workspace_admin", "w2") }); });
+    expect(await screen.findByRole("link", { name: "返回管理首頁" })).toHaveAttribute("href", "/admin");
+    expect(screen.queryByLabelText("標題")).not.toBeInTheDocument();
+  });
+});
 
 function addDeliverable(locale: "en" | "zh" = "zh") {
   fireEvent.change(screen.getByLabelText(dict[locale]["app.admin.missionEditor.workflow"]), { target: { value: "active_workspace" } });

@@ -113,3 +113,29 @@ export function requireBrand(): MiddlewareHandler<BrandEnv> {
     await next();
   };
 }
+
+/** Brand membership must not bypass an existing staff role's authoring limit. */
+export function requireBrandMissionWrite(): MiddlewareHandler<BrandEnv> {
+  return async (c, next) => {
+    if (["GET", "HEAD", "OPTIONS"].includes(c.req.method)) return next();
+    const svc = serviceClient();
+    const brand = c.get("brand");
+    try {
+      const { data: staff, error: staffError } = await svc.from("staff_users")
+        .select("user_id,active").eq("user_id", brand.userId).maybeSingle();
+      if (staffError) throw staffError;
+      if (!staff) return next();
+      const denied = () => c.json({ error: "此角色未獲任務編輯權限", code: "STAFF_CAPABILITY_REQUIRED" }, 403);
+      if (staff.user_id !== brand.userId || !staff.active) return denied();
+      const { data: grant, error: grantError } = await svc.from("staff_workspace_roles")
+        .select("user_id,workspace_id,role,active")
+        .eq("user_id", brand.userId).eq("workspace_id", brand.workspaceId).maybeSingle();
+      if (grantError) throw grantError;
+      if (!grant?.active || grant.user_id !== brand.userId || grant.workspace_id !== brand.workspaceId
+        || grant.role !== "workspace_admin") return denied();
+      return next();
+    } catch {
+      return c.json({ error: "暫未能核實任務編輯權限，請稍後重試", code: "brand_write_unavailable" }, 503);
+    }
+  };
+}

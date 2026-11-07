@@ -76,44 +76,21 @@ meBootstrap.post("/bootstrap", async (c) => {
   const e164 = toE164(u.user.phone);
   const displayName = u.user.email || e164 || "KOC";
 
-  // Resolve an optional referral code from the signup link (reject self-referral).
-  let referredBy: string | null = null;
-  if (ref) {
-    const { data: r } = await svc.from("creators").select("id").eq("referral_code", ref).maybeSingle();
-    if (r && r.id !== u.user.id) referredBy = r.id;
+  // Profile creation and balance recovery share the account-deletion row lock.
+  // Missing migration is a recoverable failure, never a non-atomic fallback.
+  const { data: result, error: bootstrapError } = await svc.rpc("bootstrap_creator_account", {
+    p_creator: u.user.id,
+    p_workspace: ws.id,
+    p_display_name: displayName,
+    p_phone: e164,
+    p_ref: ref || null,
+  });
+  if (bootstrapError?.code === "PT404") return unknownWorkspace();
+  if (bootstrapError?.code === "PT401") return c.json({ error: "Account deleted", code: "account_deleted" }, 401);
+  if (bootstrapError || typeof result?.created !== "boolean") {
+    return dbError(c, bootstrapError ?? { message: "Invalid bootstrap result" }, "bootstrap_incomplete", 503);
   }
-
-  // First-login detection: did a creator row already exist?
-  const { data: existing, error: existingErr } = await svc.from("creators").select("id").eq("id", u.user.id).maybeSingle();
-  if (existingErr) return dbError(c, existingErr, "bootstrap_incomplete", 503);
-  const created = !existing;
-
-  // ignoreDuplicates → an existing row is never overwritten; only first insert sets these.
-  // Every write is idempotent, so a failure answers 503 and the client simply retries: a
-  // creator without balance rows would otherwise fail later at approval or redemption.
-  const creatorRow = await svc.from("creators").upsert(
-    {
-      id: u.user.id,
-      workspace_id: ws.id,
-      display_name: displayName,
-      phone: e164,
-      ...(referredBy ? { referred_by: referredBy } : {}),
-    },
-    { onConflict: "id", ignoreDuplicates: true },
-  );
-  if (creatorRow.error) return dbError(c, creatorRow.error, "bootstrap_incomplete", 503);
-  const points = await svc.from("point_balances").upsert(
-    { creator_id: u.user.id, workspace_id: ws.id, balance: 0 },
-    { onConflict: "creator_id,workspace_id", ignoreDuplicates: true },
-  );
-  if (points.error) return dbError(c, points.error, "bootstrap_incomplete", 503);
-  const earnings = await svc.from("earnings_balances").upsert(
-    { creator_id: u.user.id, workspace_id: ws.id, available: 0 },
-    { onConflict: "creator_id,workspace_id", ignoreDuplicates: true },
-  );
-  if (earnings.error) return dbError(c, earnings.error, "bootstrap_incomplete", 503);
-
-  return c.json({ created });
+  return c.json({ created: result.created });
 });
 
 /** Guarded: current creator profile (includes onboarding state for the gate).

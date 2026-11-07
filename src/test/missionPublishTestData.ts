@@ -1,0 +1,6 @@
+import type { MissionPublishContext } from "../lib/creatorGrowth/missionPublishContext";
+export function context(): MissionPublishContext {
+  return {ownerKey:"owner",submissionId:"submission",rights:{sampleOnly:true,ownerKey:"owner",accountSubject:"123456789",username:"kocmax_demo_only",grantGeneration:1,grant:"valid",sources:"shareable",platformLabel:"supported",brandTag:"not_required"},
+    item:{id:"item",title:"Tea",platform:"instagram",requirements:[],required:true,position:1,deadline:null,state:"approved_to_publish",draft:null,currentSubmittedVersionId:"version",approvedVersionId:"version",reviewStartedAt:null,reviewDueAt:null,versions:[{id:"version",versionNumber:3,caption:"Tea #合作",externalUrl:null,checklist:{},contentChecksum:"b".repeat(64),submittedAt:"2026-11-06",state:"approved_to_publish",decisionAt:"2026-11-06",assets:[{id:"asset",versionId:"version",originalFilename:"sample.jpg",mimeType:"image/jpeg",sizeBytes:4,checksum:"a".repeat(64),uploadState:"ready",signedUrl:null}]}]},
+    publication:{workItemId:"item",platform:"instagram",state:"approved_to_publish",revision:1,approvedVersionId:"version",instructions:{publicationInstructions:"Keep #合作",requiredDisclosures:["#合作"],expectedAccount:"@kocmax_demo_only",proofEvidencePolicy:{},publishDueAt:"2026-12-01",frozenAt:"2026-11-06"},attempts:[],currentAttempt:null,acceptedAttempt:null}};
+}

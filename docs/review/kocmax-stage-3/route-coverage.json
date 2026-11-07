@@ -1,0 +1,2831 @@
+{
+  "date": "2026-10-31",
+  "baseline": "64f4e93",
+  "environment": "local Vite fixture, no remote connections",
+  "primaryWidths": [
+    390,
+    1440
+  ],
+  "catalog": [
+    "/",
+    "/creators",
+    "/brands",
+    "/packages",
+    "/stories",
+    "/playbooks",
+    "/earn",
+    "/contact",
+    "/legal/terms",
+    "/legal/privacy",
+    "/login",
+    "/auth/reset-password",
+    "/auth/callback",
+    "/brand/auth/callback",
+    "/onboarding",
+    "/home",
+    "/studio",
+    "/mission",
+    "/mission/tea-story",
+    "/my",
+    "/my/00000000-0000-4000-8000-000000000031",
+    "/campaigns",
+    "/campaigns/small-stories",
+    "/redemption",
+    "/redemption/history",
+    "/wallet",
+    "/wallet/earnings",
+    "/profile",
+    "/passport",
+    "/passport/local-public-example",
+    "/connections",
+    "/guide",
+    "/guide/doc/start-here",
+    "/guide/track/first-story",
+    "/news",
+    "/news/creator-notes",
+    "/notifications",
+    "/explore",
+    "/match",
+    "/more",
+    "/privacy",
+    "/tnc",
+    "/brand/login",
+    "/brand",
+    "/brand/missions",
+    "/brand/missions/new",
+    "/brand/missions/00000000-0000-4000-8000-000000000022",
+    "/brand/resources",
+    "/brand/resources/creator-notes",
+    "/admin",
+    "/admin/applications",
+    "/admin/submissions",
+    "/admin/active-missions",
+    "/admin/active-missions/00000000-0000-4000-8000-000000000031",
+    "/admin/reward-handoffs",
+    "/admin/missions",
+    "/admin/missions/new",
+    "/admin/missions/00000000-0000-4000-8000-000000000022",
+    "/admin/campaigns",
+    "/admin/campaigns/new",
+    "/admin/campaigns/00000000-0000-4000-8000-000000000071",
+    "/admin/creators",
+    "/admin/engaged",
+    "/admin/insights",
+    "/admin/radar",
+    "/admin/content",
+    "/admin/content/new",
+    "/admin/content/00000000-0000-4000-8000-000000000111",
+    "/admin/academy",
+    "/admin/academy/new",
+    "/admin/academy/00000000-0000-4000-8000-000000000101",
+    "/operator",
+    "/operator/creators",
+    "/operator/creators/00000000-0000-4000-8000-000000000011",
+    "/operator/missions/00000000-0000-4000-8000-000000000021"
+  ],
+  "coverage": [
+    {
+      "requested": "/",
+      "resolved": "/",
+      "role": "visitor",
+      "fixture": "normal",
+      "width": 320,
+      "scrollWidth": 314,
+      "headings": [
+        "你的下一個靈感，值得被看見。",
+        "把一個真實體驗，拍成你的故事。",
+        "不用先學會介面，先說出你的想法。",
+        "從一件你喜歡的事開始",
+        "按自己的節奏，也能慢慢發光。"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/",
+      "resolved": "/",
+      "role": "visitor",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "你的下一個靈感，值得被看見。",
+        "把一個真實體驗，拍成你的故事。",
+        "不用先學會介面，先說出你的想法。",
+        "從一件你喜歡的事開始",
+        "按自己的節奏，也能慢慢發光。"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/",
+      "resolved": "/",
+      "role": "visitor",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "你的下一個靈感，值得被看見。",
+        "把一個真實體驗，拍成你的故事。",
+        "不用先學會介面，先說出你的想法。",
+        "從一件你喜歡的事開始",
+        "按自己的節奏，也能慢慢發光。"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/admin",
+      "resolved": "/admin",
+      "role": "workspace_admin",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "營運後台",
+        "讓好作品，順利走到下一站。",
+        "任務申請",
+        "作品與發佈證明",
+        "舊版任務審批",
+        "核實完成",
+        "獎勵交接",
+        "創作者個案",
+        "任務管理"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/admin",
+      "resolved": "/admin",
+      "role": "workspace_admin",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "營運後台",
+        "讓好作品，順利走到下一站。",
+        "任務申請",
+        "作品與發佈證明",
+        "舊版任務審批",
+        "核實完成",
+        "獎勵交接",
+        "創作者個案",
+        "任務管理"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/admin/academy",
+      "resolved": "/admin/academy",
+      "role": "content_editor",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "學院內容",
+        "學院內容"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/admin/academy",
+      "resolved": "/admin/academy",
+      "role": "content_editor",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "學院內容",
+        "學院內容"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/admin/academy/00000000-0000-4000-8000-000000000101",
+      "resolved": "/admin/academy/00000000-0000-4000-8000-000000000101",
+      "role": "content_editor",
+      "fixture": "normal",
+      "width": 320,
+      "scrollWidth": 314,
+      "headings": [
+        "學院內容",
+        "今天的小練習"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/admin/academy/00000000-0000-4000-8000-000000000101",
+      "resolved": "/admin/academy/00000000-0000-4000-8000-000000000101",
+      "role": "content_editor",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "學院內容",
+        "今天的小練習"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/admin/academy/00000000-0000-4000-8000-000000000101",
+      "resolved": "/admin/academy/00000000-0000-4000-8000-000000000101",
+      "role": "content_editor",
+      "fixture": "normal",
+      "width": 768,
+      "scrollWidth": 762,
+      "headings": [
+        "學院內容",
+        "今天的小練習"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/admin/academy/00000000-0000-4000-8000-000000000101",
+      "resolved": "/admin/academy/00000000-0000-4000-8000-000000000101",
+      "role": "content_editor",
+      "fixture": "normal",
+      "width": 1024,
+      "scrollWidth": 1018,
+      "headings": [
+        "學院內容",
+        "今天的小練習"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/admin/academy/00000000-0000-4000-8000-000000000101",
+      "resolved": "/admin/academy/00000000-0000-4000-8000-000000000101",
+      "role": "content_editor",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "學院內容",
+        "今天的小練習"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/admin/academy/new",
+      "resolved": "/admin/academy/new",
+      "role": "content_editor",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "學院內容"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/admin/academy/new",
+      "resolved": "/admin/academy/new",
+      "role": "content_editor",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "學院內容"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/admin/active-missions",
+      "resolved": "/admin/active-missions",
+      "role": "workspace_admin",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "主動任務審批",
+        "主動任務審批"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/admin/active-missions",
+      "resolved": "/admin/active-missions",
+      "role": "workspace_admin",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "主動任務審批",
+        "主動任務審批"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/admin/active-missions/00000000-0000-4000-8000-000000000031",
+      "resolved": "/admin/active-missions/00000000-0000-4000-8000-000000000031",
+      "role": "workspace_admin",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "主動任務審批",
+        "30 秒試飲短片"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/admin/active-missions/00000000-0000-4000-8000-000000000031",
+      "resolved": "/admin/active-missions/00000000-0000-4000-8000-000000000031",
+      "role": "workspace_admin",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "主動任務審批",
+        "30 秒試飲短片"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/admin/applications",
+      "resolved": "/admin/applications",
+      "role": "workspace_admin",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "申請"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/admin/applications",
+      "resolved": "/admin/applications",
+      "role": "workspace_admin",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "申請"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/admin/campaigns",
+      "resolved": "/admin/campaigns",
+      "role": "workspace_admin",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "挑戰"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/admin/campaigns",
+      "resolved": "/admin/campaigns",
+      "role": "workspace_admin",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "挑戰"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/admin/campaigns/00000000-0000-4000-8000-000000000071",
+      "resolved": "/admin/campaigns/00000000-0000-4000-8000-000000000071",
+      "role": "workspace_admin",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "挑戰",
+        "日常小故事挑戰"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/admin/campaigns/00000000-0000-4000-8000-000000000071",
+      "resolved": "/admin/campaigns/00000000-0000-4000-8000-000000000071",
+      "role": "workspace_admin",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "挑戰",
+        "日常小故事挑戰"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/admin/campaigns/new",
+      "resolved": "/admin/campaigns/new",
+      "role": "workspace_admin",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "挑戰",
+        "新挑戰（草稿）"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/admin/campaigns/new",
+      "resolved": "/admin/campaigns/new",
+      "role": "workspace_admin",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "挑戰",
+        "新挑戰（草稿）"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/admin/content",
+      "resolved": "/admin/content",
+      "role": "content_editor",
+      "fixture": "normal",
+      "width": 320,
+      "scrollWidth": 314,
+      "headings": [
+        "內容",
+        "內容管理"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/admin/content",
+      "resolved": "/admin/content",
+      "role": "content_editor",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "內容",
+        "內容管理"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/admin/content",
+      "resolved": "/admin/content",
+      "role": "content_editor",
+      "fixture": "normal",
+      "width": 768,
+      "scrollWidth": 762,
+      "headings": [
+        "內容",
+        "內容管理"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/admin/content",
+      "resolved": "/admin/content",
+      "role": "content_editor",
+      "fixture": "normal",
+      "width": 1024,
+      "scrollWidth": 1018,
+      "headings": [
+        "內容",
+        "內容管理"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/admin/content",
+      "resolved": "/admin/content",
+      "role": "content_editor",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "內容",
+        "內容管理"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/admin/content/00000000-0000-4000-8000-000000000111",
+      "resolved": "/admin/content/00000000-0000-4000-8000-000000000111",
+      "role": "content_editor",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "內容",
+        "給今天的創作者"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/admin/content/00000000-0000-4000-8000-000000000111",
+      "resolved": "/admin/content/00000000-0000-4000-8000-000000000111",
+      "role": "content_editor",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "內容",
+        "給今天的創作者"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/admin/content/new",
+      "resolved": "/admin/content/new",
+      "role": "content_editor",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "內容"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/admin/content/new",
+      "resolved": "/admin/content/new",
+      "role": "content_editor",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "內容"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/admin/creators",
+      "resolved": "/admin/creators",
+      "role": "workspace_admin",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "創作者審核",
+        "作者審核列表"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/admin/creators",
+      "resolved": "/admin/creators",
+      "role": "workspace_admin",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "創作者審核",
+        "作者審核列表"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/admin/engaged",
+      "resolved": "/admin/engaged",
+      "role": "workspace_admin",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "活躍創作者"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/admin/engaged",
+      "resolved": "/admin/engaged",
+      "role": "workspace_admin",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "活躍創作者"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/admin/insights",
+      "resolved": "/admin/insights",
+      "role": "workspace_admin",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "洞察",
+        "洞察",
+        "活動趨勢",
+        "互動漏斗",
+        "等級分佈"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/admin/insights",
+      "resolved": "/admin/insights",
+      "role": "workspace_admin",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "洞察",
+        "洞察",
+        "活動趨勢",
+        "互動漏斗",
+        "等級分佈"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/admin/missions",
+      "resolved": "/admin/missions",
+      "role": "workspace_admin",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "任務"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/admin/missions",
+      "resolved": "/admin/missions",
+      "role": "workspace_admin",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "任務"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/admin/missions/00000000-0000-4000-8000-000000000022",
+      "resolved": "/admin/missions/00000000-0000-4000-8000-000000000022",
+      "role": "workspace_admin",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "任務",
+        "週末散步：發現社區小店",
+        "基本",
+        "獎勵",
+        "名額與期限",
+        "簡介"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/admin/missions/00000000-0000-4000-8000-000000000022",
+      "resolved": "/admin/missions/00000000-0000-4000-8000-000000000022",
+      "role": "workspace_admin",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "任務",
+        "週末散步：發現社區小店",
+        "基本",
+        "獎勵",
+        "名額與期限",
+        "簡介"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/admin/missions/new",
+      "resolved": "/admin/missions/new",
+      "role": "workspace_admin",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "任務",
+        "新任務（草稿）",
+        "基本",
+        "獎勵",
+        "名額與期限",
+        "簡介"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/admin/missions/new",
+      "resolved": "/admin/missions/new",
+      "role": "workspace_admin",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "任務",
+        "新任務（草稿）",
+        "基本",
+        "獎勵",
+        "名額與期限",
+        "簡介"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/admin/radar",
+      "resolved": "/admin/radar",
+      "role": "workspace_admin",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "雷達",
+        "今日雷達",
+        "有流失風險的創作者",
+        "審核逾期",
+        "上升中的創作者",
+        "新加入未啟動"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/admin/radar",
+      "resolved": "/admin/radar",
+      "role": "workspace_admin",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "雷達",
+        "今日雷達",
+        "有流失風險的創作者",
+        "審核逾期",
+        "上升中的創作者",
+        "新加入未啟動"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/admin/reward-handoffs",
+      "resolved": "/admin/reward-handoffs",
+      "role": "workspace_admin",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "獎勵交接",
+        "待處理獎勵交接"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/admin/reward-handoffs",
+      "resolved": "/admin/reward-handoffs",
+      "role": "workspace_admin",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "獎勵交接",
+        "待處理獎勵交接"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/admin/submissions",
+      "resolved": "/admin/submissions",
+      "role": "workspace_admin",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "作品審批"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/admin/submissions",
+      "resolved": "/admin/submissions",
+      "role": "workspace_admin",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "作品審批"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/auth/callback",
+      "resolved": "/auth/callback",
+      "role": "visitor",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "登入未能完成，請重新登入",
+        "這個登入連結並不完整"
+      ],
+      "alerts": [
+        "這個登入連結並不完整請返回登入頁並索取新連結。返回登入"
+      ],
+      "uncontainedOverflow": [],
+      "expectedAuthError": true
+    },
+    {
+      "requested": "/auth/callback",
+      "resolved": "/auth/callback",
+      "role": "visitor",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "登入未能完成，請重新登入",
+        "這個登入連結並不完整"
+      ],
+      "alerts": [
+        "這個登入連結並不完整請返回登入頁並索取新連結。返回登入"
+      ],
+      "uncontainedOverflow": [],
+      "expectedAuthError": true
+    },
+    {
+      "requested": "/auth/reset-password",
+      "resolved": "/auth/reset-password",
+      "role": "visitor",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "設定新密碼",
+        "這個登入連結並不完整"
+      ],
+      "alerts": [
+        "這個登入連結並不完整請返回登入頁並索取新連結。返回登入"
+      ],
+      "uncontainedOverflow": [],
+      "expectedAuthError": true
+    },
+    {
+      "requested": "/auth/reset-password",
+      "resolved": "/auth/reset-password",
+      "role": "visitor",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "設定新密碼",
+        "這個登入連結並不完整"
+      ],
+      "alerts": [
+        "這個登入連結並不完整請返回登入頁並索取新連結。返回登入"
+      ],
+      "uncontainedOverflow": [],
+      "expectedAuthError": true
+    },
+    {
+      "requested": "/brand",
+      "resolved": "/brand",
+      "role": "brand",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "茶日和 · 品牌工作區（示例）"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/brand",
+      "resolved": "/brand",
+      "role": "brand",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "茶日和 · 品牌工作區（示例）"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/brand/auth/callback",
+      "resolved": "/brand/auth/callback",
+      "role": "visitor",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 390,
+      "headings": [
+        "登入失敗，請重新索取連結。"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/brand/auth/callback",
+      "resolved": "/brand/auth/callback",
+      "role": "visitor",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "headings": [
+        "登入失敗，請重新索取連結。"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/brand/login",
+      "resolved": "/brand/login",
+      "role": "visitor",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 390,
+      "headings": [
+        "品牌登入"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/brand/login",
+      "resolved": "/brand/login",
+      "role": "visitor",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "headings": [
+        "品牌登入"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/brand/missions",
+      "resolved": "/brand/missions",
+      "role": "brand",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "任務"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/brand/missions",
+      "resolved": "/brand/missions",
+      "role": "brand",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "任務"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/brand/missions/00000000-0000-4000-8000-000000000022",
+      "resolved": "/brand/missions/00000000-0000-4000-8000-000000000022",
+      "role": "brand",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "週末散步：發現社區小店",
+        "基本",
+        "獎勵",
+        "名額與期限",
+        "簡介"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/brand/missions/00000000-0000-4000-8000-000000000022",
+      "resolved": "/brand/missions/00000000-0000-4000-8000-000000000022",
+      "role": "brand",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "週末散步：發現社區小店",
+        "基本",
+        "獎勵",
+        "名額與期限",
+        "簡介"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/brand/missions/new",
+      "resolved": "/brand/missions/new",
+      "role": "brand",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "新任務",
+        "基本",
+        "獎勵",
+        "名額與期限",
+        "簡介"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/brand/missions/new",
+      "resolved": "/brand/missions/new",
+      "role": "brand",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "新任務",
+        "基本",
+        "獎勵",
+        "名額與期限",
+        "簡介"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/brand/resources",
+      "resolved": "/brand/resources",
+      "role": "brand",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "資源中心"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/brand/resources",
+      "resolved": "/brand/resources",
+      "role": "brand",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "資源中心"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/brand/resources/creator-notes",
+      "resolved": "/brand/resources/creator-notes",
+      "role": "brand",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "創作小札：留住真實感",
+        "給今天的創作者"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/brand/resources/creator-notes",
+      "resolved": "/brand/resources/creator-notes",
+      "role": "brand",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "創作小札：留住真實感",
+        "給今天的創作者"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/brands",
+      "resolved": "/brands",
+      "role": "visitor",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "讓好內容，遇上對的創作者。",
+        "把一個真實體驗，拍成你的故事。",
+        "不用先學會介面，先說出你的想法。",
+        "從一件你喜歡的事開始",
+        "按自己的節奏，也能慢慢發光。"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/brands",
+      "resolved": "/brands",
+      "role": "visitor",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "讓好內容，遇上對的創作者。",
+        "把一個真實體驗，拍成你的故事。",
+        "不用先學會介面，先說出你的想法。",
+        "從一件你喜歡的事開始",
+        "按自己的節奏，也能慢慢發光。"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/campaigns",
+      "resolved": "/campaigns",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "挑戰",
+        "進行中"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/campaigns",
+      "resolved": "/campaigns",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "挑戰",
+        "進行中"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/campaigns/small-stories",
+      "resolved": "/campaigns/small-stories",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "日常小故事挑戰",
+        "完成獎勵 · 名次獎品",
+        "任務"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/campaigns/small-stories",
+      "resolved": "/campaigns/small-stories",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "日常小故事挑戰",
+        "完成獎勵 · 名次獎品",
+        "任務"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/connections",
+      "resolved": "/connections",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "已連接帳號",
+        "Instagram",
+        "Google Drive",
+        "TikTok",
+        "YouTube",
+        "Search Console",
+        "Calendar",
+        "Gmail",
+        "Telegram"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/connections",
+      "resolved": "/connections",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "已連接帳號",
+        "Instagram",
+        "Google Drive",
+        "TikTok",
+        "YouTube",
+        "Search Console",
+        "Calendar",
+        "Gmail",
+        "Telegram"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/contact",
+      "resolved": "/contact",
+      "role": "visitor",
+      "fixture": "normal",
+      "width": 320,
+      "scrollWidth": 314,
+      "headings": [
+        "傾下你嘅下一步.",
+        "品牌查詢"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/contact",
+      "resolved": "/contact",
+      "role": "visitor",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "傾下你嘅下一步.",
+        "品牌查詢"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/contact",
+      "resolved": "/contact",
+      "role": "visitor",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "傾下你嘅下一步.",
+        "品牌查詢"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/creators",
+      "resolved": "/creators",
+      "role": "visitor",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "你的下一個靈感，值得被看見。",
+        "把一個真實體驗，拍成你的故事。",
+        "不用先學會介面，先說出你的想法。",
+        "從一件你喜歡的事開始",
+        "按自己的節奏，也能慢慢發光。"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/creators",
+      "resolved": "/creators",
+      "role": "visitor",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "你的下一個靈感，值得被看見。",
+        "把一個真實體驗，拍成你的故事。",
+        "不用先學會介面，先說出你的想法。",
+        "從一件你喜歡的事開始",
+        "按自己的節奏，也能慢慢發光。"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/earn",
+      "resolved": "/earn",
+      "role": "visitor",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "你嘅創作，變收入。",
+        "一個市集，三個子產品。",
+        "申請、通過、創作、收錢。",
+        "八種賺錢方式。",
+        "喺 Adfoplace 開始賺錢。"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/earn",
+      "resolved": "/earn",
+      "role": "visitor",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "你嘅創作，變收入。",
+        "一個市集，三個子產品。",
+        "申請、通過、創作、收錢。",
+        "八種賺錢方式。",
+        "喺 Adfoplace 開始賺錢。"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/explore",
+      "resolved": "/explore",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "一起開始創作冒險",
+        "選一張任務卡",
+        "把想法聊清楚",
+        "交出可核實的作品",
+        "收下已入帳獎勵",
+        "出發前的小問題"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/explore",
+      "resolved": "/explore",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "一起開始創作冒險",
+        "選一張任務卡",
+        "把想法聊清楚",
+        "交出可核實的作品",
+        "收下已入帳獎勵",
+        "出發前的小問題"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/guide",
+      "resolved": "/guide",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "學院",
+        "快速指南",
+        "攻略庫",
+        "創作者學院"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/guide",
+      "resolved": "/guide",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "學院",
+        "快速指南",
+        "攻略庫",
+        "創作者學院"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/guide/doc/start-here",
+      "resolved": "/guide/doc/start-here",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "第一個任務怎樣開始？",
+        "今天的小練習"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/guide/doc/start-here",
+      "resolved": "/guide/doc/start-here",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "第一個任務怎樣開始？",
+        "今天的小練習"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/guide/track/first-story",
+      "resolved": "/guide/track/first-story",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "把真實體驗拍成故事",
+        "今天的小練習"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/guide/track/first-story",
+      "resolved": "/guide/track/first-story",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "把真實體驗拍成故事",
+        "今天的小練習"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/home",
+      "resolved": "/home",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 320,
+      "scrollWidth": 314,
+      "headings": [
+        "今天，想創作些甚麼？",
+        "不知道從哪開始？挑一張卡"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/home",
+      "resolved": "/home",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "今天，想創作些甚麼？",
+        "不知道從哪開始？挑一張卡"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/home",
+      "resolved": "/home",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 430,
+      "scrollWidth": 424,
+      "headings": [
+        "今天，想創作些甚麼？",
+        "不知道從哪開始？挑一張卡"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/home",
+      "resolved": "/home",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 768,
+      "scrollWidth": 762,
+      "headings": [
+        "今天，想創作些甚麼？",
+        "不知道從哪開始？挑一張卡"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/home",
+      "resolved": "/home",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 1024,
+      "scrollWidth": 1018,
+      "headings": [
+        "今天，想創作些甚麼？",
+        "不知道從哪開始？挑一張卡"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/home",
+      "resolved": "/home",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "今天，想創作些甚麼？",
+        "不知道從哪開始？挑一張卡"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/legal/privacy",
+      "resolved": "/legal/privacy",
+      "role": "visitor",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "私隱政策",
+        "資料收集",
+        "資料使用",
+        "資料保護",
+        "查閱及更正",
+        "您的選擇權"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/legal/privacy",
+      "resolved": "/legal/privacy",
+      "role": "visitor",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "私隱政策",
+        "資料收集",
+        "資料使用",
+        "資料保護",
+        "查閱及更正",
+        "您的選擇權"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/legal/terms",
+      "resolved": "/legal/terms",
+      "role": "visitor",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "條款及細則",
+        "會員資格",
+        "積分賺取",
+        "積分有效期",
+        "獎賞兌換",
+        "一般條款",
+        "公平使用"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/legal/terms",
+      "resolved": "/legal/terms",
+      "role": "visitor",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "條款及細則",
+        "會員資格",
+        "積分賺取",
+        "積分有效期",
+        "獎賞兌換",
+        "一般條款",
+        "公平使用"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/login",
+      "resolved": "/login",
+      "role": "visitor",
+      "fixture": "normal",
+      "width": 320,
+      "scrollWidth": 314,
+      "headings": [
+        "開始你的 KOCmax 旅程",
+        "用密碼登入"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/login",
+      "resolved": "/login",
+      "role": "visitor",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "開始你的 KOCmax 旅程",
+        "用密碼登入"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/login",
+      "resolved": "/login",
+      "role": "visitor",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "開始你的 KOCmax 旅程",
+        "用密碼登入"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/match",
+      "resolved": "/match",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        " 今日整乜好？"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/match",
+      "resolved": "/match",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        " 今日整乜好？"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/mission",
+      "resolved": "/mission",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "限時任務",
+        "所有任務"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/mission",
+      "resolved": "/mission",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "限時任務",
+        "所有任務"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/mission/tea-story",
+      "resolved": "/mission/tea-story",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "一杯茶的日常故事",
+        "一杯茶的日常故事"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/mission/tea-story",
+      "resolved": "/mission/tea-story",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "一杯茶的日常故事",
+        "一杯茶的日常故事"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/more",
+      "resolved": "/more",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "更多"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/more",
+      "resolved": "/more",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "更多"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/my",
+      "resolved": "/my",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "我的任務",
+        "進行中"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/my",
+      "resolved": "/my",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "我的任務",
+        "進行中"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/my/00000000-0000-4000-8000-000000000031",
+      "resolved": "/my/00000000-0000-4000-8000-000000000031",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 320,
+      "scrollWidth": 314,
+      "headings": [
+        "一杯茶的日常故事",
+        "Publication instructions",
+        "Submit publication proof",
+        "發佈證明記錄"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/my/00000000-0000-4000-8000-000000000031",
+      "resolved": "/my/00000000-0000-4000-8000-000000000031",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "一杯茶的日常故事",
+        "30 秒試飲短片",
+        "版本記錄"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/my/00000000-0000-4000-8000-000000000031",
+      "resolved": "/my/00000000-0000-4000-8000-000000000031",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 430,
+      "scrollWidth": 424,
+      "headings": [
+        "一杯茶的日常故事",
+        "Publication instructions",
+        "Submit publication proof",
+        "發佈證明記錄"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/my/00000000-0000-4000-8000-000000000031",
+      "resolved": "/my/00000000-0000-4000-8000-000000000031",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 768,
+      "scrollWidth": 762,
+      "headings": [
+        "一杯茶的日常故事",
+        "Publication instructions",
+        "Submit publication proof",
+        "發佈證明記錄"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/my/00000000-0000-4000-8000-000000000031",
+      "resolved": "/my/00000000-0000-4000-8000-000000000031",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 1024,
+      "scrollWidth": 1018,
+      "headings": [
+        "一杯茶的日常故事",
+        "Publication instructions",
+        "Submit publication proof",
+        "發佈證明記錄"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/my/00000000-0000-4000-8000-000000000031",
+      "resolved": "/my/00000000-0000-4000-8000-000000000031",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "一杯茶的日常故事",
+        "30 秒試飲短片",
+        "版本記錄"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/news",
+      "resolved": "/news",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "資訊"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/news",
+      "resolved": "/news",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "資訊"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/news/creator-notes",
+      "resolved": "/news/creator-notes",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "創作小札：留住真實感",
+        "給今天的創作者"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/news/creator-notes",
+      "resolved": "/news/creator-notes",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "創作小札：留住真實感",
+        "給今天的創作者"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/notifications",
+      "resolved": "/notifications",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        " 通知"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/notifications",
+      "resolved": "/notifications",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        " 通知"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/onboarding",
+      "resolved": "/onboarding",
+      "role": "new_creator",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "你的成長階梯"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/onboarding",
+      "resolved": "/onboarding",
+      "role": "new_creator",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "你的成長階梯"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/operator",
+      "resolved": "/admin/applications",
+      "role": "workspace_admin",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "申請"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/operator",
+      "resolved": "/admin/applications",
+      "role": "workspace_admin",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "申請"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/operator/creators",
+      "resolved": "/admin/creators",
+      "role": "workspace_admin",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "創作者審核",
+        "作者審核列表"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/operator/creators",
+      "resolved": "/admin/creators",
+      "role": "workspace_admin",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "創作者審核",
+        "作者審核列表"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/operator/creators/00000000-0000-4000-8000-000000000011",
+      "resolved": "/operator/creators/00000000-0000-4000-8000-000000000011",
+      "role": "workspace_admin",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "營運後台",
+        "創作者詳情",
+        "阿晴"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/operator/creators/00000000-0000-4000-8000-000000000011",
+      "resolved": "/operator/creators/00000000-0000-4000-8000-000000000011",
+      "role": "workspace_admin",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "營運後台",
+        "創作者詳情",
+        "阿晴"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/operator/missions/00000000-0000-4000-8000-000000000021",
+      "resolved": "/operator/missions/00000000-0000-4000-8000-000000000021",
+      "role": "workspace_admin",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "營運後台",
+        "一杯茶的日常故事",
+        "Shortlist",
+        "Mission queue"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/operator/missions/00000000-0000-4000-8000-000000000021",
+      "resolved": "/operator/missions/00000000-0000-4000-8000-000000000021",
+      "role": "workspace_admin",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "營運後台",
+        "一杯茶的日常故事",
+        "Shortlist",
+        "Mission queue"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/packages",
+      "resolved": "/packages",
+      "role": "visitor",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "揀啱你嘅方案.",
+        "每個格式，準備即開即用",
+        "實戰級服務，整理成可重複嘅創作者流程。",
+        "需要客製方案？"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/packages",
+      "resolved": "/packages",
+      "role": "visitor",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "揀啱你嘅方案.",
+        "每個格式，準備即開即用",
+        "實戰級服務，整理成可重複嘅創作者流程。",
+        "需要客製方案？"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/passport",
+      "resolved": "/passport",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "阿晴",
+        "創作者評分",
+        "徽章",
+        "Social trust",
+        "公開護照"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/passport",
+      "resolved": "/passport",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "阿晴",
+        "創作者評分",
+        "徽章",
+        "Social trust",
+        "公開護照"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/passport/local-public-example",
+      "resolved": "/passport/local-public-example",
+      "role": "visitor",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 390,
+      "headings": [
+        "阿晴（公開示例）",
+        "Creator scores",
+        "Trust badges"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/passport/local-public-example",
+      "resolved": "/passport/local-public-example",
+      "role": "visitor",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "headings": [
+        "阿晴（公開示例）",
+        "Creator scores",
+        "Trust badges"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/playbooks",
+      "resolved": "/playbooks",
+      "role": "visitor",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "創作者 Playbooks.",
+        "揀返一份啱你行業嘅打法。",
+        "把實戰洞察，整理成可執行 Playbook。",
+        "想要為品牌度身訂造嘅 Playbook？"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/playbooks",
+      "resolved": "/playbooks",
+      "role": "visitor",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "創作者 Playbooks.",
+        "揀返一份啱你行業嘅打法。",
+        "把實戰洞察，整理成可執行 Playbook。",
+        "想要為品牌度身訂造嘅 Playbook？"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/privacy",
+      "resolved": "/legal/privacy",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "私隱政策",
+        "資料收集",
+        "資料使用",
+        "資料保護",
+        "查閱及更正",
+        "您的選擇權"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/privacy",
+      "resolved": "/legal/privacy",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "私隱政策",
+        "資料收集",
+        "資料使用",
+        "資料保護",
+        "查閱及更正",
+        "您的選擇權"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/profile",
+      "resolved": "/profile",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 320,
+      "scrollWidth": 314,
+      "headings": [
+        "阿晴",
+        "內容範疇",
+        "社交帳號",
+        "創作者媒體",
+        "我的邀請碼",
+        "你的資料及帳戶"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/profile",
+      "resolved": "/profile",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "阿晴",
+        "內容範疇",
+        "社交帳號",
+        "創作者媒體",
+        "我的邀請碼",
+        "你的資料及帳戶"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/profile",
+      "resolved": "/profile",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "阿晴",
+        "內容範疇",
+        "社交帳號",
+        "創作者媒體",
+        "我的邀請碼",
+        "你的資料及帳戶"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/redemption",
+      "resolved": "/redemption",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 320,
+      "scrollWidth": 314,
+      "headings": [
+        "積分兌換"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/redemption",
+      "resolved": "/redemption",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "積分兌換"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/redemption",
+      "resolved": "/redemption",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 430,
+      "scrollWidth": 424,
+      "headings": [
+        "積分兌換"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/redemption",
+      "resolved": "/redemption",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 768,
+      "scrollWidth": 762,
+      "headings": [
+        "積分兌換"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/redemption",
+      "resolved": "/redemption",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 1024,
+      "scrollWidth": 1018,
+      "headings": [
+        "積分兌換"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/redemption",
+      "resolved": "/redemption",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "積分兌換"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/redemption/history",
+      "resolved": "/redemption/history",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "兌換記錄"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/redemption/history",
+      "resolved": "/redemption/history",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "兌換記錄"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/stories",
+      "resolved": "/stories",
+      "role": "visitor",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "成績說話.",
+        "一張一張，講成績",
+        "成為下一個案例",
+        "想要同樣嘅成績？"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/stories",
+      "resolved": "/stories",
+      "role": "visitor",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "成績說話.",
+        "一張一張，講成績",
+        "成為下一個案例",
+        "想要同樣嘅成績？"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/studio",
+      "resolved": "/studio",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "每個主題，一段自己的討論",
+        "不知道從哪開始？挑一張卡"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/studio",
+      "resolved": "/studio",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "每個主題，一段自己的討論",
+        "不知道從哪開始？挑一張卡"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/tnc",
+      "resolved": "/legal/terms",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "條款及細則",
+        "會員資格",
+        "積分賺取",
+        "積分有效期",
+        "獎賞兌換",
+        "一般條款",
+        "公平使用"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/tnc",
+      "resolved": "/legal/terms",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "條款及細則",
+        "會員資格",
+        "積分賺取",
+        "積分有效期",
+        "獎賞兌換",
+        "一般條款",
+        "公平使用"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/wallet",
+      "resolved": "/wallet",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "錢包",
+        "積分記錄",
+        "收益錢包"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/wallet",
+      "resolved": "/wallet",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "錢包",
+        "積分記錄",
+        "收益錢包"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/wallet/earnings",
+      "resolved": "/wallet",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 390,
+      "scrollWidth": 384,
+      "headings": [
+        "錢包",
+        "積分記錄",
+        "收益錢包"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    },
+    {
+      "requested": "/wallet/earnings",
+      "resolved": "/wallet",
+      "role": "creator",
+      "fixture": "normal",
+      "width": 1440,
+      "scrollWidth": 1434,
+      "headings": [
+        "錢包",
+        "積分記錄",
+        "收益錢包"
+      ],
+      "alerts": [],
+      "uncontainedOverflow": [],
+      "expectedAuthError": false
+    }
+  ]
+}

@@ -33,7 +33,11 @@
     "release:pilot:evaluate": "vite-node --script scripts/release/observer-cli.ts evaluate",
     "test:audit-integration": "node scripts/audit/run-integration.mjs",
     "test:pilot-browser": "node scripts/audit/run-browser.mjs",
-    "test:legacy-owned-integration": "node scripts/audit/run-legacy-integration.mjs"
+    "test:legacy-owned-integration": "node scripts/audit/run-legacy-integration.mjs",
+    "pilot:candidate:write": "vite-node --script scripts/integrations/pilotCandidateCli.ts write",
+    "pilot:candidate:check": "vite-node --script scripts/integrations/pilotCandidateCli.ts check",
+    "pilot:candidate:evidence": "vite-node --script scripts/integrations/pilotCandidateCli.ts evidence",
+    "pilot:candidate:gates": "vite-node --script scripts/integrations/pilotCandidateCli.ts gates"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.14",
@@ -43,6 +47,7 @@
     "clsx": "^2.1.1",
     "hono": "^4.6.0",
     "lucide-react": "^1.18.0",
+    "pdfjs-dist": "6.4.299",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-markdown": "^10.1.0",

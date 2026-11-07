@@ -18,7 +18,7 @@ beforeEach(() => {
 });
 
 it("initializes the production activation analytics transport before rendering", async () => {
-  await import("./main");
+  await (await import("./main")).application;
   expect(mocks.initialize).toHaveBeenCalledOnce();
   expect(mocks.initialize.mock.invocationCallOrder[0]).toBeLessThan(mocks.render.mock.invocationCallOrder[0]);
 });

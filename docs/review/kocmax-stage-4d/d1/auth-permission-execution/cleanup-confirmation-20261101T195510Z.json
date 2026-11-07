@@ -1,0 +1,60 @@
+{
+  "status": "CONFIRMATION_EXPIRED_CLEANUP_NOT_EXECUTED",
+  "projectRef": "mhkoayftiuojxlrkollf",
+  "branch": "codex/kocmax-studio-stages-1-2",
+  "head": "5c60020091e8e6fee934b61c498bf7518944c433",
+  "userRequest": "再發一次",
+  "sqlFile": "cleanup-sessions-and-draft.recovery.sql",
+  "sqlSha256": "52fb72281b45070a56eba878c8f8e6e5b768b7c9e69538fdf840393826b5fe5e",
+  "preflight": {
+    "checkedAtUtc": "2026-11-01T19:41:09.850075Z",
+    "transactionReadOnly": true,
+    "currentUser": "postgres",
+    "exactSessionIdsMatched": true,
+    "ownedSessions": 30,
+    "ownedRefreshTokens": 33,
+    "refreshTokenChildren": 33,
+    "amrClaimChildren": 30,
+    "privateZeroRewardDrafts": 1,
+    "retainedBannedAuthUsers": 9,
+    "retainedDeletedCreators": 9,
+    "inactiveScopedRolesRevision2": 4,
+    "inactiveStaff": 4,
+    "inactiveBrandMemberships": 5,
+    "activeAccessRows": 0
+  },
+  "submission": {
+    "connector": "Supabase execute_sql",
+    "linkId": "link_6ac09f20f7c081919bd4a70eb13d772c",
+    "status": "expired",
+    "errorCode": "INVALID_ARGUMENT",
+    "message": "This confirmation expired after 2 minutes. Call `execute_sql` again to get a new confirmation.",
+    "automaticallyResubmittedAfterExpiry": false,
+    "confirmationCardVisibility": "NOT_OBSERVED"
+  },
+  "independentReadback": {
+    "checkedAtUtc": "2026-11-01T19:55:10.897698Z",
+    "transactionReadOnly": true,
+    "sessionsRemaining": 30,
+    "refreshTokensRemaining": 33,
+    "amrClaimsRemaining": 30,
+    "privateZeroRewardDraftRemaining": 1,
+    "retainedBannedAuthUsers": 9,
+    "retainedDeletedCreators": 9,
+    "inactiveScopedRolesRevision2": 4,
+    "inactiveStaff": 4,
+    "inactiveBrandMemberships": 5,
+    "activeAccessRows": 0
+  },
+  "limitations": {
+    "cleanupComplete": false,
+    "refreshTokenReplay": "NOT_VERIFIED_PREVIOUS_BARRIER_TIMEOUT_RECEIPTS_PRESERVED",
+    "nonPilotFingerprint": "NOT_RERUN_THIS_ATTEMPT_LAST_FULL_CHECK_20261101T183048Z",
+    "noQueryPending": true,
+    "noNewKeyOrHelperRequired": true,
+    "nextStep": "Clarify confirmation-card visibility before any further resubmission; do not bypass connector confirmation."
+  },
+  "productionDeployments": 0,
+  "instagramConnections": 0,
+  "googleDriveConnections": 0
+}

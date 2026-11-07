@@ -1,8 +1,10 @@
 import { Navigate, createFileRoute } from "@tanstack/react-router";
 import { ADMIN_NAV_GROUPS } from "@/components/admin/adminNavItems";
 import { canOpenStaffPage, useStaffAccess } from "@/components/admin/StaffAccessContext";
+import { STUDIO_SHELL } from "@/lib/features";
+import { StudioStaffHome } from "@/components/studio/StudioStaffHome";
 
-export const Route = createFileRoute("/admin/")({ component: AdminLanding });
+export const Route = createFileRoute("/admin/")({ component: STUDIO_SHELL ? StudioStaffHome : AdminLanding });
 
 /** First navigable page the signed-in role may open (Insights for most roles). */
 export function firstStaffPage(access: ReturnType<typeof useStaffAccess>): string {

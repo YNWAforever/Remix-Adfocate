@@ -2,6 +2,7 @@ import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
 import type { QueryClient } from "@tanstack/react-query";
 import { I18nProvider, useI18n } from "@/lib/i18n";
 import { Toaster } from "@/components/ui/sonner";
+import { StudioTheme } from "@/components/studio/StudioTheme";
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   component: RootComponent,
@@ -11,6 +12,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 function RootComponent() {
   return (
     <I18nProvider>
+      <StudioTheme />
       <Outlet />
       <Toaster />
     </I18nProvider>

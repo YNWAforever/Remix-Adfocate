@@ -1,0 +1,13 @@
+{
+  "mode": "LOCAL_SQL_WITH_FAKE_AUTH_ONLY",
+  "result": "LOCAL_FIXTURE_SEED_AND_REVOCATION_PASSED",
+  "checks": [
+    "exact seed creates 2 workspaces, 4 staff, 5 memberships and 4 audited roles without bootstrapping creators or rewards",
+    "second seed rejects collisions without changing rows or granting twice",
+    "reviewer revocation advances 1 to 2 and retains the required audit",
+    "stale role revocation rejects without a duplicate audit"
+  ],
+  "networkAttempts": 0,
+  "realAuthAccountsCreated": 0,
+  "recordedAtUtc": "2026-11-01T08:26:47.551Z"
+}

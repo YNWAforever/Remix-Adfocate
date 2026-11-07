@@ -1,0 +1,421 @@
+{
+  "mode": "LOCAL_EMPTY_PROJECTION_NOT_LIVE_SCHEMA",
+  "payloadSha256": "c879b204d9b2928c6426b641262096fff23ef1a1b49b33a8f2003afd5ee9dbff",
+  "before": {
+    "tables": 39,
+    "columns": 400,
+    "functions": 38,
+    "policies": 54
+  },
+  "after": {
+    "tables": 94,
+    "columns": 987,
+    "functions": 190,
+    "policies": 86,
+    "sequences": []
+  },
+  "newTables": [
+    "private.integration_commands",
+    "private.integration_credentials",
+    "private.integration_oauth_states",
+    "private.integration_pilot_bindings",
+    "private.integration_pilot_evidence",
+    "private.integration_pilot_grants",
+    "private.integration_pilot_maintenance",
+    "private.integration_pilot_notices",
+    "private.integration_pilot_oauth",
+    "private.integration_pilot_tombstones",
+    "private.integration_refresh_leases",
+    "private.integration_use_permits",
+    "private.mission_draft_submission_idempotency",
+    "private.mission_workflow_notification_dedupe",
+    "public.academy_lessons",
+    "public.assistant_requests",
+    "public.creator_consents",
+    "public.creator_lesson_progress",
+    "public.integration_connections",
+    "public.integration_events",
+    "public.integration_resources",
+    "public.integration_snapshots",
+    "public.integration_sync_runs",
+    "public.legacy_evidence_corrections",
+    "public.mission_completion_decisions",
+    "public.mission_deliverable_requirements",
+    "public.mission_deliverable_templates",
+    "public.mission_draft_assets",
+    "public.mission_draft_versions",
+    "public.mission_fulfillments",
+    "public.mission_pending_rewards",
+    "public.mission_publication_instructions",
+    "public.mission_publication_proof_assets",
+    "public.mission_publication_proof_attempts",
+    "public.mission_publication_proof_review_items",
+    "public.mission_publication_proof_reviews",
+    "public.mission_review_items",
+    "public.mission_review_rounds",
+    "public.mission_revision_grants",
+    "public.mission_reward_contracts",
+    "public.mission_work_items",
+    "public.mission_workflow_events",
+    "public.mission_workflows",
+    "public.mission_working_drafts",
+    "public.operator_crm_command_receipts",
+    "public.staff_access_audit",
+    "public.staff_access_commands",
+    "public.staff_platform_roles",
+    "public.staff_workspace_roles",
+    "public.studio_badges",
+    "public.studio_briefs",
+    "public.studio_commands",
+    "public.studio_shares",
+    "public.studio_sources",
+    "public.studio_threads"
+  ],
+  "existingChanges": [
+    {
+      "table": "public.academy_content",
+      "aclChanged": true,
+      "rlsBefore": true,
+      "rlsAfter": true,
+      "addedColumns": []
+    },
+    {
+      "table": "public.assistant_conversations",
+      "aclChanged": true,
+      "rlsBefore": true,
+      "rlsAfter": true,
+      "addedColumns": []
+    },
+    {
+      "table": "public.assistant_messages",
+      "aclChanged": true,
+      "rlsBefore": true,
+      "rlsAfter": true,
+      "addedColumns": [
+        {
+          "name": "request_id",
+          "type": "uuid",
+          "default": null
+        },
+        {
+          "name": "turn_order",
+          "type": "smallint",
+          "default": "0"
+        }
+      ]
+    },
+    {
+      "table": "public.brand_invites",
+      "aclChanged": true,
+      "rlsBefore": true,
+      "rlsAfter": true,
+      "addedColumns": []
+    },
+    {
+      "table": "public.brand_users",
+      "aclChanged": true,
+      "rlsBefore": true,
+      "rlsAfter": true,
+      "addedColumns": []
+    },
+    {
+      "table": "public.campaign_missions",
+      "aclChanged": true,
+      "rlsBefore": true,
+      "rlsAfter": true,
+      "addedColumns": []
+    },
+    {
+      "table": "public.campaign_participants",
+      "aclChanged": true,
+      "rlsBefore": true,
+      "rlsAfter": true,
+      "addedColumns": []
+    },
+    {
+      "table": "public.campaign_rank_snapshots",
+      "aclChanged": true,
+      "rlsBefore": true,
+      "rlsAfter": true,
+      "addedColumns": []
+    },
+    {
+      "table": "public.campaigns",
+      "aclChanged": true,
+      "rlsBefore": true,
+      "rlsAfter": true,
+      "addedColumns": []
+    },
+    {
+      "table": "public.content_categories",
+      "aclChanged": true,
+      "rlsBefore": true,
+      "rlsAfter": true,
+      "addedColumns": []
+    },
+    {
+      "table": "public.content_item_tags",
+      "aclChanged": true,
+      "rlsBefore": true,
+      "rlsAfter": true,
+      "addedColumns": []
+    },
+    {
+      "table": "public.content_items",
+      "aclChanged": true,
+      "rlsBefore": true,
+      "rlsAfter": true,
+      "addedColumns": []
+    },
+    {
+      "table": "public.content_tags",
+      "aclChanged": true,
+      "rlsBefore": true,
+      "rlsAfter": true,
+      "addedColumns": []
+    },
+    {
+      "table": "public.creator_portfolio_links",
+      "aclChanged": true,
+      "rlsBefore": true,
+      "rlsAfter": true,
+      "addedColumns": []
+    },
+    {
+      "table": "public.creator_public_passports",
+      "aclChanged": true,
+      "rlsBefore": true,
+      "rlsAfter": true,
+      "addedColumns": []
+    },
+    {
+      "table": "public.creator_public_profile_snapshots",
+      "aclChanged": true,
+      "rlsBefore": true,
+      "rlsAfter": true,
+      "addedColumns": []
+    },
+    {
+      "table": "public.creator_review_notes",
+      "aclChanged": true,
+      "rlsBefore": true,
+      "rlsAfter": true,
+      "addedColumns": []
+    },
+    {
+      "table": "public.creator_review_statuses",
+      "aclChanged": true,
+      "rlsBefore": true,
+      "rlsAfter": true,
+      "addedColumns": [
+        {
+          "name": "revision",
+          "type": "bigint",
+          "default": "0"
+        }
+      ]
+    },
+    {
+      "table": "public.creator_social_accounts",
+      "aclChanged": true,
+      "rlsBefore": true,
+      "rlsAfter": true,
+      "addedColumns": []
+    },
+    {
+      "table": "public.creator_social_scan_snapshots",
+      "aclChanged": true,
+      "rlsBefore": true,
+      "rlsAfter": true,
+      "addedColumns": []
+    },
+    {
+      "table": "public.creators",
+      "aclChanged": true,
+      "rlsBefore": true,
+      "rlsAfter": true,
+      "addedColumns": [
+        {
+          "name": "deleted_at",
+          "type": "timestamp with time zone",
+          "default": null
+        }
+      ]
+    },
+    {
+      "table": "public.earnings_balances",
+      "aclChanged": true,
+      "rlsBefore": true,
+      "rlsAfter": true,
+      "addedColumns": []
+    },
+    {
+      "table": "public.earnings_transactions",
+      "aclChanged": true,
+      "rlsBefore": true,
+      "rlsAfter": true,
+      "addedColumns": []
+    },
+    {
+      "table": "public.kb_chunks",
+      "aclChanged": true,
+      "rlsBefore": true,
+      "rlsAfter": true,
+      "addedColumns": []
+    },
+    {
+      "table": "public.kb_documents",
+      "aclChanged": true,
+      "rlsBefore": true,
+      "rlsAfter": true,
+      "addedColumns": []
+    },
+    {
+      "table": "public.mission_shortlists",
+      "aclChanged": true,
+      "rlsBefore": true,
+      "rlsAfter": true,
+      "addedColumns": []
+    },
+    {
+      "table": "public.mission_submissions",
+      "aclChanged": true,
+      "rlsBefore": true,
+      "rlsAfter": true,
+      "addedColumns": [
+        {
+          "name": "evidence_revision",
+          "type": "bigint",
+          "default": "0"
+        }
+      ]
+    },
+    {
+      "table": "public.missions",
+      "aclChanged": true,
+      "rlsBefore": true,
+      "rlsAfter": true,
+      "addedColumns": [
+        {
+          "name": "creator_workflow_mode",
+          "type": "text",
+          "default": "'legacy'::text"
+        },
+        {
+          "name": "fulfillment_required",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "revision_limit",
+          "type": "smallint",
+          "default": "2"
+        },
+        {
+          "name": "review_sla_hours",
+          "type": "integer",
+          "default": "48"
+        },
+        {
+          "name": "revision_response_hours",
+          "type": "integer",
+          "default": "48"
+        },
+        {
+          "name": "public_preview_enabled",
+          "type": "boolean",
+          "default": "false"
+        }
+      ]
+    },
+    {
+      "table": "public.notifications",
+      "aclChanged": true,
+      "rlsBefore": true,
+      "rlsAfter": true,
+      "addedColumns": []
+    },
+    {
+      "table": "public.operator_audit_events",
+      "aclChanged": true,
+      "rlsBefore": true,
+      "rlsAfter": true,
+      "addedColumns": []
+    },
+    {
+      "table": "public.point_balances",
+      "aclChanged": true,
+      "rlsBefore": true,
+      "rlsAfter": true,
+      "addedColumns": []
+    },
+    {
+      "table": "public.point_transactions",
+      "aclChanged": true,
+      "rlsBefore": true,
+      "rlsAfter": true,
+      "addedColumns": []
+    },
+    {
+      "table": "public.redemption_codes",
+      "aclChanged": true,
+      "rlsBefore": true,
+      "rlsAfter": true,
+      "addedColumns": []
+    },
+    {
+      "table": "public.redemption_gifts",
+      "aclChanged": true,
+      "rlsBefore": true,
+      "rlsAfter": true,
+      "addedColumns": []
+    },
+    {
+      "table": "public.redemptions",
+      "aclChanged": true,
+      "rlsBefore": true,
+      "rlsAfter": true,
+      "addedColumns": [
+        {
+          "name": "client_request_id",
+          "type": "uuid",
+          "default": null
+        }
+      ]
+    },
+    {
+      "table": "public.staff_users",
+      "aclChanged": true,
+      "rlsBefore": true,
+      "rlsAfter": true,
+      "addedColumns": []
+    },
+    {
+      "table": "public.workspace_budget_transactions",
+      "aclChanged": true,
+      "rlsBefore": true,
+      "rlsAfter": true,
+      "addedColumns": []
+    },
+    {
+      "table": "public.workspace_budgets",
+      "aclChanged": true,
+      "rlsBefore": true,
+      "rlsAfter": true,
+      "addedColumns": []
+    },
+    {
+      "table": "public.workspaces",
+      "aclChanged": true,
+      "rlsBefore": true,
+      "rlsAfter": true,
+      "addedColumns": [
+        {
+          "name": "reward_processing_window_days",
+          "type": "smallint",
+          "default": null
+        }
+      ]
+    }
+  ]
+}

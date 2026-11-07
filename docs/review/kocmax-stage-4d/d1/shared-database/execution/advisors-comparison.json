@@ -1,0 +1,2815 @@
+{
+  "summary": {
+    "Security": {
+      "before": [
+        {
+          "name": "rls_enabled_no_policy",
+          "level": "INFO",
+          "count": 7
+        },
+        {
+          "name": "function_search_path_mutable",
+          "level": "WARN",
+          "count": 2
+        },
+        {
+          "name": "extension_in_public",
+          "level": "WARN",
+          "count": 1
+        },
+        {
+          "name": "anon_security_definer_function_executable",
+          "level": "WARN",
+          "count": 5
+        },
+        {
+          "name": "authenticated_security_definer_function_executable",
+          "level": "WARN",
+          "count": 10
+        },
+        {
+          "name": "auth_leaked_password_protection",
+          "level": "WARN",
+          "count": 1
+        }
+      ],
+      "after": [
+        {
+          "name": "rls_enabled_no_policy",
+          "level": "INFO",
+          "count": 28
+        },
+        {
+          "name": "function_search_path_mutable",
+          "level": "WARN",
+          "count": 2
+        },
+        {
+          "name": "extension_in_public",
+          "level": "WARN",
+          "count": 1
+        },
+        {
+          "name": "anon_security_definer_function_executable",
+          "level": "WARN",
+          "count": 5
+        },
+        {
+          "name": "authenticated_security_definer_function_executable",
+          "level": "WARN",
+          "count": 19
+        },
+        {
+          "name": "auth_leaked_password_protection",
+          "level": "WARN",
+          "count": 1
+        }
+      ]
+    },
+    "Performance": {
+      "before": [
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "count": 33
+        },
+        {
+          "name": "auth_rls_initplan",
+          "level": "WARN",
+          "count": 43
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "count": 15
+        },
+        {
+          "name": "multiple_permissive_policies",
+          "level": "WARN",
+          "count": 2
+        }
+      ],
+      "after": [
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "count": 121
+        },
+        {
+          "name": "auth_rls_initplan",
+          "level": "WARN",
+          "count": 41
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "count": 77
+        },
+        {
+          "name": "multiple_permissive_policies",
+          "level": "WARN",
+          "count": 2
+        },
+        {
+          "name": "duplicate_index",
+          "level": "WARN",
+          "count": 1
+        }
+      ]
+    }
+  },
+  "differences": {
+    "Security": {
+      "added": [
+        {
+          "name": "rls_enabled_no_policy",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy",
+          "detail": "Table \\`private.integration_commands\\` has RLS enabled, but no policies exist",
+          "metadata": {
+            "name": "integration_commands",
+            "type": "table",
+            "schema": "private"
+          },
+          "observed_at": "2026-10-31T20:19:35.471Z"
+        },
+        {
+          "name": "rls_enabled_no_policy",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy",
+          "detail": "Table \\`private.integration_credentials\\` has RLS enabled, but no policies exist",
+          "metadata": {
+            "name": "integration_credentials",
+            "type": "table",
+            "schema": "private"
+          },
+          "observed_at": "2026-10-31T20:19:35.471Z"
+        },
+        {
+          "name": "rls_enabled_no_policy",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy",
+          "detail": "Table \\`private.integration_oauth_states\\` has RLS enabled, but no policies exist",
+          "metadata": {
+            "name": "integration_oauth_states",
+            "type": "table",
+            "schema": "private"
+          },
+          "observed_at": "2026-10-31T20:19:35.471Z"
+        },
+        {
+          "name": "rls_enabled_no_policy",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy",
+          "detail": "Table \\`private.integration_pilot_bindings\\` has RLS enabled, but no policies exist",
+          "metadata": {
+            "name": "integration_pilot_bindings",
+            "type": "table",
+            "schema": "private"
+          },
+          "observed_at": "2026-10-31T20:19:35.471Z"
+        },
+        {
+          "name": "rls_enabled_no_policy",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy",
+          "detail": "Table \\`private.integration_pilot_evidence\\` has RLS enabled, but no policies exist",
+          "metadata": {
+            "name": "integration_pilot_evidence",
+            "type": "table",
+            "schema": "private"
+          },
+          "observed_at": "2026-10-31T20:19:35.471Z"
+        },
+        {
+          "name": "rls_enabled_no_policy",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy",
+          "detail": "Table \\`private.integration_pilot_grants\\` has RLS enabled, but no policies exist",
+          "metadata": {
+            "name": "integration_pilot_grants",
+            "type": "table",
+            "schema": "private"
+          },
+          "observed_at": "2026-10-31T20:19:35.471Z"
+        },
+        {
+          "name": "rls_enabled_no_policy",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy",
+          "detail": "Table \\`private.integration_pilot_maintenance\\` has RLS enabled, but no policies exist",
+          "metadata": {
+            "name": "integration_pilot_maintenance",
+            "type": "table",
+            "schema": "private"
+          },
+          "observed_at": "2026-10-31T20:19:35.471Z"
+        },
+        {
+          "name": "rls_enabled_no_policy",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy",
+          "detail": "Table \\`private.integration_pilot_notices\\` has RLS enabled, but no policies exist",
+          "metadata": {
+            "name": "integration_pilot_notices",
+            "type": "table",
+            "schema": "private"
+          },
+          "observed_at": "2026-10-31T20:19:35.471Z"
+        },
+        {
+          "name": "rls_enabled_no_policy",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy",
+          "detail": "Table \\`private.integration_pilot_oauth\\` has RLS enabled, but no policies exist",
+          "metadata": {
+            "name": "integration_pilot_oauth",
+            "type": "table",
+            "schema": "private"
+          },
+          "observed_at": "2026-10-31T20:19:35.471Z"
+        },
+        {
+          "name": "rls_enabled_no_policy",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy",
+          "detail": "Table \\`private.integration_pilot_tombstones\\` has RLS enabled, but no policies exist",
+          "metadata": {
+            "name": "integration_pilot_tombstones",
+            "type": "table",
+            "schema": "private"
+          },
+          "observed_at": "2026-10-31T20:19:35.471Z"
+        },
+        {
+          "name": "rls_enabled_no_policy",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy",
+          "detail": "Table \\`private.integration_refresh_leases\\` has RLS enabled, but no policies exist",
+          "metadata": {
+            "name": "integration_refresh_leases",
+            "type": "table",
+            "schema": "private"
+          },
+          "observed_at": "2026-10-31T20:19:35.471Z"
+        },
+        {
+          "name": "rls_enabled_no_policy",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy",
+          "detail": "Table \\`private.integration_use_permits\\` has RLS enabled, but no policies exist",
+          "metadata": {
+            "name": "integration_use_permits",
+            "type": "table",
+            "schema": "private"
+          },
+          "observed_at": "2026-10-31T20:19:35.471Z"
+        },
+        {
+          "name": "rls_enabled_no_policy",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy",
+          "detail": "Table \\`public.legacy_evidence_corrections\\` has RLS enabled, but no policies exist",
+          "metadata": {
+            "name": "legacy_evidence_corrections",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:35.471Z"
+        },
+        {
+          "name": "rls_enabled_no_policy",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy",
+          "detail": "Table \\`public.mission_completion_decisions\\` has RLS enabled, but no policies exist",
+          "metadata": {
+            "name": "mission_completion_decisions",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:35.471Z"
+        },
+        {
+          "name": "rls_enabled_no_policy",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy",
+          "detail": "Table \\`public.mission_pending_rewards\\` has RLS enabled, but no policies exist",
+          "metadata": {
+            "name": "mission_pending_rewards",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:35.471Z"
+        },
+        {
+          "name": "rls_enabled_no_policy",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy",
+          "detail": "Table \\`public.mission_reward_contracts\\` has RLS enabled, but no policies exist",
+          "metadata": {
+            "name": "mission_reward_contracts",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:35.471Z"
+        },
+        {
+          "name": "rls_enabled_no_policy",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy",
+          "detail": "Table \\`public.operator_crm_command_receipts\\` has RLS enabled, but no policies exist",
+          "metadata": {
+            "name": "operator_crm_command_receipts",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:35.471Z"
+        },
+        {
+          "name": "rls_enabled_no_policy",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy",
+          "detail": "Table \\`public.staff_access_audit\\` has RLS enabled, but no policies exist",
+          "metadata": {
+            "name": "staff_access_audit",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:35.471Z"
+        },
+        {
+          "name": "rls_enabled_no_policy",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy",
+          "detail": "Table \\`public.staff_access_commands\\` has RLS enabled, but no policies exist",
+          "metadata": {
+            "name": "staff_access_commands",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:35.471Z"
+        },
+        {
+          "name": "rls_enabled_no_policy",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy",
+          "detail": "Table \\`public.staff_platform_roles\\` has RLS enabled, but no policies exist",
+          "metadata": {
+            "name": "staff_platform_roles",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:35.471Z"
+        },
+        {
+          "name": "rls_enabled_no_policy",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy",
+          "detail": "Table \\`public.staff_workspace_roles\\` has RLS enabled, but no policies exist",
+          "metadata": {
+            "name": "staff_workspace_roles",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:35.471Z"
+        },
+        {
+          "name": "authenticated_security_definer_function_executable",
+          "level": "WARN",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable",
+          "detail": "Function `public.can_read_academy_track(p_track uuid)` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/can_read_academy_track`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+          "metadata": {
+            "name": "can_read_academy_track",
+            "schema": "public",
+            "language": "sql",
+            "arguments": "p_track uuid",
+            "security_definer": true
+          },
+          "observed_at": "2026-10-31T20:19:35.471Z"
+        },
+        {
+          "name": "authenticated_security_definer_function_executable",
+          "level": "WARN",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable",
+          "detail": "Function `public.complete_academy_lesson(p_track uuid, p_lesson uuid, p_version integer)` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/complete_academy_lesson`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+          "metadata": {
+            "name": "complete_academy_lesson",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "p_track uuid, p_lesson uuid, p_version integer",
+            "security_definer": true
+          },
+          "observed_at": "2026-10-31T20:19:35.471Z"
+        },
+        {
+          "name": "authenticated_security_definer_function_executable",
+          "level": "WARN",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable",
+          "detail": "Function `public.create_mission_workflow(p_submission uuid)` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/create_mission_workflow`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+          "metadata": {
+            "name": "create_mission_workflow",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "p_submission uuid",
+            "security_definer": true
+          },
+          "observed_at": "2026-10-31T20:19:35.471Z"
+        },
+        {
+          "name": "authenticated_security_definer_function_executable",
+          "level": "WARN",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable",
+          "detail": "Function `public.get_academy_learning(p_track uuid, p_lang text)` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/get_academy_learning`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+          "metadata": {
+            "name": "get_academy_learning",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "p_track uuid, p_lang text",
+            "security_definer": true
+          },
+          "observed_at": "2026-10-31T20:19:35.471Z"
+        },
+        {
+          "name": "authenticated_security_definer_function_executable",
+          "level": "WARN",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable",
+          "detail": "Function `public.get_assistant_request(p_workspace uuid, p_request uuid)` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/get_assistant_request`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+          "metadata": {
+            "name": "get_assistant_request",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "p_workspace uuid, p_request uuid",
+            "security_definer": true
+          },
+          "observed_at": "2026-10-31T20:19:35.471Z"
+        },
+        {
+          "name": "authenticated_security_definer_function_executable",
+          "level": "WARN",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable",
+          "detail": "Function `public.get_my_mission_reward_handoff(p_submission uuid)` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/get_my_mission_reward_handoff`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+          "metadata": {
+            "name": "get_my_mission_reward_handoff",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "p_submission uuid",
+            "security_definer": true
+          },
+          "observed_at": "2026-10-31T20:19:35.471Z"
+        },
+        {
+          "name": "authenticated_security_definer_function_executable",
+          "level": "WARN",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable",
+          "detail": "Function `public.join_active_mission(p_mission uuid)` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/join_active_mission`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+          "metadata": {
+            "name": "join_active_mission",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "p_mission uuid",
+            "security_definer": true
+          },
+          "observed_at": "2026-10-31T20:19:35.471Z"
+        },
+        {
+          "name": "authenticated_security_definer_function_executable",
+          "level": "WARN",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable",
+          "detail": "Function `public.redeem_gift_with_request(p_gift uuid, p_request_id uuid)` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/redeem_gift_with_request`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+          "metadata": {
+            "name": "redeem_gift_with_request",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "p_gift uuid, p_request_id uuid",
+            "security_definer": true
+          },
+          "observed_at": "2026-10-31T20:19:35.471Z"
+        },
+        {
+          "name": "authenticated_security_definer_function_executable",
+          "level": "WARN",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable",
+          "detail": "Function `public.refresh_mission_workflow_state(p_workflow uuid)` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/refresh_mission_workflow_state`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.",
+          "metadata": {
+            "name": "refresh_mission_workflow_state",
+            "schema": "public",
+            "language": "plpgsql",
+            "arguments": "p_workflow uuid",
+            "security_definer": true
+          },
+          "observed_at": "2026-10-31T20:19:35.471Z"
+        }
+      ],
+      "removed": []
+    },
+    "Performance": {
+      "added": [
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`private.integration_commands\\` has a foreign key \\`integration_commands_connection_id_workspace_id_creator_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "integration_commands",
+            "type": "table",
+            "schema": "private",
+            "fkey_name": "integration_commands_connection_id_workspace_id_creator_id_fkey",
+            "fkey_columns": [
+              7,
+              1,
+              2
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`private.integration_commands\\` has a foreign key \\`integration_commands_creator_id_workspace_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "integration_commands",
+            "type": "table",
+            "schema": "private",
+            "fkey_name": "integration_commands_creator_id_workspace_id_fkey",
+            "fkey_columns": [
+              2,
+              1
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`private.integration_credentials\\` has a foreign key \\`integration_credentials_connection_id_workspace_id_creator_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "integration_credentials",
+            "type": "table",
+            "schema": "private",
+            "fkey_name": "integration_credentials_connection_id_workspace_id_creator_fkey",
+            "fkey_columns": [
+              1,
+              2,
+              3
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`private.integration_pilot_bindings\\` has a foreign key \\`integration_pilot_bindings_creator_id_workspace_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "integration_pilot_bindings",
+            "type": "table",
+            "schema": "private",
+            "fkey_name": "integration_pilot_bindings_creator_id_workspace_id_fkey",
+            "fkey_columns": [
+              4,
+              3
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`private.integration_pilot_bindings\\` has a foreign key \\`integration_pilot_bindings_grant_key_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "integration_pilot_bindings",
+            "type": "table",
+            "schema": "private",
+            "fkey_name": "integration_pilot_bindings_grant_key_fkey",
+            "fkey_columns": [
+              13
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`private.integration_pilot_oauth\\` has a foreign key \\`integration_pilot_oauth_creator_id_workspace_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "integration_pilot_oauth",
+            "type": "table",
+            "schema": "private",
+            "fkey_name": "integration_pilot_oauth_creator_id_workspace_id_fkey",
+            "fkey_columns": [
+              3,
+              2
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`private.integration_refresh_leases\\` has a foreign key \\`integration_refresh_leases_connection_id_workspace_id_crea_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "integration_refresh_leases",
+            "type": "table",
+            "schema": "private",
+            "fkey_name": "integration_refresh_leases_connection_id_workspace_id_crea_fkey",
+            "fkey_columns": [
+              1,
+              2,
+              3
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`private.integration_use_permits\\` has a foreign key \\`integration_use_permits_source_id_workspace_id_creator_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "integration_use_permits",
+            "type": "table",
+            "schema": "private",
+            "fkey_name": "integration_use_permits_source_id_workspace_id_creator_id_fkey",
+            "fkey_columns": [
+              4,
+              2,
+              3
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`private.mission_draft_submission_idempotency\\` has a foreign key \\`mission_draft_submission_idempote_mission_draft_version_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_draft_submission_idempotency",
+            "type": "table",
+            "schema": "private",
+            "fkey_name": "mission_draft_submission_idempote_mission_draft_version_id_fkey",
+            "fkey_columns": [
+              5
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`private.mission_draft_submission_idempotency\\` has a foreign key \\`mission_draft_submission_idempotency_workspace_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_draft_submission_idempotency",
+            "type": "table",
+            "schema": "private",
+            "fkey_name": "mission_draft_submission_idempotency_workspace_id_fkey",
+            "fkey_columns": [
+              2
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.assistant_requests\\` has a foreign key \\`assistant_requests_conversation_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "assistant_requests",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "assistant_requests_conversation_id_fkey",
+            "fkey_columns": [
+              8
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.assistant_requests\\` has a foreign key \\`assistant_requests_workspace_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "assistant_requests",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "assistant_requests_workspace_id_fkey",
+            "fkey_columns": [
+              2
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.creator_consents\\` has a foreign key \\`creator_consents_workspace_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "creator_consents",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "creator_consents_workspace_id_fkey",
+            "fkey_columns": [
+              3
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.integration_connections\\` has a foreign key \\`integration_connections_creator_id_workspace_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "integration_connections",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "integration_connections_creator_id_workspace_id_fkey",
+            "fkey_columns": [
+              3,
+              2
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.integration_events\\` has a foreign key \\`integration_events_connection_id_workspace_id_creator_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "integration_events",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "integration_events_connection_id_workspace_id_creator_id_fkey",
+            "fkey_columns": [
+              2,
+              3,
+              4
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.integration_resources\\` has a foreign key \\`integration_resource_snapshot_fk\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "integration_resources",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "integration_resource_snapshot_fk",
+            "fkey_columns": [
+              6,
+              1,
+              2,
+              3,
+              4
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.integration_resources\\` has a foreign key \\`integration_resources_connection_id_workspace_id_creator_i_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "integration_resources",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "integration_resources_connection_id_workspace_id_creator_i_fkey",
+            "fkey_columns": [
+              2,
+              3,
+              4
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.integration_snapshots\\` has a foreign key \\`integration_snapshots_resource_id_connection_id_workspace__fkey\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "integration_snapshots",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "integration_snapshots_resource_id_connection_id_workspace__fkey",
+            "fkey_columns": [
+              3,
+              2,
+              4,
+              5
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.integration_sync_runs\\` has a foreign key \\`integration_sync_runs_connection_id_workspace_id_creator_i_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "integration_sync_runs",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "integration_sync_runs_connection_id_workspace_id_creator_i_fkey",
+            "fkey_columns": [
+              4,
+              1,
+              2
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.legacy_evidence_corrections\\` has a foreign key \\`legacy_evidence_corrections_operator_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "legacy_evidence_corrections",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "legacy_evidence_corrections_operator_id_fkey",
+            "fkey_columns": [
+              2
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.legacy_evidence_corrections\\` has a foreign key \\`legacy_evidence_corrections_submission_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "legacy_evidence_corrections",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "legacy_evidence_corrections_submission_id_fkey",
+            "fkey_columns": [
+              4
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.mission_completion_decisions\\` has a foreign key \\`mission_completion_decisions_decided_by_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_completion_decisions",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "mission_completion_decisions_decided_by_fkey",
+            "fkey_columns": [
+              14
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.mission_completion_decisions\\` has a foreign key \\`mission_completion_decisions_mission_workflow_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_completion_decisions",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "mission_completion_decisions_mission_workflow_id_fkey",
+            "fkey_columns": [
+              3
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.mission_completion_decisions\\` has a foreign key \\`mission_completion_decisions_pending_reward_fk\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_completion_decisions",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "mission_completion_decisions_pending_reward_fk",
+            "fkey_columns": [
+              6
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.mission_completion_decisions\\` has a foreign key \\`mission_completion_decisions_reward_contract_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_completion_decisions",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "mission_completion_decisions_reward_contract_id_fkey",
+            "fkey_columns": [
+              5
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.mission_completion_decisions\\` has a foreign key \\`mission_completion_decisions_supersedes_decision_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_completion_decisions",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "mission_completion_decisions_supersedes_decision_id_fkey",
+            "fkey_columns": [
+              7
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.mission_deliverable_requirements\\` has a foreign key \\`mission_requirements_template_workspace_fk\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_deliverable_requirements",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "mission_requirements_template_workspace_fk",
+            "fkey_columns": [
+              3,
+              2
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.mission_deliverable_templates\\` has a foreign key \\`mission_templates_mission_workspace_fk\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_deliverable_templates",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "mission_templates_mission_workspace_fk",
+            "fkey_columns": [
+              3,
+              2
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.mission_draft_assets\\` has a foreign key \\`mission_draft_assets_creator_workspace_fk\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_draft_assets",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "mission_draft_assets_creator_workspace_fk",
+            "fkey_columns": [
+              4,
+              2
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.mission_draft_assets\\` has a foreign key \\`mission_draft_assets_item_workflow_workspace_fk\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_draft_assets",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "mission_draft_assets_item_workflow_workspace_fk",
+            "fkey_columns": [
+              3,
+              15,
+              2
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.mission_draft_assets\\` has a foreign key \\`mission_draft_assets_item_workspace_fk\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_draft_assets",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "mission_draft_assets_item_workspace_fk",
+            "fkey_columns": [
+              3,
+              2
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.mission_draft_assets\\` has a foreign key \\`mission_draft_assets_version_item_workspace_fk\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_draft_assets",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "mission_draft_assets_version_item_workspace_fk",
+            "fkey_columns": [
+              11,
+              3,
+              2
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.mission_draft_versions\\` has a foreign key \\`mission_draft_versions_item_workspace_fk\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_draft_versions",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "mission_draft_versions_item_workspace_fk",
+            "fkey_columns": [
+              3,
+              2
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.mission_draft_versions\\` has a foreign key \\`mission_draft_versions_submitted_by_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_draft_versions",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "mission_draft_versions_submitted_by_fkey",
+            "fkey_columns": [
+              8
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.mission_fulfillments\\` has a foreign key \\`mission_fulfillments_received_by_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_fulfillments",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "mission_fulfillments_received_by_fkey",
+            "fkey_columns": [
+              7
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.mission_fulfillments\\` has a foreign key \\`mission_fulfillments_shipped_by_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_fulfillments",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "mission_fulfillments_shipped_by_fkey",
+            "fkey_columns": [
+              5
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.mission_fulfillments\\` has a foreign key \\`mission_fulfillments_workflow_workspace_fk\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_fulfillments",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "mission_fulfillments_workflow_workspace_fk",
+            "fkey_columns": [
+              3,
+              2
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.mission_pending_rewards\\` has a foreign key \\`mission_pending_rewards_creator_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_pending_rewards",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "mission_pending_rewards_creator_id_fkey",
+            "fkey_columns": [
+              5
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.mission_pending_rewards\\` has a foreign key \\`mission_pending_rewards_mission_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_pending_rewards",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "mission_pending_rewards_mission_id_fkey",
+            "fkey_columns": [
+              6
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.mission_pending_rewards\\` has a foreign key \\`mission_pending_rewards_mission_submission_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_pending_rewards",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "mission_pending_rewards_mission_submission_id_fkey",
+            "fkey_columns": [
+              4
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.mission_pending_rewards\\` has a foreign key \\`mission_pending_rewards_reward_contract_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_pending_rewards",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "mission_pending_rewards_reward_contract_id_fkey",
+            "fkey_columns": [
+              7
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.mission_pending_rewards\\` has a foreign key \\`mission_pending_rewards_settled_by_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_pending_rewards",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "mission_pending_rewards_settled_by_fkey",
+            "fkey_columns": [
+              20
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.mission_publication_instructions\\` has a foreign key \\`mission_publication_instructions_overridden_by_workspace_fk\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_publication_instructions",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "mission_publication_instructions_overridden_by_workspace_fk",
+            "fkey_columns": [
+              14,
+              2
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.mission_publication_instructions\\` has a foreign key \\`mission_publication_instructions_source_template_workspace_fk\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_publication_instructions",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "mission_publication_instructions_source_template_workspace_fk",
+            "fkey_columns": [
+              12,
+              2
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.mission_publication_instructions\\` has a foreign key \\`mission_publication_instructions_work_item_workspace_fk\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_publication_instructions",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "mission_publication_instructions_work_item_workspace_fk",
+            "fkey_columns": [
+              3,
+              2
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.mission_publication_proof_assets\\` has a foreign key \\`mission_publication_proof_assets_attempt_workspace_fk\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_publication_proof_assets",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "mission_publication_proof_assets_attempt_workspace_fk",
+            "fkey_columns": [
+              3,
+              2
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.mission_publication_proof_assets\\` has a foreign key \\`mission_publication_proof_assets_creator_workspace_fk\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_publication_proof_assets",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "mission_publication_proof_assets_creator_workspace_fk",
+            "fkey_columns": [
+              13,
+              2
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.mission_publication_proof_assets\\` has a foreign key \\`mission_publication_proof_assets_submission_workspace_fk\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_publication_proof_assets",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "mission_publication_proof_assets_submission_workspace_fk",
+            "fkey_columns": [
+              10,
+              2
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.mission_publication_proof_assets\\` has a foreign key \\`mission_publication_proof_assets_work_item_workspace_fk\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_publication_proof_assets",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "mission_publication_proof_assets_work_item_workspace_fk",
+            "fkey_columns": [
+              12,
+              2
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.mission_publication_proof_assets\\` has a foreign key \\`mission_publication_proof_assets_workflow_workspace_fk\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_publication_proof_assets",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "mission_publication_proof_assets_workflow_workspace_fk",
+            "fkey_columns": [
+              11,
+              2
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.mission_publication_proof_attempts\\` has a foreign key \\`mission_publication_proof_attempts_submitter_workspace_fk\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_publication_proof_attempts",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "mission_publication_proof_attempts_submitter_workspace_fk",
+            "fkey_columns": [
+              7,
+              2
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.mission_publication_proof_attempts\\` has a foreign key \\`mission_publication_proof_attempts_work_item_workspace_fk\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_publication_proof_attempts",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "mission_publication_proof_attempts_work_item_workspace_fk",
+            "fkey_columns": [
+              3,
+              2
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.mission_publication_proof_review_items\\` has a foreign key \\`mission_publication_proof_review_items_review_workspace_fk\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_publication_proof_review_items",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "mission_publication_proof_review_items_review_workspace_fk",
+            "fkey_columns": [
+              3,
+              2
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.mission_publication_proof_reviews\\` has a foreign key \\`mission_publication_proof_reviews_attempt_workspace_fk\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_publication_proof_reviews",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "mission_publication_proof_reviews_attempt_workspace_fk",
+            "fkey_columns": [
+              3,
+              2
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.mission_publication_proof_reviews\\` has a foreign key \\`mission_publication_proof_reviews_reviewer_workspace_fk\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_publication_proof_reviews",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "mission_publication_proof_reviews_reviewer_workspace_fk",
+            "fkey_columns": [
+              7,
+              2
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.mission_review_items\\` has a foreign key \\`mission_review_items_round_workspace_fk\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_review_items",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "mission_review_items_round_workspace_fk",
+            "fkey_columns": [
+              3,
+              2
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.mission_review_rounds\\` has a foreign key \\`mission_review_rounds_item_workspace_fk\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_review_rounds",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "mission_review_rounds_item_workspace_fk",
+            "fkey_columns": [
+              3,
+              2
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.mission_review_rounds\\` has a foreign key \\`mission_review_rounds_reviewer_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_review_rounds",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "mission_review_rounds_reviewer_id_fkey",
+            "fkey_columns": [
+              7
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.mission_review_rounds\\` has a foreign key \\`mission_review_rounds_version_item_workspace_fk\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_review_rounds",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "mission_review_rounds_version_item_workspace_fk",
+            "fkey_columns": [
+              4,
+              3,
+              2
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.mission_revision_grants\\` has a foreign key \\`mission_revision_grants_granted_by_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_revision_grants",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "mission_revision_grants_granted_by_fkey",
+            "fkey_columns": [
+              4
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.mission_revision_grants\\` has a foreign key \\`mission_revision_grants_item_workspace_fk\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_revision_grants",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "mission_revision_grants_item_workspace_fk",
+            "fkey_columns": [
+              3,
+              2
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.mission_reward_contracts\\` has a foreign key \\`mission_reward_contracts_confirmed_by_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_reward_contracts",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "mission_reward_contracts_confirmed_by_fkey",
+            "fkey_columns": [
+              12
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.mission_reward_contracts\\` has a foreign key \\`mission_reward_contracts_mission_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_reward_contracts",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "mission_reward_contracts_mission_id_fkey",
+            "fkey_columns": [
+              5
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.mission_reward_contracts\\` has a foreign key \\`mission_reward_contracts_mission_submission_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_reward_contracts",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "mission_reward_contracts_mission_submission_id_fkey",
+            "fkey_columns": [
+              4
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.mission_submissions\\` has a foreign key \\`mission_submissions_mission_workspace_fk\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_submissions",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "mission_submissions_mission_workspace_fk",
+            "fkey_columns": [
+              2,
+              4
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.mission_work_items\\` has a foreign key \\`mission_work_items_approved_version_fk\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_work_items",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "mission_work_items_approved_version_fk",
+            "fkey_columns": [
+              13,
+              1,
+              2
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.mission_work_items\\` has a foreign key \\`mission_work_items_current_proof_attempt_fk\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_work_items",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "mission_work_items_current_proof_attempt_fk",
+            "fkey_columns": [
+              19,
+              1,
+              2
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.mission_work_items\\` has a foreign key \\`mission_work_items_current_reviewer_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_work_items",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "mission_work_items_current_reviewer_id_fkey",
+            "fkey_columns": [
+              14
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.mission_work_items\\` has a foreign key \\`mission_work_items_current_version_fk\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_work_items",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "mission_work_items_current_version_fk",
+            "fkey_columns": [
+              12,
+              1,
+              2
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.mission_work_items\\` has a foreign key \\`mission_work_items_source_template_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_work_items",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "mission_work_items_source_template_id_fkey",
+            "fkey_columns": [
+              4
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.mission_work_items\\` has a foreign key \\`mission_work_items_template_workspace_fk\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_work_items",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "mission_work_items_template_workspace_fk",
+            "fkey_columns": [
+              4,
+              2
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.mission_work_items\\` has a foreign key \\`mission_work_items_verified_proof_attempt_fk\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_work_items",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "mission_work_items_verified_proof_attempt_fk",
+            "fkey_columns": [
+              20,
+              1,
+              2
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.mission_work_items\\` has a foreign key \\`mission_work_items_workflow_workspace_fk\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_work_items",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "mission_work_items_workflow_workspace_fk",
+            "fkey_columns": [
+              3,
+              2
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.mission_workflow_events\\` has a foreign key \\`mission_events_item_workflow_workspace_fk\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_workflow_events",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "mission_events_item_workflow_workspace_fk",
+            "fkey_columns": [
+              4,
+              3,
+              2
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.mission_workflow_events\\` has a foreign key \\`mission_events_workflow_workspace_fk\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_workflow_events",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "mission_events_workflow_workspace_fk",
+            "fkey_columns": [
+              3,
+              2
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.mission_workflow_events\\` has a foreign key \\`mission_workflow_events_actor_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_workflow_events",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "mission_workflow_events_actor_id_fkey",
+            "fkey_columns": [
+              6
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.mission_workflows\\` has a foreign key \\`mission_workflows_submission_workspace_fk\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_workflows",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "mission_workflows_submission_workspace_fk",
+            "fkey_columns": [
+              3,
+              2
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.mission_working_drafts\\` has a foreign key \\`mission_working_drafts_item_workspace_fk\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "mission_working_drafts",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "mission_working_drafts_item_workspace_fk",
+            "fkey_columns": [
+              3,
+              2
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.operator_crm_command_receipts\\` has a foreign key \\`operator_crm_command_receipts_operator_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "operator_crm_command_receipts",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "operator_crm_command_receipts_operator_id_fkey",
+            "fkey_columns": [
+              2
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.studio_badges\\` has a foreign key \\`studio_badges_creator_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "studio_badges",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "studio_badges_creator_id_fkey",
+            "fkey_columns": [
+              3
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.studio_briefs\\` has a foreign key \\`studio_briefs_thread_id_workspace_id_creator_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "studio_briefs",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "studio_briefs_thread_id_workspace_id_creator_id_fkey",
+            "fkey_columns": [
+              2,
+              3,
+              4
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.studio_shares\\` has a foreign key \\`studio_shares_brief_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "studio_shares",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "studio_shares_brief_id_fkey",
+            "fkey_columns": [
+              5
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.studio_shares\\` has a foreign key \\`studio_shares_submission_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "studio_shares",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "studio_shares_submission_id_fkey",
+            "fkey_columns": [
+              6
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.studio_shares\\` has a foreign key \\`studio_shares_thread_id_workspace_id_creator_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "studio_shares",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "studio_shares_thread_id_workspace_id_creator_id_fkey",
+            "fkey_columns": [
+              2,
+              3,
+              4
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.studio_shares\\` has a foreign key \\`studio_shares_work_item_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "studio_shares",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "studio_shares_work_item_id_fkey",
+            "fkey_columns": [
+              7
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.studio_sources\\` has a foreign key \\`studio_source_integration_fk\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "studio_sources",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "studio_source_integration_fk",
+            "fkey_columns": [
+              21,
+              20,
+              19,
+              3,
+              4
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.studio_sources\\` has a foreign key \\`studio_sources_thread_id_workspace_id_creator_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "studio_sources",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "studio_sources_thread_id_workspace_id_creator_id_fkey",
+            "fkey_columns": [
+              2,
+              3,
+              4
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.studio_threads\\` has a foreign key \\`studio_threads_mission_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "studio_threads",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "studio_threads_mission_id_fkey",
+            "fkey_columns": [
+              7
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.studio_threads\\` has a foreign key \\`studio_threads_workspace_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "studio_threads",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "studio_threads_workspace_id_fkey",
+            "fkey_columns": [
+              2
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`mission_templates_workspace_idx\\` on table \\`public.mission_deliverable_templates\\` has not been used",
+          "metadata": {
+            "name": "mission_deliverable_templates",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`mission_requirements_workspace_idx\\` on table \\`public.mission_deliverable_requirements\\` has not been used",
+          "metadata": {
+            "name": "mission_deliverable_requirements",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`mission_requirements_template_idx\\` on table \\`public.mission_deliverable_requirements\\` has not been used",
+          "metadata": {
+            "name": "mission_deliverable_requirements",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`mission_workflows_workspace_idx\\` on table \\`public.mission_workflows\\` has not been used",
+          "metadata": {
+            "name": "mission_workflows",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`mission_work_items_workspace_idx\\` on table \\`public.mission_work_items\\` has not been used",
+          "metadata": {
+            "name": "mission_work_items",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`mission_work_items_workflow_idx\\` on table \\`public.mission_work_items\\` has not been used",
+          "metadata": {
+            "name": "mission_work_items",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`mission_work_items_queue_idx\\` on table \\`public.mission_work_items\\` has not been used",
+          "metadata": {
+            "name": "mission_work_items",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`mission_working_drafts_workspace_idx\\` on table \\`public.mission_working_drafts\\` has not been used",
+          "metadata": {
+            "name": "mission_working_drafts",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`mission_versions_workspace_idx\\` on table \\`public.mission_draft_versions\\` has not been used",
+          "metadata": {
+            "name": "mission_draft_versions",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`mission_versions_work_item_idx\\` on table \\`public.mission_draft_versions\\` has not been used",
+          "metadata": {
+            "name": "mission_draft_versions",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`mission_assets_workspace_idx\\` on table \\`public.mission_draft_assets\\` has not been used",
+          "metadata": {
+            "name": "mission_draft_assets",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`mission_assets_work_item_idx\\` on table \\`public.mission_draft_assets\\` has not been used",
+          "metadata": {
+            "name": "mission_draft_assets",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`mission_assets_creator_idx\\` on table \\`public.mission_draft_assets\\` has not been used",
+          "metadata": {
+            "name": "mission_draft_assets",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`mission_assets_version_idx\\` on table \\`public.mission_draft_assets\\` has not been used",
+          "metadata": {
+            "name": "mission_draft_assets",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`mission_reviews_workspace_idx\\` on table \\`public.mission_review_rounds\\` has not been used",
+          "metadata": {
+            "name": "mission_review_rounds",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`mission_reviews_work_item_idx\\` on table \\`public.mission_review_rounds\\` has not been used",
+          "metadata": {
+            "name": "mission_review_rounds",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`mission_reviews_version_idx\\` on table \\`public.mission_review_rounds\\` has not been used",
+          "metadata": {
+            "name": "mission_review_rounds",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`mission_review_items_workspace_idx\\` on table \\`public.mission_review_items\\` has not been used",
+          "metadata": {
+            "name": "mission_review_items",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`mission_review_items_round_idx\\` on table \\`public.mission_review_items\\` has not been used",
+          "metadata": {
+            "name": "mission_review_items",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`mission_revision_grants_workspace_idx\\` on table \\`public.mission_revision_grants\\` has not been used",
+          "metadata": {
+            "name": "mission_revision_grants",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`mission_revision_grants_work_item_idx\\` on table \\`public.mission_revision_grants\\` has not been used",
+          "metadata": {
+            "name": "mission_revision_grants",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`mission_fulfillments_workspace_idx\\` on table \\`public.mission_fulfillments\\` has not been used",
+          "metadata": {
+            "name": "mission_fulfillments",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`mission_workflow_events_workspace_idx\\` on table \\`public.mission_workflow_events\\` has not been used",
+          "metadata": {
+            "name": "mission_workflow_events",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`mission_workflow_events_timeline_idx\\` on table \\`public.mission_workflow_events\\` has not been used",
+          "metadata": {
+            "name": "mission_workflow_events",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`mission_workflow_events_work_item_idx\\` on table \\`public.mission_workflow_events\\` has not been used",
+          "metadata": {
+            "name": "mission_workflow_events",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`mission_assets_workflow_workspace_idx\\` on table \\`public.mission_draft_assets\\` has not been used",
+          "metadata": {
+            "name": "mission_draft_assets",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`mission_work_items_current_proof_attempt_idx\\` on table \\`public.mission_work_items\\` has not been used",
+          "metadata": {
+            "name": "mission_work_items",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`mission_publication_instructions_due_at_idx\\` on table \\`public.mission_publication_instructions\\` has not been used",
+          "metadata": {
+            "name": "mission_publication_instructions",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`mission_publication_proof_attempts_late_idx\\` on table \\`public.mission_publication_proof_attempts\\` has not been used",
+          "metadata": {
+            "name": "mission_publication_proof_attempts",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`mission_publication_proof_attempts_metadata_status_idx\\` on table \\`public.mission_publication_proof_attempts\\` has not been used",
+          "metadata": {
+            "name": "mission_publication_proof_attempts",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`mission_publication_proof_reviews_reviewer_idx\\` on table \\`public.mission_publication_proof_reviews\\` has not been used",
+          "metadata": {
+            "name": "mission_publication_proof_reviews",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`mission_publication_proof_assets_owner_idx\\` on table \\`public.mission_publication_proof_assets\\` has not been used",
+          "metadata": {
+            "name": "mission_publication_proof_assets",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`creators_workspace_id_page_idx\\` on table \\`public.creators\\` has not been used",
+          "metadata": {
+            "name": "creators",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`mission_reward_contracts_workspace_workflow_idx\\` on table \\`public.mission_reward_contracts\\` has not been used",
+          "metadata": {
+            "name": "mission_reward_contracts",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`mission_reward_contracts_workspace_submission_idx\\` on table \\`public.mission_reward_contracts\\` has not been used",
+          "metadata": {
+            "name": "mission_reward_contracts",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`mission_reward_contracts_workspace_mission_idx\\` on table \\`public.mission_reward_contracts\\` has not been used",
+          "metadata": {
+            "name": "mission_reward_contracts",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`mission_completion_decisions_workspace_workflow_idx\\` on table \\`public.mission_completion_decisions\\` has not been used",
+          "metadata": {
+            "name": "mission_completion_decisions",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`mission_completion_decisions_workspace_contract_idx\\` on table \\`public.mission_completion_decisions\\` has not been used",
+          "metadata": {
+            "name": "mission_completion_decisions",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`mission_completion_decisions_workspace_pending_reward_idx\\` on table \\`public.mission_completion_decisions\\` has not been used",
+          "metadata": {
+            "name": "mission_completion_decisions",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`mission_pending_rewards_workspace_creator_idx\\` on table \\`public.mission_pending_rewards\\` has not been used",
+          "metadata": {
+            "name": "mission_pending_rewards",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`mission_pending_rewards_workspace_workflow_idx\\` on table \\`public.mission_pending_rewards\\` has not been used",
+          "metadata": {
+            "name": "mission_pending_rewards",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`mission_pending_rewards_workspace_submission_idx\\` on table \\`public.mission_pending_rewards\\` has not been used",
+          "metadata": {
+            "name": "mission_pending_rewards",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`mission_pending_rewards_workspace_mission_idx\\` on table \\`public.mission_pending_rewards\\` has not been used",
+          "metadata": {
+            "name": "mission_pending_rewards",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`assistant_requests_quota_idx\\` on table \\`public.assistant_requests\\` has not been used",
+          "metadata": {
+            "name": "assistant_requests",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`academy_lessons_track_order\\` on table \\`public.academy_lessons\\` has not been used",
+          "metadata": {
+            "name": "academy_lessons",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`creator_lesson_progress_lesson\\` on table \\`public.creator_lesson_progress\\` has not been used",
+          "metadata": {
+            "name": "creator_lesson_progress",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`academy_lessons_approved_by\\` on table \\`public.academy_lessons\\` has not been used",
+          "metadata": {
+            "name": "academy_lessons",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`staff_workspace_roles_workspace\\` on table \\`public.staff_workspace_roles\\` has not been used",
+          "metadata": {
+            "name": "staff_workspace_roles",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`staff_workspace_roles_granted_by\\` on table \\`public.staff_workspace_roles\\` has not been used",
+          "metadata": {
+            "name": "staff_workspace_roles",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`staff_platform_roles_granted_by\\` on table \\`public.staff_platform_roles\\` has not been used",
+          "metadata": {
+            "name": "staff_platform_roles",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`staff_access_audit_workspace\\` on table \\`public.staff_access_audit\\` has not been used",
+          "metadata": {
+            "name": "staff_access_audit",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`staff_access_audit_user\\` on table \\`public.staff_access_audit\\` has not been used",
+          "metadata": {
+            "name": "staff_access_audit",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`staff_access_audit_actor\\` on table \\`public.staff_access_audit\\` has not been used",
+          "metadata": {
+            "name": "staff_access_audit",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`creator_consents_creator_document_idx\\` on table \\`public.creator_consents\\` has not been used",
+          "metadata": {
+            "name": "creator_consents",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`studio_threads_owner\\` on table \\`public.studio_threads\\` has not been used",
+          "metadata": {
+            "name": "studio_threads",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`studio_sources_thread\\` on table \\`public.studio_sources\\` has not been used",
+          "metadata": {
+            "name": "studio_sources",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`studio_shares_thread\\` on table \\`public.studio_shares\\` has not been used",
+          "metadata": {
+            "name": "studio_shares",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`integration_snapshots_expiry\\` on table \\`public.integration_snapshots\\` has not been used",
+          "metadata": {
+            "name": "integration_snapshots",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`integration_sync_connection\\` on table \\`public.integration_sync_runs\\` has not been used",
+          "metadata": {
+            "name": "integration_sync_runs",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`integration_oauth_owner\\` on table \\`private.integration_oauth_states\\` has not been used",
+          "metadata": {
+            "name": "integration_oauth_states",
+            "type": "table",
+            "schema": "private"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`studio_source_integration_connection\\` on table \\`public.studio_sources\\` has not been used",
+          "metadata": {
+            "name": "studio_sources",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "detail": "Index \\`integration_permit_use\\` on table \\`private.integration_use_permits\\` has not been used",
+          "metadata": {
+            "name": "integration_use_permits",
+            "type": "table",
+            "schema": "private"
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        },
+        {
+          "name": "duplicate_index",
+          "level": "WARN",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0009_duplicate_index",
+          "detail": "Table \\`public.creators\\` has identical indexes {creators_id_workspace_unique,integration_creator_workspace_key}. Drop all except one of them",
+          "metadata": {
+            "name": "creators",
+            "type": "table",
+            "schema": "public",
+            "indexes": [
+              "creators_id_workspace_unique",
+              "integration_creator_workspace_key"
+            ]
+          },
+          "observed_at": "2026-10-31T20:19:43.493Z"
+        }
+      ],
+      "removed": [
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "detail": "Table \\`public.creators\\` has a foreign key \\`creators_workspace_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+          "metadata": {
+            "name": "creators",
+            "type": "table",
+            "schema": "public",
+            "fkey_name": "creators_workspace_id_fkey",
+            "fkey_columns": [
+              2
+            ]
+          },
+          "observed_at": "2026-10-31T20:06:31.102Z"
+        },
+        {
+          "name": "auth_rls_initplan",
+          "level": "WARN",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0003_auth_rls_initplan",
+          "detail": "Table \\`public.assistant_conversations\\` has a row level security policy \\`conv_self\\` that re-evaluates current_setting() or auth.<function>() for each row. This produces suboptimal query performance at scale. Resolve the issue by replacing \\`auth.<function>()\\` with \\`(select auth.<function>())\\`. See [docs](https://supabase.com/docs/guides/database/postgres/row-level-security#call-functions-with-select) for more info.",
+          "metadata": {
+            "name": "assistant_conversations",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:06:31.102Z"
+        },
+        {
+          "name": "auth_rls_initplan",
+          "level": "WARN",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0003_auth_rls_initplan",
+          "detail": "Table \\`public.assistant_messages\\` has a row level security policy \\`msg_self\\` that re-evaluates current_setting() or auth.<function>() for each row. This produces suboptimal query performance at scale. Resolve the issue by replacing \\`auth.<function>()\\` with \\`(select auth.<function>())\\`. See [docs](https://supabase.com/docs/guides/database/postgres/row-level-security#call-functions-with-select) for more info.",
+          "metadata": {
+            "name": "assistant_messages",
+            "type": "table",
+            "schema": "public"
+          },
+          "observed_at": "2026-10-31T20:06:31.102Z"
+        }
+      ]
+    }
+  }
+}

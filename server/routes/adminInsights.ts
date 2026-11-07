@@ -26,11 +26,12 @@ adminInsightsRoutes.get("/insights", async c => {
   const to = new Date().toISOString(), window = getInsightsWindow(to, days);
   const priorFrom = new Date(window.priorFromMs).toISOString(), from = new Date(window.fromMs).toISOString(), until = new Date(window.toMs).toISOString();
   const svc = serviceClient();
+  const canReadRewards = c.get("workspaceAccess")?.capabilities.includes("reward.read") === true;
   try {
     const [submissions, earnings, points, creators, missions, workItems, versions, reviews] = await Promise.all([
-      allRows((a,b) => svc.from("mission_submissions").select("id,creator_id,status,points_awarded,created_at,submitted_at,reviewed_at").eq("workspace_id",ws).or(`created_at.gte.${priorFrom},submitted_at.gte.${priorFrom},reviewed_at.gte.${priorFrom}`).order("id").range(a,b)),
-      allRows((a,b) => svc.from("earnings_transactions").select("id,type,amount,created_at").eq("workspace_id",ws).gte("created_at",priorFrom).lt("created_at",until).order("id").range(a,b)),
-      allRows((a,b) => svc.from("point_transactions").select("id,type,delta,created_at").eq("workspace_id",ws).gte("created_at",priorFrom).lt("created_at",until).order("id").range(a,b)),
+      allRows((a,b) => svc.from("mission_submissions").select("id,creator_id,status,created_at,submitted_at,reviewed_at").eq("workspace_id",ws).or(`created_at.gte.${priorFrom},submitted_at.gte.${priorFrom},reviewed_at.gte.${priorFrom}`).order("id").range(a,b)),
+      canReadRewards ? allRows((a,b) => svc.from("earnings_transactions").select("id,type,amount,created_at").eq("workspace_id",ws).gte("created_at",priorFrom).lt("created_at",until).order("id").range(a,b)) : [],
+      canReadRewards ? allRows((a,b) => svc.from("point_transactions").select("id,type,delta,created_at").eq("workspace_id",ws).gte("created_at",priorFrom).lt("created_at",until).order("id").range(a,b)) : [],
       allRows((a,b) => svc.from("creators").select("id,level").eq("workspace_id",ws).order("id").range(a,b)),
       allRows((a,b) => svc.from("missions").select("id,status,quota,filled").eq("workspace_id",ws).eq("status","active").order("id").range(a,b)),
       allRows((a,b) => svc.from("mission_work_items").select("id,state,required,deadline,created_at,workflow:mission_workflows!mission_work_items_workflow_workspace_fk!inner(created_at)").eq("workspace_id",ws).gte("created_at",from).lt("created_at",until).order("id").range(a,b)),
@@ -48,7 +49,8 @@ adminInsightsRoutes.get("/insights", async c => {
         cancelled:item.state==="cancelled", reviewDurationsMs:decided.flatMap(r=>r.review_started_at ? [Date.parse(r.decision_at!) - Date.parse(r.review_started_at)] : []),
       };
     });
-    return c.json({ insights: shapeInsights({ to, days, submissions, earnings, points, creators, missions, outcomes }) });
+    const insights = shapeInsights({ to, days, submissions: submissions.map(row => ({ ...row, points_awarded: null })), earnings, points, creators, missions, outcomes });
+    return c.json({ insights: { ...insights, kpis: { ...insights.kpis, pointsIssued: canReadRewards ? insights.kpis.pointsIssued : null, cashPaid: canReadRewards ? insights.kpis.cashPaid : null } } });
   } catch {
     return c.json({ code:"metrics_unavailable", error:"Insights could not be refreshed. Please retry; saved records are unchanged." },503);
   }

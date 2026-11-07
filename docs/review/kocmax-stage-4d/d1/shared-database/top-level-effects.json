@@ -1,0 +1,62 @@
+[
+  {
+    "version": "20260715163350",
+    "id": "20260715163350:S093",
+    "kind": "top-level-data-or-call-review-required",
+    "preview": "insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)\nvalues (\n  'mission-draft-assets',\n  'mission-draft-assets',\n  false,\n  20971520,\n  array['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'video/mp4', 'video/quicktime', 'video/webm']\n)\non conflict (id) do update set\n  public = false,\n  file_size_limit = excluded.file_size_limit,\n  allowed_mime_types = excluded.allowed_mime_types;"
+  },
+  {
+    "version": "20260715163350",
+    "id": "20260715163350:S115",
+    "kind": "do-block-review-required",
+    "preview": "do $$\ndeclare\n  v_table regclass;\n  v_index text;\nbegin\n  foreach v_table in array array[\n    'public.mission_deliverable_templates'::regclass,\n    'public.mission_deliverable_requirements'::regclass,\n    'public.mission_workflows'::regclass,\n    'public.mission_work_items'::regclass,\n    'public.mission_working_drafts'::regclass,\n    'public.mission_draft_versions'::regclass,\n    'public.mission_draft_assets'::regclass,\n    'public.mission_review_rounds'::regclass,\n    'public.mission_review_items'::regclass,\n    'public.mission_revision_grants'::regclass,\n    'public.mission_fulfillments'::r"
+  },
+  {
+    "version": "20260715163350",
+    "id": "20260715163350:S184",
+    "kind": "do-block-review-required",
+    "preview": "do $$\nbegin\n  if exists (\n    select 1 from pg_proc p\n    join pg_namespace n on n.oid = p.pronamespace\n    where n.nspname = 'private'\n      and p.proname in (\n        'refresh_mission_workflow_state',\n        'create_mission_workflow',\n        'raise_immutable_record',\n        'guard_completed_review_round',\n        'guard_finalized_mission_asset',\n        'guard_mission_draft_asset_owner'\n      )\n      and (\n        has_function_privilege('anon', p.oid, 'EXECUTE') or\n        has_function_privilege('authenticated', p.oid, 'EXECUTE') or\n        has_function_privilege('service_role', p.oid, 'E"
+  },
+  {
+    "version": "20260723090000",
+    "id": "20260723090000:S006",
+    "kind": "do-block-review-required",
+    "preview": "do $$\nbegin\n  if not exists (\n    select 1\n    from pg_constraint\n    where conrelid = 'public.brand_users'::regclass\n      and conname = 'brand_users_user_workspace_unique'\n  ) then\n    alter table public.brand_users\n      add constraint brand_users_user_workspace_unique unique (user_id, workspace_id);\n  end if;\nend;\n$$;"
+  },
+  {
+    "version": "20260723090000",
+    "id": "20260723090000:S034",
+    "kind": "top-level-data-or-call-review-required",
+    "preview": "insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)\nvalues (\n  'mission-publication-proof-assets',\n  'mission-publication-proof-assets',\n  false,\n  20971520,\n  array['image/jpeg', 'image/png', 'image/webp', 'application/pdf']\n)\non conflict (id) do update set\n  public = false,\n  file_size_limit = excluded.file_size_limit,\n  allowed_mime_types = excluded.allowed_mime_types;"
+  },
+  {
+    "version": "20260723170000",
+    "id": "20260723170000:S002",
+    "kind": "top-level-data-or-call-review-required",
+    "preview": "update public.mission_publication_proof_assets a\nset mission_work_item_id = attempt.mission_work_item_id,\n    mission_workflow_id = workflow.id,\n    mission_submission_id = workflow.mission_submission_id,\n    creator_id = submission.creator_id,\n    upload_state = 'finalized',\n    finalized_at = coalesce(a.created_at, now())\nfrom public.mission_publication_proof_attempts attempt\njoin public.mission_work_items item on item.id = attempt.mission_work_item_id and item.workspace_id = attempt.workspace_id\njoin public.mission_workflows workflow on workflow.id = item.mission_workflow_id and workflow.wo"
+  },
+  {
+    "version": "20260729010000",
+    "id": "20260729010000:S003",
+    "kind": "top-level-data-or-call-review-required",
+    "preview": "insert into storage.buckets (\n  id,\n  name,\n  public,\n  file_size_limit,\n  allowed_mime_types\n) values (\n  'mission-publication-proof-assets',\n  'mission-publication-proof-assets',\n  false,\n  20971520,\n  array[\n    'image/jpeg',\n    'image/png',\n    'image/webp',\n    'image/gif',\n    'video/mp4',\n    'video/quicktime',\n    'video/webm'\n  ]\n)\non conflict (id) do update set\n  public = false,\n  file_size_limit = excluded.file_size_limit,\n  allowed_mime_types = excluded.allowed_mime_types;"
+  },
+  {
+    "version": "20261030195424",
+    "id": "20261030195424:S012",
+    "kind": "do-block-review-required",
+    "preview": "do $$ declare t text; begin\n  foreach t in array array['studio_threads','studio_sources','studio_briefs','studio_shares','studio_commands','studio_badges'] loop\n    execute format('alter table public.%I enable row level security',t);\n    execute format('revoke all on public.%I from public,anon,authenticated',t);\n    execute format('grant select on public.%I to authenticated',t);\n    execute format('grant all on public.%I to service_role',t);\n    execute format('create policy studio_owner_read on public.%1$I for select to authenticated using (creator_id=(select auth.uid()) and exists(select 1 f"
+  },
+  {
+    "version": "20261031120000",
+    "id": "20261031120000:S016",
+    "kind": "do-block-review-required",
+    "preview": "do $$ declare t text; begin\n  foreach t in array array['integration_connections','integration_resources','integration_snapshots','integration_events','integration_sync_runs'] loop\n    execute format('alter table public.%I enable row level security',t);\n    execute format('revoke all on public.%I from public,anon,authenticated,service_role',t);\n    execute format('grant select on public.%I to authenticated,service_role',t);\n    execute format('create policy integration_owner_read on public.%1$I for select to authenticated using (creator_id=(select auth.uid()) and exists(select 1 from public.cre"
+  },
+  {
+    "version": "20261031123000",
+    "id": "20261031123000:S010",
+    "kind": "do-block-review-required",
+    "preview": "do $$ declare t text; begin\n  foreach t in array array['integration_pilot_grants','integration_pilot_bindings','integration_pilot_oauth','integration_refresh_leases',\n    'integration_pilot_evidence','integration_pilot_tombstones','integration_pilot_maintenance'] loop\n    execute format('alter table private.%I enable row level security',t);\n    execute format('revoke all on private.%I from public,anon,authenticated,service_role',t);\n  end loop;\nend $$;"
+  }
+]

@@ -1,0 +1,97 @@
+{
+  "status": "ROOT_SEEDED",
+  "projectRef": "mhkoayftiuojxlrkollf",
+  "runId": "5f694251-c6eb-4f5f-a281-25e91db81c04",
+  "sqlSha256": "ae276f3dfc22539b48e482dceb1aeab8de2774c75f32816fe58665bfef8b7b8d",
+  "accounts": [
+    {
+      "alias": "C-A",
+      "authId": "6c88b77f-a273-4ed4-b48f-099ad792efc7"
+    },
+    {
+      "alias": "C-P",
+      "authId": "1cf3cd31-79ba-463d-8631-2528a34d68a4"
+    },
+    {
+      "alias": "C-B",
+      "authId": "f06df842-931b-4e45-b74f-0ea9c2944159"
+    },
+    {
+      "alias": "S-A",
+      "authId": "d854b3e8-85dd-4d97-89aa-f59c93e2d1ee"
+    },
+    {
+      "alias": "S-O",
+      "authId": "4c1e5d4b-ac1d-4930-b245-1e4efe28de20"
+    },
+    {
+      "alias": "S-R",
+      "authId": "ff86250c-e600-4841-bf36-329f5bf180aa"
+    },
+    {
+      "alias": "S-F",
+      "authId": "e43cdb67-63b7-4946-836d-7333624a1842"
+    },
+    {
+      "alias": "B-A",
+      "authId": "faf3de5a-e961-4d29-b825-5f5abfe5438e"
+    },
+    {
+      "alias": "U-X",
+      "authId": "6a3bd66a-6fd4-4e24-9e56-d51d4246d833"
+    }
+  ],
+  "workspaces": [
+    {
+      "alias": "A",
+      "id": "00391df1-e411-4a82-a317-4a73bb293f89",
+      "slug": "kocmax-auth-5f694251-c6eb-4f5f-a281-25e91db81c04-a"
+    },
+    {
+      "alias": "B",
+      "id": "5d92d267-1b2a-4f19-97bd-3c80f1f3b213",
+      "slug": "kocmax-auth-5f694251-c6eb-4f5f-a281-25e91db81c04-b"
+    }
+  ],
+  "staffRoles": [
+    {
+      "alias": "S-A",
+      "workspaceAlias": "A",
+      "role": "workspace_admin"
+    },
+    {
+      "alias": "S-O",
+      "workspaceAlias": "A",
+      "role": "operator"
+    },
+    {
+      "alias": "S-R",
+      "workspaceAlias": "A",
+      "role": "reviewer"
+    },
+    {
+      "alias": "S-F",
+      "workspaceAlias": "A",
+      "role": "finance_viewer"
+    }
+  ],
+  "brandMembershipAliases": [
+    "S-A",
+    "S-O",
+    "S-R",
+    "S-F",
+    "B-A"
+  ],
+  "uXAuthOnly": true,
+  "verifiedAt": "2026-11-01T15:43:21.432470Z",
+  "verification": {
+    "confirmedOwnedAuthUsers": 9,
+    "activeStaff": 4,
+    "activeBrandMemberships": 5,
+    "auditedGrants": 4,
+    "creatorsBeforeBootstrap": 0,
+    "pointBalances": 0,
+    "earningsBalances": 0
+  },
+  "executionRepresentation": "Connector payload uses equivalent ordinary SQL literals and explicit uuid arrays; generated artifact is retained separately. Actual postconditions independently verified."
+}

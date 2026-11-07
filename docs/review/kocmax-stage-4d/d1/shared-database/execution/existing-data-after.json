@@ -1,0 +1,202 @@
+{
+  "status": "UNCHANGED",
+  "originalTables": 39,
+  "originalColumns": 400,
+  "fingerprints": [
+    {
+      "relation": "public.academy_content",
+      "row_count": 31,
+      "content_md5": "416ce7868dcd21a4c58fabe8788ffa94"
+    },
+    {
+      "relation": "public.assistant_conversations",
+      "row_count": 13,
+      "content_md5": "428d05c33fd40c0e8b2c0eb2eed704b4"
+    },
+    {
+      "relation": "public.assistant_messages",
+      "row_count": 0,
+      "content_md5": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "relation": "public.brand_invites",
+      "row_count": 0,
+      "content_md5": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "relation": "public.brand_users",
+      "row_count": 0,
+      "content_md5": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "relation": "public.campaign_missions",
+      "row_count": 0,
+      "content_md5": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "relation": "public.campaign_participants",
+      "row_count": 0,
+      "content_md5": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "relation": "public.campaign_rank_snapshots",
+      "row_count": 0,
+      "content_md5": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "relation": "public.campaigns",
+      "row_count": 0,
+      "content_md5": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "relation": "public.content_categories",
+      "row_count": 2,
+      "content_md5": "c1793e38f724483c14147b8f883556bb"
+    },
+    {
+      "relation": "public.content_item_tags",
+      "row_count": 0,
+      "content_md5": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "relation": "public.content_items",
+      "row_count": 0,
+      "content_md5": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "relation": "public.content_tags",
+      "row_count": 0,
+      "content_md5": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "relation": "public.creator_portfolio_links",
+      "row_count": 0,
+      "content_md5": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "relation": "public.creator_public_passports",
+      "row_count": 1,
+      "content_md5": "4be8d58480b93f45913c3470030ac0e5"
+    },
+    {
+      "relation": "public.creator_public_profile_snapshots",
+      "row_count": 1,
+      "content_md5": "a246bd780bfcb5a610e70393d2cbb48e"
+    },
+    {
+      "relation": "public.creator_review_notes",
+      "row_count": 0,
+      "content_md5": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "relation": "public.creator_review_statuses",
+      "row_count": 2,
+      "content_md5": "259011cb7dde9df43fb8d4c22b38e86a"
+    },
+    {
+      "relation": "public.creator_social_accounts",
+      "row_count": 1,
+      "content_md5": "c5ec048224e3d5b7b4daa7fcd78d75c3"
+    },
+    {
+      "relation": "public.creator_social_scan_snapshots",
+      "row_count": 0,
+      "content_md5": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "relation": "public.creators",
+      "row_count": 4,
+      "content_md5": "550872fc0595feca4782b3fdcb99ce10"
+    },
+    {
+      "relation": "public.earnings_balances",
+      "row_count": 4,
+      "content_md5": "9048ff5174917529d32d2a40f723cfe7"
+    },
+    {
+      "relation": "public.earnings_transactions",
+      "row_count": 0,
+      "content_md5": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "relation": "public.kb_chunks",
+      "row_count": 8,
+      "content_md5": "676ddbc595124da7ee7176df215babdc"
+    },
+    {
+      "relation": "public.kb_documents",
+      "row_count": 8,
+      "content_md5": "4cf4cebfdeb973773551502a6c1c930a"
+    },
+    {
+      "relation": "public.mission_shortlists",
+      "row_count": 0,
+      "content_md5": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "relation": "public.mission_submissions",
+      "row_count": 9,
+      "content_md5": "6793fa85790dd0dccf8b90e726fd58f6"
+    },
+    {
+      "relation": "public.missions",
+      "row_count": 6,
+      "content_md5": "5792428de3d7447f79cd22f04f4a011e"
+    },
+    {
+      "relation": "public.notifications",
+      "row_count": 0,
+      "content_md5": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "relation": "public.operator_audit_events",
+      "row_count": 2,
+      "content_md5": "49d4d39e7b2807297e797da881b2f76f"
+    },
+    {
+      "relation": "public.point_balances",
+      "row_count": 4,
+      "content_md5": "bfc6fb679d87600a27a140f5a4b05d2a"
+    },
+    {
+      "relation": "public.point_transactions",
+      "row_count": 4,
+      "content_md5": "bc4f64e18ae7cbaa0fab4ccc4d710e00"
+    },
+    {
+      "relation": "public.redemption_codes",
+      "row_count": 0,
+      "content_md5": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "relation": "public.redemption_gifts",
+      "row_count": 8,
+      "content_md5": "4a70f6e1370898bb9c6e9e13e4b7290e"
+    },
+    {
+      "relation": "public.redemptions",
+      "row_count": 0,
+      "content_md5": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "relation": "public.staff_users",
+      "row_count": 1,
+      "content_md5": "1a94a043696ad733f4763f328733d17d"
+    },
+    {
+      "relation": "public.workspace_budget_transactions",
+      "row_count": 0,
+      "content_md5": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "relation": "public.workspace_budgets",
+      "row_count": 0,
+      "content_md5": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    {
+      "relation": "public.workspaces",
+      "row_count": 1,
+      "content_md5": "2cbd7b4d4b473de66881da9ecd192509"
+    }
+  ]
+}

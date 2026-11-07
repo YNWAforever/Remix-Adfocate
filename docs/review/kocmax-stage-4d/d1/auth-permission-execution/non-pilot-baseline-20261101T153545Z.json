@@ -1,0 +1,19 @@
+{
+  "status": "READ_ONLY_BASELINE_RECONFIRMED_BEFORE_TEST_ACCOUNT_CREATION",
+  "observedAt": "2026-11-01T15:35:45.977714Z",
+  "projectRef": "mhkoayftiuojxlrkollf",
+  "runId": "5f694251-c6eb-4f5f-a281-25e91db81c04",
+  "schemas": [
+    "public",
+    "private",
+    "auth",
+    "storage"
+  ],
+  "non_pilot_data": {
+    "table_count": 129,
+    "data_digest": "ba4d59dfbe6044523379db917fe3c2b3",
+    "row_count": 374
+  },
+  "matchesOriginalBaseline": true,
+  "baselineExclusion": "Only the exact unused pilot run UUID; no test identities created yet."
+}

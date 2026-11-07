@@ -1,0 +1,13 @@
+begin;
+lock table private.controlled_pilot_provider_sources in access exclusive mode;
+do $$ begin if exists(select 1 from private.controlled_pilot_provider_sources) then raise exception 'pilot_sources_not_empty';end if;end $$;
+drop trigger controlled_pilot_connection_delete on public.integration_connections;
+drop function private.controlled_pilot_connection_delete();
+drop trigger controlled_pilot_source_connection on private.controlled_pilot_provider_sources;
+drop function private.controlled_pilot_source_connection();
+alter table private.controlled_pilot_provider_sources drop constraint pilot_source_connection_owner_fk;
+alter table private.controlled_pilot_provider_sources drop constraint pilot_source_connection_binding;
+alter table private.controlled_pilot_provider_sources drop column connection_id;
+alter table private.controlled_pilot_provider_sources add column connection_id uuid generated always as ((binding->>'connectionId')::uuid) stored;
+alter table private.controlled_pilot_provider_sources add foreign key(connection_id,workspace_id,creator_id) references public.integration_connections(id,workspace_id,creator_id);
+commit;

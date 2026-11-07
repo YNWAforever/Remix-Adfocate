@@ -1,0 +1,173 @@
+{
+  "version": 1,
+  "candidateId": "c14c2acc6a33b902913063dca87f3d1da0dba6462fe3997f70294f0e6785056c",
+  "evidenceId": "d99a35830a6c90340bc8ba9f53f007806d7e52923438e8f53590fc7df55a0853",
+  "offlineVerification": "VERIFIED",
+  "status": "HOLD_WITH_BLOCKERS",
+  "gates": [
+    {
+      "id": "B1",
+      "title": "App, product, version and eligibility",
+      "owner": "Meta owner",
+      "state": "OWNER_INPUT_REQUIRED",
+      "liveRequired": true,
+      "evidenceRefs": [
+        "docs/review/kocmax-controlled-pilot/p5-0-configuration-change-review.md"
+      ],
+      "requiredInputs": [
+        "exact App/product/version",
+        "actual user eligibility"
+      ],
+      "actionScope": "C",
+      "invalidation": "App, product, version, scope or eligibility change",
+      "reason": "Owner evidence is incomplete.",
+      "expiresAt": null
+    },
+    {
+      "id": "B2",
+      "title": "Partnership label",
+      "owner": "Brand and reviewer",
+      "state": "NOT_APPLICABLE",
+      "liveRequired": false,
+      "evidenceRefs": [
+        "docs/superpowers/plans/2026-11-07-kocmax-p5-controlled-pilot-launch.md"
+      ],
+      "requiredInputs": [],
+      "actionScope": "D",
+      "invalidation": "Any P5.4 technical-post approval",
+      "reason": "Zero-post P5 does not publish; P5.4 remains a separate optional appendix with its own approval.",
+      "expiresAt": null
+    },
+    {
+      "id": "B3",
+      "title": "Identity, OAuth and revoke contract",
+      "owner": "Security owner",
+      "state": "LIVE_TEST_REQUIRED_AFTER_APPROVAL",
+      "liveRequired": true,
+      "evidenceRefs": [
+        "docs/review/kocmax-controlled-pilot/p5-0-configuration-change-review.md",
+        "server/lib/creatorGrowth/pilot/revoke.ts"
+      ],
+      "requiredInputs": [],
+      "actionScope": "C",
+      "invalidation": "App/product/callback/revoke contract change",
+      "reason": "Offline boundaries exist; real protocol checks are not run.",
+      "expiresAt": null
+    },
+    {
+      "id": "B4",
+      "title": "Runtime composition",
+      "owner": "Engineer",
+      "state": "LIVE_TEST_REQUIRED_AFTER_APPROVAL",
+      "liveRequired": true,
+      "evidenceRefs": [
+        "docs/review/kocmax-controlled-pilot/native-offline-wiring.md",
+        "server/pilotApp.ts"
+      ],
+      "requiredInputs": [],
+      "actionScope": "B",
+      "invalidation": "candidate or environment composition change",
+      "reason": "Hosted runtime acceptance is not run.",
+      "expiresAt": null
+    },
+    {
+      "id": "B5",
+      "title": "Schema and cleanup",
+      "owner": "Database reviewer",
+      "state": "LIVE_TEST_REQUIRED_AFTER_APPROVAL",
+      "liveRequired": true,
+      "evidenceRefs": [
+        "docs/review/kocmax-controlled-pilot/native-offline-bundle.sql",
+        "docs/review/kocmax-controlled-pilot/native-offline-rollback.sql"
+      ],
+      "requiredInputs": [],
+      "actionScope": "A",
+      "invalidation": "SQL, schema prerequisite or target change",
+      "reason": "Remote application/readback is not run.",
+      "expiresAt": null
+    },
+    {
+      "id": "B6",
+      "title": "Recovery",
+      "owner": "Database operator",
+      "state": "NOT_RUN",
+      "liveRequired": true,
+      "evidenceRefs": [
+        "docs/review/kocmax-controlled-pilot/rollback-runbook.md"
+      ],
+      "requiredInputs": [],
+      "actionScope": "A",
+      "invalidation": "target, backup or restore destination change",
+      "reason": "No current target-bound restore exists.",
+      "expiresAt": null
+    },
+    {
+      "id": "B7",
+      "title": "Real authentication and authorization",
+      "owner": "QA and security",
+      "state": "LIVE_TEST_REQUIRED_AFTER_APPROVAL",
+      "liveRequired": true,
+      "evidenceRefs": [
+        "docs/review/kocmax-controlled-pilot/persistent-acceptance.md"
+      ],
+      "requiredInputs": [],
+      "actionScope": "B",
+      "invalidation": "role policy, identity or workspace change",
+      "reason": "Real nine-role/RLS checks have not run.",
+      "expiresAt": null
+    },
+    {
+      "id": "B8",
+      "title": "Media host",
+      "owner": "Engineer and privacy owner",
+      "state": "LIVE_TEST_REQUIRED_AFTER_APPROVAL",
+      "liveRequired": true,
+      "evidenceRefs": [
+        "docs/review/kocmax-controlled-pilot/native-offline-wiring.md"
+      ],
+      "requiredInputs": [],
+      "actionScope": "C",
+      "invalidation": "media backend/origin/retention change",
+      "reason": "Actual origin and provider fetch behavior are not run.",
+      "expiresAt": null
+    },
+    {
+      "id": "B9",
+      "title": "Operations",
+      "owner": "Pilot owner",
+      "state": "OWNER_INPUT_REQUIRED",
+      "liveRequired": true,
+      "evidenceRefs": [
+        "docs/review/kocmax-controlled-pilot/p5-0-owner-intake.md"
+      ],
+      "requiredInputs": [
+        "named operators",
+        "dated window",
+        "cost ceiling",
+        "retention and cleanup owner"
+      ],
+      "actionScope": "none",
+      "invalidation": "owner roster, date, cost or retention change",
+      "reason": "Operational inputs are incomplete.",
+      "expiresAt": null
+    },
+    {
+      "id": "B10",
+      "title": "Live authorization",
+      "owner": "User",
+      "state": "OWNER_INPUT_REQUIRED",
+      "liveRequired": true,
+      "evidenceRefs": [
+        "docs/review/kocmax-controlled-pilot/real-launch-approval-package.md"
+      ],
+      "requiredInputs": [
+        "explicit action approval for A/B/C"
+      ],
+      "actionScope": "none",
+      "invalidation": "candidate, resource, scope or approval expiry change",
+      "reason": "Live action approval has not been granted.",
+      "expiresAt": null
+    }
+  ],
+  "executionAllowed": false
+}

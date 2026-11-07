@@ -1,0 +1,75 @@
+{
+  "recordedAtUtc": "2026-11-01T15:03:22.2100562Z",
+  "launcherSha256": "5464f95ce96f271c813aeb364e70a04ec07e4ee0b8dab0a1c707a3e4c14abfb9",
+  "elevated": false,
+  "cases": [
+    {
+      "name": "new directory and file are private without audit privileges",
+      "status": "PASS"
+    },
+    {
+      "name": "populated private root can be reused without rewriting ACL or contents",
+      "status": "PASS"
+    },
+    {
+      "name": "empty current-user leftover is repaired and reverified",
+      "status": "PASS"
+    },
+    {
+      "name": "populated nonprivate directory is refused without mutation",
+      "status": "PASS"
+    },
+    {
+      "name": "regular file is refused without mutation",
+      "status": "PASS"
+    },
+    {
+      "name": "direct junction is rejected without touching its target",
+      "status": "PASS"
+    },
+    {
+      "name": "nonexistent descendant under a junction is rejected before creation",
+      "status": "PASS"
+    },
+    {
+      "name": "short password-like input is rejected before closing the form",
+      "status": "FAIL",
+      "error": "The term 'Get-PilotKeyInputCode' is not recognized as a name of a cmdlet, function, script file, or executable program.\r\nCheck the spelling of the name, or if a path was included, verify that the path is correct and try again."
+    },
+    {
+      "name": "publishable key is refused for server use",
+      "status": "FAIL",
+      "error": "The term 'Get-PilotKeyInputCode' is not recognized as a name of a cmdlet, function, script file, or executable program.\r\nCheck the spelling of the name, or if a path was included, verify that the path is correct and try again."
+    },
+    {
+      "name": "modern secret-key shape is accepted for later server verification",
+      "status": "FAIL",
+      "error": "The term 'Get-PilotKeyInputCode' is not recognized as a name of a cmdlet, function, script file, or executable program.\r\nCheck the spelling of the name, or if a path was included, verify that the path is correct and try again."
+    },
+    {
+      "name": "legacy server-key shape accepted for later verification",
+      "status": "FAIL",
+      "error": "The term 'Get-PilotKeyInputCode' is not recognized as a name of a cmdlet, function, script file, or executable program.\r\nCheck the spelling of the name, or if a path was included, verify that the path is correct and try again."
+    },
+    {
+      "name": "legacy anon key refused",
+      "status": "FAIL",
+      "error": "The term 'Get-PilotKeyInputCode' is not recognized as a name of a cmdlet, function, script file, or executable program.\r\nCheck the spelling of the name, or if a path was included, verify that the path is correct and try again."
+    },
+    {
+      "name": "legacy other-project key refused",
+      "status": "FAIL",
+      "error": "The term 'Get-PilotKeyInputCode' is not recognized as a name of a cmdlet, function, script file, or executable program.\r\nCheck the spelling of the name, or if a path was included, verify that the path is correct and try again."
+    },
+    {
+      "name": "malformed token returns an allowlisted code without echoing input",
+      "status": "FAIL",
+      "error": "The term 'Get-PilotKeyInputCode' is not recognized as a name of a cmdlet, function, script file, or executable program.\r\nCheck the spelling of the name, or if a path was included, verify that the path is correct and try again."
+    }
+  ],
+  "passed": 7,
+  "failed": 7,
+  "syntheticPathsCleaned": true,
+  "networkCalls": 0,
+  "credentialInput": false
+}

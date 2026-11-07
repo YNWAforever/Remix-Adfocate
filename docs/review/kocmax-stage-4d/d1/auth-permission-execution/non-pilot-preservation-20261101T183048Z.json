@@ -1,0 +1,34 @@
+{
+  "status": "NON_PILOT_DATA_PRESERVED",
+  "observedAtUtc": "2026-11-01T18:30:48.092005Z",
+  "projectRef": "mhkoayftiuojxlrkollf",
+  "runId": "5f694251-c6eb-4f5f-a281-25e91db81c04",
+  "nonPilotApplication": {
+    "rows": 110,
+    "matchesBefore": true,
+    "tables": 94,
+    "digest": "ec4e20dce8d53c695122c2f3c1551abb"
+  },
+  "nonPilotAllSchemas": {
+    "rows": 374,
+    "matchesBefore": true,
+    "tables": 129,
+    "digest": "ba4d59dfbe6044523379db917fe3c2b3"
+  },
+  "exclusionRule": "Exact owned Auth/workspace/run IDs plus session IDs derived from only those nine owned users; no broad email or workspace-name prefix.",
+  "migrationCount": 16,
+  "policyCount": 89,
+  "indexes": [
+    {
+      "name": "creators_id_workspace_unique",
+      "valid": true
+    },
+    {
+      "name": "integration_creator_workspace_key",
+      "valid": true
+    }
+  ],
+  "ownedSessionsAtObservation": 30,
+  "ownedDraftAtObservation": 1,
+  "schemaOrIndexChangesDuringPilot": 0
+}

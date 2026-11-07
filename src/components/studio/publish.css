@@ -1,0 +1,72 @@
+.s-publish {
+  container-type: inline-size;
+  display: grid;
+  gap: 20px;
+  min-width: 0;
+  max-width: 100%;
+  padding: clamp(16px, 3vw, 28px);
+  color: var(--s-ink, #302a45);
+  background: #fffefa;
+  border: 1px solid var(--s-line, #e7e0ee);
+  border-radius: 24px;
+  box-shadow: 0 4px 0 #e8e0f0;
+  font: inherit;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.s-publish *, .s-publish-demo * { box-sizing: border-box; min-width: 0; }
+.s-publish :is(h2, h3, p, figure, dl) { margin: 0; }
+.s-publish h2 { font-size: 22px; line-height: 1.35; }
+.s-publish h3 { font-size: 16px; margin-bottom: 8px; }
+.s-publish-heading { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; }
+.s-publish-heading > div { flex: 1 1 160px; }
+.s-publish-step { display: grid; place-items: center; width: 44px; height: 44px; flex: none; border-radius: 15px; background: #eee6ff; color: #56338a; font-weight: 800; }
+.s-publish-eyebrow { color: #706881; font-size: 12px; font-weight: 700; }
+.s-publish-tag { background: #edf5df; border: 1px solid #cfddba; padding: 5px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+.s-publish-layout, .s-publish-summary { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; }
+.s-publish-stack { display: grid; align-content: start; gap: 14px; }
+.s-publish-image { display: grid; align-content: start; gap: 8px; padding: 10px; border: 1px solid #e7e0ee; border-radius: 18px; background: #f2eff6; }
+.s-publish-image img { display: block; width: 100%; height: auto; max-height: 560px; object-fit: contain; }
+.s-publish-image figcaption { font-size: 12px; text-align: center; color: #62566e; }
+.s-publish-account { display: grid; gap: 2px; }
+.s-publish-account > span { font-size: 13px; color: #706881; }
+.s-publish-account strong { font-size: 22px; }
+.s-publish-facts { display: grid; gap: 8px; font-size: 13px; }
+.s-publish-facts > div { display: grid; gap: 2px; }
+.s-publish-facts dt { color: #706881; }
+.s-publish-facts dd { margin: 0; }
+.s-publish-details { border-block: 1px solid #e7e0ee; font-size: 13px; }
+.s-publish-details summary { min-height: 44px; padding: 11px 4px; color: #62566e; cursor: pointer; touch-action: manipulation; }
+.s-publish-details > dl { padding: 4px 4px 14px; }
+.s-publish-caption { padding: 16px; background: #f5f0fc; border: 1px solid #e7e0ee; border-radius: 16px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.s-publish-exact { white-space: pre-wrap; }
+.s-publish-summary { padding-block: 18px; border-block: 1px solid #e7e0ee; }
+.s-publish-deadline { font-size: 13px; color: #62566e; }
+.s-publish-notice { padding: 14px; background: #fff2d9; color: #62451e; border: 1px solid #e7d1a7; border-radius: 14px; }
+.s-publish-confirm { display: grid; gap: 12px; }
+.s-publish-check { display: flex; align-items: flex-start; gap: 12px; min-height: 48px; padding: 12px 0; cursor: pointer; font-size: 14px; }
+.s-publish-check input { width: 20px; height: 20px; flex: none; margin: 2px 0; accent-color: #7145cc; }
+.s-publish-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.s-publish-actions > * { flex: 1 1 180px; }
+.s-publish-button {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 46px; min-width: 44px; max-width: 100%; padding: 12px 16px;
+  border: 1px solid #796b8c; border-radius: 14px; background: #fff;
+  color: #302a45; font: inherit; font-weight: 700; font-size: 14px;
+  line-height: 1.5; text-align: center; white-space: normal; overflow-wrap: anywhere;
+  cursor: pointer; touch-action: manipulation; text-decoration: none;
+}
+.s-publish-primary { background: #d5f386; border-color: #6f8546; box-shadow: 0 3px 0 #b1c876; }
+.s-publish-button:disabled { opacity: .6; cursor: not-allowed; box-shadow: none; }
+.s-publish :focus-visible, .s-publish-demo :focus-visible { outline: 3px solid #7145cc; outline-offset: 3px; }
+.s-publish-demo { display: grid; gap: 16px; min-width: 0; margin-top: 24px; overflow-wrap: anywhere; }
+.s-publish-demo > label { display: grid; gap: 8px; }
+.s-publish-demo select { min-height: 46px; width: 100%; max-width: 100%; font: inherit; }
+@container (min-width: 680px) {
+  .s-publish-layout { grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); }
+  .s-publish-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .s-publish-facts > div { grid-template-columns: minmax(100px, .6fr) minmax(0, 1fr); gap: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .s-publish *, .s-publish-demo * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}

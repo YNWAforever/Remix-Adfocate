@@ -1,0 +1,147 @@
+{
+  "status": "PREPARED_ONLY_NOT_CREATED",
+  "runId": "5f694251-c6eb-4f5f-a281-25e91db81c04",
+  "projectRef": "mhkoayftiuojxlrkollf",
+  "sourceHead": "5c60020091e8e6fee934b61c498bf7518944c433",
+  "maxExecutionHours": 24,
+  "startedAt": null,
+  "expiresAt": null,
+  "requiresSqlSha256": "ae276f3dfc22539b48e482dceb1aeab8de2774c75f32816fe58665bfef8b7b8d",
+  "workspaces": [
+    {
+      "alias": "A",
+      "id": "00391df1-e411-4a82-a317-4a73bb293f89",
+      "slug": "kocmax-auth-5f694251-c6eb-4f5f-a281-25e91db81c04-a",
+      "createdThisRun": false
+    },
+    {
+      "alias": "B",
+      "id": "5d92d267-1b2a-4f19-97bd-3c80f1f3b213",
+      "slug": "kocmax-auth-5f694251-c6eb-4f5f-a281-25e91db81c04-b",
+      "createdThisRun": false
+    }
+  ],
+  "accounts": [
+    {
+      "alias": "C-A",
+      "workspaceAlias": "A",
+      "role": null,
+      "email": "kocmax-5f694251-c6eb-4f5f-a281-25e91db81c04-c-a@example.invalid",
+      "authId": null,
+      "createdThisRun": false,
+      "expectedCreatorOnNormalLogin": true,
+      "passwordStored": false
+    },
+    {
+      "alias": "C-P",
+      "workspaceAlias": "A",
+      "role": null,
+      "email": "kocmax-5f694251-c6eb-4f5f-a281-25e91db81c04-c-p@example.invalid",
+      "authId": null,
+      "createdThisRun": false,
+      "expectedCreatorOnNormalLogin": true,
+      "passwordStored": false
+    },
+    {
+      "alias": "C-B",
+      "workspaceAlias": "B",
+      "role": null,
+      "email": "kocmax-5f694251-c6eb-4f5f-a281-25e91db81c04-c-b@example.invalid",
+      "authId": null,
+      "createdThisRun": false,
+      "expectedCreatorOnNormalLogin": true,
+      "passwordStored": false
+    },
+    {
+      "alias": "S-A",
+      "workspaceAlias": "A",
+      "role": "workspace_admin",
+      "email": "kocmax-5f694251-c6eb-4f5f-a281-25e91db81c04-s-a@example.invalid",
+      "authId": null,
+      "createdThisRun": false,
+      "expectedCreatorOnNormalLogin": true,
+      "passwordStored": false
+    },
+    {
+      "alias": "S-O",
+      "workspaceAlias": "A",
+      "role": "operator",
+      "email": "kocmax-5f694251-c6eb-4f5f-a281-25e91db81c04-s-o@example.invalid",
+      "authId": null,
+      "createdThisRun": false,
+      "expectedCreatorOnNormalLogin": true,
+      "passwordStored": false
+    },
+    {
+      "alias": "S-R",
+      "workspaceAlias": "A",
+      "role": "reviewer",
+      "email": "kocmax-5f694251-c6eb-4f5f-a281-25e91db81c04-s-r@example.invalid",
+      "authId": null,
+      "createdThisRun": false,
+      "expectedCreatorOnNormalLogin": true,
+      "passwordStored": false
+    },
+    {
+      "alias": "S-F",
+      "workspaceAlias": "A",
+      "role": "finance_viewer",
+      "email": "kocmax-5f694251-c6eb-4f5f-a281-25e91db81c04-s-f@example.invalid",
+      "authId": null,
+      "createdThisRun": false,
+      "expectedCreatorOnNormalLogin": true,
+      "passwordStored": false
+    },
+    {
+      "alias": "B-A",
+      "workspaceAlias": "A",
+      "role": "brand_member",
+      "email": "kocmax-5f694251-c6eb-4f5f-a281-25e91db81c04-b-a@example.invalid",
+      "authId": null,
+      "createdThisRun": false,
+      "expectedCreatorOnNormalLogin": true,
+      "passwordStored": false
+    },
+    {
+      "alias": "U-X",
+      "workspaceAlias": null,
+      "role": null,
+      "email": "kocmax-5f694251-c6eb-4f5f-a281-25e91db81c04-u-x@example.invalid",
+      "authId": null,
+      "createdThisRun": false,
+      "expectedCreatorOnNormalLogin": true,
+      "passwordStored": false
+    }
+  ],
+  "limits": {
+    "authAccounts": 9,
+    "creators": 9,
+    "pointBalances": 9,
+    "earningsBalances": 9,
+    "staffUsers": 4,
+    "brandMemberships": 5,
+    "workspaceRoles": 4,
+    "workspaces": 2,
+    "providerConnections": 0,
+    "pointAwards": 0,
+    "cashAwards": 0,
+    "xpAwards": 0,
+    "badgeAwards": 0
+  },
+  "writesExecuted": 0,
+  "scopeNotes": [
+    "U-X stays Auth-only for initial negative tests, then may bootstrap as ordinary creator in A.",
+    "P2 child rows require exact recorded returned IDs; no generic cleanup or customer IDs.",
+    "Positive shared join excluded: existing join adds 10 XP.",
+    "No deployed environment, Auth-wide setting, provider or index change."
+  ],
+  "cleanup": {
+    "mode": "EXACT_IDS_DELETE_OR_DISABLE_WITH_AUDIT_RETENTION",
+    "authIdsToDelete": [],
+    "authIdsToBan": [],
+    "storageObjectsToRemove": [],
+    "retainedAuditIds": [],
+    "retainedParentIds": [],
+    "executed": false
+  }
+}

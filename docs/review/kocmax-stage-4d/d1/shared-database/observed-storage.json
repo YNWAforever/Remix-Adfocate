@@ -1,0 +1,54 @@
+{
+  "buckets": [],
+  "policies": [
+    {
+      "cmd": "SELECT",
+      "qual": "(bucket_id = 'creator-avatars'::text)",
+      "roles": [
+        "public"
+      ],
+      "tablename": "objects",
+      "permissive": "PERMISSIVE",
+      "policyname": "creator_avatar_objects_public_read",
+      "schemaname": "storage",
+      "with_check": null
+    },
+    {
+      "cmd": "DELETE",
+      "qual": "((bucket_id = 'creator-avatars'::text) AND ((storage.foldername(name))[1] = (auth.uid())::text))",
+      "roles": [
+        "authenticated"
+      ],
+      "tablename": "objects",
+      "permissive": "PERMISSIVE",
+      "policyname": "creator_avatar_objects_self_delete",
+      "schemaname": "storage",
+      "with_check": null
+    },
+    {
+      "cmd": "INSERT",
+      "qual": null,
+      "roles": [
+        "authenticated"
+      ],
+      "tablename": "objects",
+      "permissive": "PERMISSIVE",
+      "policyname": "creator_avatar_objects_self_insert",
+      "schemaname": "storage",
+      "with_check": "((bucket_id = 'creator-avatars'::text) AND ((storage.foldername(name))[1] = (auth.uid())::text))"
+    },
+    {
+      "cmd": "UPDATE",
+      "qual": "((bucket_id = 'creator-avatars'::text) AND ((storage.foldername(name))[1] = (auth.uid())::text))",
+      "roles": [
+        "authenticated"
+      ],
+      "tablename": "objects",
+      "permissive": "PERMISSIVE",
+      "policyname": "creator_avatar_objects_self_update",
+      "schemaname": "storage",
+      "with_check": "((bucket_id = 'creator-avatars'::text) AND ((storage.foldername(name))[1] = (auth.uid())::text))"
+    }
+  ],
+  "auth_user_triggers": []
+}

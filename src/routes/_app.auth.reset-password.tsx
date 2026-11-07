@@ -1,3 +1,4 @@
+import { STUDIO_SHELL } from "@/lib/features";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AuthFeedback } from "@/components/AuthFeedback";
@@ -124,10 +125,10 @@ function ResetPassword() {
         : () => void completeSignIn();
 
   return (
-    <main className="relative flex min-h-screen items-center justify-center px-6">
+    <main className="s-auth relative flex min-h-screen items-center justify-center px-6">
       <div className="dot-pattern absolute inset-0 opacity-30" aria-hidden="true" />
       <div className="pastel-card relative z-10 w-full max-w-sm space-y-5 p-8">
-        <span className="sticker">ADFOCATE</span>
+        <span className="sticker">{STUDIO_SHELL ? "KOCmax" : "ADFOCATE"}</span>
         <h1 className="font-display text-lg font-bold text-[var(--color-ink)]">
           {t("app.resetPassword.title")}
         </h1>

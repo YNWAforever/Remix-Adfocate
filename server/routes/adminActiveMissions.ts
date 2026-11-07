@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { projectReviewDetail } from "../lib/studio/staffProjection.js";
 import { Hono, type Context } from "hono";
 import { serviceClient } from "../lib/supabase.js";
 import type { AdminEnv, StaffIdentity } from "../lib/staffAuth.js";
@@ -798,7 +799,8 @@ export function createAdminActiveMissionRoutes(
     try {
       const { workspaceSlug, operatorId } = context(c);
       const workflowId = pathUuid(c, "workflowId");
-      return c.json(await repository().getDetail({ workflowId, workspaceSlug, operatorId, signedUrlTtlSeconds: SIGNED_URL_TTL_SECONDS }));
+      const detail = await repository().getDetail({ workflowId, workspaceSlug, operatorId, signedUrlTtlSeconds: SIGNED_URL_TTL_SECONDS });
+      return c.json(projectReviewDetail(detail, c.get("workspaceAccess")?.capabilities.includes("reward.read") === true));
     } catch (error) { return routeError(c, error); }
   });
 

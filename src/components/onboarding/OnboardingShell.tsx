@@ -1,3 +1,4 @@
+import { STUDIO_SHELL } from "@/lib/features";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ProgressBar } from "@/components/ProgressBar";
 import { useI18n } from "@/lib/i18n";
@@ -65,7 +66,7 @@ export function OnboardingShell({
         <header className="mb-5 space-y-4">
           <div className="flex items-center justify-between gap-3">
             <span className="font-display text-lg font-bold text-[var(--color-ink)]">
-              Adfocate<span className="text-[var(--color-magenta)]">.</span>
+              {STUDIO_SHELL ? "KOCmax" : "Adfocate"}<span className="text-[var(--color-magenta)]">.</span>
             </span>
             <span className="flex items-center gap-3">
               <span className="tag-mono">{t("app.onboarding.stepLabel", { step, total: totalSteps })}</span>

@@ -1,0 +1,72 @@
+{
+  "runId": "5f694251-c6eb-4f5f-a281-25e91db81c04",
+  "projectRef": "mhkoayftiuojxlrkollf",
+  "requiredSqlSha256": "ae276f3dfc22539b48e482dceb1aeab8de2774c75f32816fe58665bfef8b7b8d",
+  "manifestSha256": "32e41e0aa7febd55bb75516779bca8ac5ce62e796e28ee3a503e1a9a414aaab1",
+  "workspaces": [
+    {
+      "alias": "A",
+      "id": "00391df1-e411-4a82-a317-4a73bb293f89",
+      "slug": "kocmax-auth-5f694251-c6eb-4f5f-a281-25e91db81c04-a"
+    },
+    {
+      "alias": "B",
+      "id": "5d92d267-1b2a-4f19-97bd-3c80f1f3b213",
+      "slug": "kocmax-auth-5f694251-c6eb-4f5f-a281-25e91db81c04-b"
+    }
+  ],
+  "accounts": [
+    {
+      "alias": "C-A",
+      "authId": "6c88b77f-a273-4ed4-b48f-099ad792efc7",
+      "email": "kocmax-5f694251-c6eb-4f5f-a281-25e91db81c04-c-a@example.invalid"
+    },
+    {
+      "alias": "C-P",
+      "authId": "1cf3cd31-79ba-463d-8631-2528a34d68a4",
+      "email": "kocmax-5f694251-c6eb-4f5f-a281-25e91db81c04-c-p@example.invalid"
+    },
+    {
+      "alias": "C-B",
+      "authId": "f06df842-931b-4e45-b74f-0ea9c2944159",
+      "email": "kocmax-5f694251-c6eb-4f5f-a281-25e91db81c04-c-b@example.invalid"
+    },
+    {
+      "alias": "S-A",
+      "authId": "d854b3e8-85dd-4d97-89aa-f59c93e2d1ee",
+      "email": "kocmax-5f694251-c6eb-4f5f-a281-25e91db81c04-s-a@example.invalid"
+    },
+    {
+      "alias": "S-O",
+      "authId": "4c1e5d4b-ac1d-4930-b245-1e4efe28de20",
+      "email": "kocmax-5f694251-c6eb-4f5f-a281-25e91db81c04-s-o@example.invalid"
+    },
+    {
+      "alias": "S-R",
+      "authId": "ff86250c-e600-4841-bf36-329f5bf180aa",
+      "email": "kocmax-5f694251-c6eb-4f5f-a281-25e91db81c04-s-r@example.invalid"
+    },
+    {
+      "alias": "S-F",
+      "authId": "e43cdb67-63b7-4946-836d-7333624a1842",
+      "email": "kocmax-5f694251-c6eb-4f5f-a281-25e91db81c04-s-f@example.invalid"
+    },
+    {
+      "alias": "B-A",
+      "authId": "faf3de5a-e961-4d29-b825-5f5abfe5438e",
+      "email": "kocmax-5f694251-c6eb-4f5f-a281-25e91db81c04-b-a@example.invalid"
+    },
+    {
+      "alias": "U-X",
+      "authId": "6a3bd66a-6fd4-4e24-9e56-d51d4246d833",
+      "email": "kocmax-5f694251-c6eb-4f5f-a281-25e91db81c04-u-x@example.invalid"
+    }
+  ],
+  "grantRequestIds": [
+    "f569c015-cd3e-5b6f-9d74-c5ad3a0ab62d",
+    "645551e2-f9c7-55bc-b888-6c4f478a827d",
+    "a83b8d25-2ea4-5852-8475-c2386f40ad6f",
+    "533b7117-eba0-5982-b770-bc4c828573ba"
+  ],
+  "revokeRequestId": "9bab8dad-bc41-565a-940d-adffb6f660fd"
+}

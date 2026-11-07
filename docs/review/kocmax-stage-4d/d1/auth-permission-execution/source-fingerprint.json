@@ -1,0 +1,20 @@
+{
+  "status": "READ_ONLY_SOURCE_BASELINE_BEFORE_NEW_SQL",
+  "projectRef": "mhkoayftiuojxlrkollf",
+  "observedDateHkt": "2026-11-01",
+  "application_data": {
+    "row_count": 110,
+    "data_digest": "ec4e20dce8d53c695122c2f3c1551abb",
+    "table_count": 94
+  },
+  "migration_count": 15,
+  "policy_count": 86,
+  "auth_table_count": 27,
+  "storage_table_count": 8,
+  "queryFile": "scripts/integrations/auth-pilot-fingerprint.sql",
+  "limits": [
+    "Opaque application-row digest; no customer row values collected.",
+    "Auth and Storage table counts do not independently verify their row contents.",
+    "A source baseline alone is not a captured or restored backup."
+  ]
+}

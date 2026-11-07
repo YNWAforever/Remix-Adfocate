@@ -5,14 +5,14 @@ import {
   mkdir,
   readFile,
   readdir,
+  rm,
   unlink,
   writeFile,
 } from "node:fs/promises";
 import { execFile } from "node:child_process";
-import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { promisify } from "node:util";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import type { ReleaseManifest, ReleaseMigration } from "./contracts";
 import {
   buildManifest,
@@ -79,6 +79,14 @@ const REVIEWED_FILES = [
   "20261029160000_assistant_history_readonly.sql",
   "20261029170000_creator_consents.sql",
   "20261029180000_creator_account_deletion.sql",
+  "20261030195424_creator_studio_private_artifacts.sql",
+  "20261031120000_creator_integrations.sql",
+  "20261031121000_studio_integration_evidence.sql",
+  "20261031122000_integration_privacy_cleanup.sql",
+  "20261031123000_integration_pilot_persistence.sql",
+  "20261101075946_kocmax_auth_permission_boundary.sql",
+  "20261103215321_kocmax_creator_growth_private.sql",
+  "20261104134202_kocmax_publish_intents.sql",
 ] as const;
 
 // Pinned by checksum in manifest.ts, so the fixture copies the repository's real bytes instead of
@@ -115,6 +123,21 @@ const BASELINE_FILES = [
 ] as const;
 
 const execFileAsync = promisify(execFile);
+const DIRECT_CLI_EXEC_TIMEOUT_MS = 20_000;
+const DIRECT_CLI_TEST_TIMEOUT_MS = 30_000;
+const fixtureRoots: string[] = [];
+afterEach(async () => {
+  await Promise.all(
+    fixtureRoots.splice(0).map((root) =>
+      rm(root, {
+        recursive: true,
+        force: true,
+        maxRetries: 10,
+        retryDelay: 100,
+      }),
+    ),
+  );
+});
 
 type MutableMigration = {
   -readonly [Key in keyof ReleaseMigration]: ReleaseMigration[Key] extends readonly string[]
@@ -130,7 +153,9 @@ async function fixture(
   files: readonly string[] = REVIEWED_FILES,
   overrides: Record<string, string> = {},
 ) {
-  const root = await mkdtemp(join(tmpdir(), "adfocate-manifest-"));
+  await mkdir(resolve(".superpowers"), { recursive: true });
+  const root = await mkdtemp(resolve(".superpowers/release-manifest-"));
+  fixtureRoots.push(root);
   const dir = join(root, "supabase", "migrations");
   await mkdir(dir, { recursive: true });
   await Promise.all([
@@ -149,6 +174,72 @@ async function fixture(
 }
 
 describe("release migration manifest", () => {
+  it("classifies private preparation without granting browser or direct service table access", async () => {
+    const manifest = await buildManifest(resolve("."));
+    const growth = manifest.migrations.find(item => item.version === "20261103215321")!;
+    const publish = manifest.migrations.find(item => item.version === "20261104134202")!;
+    expect(growth.dependsOn).toEqual(["20261030195424", "20261031123000", "20261101075946"]);
+    expect(publish.dependsOn).toEqual(["20261103215321", "20261031123000"]);
+    expect(growth.phase).toBe("privacy_compliance");
+    expect(publish.phase).toBe("privacy_compliance");
+    for (const migration of [growth, publish]) {
+      const tables = migration.capabilities.filter(cap => cap.startsWith("table:private."));
+      expect(tables).toHaveLength(migration === growth ? 11 : 4);
+      for (const table of tables.map(cap => cap.slice("table:".length))) {
+        expect(migration.capabilities).toContain(`rls:${table}`);
+        for (const role of ["public", "anon", "authenticated", "service_role"]) {
+          for (const operation of ["select", "insert", "update", "delete", "truncate"]) {
+            expect(migration.capabilities).toContain(`grant-removed:${role}.${table}(${operation})`);
+          }
+        }
+      }
+      expect(migration.capabilities.some(cap => cap.startsWith("grant:authenticated."))).toBe(false);
+    }
+    expect(publish.capabilities).toContain("index:private.creator_publish_intents.creator_publish_intents_revision");
+    expect(publish.capabilities).toContain("grant:service_role.public.creator_publish_command(uuid,uuid,text,jsonb,timestamptz)");
+    expect(await validateManifest(manifest, resolve("."))).toEqual([]);
+  });
+
+  it.each(["20261103215321", "20261104134202"])("rejects omitted dependencies, denied grants and SQL drift for %s", async version => {
+    const root = await fixture();
+    const manifest = await buildManifest(root);
+    const omittedDependency = structuredClone(manifest) as MutableManifest;
+    omittedDependency.migrations.find(item => item.version === version)!.dependsOn.pop();
+    expect(await validateManifest(omittedDependency, root)).toContain("manifest content drift");
+    const omittedDenial = structuredClone(manifest) as MutableManifest;
+    const migration = omittedDenial.migrations.find(item => item.version === version)!;
+    migration.capabilities = migration.capabilities.filter(cap => !cap.startsWith("grant-removed:authenticated."));
+    expect(await validateManifest(omittedDenial, root)).toContain("manifest content drift");
+    await appendFile(join(root, migration.path), "\n-- changed after review\n");
+    expect(await validateManifest(manifest, root)).toContain(`checksum drift: ${version}`);
+  });
+
+  it("requires the service-only bootstrap and staff mission policy boundaries", async () => {
+    const manifest = await buildManifest(resolve("."));
+    const boundary = manifest.migrations.find(item => item.version === "20261101075946");
+    expect(boundary?.dependsOn).toEqual(expect.arrayContaining(["20261023124149", "20261029100000"]));
+    expect(boundary?.capabilities).toEqual(expect.arrayContaining([
+      "function:public.bootstrap_creator_account",
+      "grant:service_role.public.bootstrap_creator_account(uuid,uuid,text,text,text)",
+      "grant-removed:authenticated.public.bootstrap_creator_account(uuid,uuid,text,text,text)",
+      "grant-removed:anon.public.bootstrap_creator_account(uuid,uuid,text,text,text)",
+      "policy:public.missions.missions_staff_insert_boundary",
+      "policy:public.missions.missions_staff_update_boundary",
+      "policy:public.missions.missions_staff_delete_boundary",
+    ]));
+  });
+  it("keeps the integration dependency chain and service-only write boundary explicit", async () => {
+    const manifest = await buildManifest(resolve("."));
+    const integration = manifest.migrations.filter(item => item.version.startsWith("2026103112"));
+    expect(integration.map(item => item.version)).toEqual(["20261031120000", "20261031121000", "20261031122000", "20261031123000"]);
+    expect(integration[1].dependsOn).toContain(integration[0].version);
+    expect(integration[2].dependsOn).toContain(integration[1].version);
+    expect(integration[2].capabilities).toEqual(expect.arrayContaining([
+      "function:public.integration_command", "grant:service_role.public.integration_command(uuid,uuid,uuid,text,jsonb)",
+      "grant-removed:authenticated.public.integration_command(uuid,uuid,uuid,text,jsonb)",
+      "trigger:public.creators.integration_account_cleanup",
+    ]));
+  });
   it("classifies the redemption receipt contract without dropping ACL or uniqueness checks", async () => {
     const manifest = await buildManifest(resolve("."));
     const migration = manifest.migrations.find((item) => item.version === "20261025194402");
@@ -475,13 +566,13 @@ describe("release migration manifest", () => {
     const { stdout } = await execFileAsync(
       process.execPath,
       [viteNode, "--script", script, "write"],
-      { cwd: root },
+      { cwd: root, timeout: DIRECT_CLI_EXEC_TIMEOUT_MS, windowsHide: true },
     );
     expect(stdout.trim()).toMatch(/^[a-f0-9]{64}$/);
     await expect(
       readFile(join(root, "supabase", "release-manifest.json"), "utf8"),
     ).resolves.toContain('"schemaVersion": 1');
-  });
+  }, DIRECT_CLI_TEST_TIMEOUT_MS);
 
   it.each([
     ["missing", []],
@@ -493,12 +584,14 @@ describe("release migration manifest", () => {
     await expect(
       execFileAsync(process.execPath, [viteNode, "--script", script, ...args], {
         cwd: root,
+        timeout: DIRECT_CLI_EXEC_TIMEOUT_MS,
+        windowsHide: true,
       }),
     ).rejects.toMatchObject({
       code: 1,
       stderr: expect.stringContaining("usage: manifest-cli.ts <write|check>"),
     });
-  });
+  }, DIRECT_CLI_TEST_TIMEOUT_MS);
 
   it("detects checksum drift, missing files, duplicates, and bad dependencies", async () => {
     const root = await fixture();

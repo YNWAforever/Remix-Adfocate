@@ -1,7 +1,6 @@
 // src/components/admin/AdminTopBar.tsx
 import { useLocation } from "@tanstack/react-router";
 import { Menu } from "lucide-react";
-import { supabase } from "@/lib/supabase";
 import { useI18n } from "@/lib/i18n";
 import { useAdminAuth } from "./AdminAuthContext";
 import { WorkspaceSwitcher } from "./WorkspaceSwitcher";
@@ -10,14 +9,10 @@ import { useStaffAccess } from "./StaffAccessContext";
 
 export function AdminTopBar({ onMenu, navOpen }: { onMenu: () => void; navOpen: boolean }) {
   const { t } = useI18n();
-  const { staff } = useAdminAuth();
+  const { staff, signOut } = useAdminAuth();
   const { pathname } = useLocation();
   const access=useStaffAccess();
   const roles={workspace_admin:"Workspace admin / 工作空間管理員",operator:"Operator / 營運員",reviewer:"Reviewer / 審稿員",finance_viewer:"Finance viewer / 財務檢視員"};
-
-  async function handleSignOut() {
-    await supabase.auth.signOut();
-  }
 
   return (
     <header className="sticky top-0 z-30 flex flex-wrap items-center gap-3 border-b-2 border-[var(--color-ink)] bg-[var(--color-paper)] px-4 py-3">
@@ -43,7 +38,7 @@ export function AdminTopBar({ onMenu, navOpen }: { onMenu: () => void; navOpen: 
         ) : null}
         <button
           type="button"
-          onClick={handleSignOut}
+          onClick={() => void signOut()}
           className="min-h-11 shrink-0 rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-sm font-heading font-bold"
         >
           {t("app.admin.signOut")}
