@@ -110,7 +110,7 @@ export function assistantRoutes(testProvider?: AssistantProvider) {
     try {
       if(studio?.integrationSources?.length) await authorizeIntegrationSources({creatorId:c.get("userId"),workspaceId},studio.integrationSources,"model",{requestId:input.requestId});
       result = await withProviderDeadline((signal) => runAssistant(client,
-        { query: input.message, locale: input.locale, workspace: workspaceId, history, studioContext:studio?.context },
+        { query: input.message, locale: input.locale, workspace: workspaceId, history, studioContext:studio?.context, historyChanged: studio?.contextChanged },
         { ...(testProvider ? { provider: testProvider } : {}), signal }));
     } catch {
       await markUnknown();
@@ -125,15 +125,16 @@ export function assistantRoutes(testProvider?: AssistantProvider) {
         }
       }
       const saved = await store.rpc("save_assistant_turn", { ...identity, p_answer: result.answer, p_citations: result.citations });
-      if (!saved.error && saved.data?.persistence === "saved") return c.json(saved.data);
+      if (!saved.error && saved.data?.persistence === "saved") return c.json({ ...saved.data, ...(result.toolsUsed?.length ? { tools_used: result.toolsUsed } : {}) });
       await markUnknown();
       if(studio?.integrationSources?.length) return c.json({code:"studio_context_changed",persistence:"failed",request_id:input.requestId,error:"來源或儲存權限已變更，已停止返回衍生回覆。"},409);
       return c.json({ ...result, conversation_id: input.conversationId ?? null, request_id: input.requestId,
+        ...(result.toolsUsed?.length ? { tools_used: result.toolsUsed } : {}),
         persistence: saved.error?.code && /^(22|23|P0)/.test(saved.error.code) ? "failed" : "unknown" });
     } catch {
       await markUnknown();
       if(studio?.integrationSources?.length) return c.json({code:"studio_context_changed",persistence:"failed",request_id:input.requestId,error:"來源權限尚未確認；沒有保存或返回衍生回覆。"},409);
-      return c.json({ ...result, conversation_id: input.conversationId ?? null, request_id: input.requestId, persistence: "unknown" });
+      return c.json({ ...result, conversation_id: input.conversationId ?? null, request_id: input.requestId, ...(result.toolsUsed?.length ? { tools_used: result.toolsUsed } : {}), persistence: "unknown" });
     }
   });
   r.get("/requests/:id", async (c) => {
