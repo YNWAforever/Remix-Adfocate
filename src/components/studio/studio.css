@@ -982,3 +982,17 @@
 
 .studio .s-subcard.s-danger{background:#fff6f4;border-color:#e2c3bf}
 @media(max-width:767px){.studio .s-subcard{padding:12px}}
+
+/* B3.1 discovery cards */
+.studio{--s-mission-art:#efe9fa}
+.studio .s-mission-card{display:flex;gap:14px;align-items:flex-start;border:1px solid var(--s-line);border-radius:20px;background:#fff;padding:16px;min-width:0;height:100%;box-shadow:0 4px 0 #ece7f170}
+.studio .s-mission-art{width:64px;height:64px;flex:none;border-radius:16px;background:var(--s-lilac);display:grid;place-items:center;overflow:hidden;color:var(--s-purple)}
+.studio .s-mission-art img{width:100%;height:100%;object-fit:cover}
+.studio .s-mission-body{min-width:0;flex:1;display:grid;gap:8px}
+.studio .s-mission-card h3{font-size:15px;line-height:1.35;margin:0;font-weight:750}
+.studio .s-mission-meta{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13px;color:var(--s-muted);align-items:center}
+.studio .s-mission-meta svg{width:14px;height:14px}
+.studio .s-mission-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 16px;margin:0;font-size:12px}
+.studio .s-mission-facts dt{font-weight:650;color:var(--s-muted)}
+.studio .s-mission-facts dd{margin:0;min-width:0;overflow-wrap:anywhere}
+@media(max-width:420px){.studio .s-mission-facts{grid-template-columns:minmax(0,1fr)}}
