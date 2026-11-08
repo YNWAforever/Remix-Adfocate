@@ -91,42 +91,37 @@ export function WorkspaceHeader({ workspace, nextAction, onPrimaryAction }: Work
   const reasonKey = blockedReason ? BLOCK_REASON_KEYS[blockedReason] : null;
   const reasonFallback = blockedReason?.replaceAll("_", " ").replace(/^./, (character) => character.toUpperCase()) ?? "";
   return (
-    <header className="rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 shadow-[4px_4px_0_0_var(--color-ink)] sm:p-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div className="min-w-0 space-y-2">
-          <p className="font-mono text-xs uppercase tracking-wider text-[var(--color-soft-ink)]">{t("app.activeMission.workspace.label")}</p>
-          <h1 className="break-words font-heading text-2xl font-black text-pretty">{workspace.mission.title}</h1>
-          <span className="inline-flex rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 text-sm font-bold">
-            {t(stateKey)}
-          </span>
+    <header className="s-card s-stack">
+      <div className="s-between" style={{ alignItems: "flex-start" }}>
+        <div className="s-stack" style={{ gap: 10 }}>
+          <span className="s-eyebrow">{t("app.activeMission.workspace.label")}</span>
+          <h1 className="min-w-0 break-words text-pretty">{workspace.mission.title}</h1>
+          <div className="s-row">
+            <span className="s-tag">{t(stateKey)}</span>
+          </div>
         </div>
-        <button
-          type="button"
-          onClick={() => onPrimaryAction(nextAction)}
-          className="min-h-11 shrink-0 touch-manipulation rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-ink)] px-5 py-2.5 font-heading font-bold text-white hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-        >
+        <button type="button" onClick={() => onPrimaryAction(nextAction)} className="s-btn s-primary shrink-0 touch-manipulation">
           {t(actionKey)}
         </button>
       </div>
 
-      <dl className="mt-5 grid gap-4 border-t-2 border-[var(--color-ink)] pt-4 sm:grid-cols-2">
+      <dl className="s-row" style={{ gap: "12px 32px", alignItems: "flex-start", margin: 0 }}>
         <div>
-          <dt className="font-mono text-xs uppercase tracking-wider text-[var(--color-soft-ink)]">{t("app.activeMission.workspace.responsible")}</dt>
-          <dd className="mt-1 text-sm font-medium">{t(responsibleKey)}</dd>
-        </div>
-        <div>
-          <dt className="font-mono text-xs uppercase tracking-wider text-[var(--color-soft-ink)]">{t("app.activeMission.workspace.deadline")}</dt>
-          <dd className="mt-1 text-sm font-medium">
+          <dt className="s-eyebrow" style={{ fontSize: 11 }}>{t("app.activeMission.workspace.deadline")}</dt>
+          <dd style={{ margin: 0 }}>
             {rewardExperience ? t("app.activeMission.workspace.rewardReviewTiming") : nextAction.deadline ? <time dateTime={nextAction.deadline}>{formatDate(nextAction.deadline, lang === "zh" ? "zh-HK" : "en-US")}</time> : t("app.activeMission.workspace.noDeadline")}
           </dd>
         </div>
-        {blockedReason ? (
-          <div className="sm:col-span-2">
-            <dt className="font-mono text-xs uppercase tracking-wider text-[var(--color-soft-ink)]">{t("app.activeMission.workspace.blockedWhy")}</dt>
-            <dd className="mt-1 break-words text-sm font-medium">{reasonKey ? t(reasonKey) : t("app.activeMission.workspace.unknownReason", { reason: reasonFallback })}</dd>
-          </div>
-        ) : null}
+        <div>
+          <dt className="s-eyebrow" style={{ fontSize: 11 }}>{t("app.activeMission.workspace.responsible")}</dt>
+          <dd style={{ margin: 0 }}>{t(responsibleKey)}</dd>
+        </div>
       </dl>
-    </header>
+
+      {blockedReason ? (
+        <p className="s-note" role="status">
+          {reasonKey ? t(reasonKey) : t("app.activeMission.workspace.unknownReason", { reason: reasonFallback })}
+        </p>
+      ) : null}    </header>
   );
 }
