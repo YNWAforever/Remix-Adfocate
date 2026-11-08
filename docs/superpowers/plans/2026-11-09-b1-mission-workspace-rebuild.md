@@ -1,6 +1,6 @@
 # B1 — mission workspace rebuild plan
 
-Status: started 2026-11-09. Page: `/my/$submissionId` (`src/routes/_app.my.$submissionId.tsx`). Goal: rebuild
+Status: **done 2026-11-09** (B1.1–B1.5 shipped). Page: `/my/$submissionId` (`src/routes/_app.my.$submissionId.tsx`). Goal: rebuild
 the creator mission workspace on the studio design system (`s-*` components in
 `src/components/studio/studio.css`) without changing the workflow or server contracts.
 
@@ -38,7 +38,7 @@ the creator mission workspace on the studio design system (`s-*` components in
 - Proof upload: file input, preview, existing evidence grant flow; verification status callout.
 - Acceptance: no upload path changes; E2E with fixture revisions.
 
-### B1.5 — Mobile, a11y, cleanup
+### B1.5 — Mobile, a11y, cleanup (done)
 - 390/768/1024 layout pass; min 44px targets; focus order; reduced-motion.
 - Remove now-unused legacy block components; keep route logic untouched.
 - Acceptance: Playwright viewport sweeps + axe-lite checks; Visual audit archived.
@@ -55,3 +55,7 @@ the creator mission workspace on the studio design system (`s-*` components in
 - Route file is large; extract presentational components first, keep selectors/mutations in the route.
 - Existing tests target legacy text; update assertions per phase rather than rewriting tests.
 - Fixture data must cover multi-deliverable and revision states; extend fixtures only if needed.
+
+## Completion evidence (B1.5)
+
+Audited with the fixture at 390/768/1024/1440: no horizontal overflow, one h1, one main landmark on every width; workspace height 1926 px at 390 and 1687 px at 1440. The only sub-44 px native controls are the requirement checkbox (now 22 px, with the full 44 px label as its touch target) and the visually hidden file input; no separate legacy block components remained after B1.1–B1.4 (the surface was restyled in place), and all active-mission/admin/workspace tests pass.
