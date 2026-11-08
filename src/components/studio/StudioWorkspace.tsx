@@ -124,6 +124,9 @@ function ThreadContent({ detail, skill, identityKey, onLoginRequired }: { detail
     get_my_missions: ["我的任務", "My missions"],
     get_my_mission_requirements: ["任務要求", "Mission requirements"],
     get_my_earnings: ["收益", "Earnings"],
+    get_open_missions: ["公開任務", "Open missions"],
+    get_my_redemptions: ["兌換記錄", "Redemptions"],
+    get_my_notifications: ["通知", "Notifications"],
   };
   async function receive(reply: AssistantReply, sentMessage?: string) {
     setUsedTools(reply.tools_used ?? []);

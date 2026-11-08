@@ -11,6 +11,7 @@ function fakeClient(rows: Record<string, unknown>) {
     const query = {
       select(fields: string) { call.select = fields; return query; },
       eq(key: string, value: unknown) { call.filters[key] = value; return query; },
+      order() { return query; },
       limit(value: number) { call.limit = value; return query; },
       then(resolve: (value: { data: unknown; error: null }) => unknown) {
         return Promise.resolve({ data: rows[table] ?? [], error: null as null }).then(resolve);
@@ -53,5 +54,20 @@ describe("read-only studio tools", () => {
     const { client } = fakeClient({ point_balances: [{ balance: 120 }] });
     expect(await runTool("get_my_points", "{}", client)).toBe(JSON.stringify({ points: 120 }));
     expect(await runTool("award_points", "{}", client)).toBe("unknown tool: award_points");
+  });
+  it("lists open workspace missions with a bounded read", async () => {
+    const { client, calls } = fakeClient({ missions: [{ slug: "tea", title: "Tea", points_reward: 400 }] });
+    const output = await runTool("get_open_missions", "{}", client, { workspaceId: "workspace" });
+    expect(calls[0].filters).toMatchObject({ status: "active", workspace_id: "workspace" });
+    expect(calls[0].limit).toBe(20);
+    expect(JSON.parse(output).missions).toHaveLength(1);
+  });
+  it("returns redemption history and notification state without writes", async () => {
+    const redemptions = fakeClient({ redemptions: [{ code: "A-1", status: "fulfilled" }] });
+    expect(JSON.parse(await runTool("get_my_redemptions", "{}", redemptions.client)).redemptions).toHaveLength(1);
+    expect(redemptions.calls[0].select).toContain("redemption_gifts");
+    const notifications = fakeClient({ notifications: [{ type: "mission", read_at: null }] });
+    expect(JSON.parse(await runTool("get_my_notifications", "{}", notifications.client)).notifications).toHaveLength(1);
+    expect(notifications.calls[0].select).toContain("read_at");
   });
 });
