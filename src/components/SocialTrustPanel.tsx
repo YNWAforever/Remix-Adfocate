@@ -36,7 +36,7 @@ export function SocialTrustPanel({ presentations, legacyHandles = [] }: { presen
   const requestCode = (id: string) => run(id, async () => { const result = await issue.mutateAsync(id); setCodes(current => ({ ...current, [id]: result.code })); });
 
   if (accounts.isLoading && !rows.length) return <p role="status">{t("app.social.loading")}</p>;
-  return <section className="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 shadow-[4px_4px_0_0_var(--color-ink)]">
+  return <section className="s-card s-stack">
     <h2 className="font-heading font-bold">{t("app.profile.socialAccounts")}</h2>
     {accounts.isError ? <div role="alert" className="space-y-2 text-sm"><p>{t("app.social.loadError")}</p><button type="button" className={button} onClick={() => void accounts.refetch()}>{t("common.retry")}</button></div> : null}
     <p className="text-xs text-[var(--color-soft-ink)]">{t("app.social.optionalHelp")}</p>
