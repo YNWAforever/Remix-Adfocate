@@ -13,14 +13,14 @@ the creator mission workspace on the studio design system (`s-*` components in
 
 ## Phases (each independently shippable)
 
-### B1.1 — Shell, header, progress (this phase)
+### B1.1 — Shell, header, progress (done)
 - `WorkspaceHeader`: `s-page-head` card with mission title, status tag, deadline, cash/points summary,
   primary action; remove duplicated labels.
 - `StudioProgress`: keep, now compact; move to a `s-card s-stack` with clearer current step.
 - Page wrapper: `s-stack` spacing, no legacy `main`.
 - Acceptance: fixture screenshot 1440/390, no overflow, height reduced, one H1, studio typography.
 
-### B1.2 — Deliverables + editor frame
+### B1.2 — Deliverables + editor frame (done)
 - `DeliverableNavigator` rebuilt as `s-tabs`/`s-card` list (desktop) and horizontal scroll (mobile),
   showing status, requirement count and blocked reason.
 - Editor card shell: heading block (deliverable title, format tag, state), field group spacing.
@@ -28,12 +28,12 @@ the creator mission workspace on the studio design system (`s-*` components in
 - Acceptance: keyboard nav preserved (existing roving tabindex tests), textareas bounded, autosave
   status visible only when dirty/saving.
 
-### B1.3 — Versions, review and revision
+### B1.3 — Versions, review and revision (done)
 - Version timeline as `s-card` list with event icons; review feedback as callout (`s-note`/`s-callout`).
 - Revision request state: distinct callout, remaining attempts, retry action.
 - Acceptance: tests for revision-request and version selection states.
 
-### B1.4 — Publication and proof
+### B1.4 — Publication and proof (done)
 - Publication instructions as numbered checklist; "publish" and "submit proof" actions grouped.
 - Proof upload: file input, preview, existing evidence grant flow; verification status callout.
 - Acceptance: no upload path changes; E2E with fixture revisions.

@@ -157,9 +157,9 @@ export function ProofSubmissionForm({
   }
 
   return (
-    <section aria-labelledby={headingId} className="rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-5 shadow-[var(--shadow-sm)]">
-      <h2 id={headingId} className="font-heading text-xl font-bold">Submit publication proof</h2>
-      <p className="mt-2 text-sm text-[var(--color-soft-ink)]">Add the public link for the exact approved version you published.</p>
+    <section aria-labelledby={headingId} className="s-card s-stack">
+      <h2 id={headingId}>Submit publication proof</h2>
+      <p className="s-muted">Add the public link for the exact approved version you published.</p>
 
       <form className="mt-5 space-y-5" noValidate onFocusCapture={startInteraction} onChangeCapture={startInteraction} onSubmit={submit}>
         <div>

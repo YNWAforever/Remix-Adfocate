@@ -178,12 +178,12 @@ export function RewardPendingCard({
   return (
     <section
       aria-label={t("app.activeMission.rewardPending.ariaLabel", { missionTitle })}
-      className="min-w-0 max-w-full overflow-hidden rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 shadow-[4px_4px_0_0_var(--color-ink)] sm:p-6"
+      className="min-w-0 max-w-full overflow-hidden s-card s-stack"
     >
       <p role="status" aria-live="polite" aria-atomic="true" className="sr-only">
         {announcementText}
       </p>
-      <p className="font-mono text-xs font-bold uppercase tracking-wider text-[var(--color-soft-ink)]">
+      <p className="s-eyebrow">
         {t(reassessment
           ? "app.activeMission.rewardPending.cancelledStatus"
           : "app.activeMission.rewardPending.status")}
@@ -191,13 +191,13 @@ export function RewardPendingCard({
       <h2
         ref={headingRef}
         tabIndex={-1}
-        className="mt-2 break-words font-heading text-2xl font-black text-pretty focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+        className="break-words text-pretty focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
       >
         {t(reassessment
           ? "app.activeMission.rewardPending.cancelledTitle"
           : "app.activeMission.rewardPending.title")}
       </h2>
-      <p className="mt-3 break-words text-sm leading-6 text-[var(--color-soft-ink)]">
+      <p className="s-muted break-words">
         {t(reassessment
           ? "app.activeMission.rewardPending.cancelledBody"
           : "app.activeMission.rewardPending.body")}
@@ -205,28 +205,28 @@ export function RewardPendingCard({
 
       {!reassessment ? (
         <>
-          <dl className="mt-5 grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-3">
+          <dl className="s-stats" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))" }}>
             {hasPoints ? (
-              <div className="min-w-0 rounded-xl bg-[var(--color-paper)] p-3">
-                <dt className="text-xs font-bold uppercase tracking-wide text-[var(--color-soft-ink)]">{t("app.activeMission.rewardPending.points")}</dt>
-                <dd className="mt-1 break-words font-heading text-xl font-black">{new Intl.NumberFormat(locale).format(pendingReward.reward.pointsAmount)}</dd>
+              <div className="s-stat">
+                <dt className="s-muted">{t("app.activeMission.rewardPending.points")}</dt>
+                <dd style={{ margin: 0 }}><strong>{new Intl.NumberFormat(locale).format(pendingReward.reward.pointsAmount)}</strong></dd>
               </div>
             ) : null}
             {hasCash ? (
-              <div className="min-w-0 rounded-xl bg-[var(--color-paper)] p-3">
-                <dt className="text-xs font-bold uppercase tracking-wide text-[var(--color-soft-ink)]">{t("app.activeMission.rewardPending.cash")}</dt>
-                <dd className="mt-1 break-words font-heading text-xl font-black">{formatCash(pendingReward.reward.cashAmount, pendingReward.reward.currency, locale)}</dd>
+              <div className="s-stat">
+                <dt className="s-muted">{t("app.activeMission.rewardPending.cash")}</dt>
+                <dd style={{ margin: 0 }}><strong>{formatCash(pendingReward.reward.cashAmount, pendingReward.reward.currency, locale)}</strong></dd>
               </div>
             ) : null}
             {hasXp ? (
-              <div className="min-w-0 rounded-xl bg-[var(--color-paper)] p-3">
-                <dt className="text-xs font-bold uppercase tracking-wide text-[var(--color-soft-ink)]">{t("app.activeMission.rewardPending.xp")}</dt>
-                <dd className="mt-1 break-words font-heading text-xl font-black">{new Intl.NumberFormat(locale).format(pendingReward.reward.xpAmount)}</dd>
+              <div className="s-stat">
+                <dt className="s-muted">{t("app.activeMission.rewardPending.xp")}</dt>
+                <dd style={{ margin: 0 }}><strong>{new Intl.NumberFormat(locale).format(pendingReward.reward.xpAmount)}</strong></dd>
               </div>
             ) : null}
           </dl>
 
-          <div className="mt-5 min-w-0 rounded-xl border-2 border-[var(--color-ink)] p-4 text-sm">
+          <div className="s-note" style={{ flexDirection: "column", alignItems: "stretch" }}>
             {targetAt ? (
               <p className="break-words">
                 <span className="font-bold">{t("app.activeMission.rewardPending.target")}: </span>
