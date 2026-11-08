@@ -37,33 +37,24 @@ test("D14 public pages identify illustrative claims and use canonical XP in both
   record("public-ui", { coverage, data: "fictional samples; no production performance claim" });
 });
 
-test("D14 five contact previews retain drafts, send no data and show no receipt after refresh", async ({ browser }) => {
+test("D14 contact page collects nothing, sends no data and claims no receipt", async ({ browser }) => {
   const ctx = await context(browser), page = await ctx.newPage();
   const writes: string[] = [];
   page.on("request", request => { if (["POST", "PATCH", "PUT", "DELETE"].includes(request.method())) writes.push(new URL(request.url()).pathname); });
   await page.goto("/contact");
-  for (const tab of ["Brand Enquiry", "Creator Signup", "Adfoplace Offer", "Capital Waitlist", "Partner Enquiry"]) {
-    await page.getByRole("tab", { name: tab, exact: true }).click();
-    const form = page.locator("form:visible");
-    for (const input of await form.locator("input[required]").all()) {
-      const type = await input.getAttribute("type");
-      if (type === "checkbox") await input.check();
-      else await input.fill(type === "email" ? "d14-preview@example.invalid" : type === "number" ? "5000" : "Retained preview draft");
-    }
-    await form.getByRole("button", { name: "Preview form", exact: true }).click();
-    await expect(page.getByText("Preview only. Nothing was sent or saved.", { exact: true }).last()).toBeVisible();
-    await expect(form.locator('input[name="name"]')).toHaveValue("Retained preview draft");
-    await expect(page.getByRole("heading", { name: /Thanks|Received/ })).toHaveCount(0);
-  }
-  await page.getByRole("tab", { name: "Brand Enquiry", exact: true }).click();
-  await expect(page.locator('form:visible input[name="name"]')).toHaveValue("Retained preview draft");
+  await expect(page.getByRole("heading", { name: "Let's talk about your next step.", exact: true })).toBeVisible();
+  // The preview forms were removed; the page must not offer a submission surface.
+  await expect(page.locator("form")).toHaveCount(0);
+  await expect(page.locator("input, textarea")).toHaveCount(0);
+  await expect(page.getByText("No form on this page", { exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Thanks|Received/ })).toHaveCount(0);
   expect(writes).toEqual([]);
   const stored = await page.evaluate(() => JSON.stringify(localStorage));
   expect(stored).not.toContain("Retained preview draft"); expect(stored).not.toContain("d14-preview@example.invalid");
   await page.reload();
-  await expect(page.locator('form:visible input[name="name"]')).toHaveValue("");
+  await expect(page.locator("form")).toHaveCount(0);
   await expect(page.getByRole("heading", { name: /Thanks|Received/ })).toHaveCount(0);
-  record("contact-ui", { tabs: 5, retainedAcrossPreviewAndTabs: true, writes, storedDraft: false, receiptAfterRefresh: false });
+  record("contact-ui", { forms: 0, writes, storedDraft: false, receiptAfterRefresh: false });
   await ctx.close();
 });
 

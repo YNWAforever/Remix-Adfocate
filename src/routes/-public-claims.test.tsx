@@ -79,25 +79,18 @@ describe("D14 public promises", () => {
     expect(await screen.findByText(lang === "en" ? "Course topics preview · content in preparation" : "課程主題預覽 · 內容準備中")).toBeInTheDocument();
   });
   for (const lang of ["en", "zh"] as const) {
-    it(`contact ${lang}: preview submission preserves inputs, sends nothing and never claims receipt or storage`, async () => {
+    it(`contact ${lang}: collects nothing and never claims receipt or storage`, async () => {
       localStorage.setItem("lang", lang);
-      const { container, unmount } = page(Contact);
-      const button = await screen.findByRole("button", { name: lang === "en" ? "Preview form" : "預覽表格" });
-      fireEvent.change(container.querySelector('input[name="name"]')!, { target: { value: "Retained draft" } });
-      fireEvent.change(container.querySelector('input[name="email"]')!, { target: { value: "preview@example.invalid" } });
-      const fetch = vi.spyOn(globalThis, "fetch");
-      const persist = vi.spyOn(Storage.prototype, "setItem");
-      fireEvent.submit(button.closest("form")!);
-      expect(h.info).toHaveBeenCalledWith(lang === "en" ? "Preview only. Nothing was sent or saved." : "僅供預覽，沒有發送或儲存任何資料。");
-      expect(h.success).not.toHaveBeenCalled();
-      expect(fetch).not.toHaveBeenCalled();
-      expect(persist).not.toHaveBeenCalled();
-      expect(container.querySelector('input[name="name"]')).toHaveValue("Retained draft");
+      const { container } = page(Contact);
+      await screen.findByRole("heading", { level: 1 });
+      // The preview form was removed rather than made to look functional.
+      expect(container.querySelectorAll("form")).toHaveLength(0);
+      expect(container.querySelectorAll("input, textarea")).toHaveLength(0);
+      expect(container.textContent).toMatch(lang === "en" ? /does not collect or send/i : /不會收集或傳送/);
       expect(container.textContent).not.toMatch(/Received|we got it|recorded your interest|已收到|收到喇|本機記低|24h|真人回覆/);
-      fetch.mockRestore(); persist.mockRestore(); unmount();
-      const fresh = page(Contact);
-      expect(fresh.container.querySelector('input[name="name"]')).toHaveValue("");
-      expect(fresh.container.textContent).not.toMatch(/Received|we got it|已收到|收到喇/);
+      const fetch = vi.spyOn(globalThis, "fetch");
+      expect(fetch).not.toHaveBeenCalled();
+      fetch.mockRestore();
     });
   }
 });
