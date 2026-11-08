@@ -1,6 +1,6 @@
 // @vitest-environment node
 import { describe, expect, it } from "vitest";
-import { loadWorkspaceMcpServers, recordMcpCall } from "../lib/mcp/registry";
+import { hasLiveConsent, loadWorkspaceMcpServers, recordMcpCall, runFencedMcpTool } from "../lib/mcp/registry";
 
 type Row = Record<string, unknown>;
 type Call = { table: string; op: string; filters: Row; values?: unknown };
@@ -18,6 +18,7 @@ function store(rows: Record<string, Row[]>, options: { fail?: boolean; insertErr
       is(key: string, value: unknown) { call.filters[key] = value; return query; },
       order() { return query; },
       limit() { return query; },
+      maybeSingle() { call.op = "maybe"; return query; },
       insert(values: unknown) { call.op = "insert"; call.values = values; return query; },
       then(resolve: (value: unknown) => unknown) {
         if (options.fail) return Promise.resolve({ data: null, error: { message: "42P01 relation does not exist" } }).then(resolve);
@@ -33,7 +34,7 @@ function store(rows: Record<string, Row[]>, options: { fail?: boolean; insertErr
           if (value === null) return row[key] === null || row[key] === undefined;
           return row[key] === value;
         }));
-        return Promise.resolve({ data, error: null }).then(resolve);
+        return Promise.resolve({ data: call.op === "maybe" ? (data[0] ?? null) : data, error: null }).then(resolve);
       },
     };
     return query;
@@ -67,8 +68,27 @@ describe("mcp workspace registry", () => {
     expect(registry.servers.map(server => server.name)).toEqual(["notes"]);
     expect(registry.servers[0].tools.map(tool => tool.name)).toEqual(["lookup_note", "get_brief"]);
     expect(registry.servers[0].url).toBe("https://mcp.example.test/rpc");
+    expect(registry.serverIds.get("notes")).toBe("s1");
     const consentCall = fake.calls.find(call => call.table === "mcp_consents");
     expect(consentCall?.filters).toMatchObject({ creator_id: "c", workspace_id: "w", revoked_at: null });
+  });
+
+  it("keeps consent fencing live and fails closed on errors", async () => {
+    const fake = store({ mcp_consents: consents });
+    expect(await hasLiveConsent(fake.client, "s1", "c", "w")).toBe(true);
+    expect(await hasLiveConsent(fake.client, "s3", "c", "w")).toBe(false);
+    expect(await hasLiveConsent(fake.client, "s1", "other", "w")).toBe(false);
+    expect(await hasLiveConsent(store({}, { fail: true }).client, "s1", "c", "w")).toBe(false);
+  });
+
+  it("drops an MCP payload when consent is revoked while it runs", async () => {
+    const fake = store({ mcp_consents: consents });
+    const live = await runFencedMcpTool(fake.client, { serverId: "s1", creatorId: "c", workspaceId: "w" }, async () => "PAYLOAD");
+    expect(live).toEqual({ result: "PAYLOAD", outcome: "ok" });
+    const revoked = await runFencedMcpTool(fake.client, { serverId: "s3", creatorId: "c", workspaceId: "w" }, async () => "SECRET");
+    expect(revoked).toEqual({ result: "error: consent_revoked", outcome: "consent_revoked" });
+    const envMode = await runFencedMcpTool(fake.client, { creatorId: "c", workspaceId: "w" }, async () => "error: mcp_timeout");
+    expect(envMode).toEqual({ result: "error: mcp_timeout", outcome: "mcp_timeout" });
   });
 
   it("reports unavailable when the optional tables are missing", async () => {

@@ -37,6 +37,8 @@ export type McpWorkspaceRegistry = Readonly<{
   /** false when the optional registry tables are absent or unreadable. */
   available: boolean;
   servers: readonly McpServerConfig[];
+  /** server name → registry row id, used for mid-turn consent fencing. */
+  serverIds: ReadonlyMap<string, string>;
   errors: readonly string[];
 }>;
 
@@ -55,9 +57,9 @@ export async function loadWorkspaceMcpServers(
     .eq("workspace_id", workspaceId)
     .eq("enabled", true)
     .eq("read_only", true);
-  if (servers.error) return { available: false, servers: [], errors: ["registry unavailable"] };
+  if (servers.error) return { available: false, servers: [], serverIds: new Map(), errors: ["registry unavailable"] };
   const rows = (servers.data ?? []) as Array<{ id: string; name: string; url: string }>;
-  if (!rows.length) return { available: true, servers: [], errors: [] };
+  if (!rows.length) return { available: true, servers: [], serverIds: new Map(), errors: [] };
 
   const ids = rows.map(row => row.id);
   const [tools, consents] = await Promise.all([
@@ -65,7 +67,7 @@ export async function loadWorkspaceMcpServers(
     store.from("mcp_consents").select("server_id,revoked_at").in("server_id", ids)
       .eq("creator_id", creatorId).eq("workspace_id", workspaceId).is("revoked_at", null),
   ]);
-  if (tools.error || consents.error) return { available: false, servers: [], errors: ["registry unavailable"] };
+  if (tools.error || consents.error) return { available: false, servers: [], serverIds: new Map(), errors: ["registry unavailable"] };
 
   const toolsByServer = new Map<string, McpRemoteTool[]>();
   for (const row of (tools.data ?? []) as Array<{ server_id: string; tool_name: string }>) {
@@ -77,14 +79,16 @@ export async function loadWorkspaceMcpServers(
   const consented = new Set(((consents.data ?? []) as Array<{ server_id: string }>).map(row => row.server_id));
 
   const result: McpServerConfig[] = [];
+  const serverIds = new Map<string, string>();
   for (const row of rows) {
     if (!SERVER_NAME.test(row.name) || !consented.has(row.id)) continue;
     const url = parseServerUrl(row.url);
     const allowlistedTools = toolsByServer.get(row.id) ?? [];
     if (!url || !allowlistedTools.length) continue;
     result.push({ name: row.name, url, timeoutMs: DEFAULT_TIMEOUT_MS, headers: {}, tools: allowlistedTools });
+    serverIds.set(row.name, row.id);
   }
-  return { available: true, servers: result, errors: [] };
+  return { available: true, servers: result, serverIds, errors: [] };
 }
 
 /** Best-effort call audit; the table is optional and malformed/oversized outcomes are bounded. */
@@ -113,4 +117,35 @@ export async function recordMcpCall(
   } catch {
     /* Audit table optional (or insert rejected): never fail a chat turn for audit. */
   }
+}
+
+/** Mid-turn fencing: a tool result is usable only while the creator's consent row is still live. */
+export async function hasLiveConsent(
+  store: Store,
+  serverId: string,
+  creatorId: string,
+  workspaceId: string,
+): Promise<boolean> {
+  try {
+    const result = await store.from("mcp_consents").select("id")
+      .eq("server_id", serverId).eq("creator_id", creatorId).eq("workspace_id", workspaceId)
+      .is("revoked_at", null).maybeSingle();
+    if (result.error) return false;
+    return Boolean(result.data);
+  } catch {
+    return false;
+  }
+}
+
+/** Runs one MCP tool call and drops its payload if consent was revoked while it ran. */
+export async function runFencedMcpTool(
+  store: Store,
+  state: { serverId?: string; creatorId: string; workspaceId: string },
+  run: () => Promise<string>,
+): Promise<{ result: string; outcome: string }> {
+  const result = await run();
+  const outcome = result.startsWith("error:") ? result.slice(7, 40) : "ok";
+  if (!state.serverId) return { result, outcome };
+  if (await hasLiveConsent(store, state.serverId, state.creatorId, state.workspaceId)) return { result, outcome };
+  return { result: "error: consent_revoked", outcome: "consent_revoked" };
 }
