@@ -1,5 +1,5 @@
-// @vitest-environment node
-import { describe, expect, it, vi } from "vitest";
+﻿// @vitest-environment node
+import { describe, expect, it } from "vitest";
 import { answerFingerprint, readToolTraces, saveToolTrace } from "../lib/studio/toolTraces";
 
 type Call = { table: string; op: string; value?: unknown };
@@ -62,3 +62,4 @@ describe("studio tool traces", () => {
     await expect(readToolTraces(fake.client, "conversation")).resolves.toEqual(new Map());
   });
 });
+
