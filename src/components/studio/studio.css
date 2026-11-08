@@ -885,3 +885,29 @@
 .s-saved-output summary { padding-block: 12px; cursor: pointer; }
 .s-saved-text { white-space: pre-wrap; }
 .s-saved-snippet { margin: 0; }
+
+/* Layout tightening pass: bounded chat, quieter labels, phone-safe headings. */
+.studio h1 { overflow-wrap: anywhere; }
+.s-thread-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; min-width: 0; }
+.s-thread-head > div { min-width: 0; }
+.s-thread-head h1 { font-size: clamp(23px, 3.2vw, 32px); margin: 0; }
+.s-chat { min-height: 0; max-height: min(52vh, 520px); overflow-y: auto; overscroll-behavior: contain; padding: 6px 4px; scrollbar-gutter: stable; }
+.s-chat-empty { display: grid; gap: 6px; padding: 16px 4px; font-size: 14px; color: var(--s-muted); }
+.s-chat-empty strong { color: var(--s-ink); }
+.s-ask-note { margin: 8px 2px 0; font-size: 12px; color: var(--s-muted); }
+.s-thread-aside .s-card { padding: 18px; }
+.s-aside-flow { font-size: 13px; color: var(--s-muted); }
+@media (min-width: 1024px) {
+  .s-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 767px) {
+  .s-chat { max-height: 42vh; }
+  .s-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .s-thread-head { gap: 8px; }
+  .s-thread-head .s-mascot { width: 56px; }
+  .s-thread-head h1 { font-size: clamp(22px, 6vw, 28px); }
+  .s-tabs button { flex: 1 1 calc(50% - 8px); min-width: 0; }
+}
+@media (max-width: 359px) {
+  .s-tabs button { flex: 1 1 100%; }
+}
