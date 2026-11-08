@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { McpRemoteTool, McpServerConfig } from "./policy.js";
+import { decryptSecret } from "./oauthCrypto.js";
 
 type Store = Pick<SupabaseClient, "from">;
 
@@ -53,12 +54,12 @@ export async function loadWorkspaceMcpServers(
 ): Promise<McpWorkspaceRegistry> {
   const servers = await store
     .from("mcp_servers")
-    .select("id,name,url,enabled,read_only")
+    .select("id,name,url,enabled,read_only,auth_mode,oauth_provider,oauth_scopes")
     .eq("workspace_id", workspaceId)
     .eq("enabled", true)
     .eq("read_only", true);
   if (servers.error) return { available: false, servers: [], serverIds: new Map(), errors: ["registry unavailable"] };
-  const rows = (servers.data ?? []) as Array<{ id: string; name: string; url: string }>;
+  const rows = (servers.data ?? []) as Array<{ id: string; name: string; url: string; auth_mode?: string | null }>;
   if (!rows.length) return { available: true, servers: [], serverIds: new Map(), errors: [] };
 
   const ids = rows.map(row => row.id);
@@ -78,6 +79,19 @@ export async function loadWorkspaceMcpServers(
   }
   const consented = new Set(((consents.data ?? []) as Array<{ server_id: string }>).map(row => row.server_id));
 
+  const oauthServerIds = rows.filter(row => row.auth_mode === "oauth").map(row => row.id);
+  const connections = oauthServerIds.length
+    ? await store.from("mcp_oauth_connections").select("server_id,access_token_encrypted,expires_at")
+        .in("server_id", oauthServerIds).eq("creator_id", creatorId).eq("workspace_id", workspaceId).is("revoked_at", null)
+    : { data: [] as Array<Record<string, unknown>>, error: null };
+  if (connections.error) return { available: false, servers: [], serverIds: new Map(), errors: ["registry unavailable"] };
+  const accessTokens = new Map<string, string>();
+  for (const row of (connections.data ?? []) as Array<{ server_id: string; access_token_encrypted: string; expires_at?: string | null }>) {
+    if (row.expires_at && Date.parse(row.expires_at) <= Date.now()) continue;
+    try { accessTokens.set(row.server_id, decryptSecret(row.access_token_encrypted)); }
+    catch { /* missing key or broken cipher: fail closed, server is not exposed */ }
+  }
+
   const result: McpServerConfig[] = [];
   const serverIds = new Map<string, string>();
   for (const row of rows) {
@@ -85,7 +99,13 @@ export async function loadWorkspaceMcpServers(
     const url = parseServerUrl(row.url);
     const allowlistedTools = toolsByServer.get(row.id) ?? [];
     if (!url || !allowlistedTools.length) continue;
-    result.push({ name: row.name, url, timeoutMs: DEFAULT_TIMEOUT_MS, headers: {}, tools: allowlistedTools });
+    let headers: Record<string, string> = {};
+    if (row.auth_mode === "oauth") {
+      const token = accessTokens.get(row.id);
+      if (!token) continue;
+      headers = { Authorization: `Bearer ${token}` };
+    }
+    result.push({ name: row.name, url, timeoutMs: DEFAULT_TIMEOUT_MS, headers, tools: allowlistedTools });
     serverIds.set(row.name, row.id);
   }
   return { available: true, servers: result, serverIds, errors: [] };

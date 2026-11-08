@@ -1,5 +1,6 @@
 // @vitest-environment node
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { encryptSecret } from "../lib/mcp/oauthCrypto";
 import { hasLiveConsent, loadWorkspaceMcpServers, recordMcpCall, runFencedMcpTool } from "../lib/mcp/registry";
 
 type Row = Record<string, unknown>;
@@ -60,7 +61,32 @@ const consents = [
   { server_id: "s3", creator_id: "c", workspace_id: "w", revoked_at: "2026-11-01T00:00:00Z" },
 ];
 
+afterEach(() => vi.unstubAllEnvs());
+
 describe("mcp workspace registry", () => {
+  it("exposes an OAuth server only with a live encrypted token", async () => {
+    vi.stubEnv("MCP_OAUTH_ENCRYPTION_KEY", Buffer.alloc(32, 3).toString("base64"));
+    const oauthServer = { id: "s4", name: "oauth_notes", url: "https://mcp.example.test/oauth", enabled: true, read_only: true, workspace_id: "w", auth_mode: "oauth" };
+    const oauthTool = { server_id: "s4", tool_name: "lookup_note", enabled: true };
+    const consent = { server_id: "s4", creator_id: "c", workspace_id: "w", revoked_at: null };
+    const connection = (over: Row = {}) => ({
+      server_id: "s4", creator_id: "c", workspace_id: "w", revoked_at: null,
+      access_token_encrypted: encryptSecret("TOKEN"), expires_at: new Date(Date.now() + 60_000).toISOString(), ...over,
+    });
+    const base = { mcp_servers: [oauthServer], mcp_server_tools: [oauthTool], mcp_consents: [consent] };
+    const live = await loadWorkspaceMcpServers(store({ ...base, mcp_oauth_connections: [connection()] }).client, "w", "c");
+    expect(live.servers.map(server => server.name)).toEqual(["oauth_notes"]);
+    expect(live.servers[0].headers).toMatchObject({ Authorization: "Bearer TOKEN" });
+    const missing = await loadWorkspaceMcpServers(store({ ...base }).client, "w", "c");
+    expect(missing.servers).toEqual([]);
+    const expired = await loadWorkspaceMcpServers(store({ ...base, mcp_oauth_connections: [connection({ expires_at: new Date(Date.now() - 60_000).toISOString() })] }).client, "w", "c");
+    expect(expired.servers).toEqual([]);
+    const sealed = connection();
+    vi.stubEnv("MCP_OAUTH_ENCRYPTION_KEY", "");
+    const noKey = await loadWorkspaceMcpServers(store({ ...base, mcp_oauth_connections: [sealed] }).client, "w", "c");
+    expect(noKey.servers).toEqual([]);
+  });
+
   it("returns only read-only, consented servers with enabled allowlisted tools", async () => {
     const fake = store({ mcp_servers: servers, mcp_server_tools: tools, mcp_consents: consents });
     const registry = await loadWorkspaceMcpServers(fake.client, "w", "c");
