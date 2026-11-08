@@ -12,11 +12,11 @@ function CampaignDetail() {
   const { data, isLoading, isError, error, refetch } = useCampaign(slug);
   const { data: board = [] } = useCampaignLeaderboard(slug);
 
-  if (isLoading) return <div role="status" className="p-4 text-muted-foreground">{t("common.loading")}</div>;
+  if (isLoading) return <p role="status" className="s-muted">{t("common.loading")}</p>;
   if (isError || !data) {
     const notFound = error instanceof ApiError && error.status === 404;
     return (
-      <div role="alert" className="mx-auto max-w-3xl space-y-3 p-4">
+      <div role="alert" className="s-card s-stack">
         <p>{t(notFound ? "app.campaigns.notFound" : "common.loadFailed")}</p>
         <div className="flex gap-3 text-sm font-semibold underline underline-offset-4">
           {!notFound && <button type="button" onClick={() => void refetch()}>{t("common.retry")}</button>}
@@ -33,30 +33,30 @@ function CampaignDetail() {
   );
 
   return (
-    <div className="mx-auto max-w-3xl p-4 space-y-6">
+    <div className="s-stack">
       {/* Header */}
-      <header className="space-y-1">
-        <h1 className="text-2xl font-bold">{campaign.title}</h1>
+      <header className="s-stack" style={{ gap: 6 }}>
+        <h1>{campaign.title}</h1>
         {campaign.description && (
-          <p className="text-sm text-muted-foreground">{campaign.description}</p>
+          <p className="s-muted">{campaign.description}</p>
         )}
-        <p className="text-xs text-muted-foreground">
+        <p className="s-muted">
           {t("app.campaigns.endsIn")}: {formatCreatorDate(campaign.ends_at, lang) ?? campaign.ends_at}
         </p>
       </header>
 
       {/* Goal progress */}
-      <section className="rounded-xl border p-4 space-y-2">
+      <section className="s-card s-stack">
         <div className="text-sm">
           {t("app.campaigns.goalProgress", {
             x: my_progress.approved,
             y: campaign.goal_target,
           })}
         </div>
-        <div className="h-2 rounded-full bg-muted overflow-hidden">
+        <div style={{ height: 8, borderRadius: 99, background: "#f1eef5", overflow: "hidden" }}>
           <div
-            className="h-2 rounded-full bg-primary"
-            style={{ width: `${pct}%` }}
+            className="h-2 rounded-full"
+            style={{ width: `${pct}%`, background: "var(--s-purple)" }}
             role="progressbar"
             aria-valuenow={pct}
             aria-valuemin={0}
@@ -70,7 +70,7 @@ function CampaignDetail() {
       </section>
 
       {/* Rewards */}
-      <section className="rounded-xl border p-4 space-y-2">
+      <section className="s-card s-stack">
         <h2 className="text-sm font-semibold">
           {t("app.campaigns.completionBonus")} · {t("app.campaigns.prizes")}
         </h2>
@@ -92,10 +92,10 @@ function CampaignDetail() {
 
       {/* Missions in this campaign */}
       {missions.length > 0 && (
-        <section className="space-y-2">
-          <h2 className="text-sm font-semibold">{t("app.campaigns.missions")}</h2>
+        <section className="s-card s-stack">
+          <h2>{t("app.campaigns.missions")}</h2>
           {missions.map((m) => (
-            <div key={m.mission_id} className="rounded-xl border p-3 text-sm">
+            <div key={m.mission_id} className="s-subcard" style={{ fontSize: 14 }}>
               {m.missions?.title}
             </div>
           ))}
@@ -104,8 +104,8 @@ function CampaignDetail() {
 
       {/* Leaderboard */}
       {board.length > 0 && (
-        <section className="space-y-1">
-          <h2 className="text-sm font-semibold">{t("app.campaigns.leaderboard")}</h2>
+        <section className="s-card s-stack">
+          <h2>{t("app.campaigns.leaderboard")}</h2>
           {board.map((row) => (
             <div
               key={row.creator_id}

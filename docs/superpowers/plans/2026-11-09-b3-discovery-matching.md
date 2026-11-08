@@ -1,6 +1,6 @@
 # B3 — discovery and matching polish (plan)
 
-Status: started 2026-11-09 (Week 3). **B3.1 done** (mission cards + list shell); **B3.2 header/fit-badge restyle started**; campaigns/mobile pending. Pages: `/mission` (mission list), `/match` (brand matching),
+Status: **done 2026-11-09** — B3.1–B3.4 shipped. Pages: `/mission` (mission list), `/match` (brand matching),
 `/campaigns` (campaigns). Goal: make discovery feel like one product surface on the studio system while
 keeping every server query and eligibility rule untouched.
 
@@ -18,18 +18,18 @@ secondary labels, and matching/campaign states rely on ad-hoc tags. Empty/error 
 - Empty state `s-empty` when no missions match; error state `s-error` with retry.
 - Acceptance: fixture screenshots at 390/1440; no overflow; one h1; query contracts unchanged.
 
-### B3.2 — Match page (header/cards started)
+### B3.2 — Match page (done)
 - Brand-match cards: match reasons as short disclosure rows, eligibility/blocked reasons as `s-note`,
   honest "why this match" summary; no invented scores.
 - CTA per card (apply/view) using `s-btn`; states for applied/accepted/declined.
 - Acceptance: matching tests pass; blocked reasons visible, not hidden.
 
-### B3.3 — Campaigns page
+### B3.3 — Campaigns page (done)
 - Campaign cards with status, dates and reward context; leaderboard/team summaries as compact rows.
 - No fake metrics: only fields the API returns.
 - Acceptance: campaign query/list tests pass; mobile layout verified.
 
-### B3.4 — Mobile, a11y, cleanup
+### B3.4 — Mobile, a11y, cleanup (done)
 - 390/768/1024 sweep, 44 px targets, focus order; remove leftover legacy card wrappers in these pages.
 - Acceptance: audit script shows no overflow / one h1; screenshots archived.
 
@@ -43,3 +43,7 @@ secondary labels, and matching/campaign states rely on ad-hoc tags. Empty/error 
 
 - `src/routes/_app.mission*`, `_app.match*`, `_app.campaigns*` tests, typecheck, lint, build.
 - Fixture screenshots at 390/768/1440 for each page under `.ui-audit-2026-11-08/`.
+
+## Completion evidence
+
+Mission cards and the match page share the studio card/meta/fact treatment with mint fit tags; campaigns list/detail use studio headers, s-task cards, s-grid, s-empty, studio progress bar and leaderboard cards. Audit at 390/1440: mission 1229/1000 px, match 1366/1000 px, campaigns 844/1000 px — no horizontal overflow and one h1 on every page; mission/match/campaign/card tests (181) pass.
