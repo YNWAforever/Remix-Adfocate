@@ -36,8 +36,8 @@ function Missions() {
   const categories = [ALL_CATEGORY, ...missionCategoryOptions([...(data?.map((mission) => mission.category) ?? []), ...(category !== ALL_CATEGORY ? [category] : [])])];
   const visible = data?.filter((mission) => category === ALL_CATEGORY || canonicalMissionCategory(mission.category ?? "") === category);
   return (
-    <div className="mx-auto max-w-lg space-y-4 p-4 lg:max-w-5xl">
-      <h1 className="font-display text-2xl font-bold">{t("app.mission.pageTitle")}</h1>
+    <div className="s-stack">
+      <h1>{t("app.mission.pageTitle")}</h1>
       <FilterPills options={categories} value={category} onChange={setCategory} renderLabel={(value) => t(categoryLabelKey(value))} />
       {missions.isLoading ? (
         <div role="status" aria-label={t("app.mission.loading")} className="grid gap-2 lg:grid-cols-2">
@@ -49,10 +49,10 @@ function Missions() {
       {missions.isError ? <RequestFeedback error={missions.error ?? new Error("mission-list-unavailable")}
         summary={t("app.mission.loadFailed")} stale={Boolean(data?.length)} retry={() => void missions.refetch()} /> : null}
       {!missions.isLoading && !missions.isError && visible?.length === 0 ? (
-        <p className="text-sm text-[var(--color-soft-ink)]">{t("app.mission.emptyCategory")}</p>
+        <p className="s-empty">{t("app.mission.emptyCategory")}</p>
       ) : null}
       <h2 className="sr-only">{t("app.mission.resultsHeading")}</h2>
-      <div className="grid gap-2 lg:grid-cols-2">
+      <div className="s-grid">
         {visible?.map((mission) => (
           <Link key={mission.id} to="/mission/$missionSlug" params={{ missionSlug: mission.slug }}>
             <MissionCard

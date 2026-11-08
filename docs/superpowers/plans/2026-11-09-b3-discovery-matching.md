@@ -1,6 +1,6 @@
 # B3 — discovery and matching polish (plan)
 
-Status: started 2026-11-09 (Week 3). Pages: `/mission` (mission list), `/match` (brand matching),
+Status: started 2026-11-09 (Week 3). **B3.1 done** (mission cards + list shell); **B3.2 header/fit-badge restyle started**; campaigns/mobile pending. Pages: `/mission` (mission list), `/match` (brand matching),
 `/campaigns` (campaigns). Goal: make discovery feel like one product surface on the studio system while
 keeping every server query and eligibility rule untouched.
 
@@ -11,14 +11,14 @@ secondary labels, and matching/campaign states rely on ad-hoc tags. Empty/error 
 
 ## Phases
 
-### B3.1 — Discovery shell and mission cards
+### B3.1 — Discovery shell and mission cards (done)
 - Shared studio page header (`s-eyebrow`, title, one-line context, entry count) for all three pages.
 - Mission cards as `s-task`-style items: title, platform, reward, deadline, one primary action; filters
   as `s-tag` chips in a scrollable row on mobile.
 - Empty state `s-empty` when no missions match; error state `s-error` with retry.
 - Acceptance: fixture screenshots at 390/1440; no overflow; one h1; query contracts unchanged.
 
-### B3.2 — Match page
+### B3.2 — Match page (header/cards started)
 - Brand-match cards: match reasons as short disclosure rows, eligibility/blocked reasons as `s-note`,
   honest "why this match" summary; no invented scores.
 - CTA per card (apply/view) using `s-btn`; states for applied/accepted/declined.

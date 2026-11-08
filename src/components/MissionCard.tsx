@@ -122,14 +122,14 @@ export function MissionCard({
   const visibleFacts = facts.filter((fact): fact is CardFact => fact !== null);
 
   return (
-    <article className="s-mission-card pastel-card flex gap-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3">
-      <div className="s-mission-art h-20 w-20 shrink-0 overflow-hidden rounded-xl border-2 border-[var(--color-ink)] bg-[var(--color-muted,#E4E4E4)]">
-        {imageUrl ? <img src={imageUrl} alt="" className="h-full w-full object-cover" /> : <Clapperboard size={30} aria-hidden className="s-card-illustration" />}
+    <article className="s-mission-card">
+      <div className="s-mission-art">
+        {imageUrl ? <img src={imageUrl} alt="" /> : <Clapperboard size={26} aria-hidden className="s-card-illustration" />}
       </div>
-      <div className="min-w-0 flex-1">
-        {category ? <BadgePill>{t(categoryLabelKey(category))}</BadgePill> : null}
-        <h3 className="mt-1 line-clamp-2 font-heading font-semibold">{title}</h3>
-        <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-[var(--color-soft-ink)]">
+      <div className="s-mission-body">
+        {category ? <div style={{ justifySelf: "start" }}><BadgePill>{t(categoryLabelKey(category))}</BadgePill></div> : null}
+        <h3 className="line-clamp-2">{title}</h3>
+        <div className="s-mission-meta">
           <span className="flex items-center gap-1">
             <Star size={14} aria-hidden="true" />
             {t("app.mission.cardPoints", { n: points })}
@@ -142,11 +142,11 @@ export function MissionCard({
           ) : null}
         </div>
         {visibleFacts.length ? (
-          <dl className="mt-3 grid gap-1 text-xs">
+          <dl className="s-mission-facts">
             {visibleFacts.map((fact) => (
-              <div key={fact.label} className="grid grid-cols-[auto_1fr] gap-2">
-                <dt className="font-semibold text-[var(--color-soft-ink)]">{fact.label}</dt>
-                <dd className="min-w-0 break-words">{fact.value}</dd>
+              <div key={fact.label}>
+                <dt>{fact.label}</dt>
+                <dd>{fact.value}</dd>
               </div>
             ))}
           </dl>
