@@ -150,13 +150,7 @@ export function GrowthSkillCards({
             </article>
           );
         })}
-      </div>
-      <p className="s-growth-footnote">
-        {tx(
-          "技能練習不另計分；任務獎勵以核實結果為準。",
-          "Skill practice does not earn extra points. Mission rewards follow verified results.",
-        )}
-      </p>
+      </div>
     </section>
   );
 }

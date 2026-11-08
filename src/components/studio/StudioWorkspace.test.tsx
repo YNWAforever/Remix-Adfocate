@@ -303,6 +303,12 @@ it("keeps the composer before the four growth cards on the empty Studio entry",(
   expect(document.querySelectorAll("[data-skill]")).toHaveLength(4);
 });
 
+it("keeps the growth workspace on its own tab",()=>{
+  render(<StudioWorkspace threadId="thread" skill="next_caption"/>);
+  expect(screen.getByRole("tab",{name:"技能"})).toHaveAttribute("aria-selected","true");
+  fireEvent.click(screen.getByRole("tab",{name:"討論"}));
+  expect(screen.getByRole("textbox",{name:"繼續討論"})).toBeVisible();
+});
 it("opens the active thread with only the requested growth skill context",()=>{
   render(<StudioWorkspace threadId="thread" skill="next_caption"/>);
   expect(screen.getByRole("region",{name:"圖片成長工作區"})).toHaveAttribute("data-skill","next_caption");

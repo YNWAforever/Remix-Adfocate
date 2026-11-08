@@ -61,6 +61,13 @@ it("retains transient creation input and reuses its id only on explicit retry",a
   await waitFor(()=>expect(h.mutate).toHaveBeenCalledTimes(2));
   expect(h.mutate.mock.calls[1][0].requestId).toBe(h.mutate.mock.calls[0][0].requestId);
 });
+it("keeps the starter idea list short until the creator asks for more",()=>{
+  render(<StudioStarter/>);
+  expect(screen.getAllByRole("button",{name:/積分按任務/})).toHaveLength(4);
+  fireEvent.click(screen.getByRole("button",{name:"顯示其餘 6 個靈感"}));
+  expect(screen.getAllByRole("button",{name:/積分按任務/})).toHaveLength(10);
+  expect(screen.getByRole("button",{name:"收起靈感"})).toBeVisible();
+});
 it("keeps threads disabled and ignores their stale error when the rollout flag is off",()=>{
   h.enabled=false;h.historyError=new ApiError(401,"no_auth","no_auth");
   render(<StudioHome/>);
