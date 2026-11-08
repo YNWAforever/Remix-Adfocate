@@ -33,6 +33,7 @@ import { integrationRoutes } from "./routes/integrations.js";
 import { integrationOAuthCallbacks, integrationOAuthRoutes } from "./routes/integrationOAuth.js";
 import { integrationNoticeRoutes } from "./routes/integrationNotices.js";
 import { mcpSkillRoutes } from "./routes/mcp.js";
+import { mcpPilotRoutes } from "./routes/mcpPilot.js";
 
 export type Env = {
   Variables: { userId: string; workspaceId: string; jwt: string };
@@ -60,6 +61,8 @@ export function createApp(options: { creatorPilot?: CreatorPilotRouteDependencie
   app.route("/cron", cronRoutes);
   // D0: these surfaces remain inactive; no real coordinator/client is constructed.
   app.route("/integration-oauth", integrationOAuthCallbacks());
+  // Read-only MCP pilot server reached by the studio chat over MCP (token + workspace scoped).
+  app.route("/mcp-pilot", mcpPilotRoutes());
   // No fixture dependencies or live receipt reader are installed in the original application.
   app.route("/integration-notices", integrationNoticeRoutes());
 
