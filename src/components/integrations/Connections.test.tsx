@@ -275,7 +275,9 @@ describe("mock connection journeys", () => {
   it("keeps basic missions and six later providers when the feature endpoint is absent", async () => {
     fetchMock.mockRejectedValue(new ApiError(404, "NOT_FOUND", "off"));
     mount();
-    expect(await screen.findByText(/Mock connections are not enabled/)).toBeVisible();
+    expect(await screen.findByText(/Data connections are not open yet/)).toBeVisible();
+    expect(screen.getByText("Planned · not open")).toBeVisible();
+    expect(screen.queryByText("Mock · no live connection")).not.toBeInTheDocument();
     expect(screen.getByRole("link", { name: /Start creating/ })).toHaveAttribute("href", "/home");
     for (const name of ["TikTok", "YouTube", "Search Console", "Calendar", "Gmail", "Telegram"]) {
       expect(screen.getByRole("heading", { name })).toBeVisible();
@@ -370,5 +372,19 @@ describe("mock connection journeys", () => {
     expect(await screen.findByText(/Platform revocation not confirmed/)).toBeVisible();
     expect(screen.queryByText(/Local and mock platform access revoked/)).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Revoke mock Google Drive/ })).toBeEnabled();
+  });
+});
+
+describe("disabled integrations mode", () => {
+  it("shows the planning state without mock connect controls", async () => {
+    fetchMock.mockImplementation(async path => path === "/me/integrations" ? { mode: "disabled", connections: [] } : {});
+    mount("en", "creator-a");
+    await screen.findByRole("heading", { level: 1 });
+    expect(await screen.findByText("Planned · not open")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Connect mock/i })).not.toBeInTheDocument();
+    expect(screen.queryByText("Mock · no live connection")).not.toBeInTheDocument();
+    expect(screen.getByText(/Data connections are not open yet/)).toBeInTheDocument();
+    expect(screen.queryByText(/Not connected · no scopes · never synced/)).not.toBeInTheDocument();
+    expect(document.body).not.toHaveTextContent("Preparing mock skills");
   });
 });
