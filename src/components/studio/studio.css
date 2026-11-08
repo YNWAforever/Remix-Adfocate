@@ -936,3 +936,17 @@
 .s-legal-toc a:hover { background: var(--s-lilac); }
 .s-between > .s-tag { flex: none; }
 @media (min-width: 1024px) { .s-legal-grid { grid-template-columns: 260px minmax(0, 1fr); align-items: start; } .s-legal-grid > aside { order: 0; position: sticky; top: 20px; } }
+/* Legacy creator surfaces inherit the studio look inside the creator shell. */
+.studio:not(.s-staff) .font-display { font-family: inherit; letter-spacing: -0.02em; }
+.studio:not(.s-staff) .pastel-card,
+.studio:not(.s-staff) .game-card { background: #fff; border: 1px solid var(--s-line); border-radius: 22px; box-shadow: 0 4px 0 #ece7f1a0; }
+.studio:not(.s-staff) .pastel-card:hover,
+.studio:not(.s-staff) .game-card:hover { transform: none; box-shadow: 0 4px 0 #ece7f1a0; border-color: #d9cdef; }
+.studio:not(.s-staff) .pastel-card:active,
+.studio:not(.s-staff) .game-card:active { transform: none; box-shadow: 0 4px 0 #ece7f1a0; }
+.studio:not(.s-staff) .btn-primary,
+.studio:not(.s-staff) .btn-ink { border: 0; border-radius: 14px; box-shadow: none; font-family: inherit; }
+.studio:not(.s-staff) .btn-primary:hover,
+.studio:not(.s-staff) .btn-ink:hover { transform: none; box-shadow: none; }
+.studio:not(.s-staff) .btn-primary:active,
+.studio:not(.s-staff) .btn-ink:active { transform: none; box-shadow: none; }
