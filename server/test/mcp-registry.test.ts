@@ -1,0 +1,94 @@
+// @vitest-environment node
+import { describe, expect, it } from "vitest";
+import { loadWorkspaceMcpServers, recordMcpCall } from "../lib/mcp/registry";
+
+type Row = Record<string, unknown>;
+type Call = { table: string; op: string; filters: Row; values?: unknown };
+
+function store(rows: Record<string, Row[]>, options: { fail?: boolean; insertError?: boolean } = {}) {
+  const calls: Call[] = [];
+  const inserted: Row[] = [];
+  const from = (table: string) => {
+    const call: Call = { table, op: "select", filters: {} };
+    calls.push(call);
+    const query: Record<string, unknown> = {
+      select(fields: string) { call.op = `select:${fields}`; return query; },
+      eq(key: string, value: unknown) { call.filters[key] = value; return query; },
+      in(key: string, value: unknown) { call.filters[key] = value; return query; },
+      is(key: string, value: unknown) { call.filters[key] = value; return query; },
+      order() { return query; },
+      limit() { return query; },
+      insert(values: unknown) { call.op = "insert"; call.values = values; return query; },
+      then(resolve: (value: unknown) => unknown) {
+        if (options.fail) return Promise.resolve({ data: null, error: { message: "42P01 relation does not exist" } }).then(resolve);
+        if (call.op === "insert") {
+          if (table === "mcp_call_audit") {
+            if (options.insertError) return Promise.resolve({ data: null, error: { message: "denied" } }).then(resolve);
+            inserted.push(call.values as Row);
+          }
+          return Promise.resolve({ data: null, error: null }).then(resolve);
+        }
+        const data = (rows[table] ?? []).filter(row => Object.entries(call.filters).every(([key, value]) => {
+          if (Array.isArray(value)) return value.includes(row[key]);
+          if (value === null) return row[key] === null || row[key] === undefined;
+          return row[key] === value;
+        }));
+        return Promise.resolve({ data, error: null }).then(resolve);
+      },
+    };
+    return query;
+  };
+  return { client: { from } as unknown as Parameters<typeof loadWorkspaceMcpServers>[0], calls, inserted };
+}
+
+const servers = [
+  { id: "s1", name: "notes", url: "https://mcp.example.test/rpc", enabled: true, read_only: true, workspace_id: "w" },
+  { id: "s2", name: "unconsented", url: "https://mcp.example.test/two", enabled: true, read_only: true, workspace_id: "w" },
+  { id: "s3", name: "revoked", url: "http://127.0.0.1:9999/mcp", enabled: true, read_only: true, workspace_id: "w" },
+];
+const tools = [
+  { server_id: "s1", tool_name: "lookup_note", enabled: true },
+  { server_id: "s1", tool_name: "get_brief", enabled: true },
+  { server_id: "s1", tool_name: "disabled_tool", enabled: false },
+  { server_id: "s2", tool_name: "secret", enabled: true },
+  { server_id: "s3", tool_name: "local_tool", enabled: true },
+];
+const consents = [
+  { server_id: "s1", creator_id: "c", workspace_id: "w", revoked_at: null },
+  { server_id: "s2", creator_id: "other", workspace_id: "w", revoked_at: null },
+  { server_id: "s3", creator_id: "c", workspace_id: "w", revoked_at: "2026-11-01T00:00:00Z" },
+];
+
+describe("mcp workspace registry", () => {
+  it("returns only read-only, consented servers with enabled allowlisted tools", async () => {
+    const fake = store({ mcp_servers: servers, mcp_server_tools: tools, mcp_consents: consents });
+    const registry = await loadWorkspaceMcpServers(fake.client, "w", "c");
+    expect(registry.available).toBe(true);
+    expect(registry.servers.map(server => server.name)).toEqual(["notes"]);
+    expect(registry.servers[0].tools.map(tool => tool.name)).toEqual(["lookup_note", "get_brief"]);
+    expect(registry.servers[0].url).toBe("https://mcp.example.test/rpc");
+    const consentCall = fake.calls.find(call => call.table === "mcp_consents");
+    expect(consentCall?.filters).toMatchObject({ creator_id: "c", workspace_id: "w", revoked_at: null });
+  });
+
+  it("reports unavailable when the optional tables are missing", async () => {
+    const fake = store({}, { fail: true });
+    const registry = await loadWorkspaceMcpServers(fake.client, "w", "c");
+    expect(registry.available).toBe(false);
+    expect(registry.servers).toEqual([]);
+  });
+
+  it("records a bounded audit row and never fails on audit errors", async () => {
+    const fake = store({});
+    await recordMcpCall(fake.client, {
+      requestId: "r1", serverName: "notes", toolName: "lookup_note",
+      creatorId: "c", workspaceId: "w", outcome: "ok", durationMs: 12.6,
+    });
+    expect(fake.inserted).toHaveLength(1);
+    expect(fake.inserted[0]).toMatchObject({ request_id: "r1", server_name: "notes", tool_name: "lookup_note", outcome: "ok", duration_ms: 13 });
+    const failing = store({}, { insertError: true });
+    await expect(recordMcpCall(failing.client, {
+      serverName: "notes", toolName: "lookup_note", creatorId: "c", workspaceId: "w", outcome: "error: mcp_timeout", durationMs: 9000,
+    })).resolves.toBeUndefined();
+  });
+});

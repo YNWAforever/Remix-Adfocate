@@ -3,6 +3,19 @@
 Status: scope for approval, 2026-11-09. Phase 1 (dark-launch client, env allowlist) is merged; this
 document scopes the next slice. No schema change is applied by this document.
 
+**Defaults adopted for the server-side slice (owner can override):**
+1. Workspace **owner** enables a server; staff with `submission.review` may view but not enable.
+2. Consent is **per server** (one consent row covers its enabled read-only tools).
+3. First pilot is the **local fixture server**, then one provider-hosted read-only server with an
+   owner-signed approval packet.
+4. MCP call audit retention: **90 days** (trim job in phase 2 completion).
+
+**Implemented so far (server-side, dark):** registry loading with consent filtering and read-only /
+https checks (`server/lib/mcp/registry.ts`), env fallback when tables are absent, per-call audit insert,
+and `STUDIO_MCP_REGISTRY=true` to make the workspace registry authoritative. The SQL lives in
+[`docs/operations/mcp-registry.sql`](../../operations/mcp-registry.sql) and is applied manually.
+Still to build: owner/creator UI + API, consent grant/revoke endpoints, OAuth/PKCE, audit retention job.
+
 ## 1. Problem
 
 Phase 1 works but every server, tool and header lives in two env vars on the deployment. That is fine
