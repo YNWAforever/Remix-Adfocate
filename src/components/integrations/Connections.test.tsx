@@ -9,6 +9,7 @@ import { Route } from "@/routes/_app.connections";
 import { integrationKeys } from "@/lib/integrations/queries";
 
 vi.mock("@/lib/api", async original => ({ ...await original<object>(), apiFetch: vi.fn() }));
+vi.mock("./McpSkills", () => ({ McpSkills: () => null }));
 vi.mock("@tanstack/react-router", async original => ({
   ...await original<object>(), Link: ({ to, children, ...props }: { to: string; children: ReactNode }) => <a href={to} {...props}>{children}</a>,
 }));

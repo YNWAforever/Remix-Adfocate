@@ -12,9 +12,15 @@ document scopes the next slice. No schema change is applied by this document.
 
 **Implemented so far (server-side, dark):** registry loading with consent filtering and read-only /
 https checks (`server/lib/mcp/registry.ts`), env fallback when tables are absent, per-call audit insert,
-and `STUDIO_MCP_REGISTRY=true` to make the workspace registry authoritative. The SQL lives in
-[`docs/operations/mcp-registry.sql`](../../operations/mcp-registry.sql) and is applied manually.
-Still to build: owner/creator UI + API, consent grant/revoke endpoints, OAuth/PKCE, audit retention job.
+and `STUDIO_MCP_REGISTRY=true` to make the workspace registry authoritative. Creator consent API
+(`GET /mcp/skills`, `POST|DELETE /mcp/skills/:id/consent`, same-origin mutations) and a `/connections`
+"資料技能" section that lists servers/tools, grants or revokes consent, and renders nothing while the
+feature is dark. The SQL lives in [`docs/operations/mcp-registry.sql`](../../operations/mcp-registry.sql)
+and is applied manually.
+
+Still to build: owner-facing registry write API/UI (enable server, allowlist tools), OAuth/PKCE against
+provider-hosted servers with the token vault, consent-revocation fencing of in-flight chats, and the
+90-day audit retention job.
 
 ## 1. Problem
 
