@@ -32,6 +32,7 @@ import { createCreatorPilotRoutes, type CreatorPilotRouteDependencies } from "./
 import { integrationRoutes } from "./routes/integrations.js";
 import { integrationOAuthCallbacks, integrationOAuthRoutes } from "./routes/integrationOAuth.js";
 import { integrationNoticeRoutes } from "./routes/integrationNotices.js";
+import { mcpSkillRoutes } from "./routes/mcp.js";
 
 export type Env = {
   Variables: { userId: string; workspaceId: string; jwt: string };
@@ -80,6 +81,7 @@ export function createApp(options: { creatorPilot?: CreatorPilotRouteDependencie
   guarded.route("/copilot", copilotRoutes);
   guarded.route("/assistant", assistantRoutes());
   guarded.route("/studio", studioRoutes);
+  guarded.route("/mcp", mcpSkillRoutes());
   // Publication is separately guarded and disabled; no service/worker is installed.
   guarded.route("/creator-growth/publish", createCreatorGrowthPublishRoutes());
   // Explicit trusted server injection only; existing entrypoints pass no dependencies.

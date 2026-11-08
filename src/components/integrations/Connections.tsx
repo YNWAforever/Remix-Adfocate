@@ -7,6 +7,7 @@ import type { IntegrationConnection, IntegrationList, ProviderId, StartConnectio
 import { ConnectionCard } from "./ConnectionCard";
 import { ConnectionConsent, D0Notice, IntegrationDialog, IntegrationError, IntegrationModeBadge, MockBadge } from "./ConnectionConsent";
 import { DriveSourcePicker } from "./DriveSourcePicker";
+import { McpSkills } from "./McpSkills";
 import "./integrations.css";
 
 /** Shown while data connections are off (the default production state). No mock connect flow. */
@@ -112,6 +113,7 @@ function ConnectionsForOwner() {
       <div className="i-grid">{(["instagram", "google_drive"] as const).map(provider => <ProviderConnection key={provider} provider={provider} mode={query.data?.mode} enabled={query.data?.mode === "mock"} connection={query.data?.connections.find(item => item.provider === provider)} onLoginRequired={() => setLoginRequired(true)} />)}</div>
     </>}
     <section className="i-basic"><div><h2>{tx("先創作，也很好。", "You can start right here.")}</h2><p>{tx("連接是選項，基本任務隨時可做。", "Connections are optional. Basic missions are always available.")}</p></div><Link to="/home" className="i-button i-primary">{tx("先開始創作", "Start creating now")}</Link></section>
+    <McpSkills />
     <section className="i-stack" aria-labelledby="later-integrations"><div><p className="i-eyebrow">{tx("下一批小幫手", "More helpers on the way")}</p><h2 id="later-integrations">{tx("慢慢擴充你的技能收藏", "Grow your skill collection")}</h2></div>
       <div className="i-later-grid">{[["TikTok", "🎵", "短片探索", "Short video insights"], ["YouTube", "▶️", "影片洞察", "Video insights"], ["Search Console", "🔎", "搜尋線索", "Search insights"], ["Calendar", "🗓️", "創作日程", "Creator calendar"], ["Gmail", "✉️", "合作信箱（只讀）", "Collaboration inbox (read only)"], ["Telegram", "💬", "訊息線索", "Message insights"]].map(([name, icon, zh, en]) => <section className="i-later" key={name}><div className="i-row"><span aria-hidden className="i-provider-icon">{icon}</span><span className="i-badge">{tx("稍後開放", "Later")}</span></div><h3>{tx(name, name)}</h3><p>{tx(zh, en)}</p>{disabled ? <small>{tx("未開放", "Not open")}</small> : <><small>{tx("未連接 · 未授權 · 未同步", "Not connected · no scopes · never synced")}</small><MockBadge /></>}</section>)}</div>
     </section>
