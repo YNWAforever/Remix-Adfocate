@@ -38,11 +38,14 @@ async function missionAssist(body: unknown, principal: AssistPrincipal, getClien
 }
 
 /** D0 MCP skills are dark by default and only reachable from studio threads. */
-function studioMcpRuntime() {
+async function studioMcpRuntime(signal?: AbortSignal) {
   if (process.env.STUDIO_MCP_ENABLED !== "true") return null;
   const registry = loadMcpRegistry();
   if (registry.errors.length) console.info(`[mcp] config: ${registry.errors.slice(0, 3).join("; ").slice(0, 300)}`);
-  return registry.servers.length ? createMcpRuntime(registry.servers) : null;
+  if (!registry.servers.length) return null;
+  const runtime = createMcpRuntime(registry.servers);
+  const defs = await runtime.prepare(signal);
+  return defs.length ? { defs, run: runtime.run } : null;
 }
 
 /** Mounted behind the existing staff identity, single membership and submission.review gates. */
@@ -120,14 +123,16 @@ export function assistantRoutes(testProvider?: AssistantProvider) {
     let result;
     try {
       if(studio?.integrationSources?.length) await authorizeIntegrationSources({creatorId:c.get("userId"),workspaceId},studio.integrationSources,"model",{requestId:input.requestId});
-      const mcp = studio ? studioMcpRuntime() : null;
-      result = await withProviderDeadline((signal) => runAssistant(client,
-        { query: input.message, locale: input.locale, workspace: workspaceId, history, studioContext:studio?.context, historyChanged: studio?.contextChanged },
-        {
-          ...(testProvider ? { provider: testProvider } : {}),
-          signal,
-          ...(mcp ? { studioToolDefs: mcp.defs, runStudioTool: (name: string, args: string, abort?: AbortSignal) => mcp.run(name, args, abort) } : {}),
-        }));
+      result = await withProviderDeadline(async (signal) => {
+        const mcp = studio ? await studioMcpRuntime(signal) : null;
+        return runAssistant(client,
+          { query: input.message, locale: input.locale, workspace: workspaceId, history, studioContext:studio?.context, historyChanged: studio?.contextChanged },
+          {
+            ...(testProvider ? { provider: testProvider } : {}),
+            signal,
+            ...(mcp ? { studioToolDefs: mcp.defs, runStudioTool: (name: string, args: string, abort?: AbortSignal) => mcp.run(name, args, abort) } : {}),
+          });
+      });
     } catch {
       await markUnknown();
       return c.json({ error: "Generation outcome is unknown. Check this request before starting another", code: "provider_outcome_unknown", request_id: input.requestId, persistence: "unknown" }, 503);

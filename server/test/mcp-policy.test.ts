@@ -52,6 +52,12 @@ describe("mcp registry policy", () => {
     expect(remote.servers).toHaveLength(0);
   });
 
+  it("accepts name-only allowlist entries for discovery", () => {
+    const registry = loadMcpRegistry(JSON.stringify([server({ tools: ["lookup_note"] })]), "true");
+    expect(registry.servers[0].tools).toEqual([{ name: "lookup_note" }]);
+    expect(buildMcpToolDefs(registry.servers)).toEqual([]);
+  });
+
   it("namespaces tools and builds definitions only from the allowlist", () => {
     const registry = loadMcpRegistry(JSON.stringify([server()]), "true");
     const defs = buildMcpToolDefs(registry.servers);

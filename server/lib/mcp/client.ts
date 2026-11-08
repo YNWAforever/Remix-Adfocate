@@ -1,7 +1,10 @@
+import type { ToolDef } from "../llm.js";
 import {
   MCP_MAX_RESPONSE_BYTES,
   buildMcpToolDefs,
   findMcpTool,
+  isCompleteTool,
+  type McpRemoteTool,
   type McpServerConfig,
 } from "./policy.js";
 
@@ -163,10 +166,80 @@ export async function callMcpTool(
   }
 }
 
+/** Discovers the server's tools so an allowlist of names needs no hand-written schemas. */
+export async function listMcpTools(server: McpServerConfig, signal?: AbortSignal): Promise<McpRemoteTool[]> {
+  const init = await rpc(server, "initialize", {
+    protocolVersion: PROTOCOL_VERSION,
+    capabilities: {},
+    clientInfo: CLIENT_INFO,
+  }, signal);
+  const list = await rpc(server, "tools/list", {}, signal, init.sessionId);
+  const raw = (list.result as { tools?: unknown } | null)?.tools;
+  if (!Array.isArray(raw)) throw new McpError("mcp_invalid_response", "tools/list returned no tools");
+  const tools: McpRemoteTool[] = [];
+  for (const entry of raw.slice(0, 50)) {
+    if (!entry || typeof entry !== "object") continue;
+    const name = (entry as { name?: unknown }).name;
+    if (typeof name !== "string" || !/^[a-z0-9_]{1,64}$/.test(name)) continue;
+    const description = (entry as { description?: unknown }).description;
+    const schema = (entry as { inputSchema?: unknown }).inputSchema;
+    if (typeof description !== "string" || !description.trim()) continue;
+    if (!schema || typeof schema !== "object" || (schema as { type?: unknown }).type !== "object") continue;
+    tools.push({ name, description: description.slice(0, 300), inputSchema: schema as Record<string, unknown> });
+  }
+  if (!tools.length) throw new McpError("mcp_invalid_response", "tools/list returned no usable tools");
+  return tools;
+}
+
 /** Builds the tool definitions and the dispatcher for the studio loop. */
-export function createMcpRuntime(servers: readonly McpServerConfig[]) {
+const DISCOVERY_TTL_MS = 5 * 60_000;
+
+export function createMcpRuntime(
+  servers: readonly McpServerConfig[],
+  options: { ttlMs?: number; now?: () => number } = {},
+) {
+  const ttl = options.ttlMs ?? DISCOVERY_TTL_MS;
+  const clock = options.now ?? Date.now;
+  const cache = new Map<string, { expires: number; tools: McpRemoteTool[] }>();
+
+  async function remoteTools(server: McpServerConfig, signal?: AbortSignal): Promise<McpRemoteTool[]> {
+    const key = `${server.name}|${server.url}`;
+    const cached = cache.get(key);
+    if (cached && cached.expires > clock()) return cached.tools;
+    const tools = await listMcpTools(server, signal);
+    cache.set(key, { tools, expires: clock() + ttl });
+    return tools;
+  }
+
+  /** Resolves name-only allowlist entries against the server's tools/list (cached, bounded). */
+  async function prepare(signal?: AbortSignal): Promise<ToolDef[]> {
+    const defs: ToolDef[] = [];
+    for (const server of servers) {
+      let tools: McpRemoteTool[] = [...server.tools];
+      if (server.tools.some(tool => !isCompleteTool(tool))) {
+        let remote: McpRemoteTool[] = [];
+        try {
+          remote = await remoteTools(server, signal);
+        } catch (error) {
+          const code = error instanceof McpError ? error.code : "mcp_unavailable";
+          console.info(`[mcp] ${server.name} discovery ${code}`);
+        }
+        tools = server.tools.flatMap(allowed => {
+          if (isCompleteTool(allowed)) return [allowed];
+          const metadata = remote.find(candidate => candidate.name === allowed.name);
+          return metadata && isCompleteTool(metadata)
+            ? [{ name: allowed.name, description: metadata.description, inputSchema: metadata.inputSchema }]
+            : [];
+        });
+      }
+      defs.push(...buildMcpToolDefs([{ ...server, tools }]));
+    }
+    return defs;
+  }
+
   return {
     defs: buildMcpToolDefs(servers),
+    prepare,
     async run(name: string, args: string, signal?: AbortSignal): Promise<string> {
       const found = findMcpTool(servers, name);
       if (!found) return "error: tool_not_allowed";

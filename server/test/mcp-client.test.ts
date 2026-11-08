@@ -3,7 +3,7 @@ import { createServer } from "node:http";
 import type { IncomingMessage, ServerResponse } from "node:http";
 import type { AddressInfo } from "node:net";
 import { afterEach, describe, expect, it } from "vitest";
-import { callMcpTool } from "../lib/mcp/client";
+import { callMcpTool, createMcpRuntime } from "../lib/mcp/client";
 import type { McpServerConfig } from "../lib/mcp/policy";
 
 const tool = { name: "lookup_note", description: "Read one note", inputSchema: { type: "object" } };
@@ -90,5 +90,38 @@ describe("mcp client", () => {
       return jsonrpc(res, { content: [{ type: "text", text: "x".repeat(70000) }] });
     });
     expect(await callMcpTool(config(huge), "lookup_note", "{}")).toBe("error: mcp_invalid_response");
+  });
+
+  it("resolves name-only allowlists through tools/list and caches discovery", async () => {
+    let lists = 0;
+    const url = await fixture((body, res) => {
+      if (body.method === "initialize") return jsonrpc(res, {});
+      if (body.method === "notifications/initialized") { res.writeHead(202); return res.end(); }
+      if (body.method === "tools/list") {
+        lists += 1;
+        return jsonrpc(res, { tools: [
+          { name: "lookup_note", description: "Read a note", inputSchema: { type: "object", properties: {} } },
+          { name: "not_allowlisted", description: "Should not surface", inputSchema: { type: "object" } },
+        ] });
+      }
+      if (body.method === "tools/call") return jsonrpc(res, { content: [{ type: "text", text: "DISCOVERED" }] });
+      res.writeHead(400); res.end();
+    });
+    const runtime = createMcpRuntime([{ ...config(url), tools: [{ name: "lookup_note" }] }], { ttlMs: 60_000 });
+    const defs = await runtime.prepare();
+    expect(defs.map(definition => definition.function.name)).toEqual(["mcp__fixture__lookup_note"]);
+    expect(lists).toBe(1);
+    expect((await runtime.prepare()).map(definition => definition.function.name)).toEqual(["mcp__fixture__lookup_note"]);
+    expect(lists).toBe(1);
+    expect(await runtime.run("mcp__fixture__lookup_note", "{}")).toBe("DISCOVERED");
+  });
+
+  it("keeps declared tools when discovery is unavailable", async () => {
+    const url = await fixture((_body, res) => { res.writeHead(500); res.end(); });
+    const runtime = createMcpRuntime([{
+      ...config(url),
+      tools: [{ name: "lookup_note" }, { name: "declared", description: "Declared read", inputSchema: { type: "object" } }],
+    }]);
+    expect((await runtime.prepare()).map(definition => definition.function.name)).toEqual(["mcp__fixture__declared"]);
   });
 });

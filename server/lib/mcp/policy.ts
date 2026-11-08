@@ -12,9 +12,16 @@ const TOOL_NAME = /^[a-z0-9_]{1,64}$/;
 
 export type McpRemoteTool = Readonly<{
   name: string;
-  description: string;
-  inputSchema: Record<string, unknown>;
+  description?: string;
+  inputSchema?: Record<string, unknown>;
 }>;
+
+/** A tool with metadata may be exposed without calling tools/list first. */
+export type CompleteMcpTool = McpRemoteTool & { description: string; inputSchema: Record<string, unknown> };
+
+export function isCompleteTool(tool: McpRemoteTool): tool is CompleteMcpTool {
+  return typeof tool.description === "string" && tool.description.length > 0 && Boolean(tool.inputSchema) && typeof tool.inputSchema === "object";
+}
 
 export type McpServerConfig = Readonly<{
   name: string;
@@ -35,14 +42,21 @@ function isLocalFixture(url: URL): boolean {
 }
 
 function parseTool(raw: unknown, index: number, errors: string[], serverName: string): McpRemoteTool | null {
-  if (!isRecord(raw)) { errors.push(`mcp:${serverName}: tool ${index} is not an object`); return null; }
+  if (typeof raw === "string") {
+    if (!TOOL_NAME.test(raw)) { errors.push(`mcp:${serverName}: tool ${index} has an invalid name`); return null; }
+    return { name: raw };
+  }
+  if (!isRecord(raw)) { errors.push(`mcp:${serverName}: tool ${index} is not a string or object`); return null; }
   const name = typeof raw.name === "string" ? raw.name : "";
   if (!TOOL_NAME.test(name)) { errors.push(`mcp:${serverName}: tool ${index} has an invalid name`); return null; }
-  const description = typeof raw.description === "string" ? raw.description.slice(0, 300) : "";
-  if (!description) { errors.push(`mcp:${serverName}:${name}: missing description`); return null; }
-  const inputSchema = isRecord(raw.inputSchema ?? raw.input_schema) ? (raw.inputSchema ?? raw.input_schema) as Record<string, unknown> : null;
-  if (!inputSchema || inputSchema.type !== "object") { errors.push(`mcp:${serverName}:${name}: inputSchema must be an object schema`); return null; }
-  return { name, description, inputSchema };
+  const description = typeof raw.description === "string" ? raw.description.slice(0, 300) : undefined;
+  const schema = raw.inputSchema ?? raw.input_schema;
+  const inputSchema = isRecord(schema) ? schema : undefined;
+  if (inputSchema && inputSchema.type !== "object") {
+    errors.push(`mcp:${serverName}:${name}: inputSchema must be an object schema`);
+    return null;
+  }
+  return { name, ...(description ? { description } : {}), ...(inputSchema ? { inputSchema } : {}) };
 }
 
 /** Parses the static, env-driven registry. Never trusts a remote tool list to widen the allowlist. */
@@ -109,9 +123,9 @@ export function parseMcpToolName(name: string): { server: string; tool: string }
   return { server, tool };
 }
 
-/** Tool definitions for the studio loop, built only from the allowlisted config. */
+/** Tool definitions for the studio loop, built only from the allowlisted config (complete rows). */
 export function buildMcpToolDefs(servers: readonly McpServerConfig[]): ToolDef[] {
-  return servers.flatMap(server => server.tools.map(tool => ({
+  return servers.flatMap(server => server.tools.filter(isCompleteTool).map(tool => ({
     type: "function" as const,
     function: {
       name: mcpToolName(server.name, tool.name),
