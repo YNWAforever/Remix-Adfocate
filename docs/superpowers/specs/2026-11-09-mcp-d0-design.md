@@ -102,6 +102,20 @@ All output is treated as untrusted data in the prompt (same rule as mission/sour
 3. A real MCP server is a separate approval: named server, URL, tool allowlist, data classes, retention,
    audit owner. Provider data rules from the pilot docs still apply.
 
+### Local fixture demo
+
+```bash
+npm run mcp:fixture          # http://127.0.0.1:8787/mcp, read-only fixture tools
+```
+
+```bash
+STUDIO_MCP_ENABLED=true
+STUDIO_MCP_SERVERS=[{"name":"fixture","url":"http://127.0.0.1:8787/mcp","enabled":true,"readOnly":true,"tools":["lookup_note","get_trend_brief"]}]
+```
+
+The fixture exposes `lookup_note` and `get_trend_brief`, both returning synthetic text; names only are
+enough because the runtime discovers metadata via `tools/list`.
+
 ## 7. Test plan (hermetic)
 
 - client: initialize handshake, `tools/call`, JSON-RPC error, HTTP error, timeout/abort, size cap.

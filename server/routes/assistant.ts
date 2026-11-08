@@ -10,7 +10,8 @@ import { requireCapability } from "../lib/staffCapabilities.js";
 import { authorizeIntegrationSources } from "../lib/integrations/evidence.js";
 import { saveToolTrace } from "../lib/studio/toolTraces.js";
 import { createMcpRuntime } from "../lib/mcp/client.js";
-import { loadMcpRegistry } from "../lib/mcp/policy.js";
+import { loadMcpRegistry, parseMcpToolName } from "../lib/mcp/policy.js";
+import { loadWorkspaceMcpServers, recordMcpCall } from "../lib/mcp/registry.js";
 
 /** D20 is offline only. No request flag, env variable or configured gateway key enables this provider. */
 async function missionAssist(body: unknown, principal: AssistPrincipal, getClient: typeof serviceClient, provider?: AssistantProvider) {
@@ -37,15 +38,56 @@ async function missionAssist(body: unknown, principal: AssistPrincipal, getClien
   }
 }
 
-/** D0 MCP skills are dark by default and only reachable from studio threads. */
-async function studioMcpRuntime(signal?: AbortSignal) {
-  if (process.env.STUDIO_MCP_ENABLED !== "true") return null;
+function envMcpServers() {
   const registry = loadMcpRegistry();
   if (registry.errors.length) console.info(`[mcp] config: ${registry.errors.slice(0, 3).join("; ").slice(0, 300)}`);
-  if (!registry.servers.length) return null;
-  const runtime = createMcpRuntime(registry.servers);
-  const defs = await runtime.prepare(signal);
-  return defs.length ? { defs, run: runtime.run } : null;
+  return registry.servers;
+}
+
+/**
+ * D0 MCP skills are dark by default and only reachable from studio threads.
+ * With STUDIO_MCP_REGISTRY=true the workspace registry is authoritative and only servers the
+ * creator has consented to are exposed; when the optional tables are absent we fall back to the
+ * env allowlist so phase 1 keeps working.
+ */
+async function studioMcpRuntime(input: {
+  store: ReturnType<typeof serviceClient>;
+  creatorId: string;
+  workspaceId: string;
+  requestId: string;
+  signal?: AbortSignal;
+}) {
+  if (process.env.STUDIO_MCP_ENABLED !== "true") return null;
+  let servers = envMcpServers();
+  if (process.env.STUDIO_MCP_REGISTRY === "true") {
+    const registry = await loadWorkspaceMcpServers(input.store, input.workspaceId, input.creatorId);
+    if (registry.available) servers = [...registry.servers];
+    else console.info("[mcp] workspace registry unavailable; using the env allowlist");
+  }
+  if (!servers.length) return null;
+  const runtime = createMcpRuntime(servers);
+  const defs = await runtime.prepare(input.signal);
+  if (!defs.length) return null;
+  return {
+    defs,
+    run: async (name: string, args: string, abort?: AbortSignal) => {
+      const started = Date.now();
+      const result = await runtime.run(name, args, abort);
+      const parsed = parseMcpToolName(name);
+      if (parsed) {
+        void recordMcpCall(input.store, {
+          requestId: input.requestId,
+          serverName: parsed.server,
+          toolName: parsed.tool,
+          creatorId: input.creatorId,
+          workspaceId: input.workspaceId,
+          outcome: result.startsWith("error:") ? result.slice(7, 40) : "ok",
+          durationMs: Date.now() - started,
+        });
+      }
+      return result;
+    },
+  };
 }
 
 /** Mounted behind the existing staff identity, single membership and submission.review gates. */
@@ -124,7 +166,7 @@ export function assistantRoutes(testProvider?: AssistantProvider) {
     try {
       if(studio?.integrationSources?.length) await authorizeIntegrationSources({creatorId:c.get("userId"),workspaceId},studio.integrationSources,"model",{requestId:input.requestId});
       result = await withProviderDeadline(async (signal) => {
-        const mcp = studio ? await studioMcpRuntime(signal) : null;
+        const mcp = studio ? await studioMcpRuntime({ store, creatorId: c.get("userId"), workspaceId, requestId: input.requestId, signal }) : null;
         return runAssistant(client,
           { query: input.message, locale: input.locale, workspace: workspaceId, history, studioContext:studio?.context, historyChanged: studio?.contextChanged },
           {
