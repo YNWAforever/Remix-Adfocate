@@ -1,0 +1,25 @@
+{
+  "observedAt": "2026-11-01T15:02:29.773095Z",
+  "projectRef": "mhkoayftiuojxlrkollf",
+  "transactionReadOnly": true,
+  "rowSecurityOff": true,
+  "applicationData": {
+    "opaqueDigest": "ec4e20dce8d53c695122c2f3c1551abb",
+    "tableCount": 94,
+    "rowCount": 110
+  },
+  "migrationCount": 16,
+  "policyCount": 89,
+  "approvedMigration": {
+    "sqlBytes": 6869,
+    "version": "20261101075946",
+    "sqlSha256": "ae276f3dfc22539b48e482dceb1aeab8de2774c75f32816fe58665bfef8b7b8d",
+    "statementCount": 1,
+    "name": "kocmax_auth_permission_boundary"
+  },
+  "authUserTriggers": 0,
+  "reservedEmailCollisions": [],
+  "reservedWorkspaceCollisions": 0,
+  "originalApplicationDataUnchanged": true,
+  "writes": 0
+}

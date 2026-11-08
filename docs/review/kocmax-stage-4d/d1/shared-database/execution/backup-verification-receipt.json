@@ -1,0 +1,85 @@
+{
+  "status": "LOCAL_LOGICAL_BACKUP_CAPTURE_READ_AND_RESTORE_VERIFIED",
+  "projectRef": "mhkoayftiuojxlrkollf",
+  "attempt": "20261031T194921Z-932d4da79f9741b7b87a26a186b34831",
+  "fullRead": {
+    "verifierVersion": "1-archive-read-20261101",
+    "status": "ARCHIVE_FULL_READ_OK_RESTORE_NOT_TESTED",
+    "projectRef": "mhkoayftiuojxlrkollf",
+    "attempt": "20261031T194921Z-932d4da79f9741b7b87a26a186b34831",
+    "failureCode": null,
+    "checkedUtc": "2026-10-31T19:51:26.8584518Z",
+    "manifestSha256": "aa7ae574bf6d78174034319bfdd87176603391036d12c68024856fe802f699b5",
+    "captureScriptSha256": "07cc5d1571b0f70c7d3269406b0d460818e30d1e5a35bb33e2d327f344548f75",
+    "artifacts": [
+      {
+        "name": "database.dump",
+        "bytes": 784133,
+        "sha256": "a7d86a983fdbd368cfca9702014622469a103acaf9805945e34c5fef97279150"
+      },
+      {
+        "name": "roles.sql",
+        "bytes": 5370,
+        "sha256": "47120a017ebbf26f35624c68105f13e0fe8558e50d6d15ee00ce0f73c782b048"
+      },
+      {
+        "name": "toc.list",
+        "bytes": 97610,
+        "sha256": "8253b477caf4ac8da65353495d604ec99736d44198de4a952c57674061076ff7"
+      }
+    ],
+    "image": "postgres@sha256:f4c66b820c6f974249089d3d16d86a3698eae11e8746eb6644b2271031e91232",
+    "fullArchiveRead": "PASSED",
+    "hashesAfter": "UNCHANGED",
+    "containerCleanup": "CONFIRMED",
+    "restoreTested": false,
+    "manifestModified": false,
+    "migrationGate": "NOT_ASSESSED",
+    "coverage": [
+      "Manifest identity/status and private ACLs",
+      "Three artifact sizes and SHA-256 before/after",
+      "Unfiltered custom-archive read/decompression to /dev/null only"
+    ],
+    "limitations": [
+      "No database restore or SQL execution",
+      "No proof of source completeness or authenticity from hashes alone",
+      "roles.sql and toc.list are hash-checked, not executed",
+      "Storage object bytes and platform configuration remain outside this backup"
+    ]
+  },
+  "localRestore": {
+    "image": "public.ecr.aws/supabase/postgres@sha256:658d1c9b09ae4f61b8e95087b6859181b4b7d6940d769cf7b605609c8aad43e9",
+    "metadata": {
+      "database": "postgres",
+      "server_version_num": 170006,
+      "public_tables": 39,
+      "auth_tables": 27,
+      "storage_tables": 8,
+      "public_policies": 54,
+      "event_triggers": 7,
+      "migration_rows": 14
+    },
+    "originalDataComparison": {
+      "tables": 39,
+      "originalColumns": 400,
+      "allMatched": true
+    },
+    "containerCleanup": "CONFIRMED",
+    "sourceBackupMount": "READ_ONLY",
+    "network": "NONE",
+    "ports": "NONE",
+    "sourceCredentials": "NONE",
+    "sourceBootstrap": "supabase_admin (verified OID 10)",
+    "rolesAdaptation": "Only the redundant CREATE ROLE supabase_admin statement was omitted in a tmpfs copy; every ALTER, grant and original grantor was retained.",
+    "eventTriggerRestore": "All TOC entries retained exactly once. Native base restore, then all event-trigger entries under original session authorization with source Supautils support. No materialized-view data entries exist in this archive."
+  },
+  "priorRestoreFindings": [
+    "Different bootstrap OID-10 identity prevented original grantor semantics; corrected only in disposable environment.",
+    "Managed event-trigger ownership requires source Supautils support and original-owner restoration; corrected only in disposable environment."
+  ],
+  "limitations": [
+    "Not a hosted Auth/Storage/provider or full-platform recovery test.",
+    "Storage object bytes, role passwords, platform settings and encryption root keys are outside the logical backup.",
+    "Original public-table data comparison covers the 400 original columns in 39 tables; other schemas were restored without native errors but not independently row-hashed."
+  ]
+}

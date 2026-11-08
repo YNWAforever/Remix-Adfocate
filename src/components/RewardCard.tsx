@@ -1,4 +1,4 @@
-import { Star } from "lucide-react";
+import { Star, Gift } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 
 export function RewardCard({
@@ -17,9 +17,9 @@ export function RewardCard({
   const { t } = useI18n();
   const soldOut = stockRemaining <= 0;
   return (
-    <article className="pastel-card relative flex flex-col overflow-hidden rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-0">
-      <div className="relative h-32 w-full border-b-2 border-[var(--color-ink)] bg-[var(--color-muted,#E4E4E4)]">
-        {imageUrl ? <img src={imageUrl} alt="" className="h-full w-full object-cover" /> : null}
+    <article className="s-reward-card pastel-card relative flex flex-col overflow-hidden rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-0">
+      <div className="s-reward-art relative h-32 w-full border-b-2 border-[var(--color-ink)] bg-[var(--color-muted,#E4E4E4)]">
+        {imageUrl ? <img src={imageUrl} alt="" className="h-full w-full object-cover" /> : <Gift aria-hidden className="s-card-illustration" />}
         {soldOut && (
           <span className="absolute inset-0 grid place-items-center bg-black/55 font-heading font-bold text-white">{t("app.reward.soldOut")}</span>
         )}

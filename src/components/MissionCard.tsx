@@ -1,4 +1,4 @@
-import { Clock, Star } from "lucide-react";
+import { Clock, Star, Clapperboard } from "lucide-react";
 import { BadgePill } from "./BadgePill";
 import { formatCreatorCurrency, formatCreatorDate } from "@/lib/creatorFormatting";
 import { useI18n } from "@/lib/i18n";
@@ -122,9 +122,9 @@ export function MissionCard({
   const visibleFacts = facts.filter((fact): fact is CardFact => fact !== null);
 
   return (
-    <article className="pastel-card flex gap-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3">
-      <div className="h-20 w-20 shrink-0 overflow-hidden rounded-xl border-2 border-[var(--color-ink)] bg-[var(--color-muted,#E4E4E4)]">
-        {imageUrl ? <img src={imageUrl} alt="" className="h-full w-full object-cover" /> : null}
+    <article className="s-mission-card pastel-card flex gap-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3">
+      <div className="s-mission-art h-20 w-20 shrink-0 overflow-hidden rounded-xl border-2 border-[var(--color-ink)] bg-[var(--color-muted,#E4E4E4)]">
+        {imageUrl ? <img src={imageUrl} alt="" className="h-full w-full object-cover" /> : <Clapperboard size={30} aria-hidden className="s-card-illustration" />}
       </div>
       <div className="min-w-0 flex-1">
         {category ? <BadgePill>{t(categoryLabelKey(category))}</BadgePill> : null}

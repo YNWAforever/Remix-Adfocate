@@ -1,0 +1,159 @@
+{
+  "sampleOnly": true,
+  "liveAuthVerified": false,
+  "checks": [
+    {
+      "width": 390,
+      "role": "creator",
+      "privateThread": true,
+      "composer": true
+    },
+    {
+      "width": 390,
+      "role": "same_workspace_creator",
+      "privateThread": false,
+      "composer": false,
+      "result": "工作室\n＋ 新討論\n暫時讀取不到資料，已保存的內容不受影響。再試一次"
+    },
+    {
+      "width": 390,
+      "role": "other_workspace_creator",
+      "privateThread": 0,
+      "composer": 0
+    },
+    {
+      "width": 390,
+      "role": "brand_owner",
+      "composer": 0,
+      "result": "工作室\n＋ 新討論\n暫時讀取不到資料，已保存的內容不受影響。再試一次"
+    },
+    {
+      "width": 390,
+      "role": "brand_member",
+      "composer": 0,
+      "result": "工作室\n＋ 新討論\n暫時讀取不到資料，已保存的內容不受影響。再試一次"
+    },
+    {
+      "width": 390,
+      "role": "operator",
+      "composer": 0
+    },
+    {
+      "width": 390,
+      "role": "Reviewer",
+      "composer": 0,
+      "layout": {
+        "scroll": 384,
+        "width": 390
+      }
+    },
+    {
+      "width": 390,
+      "role": "Finance viewer",
+      "composer": 0,
+      "layout": {
+        "scroll": 384,
+        "width": 390
+      }
+    },
+    {
+      "width": 390,
+      "role": "Admin",
+      "composer": 0,
+      "layout": {
+        "scroll": 384,
+        "width": 390
+      }
+    },
+    {
+      "width": 1440,
+      "role": "創作者",
+      "privateThread": 1,
+      "composer": 1,
+      "layout": {
+        "scroll": 1434,
+        "width": 1440
+      }
+    },
+    {
+      "width": 1440,
+      "role": "同工作區其他創作者",
+      "privateThread": 0,
+      "composer": 0,
+      "layout": {
+        "scroll": 1434,
+        "width": 1440
+      }
+    },
+    {
+      "width": 1440,
+      "role": "其他工作區創作者",
+      "privateThread": 0,
+      "composer": 0,
+      "layout": {
+        "scroll": 1434,
+        "width": 1440
+      }
+    },
+    {
+      "width": 1440,
+      "role": "品牌擁有者",
+      "privateThread": 0,
+      "composer": 0,
+      "layout": {
+        "scroll": 1434,
+        "width": 1440
+      }
+    },
+    {
+      "width": 1440,
+      "role": "品牌成員",
+      "privateThread": 0,
+      "composer": 0,
+      "layout": {
+        "scroll": 1434,
+        "width": 1440
+      }
+    },
+    {
+      "width": 1440,
+      "role": "Operator",
+      "privateThread": 0,
+      "composer": 0,
+      "layout": {
+        "scroll": 1434,
+        "width": 1440
+      }
+    },
+    {
+      "width": 1440,
+      "role": "Reviewer",
+      "privateThread": 0,
+      "composer": 0,
+      "layout": {
+        "scroll": 1434,
+        "width": 1440
+      }
+    },
+    {
+      "width": 1440,
+      "role": "Finance viewer",
+      "privateThread": 0,
+      "composer": 0,
+      "layout": {
+        "scroll": 1434,
+        "width": 1440
+      }
+    },
+    {
+      "width": 1440,
+      "role": "Admin",
+      "privateThread": 0,
+      "composer": 0,
+      "layout": {
+        "scroll": 1434,
+        "width": 1440
+      }
+    }
+  ]
+}

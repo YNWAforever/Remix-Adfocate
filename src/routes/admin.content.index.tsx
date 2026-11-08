@@ -1,3 +1,4 @@
+import { StudioTable } from "@/components/studio/StudioTable";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
@@ -36,7 +37,7 @@ function ContentList() {
       ) : !q.isError && data?.items.length === 0 ? (
         <p className="text-sm text-[var(--color-soft-ink)]">{t("app.admin.content.empty")}</p>
       ) : data?.items.length ? (
-        <table className="w-full border-collapse text-sm">
+        <StudioTable className="w-full border-collapse text-sm">
           <thead><tr className="border-b-2 border-[var(--color-ink)] text-left text-xs uppercase">
             <th className="p-2">Title</th><th className="p-2">Kind</th><th className="p-2">Status</th><th className="p-2">Views</th><th />
           </tr></thead>
@@ -51,7 +52,7 @@ function ContentList() {
               </tr>
             ))}
           </tbody>
-        </table>
+        </StudioTable>
       ) : null}
     </div>
   );

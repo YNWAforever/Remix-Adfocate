@@ -1055,8 +1055,8 @@ export type Insights = {
   kpis: {
     activeCreators: InsightsMetric;
     submitToApprove: InsightsMetric;
-    pointsIssued: InsightsMetric;
-    cashPaid: InsightsMetric;
+    pointsIssued: InsightsMetric | null;
+    cashPaid: InsightsMetric | null;
     missionFillRate: InsightsMetric;
     completions: InsightsMetric;
   };

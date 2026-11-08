@@ -1,0 +1,39 @@
+{
+  "status": "PREPARED_NOT_APPLIED",
+  "projectRef": "mhkoayftiuojxlrkollf",
+  "runId": "5f694251-c6eb-4f5f-a281-25e91db81c04",
+  "preparedAt": "2026-11-01T17:22:43.122Z",
+  "approvalRef": "User explicitly approved the new SQL, restore verification, nine-account testing and cleanup on 2026-11-01.",
+  "missionId": "446802cb-4f6c-418d-967a-bf5f1cf63ea5",
+  "workspaceId": "00391df1-e411-4a82-a317-4a73bb293f89",
+  "actorId": "d854b3e8-85dd-4d97-89aa-f59c93e2d1ee",
+  "revoke": [
+    {
+      "alias": "S-O",
+      "authId": "4c1e5d4b-ac1d-4930-b245-1e4efe28de20",
+      "role": "operator",
+      "requestId": "4b2ec8b8-4c7c-4169-afa2-bb1920770424"
+    },
+    {
+      "alias": "S-F",
+      "authId": "e43cdb67-63b7-4946-836d-7333624a1842",
+      "role": "finance_viewer",
+      "requestId": "2bac3bca-b1e3-4ef9-9674-71335857da9d"
+    },
+    {
+      "alias": "S-A",
+      "authId": "d854b3e8-85dd-4d97-89aa-f59c93e2d1ee",
+      "role": "workspace_admin",
+      "requestId": "49d68b1d-0e42-4882-83bd-6b3100e71458"
+    }
+  ],
+  "existingInactiveReviewer": {
+    "authId": "ff86250c-e600-4841-bf36-329f5bf180aa",
+    "revision": 2,
+    "requestId": "9bab8dad-bc41-565a-940d-adffb6f660fd"
+  },
+  "initialMissionDependentRows": 0,
+  "retainAuthParents": true,
+  "retainAudits": true,
+  "retainWorkspaces": true
+}

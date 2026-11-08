@@ -1,0 +1,40 @@
+{
+  "recordedAtUtc": "2026-11-01T14:05:36.7864437Z",
+  "launcherSha256": "5464f95ce96f271c813aeb364e70a04ec07e4ee0b8dab0a1c707a3e4c14abfb9",
+  "elevated": false,
+  "cases": [
+    {
+      "name": "new directory and file are private without audit privileges",
+      "status": "PASS"
+    },
+    {
+      "name": "populated private root can be reused without rewriting ACL or contents",
+      "status": "PASS"
+    },
+    {
+      "name": "empty current-user leftover is repaired and reverified",
+      "status": "PASS"
+    },
+    {
+      "name": "populated nonprivate directory is refused without mutation",
+      "status": "PASS"
+    },
+    {
+      "name": "regular file is refused without mutation",
+      "status": "PASS"
+    },
+    {
+      "name": "direct junction is rejected without touching its target",
+      "status": "PASS"
+    },
+    {
+      "name": "nonexistent descendant under a junction is rejected before creation",
+      "status": "PASS"
+    }
+  ],
+  "passed": 7,
+  "failed": 0,
+  "syntheticPathsCleaned": true,
+  "networkCalls": 0,
+  "credentialInput": false
+}

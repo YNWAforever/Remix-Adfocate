@@ -1,0 +1,746 @@
+{
+  "date": "2026-10-31",
+  "mode": "local mock only",
+  "records": [
+    {
+      "name": "desktop-unconnected",
+      "note": "未連接，基本任務入口仍可用",
+      "alerts": [],
+      "headings": [
+        "把靈感，連在一起。",
+        "Instagram",
+        "Google Drive",
+        "先創作，也很好。",
+        "慢慢擴充你的技能收藏"
+      ],
+      "height": 1000,
+      "overflow": false,
+      "path": "/connections",
+      "width": 1440
+    },
+    {
+      "name": "desktop-partial-confirmed",
+      "note": "部分授權已完成；同步按鈕停用",
+      "alerts": [],
+      "headings": [
+        "把靈感，連在一起。",
+        "Instagram",
+        "Google Drive",
+        "先創作，也很好。",
+        "慢慢擴充你的技能收藏"
+      ],
+      "height": 1000,
+      "overflow": false,
+      "path": "/connections",
+      "width": 1440
+    },
+    {
+      "name": "desktop-sync-cooldown",
+      "note": "首次同步成功，再次同步限流而不補資料",
+      "alerts": [
+        "模擬服務暫時受限，請稍後重試。你的輸入仍保留。"
+      ],
+      "headings": [
+        "把靈感，連在一起。",
+        "Instagram",
+        "Google Drive",
+        "先創作，也很好。",
+        "慢慢擴充你的技能收藏"
+      ],
+      "height": 1000,
+      "overflow": false,
+      "path": "/connections",
+      "width": 1440
+    },
+    {
+      "name": "desktop-instagram-import",
+      "note": "真實零與缺值分開；地區語言未知；獨立同意後私人匯入",
+      "alerts": [],
+      "headings": [
+        "幫我整理這個任務的腳本、鏡頭與拍攝清單。",
+        "每個建議，都有出處"
+      ],
+      "height": 1000,
+      "overflow": false,
+      "path": "/studio",
+      "width": 1440
+    },
+    {
+      "name": "desktop-private-conversation",
+      "note": "兩項已同意模擬來源進入私人對話，附引用與未驗證標記",
+      "alerts": [],
+      "headings": [
+        "幫我整理這個任務的腳本、鏡頭與拍攝清單。"
+      ],
+      "height": 1000,
+      "overflow": false,
+      "path": "/studio",
+      "width": 1440
+    },
+    {
+      "name": "desktop-brief-sharing",
+      "note": "已保存私人v1，來源段落、任務及交付項目逐項確認",
+      "alerts": [],
+      "headings": [
+        "幫我整理這個任務的腳本、鏡頭與拍攝清單。",
+        "你的拍攝 Brief",
+        "只把你選的內容送到任務"
+      ],
+      "height": 1000,
+      "overflow": false,
+      "path": "/studio",
+      "width": 1440
+    },
+    {
+      "name": "mobile-brief-sharing",
+      "note": "390px同一私人Brief，逐段分享和接收者確認可操作",
+      "alerts": [],
+      "headings": [
+        "幫我整理這個任務的腳本、鏡頭與拍攝清單。",
+        "你的拍攝 Brief",
+        "只把你選的內容送到任務"
+      ],
+      "height": 844,
+      "overflow": false,
+      "path": "/studio",
+      "width": 390
+    },
+    {
+      "name": "mobile-original-task-submit",
+      "note": "轉存caption、草稿連結和checklist保存後提交示例版本",
+      "alerts": [],
+      "headings": [
+        "一杯茶的日常故事",
+        "30 秒試飲短片",
+        "版本記錄"
+      ],
+      "height": 844,
+      "overflow": false,
+      "path": "/my/00000000-0000-4000-8000-000000000031",
+      "width": 390
+    },
+    {
+      "name": "mobile-reward-pending",
+      "note": "原版本記錄與等待結算可見，未發獎",
+      "alerts": [],
+      "headings": [
+        "一杯茶的日常故事",
+        "發佈證明已核實",
+        "版本記錄",
+        "任務已完成 — 獎賞正由財務審核"
+      ],
+      "height": 844,
+      "overflow": false,
+      "path": "/my/00000000-0000-4000-8000-000000000031",
+      "width": 390
+    },
+    {
+      "name": "mobile-settled",
+      "note": "模擬入帳事件後400積分及完成狀態可見",
+      "alerts": [],
+      "headings": [
+        "一杯茶的日常故事",
+        "發佈證明已核實",
+        "版本記錄",
+        "獎賞已加入你的餘額"
+      ],
+      "height": 844,
+      "overflow": false,
+      "path": "/my/00000000-0000-4000-8000-000000000031",
+      "width": 390
+    },
+    {
+      "name": "desktop-settled",
+      "note": "同一原任務的400積分入帳狀態",
+      "alerts": [],
+      "headings": [
+        "一杯茶的日常故事",
+        "發佈證明已核實",
+        "版本記錄",
+        "獎賞已加入你的餘額"
+      ],
+      "height": 1000,
+      "overflow": false,
+      "path": "/my/00000000-0000-4000-8000-000000000031",
+      "width": 1440
+    },
+    {
+      "name": "desktop-home-reward",
+      "note": "餘額由200增至600；XP維持800；只由模擬原帳本事件改變",
+      "alerts": [],
+      "headings": [
+        "今天，想創作些甚麼？",
+        "不知道從哪開始？挑一張卡"
+      ],
+      "height": 1000,
+      "overflow": false,
+      "path": "/home",
+      "width": 1440
+    },
+    {
+      "name": "mobile-connected-accounts",
+      "note": "Instagram與Drive狀態、同步時間、權限與撤銷入口可見",
+      "alerts": [],
+      "headings": [
+        "把靈感，連在一起。",
+        "Instagram",
+        "Google Drive",
+        "先創作，也很好。",
+        "慢慢擴充你的技能收藏"
+      ],
+      "height": 844,
+      "overflow": false,
+      "path": "/connections",
+      "width": 390
+    },
+    {
+      "name": "mobile-drive-revoked",
+      "note": "一鍵撤銷後本地使用停止，平台撤權結果單獨標示",
+      "alerts": [],
+      "headings": [
+        "把靈感，連在一起。",
+        "Instagram",
+        "Google Drive",
+        "先創作，也很好。",
+        "慢慢擴充你的技能收藏"
+      ],
+      "height": 844,
+      "overflow": false,
+      "path": "/connections",
+      "width": 390
+    },
+    {
+      "name": "mobile-private-metadata",
+      "note": "未知分享權的文件無法勾選分享；AI關閉且無處理權，只匯入權限提示",
+      "alerts": [],
+      "headings": [
+        "手機撤銷與來源權利測試",
+        "每個建議，都有出處"
+      ],
+      "height": 844,
+      "overflow": false,
+      "path": "/studio",
+      "width": 390
+    },
+    {
+      "name": "mobile-revoke-final",
+      "note": "修正預覽時間後的一鍵撤銷",
+      "alerts": [],
+      "headings": [
+        "把靈感，連在一起。",
+        "Instagram",
+        "Google Drive",
+        "先創作，也很好。",
+        "慢慢擴充你的技能收藏"
+      ],
+      "height": 844,
+      "overflow": false,
+      "path": "/connections",
+      "width": 390
+    },
+    {
+      "name": "mobile-after-revoke-safe-chat",
+      "note": "原輸入保留，舊文件回覆隱藏，新的無來源回覆仍可顯示",
+      "alerts": [],
+      "headings": [
+        "手機撤銷與來源權利測試"
+      ],
+      "height": 844,
+      "overflow": false,
+      "path": "/studio",
+      "width": 390
+    },
+    {
+      "name": "mobile-reconnect-same-file",
+      "note": "重新連接後可再選同一檔案；舊來源同意保持撤銷",
+      "alerts": [],
+      "headings": [
+        "把靈感，連在一起。",
+        "Instagram",
+        "Google Drive",
+        "先創作，也很好。",
+        "慢慢擴充你的技能收藏"
+      ],
+      "height": 844,
+      "overflow": false,
+      "path": "/connections",
+      "width": 390
+    },
+    {
+      "name": "mobile-purge",
+      "note": "可取消或確認清除可重置的本機示例資料；不刪除Drive原檔或原任務回執",
+      "alerts": [],
+      "headings": [
+        "把靈感，連在一起。",
+        "Instagram",
+        "Google Drive",
+        "先創作，也很好。",
+        "慢慢擴充你的技能收藏"
+      ],
+      "height": 844,
+      "overflow": false,
+      "path": "/connections",
+      "width": 390
+    },
+    {
+      "name": "mobile-partial-instagram",
+      "note": "部分授權可顯示及重新檢視，不可讀成效",
+      "alerts": [],
+      "headings": [
+        "把靈感，連在一起。",
+        "Instagram",
+        "Google Drive",
+        "先創作，也很好。",
+        "慢慢擴充你的技能收藏"
+      ],
+      "height": 844,
+      "overflow": false,
+      "path": "/connections",
+      "width": 390
+    },
+    {
+      "name": "connections-width-320",
+      "note": "技能卡、狀態與撤銷入口不溢出",
+      "alerts": [],
+      "headings": [
+        "把靈感，連在一起。",
+        "Instagram",
+        "Google Drive",
+        "先創作，也很好。",
+        "慢慢擴充你的技能收藏"
+      ],
+      "height": 900,
+      "overflow": false,
+      "path": "/connections",
+      "width": 320
+    },
+    {
+      "name": "connections-width-430",
+      "note": "技能卡、狀態與撤銷入口不溢出",
+      "alerts": [],
+      "headings": [
+        "把靈感，連在一起。",
+        "Instagram",
+        "Google Drive",
+        "先創作，也很好。",
+        "慢慢擴充你的技能收藏"
+      ],
+      "height": 900,
+      "overflow": false,
+      "path": "/connections",
+      "width": 430
+    },
+    {
+      "name": "connections-width-768",
+      "note": "技能卡、狀態與撤銷入口不溢出",
+      "alerts": [],
+      "headings": [
+        "把靈感，連在一起。",
+        "Instagram",
+        "Google Drive",
+        "先創作，也很好。",
+        "慢慢擴充你的技能收藏"
+      ],
+      "height": 900,
+      "overflow": false,
+      "path": "/connections",
+      "width": 768
+    },
+    {
+      "name": "connections-width-1024",
+      "note": "技能卡、狀態與撤銷入口不溢出",
+      "alerts": [],
+      "headings": [
+        "把靈感，連在一起。",
+        "Instagram",
+        "Google Drive",
+        "先創作，也很好。",
+        "慢慢擴充你的技能收藏"
+      ],
+      "height": 900,
+      "overflow": false,
+      "path": "/connections",
+      "width": 1024
+    },
+    {
+      "name": "desktop-permission-denied",
+      "note": "403後隱藏私人帳號快取",
+      "alerts": [
+        "來源權限無法確認，已停止使用相關資料。你的提問仍保留。再試一次"
+      ],
+      "headings": [
+        "把靈感，連在一起。",
+        "Instagram",
+        "Google Drive",
+        "先創作，也很好。",
+        "慢慢擴充你的技能收藏"
+      ],
+      "height": 1000,
+      "overflow": false,
+      "path": "/connections",
+      "width": 1440
+    },
+    {
+      "name": "desktop-error-after-denial",
+      "note": "403後503仍不恢復私人帳號",
+      "alerts": [
+        "模擬資料暫時無法載入。你的輸入仍保留，可繼續基本任務。再試一次"
+      ],
+      "headings": [
+        "把靈感，連在一起。",
+        "Instagram",
+        "Google Drive",
+        "先創作，也很好。",
+        "慢慢擴充你的技能收藏"
+      ],
+      "height": 1000,
+      "overflow": false,
+      "path": "/connections",
+      "width": 1440
+    },
+    {
+      "name": "mobile-error-after-denial",
+      "note": "手機錯誤訊息保留重試與手動創作入口，無私人快取",
+      "alerts": [
+        "模擬資料暫時無法載入。你的輸入仍保留，可繼續基本任務。再試一次"
+      ],
+      "headings": [
+        "把靈感，連在一起。",
+        "Instagram",
+        "Google Drive",
+        "先創作，也很好。",
+        "慢慢擴充你的技能收藏"
+      ],
+      "height": 844,
+      "overflow": false,
+      "path": "/connections",
+      "width": 390
+    },
+    {
+      "name": "390-訪客-/",
+      "note": "公開首頁、任務預覽及登入入口可用",
+      "alerts": [],
+      "headings": [
+        "你的下一個靈感，值得被看見。",
+        "把一個真實體驗，拍成你的故事。",
+        "不用先學會介面，先說出你的想法。",
+        "從一件你喜歡的事開始",
+        "按自己的節奏，也能慢慢發光。"
+      ],
+      "height": 844,
+      "overflow": false,
+      "path": "/",
+      "width": 390
+    },
+    {
+      "name": "390-訪客-/login",
+      "note": "角色入口與原畫面載入檢查",
+      "alerts": [],
+      "headings": [
+        "開始你的 KOCmax 旅程",
+        "用密碼登入"
+      ],
+      "height": 844,
+      "overflow": false,
+      "path": "/login",
+      "width": 390
+    },
+    {
+      "name": "390-新創作者-/onboarding",
+      "note": "角色入口與原畫面載入檢查",
+      "alerts": [],
+      "headings": [
+        "你的成長階梯"
+      ],
+      "height": 844,
+      "overflow": false,
+      "path": "/onboarding",
+      "width": 390
+    },
+    {
+      "name": "390-創作者-/mission",
+      "note": "角色入口與原畫面載入檢查",
+      "alerts": [],
+      "headings": [
+        "限時任務",
+        "所有任務"
+      ],
+      "height": 844,
+      "overflow": false,
+      "path": "/mission",
+      "width": 390
+    },
+    {
+      "name": "390-創作者-/redemption",
+      "note": "角色入口與原畫面載入檢查",
+      "alerts": [],
+      "headings": [
+        "積分兌換"
+      ],
+      "height": 844,
+      "overflow": false,
+      "path": "/redemption",
+      "width": 390
+    },
+    {
+      "name": "390-創作者-/profile",
+      "note": "角色入口與原畫面載入檢查",
+      "alerts": [],
+      "headings": [
+        "阿晴",
+        "內容範疇",
+        "社交帳號",
+        "創作者媒體",
+        "我的邀請碼",
+        "你的資料及帳戶"
+      ],
+      "height": 844,
+      "overflow": false,
+      "path": "/profile",
+      "width": 390
+    },
+    {
+      "name": "390-品牌-/brand/missions",
+      "note": "角色入口與原畫面載入檢查",
+      "alerts": [],
+      "headings": [
+        "任務"
+      ],
+      "height": 844,
+      "overflow": false,
+      "path": "/brand/missions",
+      "width": 390
+    },
+    {
+      "name": "390-Operator-/operator/creators",
+      "note": "角色入口與原畫面載入檢查",
+      "alerts": [],
+      "headings": [
+        "創作者審核",
+        "作者審核列表"
+      ],
+      "height": 844,
+      "overflow": false,
+      "path": "/admin/creators",
+      "width": 390
+    },
+    {
+      "name": "390-Reviewer-/admin/active-missions",
+      "note": "角色入口與原畫面載入檢查",
+      "alerts": [],
+      "headings": [
+        "主動任務審批",
+        "主動任務審批"
+      ],
+      "height": 844,
+      "overflow": false,
+      "path": "/admin/active-missions",
+      "width": 390
+    },
+    {
+      "name": "390-Finance viewer-/admin/reward-handoffs",
+      "note": "角色入口與原畫面載入檢查",
+      "alerts": [],
+      "headings": [
+        "獎勵交接",
+        "待處理獎勵交接"
+      ],
+      "height": 844,
+      "overflow": false,
+      "path": "/admin/reward-handoffs",
+      "width": 390
+    },
+    {
+      "name": "390-內容編輯-/admin/content",
+      "note": "角色入口與原畫面載入檢查",
+      "alerts": [],
+      "headings": [
+        "內容",
+        "內容管理"
+      ],
+      "height": 844,
+      "overflow": false,
+      "path": "/admin/content",
+      "width": 390
+    },
+    {
+      "name": "1440-訪客-/",
+      "note": "角色入口與原畫面載入檢查",
+      "alerts": [],
+      "headings": [
+        "你的下一個靈感，值得被看見。",
+        "把一個真實體驗，拍成你的故事。",
+        "不用先學會介面，先說出你的想法。",
+        "從一件你喜歡的事開始",
+        "按自己的節奏，也能慢慢發光。"
+      ],
+      "height": 1000,
+      "overflow": false,
+      "path": "/",
+      "width": 1440
+    },
+    {
+      "name": "1440-訪客-/login",
+      "note": "角色入口與原畫面載入檢查",
+      "alerts": [],
+      "headings": [
+        "開始你的 KOCmax 旅程",
+        "用密碼登入"
+      ],
+      "height": 1000,
+      "overflow": false,
+      "path": "/login",
+      "width": 1440
+    },
+    {
+      "name": "1440-新創作者-/onboarding",
+      "note": "角色入口與原畫面載入檢查",
+      "alerts": [],
+      "headings": [
+        "你的成長階梯"
+      ],
+      "height": 1000,
+      "overflow": false,
+      "path": "/onboarding",
+      "width": 1440
+    },
+    {
+      "name": "1440-創作者-/mission",
+      "note": "角色入口與原畫面載入檢查",
+      "alerts": [],
+      "headings": [
+        "限時任務",
+        "所有任務"
+      ],
+      "height": 1000,
+      "overflow": false,
+      "path": "/mission",
+      "width": 1440
+    },
+    {
+      "name": "1440-創作者-/redemption",
+      "note": "角色入口與原畫面載入檢查",
+      "alerts": [],
+      "headings": [
+        "積分兌換"
+      ],
+      "height": 1000,
+      "overflow": false,
+      "path": "/redemption",
+      "width": 1440
+    },
+    {
+      "name": "1440-創作者-/profile",
+      "note": "角色入口與原畫面載入檢查",
+      "alerts": [],
+      "headings": [
+        "阿晴",
+        "內容範疇",
+        "社交帳號",
+        "創作者媒體",
+        "我的邀請碼",
+        "你的資料及帳戶"
+      ],
+      "height": 1000,
+      "overflow": false,
+      "path": "/profile",
+      "width": 1440
+    },
+    {
+      "name": "1440-品牌-/brand/missions",
+      "note": "角色入口與原畫面載入檢查",
+      "alerts": [],
+      "headings": [
+        "任務"
+      ],
+      "height": 1000,
+      "overflow": false,
+      "path": "/brand/missions",
+      "width": 1440
+    },
+    {
+      "name": "1440-Operator-/operator/creators",
+      "note": "角色入口與原畫面載入檢查",
+      "alerts": [],
+      "headings": [
+        "創作者審核",
+        "作者審核列表"
+      ],
+      "height": 1000,
+      "overflow": false,
+      "path": "/admin/creators",
+      "width": 1440
+    },
+    {
+      "name": "1440-Reviewer-/admin/active-missions",
+      "note": "角色入口與原畫面載入檢查",
+      "alerts": [],
+      "headings": [
+        "主動任務審批",
+        "主動任務審批"
+      ],
+      "height": 1000,
+      "overflow": false,
+      "path": "/admin/active-missions",
+      "width": 1440
+    },
+    {
+      "name": "1440-Finance viewer-/admin/reward-handoffs",
+      "note": "角色入口與原畫面載入檢查",
+      "alerts": [],
+      "headings": [
+        "獎勵交接",
+        "待處理獎勵交接"
+      ],
+      "height": 1000,
+      "overflow": false,
+      "path": "/admin/reward-handoffs",
+      "width": 1440
+    },
+    {
+      "name": "1440-內容編輯-/admin/content",
+      "note": "角色入口與原畫面載入檢查",
+      "alerts": [],
+      "headings": [
+        "內容",
+        "內容管理"
+      ],
+      "height": 1000,
+      "overflow": false,
+      "path": "/admin/content",
+      "width": 1440
+    },
+    {
+      "name": "390-創作者-/connections",
+      "note": "角色入口與原畫面載入檢查",
+      "alerts": [],
+      "headings": [
+        "把靈感，連在一起。",
+        "Instagram",
+        "Google Drive",
+        "先創作，也很好。",
+        "慢慢擴充你的技能收藏"
+      ],
+      "height": 844,
+      "overflow": false,
+      "path": "/connections",
+      "width": 390
+    },
+    {
+      "name": "mobile-dialog-keyboard",
+      "note": "Escape關閉授權視窗並恢復連接按鈕焦點",
+      "alerts": [],
+      "headings": [
+        "把靈感，連在一起。",
+        "Instagram",
+        "Google Drive",
+        "先創作，也很好。",
+        "慢慢擴充你的技能收藏"
+      ],
+      "height": 844,
+      "overflow": false,
+      "path": "/connections",
+      "width": 390
+    }
+  ]
+}

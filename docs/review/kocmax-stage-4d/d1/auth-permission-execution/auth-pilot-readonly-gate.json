@@ -1,0 +1,63 @@
+{
+  "status": "PASSED",
+  "projectRef": "mhkoayftiuojxlrkollf",
+  "runId": "5f694251-c6eb-4f5f-a281-25e91db81c04",
+  "sqlSha256": "ae276f3dfc22539b48e482dceb1aeab8de2774c75f32816fe58665bfef8b7b8d",
+  "preparedManifestSha256": "32e41e0aa7febd55bb75516779bca8ac5ce62e796e28ee3a503e1a9a414aaab1",
+  "observedAt": "2026-11-01T15:49:27.883020Z",
+  "transactionReadOnly": true,
+  "rowSecurityOff": true,
+  "sqlApplied": true,
+  "backupRestoreVerified": true,
+  "originalDataUnchanged": true,
+  "authUserTriggers": 0,
+  "reservedEmailCollisions": [
+    {
+      "alias": "C-A",
+      "authId": "6c88b77f-a273-4ed4-b48f-099ad792efc7"
+    },
+    {
+      "alias": "C-P",
+      "authId": "1cf3cd31-79ba-463d-8631-2528a34d68a4"
+    },
+    {
+      "alias": "C-B",
+      "authId": "f06df842-931b-4e45-b74f-0ea9c2944159"
+    },
+    {
+      "alias": "S-A",
+      "authId": "d854b3e8-85dd-4d97-89aa-f59c93e2d1ee"
+    },
+    {
+      "alias": "S-O",
+      "authId": "4c1e5d4b-ac1d-4930-b245-1e4efe28de20"
+    },
+    {
+      "alias": "S-R",
+      "authId": "ff86250c-e600-4841-bf36-329f5bf180aa"
+    },
+    {
+      "alias": "S-F",
+      "authId": "e43cdb67-63b7-4946-836d-7333624a1842"
+    },
+    {
+      "alias": "B-A",
+      "authId": "faf3de5a-e961-4d29-b825-5f5abfe5438e"
+    },
+    {
+      "alias": "U-X",
+      "authId": "6a3bd66a-6fd4-4e24-9e56-d51d4246d833"
+    }
+  ],
+  "reservedWorkspaceCollisions": 2,
+  "applicationReceipt": "application-receipt.json",
+  "restoreReceipt": "checkpoint-restore.json",
+  "sourceDigestBeforeAndAfterSql": "ec4e20dce8d53c695122c2f3c1551abb",
+  "readonlyObservation": "readonly-observation-20261101T154927Z.json",
+  "nonPilotData": {
+    "data_digest": "ba4d59dfbe6044523379db917fe3c2b3",
+    "table_count": 129,
+    "row_count": 374
+  },
+  "exactOwnedFixtureExclusion": true
+}

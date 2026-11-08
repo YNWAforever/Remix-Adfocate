@@ -19,8 +19,8 @@ function OperatorLayout() {
   const reportAuthError = useCallback((error: unknown) => { if (error instanceof AdminAuthError) { qc.clear(); setAuthRevision((value) => value + 1); } }, [qc]);
   return (
     <StaffAuthGate refreshKey={authRevision} onIdentityChange={clearIdentityCache}>
-      {(staff) => (
-        <AdminAuthContext.Provider value={{ authed: true, staff, reportAuthError }}>
+      {(staff, signOut) => (
+        <AdminAuthContext.Provider value={{ authed: true, staff, signOut, reportAuthError }}>
           <AdminWorkspaceProvider>
             <AdminShell><Outlet /></AdminShell>
           </AdminWorkspaceProvider>

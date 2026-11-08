@@ -1,0 +1,98 @@
+{
+  "mode": "mock",
+  "sampleOnly": true,
+  "liveApiVersion": "v26.0",
+  "liveAcceptance": "D0_offline_only_not_live_verified",
+  "offlineProtocolAdapters": {
+    "mode": "live_pilot",
+    "transportKind": "fixture",
+    "sampleOnly": true,
+    "externalAccess": false,
+    "networkTransportRequires": "separate_D1_D2_approval_and_target_verification",
+    "http": {
+      "timeoutMs": 10000,
+      "maxTimeoutMs": 30000,
+      "maxReadRetries": 2,
+      "maxRetryDelayMs": 2000,
+      "circuitFailures": 3,
+      "circuitReadPauseMs": 30000,
+      "redirects": "error",
+      "defaultJsonMaxBytes": 262144,
+      "hardMaxBytes": 5242880,
+      "lifecycleRetries": 0
+    }
+  },
+  "instagram": {
+    "login": "instagram_login",
+    "scopes": ["instagram_business_basic", "instagram_business_manage_insights"],
+    "contractVersion": "mock-insights-v1",
+    "liveContractVersion": "instagram-login-v26.0-offline-v1",
+    "apiVersion": "v26.0",
+    "apiVersionVerifiedAt": "2026-10-31",
+    "apiVersionEvidence": "official_media_insights_reference_observed_by_coordinating_task",
+    "candidateMetrics": ["reach", "views", "likes", "saves"],
+    "days": 30,
+    "mediaLimit": 50,
+    "pageLimit": 5,
+    "cooldownMinutes": 60,
+    "reference": "https://developers.facebook.com/documentation/instagram-platform/reference/instagram-media/insights",
+    "referenceUpdatedAt": "2026-09-11",
+    "metrics": [
+      { "provider": "reach", "normalized": "reach", "media": ["FEED_IMAGE", "FEED_CAROUSEL_CONTAINER", "REELS_VIDEO"], "period": "lifetime" },
+      { "provider": "views", "normalized": "views", "media": ["FEED_IMAGE", "FEED_CAROUSEL_CONTAINER", "REELS_VIDEO"], "period": "lifetime" },
+      { "provider": "likes", "normalized": "likes", "media": ["FEED_IMAGE", "FEED_CAROUSEL_CONTAINER", "REELS_VIDEO"], "period": "lifetime" },
+      { "provider": "saved", "normalized": "saves", "media": ["FEED_IMAGE", "FEED_CAROUSEL_CONTAINER", "REELS_VIDEO"], "period": "lifetime" }
+    ],
+    "measurementDelayHours": 48,
+    "selectionWindowIsMeasurementPeriod": false,
+    "unsupported": ["carousel_children", "stories", "live", "ads_aggregates", "demographics", "Facebook_Login_total_metrics"],
+    "tokenLifecycle": {
+      "codeExchange": "POST https://api.instagram.com/oauth/access_token",
+      "longLivedExchange": "GET https://graph.instagram.com/access_token?grant_type=ig_exchange_token",
+      "refresh": "GET https://graph.instagram.com/refresh_access_token?grant_type=ig_refresh_token",
+      "revoke": "DELETE https://graph.instagram.com/v26.0/{user-id}/permissions",
+      "revokeProtocolReferenceStatus": "requires_explicit_Instagram_Login_endpoint_confirmation_before_network_enablement",
+      "longLivedDays": 60,
+      "refreshMinimumAgeHours": 24,
+      "refreshRequiresUnexpiredToken": true,
+      "refreshTokenIssued": false,
+      "grantedScopesFrom": "code_exchange_permissions",
+      "reference": "https://developers.facebook.com/documentation/instagram-platform/instagram-api-with-instagram-login/business-login",
+      "referenceUpdatedAt": "2026-03-13"
+    },
+    "checkedAt": "2026-10-31",
+    "coverage": "unknown; example values are not Hong Kong audience evidence"
+  },
+  "google_drive": {
+    "scopes": ["https://www.googleapis.com/auth/drive.file"],
+    "liveScopes": ["openid", "https://www.googleapis.com/auth/drive.file"],
+    "scopeIncludesWrite": true,
+    "applicationContentOperations": ["read_selected"],
+    "maxFiles": 5,
+    "maxFileBytes": 5242880,
+    "maxExcerptCharacters": 8000,
+    "fileParsing": "mock_extracted_text_only",
+    "liveFileParsing": {
+      "formats": ["application/vnd.google-apps.document", "text/plain", "application/pdf"],
+      "pdfParser": "pdfjs-dist@6.4.299",
+      "pdfExecution": "isolated_node_worker_no_eval_no_network_no_script_execution",
+      "pdfTimeoutMs": 4000,
+      "pdfMaxPages": 100,
+      "pdfMaxTextBytes": 5242880,
+      "pdfWorkerOldHeapMiB": 64,
+      "runtimeRequirement": "Node >=22.13.0; packaging_for_deployment_not_verified",
+      "rejects": ["encrypted", "scanned_or_empty", "corrupt", "over_limit", "shared_drives", "shortcuts", "folders", "sheets", "slides", "office"],
+      "metadataRecheck": "before_and_after_download_and_parse",
+      "selectionAuthority": "durable_isSelected_callback_or_immutable_request_scoped_selectedFiles_candidates",
+      "rights": "unknown_until_separate_processing_sharing_evidence",
+      "filesListing": "disabled_Picker_candidates_only"
+    },
+    "tokenLifecycle": {
+      "exchangeRefresh": "POST https://oauth2.googleapis.com/token",
+      "revoke": "POST https://oauth2.googleapis.com/revoke",
+      "identity": "injected_RS256_JWKS_verifier_with_nonce_by_main",
+      "reference": "https://developers.google.com/identity/protocols/oauth2/web-server"
+    },
+    "reference": "https://developers.google.com/workspace/drive/api/guides/api-specific-auth"
+  }
+}

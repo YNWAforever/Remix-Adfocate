@@ -1,0 +1,9 @@
+{
+  "status": "PREPARED_NOT_APPLIED",
+  "projectRef": "mhkoayftiuojxlrkollf",
+  "runId": "5f694251-c6eb-4f5f-a281-25e91db81c04",
+  "observedAt": "2026-11-01T15:37:39.979Z",
+  "sqlSha256": "1385bc5362a388bded9b4281c2e5cd02cb5086fd487133b8a62350c4f5959f25",
+  "sqlFile": "fixture-seed.actual.sql",
+  "authUsersObserved": 9
+}

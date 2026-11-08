@@ -1,3 +1,4 @@
+import { STUDIO_SHELL } from "@/lib/features";
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { supabase } from "@/lib/supabase";
@@ -30,12 +31,12 @@ function BrandLogin() {
   }
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[var(--color-paper)] px-4 py-10">
+    <div className="s-auth relative flex min-h-screen items-center justify-center overflow-hidden bg-[var(--color-paper)] px-4 py-10">
       <div aria-hidden className="dot-pattern pointer-events-none absolute inset-0 z-0 opacity-30" />
       <div className="relative z-10 w-full max-w-md">
         <div className="mb-4 flex items-center justify-between">
           <span className="font-display text-xl font-bold tracking-tight text-[var(--color-ink)]">
-            Adfocate<span className="text-[var(--color-magenta)]">.</span>
+            {STUDIO_SHELL ? "KOCmax" : "Adfocate"}<span className="text-[var(--color-magenta)]">.</span>
           </span>
           <button type="button" onClick={() => setLang(lang === "en" ? "zh" : "en")} className="tag-mono" aria-label={tx("Switch language", "切換語言")}>
             EN · 繁

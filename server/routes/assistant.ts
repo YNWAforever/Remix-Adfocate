@@ -7,6 +7,7 @@ import type { ChatMessage } from "../lib/llm.js";
 import { AssistError, parseAssistContext, type AssistPrincipal } from "../lib/assistant/contextPolicy.js";
 import type { AdminEnv } from "../lib/staffAuth.js";
 import { requireCapability } from "../lib/staffCapabilities.js";
+import { authorizeIntegrationSources } from "../lib/integrations/evidence.js";
 
 /** D20 is offline only. No request flag, env variable or configured gateway key enables this provider. */
 async function missionAssist(body: unknown, principal: AssistPrincipal, getClient: typeof serviceClient, provider?: AssistantProvider) {
@@ -59,11 +60,32 @@ export function assistantRoutes(testProvider?: AssistantProvider) {
     const client = makeUserClient(c.get("jwt"));
     const store = serviceClient();
     const workspaceId = c.get("workspaceId");
+    let studio: Awaited<ReturnType<typeof import("../lib/studio/assistantContext.js").loadStudioContext>>;
+    if (input.conversationId) {
+      try {
+        if (process.env.STUDIO_THREADS === "true") {
+          studio = await (await import("../lib/studio/assistantContext.js")).loadStudioContext(store,client,c.get("userId"),workspaceId,input.conversationId);
+        } else {
+          // Disabling Studio must not reclassify its retained private history as general chat.
+          // Classify before reading history, reserving a request or calling any model.
+          const thread = await store.from("studio_threads").select("id").eq("conversation_id",input.conversationId)
+            .eq("creator_id",c.get("userId")).eq("workspace_id",workspaceId).maybeSingle();
+          if (thread.error) throw new Error("studio_unavailable");
+          if (thread.data) return c.json({ code:"studio_disabled", error:"Studio assistance is disabled. Your input is retained.",
+            request_id:input.requestId, persistence:"not_saved", generation:"not_started" },503);
+        }
+      }
+      catch { return c.json({code:"studio_unavailable",error:"Studio context or history unavailable"},503); }
+    }
     const identity = { p_workspace: workspaceId, p_creator: c.get("userId"), p_request: input.requestId };
     const reserved = await store.rpc("reserve_assistant_request", { ...identity, p_message: input.message,
-      p_locale: input.locale, p_conversation: input.conversationId ?? null, p_context_version: "r1" });
+      p_locale: input.locale, p_conversation: input.conversationId ?? null, p_context_version: studio?.contextVersion ?? "r1" });
     if (reserved.error) {
       const code = reserved.error.message;
+      if(studio && code === "IDEMPOTENCY_CONFLICT") {
+        const recovered=await store.rpc("resolve_studio_request_context",{...identity,p_message:input.message,p_locale:input.locale,p_conversation:input.conversationId,p_context_version:studio.contextVersion});
+        if(!recovered.error && recovered.data) return c.json(recovered.data);
+      }
       if (["RATE_LIMITED", "REQUEST_INFLIGHT"].includes(code)) return c.json({ error: "Please wait before retrying this request", code }, 429);
       if (code === "IDEMPOTENCY_CONFLICT") return c.json({ error: "Request payload changed; compare the existing request", code }, 409);
       if (code === "not_found" || code === "FORBIDDEN") return c.json({ error: "Conversation not found", code: "not_found" }, 404);
@@ -72,8 +94,8 @@ export function assistantRoutes(testProvider?: AssistantProvider) {
     if (reserved.data?.action === "replay") return c.json(reserved.data.result);
     if (reserved.data?.action !== "reserved") return c.json({ request_id: input.requestId, persistence: "unknown", code: "request_pending" }, 202);
 
-    let history: ChatMessage[] = [];
-    if (input.conversationId) {
+    let history: ChatMessage[] = studio?.history ?? [];
+    if (input.conversationId && !studio) {
       const prior = await client.from("assistant_messages").select("role, content")
         .eq("conversation_id", input.conversationId).order("created_at", { ascending: false })
         .order("turn_order", { ascending: false }).limit(20);
@@ -86,21 +108,31 @@ export function assistantRoutes(testProvider?: AssistantProvider) {
     const markUnknown = async () => { try { await store.rpc("mark_assistant_request_unknown", identity); } catch { /* Outcome remains unknown; never regenerate automatically. */ } };
     let result;
     try {
+      if(studio?.integrationSources?.length) await authorizeIntegrationSources({creatorId:c.get("userId"),workspaceId},studio.integrationSources,"model",{requestId:input.requestId});
       result = await withProviderDeadline((signal) => runAssistant(client,
-        { query: input.message, locale: input.locale, workspace: workspaceId, history },
+        { query: input.message, locale: input.locale, workspace: workspaceId, history, studioContext:studio?.context },
         { ...(testProvider ? { provider: testProvider } : {}), signal }));
     } catch {
       await markUnknown();
       return c.json({ error: "Generation outcome is unknown. Check this request before starting another", code: "provider_outcome_unknown", request_id: input.requestId, persistence: "unknown" }, 503);
     }
     try {
+      if(studio?.integrationSources?.length) {
+        await authorizeIntegrationSources({creatorId:c.get("userId"),workspaceId},studio.integrationSources,"read");
+        const current = await (await import("../lib/studio/assistantContext.js")).loadStudioContext(store,client,c.get("userId"),workspaceId,input.conversationId!);
+        if(current?.contextVersion !== studio.contextVersion) {
+          await markUnknown();return c.json({code:"studio_context_changed",persistence:"failed",generation:"completed_discarded",request_id:input.requestId,error:"來源已變更，已停止保存回覆。輸入仍保留。"},409);
+        }
+      }
       const saved = await store.rpc("save_assistant_turn", { ...identity, p_answer: result.answer, p_citations: result.citations });
       if (!saved.error && saved.data?.persistence === "saved") return c.json(saved.data);
       await markUnknown();
+      if(studio?.integrationSources?.length) return c.json({code:"studio_context_changed",persistence:"failed",request_id:input.requestId,error:"來源或儲存權限已變更，已停止返回衍生回覆。"},409);
       return c.json({ ...result, conversation_id: input.conversationId ?? null, request_id: input.requestId,
         persistence: saved.error?.code && /^(22|23|P0)/.test(saved.error.code) ? "failed" : "unknown" });
     } catch {
       await markUnknown();
+      if(studio?.integrationSources?.length) return c.json({code:"studio_context_changed",persistence:"failed",request_id:input.requestId,error:"來源權限尚未確認；沒有保存或返回衍生回覆。"},409);
       return c.json({ ...result, conversation_id: input.conversationId ?? null, request_id: input.requestId, persistence: "unknown" });
     }
   });

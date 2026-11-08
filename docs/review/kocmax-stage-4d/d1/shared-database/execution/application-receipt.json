@@ -1,0 +1,310 @@
+{
+  "status": "APPLIED_AND_READ_ONLY_POSTCONDITIONS_PASSED",
+  "projectRef": "mhkoayftiuojxlrkollf",
+  "projectName": "Remix-Adfocate",
+  "branch": "codex/kocmax-studio-stages-1-2",
+  "head": "5c60020091e8e6fee934b61c498bf7518944c433",
+  "approvedSql": {
+    "sha256": "9cbecbf1b4b68c476ed8d996f8f3d1c61408e46986584c22ab0111788cd9e5a5",
+    "bytes": 775304,
+    "reviewedPayloadSha256": "c879b204d9b2928c6426b641262096fff23ef1a1b49b33a8f2003afd5ee9dbff",
+    "contentChanged": false
+  },
+  "backupReceipt": "backup-verification-receipt.json",
+  "attempts": [
+    {
+      "startedUtc": "2026-10-31T20:07:23.782Z",
+      "finishedUtc": "2026-10-31T20:17:10.851Z",
+      "result": "CONNECTOR_CONFIRMATION_EXPIRED",
+      "reconciliation": "Original schema, 14 migration records and 39 original-table fingerprints rechecked unchanged before retry."
+    },
+    {
+      "startedUtc": "2026-10-31T20:18:32.97Z",
+      "finishedUtc": "2026-10-31T20:19:02.583Z",
+      "result": "SUCCESS",
+      "toolSuccess": true
+    }
+  ],
+  "migrationHistory": {
+    "originalPreserved": 14,
+    "newRecords": [
+      {
+        "version": "20261031201901",
+        "name": "kocmax_studio_shared_review_c879b204"
+      }
+    ],
+    "total": 15
+  },
+  "schema": {
+    "app_tables": 94,
+    "app_columns": 987,
+    "app_policies": 86,
+    "nonextension_app_functions": 192
+  },
+  "postconditions": {
+    "passed": true,
+    "expectedNewTables": 55,
+    "newTablesEmpty": true,
+    "newPublicTablesRlsEnabled": true,
+    "privateAssetBuckets": 2,
+    "bucketMaxBytes": 20971520,
+    "directPrivateCredentialAndSourceWritesDenied": true
+  },
+  "originalData": {
+    "tables": 39,
+    "columns": 400,
+    "rowCountsUnchanged": true,
+    "opaqueContentChecksumsUnchanged": true
+  },
+  "advisors": {
+    "Security": {
+      "before": [
+        {
+          "name": "rls_enabled_no_policy",
+          "level": "INFO",
+          "count": 7
+        },
+        {
+          "name": "function_search_path_mutable",
+          "level": "WARN",
+          "count": 2
+        },
+        {
+          "name": "extension_in_public",
+          "level": "WARN",
+          "count": 1
+        },
+        {
+          "name": "anon_security_definer_function_executable",
+          "level": "WARN",
+          "count": 5
+        },
+        {
+          "name": "authenticated_security_definer_function_executable",
+          "level": "WARN",
+          "count": 10
+        },
+        {
+          "name": "auth_leaked_password_protection",
+          "level": "WARN",
+          "count": 1
+        }
+      ],
+      "after": [
+        {
+          "name": "rls_enabled_no_policy",
+          "level": "INFO",
+          "count": 28
+        },
+        {
+          "name": "function_search_path_mutable",
+          "level": "WARN",
+          "count": 2
+        },
+        {
+          "name": "extension_in_public",
+          "level": "WARN",
+          "count": 1
+        },
+        {
+          "name": "anon_security_definer_function_executable",
+          "level": "WARN",
+          "count": 5
+        },
+        {
+          "name": "authenticated_security_definer_function_executable",
+          "level": "WARN",
+          "count": 19
+        },
+        {
+          "name": "auth_leaked_password_protection",
+          "level": "WARN",
+          "count": 1
+        }
+      ]
+    },
+    "Performance": {
+      "before": [
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "count": 33
+        },
+        {
+          "name": "auth_rls_initplan",
+          "level": "WARN",
+          "count": 43
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "count": 15
+        },
+        {
+          "name": "multiple_permissive_policies",
+          "level": "WARN",
+          "count": 2
+        }
+      ],
+      "after": [
+        {
+          "name": "unindexed_foreign_keys",
+          "level": "INFO",
+          "count": 121
+        },
+        {
+          "name": "auth_rls_initplan",
+          "level": "WARN",
+          "count": 41
+        },
+        {
+          "name": "unused_index",
+          "level": "INFO",
+          "count": 77
+        },
+        {
+          "name": "multiple_permissive_policies",
+          "level": "WARN",
+          "count": 2
+        },
+        {
+          "name": "duplicate_index",
+          "level": "WARN",
+          "count": 1
+        }
+      ]
+    }
+  },
+  "newAuthenticatedRpcMetadata": [
+    {
+      "signature": "can_read_academy_track(uuid)",
+      "definition_md5": "23b5fbdf06c586e74b292e97fc38020f",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "owner": "postgres",
+      "anon_execute": false,
+      "authenticated_execute": true
+    },
+    {
+      "signature": "complete_academy_lesson(uuid,uuid,integer)",
+      "definition_md5": "c81436f7d61afad0db28f5479a01994b",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "owner": "postgres",
+      "anon_execute": false,
+      "authenticated_execute": true
+    },
+    {
+      "signature": "create_mission_workflow(uuid)",
+      "definition_md5": "df2004fbf9b4f1f0f0e970bb44b2cf5b",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "owner": "postgres",
+      "anon_execute": false,
+      "authenticated_execute": true
+    },
+    {
+      "signature": "get_academy_learning(uuid,text)",
+      "definition_md5": "60a393bf35e358c579e78f829724301e",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "owner": "postgres",
+      "anon_execute": false,
+      "authenticated_execute": true
+    },
+    {
+      "signature": "get_assistant_request(uuid,uuid)",
+      "definition_md5": "425ac33603e6b28e0730a5639b936fa9",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "owner": "postgres",
+      "anon_execute": false,
+      "authenticated_execute": true
+    },
+    {
+      "signature": "get_my_mission_reward_handoff(uuid)",
+      "definition_md5": "ce42eaa6bcacc83a494bea260a545fab",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "owner": "postgres",
+      "anon_execute": false,
+      "authenticated_execute": true
+    },
+    {
+      "signature": "join_active_mission(uuid)",
+      "definition_md5": "fa87d8eb496ac1466f2c53b7b0f0a3c9",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "owner": "postgres",
+      "anon_execute": false,
+      "authenticated_execute": true
+    },
+    {
+      "signature": "redeem_gift_with_request(uuid,uuid)",
+      "definition_md5": "85f2d7bbb308e458ba422f28a7909c41",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "owner": "postgres",
+      "anon_execute": false,
+      "authenticated_execute": true
+    },
+    {
+      "signature": "refresh_mission_workflow_state(uuid)",
+      "definition_md5": "75ab78064974b4a66a08eca8724492b7",
+      "security_definer": true,
+      "config": [
+        "search_path=\"\""
+      ],
+      "owner": "postgres",
+      "anon_execute": false,
+      "authenticated_execute": true
+    }
+  ],
+  "boundaries": {
+    "deployed": false,
+    "realInstagramConnected": false,
+    "realGoogleDriveConnected": false,
+    "externalAiEnabled": false,
+    "pilotEnabled": false,
+    "authAccountsCreated": false,
+    "persistentBrowserFixturesCreated": false,
+    "realJwtTenantAcceptance": "NOT_RUN",
+    "realProviderAcceptance": "NOT_RUN",
+    "mobileDesktop": "Post-application in-app-browser mock checks passed at 390x844 and 1440x1000; real-provider buttons disabled; no horizontal document overflow. New desktop screenshot capture incomplete; see ui-verification.md."
+  },
+  "followUps": [
+    "Nine newly exposed authenticated SECURITY DEFINER RPCs have completed bounded static/catalog review; real JWT/runtime authorization remains untested. See rpc-advisory-review.md.",
+    "One duplicate-index warning on public.creators; no unapproved index or constraint removal was performed.",
+    "Additional no-policy RLS and unindexed/unused-index findings are recorded for follow-up; this receipt is not an all-advisors-clean claim."
+  ],
+  "staticRpcReview": {
+    "status": "BOUNDED_STATIC_AND_CATALOG_REVIEW_COMPLETE",
+    "newRpcCount": 9,
+    "unexpectedExposureFound": false,
+    "allAnonymousExecuteDenied": true,
+    "fixedSearchPath": true,
+    "realJwtRuntimeTested": false,
+    "limits": [
+      "Global Academy content",
+      "Self-attested lesson progress",
+      "Retained redemption-helper dependency"
+    ],
+    "report": "rpc-advisory-review.md"
+  }
+}

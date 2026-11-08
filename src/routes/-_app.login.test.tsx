@@ -31,6 +31,7 @@ vi.mock("@/lib/supabase", () => ({
 // (!WHATSAPP_LOGIN) branch while another keeps the WhatsApp-primary branch.
 const { flags } = vi.hoisted(() => ({ flags: { whatsapp: true, google: true } }));
 vi.mock("@/lib/features", () => ({
+  STUDIO_SHELL: false,
   get WHATSAPP_LOGIN() {
     return flags.whatsapp;
   },
@@ -340,6 +341,7 @@ describe("Login (email + password primary)", () => {
     await waitFor(() =>
       expect(supabase.auth.signUp).toHaveBeenCalledWith({
         email: "new@example.com",
+        options: { emailRedirectTo: expect.stringContaining("/auth/callback") },
         password: "hunter2hunter2",
       }),
     );

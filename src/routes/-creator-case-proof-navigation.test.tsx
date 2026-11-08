@@ -111,7 +111,7 @@ function mount(initialProof = proof, updatedAt = Date.now(), seedCase = true) {
   render(
     <QueryClientProvider client={queryClient}>
       <I18nProvider>
-        <AdminAuthContext.Provider value={{ authed: true, staff: { userId: "reviewer-1", email: "reviewer@test.local" }, reportAuthError: vi.fn() }}>
+        <AdminAuthContext.Provider value={{ authed: true, staff: { userId: "reviewer-1", email: "reviewer@test.local" }, signOut: vi.fn(async () => {}), reportAuthError: vi.fn() }}>
           <RouterProvider router={router as never} />
         </AdminAuthContext.Provider>
       </I18nProvider>

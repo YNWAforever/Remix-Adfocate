@@ -1,0 +1,27 @@
+{
+  "observedAt": "2026-11-01T15:30:32.367706Z",
+  "projectRef": "mhkoayftiuojxlrkollf",
+  "transactionReadOnly": true,
+  "rowSecurityOff": true,
+  "applicationData": {
+    "opaqueDigest": "ec4e20dce8d53c695122c2f3c1551abb",
+    "rowCount": 110,
+    "tableCount": 94
+  },
+  "migrationCount": 16,
+  "policyCount": 89,
+  "sqlBytes": 6869,
+  "statementCount": 1,
+  "sqlSha256": "ae276f3dfc22539b48e482dceb1aeab8de2774c75f32816fe58665bfef8b7b8d",
+  "authUserTriggers": 0,
+  "reservedEmailCollisions": [],
+  "exactWorkspaceObservedAt": "2026-11-01T15:31:01.367245Z",
+  "exactReservedWorkspaceCollisions": 0,
+  "workspaceIds": [
+    "00391df1-e411-4a82-a317-4a73bb293f89",
+    "5d92d267-1b2a-4f19-97bd-3c80f1f3b213"
+  ],
+  "queryCorrection": "The first workspace count contained a mistyped B UUID. A separate exact-ID-and-slug READ ONLY query confirmed zero collisions; earliest observation time retained for freshness.",
+  "applicationWrites": 0,
+  "authWrites": 0
+}

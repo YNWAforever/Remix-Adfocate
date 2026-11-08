@@ -1,0 +1,1303 @@
+{
+  "status": "READ_ONLY_PLANNING_REVIEW",
+  "review_date_hkt": "2026-11-01",
+  "project_ref": "mhkoayftiuojxlrkollf",
+  "branch": "codex/kocmax-studio-stages-1-2",
+  "head": "5c60020091e8e6fee934b61c498bf7518944c433",
+  "approved_artifact_sha256": "9cbecbf1b4b68c476ed8d996f8f3d1c61408e46986584c22ab0111788cd9e5a5",
+  "source": "Supabase execute_sql read-only pg_catalog/information_schema/policies/bucket metadata; local source inspection",
+  "applied_migration": [
+    {
+      "name": "kocmax_studio_shared_review_c879b204",
+      "version": "20261031201901"
+    }
+  ],
+  "duplicate_index": {
+    "indexes": [
+      {
+        "key": "1 2",
+        "name": "creators_id_workspace_unique",
+        "ready": true,
+        "valid": true,
+        "unique": true,
+        "opclass": "10065 10065",
+        "options": "0 0",
+        "primary": false,
+        "collation": "0 0",
+        "predicate": null,
+        "definition": "CREATE UNIQUE INDEX creators_id_workspace_unique ON public.creators USING btree (id, workspace_id)",
+        "expressions": null,
+        "nulls_not_distinct": false
+      },
+      {
+        "key": "1 2",
+        "name": "integration_creator_workspace_key",
+        "ready": true,
+        "valid": true,
+        "unique": true,
+        "opclass": "10065 10065",
+        "options": "0 0",
+        "primary": false,
+        "collation": "0 0",
+        "predicate": null,
+        "definition": "CREATE UNIQUE INDEX integration_creator_workspace_key ON public.creators USING btree (id, workspace_id)",
+        "expressions": null,
+        "nulls_not_distinct": false
+      }
+    ],
+    "constraints": [
+      {
+        "name": "creators_id_workspace_unique",
+        "type": "u",
+        "table": "creators",
+        "schema": "public",
+        "validated": true,
+        "deferrable": false,
+        "definition": "UNIQUE (id, workspace_id)",
+        "supporting_index": "creators_id_workspace_unique"
+      },
+      {
+        "name": "mission_draft_assets_creator_workspace_fk",
+        "type": "f",
+        "table": "mission_draft_assets",
+        "schema": "public",
+        "validated": true,
+        "deferrable": false,
+        "definition": "FOREIGN KEY (creator_id, workspace_id) REFERENCES creators(id, workspace_id) ON DELETE CASCADE",
+        "supporting_index": "creators_id_workspace_unique"
+      },
+      {
+        "name": "mission_publication_proof_attempts_submitter_workspace_fk",
+        "type": "f",
+        "table": "mission_publication_proof_attempts",
+        "schema": "public",
+        "validated": true,
+        "deferrable": false,
+        "definition": "FOREIGN KEY (submitted_by, workspace_id) REFERENCES creators(id, workspace_id)",
+        "supporting_index": "creators_id_workspace_unique"
+      },
+      {
+        "name": "mission_publication_proof_assets_creator_workspace_fk",
+        "type": "f",
+        "table": "mission_publication_proof_assets",
+        "schema": "public",
+        "validated": true,
+        "deferrable": false,
+        "definition": "FOREIGN KEY (creator_id, workspace_id) REFERENCES creators(id, workspace_id) ON DELETE CASCADE",
+        "supporting_index": "creators_id_workspace_unique"
+      },
+      {
+        "name": "integration_creator_workspace_key",
+        "type": "u",
+        "table": "creators",
+        "schema": "public",
+        "validated": true,
+        "deferrable": false,
+        "definition": "UNIQUE (id, workspace_id)",
+        "supporting_index": "integration_creator_workspace_key"
+      },
+      {
+        "name": "integration_connections_creator_id_workspace_id_fkey",
+        "type": "f",
+        "table": "integration_connections",
+        "schema": "public",
+        "validated": true,
+        "deferrable": false,
+        "definition": "FOREIGN KEY (creator_id, workspace_id) REFERENCES creators(id, workspace_id)",
+        "supporting_index": "creators_id_workspace_unique"
+      },
+      {
+        "name": "integration_oauth_states_creator_id_workspace_id_fkey",
+        "type": "f",
+        "table": "integration_oauth_states",
+        "schema": "private",
+        "validated": true,
+        "deferrable": false,
+        "definition": "FOREIGN KEY (creator_id, workspace_id) REFERENCES creators(id, workspace_id)",
+        "supporting_index": "creators_id_workspace_unique"
+      },
+      {
+        "name": "integration_commands_creator_id_workspace_id_fkey",
+        "type": "f",
+        "table": "integration_commands",
+        "schema": "private",
+        "validated": true,
+        "deferrable": false,
+        "definition": "FOREIGN KEY (creator_id, workspace_id) REFERENCES creators(id, workspace_id)",
+        "supporting_index": "creators_id_workspace_unique"
+      },
+      {
+        "name": "integration_pilot_bindings_creator_id_workspace_id_fkey",
+        "type": "f",
+        "table": "integration_pilot_bindings",
+        "schema": "private",
+        "validated": true,
+        "deferrable": false,
+        "definition": "FOREIGN KEY (creator_id, workspace_id) REFERENCES creators(id, workspace_id)",
+        "supporting_index": "creators_id_workspace_unique"
+      },
+      {
+        "name": "integration_pilot_oauth_creator_id_workspace_id_fkey",
+        "type": "f",
+        "table": "integration_pilot_oauth",
+        "schema": "private",
+        "validated": true,
+        "deferrable": false,
+        "definition": "FOREIGN KEY (creator_id, workspace_id) REFERENCES creators(id, workspace_id)",
+        "supporting_index": "creators_id_workspace_unique"
+      }
+    ],
+    "dependencies": [
+      {
+        "type": "i",
+        "object": "index creators_id_workspace_unique",
+        "depends_on": "constraint creators_id_workspace_unique on table creators"
+      },
+      {
+        "type": "n",
+        "object": "constraint mission_draft_assets_creator_workspace_fk on table mission_draft_assets",
+        "depends_on": "index creators_id_workspace_unique"
+      },
+      {
+        "type": "n",
+        "object": "constraint mission_publication_proof_attempts_submitter_workspace_fk on table mission_publication_proof_attempts",
+        "depends_on": "index creators_id_workspace_unique"
+      },
+      {
+        "type": "n",
+        "object": "constraint mission_publication_proof_assets_creator_workspace_fk on table mission_publication_proof_assets",
+        "depends_on": "index creators_id_workspace_unique"
+      },
+      {
+        "type": "i",
+        "object": "index integration_creator_workspace_key",
+        "depends_on": "constraint integration_creator_workspace_key on table creators"
+      },
+      {
+        "type": "n",
+        "object": "constraint integration_connections_creator_id_workspace_id_fkey on table integration_connections",
+        "depends_on": "index creators_id_workspace_unique"
+      },
+      {
+        "type": "n",
+        "object": "constraint integration_oauth_states_creator_id_workspace_id_fkey on table private.integration_oauth_states",
+        "depends_on": "index creators_id_workspace_unique"
+      },
+      {
+        "type": "n",
+        "object": "constraint integration_commands_creator_id_workspace_id_fkey on table private.integration_commands",
+        "depends_on": "index creators_id_workspace_unique"
+      },
+      {
+        "type": "n",
+        "object": "constraint integration_pilot_bindings_creator_id_workspace_id_fkey on table private.integration_pilot_bindings",
+        "depends_on": "index creators_id_workspace_unique"
+      },
+      {
+        "type": "n",
+        "object": "constraint integration_pilot_oauth_creator_id_workspace_id_fkey on table private.integration_pilot_oauth",
+        "depends_on": "index creators_id_workspace_unique"
+      }
+    ]
+  },
+  "lifecycle": {
+    "workspace_columns": [
+      {
+        "type": "uuid",
+        "column": "id"
+      },
+      {
+        "type": "text",
+        "column": "slug"
+      },
+      {
+        "type": "text",
+        "column": "name"
+      },
+      {
+        "type": "text",
+        "column": "plan"
+      },
+      {
+        "type": "jsonb",
+        "column": "theme"
+      },
+      {
+        "type": "jsonb",
+        "column": "settings"
+      },
+      {
+        "type": "timestamp with time zone",
+        "column": "created_at"
+      },
+      {
+        "type": "smallint",
+        "column": "reward_processing_window_days"
+      }
+    ],
+    "retention_triggers": [
+      {
+        "name": "mission_draft_versions_immutable",
+        "table": "mission_draft_versions",
+        "definition": "CREATE TRIGGER mission_draft_versions_immutable BEFORE DELETE OR UPDATE ON public.mission_draft_versions FOR EACH ROW EXECUTE FUNCTION private.raise_immutable_record()"
+      },
+      {
+        "name": "mission_workflow_events_immutable",
+        "table": "mission_workflow_events",
+        "definition": "CREATE TRIGGER mission_workflow_events_immutable BEFORE DELETE OR UPDATE ON public.mission_workflow_events FOR EACH ROW EXECUTE FUNCTION private.raise_immutable_record()"
+      },
+      {
+        "name": "publication_proof_workflow_event_notifications",
+        "table": "mission_workflow_events",
+        "definition": "CREATE TRIGGER publication_proof_workflow_event_notifications AFTER INSERT ON public.mission_workflow_events FOR EACH ROW EXECUTE FUNCTION private.notify_publication_proof_event()"
+      },
+      {
+        "name": "reward_handoff_workflow_event_notifications",
+        "table": "mission_workflow_events",
+        "definition": "CREATE TRIGGER reward_handoff_workflow_event_notifications AFTER INSERT ON public.mission_workflow_events FOR EACH ROW EXECUTE FUNCTION private.notify_reward_handoff_event()"
+      }
+    ],
+    "creator_status_constraint": [
+      "CHECK ((status = ANY (ARRAY['active'::text, 'suspended'::text, 'pending_review'::text, 'deleted'::text])))"
+    ],
+    "auth_role_reference_columns": [
+      {
+        "table": "staff_access_audit",
+        "column": "id",
+        "default": "gen_random_uuid()",
+        "nullable": "NO"
+      },
+      {
+        "table": "staff_access_audit",
+        "column": "request_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "table": "staff_access_audit",
+        "column": "workspace_id",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "table": "staff_access_audit",
+        "column": "user_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "table": "staff_access_audit",
+        "column": "actor_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "table": "staff_access_audit",
+        "column": "actor_kind",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "table": "staff_access_audit",
+        "column": "db_session_user",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "table": "staff_access_audit",
+        "column": "before_state",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "table": "staff_access_audit",
+        "column": "after_state",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "table": "staff_access_audit",
+        "column": "reason",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "table": "staff_access_audit",
+        "column": "approval_ref",
+        "default": null,
+        "nullable": "YES"
+      },
+      {
+        "table": "staff_access_audit",
+        "column": "created_at",
+        "default": "clock_timestamp()",
+        "nullable": "NO"
+      },
+      {
+        "table": "staff_access_commands",
+        "column": "request_id",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "table": "staff_access_commands",
+        "column": "payload",
+        "default": null,
+        "nullable": "NO"
+      },
+      {
+        "table": "staff_access_commands",
+        "column": "result",
+        "default": null,
+        "nullable": "NO"
+      }
+    ]
+  },
+  "auth_users_noninternal_triggers": [],
+  "identity_references": [
+    {
+      "name": "mission_review_items_workspace_id_fkey",
+      "table": "mission_review_items",
+      "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE CASCADE",
+      "references": "workspaces",
+      "delete_action": "c"
+    },
+    {
+      "name": "creators_id_fkey",
+      "table": "creators",
+      "definition": "FOREIGN KEY (id) REFERENCES auth.users(id) ON DELETE CASCADE",
+      "references": "auth.users",
+      "delete_action": "c"
+    },
+    {
+      "name": "creators_workspace_id_fkey",
+      "table": "creators",
+      "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id)",
+      "references": "workspaces",
+      "delete_action": "a"
+    },
+    {
+      "name": "campaigns_workspace_id_fkey",
+      "table": "campaigns",
+      "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE CASCADE",
+      "references": "workspaces",
+      "delete_action": "c"
+    },
+    {
+      "name": "missions_workspace_id_fkey",
+      "table": "missions",
+      "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id)",
+      "references": "workspaces",
+      "delete_action": "a"
+    },
+    {
+      "name": "redemption_gifts_workspace_id_fkey",
+      "table": "redemption_gifts",
+      "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id)",
+      "references": "workspaces",
+      "delete_action": "a"
+    },
+    {
+      "name": "point_balances_creator_id_fkey",
+      "table": "point_balances",
+      "definition": "FOREIGN KEY (creator_id) REFERENCES creators(id) ON DELETE CASCADE",
+      "references": "creators",
+      "delete_action": "c"
+    },
+    {
+      "name": "point_balances_workspace_id_fkey",
+      "table": "point_balances",
+      "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id)",
+      "references": "workspaces",
+      "delete_action": "a"
+    },
+    {
+      "name": "point_transactions_creator_id_fkey",
+      "table": "point_transactions",
+      "definition": "FOREIGN KEY (creator_id) REFERENCES creators(id) ON DELETE CASCADE",
+      "references": "creators",
+      "delete_action": "c"
+    },
+    {
+      "name": "point_transactions_workspace_id_fkey",
+      "table": "point_transactions",
+      "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id)",
+      "references": "workspaces",
+      "delete_action": "a"
+    },
+    {
+      "name": "creators_referred_by_fkey",
+      "table": "creators",
+      "definition": "FOREIGN KEY (referred_by) REFERENCES creators(id)",
+      "references": "creators",
+      "delete_action": "a"
+    },
+    {
+      "name": "mission_submissions_creator_id_fkey",
+      "table": "mission_submissions",
+      "definition": "FOREIGN KEY (creator_id) REFERENCES creators(id) ON DELETE CASCADE",
+      "references": "creators",
+      "delete_action": "c"
+    },
+    {
+      "name": "mission_submissions_workspace_id_fkey",
+      "table": "mission_submissions",
+      "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id)",
+      "references": "workspaces",
+      "delete_action": "a"
+    },
+    {
+      "name": "redemption_codes_workspace_id_fkey",
+      "table": "redemption_codes",
+      "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id)",
+      "references": "workspaces",
+      "delete_action": "a"
+    },
+    {
+      "name": "redemption_codes_issued_to_fkey",
+      "table": "redemption_codes",
+      "definition": "FOREIGN KEY (issued_to) REFERENCES creators(id)",
+      "references": "creators",
+      "delete_action": "a"
+    },
+    {
+      "name": "redemptions_creator_id_fkey",
+      "table": "redemptions",
+      "definition": "FOREIGN KEY (creator_id) REFERENCES creators(id) ON DELETE CASCADE",
+      "references": "creators",
+      "delete_action": "c"
+    },
+    {
+      "name": "redemptions_workspace_id_fkey",
+      "table": "redemptions",
+      "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id)",
+      "references": "workspaces",
+      "delete_action": "a"
+    },
+    {
+      "name": "earnings_balances_creator_id_fkey",
+      "table": "earnings_balances",
+      "definition": "FOREIGN KEY (creator_id) REFERENCES creators(id) ON DELETE CASCADE",
+      "references": "creators",
+      "delete_action": "c"
+    },
+    {
+      "name": "earnings_balances_workspace_id_fkey",
+      "table": "earnings_balances",
+      "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id)",
+      "references": "workspaces",
+      "delete_action": "a"
+    },
+    {
+      "name": "creator_portfolio_links_creator_id_fkey",
+      "table": "creator_portfolio_links",
+      "definition": "FOREIGN KEY (creator_id) REFERENCES creators(id) ON DELETE CASCADE",
+      "references": "creators",
+      "delete_action": "c"
+    },
+    {
+      "name": "creator_portfolio_links_workspace_id_fkey",
+      "table": "creator_portfolio_links",
+      "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id)",
+      "references": "workspaces",
+      "delete_action": "a"
+    },
+    {
+      "name": "earnings_transactions_creator_id_fkey",
+      "table": "earnings_transactions",
+      "definition": "FOREIGN KEY (creator_id) REFERENCES creators(id) ON DELETE CASCADE",
+      "references": "creators",
+      "delete_action": "c"
+    },
+    {
+      "name": "earnings_transactions_workspace_id_fkey",
+      "table": "earnings_transactions",
+      "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id)",
+      "references": "workspaces",
+      "delete_action": "a"
+    },
+    {
+      "name": "creator_public_profile_snapshots_creator_id_fkey",
+      "table": "creator_public_profile_snapshots",
+      "definition": "FOREIGN KEY (creator_id) REFERENCES creators(id) ON DELETE CASCADE",
+      "references": "creators",
+      "delete_action": "c"
+    },
+    {
+      "name": "content_items_workspace_id_fkey",
+      "table": "content_items",
+      "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id)",
+      "references": "workspaces",
+      "delete_action": "a"
+    },
+    {
+      "name": "creator_social_accounts_creator_id_fkey",
+      "table": "creator_social_accounts",
+      "definition": "FOREIGN KEY (creator_id) REFERENCES creators(id) ON DELETE CASCADE",
+      "references": "creators",
+      "delete_action": "c"
+    },
+    {
+      "name": "creator_social_accounts_workspace_id_fkey",
+      "table": "creator_social_accounts",
+      "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id)",
+      "references": "workspaces",
+      "delete_action": "a"
+    },
+    {
+      "name": "creator_public_profile_snapshots_workspace_id_fkey",
+      "table": "creator_public_profile_snapshots",
+      "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id)",
+      "references": "workspaces",
+      "delete_action": "a"
+    },
+    {
+      "name": "creator_public_passports_creator_id_fkey",
+      "table": "creator_public_passports",
+      "definition": "FOREIGN KEY (creator_id) REFERENCES creators(id) ON DELETE CASCADE",
+      "references": "creators",
+      "delete_action": "c"
+    },
+    {
+      "name": "creator_review_statuses_creator_id_fkey",
+      "table": "creator_review_statuses",
+      "definition": "FOREIGN KEY (creator_id) REFERENCES creators(id) ON DELETE CASCADE",
+      "references": "creators",
+      "delete_action": "c"
+    },
+    {
+      "name": "creator_review_statuses_workspace_id_fkey",
+      "table": "creator_review_statuses",
+      "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id)",
+      "references": "workspaces",
+      "delete_action": "a"
+    },
+    {
+      "name": "creator_review_notes_creator_id_fkey",
+      "table": "creator_review_notes",
+      "definition": "FOREIGN KEY (creator_id) REFERENCES creators(id) ON DELETE CASCADE",
+      "references": "creators",
+      "delete_action": "c"
+    },
+    {
+      "name": "creator_review_notes_workspace_id_fkey",
+      "table": "creator_review_notes",
+      "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id)",
+      "references": "workspaces",
+      "delete_action": "a"
+    },
+    {
+      "name": "creator_public_profile_snapshots_published_by_fkey",
+      "table": "creator_public_profile_snapshots",
+      "definition": "FOREIGN KEY (published_by) REFERENCES creators(id) ON DELETE CASCADE",
+      "references": "creators",
+      "delete_action": "c"
+    },
+    {
+      "name": "mission_shortlists_creator_id_fkey",
+      "table": "mission_shortlists",
+      "definition": "FOREIGN KEY (creator_id) REFERENCES creators(id) ON DELETE CASCADE",
+      "references": "creators",
+      "delete_action": "c"
+    },
+    {
+      "name": "mission_shortlists_workspace_id_fkey",
+      "table": "mission_shortlists",
+      "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id)",
+      "references": "workspaces",
+      "delete_action": "a"
+    },
+    {
+      "name": "operator_audit_events_workspace_id_fkey",
+      "table": "operator_audit_events",
+      "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id)",
+      "references": "workspaces",
+      "delete_action": "a"
+    },
+    {
+      "name": "operator_audit_events_creator_id_fkey",
+      "table": "operator_audit_events",
+      "definition": "FOREIGN KEY (creator_id) REFERENCES creators(id) ON DELETE SET NULL",
+      "references": "creators",
+      "delete_action": "n"
+    },
+    {
+      "name": "assistant_conversations_creator_id_fkey",
+      "table": "assistant_conversations",
+      "definition": "FOREIGN KEY (creator_id) REFERENCES auth.users(id) ON DELETE CASCADE",
+      "references": "auth.users",
+      "delete_action": "c"
+    },
+    {
+      "name": "mission_draft_assets_workspace_id_fkey",
+      "table": "mission_draft_assets",
+      "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE CASCADE",
+      "references": "workspaces",
+      "delete_action": "c"
+    },
+    {
+      "name": "missions_created_by_fkey",
+      "table": "missions",
+      "definition": "FOREIGN KEY (created_by) REFERENCES auth.users(id) ON DELETE SET NULL",
+      "references": "auth.users",
+      "delete_action": "n"
+    },
+    {
+      "name": "staff_users_user_id_fkey",
+      "table": "staff_users",
+      "definition": "FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE",
+      "references": "auth.users",
+      "delete_action": "c"
+    },
+    {
+      "name": "notifications_user_id_fkey",
+      "table": "notifications",
+      "definition": "FOREIGN KEY (user_id) REFERENCES creators(id) ON DELETE CASCADE",
+      "references": "creators",
+      "delete_action": "c"
+    },
+    {
+      "name": "notifications_workspace_id_fkey",
+      "table": "notifications",
+      "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id)",
+      "references": "workspaces",
+      "delete_action": "a"
+    },
+    {
+      "name": "brand_invites_workspace_id_fkey",
+      "table": "brand_invites",
+      "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE CASCADE",
+      "references": "workspaces",
+      "delete_action": "c"
+    },
+    {
+      "name": "brand_invites_invited_by_staff_fkey",
+      "table": "brand_invites",
+      "definition": "FOREIGN KEY (invited_by_staff) REFERENCES auth.users(id)",
+      "references": "auth.users",
+      "delete_action": "a"
+    },
+    {
+      "name": "brand_users_user_id_fkey",
+      "table": "brand_users",
+      "definition": "FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE",
+      "references": "auth.users",
+      "delete_action": "c"
+    },
+    {
+      "name": "brand_users_workspace_id_fkey",
+      "table": "brand_users",
+      "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE CASCADE",
+      "references": "workspaces",
+      "delete_action": "c"
+    },
+    {
+      "name": "workspace_budgets_workspace_id_fkey",
+      "table": "workspace_budgets",
+      "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE CASCADE",
+      "references": "workspaces",
+      "delete_action": "c"
+    },
+    {
+      "name": "workspace_budget_transactions_workspace_id_fkey",
+      "table": "workspace_budget_transactions",
+      "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE CASCADE",
+      "references": "workspaces",
+      "delete_action": "c"
+    },
+    {
+      "name": "campaign_participants_creator_id_fkey",
+      "table": "campaign_participants",
+      "definition": "FOREIGN KEY (creator_id) REFERENCES creators(id) ON DELETE CASCADE",
+      "references": "creators",
+      "delete_action": "c"
+    },
+    {
+      "name": "mission_draft_submission_idempotency_workspace_id_fkey",
+      "table": "private.mission_draft_submission_idempotency",
+      "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE CASCADE",
+      "references": "workspaces",
+      "delete_action": "c"
+    },
+    {
+      "name": "legacy_evidence_corrections_operator_id_fkey",
+      "table": "legacy_evidence_corrections",
+      "definition": "FOREIGN KEY (operator_id) REFERENCES auth.users(id)",
+      "references": "auth.users",
+      "delete_action": "a"
+    },
+    {
+      "name": "mission_draft_assets_creator_id_fkey",
+      "table": "mission_draft_assets",
+      "definition": "FOREIGN KEY (creator_id) REFERENCES creators(id) ON DELETE CASCADE",
+      "references": "creators",
+      "delete_action": "c"
+    },
+    {
+      "name": "mission_deliverable_templates_workspace_id_fkey",
+      "table": "mission_deliverable_templates",
+      "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE CASCADE",
+      "references": "workspaces",
+      "delete_action": "c"
+    },
+    {
+      "name": "mission_deliverable_requirements_workspace_id_fkey",
+      "table": "mission_deliverable_requirements",
+      "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE CASCADE",
+      "references": "workspaces",
+      "delete_action": "c"
+    },
+    {
+      "name": "mission_workflows_workspace_id_fkey",
+      "table": "mission_workflows",
+      "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE CASCADE",
+      "references": "workspaces",
+      "delete_action": "c"
+    },
+    {
+      "name": "mission_review_rounds_workspace_id_fkey",
+      "table": "mission_review_rounds",
+      "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE CASCADE",
+      "references": "workspaces",
+      "delete_action": "c"
+    },
+    {
+      "name": "mission_work_items_workspace_id_fkey",
+      "table": "mission_work_items",
+      "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE CASCADE",
+      "references": "workspaces",
+      "delete_action": "c"
+    },
+    {
+      "name": "mission_work_items_current_reviewer_id_fkey",
+      "table": "mission_work_items",
+      "definition": "FOREIGN KEY (current_reviewer_id) REFERENCES auth.users(id) ON DELETE SET NULL",
+      "references": "auth.users",
+      "delete_action": "n"
+    },
+    {
+      "name": "mission_working_drafts_workspace_id_fkey",
+      "table": "mission_working_drafts",
+      "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE CASCADE",
+      "references": "workspaces",
+      "delete_action": "c"
+    },
+    {
+      "name": "mission_review_rounds_reviewer_id_fkey",
+      "table": "mission_review_rounds",
+      "definition": "FOREIGN KEY (reviewer_id) REFERENCES auth.users(id) ON DELETE SET NULL",
+      "references": "auth.users",
+      "delete_action": "n"
+    },
+    {
+      "name": "mission_draft_versions_workspace_id_fkey",
+      "table": "mission_draft_versions",
+      "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE CASCADE",
+      "references": "workspaces",
+      "delete_action": "c"
+    },
+    {
+      "name": "mission_draft_versions_submitted_by_fkey",
+      "table": "mission_draft_versions",
+      "definition": "FOREIGN KEY (submitted_by) REFERENCES auth.users(id)",
+      "references": "auth.users",
+      "delete_action": "a"
+    },
+    {
+      "name": "mission_revision_grants_workspace_id_fkey",
+      "table": "mission_revision_grants",
+      "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE CASCADE",
+      "references": "workspaces",
+      "delete_action": "c"
+    },
+    {
+      "name": "mission_revision_grants_granted_by_fkey",
+      "table": "mission_revision_grants",
+      "definition": "FOREIGN KEY (granted_by) REFERENCES auth.users(id)",
+      "references": "auth.users",
+      "delete_action": "a"
+    },
+    {
+      "name": "mission_fulfillments_workspace_id_fkey",
+      "table": "mission_fulfillments",
+      "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE CASCADE",
+      "references": "workspaces",
+      "delete_action": "c"
+    },
+    {
+      "name": "mission_fulfillments_shipped_by_fkey",
+      "table": "mission_fulfillments",
+      "definition": "FOREIGN KEY (shipped_by) REFERENCES auth.users(id) ON DELETE SET NULL",
+      "references": "auth.users",
+      "delete_action": "n"
+    },
+    {
+      "name": "mission_fulfillments_received_by_fkey",
+      "table": "mission_fulfillments",
+      "definition": "FOREIGN KEY (received_by) REFERENCES auth.users(id) ON DELETE SET NULL",
+      "references": "auth.users",
+      "delete_action": "n"
+    },
+    {
+      "name": "mission_workflow_events_workspace_id_fkey",
+      "table": "mission_workflow_events",
+      "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE CASCADE",
+      "references": "workspaces",
+      "delete_action": "c"
+    },
+    {
+      "name": "mission_workflow_events_actor_id_fkey",
+      "table": "mission_workflow_events",
+      "definition": "FOREIGN KEY (actor_id) REFERENCES auth.users(id) ON DELETE SET NULL",
+      "references": "auth.users",
+      "delete_action": "n"
+    },
+    {
+      "name": "mission_draft_assets_creator_workspace_fk",
+      "table": "mission_draft_assets",
+      "definition": "FOREIGN KEY (creator_id, workspace_id) REFERENCES creators(id, workspace_id) ON DELETE CASCADE",
+      "references": "creators",
+      "delete_action": "c"
+    },
+    {
+      "name": "mission_publication_instructions_workspace_id_fkey",
+      "table": "mission_publication_instructions",
+      "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE CASCADE",
+      "references": "workspaces",
+      "delete_action": "c"
+    },
+    {
+      "name": "mission_publication_proof_attempts_workspace_fk",
+      "table": "mission_publication_proof_attempts",
+      "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE CASCADE",
+      "references": "workspaces",
+      "delete_action": "c"
+    },
+    {
+      "name": "mission_publication_proof_attempts_submitter_workspace_fk",
+      "table": "mission_publication_proof_attempts",
+      "definition": "FOREIGN KEY (submitted_by, workspace_id) REFERENCES creators(id, workspace_id)",
+      "references": "creators",
+      "delete_action": "a"
+    },
+    {
+      "name": "mission_publication_proof_assets_workspace_fk",
+      "table": "mission_publication_proof_assets",
+      "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE CASCADE",
+      "references": "workspaces",
+      "delete_action": "c"
+    },
+    {
+      "name": "mission_publication_proof_reviews_workspace_fk",
+      "table": "mission_publication_proof_reviews",
+      "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE CASCADE",
+      "references": "workspaces",
+      "delete_action": "c"
+    },
+    {
+      "name": "mission_publication_proof_review_items_workspace_fk",
+      "table": "mission_publication_proof_review_items",
+      "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE CASCADE",
+      "references": "workspaces",
+      "delete_action": "c"
+    },
+    {
+      "name": "staff_access_audit_actor_id_fkey",
+      "table": "staff_access_audit",
+      "definition": "FOREIGN KEY (actor_id) REFERENCES auth.users(id)",
+      "references": "auth.users",
+      "delete_action": "a"
+    },
+    {
+      "name": "mission_publication_proof_assets_creator_workspace_fk",
+      "table": "mission_publication_proof_assets",
+      "definition": "FOREIGN KEY (creator_id, workspace_id) REFERENCES creators(id, workspace_id) ON DELETE CASCADE",
+      "references": "creators",
+      "delete_action": "c"
+    },
+    {
+      "name": "mission_reward_contracts_workspace_id_fkey",
+      "table": "mission_reward_contracts",
+      "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id)",
+      "references": "workspaces",
+      "delete_action": "a"
+    },
+    {
+      "name": "mission_reward_contracts_confirmed_by_fkey",
+      "table": "mission_reward_contracts",
+      "definition": "FOREIGN KEY (confirmed_by) REFERENCES auth.users(id)",
+      "references": "auth.users",
+      "delete_action": "a"
+    },
+    {
+      "name": "mission_completion_decisions_workspace_id_fkey",
+      "table": "mission_completion_decisions",
+      "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id)",
+      "references": "workspaces",
+      "delete_action": "a"
+    },
+    {
+      "name": "mission_completion_decisions_decided_by_fkey",
+      "table": "mission_completion_decisions",
+      "definition": "FOREIGN KEY (decided_by) REFERENCES auth.users(id)",
+      "references": "auth.users",
+      "delete_action": "a"
+    },
+    {
+      "name": "mission_pending_rewards_workspace_id_fkey",
+      "table": "mission_pending_rewards",
+      "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id)",
+      "references": "workspaces",
+      "delete_action": "a"
+    },
+    {
+      "name": "mission_pending_rewards_creator_id_fkey",
+      "table": "mission_pending_rewards",
+      "definition": "FOREIGN KEY (creator_id) REFERENCES creators(id)",
+      "references": "creators",
+      "delete_action": "a"
+    },
+    {
+      "name": "legacy_evidence_corrections_workspace_id_fkey",
+      "table": "legacy_evidence_corrections",
+      "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id)",
+      "references": "workspaces",
+      "delete_action": "a"
+    },
+    {
+      "name": "operator_crm_command_receipts_workspace_id_fkey",
+      "table": "operator_crm_command_receipts",
+      "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id)",
+      "references": "workspaces",
+      "delete_action": "a"
+    },
+    {
+      "name": "operator_crm_command_receipts_operator_id_fkey",
+      "table": "operator_crm_command_receipts",
+      "definition": "FOREIGN KEY (operator_id) REFERENCES auth.users(id)",
+      "references": "auth.users",
+      "delete_action": "a"
+    },
+    {
+      "name": "assistant_requests_creator_id_fkey",
+      "table": "assistant_requests",
+      "definition": "FOREIGN KEY (creator_id) REFERENCES creators(id)",
+      "references": "creators",
+      "delete_action": "a"
+    },
+    {
+      "name": "assistant_requests_workspace_id_fkey",
+      "table": "assistant_requests",
+      "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id)",
+      "references": "workspaces",
+      "delete_action": "a"
+    },
+    {
+      "name": "academy_lessons_approved_by_fkey",
+      "table": "academy_lessons",
+      "definition": "FOREIGN KEY (approved_by) REFERENCES auth.users(id) ON DELETE RESTRICT",
+      "references": "auth.users",
+      "delete_action": "r"
+    },
+    {
+      "name": "creator_lesson_progress_creator_id_fkey",
+      "table": "creator_lesson_progress",
+      "definition": "FOREIGN KEY (creator_id) REFERENCES creators(id) ON DELETE RESTRICT",
+      "references": "creators",
+      "delete_action": "r"
+    },
+    {
+      "name": "staff_workspace_roles_user_id_fkey",
+      "table": "staff_workspace_roles",
+      "definition": "FOREIGN KEY (user_id) REFERENCES auth.users(id)",
+      "references": "auth.users",
+      "delete_action": "a"
+    },
+    {
+      "name": "staff_workspace_roles_workspace_id_fkey",
+      "table": "staff_workspace_roles",
+      "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id)",
+      "references": "workspaces",
+      "delete_action": "a"
+    },
+    {
+      "name": "staff_workspace_roles_granted_by_fkey",
+      "table": "staff_workspace_roles",
+      "definition": "FOREIGN KEY (granted_by) REFERENCES auth.users(id)",
+      "references": "auth.users",
+      "delete_action": "a"
+    },
+    {
+      "name": "staff_platform_roles_user_id_fkey",
+      "table": "staff_platform_roles",
+      "definition": "FOREIGN KEY (user_id) REFERENCES auth.users(id)",
+      "references": "auth.users",
+      "delete_action": "a"
+    },
+    {
+      "name": "staff_platform_roles_granted_by_fkey",
+      "table": "staff_platform_roles",
+      "definition": "FOREIGN KEY (granted_by) REFERENCES auth.users(id)",
+      "references": "auth.users",
+      "delete_action": "a"
+    },
+    {
+      "name": "staff_access_audit_workspace_id_fkey",
+      "table": "staff_access_audit",
+      "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id)",
+      "references": "workspaces",
+      "delete_action": "a"
+    },
+    {
+      "name": "staff_access_audit_user_id_fkey",
+      "table": "staff_access_audit",
+      "definition": "FOREIGN KEY (user_id) REFERENCES auth.users(id)",
+      "references": "auth.users",
+      "delete_action": "a"
+    },
+    {
+      "name": "mission_pending_rewards_settled_by_fkey",
+      "table": "mission_pending_rewards",
+      "definition": "FOREIGN KEY (settled_by) REFERENCES auth.users(id)",
+      "references": "auth.users",
+      "delete_action": "a"
+    },
+    {
+      "name": "creator_consents_creator_id_fkey",
+      "table": "creator_consents",
+      "definition": "FOREIGN KEY (creator_id) REFERENCES creators(id) ON DELETE CASCADE",
+      "references": "creators",
+      "delete_action": "c"
+    },
+    {
+      "name": "creator_consents_workspace_id_fkey",
+      "table": "creator_consents",
+      "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id)",
+      "references": "workspaces",
+      "delete_action": "a"
+    },
+    {
+      "name": "studio_threads_workspace_id_fkey",
+      "table": "studio_threads",
+      "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id)",
+      "references": "workspaces",
+      "delete_action": "a"
+    },
+    {
+      "name": "studio_threads_creator_id_fkey",
+      "table": "studio_threads",
+      "definition": "FOREIGN KEY (creator_id) REFERENCES creators(id)",
+      "references": "creators",
+      "delete_action": "a"
+    },
+    {
+      "name": "studio_badges_workspace_id_fkey",
+      "table": "studio_badges",
+      "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id)",
+      "references": "workspaces",
+      "delete_action": "a"
+    },
+    {
+      "name": "studio_badges_creator_id_fkey",
+      "table": "studio_badges",
+      "definition": "FOREIGN KEY (creator_id) REFERENCES creators(id)",
+      "references": "creators",
+      "delete_action": "a"
+    },
+    {
+      "name": "integration_connections_creator_id_workspace_id_fkey",
+      "table": "integration_connections",
+      "definition": "FOREIGN KEY (creator_id, workspace_id) REFERENCES creators(id, workspace_id)",
+      "references": "creators",
+      "delete_action": "a"
+    },
+    {
+      "name": "integration_oauth_states_creator_id_workspace_id_fkey",
+      "table": "private.integration_oauth_states",
+      "definition": "FOREIGN KEY (creator_id, workspace_id) REFERENCES creators(id, workspace_id)",
+      "references": "creators",
+      "delete_action": "a"
+    },
+    {
+      "name": "integration_commands_creator_id_workspace_id_fkey",
+      "table": "private.integration_commands",
+      "definition": "FOREIGN KEY (creator_id, workspace_id) REFERENCES creators(id, workspace_id)",
+      "references": "creators",
+      "delete_action": "a"
+    },
+    {
+      "name": "integration_pilot_bindings_creator_id_workspace_id_fkey",
+      "table": "private.integration_pilot_bindings",
+      "definition": "FOREIGN KEY (creator_id, workspace_id) REFERENCES creators(id, workspace_id)",
+      "references": "creators",
+      "delete_action": "a"
+    },
+    {
+      "name": "integration_pilot_oauth_creator_id_workspace_id_fkey",
+      "table": "private.integration_pilot_oauth",
+      "definition": "FOREIGN KEY (creator_id, workspace_id) REFERENCES creators(id, workspace_id)",
+      "references": "creators",
+      "delete_action": "a"
+    }
+  ],
+  "policies_and_buckets": {
+    "policies": [
+      {
+        "name": "brand_users_self_read",
+        "check": null,
+        "roles": [
+          "authenticated"
+        ],
+        "table": "brand_users",
+        "using": "(user_id = auth.uid())",
+        "command": "SELECT"
+      },
+      {
+        "name": "creators_self",
+        "check": null,
+        "roles": [
+          "public"
+        ],
+        "table": "creators",
+        "using": "(id = auth.uid())",
+        "command": "SELECT"
+      },
+      {
+        "name": "creators_self_update",
+        "check": "(id = auth.uid())",
+        "roles": [
+          "public"
+        ],
+        "table": "creators",
+        "using": "(id = auth.uid())",
+        "command": "UPDATE"
+      },
+      {
+        "name": "earnings_bal_self",
+        "check": null,
+        "roles": [
+          "public"
+        ],
+        "table": "earnings_balances",
+        "using": "(creator_id = auth.uid())",
+        "command": "SELECT"
+      },
+      {
+        "name": "missions_brand_delete",
+        "check": null,
+        "roles": [
+          "authenticated"
+        ],
+        "table": "missions",
+        "using": "(workspace_id IN ( SELECT bu.workspace_id\n   FROM brand_users bu\n  WHERE ((bu.user_id = auth.uid()) AND bu.active AND (bu.role = 'owner'::text))))",
+        "command": "DELETE"
+      },
+      {
+        "name": "missions_brand_insert",
+        "check": "(workspace_id IN ( SELECT brand_users.workspace_id\n   FROM brand_users\n  WHERE ((brand_users.user_id = auth.uid()) AND brand_users.active)))",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "missions",
+        "using": null,
+        "command": "INSERT"
+      },
+      {
+        "name": "missions_brand_select",
+        "check": null,
+        "roles": [
+          "authenticated"
+        ],
+        "table": "missions",
+        "using": "(workspace_id IN ( SELECT brand_users.workspace_id\n   FROM brand_users\n  WHERE ((brand_users.user_id = auth.uid()) AND brand_users.active)))",
+        "command": "SELECT"
+      },
+      {
+        "name": "missions_brand_update",
+        "check": "((workspace_id IN ( SELECT brand_users.workspace_id\n   FROM brand_users\n  WHERE ((brand_users.user_id = auth.uid()) AND brand_users.active))) AND private.mission_brand_update_allowed(id, status, points_reward, cash_reward, cpm_rate, cpm_budget_pool))",
+        "roles": [
+          "authenticated"
+        ],
+        "table": "missions",
+        "using": "(workspace_id IN ( SELECT brand_users.workspace_id\n   FROM brand_users\n  WHERE ((brand_users.user_id = auth.uid()) AND brand_users.active)))",
+        "command": "UPDATE"
+      },
+      {
+        "name": "missions_workspace",
+        "check": null,
+        "roles": [
+          "public"
+        ],
+        "table": "missions",
+        "using": "((workspace_id = private.current_workspace_id()) AND (status = ANY (ARRAY['active'::text, 'closed'::text])))",
+        "command": "SELECT"
+      },
+      {
+        "name": "balances_self",
+        "check": null,
+        "roles": [
+          "public"
+        ],
+        "table": "point_balances",
+        "using": "(creator_id = auth.uid())",
+        "command": "SELECT"
+      },
+      {
+        "name": "workspace_self",
+        "check": null,
+        "roles": [
+          "public"
+        ],
+        "table": "workspaces",
+        "using": "(id = private.current_workspace_id())",
+        "command": "SELECT"
+      }
+    ],
+    "private_buckets": [
+      {
+        "id": "mission-draft-assets",
+        "public": false,
+        "file_size_limit": 20971520,
+        "allowed_mime_types": [
+          "image/jpeg",
+          "image/png",
+          "image/webp",
+          "image/gif",
+          "video/mp4",
+          "video/quicktime",
+          "video/webm"
+        ]
+      },
+      {
+        "id": "mission-publication-proof-assets",
+        "public": false,
+        "file_size_limit": 20971520,
+        "allowed_mime_types": [
+          "image/jpeg",
+          "image/png",
+          "image/webp",
+          "image/gif",
+          "video/mp4",
+          "video/quicktime",
+          "video/webm"
+        ]
+      }
+    ]
+  },
+  "limits": [
+    "Catalog/source review only, no real JWT or login test",
+    "No data rows or credentials collected",
+    "Not a complete dependency scan of deployed clients or jobs",
+    "Permissions may change; recheck before execution"
+  ],
+  "actions": {
+    "auth_accounts_created": 0,
+    "persistent_fixture_writes": 0,
+    "database_schema_changes": 0,
+    "indexes_dropped": 0,
+    "deployments": 0,
+    "real_instagram_connections": 0,
+    "real_google_drive_connections": 0
+  }
+}
+

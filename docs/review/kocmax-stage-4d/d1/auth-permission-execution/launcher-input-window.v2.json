@@ -1,0 +1,10 @@
+{
+  "recordedAtUtc": "2026-11-01T14:09:59.5405116Z",
+  "status": "SECURE_INPUT_WINDOW_OPEN_VERIFIED",
+  "processId": 1924,
+  "execSession": 81186,
+  "windowTitle": "KOCmax - approved Auth pilot secure input v2",
+  "launcherSha256": "5464f95ce96f271c813aeb364e70a04ec07e4ee0b8dab0a1c707a3e4c14abfb9",
+  "credentialReadByAgent": false,
+  "previousHiddenLaunchReplaced": true
+}

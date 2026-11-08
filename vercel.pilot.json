@@ -1,0 +1,30 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "vite",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "git": { "deploymentEnabled": false },
+  "crons": [],
+  "env": { "INTEGRATIONS_PILOT_STAGE": "D1" },
+  "functions": {
+    "api/pilot.ts": {
+      "includeFiles": "{server/lib/integrations/providers/pdfTextWorker.mjs,node_modules/pdfjs-dist/legacy/build/*.mjs}",
+      "maxDuration": 30
+    }
+  },
+  "headers": [
+    { "source": "/integration-deletion/:path*", "headers": [{ "key": "Referrer-Policy", "value": "no-referrer" }, { "key": "X-Robots-Tag", "value": "noindex, nofollow" }] },
+    { "source": "/(.*)", "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }] },
+    { "source": "/api/(.*)", "headers": [{ "key": "Cache-Control", "value": "private, no-store" }, { "key": "Referrer-Policy", "value": "no-referrer" }] }
+  ],
+  "redirects": [
+    { "source": "/kocmax/demo", "destination": "/home" },
+    { "source": "/kocmax/demo/", "destination": "/home" },
+    { "source": "/kocmax/demo/:path*", "destination": "/:path*" }
+  ],
+  "rewrites": [
+    { "source": "/api", "destination": "/api/pilot" },
+    { "source": "/api/(.*)", "destination": "/api/pilot" },
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
+  ]
+}

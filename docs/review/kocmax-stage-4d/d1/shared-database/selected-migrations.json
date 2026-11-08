@@ -1,0 +1,308 @@
+{
+  "status": "PROPOSED_REVIEW_ONLY_NOT_APPLIED",
+  "versions": [
+    "20260715163350",
+    "20260717190420",
+    "20260718134500",
+    "20260718193000",
+    "20260718210000",
+    "20260718213000",
+    "20260719133000",
+    "20260719160000",
+    "20260719200000",
+    "20260719220000",
+    "20260720033542",
+    "20260720175319",
+    "20260720193637",
+    "20260723090000",
+    "20260723170000",
+    "20260725090000",
+    "20260725110000",
+    "20260725130000",
+    "20260725140000",
+    "20260725143000",
+    "20260725150000",
+    "20260727120000",
+    "20260727130000",
+    "20260728135000",
+    "20260729010000",
+    "20260731100000",
+    "20260731110000",
+    "20260731120000",
+    "20260731130000",
+    "20260731140000",
+    "20260731150000",
+    "20260805120000",
+    "20261022170454",
+    "20261022170751",
+    "20261022171111",
+    "20261022171843",
+    "20261022182544",
+    "20261023091050",
+    "20261023093445",
+    "20261023095521",
+    "20261023124149",
+    "20261023192141",
+    "20261025120934",
+    "20261025194402",
+    "20261028140231",
+    "20261028140709",
+    "20261028155000",
+    "20261029000000",
+    "20261029100000",
+    "20261029110000",
+    "20261029120000",
+    "20261029130000",
+    "20261029140000",
+    "20261029150000",
+    "20261029160000",
+    "20261029170000",
+    "20261029180000",
+    "20261030195424",
+    "20261031120000",
+    "20261031121000",
+    "20261031122000",
+    "20261031123000"
+  ],
+  "selectionReason": "Full canonical source envelope preserves optional helper/RPC capabilities; definitions are not rollout actions. Reduced54 analysis retained as evidence only.",
+  "reducedAnalysisSelectionSha256": "e5dd0c1a36ad30671c6b8546a87e9539ecfb2478e0ad4add5c9dd3d3aa1546a6",
+  "baselineRepairs": [
+    {
+      "version": "0017",
+      "path": "supabase/migrations/0017_social_verification.sql",
+      "routine": "public.apply_mission",
+      "startLine": 93,
+      "endLine": 143,
+      "statementSha256": "da48e0fdd9cac4cdd6af323d2aee1dfa1b21826e0404805de6868d80212a33e1",
+      "observedBodySource": "0010",
+      "observedDefinitionMd5": "11d391e911a06316ffd8ba21360f67b5"
+    }
+  ],
+  "derivations": [
+    "LF line endings per release manifest",
+    "Remove only outer transaction boundaries",
+    "Immediately revoke inherited API/PUBLIC grants on newly created tables, then retain source explicit grants"
+  ],
+  "normalizations": [
+    {
+      "version": "20260715163350",
+      "table": "public.mission_deliverable_templates"
+    },
+    {
+      "version": "20260715163350",
+      "table": "public.mission_deliverable_requirements"
+    },
+    {
+      "version": "20260715163350",
+      "table": "public.mission_workflows"
+    },
+    {
+      "version": "20260715163350",
+      "table": "public.mission_work_items"
+    },
+    {
+      "version": "20260715163350",
+      "table": "public.mission_working_drafts"
+    },
+    {
+      "version": "20260715163350",
+      "table": "public.mission_draft_versions"
+    },
+    {
+      "version": "20260715163350",
+      "table": "public.mission_draft_assets"
+    },
+    {
+      "version": "20260715163350",
+      "table": "public.mission_review_rounds"
+    },
+    {
+      "version": "20260715163350",
+      "table": "public.mission_review_items"
+    },
+    {
+      "version": "20260715163350",
+      "table": "public.mission_revision_grants"
+    },
+    {
+      "version": "20260715163350",
+      "table": "public.mission_fulfillments"
+    },
+    {
+      "version": "20260715163350",
+      "table": "public.mission_workflow_events"
+    },
+    {
+      "version": "20260719200000",
+      "table": "private.mission_workflow_notification_dedupe"
+    },
+    {
+      "version": "20260720033542",
+      "table": "private.mission_draft_submission_idempotency"
+    },
+    {
+      "version": "20260723090000",
+      "table": "public.mission_publication_instructions"
+    },
+    {
+      "version": "20260723090000",
+      "table": "public.mission_publication_proof_attempts"
+    },
+    {
+      "version": "20260723090000",
+      "table": "public.mission_publication_proof_assets"
+    },
+    {
+      "version": "20260723090000",
+      "table": "public.mission_publication_proof_reviews"
+    },
+    {
+      "version": "20260723090000",
+      "table": "public.mission_publication_proof_review_items"
+    },
+    {
+      "version": "20260731100000",
+      "table": "public.mission_reward_contracts"
+    },
+    {
+      "version": "20260731100000",
+      "table": "public.mission_completion_decisions"
+    },
+    {
+      "version": "20260731100000",
+      "table": "public.mission_pending_rewards"
+    },
+    {
+      "version": "20261022170454",
+      "table": "public.legacy_evidence_corrections"
+    },
+    {
+      "version": "20261022170751",
+      "table": "public.operator_crm_command_receipts"
+    },
+    {
+      "version": "20261022171843",
+      "table": "public.assistant_requests"
+    },
+    {
+      "version": "20261023091050",
+      "table": "public.academy_lessons"
+    },
+    {
+      "version": "20261023091050",
+      "table": "public.creator_lesson_progress"
+    },
+    {
+      "version": "20261023124149",
+      "table": "public.staff_workspace_roles"
+    },
+    {
+      "version": "20261023124149",
+      "table": "public.staff_platform_roles"
+    },
+    {
+      "version": "20261023124149",
+      "table": "public.staff_access_audit"
+    },
+    {
+      "version": "20261023124149",
+      "table": "public.staff_access_commands"
+    },
+    {
+      "version": "20261029170000",
+      "table": "public.creator_consents"
+    },
+    {
+      "version": "20261030195424",
+      "table": "public.studio_threads"
+    },
+    {
+      "version": "20261030195424",
+      "table": "public.studio_sources"
+    },
+    {
+      "version": "20261030195424",
+      "table": "public.studio_briefs"
+    },
+    {
+      "version": "20261030195424",
+      "table": "public.studio_shares"
+    },
+    {
+      "version": "20261030195424",
+      "table": "public.studio_commands"
+    },
+    {
+      "version": "20261030195424",
+      "table": "public.studio_badges"
+    },
+    {
+      "version": "20261031120000",
+      "table": "public.integration_connections"
+    },
+    {
+      "version": "20261031120000",
+      "table": "public.integration_resources"
+    },
+    {
+      "version": "20261031120000",
+      "table": "public.integration_snapshots"
+    },
+    {
+      "version": "20261031120000",
+      "table": "public.integration_events"
+    },
+    {
+      "version": "20261031120000",
+      "table": "public.integration_sync_runs"
+    },
+    {
+      "version": "20261031120000",
+      "table": "private.integration_credentials"
+    },
+    {
+      "version": "20261031120000",
+      "table": "private.integration_oauth_states"
+    },
+    {
+      "version": "20261031120000",
+      "table": "private.integration_commands"
+    },
+    {
+      "version": "20261031121000",
+      "table": "private.integration_use_permits"
+    },
+    {
+      "version": "20261031123000",
+      "table": "private.integration_pilot_grants"
+    },
+    {
+      "version": "20261031123000",
+      "table": "private.integration_pilot_bindings"
+    },
+    {
+      "version": "20261031123000",
+      "table": "private.integration_pilot_oauth"
+    },
+    {
+      "version": "20261031123000",
+      "table": "private.integration_refresh_leases"
+    },
+    {
+      "version": "20261031123000",
+      "table": "private.integration_pilot_evidence"
+    },
+    {
+      "version": "20261031123000",
+      "table": "private.integration_pilot_tombstones"
+    },
+    {
+      "version": "20261031123000",
+      "table": "private.integration_pilot_maintenance"
+    },
+    {
+      "version": "20261031123000",
+      "table": "private.integration_pilot_notices"
+    }
+  ]
+}

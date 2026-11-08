@@ -1,4 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { STUDIO_SHELL } from "@/lib/features";
+import { StudioPublicHome } from "@/components/studio/StudioPublic";
 import { useRef, useEffect, useState } from "react";
 import {
   Sparkles,
@@ -56,7 +58,7 @@ function YoutubeIcon({ className }: { className?: string }) {
 }
 
 export const Route = createFileRoute("/_site/creators")({
-  component: CreatorsPage,
+  component: STUDIO_SHELL ? StudioPublicHome : CreatorsPage,
 });
 
 const levelPillClass: Record<string, string> = {

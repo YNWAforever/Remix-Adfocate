@@ -6,6 +6,7 @@ import { MissionCompletionReview } from "@/components/admin/MissionCompletionRev
 import { PublicationProofReview } from "@/components/admin/PublicationProofReview";
 import { useAdminAuth } from "@/components/admin/AdminAuthContext";
 import { useAdminWorkspace } from "@/components/admin/AdminWorkspaceContext";
+import { useStaffAccess } from "@/components/admin/StaffAccessContext";
 import {
   getDeviceCategory,
   trackActivationEvent,
@@ -98,6 +99,7 @@ export function AdminActiveMissionReviewView({
 }) {
   const { authed, staff, reportAuthError } = useAdminAuth();
   const { workspaceSlug } = useAdminWorkspace();
+  const access = useStaffAccess();
   const queryClient = useQueryClient();
   const key = ["admin-active-mission", workspaceSlug, workflowId] as const;
   const { lang, t } = useI18n();
@@ -119,6 +121,7 @@ export function AdminActiveMissionReviewView({
   });
 
   const completionApplicable = authed
+    && (!access || access.can("completion.approve"))
     && Boolean(workspaceSlug)
     && Boolean(workflowStateField(detail.data?.workflow.state));
   const completionReview = useCompletionReview(

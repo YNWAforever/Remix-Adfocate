@@ -12,6 +12,7 @@ function Wallet() {
   const { t, lang } = useI18n();
   const me = useMe();
   const balance = useBalance();
+  const currentBalance = balance.isError ? undefined : balance.data;
   const history = usePointHistory();
   const earnings = useEarnings();
   const earningsHistory = useEarningsHistory();
@@ -22,8 +23,8 @@ function Wallet() {
       <div className="lg:grid lg:grid-cols-[1fr_1.4fr] lg:gap-6 lg:items-start">
         {/* Left column — points */}
         <div className="space-y-4">
-          <PointsBalanceCard balance={balance.data?.balance ?? 0} availableTo={balance.data?.available_to} loading={balance.isLoading} />
-          {balance.isError && <p className="text-sm text-[var(--color-magenta)]">{t("common.balanceError")}</p>}
+          <PointsBalanceCard balance={currentBalance?.balance} availableTo={currentBalance?.available_to} loading={balance.isLoading} />
+          {balance.isError && <div role="alert" className="space-y-2 text-sm text-[var(--color-magenta)]"><p>{t("common.balanceError")}</p><button type="button" className="underline" onClick={() => void balance.refetch()}>{t("common.retry")}</button></div>}
 
           <h2 className="font-heading font-bold">{t("app.wallet.pointsHistory")}</h2>
           {history.isLoading && <SkeletonCard className="h-24" />}

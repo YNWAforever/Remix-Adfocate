@@ -1,0 +1,27 @@
+{
+  "status": "REVIEW_ONLY_NOT_APPLIED",
+  "projectRef": "mhkoayftiuojxlrkollf",
+  "branch": "codex/kocmax-studio-stages-1-2",
+  "head": "5c60020091e8e6fee934b61c498bf7518944c433",
+  "file": "22-proposed-auth-boundary-apply.sql",
+  "bytes": 6869,
+  "sha256": "ae276f3dfc22539b48e482dceb1aeab8de2774c75f32816fe58665bfef8b7b8d",
+  "sources": [
+    {
+      "name": "20-proposed-brand-staff-write-boundary.sql",
+      "sha256": "e6b05ded60f0fc7576c8fb9f1f1036184b82cc85bded7390c24ce4c5e9e2abc8"
+    },
+    {
+      "name": "21-proposed-atomic-bootstrap.sql",
+      "sha256": "9ec993da6e2795d07518d8a2fa43e3aa018ef67de815779d509006c701aa1744"
+    }
+  ],
+  "changes": {
+    "newFunctions": 2,
+    "newRestrictiveMissionPolicies": 3,
+    "existingPoliciesReplaced": 0,
+    "rowsUpdatedByDDL": 0,
+    "indexChanges": 0
+  },
+  "remoteExecution": false
+}

@@ -85,7 +85,7 @@ adminRoutes.use("*", async (c, next) => {
       if (value && value !== scope.workspaceId && value !== scope.workspaceSlug) throw new StaffWorkspaceError("NOT_FOUND", 404);
     }
     c.set("authorizedWorkspace", scope);
-    if (requirement.kind === "workspace") await requireCapability(client, scope, requirement.anyOf);
+    if (requirement.kind === "workspace") c.set("workspaceAccess", await requireCapability(client, scope, requirement.anyOf));
     const tables: Record<string, string> = {
       creators: "creators", missions: "missions", submissions: "mission_submissions",
       applications: "mission_submissions", campaigns: "campaigns", gifts: "redemption_gifts", social: "creator_social_accounts",

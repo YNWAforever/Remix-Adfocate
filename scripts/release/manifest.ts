@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { readdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
+import { CREATOR_GROWTH_CAPABILITIES, CREATOR_PUBLISH_CAPABILITIES } from "./creator-private-capabilities";
 import type {
   ReleaseManifest,
   ReleaseMigration,
@@ -1213,6 +1214,111 @@ const REVIEWED_MIGRATIONS = [
       "grant-removed:anon.public.anonymize_creator_account(uuid)",
       "grant-removed:public.public.anonymize_creator_account(uuid)",
     ],
+    transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
+  },
+  {
+    version: "20261030195424", name: "creator_studio_private_artifacts", phase: "assistant_requests",
+    dependsOn: ["20261029160000", "20261029180000", "20260720033542", "20261023124149"],
+    capabilities: [
+      "column:public.missions.public_preview_enabled",
+      ...["studio_threads", "studio_sources", "studio_briefs", "studio_shares", "studio_commands", "studio_badges"].flatMap(table => [
+        `table:public.${table}`, `rls:public.${table}`, `policy:public.${table}.studio_owner_read`,
+        `grant:authenticated.public.${table}(select)`, `grant-removed:authenticated.public.${table}(insert)`,
+        `grant-removed:authenticated.public.${table}(update)`, `grant-removed:authenticated.public.${table}(delete)`,
+      ]),
+      "function:public.studio_command", "grant:service_role.public.studio_command(uuid,uuid,uuid,text,jsonb)",
+      "grant-removed:authenticated.public.studio_command(uuid,uuid,uuid,text,jsonb)",
+      "grant-removed:anon.public.studio_command(uuid,uuid,uuid,text,jsonb)",
+      "grant-removed:public.public.studio_command(uuid,uuid,uuid,text,jsonb)",
+      "function:public.resolve_studio_request_context", "grant:service_role.public.resolve_studio_request_context(uuid,uuid,uuid,text,text,uuid,text)",
+      ...["authenticated", "anon", "public"].map(role => `grant-removed:${role}.public.resolve_studio_request_context(uuid,uuid,uuid,text,text,uuid,text)`),
+      "trigger:public.mission_pending_rewards.studio_settlement_badge", "trigger:public.mission_submissions.studio_legacy_badge", "trigger:public.creators.studio_account_cleanup",
+    ],
+    transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
+  },
+  {
+    version: "20261031120000", name: "creator_integrations", phase: "privacy_compliance",
+    dependsOn: ["20261030195424"],
+    capabilities: [
+      ...["integration_connections", "integration_resources", "integration_snapshots", "integration_events", "integration_sync_runs"].flatMap(table => [
+        `table:public.${table}`, `rls:public.${table}`, `policy:public.${table}.integration_owner_read`,
+        `grant:authenticated.public.${table}(select)`,
+        ...["insert", "update", "delete"].map(operation => `grant-removed:authenticated.public.${table}(${operation})`),
+      ]),
+      ...["integration_credentials", "integration_oauth_states", "integration_commands"].map(table => `table:private.${table}`),
+      ...["integration_hash", "integration_keys", "integration_envelope", "integration_cached_resources", "integration_immutable_snapshot", "integration_connection", "integration_foundation_command"].map(name => `function:private.${name}`),
+      "trigger:public.integration_snapshots.integration_immutable_snapshot",
+    ],
+    transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
+  },
+  {
+    version: "20261031121000", name: "studio_integration_evidence", phase: "assistant_requests",
+    dependsOn: ["20261031120000", "20261030195424"],
+    capabilities: [
+      "column:public.studio_sources.integration", "column:public.studio_sources.integration_connection_id", "column:public.studio_sources.integration_resource_id", "column:public.studio_sources.integration_snapshot_id",
+      "constraint:public.studio_sources.studio_source_coverage", "constraint:public.studio_sources.studio_source_integration_fk",
+      "column:public.studio_shares.integration_receipt", "table:private.integration_use_permits",
+      "function:private.integration_source", "function:private.integration_evidence_command", "function:private.studio_command_stage3", "function:public.studio_command",
+      "grant:service_role.public.studio_command(uuid,uuid,uuid,text,jsonb)",
+      ...["authenticated", "anon", "public"].map(role => `grant-removed:${role}.public.studio_command(uuid,uuid,uuid,text,jsonb)`),
+    ],
+    transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
+  },
+  {
+    version: "20261031122000", name: "integration_privacy_cleanup", phase: "privacy_compliance",
+    dependsOn: ["20261031121000"],
+    capabilities: [
+      ...["integration_invalidate", "integration_purge", "integration_privacy_command", "integration_account_cleanup", "save_assistant_turn_stage3", "get_assistant_request_stage3"].map(name => `function:private.${name}`),
+      "function:public.integration_command", "function:public.save_assistant_turn", "function:public.get_assistant_request",
+      "trigger:public.creators.integration_account_cleanup",
+      "grant:service_role.public.integration_command(uuid,uuid,uuid,text,jsonb)",
+      ...["authenticated", "anon", "public"].map(role => `grant-removed:${role}.public.integration_command(uuid,uuid,uuid,text,jsonb)`),
+    ],
+    transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
+  },
+  {
+    version: "20261031123000", name: "integration_pilot_persistence", phase: "privacy_compliance",
+    dependsOn: ["20261031122000"],
+    capabilities: [
+      ...["integration_pilot_grants", "integration_pilot_bindings", "integration_pilot_oauth", "integration_refresh_leases", "integration_pilot_evidence", "integration_pilot_tombstones", "integration_pilot_maintenance", "integration_pilot_notices"].flatMap(table => [`table:private.${table}`, `rls:private.${table}`]),
+      "column:private.integration_credentials.credential_version", "column:private.integration_pilot_bindings.notice_invalidated_at",
+      "constraint:private.integration_oauth_states.integration_oauth_states_return_path_check",
+      ...["integration_pilot_return_path", "integration_pilot_metadata", "integration_pilot_provenance", "integration_pilot_tombstone", "integration_command_stage4abc", "integration_pilot_restore_candidates", "integration_pilot_maintenance_command", "integration_notice_binding_guard"].map(name => `function:private.${name}`),
+      ...[["integration_connections", "integration_pilot_connection_provenance"], ["integration_resources", "integration_pilot_resource_provenance"], ["integration_snapshots", "integration_pilot_snapshot_provenance"], ["studio_sources", "integration_pilot_source_provenance"], ["integration_connections", "integration_pilot_tombstone"], ["creators", "integration_pilot_account_tombstone"]].map(([table, name]) => `trigger:public.${table}.${name}`),
+      "trigger:private.integration_pilot_bindings.integration_notice_binding_guard",
+      ...[["integration_oauth_lookup", "text,text"], ["integration_oauth_callback", "text,text,text,jsonb,timestamptz"], ["integration_provider_notice", "text,text,text,text"]].flatMap(([name, signature]) => [
+        `function:public.${name}`, `grant:service_role.public.${name}(${signature})`,
+        ...["authenticated", "anon", "public"].map(role => `grant-removed:${role}.public.${name}(${signature})`),
+      ]),
+    ],
+    transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
+  },
+  {
+    version: "20261101075946", name: "kocmax_auth_permission_boundary", phase: "staff_access",
+    dependsOn: ["20261023124149", "20261029100000"],
+    capabilities: [
+      "function:private.brand_staff_mission_write_allowed",
+      "grant:authenticated.private.brand_staff_mission_write_allowed(uuid)",
+      ...["anon", "public", "service_role"].map(role => `grant-removed:${role}.private.brand_staff_mission_write_allowed(uuid)`),
+      "function:public.bootstrap_creator_account",
+      "grant:service_role.public.bootstrap_creator_account(uuid,uuid,text,text,text)",
+      ...["authenticated", "anon", "public"].map(role => `grant-removed:${role}.public.bootstrap_creator_account(uuid,uuid,text,text,text)`),
+      ...["insert", "update", "delete"].map(operation => `policy:public.missions.missions_staff_${operation}_boundary`),
+    ],
+    transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
+  },
+  // Inventory/checksum classification only: these private preparation contracts do
+  // not authorize provider activation, SQL application, or a production release.
+  {
+    version: "20261103215321", name: "kocmax_creator_growth_private", phase: "privacy_compliance",
+    dependsOn: ["20261030195424", "20261031123000", "20261101075946"],
+    capabilities: CREATOR_GROWTH_CAPABILITIES,
+    transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
+  },
+  {
+    version: "20261104134202", name: "kocmax_publish_intents", phase: "privacy_compliance",
+    dependsOn: ["20261103215321", "20261031123000"],
+    capabilities: CREATOR_PUBLISH_CAPABILITIES,
     transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
   },
 ] as const satisfies readonly ReviewedMigration[];

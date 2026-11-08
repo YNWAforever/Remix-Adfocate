@@ -1,3 +1,4 @@
+import { STUDIO_SHELL } from "@/lib/features";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
@@ -27,21 +28,21 @@ function BrandCallback() {
   }, [navigate]);
   if (failed) {
     return (
-      <div className="relative flex min-h-screen items-center justify-center px-6">
+      <div className="s-auth relative flex min-h-screen items-center justify-center px-6">
         <div className="dot-pattern absolute inset-0 opacity-30" aria-hidden="true" />
         <div className="pastel-card relative z-10 w-full max-w-sm space-y-5 p-8 text-center">
-          <span className="sticker">ADFOCATE</span>
-          <p className="font-display text-lg font-bold text-[var(--color-ink)]">{t("app.brand.callbackFailed")}</p>
+          <span className="sticker">{STUDIO_SHELL ? "KOCmax" : "ADFOCATE"}</span>
+          <h1 className="font-display text-lg font-bold text-[var(--color-ink)]">{t("app.brand.callbackFailed")}</h1>
           <a href="/brand/login" className="btn-primary inline-flex">{t("app.brand.toLogin")}</a>
         </div>
       </div>
     );
   }
   return (
-    <div className="relative flex min-h-screen items-center justify-center px-6">
+    <div className="s-auth relative flex min-h-screen items-center justify-center px-6">
       <div className="dot-pattern absolute inset-0 opacity-30" aria-hidden="true" />
       <div className="pastel-card relative z-10 w-full max-w-sm space-y-5 p-8 text-center">
-        <span className="sticker">ADFOCATE</span>
+        <span className="sticker">{STUDIO_SHELL ? "KOCmax" : "ADFOCATE"}</span>
         <div className="mx-auto h-10 w-10 animate-spin rounded-full border-2 border-[var(--color-ink)] border-t-transparent" aria-hidden="true" />
         <p className="font-display text-lg font-bold text-[var(--color-ink)]">{t("app.brand.callbackWorking")}</p>
       </div>

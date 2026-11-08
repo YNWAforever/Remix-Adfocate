@@ -1,0 +1,45 @@
+{
+  "verifierVersion": "1-archive-read-20261101",
+  "status": "ARCHIVE_FULL_READ_OK_RESTORE_NOT_TESTED",
+  "projectRef": "mhkoayftiuojxlrkollf",
+  "attempt": "20261101T073819Z-4e90d939a7a144639faa6a720e0d1f6c",
+  "failureCode": null,
+  "checkedUtc": "2026-11-01T07:42:03.1587268Z",
+  "manifestSha256": "d2aca5cbffabed4b603e21bca84b02d75408e3bd3674a97871e47787e8ef93bb",
+  "captureScriptSha256": "6ea5c0418f04b6fad94b77b00d878b2611027ffb46bce095e335c9763377e3e5",
+  "artifacts": [
+    {
+      "name": "database.dump",
+      "bytes": 1751970,
+      "sha256": "ddcf2afbc70b3e235b4523c5daa09ef9b11fc8e4b4489dea2f6d557eb88aefcc"
+    },
+    {
+      "name": "roles.sql",
+      "bytes": 5370,
+      "sha256": "884ac3de343feaa40a09a0efcf91d9939fff18846a7b9ceedd95661bdde2c4f5"
+    },
+    {
+      "name": "toc.list",
+      "bytes": 192755,
+      "sha256": "550fe0f41f849f32e1c5cabe60b35c84d3a37ed0f9fc5bb69a2af16f3867ba12"
+    }
+  ],
+  "image": "postgres@sha256:f4c66b820c6f974249089d3d16d86a3698eae11e8746eb6644b2271031e91232",
+  "fullArchiveRead": "PASSED",
+  "hashesAfter": "UNCHANGED",
+  "containerCleanup": "CONFIRMED",
+  "restoreTested": false,
+  "manifestModified": false,
+  "migrationGate": "NOT_ASSESSED",
+  "coverage": [
+    "Manifest identity/status and private ACLs",
+    "Three artifact sizes and SHA-256 before/after",
+    "Unfiltered custom-archive read/decompression to /dev/null only"
+  ],
+  "limitations": [
+    "No database restore or SQL execution",
+    "No proof of source completeness or authenticity from hashes alone",
+    "roles.sql and toc.list are hash-checked, not executed",
+    "Storage object bytes and platform configuration remain outside this backup"
+  ]
+}

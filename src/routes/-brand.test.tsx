@@ -6,6 +6,7 @@ const h = vi.hoisted(() => ({
   fetchBrandMe: vi.fn(),
   fetchBrandMissions: vi.fn(),
   reportAuthError: vi.fn(),
+  brandRole: "owner" as "owner" | "member",
 }));
 
 vi.mock("@/lib/brand", () => ({
@@ -24,7 +25,7 @@ vi.mock("@/lib/brand", () => ({
 vi.mock("@/lib/admin", () => ({ AdminRequestError: class extends Error {} }));
 vi.mock("@/components/brand/BrandAuthContext", () => ({
   useBrandAuth: () => ({
-    brand: { email: "b@x", workspaceId: "w1", workspaceName: "Acme", role: "owner" },
+    brand: { email: "b@x", workspaceId: "w1", workspaceName: "Acme", role: h.brandRole },
     reportAuthError: h.reportAuthError,
   }),
 }));
@@ -76,7 +77,35 @@ describe("BrandAuthGate", () => {
 describe("brand missions list", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    h.brandRole = "owner";
     localStorage.setItem("lang", "zh");
+  });
+
+  async function showMission(role: "owner" | "member", status: "draft" | "active") {
+    h.brandRole = role;
+    h.fetchBrandMissions.mockResolvedValue({
+      missions: [
+        { id: "m1", slug: "test-x", title: "夏日企劃", status, mission_type: "ugc", points_reward: 100, cash_reward: null, filled: 0, quota: 10, deadline: null },
+      ],
+    });
+    const C = MissionsRoute.options.component as React.ComponentType;
+    withClient(<C />);
+    await screen.findByText("夏日企劃");
+  }
+
+  it("hides draft Delete from a brand member", async () => {
+    await showMission("member", "draft");
+    expect(screen.queryByRole("button", { name: "刪除" })).not.toBeInTheDocument();
+  });
+
+  it("shows draft Delete to a brand owner", async () => {
+    await showMission("owner", "draft");
+    expect(screen.getByRole("button", { name: "刪除" })).toBeInTheDocument();
+  });
+
+  it.each(["owner", "member"] as const)("hides active Delete from a brand %s", async (role) => {
+    await showMission(role, "active");
+    expect(screen.queryByRole("button", { name: "刪除" })).not.toBeInTheDocument();
   });
 
   it("renders a mission title and its status chip", async () => {
