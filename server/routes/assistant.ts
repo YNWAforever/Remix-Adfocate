@@ -9,6 +9,8 @@ import type { AdminEnv } from "../lib/staffAuth.js";
 import { requireCapability } from "../lib/staffCapabilities.js";
 import { authorizeIntegrationSources } from "../lib/integrations/evidence.js";
 import { saveToolTrace } from "../lib/studio/toolTraces.js";
+import { createMcpRuntime } from "../lib/mcp/client.js";
+import { loadMcpRegistry } from "../lib/mcp/policy.js";
 
 /** D20 is offline only. No request flag, env variable or configured gateway key enables this provider. */
 async function missionAssist(body: unknown, principal: AssistPrincipal, getClient: typeof serviceClient, provider?: AssistantProvider) {
@@ -33,6 +35,14 @@ async function missionAssist(body: unknown, principal: AssistPrincipal, getClien
         : "Assistance unavailable or outcome unknown. Your input is retained. Do not retry automatically.",
       request_id: requestId, persistence: "not_saved", generation: known.code === "provider_outcome_unknown" ? "unknown" : "not_started" } };
   }
+}
+
+/** D0 MCP skills are dark by default and only reachable from studio threads. */
+function studioMcpRuntime() {
+  if (process.env.STUDIO_MCP_ENABLED !== "true") return null;
+  const registry = loadMcpRegistry();
+  if (registry.errors.length) console.info(`[mcp] config: ${registry.errors.slice(0, 3).join("; ").slice(0, 300)}`);
+  return registry.servers.length ? createMcpRuntime(registry.servers) : null;
 }
 
 /** Mounted behind the existing staff identity, single membership and submission.review gates. */
@@ -110,9 +120,14 @@ export function assistantRoutes(testProvider?: AssistantProvider) {
     let result;
     try {
       if(studio?.integrationSources?.length) await authorizeIntegrationSources({creatorId:c.get("userId"),workspaceId},studio.integrationSources,"model",{requestId:input.requestId});
+      const mcp = studio ? studioMcpRuntime() : null;
       result = await withProviderDeadline((signal) => runAssistant(client,
         { query: input.message, locale: input.locale, workspace: workspaceId, history, studioContext:studio?.context, historyChanged: studio?.contextChanged },
-        { ...(testProvider ? { provider: testProvider } : {}), signal }));
+        {
+          ...(testProvider ? { provider: testProvider } : {}),
+          signal,
+          ...(mcp ? { studioToolDefs: mcp.defs, runStudioTool: (name: string, args: string, abort?: AbortSignal) => mcp.run(name, args, abort) } : {}),
+        }));
     } catch {
       await markUnknown();
       return c.json({ error: "Generation outcome is unknown. Check this request before starting another", code: "provider_outcome_unknown", request_id: input.requestId, persistence: "unknown" }, 503);
