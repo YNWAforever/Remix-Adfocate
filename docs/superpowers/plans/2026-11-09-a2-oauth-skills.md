@@ -1,6 +1,6 @@
 # A2 — OAuth provider skills, token vault and consent fencing (implementation plan)
 
-Status: started 2026-11-09 (Week 2). Builds on the phase-1 MCP client (env allowlist), the workspace
+Status: started 2026-11-09 (Week 2). **A2.1 implemented** (2026-11-09): `serverIds` on the registry result plus `runFencedMcpTool`, which re-checks live consent after each MCP call and returns/audits `error: consent_revoked` when it was revoked mid-turn. A2.2/A2.3 pending. Builds on the phase-1 MCP client (env allowlist), the workspace
 registry/consent tables and the admin registry UI. This plan adds real provider-hosted read-only skills
 and closes the consent lifecycle gaps. Schema is applied out of band, like the existing MCP tables.
 

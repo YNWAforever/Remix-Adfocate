@@ -11,7 +11,7 @@ import { authorizeIntegrationSources } from "../lib/integrations/evidence.js";
 import { saveToolTrace } from "../lib/studio/toolTraces.js";
 import { createMcpRuntime } from "../lib/mcp/client.js";
 import { loadMcpRegistry, parseMcpToolName } from "../lib/mcp/policy.js";
-import { loadWorkspaceMcpServers, recordMcpCall } from "../lib/mcp/registry.js";
+import { loadWorkspaceMcpServers, recordMcpCall, runFencedMcpTool } from "../lib/mcp/registry.js";
 
 /** D20 is offline only. No request flag, env variable or configured gateway key enables this provider. */
 async function missionAssist(body: unknown, principal: AssistPrincipal, getClient: typeof serviceClient, provider?: AssistantProvider) {
@@ -59,10 +59,15 @@ async function studioMcpRuntime(input: {
 }) {
   if (process.env.STUDIO_MCP_ENABLED !== "true") return null;
   let servers = envMcpServers();
+  let serverIds: ReadonlyMap<string, string> = new Map();
   if (process.env.STUDIO_MCP_REGISTRY === "true") {
     const registry = await loadWorkspaceMcpServers(input.store, input.workspaceId, input.creatorId);
-    if (registry.available) servers = [...registry.servers];
-    else console.info("[mcp] workspace registry unavailable; using the env allowlist");
+    if (registry.available) {
+      servers = [...registry.servers];
+      serverIds = registry.serverIds;
+    } else {
+      console.info("[mcp] workspace registry unavailable; using the env allowlist");
+    }
   }
   if (!servers.length) return null;
   const runtime = createMcpRuntime(servers);
@@ -72,8 +77,12 @@ async function studioMcpRuntime(input: {
     defs,
     run: async (name: string, args: string, abort?: AbortSignal) => {
       const started = Date.now();
-      const result = await runtime.run(name, args, abort);
       const parsed = parseMcpToolName(name);
+      const fenced = await runFencedMcpTool(input.store, {
+        serverId: parsed ? serverIds.get(parsed.server) : undefined,
+        creatorId: input.creatorId,
+        workspaceId: input.workspaceId,
+      }, () => runtime.run(name, args, abort));
       if (parsed) {
         void recordMcpCall(input.store, {
           requestId: input.requestId,
@@ -81,11 +90,11 @@ async function studioMcpRuntime(input: {
           toolName: parsed.tool,
           creatorId: input.creatorId,
           workspaceId: input.workspaceId,
-          outcome: result.startsWith("error:") ? result.slice(7, 40) : "ok",
+          outcome: fenced.outcome,
           durationMs: Date.now() - started,
         });
       }
-      return result;
+      return fenced.result;
     },
   };
 }
