@@ -181,14 +181,14 @@ export function CreatorProfileMediaPanel() {
     <section className="s-card s-stack">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="font-heading font-bold">{t("app.media.heading")}</h2>
-        <span className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 text-sm font-bold">
+        <span className="s-tag mint">
           {media.data.completeness.score}%
         </span>
       </div>
 
-      {message ? <p className="text-sm font-medium text-[var(--color-soft-ink)]">{message}</p> : null}
+      {message ? <p className="s-muted">{message}</p> : null}
 
-      <label className="flex cursor-pointer items-center gap-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3 text-sm font-heading font-bold">
+      <label className="s-btn" style={{ width: "100%", justifyContent: "flex-start" }}>
         <Upload className="h-4 w-4" />
         {t("app.media.uploadAvatar")}
         <input
@@ -209,20 +209,20 @@ export function CreatorProfileMediaPanel() {
           onChange={(event) => setTitle(event.target.value)}
           aria-label={t("app.media.workTitle")}
           placeholder={t("app.media.workTitle")}
-          className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+          className="s-input"
         />
         <input
           value={url}
           onChange={(event) => setUrl(event.target.value)}
           aria-label={t("app.media.workUrl")}
           placeholder="https://example.com/work"
-          className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+          className="s-input"
         />
         <select
           value={platformType}
           onChange={(event) => setPlatformType(event.target.value as PortfolioPlatformType)}
           aria-label={t("app.media.workType")}
-          className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+          className="s-input"
         >
           {platformOptions.map((option) => (
             <option key={option.value} value={option.value}>
@@ -235,14 +235,14 @@ export function CreatorProfileMediaPanel() {
           onChange={(event) => setCaption(event.target.value)}
           aria-label={t("app.media.workCaption")}
           placeholder={t("app.media.workCaption")}
-          className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3"
+          className="s-input"
         />
         <button
           type="button"
           aria-label={t("app.media.addWork")}
           disabled={!title.trim() || !url.trim() || createLink.isPending}
           onClick={() => void submitLink().catch(() => setMessage(t("app.media.addError")))}
-          className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 font-heading font-bold disabled:opacity-50"
+          className="s-btn s-lime-btn" style={{ width: "100%" }}
         >
           {t("app.media.addWork")}
         </button>
@@ -255,13 +255,13 @@ export function CreatorProfileMediaPanel() {
           const highlightDisabled = !link.publicHighlight && selectedHighlights + pendingHighlightIds.length >= 3 && !pendingEnable;
           const isEditing = editingId === link.id;
           return (
-            <div key={link.id} className="rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-3">
+            <div key={link.id} className="s-subcard">
               <div className="flex flex-wrap items-center gap-2">
                 <a href={link.url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 font-heading font-bold">
                   {link.title}
                   <ExternalLink className="h-3 w-3" />
                 </a>
-                <span className="rounded-full border-2 border-[var(--color-ink)] bg-white px-2 py-0.5 text-xs font-bold">
+                <span className="s-tag ghost">
                   {link.platformType}
                 </span>
               </div>
@@ -272,7 +272,7 @@ export function CreatorProfileMediaPanel() {
                   aria-label={t("app.media.editWorkAria", { title: link.title })}
                   disabled={isEditing && savingLinkId === link.id}
                   onClick={() => beginEdit(link)}
-                  className="inline-flex h-9 items-center gap-2 rounded-full border-2 border-[var(--color-ink)] bg-white px-3 text-sm font-heading font-bold disabled:opacity-50"
+                  className="s-btn s-compact"
                 >
                   <Pencil className="h-4 w-4" />
                   {t("app.media.editBtn")}
@@ -283,7 +283,7 @@ export function CreatorProfileMediaPanel() {
                   aria-pressed={effectivePublicHighlight}
                   disabled={highlightDisabled}
                   onClick={() => void toggleHighlight(link)}
-                  className="inline-flex h-9 items-center gap-2 rounded-full border-2 border-[var(--color-ink)] bg-white px-3 text-sm font-heading font-bold disabled:opacity-50"
+                  className="s-btn s-compact"
                 >
                   <Star className="h-4 w-4" />
                   {effectivePublicHighlight ? t("app.media.highlighted") : t("app.media.setPublic")}
@@ -293,7 +293,7 @@ export function CreatorProfileMediaPanel() {
                   aria-label={t("app.media.deleteWorkAria", { title: link.title })}
                   disabled={deletingLinkId === link.id}
                   onClick={() => void removeLink(link.id)}
-                  className="inline-flex h-9 items-center gap-2 rounded-full border-2 border-[var(--color-ink)] bg-white px-3 text-sm font-heading font-bold text-[var(--color-magenta)] disabled:opacity-50"
+                  className="s-btn s-compact"
                 >
                   <Trash2 className="h-4 w-4" />
                   {t("app.media.deleteBtn")}
@@ -346,7 +346,7 @@ export function CreatorProfileMediaPanel() {
                       aria-label={t("app.media.saveWorkAria", { title: link.title })}
                       disabled={!editTitle.trim() || !editUrl.trim() || savingLinkId === link.id}
                       onClick={() => void saveEdit(link.id).catch(() => setMessage(t("app.media.updateError")))}
-                      className="inline-flex h-9 items-center gap-2 rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 text-sm font-heading font-bold disabled:opacity-50"
+                      className="s-btn s-compact s-lime-btn"
                     >
                       {t("app.media.saveBtn")}
                     </button>
@@ -355,7 +355,7 @@ export function CreatorProfileMediaPanel() {
                       aria-label={t("app.media.cancelEditAria", { title: link.title })}
                       disabled={savingLinkId === link.id}
                       onClick={cancelEdit}
-                      className="inline-flex h-9 items-center gap-2 rounded-full border-2 border-[var(--color-ink)] bg-white px-3 text-sm font-heading font-bold disabled:opacity-50"
+                      className="s-btn s-compact"
                     >
                       <X className="h-4 w-4" />
                       {t("common.cancel")}
@@ -373,7 +373,7 @@ export function CreatorProfileMediaPanel() {
         aria-label={t("app.media.publishBtn")}
         disabled={publish.isPending}
         onClick={() => void publish.mutateAsync().then(() => setMessage(t("app.media.publishSuccess"))).catch(() => setMessage(t("app.media.publishError")))}
-        className="w-full rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 font-heading font-bold disabled:opacity-50"
+        className="s-btn s-lime-btn" style={{ width: "100%" }}
       >
         {t("app.media.publishBtn")}
       </button>

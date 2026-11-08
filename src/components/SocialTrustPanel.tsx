@@ -6,7 +6,7 @@ import { platformDisplayLabelKey } from "@/lib/labels";
 import { SocialAccountSummary } from "./SocialAccountSummary";
 
 const CONNECTABLE = ["instagram", "threads"] as const;
-const button = "rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-2 text-xs font-bold disabled:opacity-50";
+const button = "s-btn s-compact";
 const number = (value?: number | null) => value == null ? "—" : new Intl.NumberFormat("en-HK").format(value);
 
 export function SocialTrustPanel({ presentations, legacyHandles = [] }: { presentations?: SocialAccountPresentation[]; legacyHandles?: SocialHandle[] } = {}) {
@@ -39,14 +39,14 @@ export function SocialTrustPanel({ presentations, legacyHandles = [] }: { presen
   return <section className="s-card s-stack">
     <h2 className="font-heading font-bold">{t("app.profile.socialAccounts")}</h2>
     {accounts.isError ? <div role="alert" className="space-y-2 text-sm"><p>{t("app.social.loadError")}</p><button type="button" className={button} onClick={() => void accounts.refetch()}>{t("common.retry")}</button></div> : null}
-    <p className="text-xs text-[var(--color-soft-ink)]">{t("app.social.optionalHelp")}</p>
+    <p className="s-muted">{t("app.social.optionalHelp")}</p>
     {platforms.map(platform => {
       const platformRows = rows.filter(row => row.platform === platform);
       const label = t(platformDisplayLabelKey(socialPlatformName(platform)));
       const connectable = CONNECTABLE.includes(platform as SocialPlatform);
       const inputKey = platform as SocialPlatform;
       const handle = handles[inputKey] ?? platformRows.find(row => row.source === "legacy")?.handle ?? "";
-      return <div key={platform} className="space-y-3 rounded-xl border-2 border-[var(--color-ink)] p-3">
+      return <div key={platform} className="s-subcard">
         {!platformRows.length ? <h3 className="font-heading font-bold">{label}</h3> : null}
         {platformRows.map(row => {
           const account = row.accountId ? accounts.data?.find(item => item.id === row.accountId) : undefined;
@@ -85,7 +85,7 @@ export function SocialTrustPanel({ presentations, legacyHandles = [] }: { presen
           <label className="block text-sm">{t("common.platformHandleLabel", { platform: label })}
             <input value={handle} onChange={event => setHandles(current => ({ ...current, [platform]: event.target.value }))}
               aria-label={t("common.platformHandleLabel", { platform: label })} disabled={pending}
-              className="w-full min-w-0 rounded-xl border-2 border-[var(--color-ink)] bg-white px-3 py-2 text-sm" />
+              className="s-input" />
           </label>
           <button type="submit" className={button} disabled={pending || !handle.trim()}>{t("app.social.save", { platform: label })}</button>
           {errors[platform] ? <p role="alert" className="text-sm text-[var(--color-magenta)]">{errors[platform]}</p> : null}
