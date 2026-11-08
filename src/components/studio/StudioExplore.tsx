@@ -10,8 +10,8 @@ export function StudioExplore() {
     ["交出可核實的作品","Submit verifiable work","沿原有任務流程審核、發佈並提交證明。","Follow the mission's review, publication and proof steps.",ShieldCheck],
     ["收下已入帳獎勵","Enjoy credited rewards","待結算不等於已入帳。獎勵記錄以錢包為準。","Pending rewards are not credited points. Check your wallet.",Gift],
   ] as const;
-  return <div className="s-stack"><header className="s-between"><div><span className="s-eyebrow">YOUR CREATOR FIELD GUIDE</span><h1>{tx("一起開始創作冒險", "Your creator adventure")}</h1><p className="s-muted">{tx("不用先連接帳號。從一個真實想法開始。", "No connection required. Start with one real idea.")}</p></div><Sprout small/></header>
-    <div className="s-grid">{steps.map(([zh,en,detail,detailEn,Icon],i)=><article key={en} className="s-card s-stack"><span className="s-task-icon"><Icon aria-hidden size={23}/></span><span className="s-step-number">STEP 0{i+1}</span><h2>{tx(zh,en)}</h2><p className="s-muted">{tx(detail,detailEn)}</p></article>)}</div>
+  return <div className="s-stack"><header className="s-between"><div><span className="s-eyebrow">{tx("創作冒險指南 · FIELD GUIDE", "FIELD GUIDE")}</span><h1>{tx("一起開始創作冒險", "Your creator adventure")}</h1><p className="s-muted">{tx("不用先連接帳號。從一個真實想法開始。", "No connection required. Start with one real idea.")}</p></div><Sprout small/></header>
+    <div className="s-card-grid-4">{steps.map(([zh,en,detail,detailEn,Icon],i)=><article key={en} className="s-card s-stack"><span className="s-task-icon"><Icon aria-hidden size={23}/></span><span className="s-step-number">STEP 0{i+1}</span><h2>{tx(zh,en)}</h2><p className="s-muted">{tx(detail,detailEn)}</p></article>)}</div>
     <div className="s-note">🌱 {tx("休息不會扣分。登入、重複提問或重複提交不會自動賺取積分。", "Breaks never cost points. Visits, repeated questions and repeated submissions do not automatically earn points.")}</div>
     <section className="s-card s-stack"><h2>{tx("出發前的小問題", "Before you begin")}</h2>{[
       ["如何賺取積分？","How do I earn points?","完成任務要求及所需核實，由原有獎勵流程處理。每個任務的積分、經驗值及現金分開列明。","Complete the requirements and verification. Points, XP and cash follow each mission's reward contract."],

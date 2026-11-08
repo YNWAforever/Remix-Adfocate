@@ -956,3 +956,7 @@
   .s-progress li { font-size: 12px; }
   .s-progress span { width: 22px; height: 22px; font-size: 11px; }
 }
+/* Four-up step grid on wide creator screens. */
+.s-card-grid-4 { display: grid; gap: 16px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+@media (max-width: 1023px) { .s-card-grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 767px) { .s-card-grid-4 { grid-template-columns: minmax(0, 1fr); } }
