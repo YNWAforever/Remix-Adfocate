@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AdminAuthError, AdminRequestError } from "@/lib/admin";
-import { createMcpServer, deleteMcpServer, fetchMcpServers, mcpAdminKeys, updateMcpServer, type AdminMcpServer } from "@/lib/admin/mcp";
+import { createMcpServer, deleteMcpServer, fetchMcpAudit, fetchMcpServers, mcpAdminKeys, updateMcpServer, type AdminMcpServer } from "@/lib/admin/mcp";
 import { useAdminAuth } from "@/components/admin/AdminAuthContext";
 import { useAdminWorkspace } from "@/components/admin/AdminWorkspaceContext";
 import { useI18n } from "@/lib/i18n";
@@ -38,6 +38,16 @@ export function AdminSkillsPage() {
   useEffect(() => {
     if (list.error instanceof AdminAuthError) reportAuthError(list.error);
   }, [list.error, reportAuthError]);
+
+  const audit = useQuery({
+    queryKey: mcpAdminKeys.audit(workspace),
+    queryFn: () => fetchMcpAudit(workspace),
+    enabled: authed,
+    retry: false,
+  });
+  useEffect(() => {
+    if (audit.error instanceof AdminAuthError) reportAuthError(audit.error);
+  }, [audit.error, reportAuthError]);
 
   const refresh = () => client.invalidateQueries({ queryKey: mcpAdminKeys.all });
   const mutation = useMutation({
@@ -99,6 +109,22 @@ export function AdminSkillsPage() {
           </div>
         </div>
       ))}
+
+      <div className={card}>
+        <h2 className="font-heading font-bold">{t("app.admin.skillsAudit")}</h2>
+        {!audit.data?.calls.length ? <p className="text-sm text-[var(--color-soft-ink)]">{t("app.admin.skillsAuditEmpty")}</p> : (
+          <ul className="space-y-1 text-sm">
+            {audit.data.calls.map(call => (
+              <li key={`${call.created_at}-${call.server_name}-${call.tool_name}`} className="flex flex-wrap items-center justify-between gap-2">
+                <span className="font-mono text-xs">{new Date(call.created_at).toLocaleString()}</span>
+                <span className="font-semibold">{call.server_name} · {call.tool_name}</span>
+                <span className={call.outcome === "ok" ? "rounded-full bg-[#e2f4e6] px-2 py-0.5 text-xs font-bold text-[#316444]" : "rounded-full bg-[#fff0ed] px-2 py-0.5 text-xs font-bold text-[#89382f]"}>{call.outcome}</span>
+                <span className="text-xs text-[var(--color-soft-ink)]">{call.duration_ms ?? "-"} ms</span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
   );
 }

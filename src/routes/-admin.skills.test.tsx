@@ -15,10 +15,11 @@ vi.mock("@/lib/admin", () => ({
 }));
 vi.mock("@/lib/admin/mcp", () => ({
   fetchMcpServers: h.fetchMcpServers,
+  fetchMcpAudit: async () => ({ calls: [] }),
   createMcpServer: h.createMcpServer,
   updateMcpServer: h.updateMcpServer,
   deleteMcpServer: h.deleteMcpServer,
-  mcpAdminKeys: { all: ["admin", "mcp"], list: (workspace: string) => ["admin", "mcp", workspace] },
+  mcpAdminKeys: { all: ["admin", "mcp"], list: (workspace: string) => ["admin", "mcp", workspace], audit: (workspace: string) => ["admin", "mcp", "audit", workspace] },
 }));
 
 import { Route } from "./admin.skills";

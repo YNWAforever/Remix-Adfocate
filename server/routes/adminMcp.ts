@@ -114,6 +114,17 @@ adminMcpRoutes.patch("/registry/:id", async c => {
   return c.json({ id, ok: true });
 });
 
+adminMcpRoutes.get("/audit", async c => {
+  const scope = c.get("authorizedWorkspace");
+  const store = serviceClient();
+  const rows = await store.from("mcp_call_audit")
+    .select("server_name,tool_name,outcome,duration_ms,created_at")
+    .eq("workspace_id", scope.workspaceId)
+    .order("created_at", { ascending: false }).limit(50);
+  if (rows.error) return c.json({ code: "mcp_registry_unavailable", calls: [] });
+  return c.json({ calls: rows.data ?? [] });
+});
+
 adminMcpRoutes.delete("/registry/:id", async c => {
   const scope = c.get("authorizedWorkspace");
   const id = c.req.param("id");

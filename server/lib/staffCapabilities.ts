@@ -66,7 +66,7 @@ export function staffRouteRequirement(method: string, path: string): Requirement
     ["PATCH", ["academy/:id", "academy/:id/lessons/:lessonId", "content/:id"], platform],
     ["DELETE", ["academy/:id", "content/:id"], platform],
     ["GET", ["staff-access"], workspace("access.manage")],
-    ["GET", ["mcp/registry"], workspace("access.manage")],
+    ["GET", ["mcp/registry", "mcp/audit"], workspace("access.manage")],
     ["POST", ["mcp/registry"], workspace("access.manage")],
     ["PATCH", ["mcp/registry/:id"], workspace("access.manage")],
     ["DELETE", ["mcp/registry/:id"], workspace("access.manage")],

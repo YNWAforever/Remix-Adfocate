@@ -22,7 +22,14 @@ export function deleteMcpServer(workspace: string, id: string) {
   return adminFetch(`/admin/mcp/registry/${id}${qs(workspace)}`, { method: "DELETE" });
 }
 
+export type AdminMcpCall = { server_name: string; tool_name: string; outcome: string; duration_ms: number | null; created_at: string };
+
+export function fetchMcpAudit(workspace = "") {
+  return adminFetch<{ calls: AdminMcpCall[] }>(`/admin/mcp/audit${qs(workspace)}`);
+}
+
 export const mcpAdminKeys = {
   all: ["admin", "mcp"] as const,
   list: (workspace: string) => ["admin", "mcp", workspace] as const,
+  audit: (workspace: string) => ["admin", "mcp", "audit", workspace] as const,
 };
