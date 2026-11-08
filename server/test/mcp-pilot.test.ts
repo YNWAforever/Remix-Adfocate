@@ -9,6 +9,7 @@ import { mcpPilotRoutes } from "../routes/mcpPilot";
 
 type Row = Record<string, unknown>;
 const WORKSPACE = "11111111-1111-4111-8111-111111111111";
+const ZERO_WORKSPACE = "00000000-0000-0000-0000-0000000000aa";
 const TOKEN = "pilot-secret";
 
 function db(rows: Record<string, Row[]> = {}) {
@@ -42,6 +43,7 @@ describe("mcp pilot server", () => {
     expect((await post({ id: 1, method: "initialize" }, `ws=${WORKSPACE}&token=nope`)).status).toBe(401);
     expect((await post({ id: 1, method: "initialize" }, `ws=not-a-uuid&token=${TOKEN}`)).status).toBe(401);
     expect((await post({ id: 1, method: "initialize" }, `ws=${WORKSPACE}`)).status).toBe(401);
+    expect((await post({ id: 1, method: "initialize" }, `ws=${ZERO_WORKSPACE}&token=${TOKEN}`)).status).toBe(200);
   });
 
   it("speaks initialize and tools/list", async () => {
