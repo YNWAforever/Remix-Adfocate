@@ -15,12 +15,13 @@ https checks (`server/lib/mcp/registry.ts`), env fallback when tables are absent
 and `STUDIO_MCP_REGISTRY=true` to make the workspace registry authoritative. Creator consent API
 (`GET /mcp/skills`, `POST|DELETE /mcp/skills/:id/consent`, same-origin mutations) and a `/connections`
 "資料技能" section that lists servers/tools, grants or revokes consent, and renders nothing while the
-feature is dark. The SQL lives in [`docs/operations/mcp-registry.sql`](../../operations/mcp-registry.sql)
+feature is dark. Workspace-admin registry API (`GET|POST /mcp/registry`, `PATCH|DELETE /mcp/registry/:id`,
+gated by the `access.manage` capability) manages servers and allowlists without SQL; the admin UI is
+still pending. The SQL lives in [`docs/operations/mcp-registry.sql`](../../operations/mcp-registry.sql)
 and is applied manually.
 
-Still to build: owner-facing registry write API/UI (enable server, allowlist tools), OAuth/PKCE against
-provider-hosted servers with the token vault, consent-revocation fencing of in-flight chats, and the
-90-day audit retention job.
+Still to build: admin UI for the registry API, OAuth/PKCE against provider-hosted servers with the token
+vault, consent-revocation fencing of in-flight chats, and the 90-day audit retention job.
 
 ## 1. Problem
 
