@@ -76,6 +76,30 @@ export const STUDIO_TOOL_DEFS: ToolDef[] = [
       parameters: { type: "object", properties: {}, additionalProperties: false },
     },
   },
+  {
+    type: "function",
+    function: {
+      name: "get_my_points_history",
+      description: "List the creator's recent point ledger entries (type, delta, balance, description).",
+      parameters: { type: "object", properties: {}, additionalProperties: false },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "get_my_earnings_history",
+      description: "List the creator's recent cash earnings ledger entries (type, amount, balance, description).",
+      parameters: { type: "object", properties: {}, additionalProperties: false },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "get_my_recent_threads",
+      description: "List the creator's recent studio discussion threads with title and topic.",
+      parameters: { type: "object", properties: {}, additionalProperties: false },
+    },
+  },
 ];
 
 export type ToolScope = Readonly<{ workspaceId?: string | null }>;
@@ -157,6 +181,30 @@ export async function runTool(name: string, argsJson: string, client: Client, sc
       .order("created_at", { ascending: false }).limit(20);
     if (error) return `error: ${error.message}`;
     return compact(JSON.stringify({ notifications: data ?? [] }));
+  }
+
+  if (name === "get_my_points_history") {
+    const { data, error } = await client.from("point_transactions")
+      .select("type,delta,balance_after,description,created_at")
+      .order("created_at", { ascending: false }).limit(20);
+    if (error) return `error: ${error.message}`;
+    return compact(JSON.stringify({ transactions: data ?? [] }));
+  }
+
+  if (name === "get_my_earnings_history") {
+    const { data, error } = await client.from("earnings_transactions")
+      .select("type,amount,balance_after,description,created_at")
+      .order("created_at", { ascending: false }).limit(20);
+    if (error) return `error: ${error.message}`;
+    return compact(JSON.stringify({ transactions: data ?? [] }));
+  }
+
+  if (name === "get_my_recent_threads") {
+    const { data, error } = await client.from("studio_threads")
+      .select("title,topic,created_at")
+      .order("created_at", { ascending: false }).limit(10);
+    if (error) return `error: ${error.message}`;
+    return compact(JSON.stringify({ threads: data ?? [] }));
   }
 
   return `unknown tool: ${name}`;

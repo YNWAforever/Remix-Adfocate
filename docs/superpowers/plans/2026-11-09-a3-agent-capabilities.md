@@ -1,6 +1,6 @@
 # A3 — agent capability expansion (plan)
 
-Status: started 2026-11-09 (Week 3). Builds on the studio tool loop (7 read-only account tools + MCP
+Status: started 2026-11-09 (Week 3). **A3.1 implemented** (2026-11-09): `get_my_points_history`, `get_my_earnings_history` and `get_my_recent_threads` read-only tools, bounded and RLS-scoped, with client chips and allowlist tests. Builds on the studio tool loop (7 read-only account tools + MCP
 skills), consent fencing and persisted traces. The rule stays: the assistant never mutates creator data
 without an explicit, attributed confirmation step.
 

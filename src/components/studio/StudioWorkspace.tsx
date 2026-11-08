@@ -127,6 +127,9 @@ function ThreadContent({ detail, skill, identityKey, onLoginRequired }: { detail
     get_open_missions: ["公開任務", "Open missions"],
     get_my_redemptions: ["兌換記錄", "Redemptions"],
     get_my_notifications: ["通知", "Notifications"],
+    get_my_points_history: ["積分紀錄", "Point history"],
+    get_my_earnings_history: ["收益紀錄", "Earnings history"],
+    get_my_recent_threads: ["近期討論", "Recent discussions"],
   };
   function toolLabel(name: string): [string, string] {
     if (name.startsWith("mcp__")) {
