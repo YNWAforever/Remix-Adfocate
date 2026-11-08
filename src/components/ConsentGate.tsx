@@ -88,7 +88,7 @@ export function MarketingConsentToggle() {
   });
   if (!consents.data) return null;
   return (
-    <label className="flex items-center gap-2 text-sm">
+    <label className="s-check">
       <input type="checkbox" checked={consents.data.marketing.granted} disabled={toggle.isPending}
         onChange={(e) => toggle.mutate(e.target.checked)} />
       <span>{t("app.consent.marketingToggle")}</span>

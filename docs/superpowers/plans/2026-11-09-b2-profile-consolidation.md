@@ -1,6 +1,6 @@
 # B2 — profile and account consolidation (plan)
 
-Status: started 2026-11-09 (Week 3), after B1 completed. **B2.1 and B2.2 shipped**; B2.3/B2.4 pending. Page: `/profile`
+Status: **done 2026-11-09** — B2.1–B2.4 shipped. Page: `/profile`
 (`src/routes/_app.profile.tsx`, ~12 KB, legacy layout inside the studio shell). Goal: one coherent
 "my account" surface for identity, portfolio and privacy, without changing any account API.
 
@@ -27,13 +27,13 @@ three visual systems and leaves an empty left column on desktop.
   publish-status component.
 - Acceptance: existing media/upload/publish tests pass; empty states honest; no mock content labels.
 
-### B2.3 — Privacy and data controls
+### B2.3 — Privacy and data controls (done)
 - Notification consent as a labelled switch row.
 - Export ("下載我的資料") and delete account become a `danger`-styled card separated from the rest, with
   the existing confirmation/export flow untouched.
 - Acceptance: export/delete mutation tests still pass; no form sends data without an explicit action.
 
-### B2.4 — Mobile and cleanup
+### B2.4 — Mobile and cleanup (done)
 - 390/768 layout sweep, 44 px targets, focus order, empty-column removal.
 - Remove leftover legacy Tailwind conventions in this page; keep all i18n keys.
 
@@ -48,3 +48,7 @@ three visual systems and leaves an empty left column on desktop.
 - Fixture screenshots at 390/768/1440 archived under `.ui-audit-2026-11-08/`.
 - `src/routes/-_app.profile.test.tsx` (if present) plus profile-related media tests, typecheck, lint, build.
 - No horizontal overflow; one h1; min 44 px targets except native checkbox (labelled 44 px target).
+
+## Completion evidence (B2.3/B2.4)
+
+Consent toggle is a 44 px s-check row; account data controls split into export and a danger-tinted delete card, with the same export/delete contracts and DELETE confirmation. Profile audit at 390/768/1440: no horizontal overflow, one h1, only the visually hidden file input and the 22 px checkbox (44 px labelled target) below 44 px; profile height 2442 px at 390, 1758 px at 1440. All profile/social/media/studio tests pass.

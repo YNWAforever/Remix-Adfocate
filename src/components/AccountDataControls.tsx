@@ -36,21 +36,21 @@ export function AccountDataControls() {
   });
 
   return (
-    <div className="space-y-4">
-      <h2 className="font-heading text-lg font-black">{t("app.account.title")}</h2>
-      <div className="space-y-2">
-        <p className="text-sm text-[var(--color-soft-ink)]">{t("app.account.exportBody")}</p>
+    <div className="s-stack">
+      <h2>{t("app.account.title")}</h2>
+      <div className="s-subcard">
+        <p className="s-muted">{t("app.account.exportBody")}</p>
         <button type="button" onClick={() => exportData.mutate()} disabled={exportData.isPending}
-          className="rounded-full border-2 border-[var(--color-ink)] px-4 py-2 text-sm font-bold disabled:opacity-50">
+          className="s-btn" style={{ justifySelf: "start" }}>
           {exportData.isPending ? t("common.processing") : t("app.account.export")}
         </button>
         {exportData.isError && <p role="alert" className="text-sm text-[var(--color-magenta)]">{t("app.account.exportError")}</p>}
       </div>
-      <div className="space-y-2">
-        <p className="text-sm text-[var(--color-soft-ink)]">{t("app.account.deleteBody")}</p>
+      <div className="s-subcard s-danger">
+        <p className="s-muted">{t("app.account.deleteBody")}</p>
         {!confirming ? (
           <button type="button" onClick={() => setConfirming(true)}
-            className="rounded-full border-2 border-[var(--color-magenta)] px-4 py-2 text-sm font-bold text-[var(--color-magenta)]">
+            className="s-btn" style={{ justifySelf: "start", color: "#89382f", borderColor: "#cba4a1" }}>
             {t("app.account.delete")}
           </button>
         ) : (
@@ -58,14 +58,14 @@ export function AccountDataControls() {
             <label className="block text-sm font-semibold">
               {t("app.account.deleteConfirmLabel")}
               <input value={typed} onChange={(e) => setTyped(e.target.value)} autoComplete="off"
-                className="mt-1 block w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] px-3 py-2" />
+                className="s-input" style={{ marginTop: 4 }} />
             </label>
             {deleteAccount.isError && <p role="alert" className="text-sm text-[var(--color-magenta)]">{t("app.account.deleteError")}</p>}
             <div className="flex gap-3">
               <button type="button" onClick={() => { setConfirming(false); setTyped(""); }}
-                className="text-sm font-semibold underline underline-offset-4">{t("common.cancel")}</button>
+                className="s-btn">{t("common.cancel")}</button>
               <button type="button" disabled={typed !== "DELETE" || deleteAccount.isPending} onClick={() => deleteAccount.mutate()}
-                className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-magenta)] px-4 py-2 text-sm font-bold text-white disabled:opacity-50">
+                className="s-btn" style={{ background: "#89382f", borderColor: "#89382f", color: "#fff" }}>
                 {deleteAccount.isPending ? t("common.processing") : t("app.account.deleteConfirm")}
               </button>
             </div>
