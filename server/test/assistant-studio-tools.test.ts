@@ -55,6 +55,25 @@ describe("read-only studio tools", () => {
     expect(await runTool("get_my_points", "{}", client)).toBe(JSON.stringify({ points: 120 }));
     expect(await runTool("award_points", "{}", client)).toBe("unknown tool: award_points");
   });
+  it("lists bounded point and earnings history for the creator", async () => {
+    const points = fakeClient({ point_transactions: [{ type: "earn", delta: 200, description: "mission" }] });
+    const pointOut = JSON.parse(await runTool("get_my_points_history", "{}", points.client));
+    expect(pointOut.transactions).toHaveLength(1);
+    expect(points.calls[0].select).toContain("balance_after");
+    expect(points.calls[0].limit).toBe(20);
+    const earnings = fakeClient({ earnings_transactions: [{ type: "settle", amount: 30 }] });
+    const earningOut = JSON.parse(await runTool("get_my_earnings_history", "{}", earnings.client));
+    expect(earningOut.transactions).toHaveLength(1);
+    expect(earnings.calls[0].select).toContain("amount");
+    expect(earnings.calls[0].limit).toBe(20);
+  });
+  it("lists the creator's recent discussion threads", async () => {
+    const { client, calls } = fakeClient({ studio_threads: [{ title: "Tea brief", topic: "creation" }] });
+    const output = JSON.parse(await runTool("get_my_recent_threads", "{}", client));
+    expect(output.threads).toHaveLength(1);
+    expect(calls[0].select).toContain("topic");
+    expect(calls[0].limit).toBe(10);
+  });
   it("lists open workspace missions with a bounded read", async () => {
     const { client, calls } = fakeClient({ missions: [{ slug: "tea", title: "Tea", points_reward: 400 }] });
     const output = await runTool("get_open_missions", "{}", client, { workspaceId: "workspace" });
