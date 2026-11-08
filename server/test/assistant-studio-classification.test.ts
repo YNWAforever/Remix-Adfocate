@@ -114,7 +114,7 @@ describe("Studio conversation classification before assistant egress", () => {
     const response = await send();
     expect(response.status).toBe(200);
     expect(chat).toHaveBeenCalledOnce(); expect(embed).not.toHaveBeenCalled();
-    expect(chat.mock.calls[0][0].tools?.map((tool: { function: { name: string } }) => tool.function.name)).toEqual(["get_my_points","get_my_missions","get_my_mission_requirements","get_my_earnings"]);
+    expect(chat.mock.calls[0][0].tools?.map((tool: { function: { name: string } }) => tool.function.name)).toEqual(["get_my_points","get_my_missions","get_my_mission_requirements","get_my_earnings","get_open_missions","get_my_redemptions","get_my_notifications"]);
     expect(JSON.stringify(chat.mock.calls[0])).toContain("My own source text");
     expect(JSON.stringify(chat.mock.calls[0])).not.toContain(derivative);
     expect(reads.some(read => read.table === "assistant_messages")).toBe(false);

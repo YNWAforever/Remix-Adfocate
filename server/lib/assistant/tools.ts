@@ -52,6 +52,30 @@ export const STUDIO_TOOL_DEFS: ToolDef[] = [
       parameters: { type: "object", properties: {}, additionalProperties: false },
     },
   },
+  {
+    type: "function",
+    function: {
+      name: "get_open_missions",
+      description: "List currently open missions in the creator's workspace with slug, title, points and deadline.",
+      parameters: { type: "object", properties: {}, additionalProperties: false },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "get_my_redemptions",
+      description: "List the creator's recent reward redemptions and their status.",
+      parameters: { type: "object", properties: {}, additionalProperties: false },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "get_my_notifications",
+      description: "List the creator's latest notifications with their read state.",
+      parameters: { type: "object", properties: {}, additionalProperties: false },
+    },
+  },
 ];
 
 export type ToolScope = Readonly<{ workspaceId?: string | null }>;
@@ -107,6 +131,32 @@ export async function runTool(name: string, argsJson: string, client: Client, sc
     const { data, error } = await client.from("earnings_balances").select("available").limit(1);
     if (error) return `error: ${error.message}`;
     return JSON.stringify({ available: Number((firstRow(data) as { available?: number | string } | null)?.available ?? 0) });
+  }
+
+  if (name === "get_open_missions") {
+    let query = client.from("missions")
+      .select("slug,title,mission_type,points_reward,deadline,platforms")
+      .eq("status", "active");
+    if (scope?.workspaceId) query = query.eq("workspace_id", scope.workspaceId);
+    const { data, error } = await query.order("deadline", { ascending: true, nullsFirst: false }).limit(20);
+    if (error) return `error: ${error.message}`;
+    return compact(JSON.stringify({ missions: data ?? [] }));
+  }
+
+  if (name === "get_my_redemptions") {
+    const { data, error } = await client.from("redemptions")
+      .select("code,points_spent,status,created_at,redemption_gifts(name)")
+      .order("created_at", { ascending: false }).limit(20);
+    if (error) return `error: ${error.message}`;
+    return compact(JSON.stringify({ redemptions: data ?? [] }));
+  }
+
+  if (name === "get_my_notifications") {
+    const { data, error } = await client.from("notifications")
+      .select("type,data,read_at,created_at")
+      .order("created_at", { ascending: false }).limit(20);
+    if (error) return `error: ${error.message}`;
+    return compact(JSON.stringify({ notifications: data ?? [] }));
   }
 
   return `unknown tool: ${name}`;
