@@ -45,25 +45,25 @@ export function VersionTimeline({ versions, events }: VersionTimelineProps) {
   const { lang, t } = useI18n();
 
   return (
-    <section aria-labelledby={headingId} className="rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4">
-      <h2 id={headingId} className="font-heading text-lg font-bold">{t("app.activeMission.timeline.title")}</h2>
-      {entries.length === 0 ? <p className="mt-3 text-sm text-[var(--color-soft-ink)]">{t("app.activeMission.timeline.empty")}</p> : (
-        <ol className="mt-4 space-y-3">
+    <section aria-labelledby={headingId} className="s-card s-stack">
+      <h2 id={headingId}>{t("app.activeMission.timeline.title")}</h2>
+      {entries.length === 0 ? <p className="s-muted">{t("app.activeMission.timeline.empty")}</p> : (
+        <ol className="s-version-list">
           {entries.map((entry) => entry.kind === "version" ? (
-            <li key={`version-${entry.value.id}`} className="rounded-xl border border-[var(--color-ink)] p-3">
-              <div className="flex flex-wrap items-start justify-between gap-2">
-                <h3 className="font-heading font-bold">{t("app.activeMission.timeline.version", { number: entry.value.versionNumber })}</h3>
-                <span className="rounded-full border border-[var(--color-ink)] px-2 py-1 text-xs font-semibold">{t(VERSION_KEYS[entry.value.state])}</span>
+            <li key={`version-${entry.value.id}`} className="s-version-entry">
+              <div className="s-between">
+                <h3>{t("app.activeMission.timeline.version", { number: entry.value.versionNumber })}</h3>
+                <span className="s-tag">{t(VERSION_KEYS[entry.value.state])}</span>
               </div>
-              <div className="mt-2 grid gap-1 text-sm text-[var(--color-soft-ink)]">
-                <p><span className="font-semibold text-[var(--color-ink)]">{t("app.activeMission.timeline.submittedAt")}</span>{" "}<time dateTime={entry.value.submittedAt}>{displayTime(entry.value.submittedAt, lang === "zh" ? "zh-HK" : "en-US")}</time></p>
-                {entry.value.decisionAt ? <p><span className="font-semibold text-[var(--color-ink)]">{t("app.activeMission.timeline.decisionTime")}</span><time className="ml-1" dateTime={entry.value.decisionAt}>{displayTime(entry.value.decisionAt, lang === "zh" ? "zh-HK" : "en-US")}</time></p> : null}
+              <div className="s-version-meta">
+                <p><span>{t("app.activeMission.timeline.submittedAt")}</span>{" "}<time dateTime={entry.value.submittedAt}>{displayTime(entry.value.submittedAt, lang === "zh" ? "zh-HK" : "en-US")}</time></p>
+                {entry.value.decisionAt ? <p><span>{t("app.activeMission.timeline.decisionTime")}</span><time dateTime={entry.value.decisionAt}>{displayTime(entry.value.decisionAt, lang === "zh" ? "zh-HK" : "en-US")}</time></p> : null}
               </div>
             </li>
           ) : (
-            <li key={`event-${entry.value.id}`} className="rounded-xl border border-dashed border-[var(--color-ink)] p-3">
-              <p className="font-semibold">{EVENT_KEYS[entry.value.eventType] ? t(EVENT_KEYS[entry.value.eventType]) : t("app.activeMission.timeline.event.unknown", { event: entry.value.eventType.replaceAll("_", " ") })}</p>
-              <time className="mt-1 block text-sm text-[var(--color-soft-ink)]" dateTime={entry.value.createdAt}>{displayTime(entry.value.createdAt, lang === "zh" ? "zh-HK" : "en-US")}</time>
+            <li key={`event-${entry.value.id}`} className="s-version-entry event">
+              <p>{EVENT_KEYS[entry.value.eventType] ? t(EVENT_KEYS[entry.value.eventType]) : t("app.activeMission.timeline.event.unknown", { event: entry.value.eventType.replaceAll("_", " ") })}</p>
+              <time dateTime={entry.value.createdAt}>{displayTime(entry.value.createdAt, lang === "zh" ? "zh-HK" : "en-US")}</time>
             </li>
           ))}
         </ol>

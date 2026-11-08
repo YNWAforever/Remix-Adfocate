@@ -47,14 +47,14 @@ export function ReviewFeedback({ requirements, changes }: ReviewFeedbackProps) {
   const generalChanges = changes.filter(({ requirementId }) => !requirementId || !knownRequirementIds.has(requirementId));
 
   return (
-    <section aria-labelledby={headingId} className="rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-[var(--color-pink)] p-4">
-      <h3 id={headingId} className="font-heading text-lg font-bold">{t("app.activeMission.feedback.title")}</h3>
-      <ul className="mt-3 space-y-3">
+    <section aria-labelledby={headingId} className="s-card peach s-stack">
+      <h3 id={headingId}>{t("app.activeMission.feedback.title")}</h3>
+      <ul className="s-version-list">
         {normalized.map((requirement) => {
           const matchingChanges = changes.filter(({ requirementId }) => requirementId === requirement.id);
           return (
-            <li key={requirement.id} className="rounded-xl border border-[var(--color-ink)] bg-white p-3">
-              <p className="font-semibold">{requirement.label}</p>
+            <li key={requirement.id} className="s-version-entry">
+              <p className="s-version-entry-title">{requirement.label}</p>
               {matchingChanges.length > 0 ? (
                 <ul className="mt-2 list-disc space-y-1 pl-5 text-sm">
                   {matchingChanges.map((change) => <li key={change.id} className="break-words">{change.text}</li>)}
