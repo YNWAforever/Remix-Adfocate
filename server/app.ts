@@ -34,6 +34,7 @@ import { integrationOAuthCallbacks, integrationOAuthRoutes } from "./routes/inte
 import { integrationNoticeRoutes } from "./routes/integrationNotices.js";
 import { mcpSkillRoutes } from "./routes/mcp.js";
 import { mcpPilotRoutes } from "./routes/mcpPilot.js";
+import { mcpOAuthCallbackRoutes, mcpOAuthRoutes } from "./routes/mcpOAuth.js";
 
 export type Env = {
   Variables: { userId: string; workspaceId: string; jwt: string };
@@ -63,6 +64,8 @@ export function createApp(options: { creatorPilot?: CreatorPilotRouteDependencie
   app.route("/integration-oauth", integrationOAuthCallbacks());
   // Read-only MCP pilot server reached by the studio chat over MCP (token + workspace scoped).
   app.route("/mcp-pilot", mcpPilotRoutes());
+  // Provider OAuth callback (browser redirect); state row identifies the creator.
+  app.route("/mcp-oauth", mcpOAuthCallbackRoutes());
   // No fixture dependencies or live receipt reader are installed in the original application.
   app.route("/integration-notices", integrationNoticeRoutes());
 
@@ -85,6 +88,7 @@ export function createApp(options: { creatorPilot?: CreatorPilotRouteDependencie
   guarded.route("/assistant", assistantRoutes());
   guarded.route("/studio", studioRoutes);
   guarded.route("/mcp", mcpSkillRoutes());
+  guarded.route("/mcp", mcpOAuthRoutes());
   // Publication is separately guarded and disabled; no service/worker is installed.
   guarded.route("/creator-growth/publish", createCreatorGrowthPublishRoutes());
   // Explicit trusted server injection only; existing entrypoints pass no dependencies.
