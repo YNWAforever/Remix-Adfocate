@@ -8,20 +8,37 @@ const TOOL_NAME = /^[a-z0-9_]{1,64}$/;
 
 const DEFAULT_TIMEOUT_MS = 8000;
 
+/** Validates an owner-supplied server URL: https, or http on a loopback fixture, never with userinfo. */
+export function parseServerUrl(raw: unknown): string | null {
+  let url: URL;
+  try { url = new URL(String(raw)); } catch { return null; }
+  if (url.username || url.password) return null;
+  const local = url.hostname === "127.0.0.1" || url.hostname === "localhost" || url.hostname === "::1";
+  if (url.protocol !== "https:" && !(url.protocol === "http:" && local)) return null;
+  return url.toString();
+}
+
+/** Validates an owner-supplied tool allowlist: 1-10 unique lowercase names. */
+export function parseToolNames(value: unknown): string[] | null {
+  if (!Array.isArray(value) || value.length === 0 || value.length > 10) return null;
+  const tools: string[] = [];
+  for (const tool of value) {
+    if (typeof tool !== "string" || !TOOL_NAME.test(tool) || tools.includes(tool)) return null;
+    tools.push(tool);
+  }
+  return tools;
+}
+
+export function validServerName(name: string): boolean {
+  return SERVER_NAME.test(name);
+}
+
 export type McpWorkspaceRegistry = Readonly<{
   /** false when the optional registry tables are absent or unreadable. */
   available: boolean;
   servers: readonly McpServerConfig[];
   errors: readonly string[];
 }>;
-
-function allowedUrl(raw: unknown): string | null {
-  let url: URL;
-  try { url = new URL(String(raw)); } catch { return null; }
-  const local = url.hostname === "127.0.0.1" || url.hostname === "localhost" || url.hostname === "::1";
-  if (url.protocol !== "https:" && !(url.protocol === "http:" && local)) return null;
-  return url.toString();
-}
 
 /**
  * Loads the workspace registry (owner-configured servers) and keeps only servers the creator has
@@ -62,7 +79,7 @@ export async function loadWorkspaceMcpServers(
   const result: McpServerConfig[] = [];
   for (const row of rows) {
     if (!SERVER_NAME.test(row.name) || !consented.has(row.id)) continue;
-    const url = allowedUrl(row.url);
+    const url = parseServerUrl(row.url);
     const allowlistedTools = toolsByServer.get(row.id) ?? [];
     if (!url || !allowlistedTools.length) continue;
     result.push({ name: row.name, url, timeoutMs: DEFAULT_TIMEOUT_MS, headers: {}, tools: allowlistedTools });

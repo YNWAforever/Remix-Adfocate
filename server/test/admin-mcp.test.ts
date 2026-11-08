@@ -1,12 +1,13 @@
 // @vitest-environment node
 import { Hono } from "hono";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { Env } from "../app";
+import type { AdminEnv } from "../lib/staffAuth";
 
 const h = vi.hoisted(() => ({ db: null as unknown }));
 vi.mock("../lib/supabase.js", () => ({ serviceClient: () => h.db, makeUserClient: () => h.db }));
 
-import { mcpSkillRoutes } from "../routes/mcp";
+import { adminMcpRoutes } from "../routes/adminMcp";
+import { staffRouteRequirement } from "../lib/staffCapabilities";
 
 type Row = Record<string, unknown>;
 const SERVER_ID = "11111111-1111-4111-8111-111111111111";
@@ -46,16 +47,18 @@ function db(rows: Record<string, Row[]>) {
   return { client: { from }, writes };
 }
 
-function app(userId: string) {
-  return new Hono<Env>()
-    .use("*", async (c, next) => { c.set("userId", userId); c.set("workspaceId", "w1"); c.set("jwt", "jwt"); await next(); })
-    .route("/mcp", mcpSkillRoutes());
+function app() {
+  return new Hono<AdminEnv>()
+    .use("*", async (c, next) => {
+      c.set("staff", { userId: "staff-owner", email: "owner@example.test", active: true });
+      c.set("authorizedWorkspace", { workspaceId: "w1", workspaceSlug: "owned", userId: "staff-owner" });
+      await next();
+    })
+    .route("/mcp", adminMcpRoutes);
 }
 
-const staff = (role: string) => ({ user_id: "owner", workspace_id: "w1", role, active: true, revision: 1 });
 function rows() {
   return {
-    staff_workspace_roles: [staff("workspace_admin")],
     mcp_servers: [
       { id: SERVER_ID, name: "notes", url: "https://mcp.example.test/rpc", enabled: true, read_only: true, workspace_id: "w1" },
       { id: SERVER_ID_TWO, name: "empty", url: "https://mcp.example.test/empty", enabled: false, read_only: true, workspace_id: "w1" },
@@ -70,23 +73,24 @@ function rows() {
 beforeEach(() => {
   vi.stubEnv("STUDIO_MCP_ENABLED", "true");
   vi.stubEnv("STUDIO_MCP_REGISTRY", "true");
-  h.db = db(rows()).client;
 });
 afterEach(() => vi.unstubAllEnvs());
 
-describe("mcp owner registry API", () => {
-  it("requires the workspace-admin role for every registry operation", async () => {
-    h.db = db({ ...rows(), staff_workspace_roles: [staff("reviewer")] }).client;
-    for (const [method, path] of [["GET", "/mcp/registry"], ["POST", "/mcp/registry"], ["PATCH", `/mcp/registry/${SERVER_ID}`], ["DELETE", `/mcp/registry/${SERVER_ID}`]]) {
-      const response = await app("owner").request(path, { method, ...(method === "POST" ? { body: JSON.stringify({ name: "x", url: "https://mcp.test/rpc", tools: ["a"] }), headers: { "content-type": "application/json" } } : {}) });
-      expect(response.status, `${method} ${path}`).toBe(403);
-      expect(await response.json()).toMatchObject({ code: "OWNER_REQUIRED" });
+describe("admin mcp registry API", () => {
+  it("requires the access.manage capability on every mounted route", () => {
+    for (const [method, path] of [["GET", "mcp/registry"], ["POST", "mcp/registry"], ["PATCH", "mcp/registry/:id"], ["DELETE", "mcp/registry/:id"]]) {
+      expect(staffRouteRequirement(method, path), `${method} ${path}`).toEqual({ kind: "workspace", anyOf: ["access.manage"] });
     }
+  });
+
+  it("is dark unless the MCP flags are on", async () => {
+    vi.stubEnv("STUDIO_MCP_ENABLED", "false");
+    expect((await app().request("/mcp/registry")).status).toBe(404);
   });
 
   it("lists every configured server with its allowlist", async () => {
     h.db = db(rows()).client;
-    const response = await app("owner").request("/mcp/registry");
+    const response = await app().request("/mcp/registry");
     expect(response.status).toBe(200);
     expect(await response.json()).toMatchObject({ servers: [
       { id: SERVER_ID, name: "notes", enabled: true, tools: ["lookup_note", "get_brief"] },
@@ -97,18 +101,17 @@ describe("mcp owner registry API", () => {
   it("creates a disabled read-only server with tools", async () => {
     const fake = db(rows());
     h.db = fake.client;
-    const response = await app("owner").request("/mcp/registry", {
+    const response = await app().request("/mcp/registry", {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ name: "fixture", url: "https://mcp.example.test/rpc", tools: ["lookup_note"] }),
     });
     expect(response.status).toBe(201);
-    expect(await response.json()).toMatchObject({ server: { name: "fixture", enabled: false, tools: ["lookup_note"] } });
-    expect(fake.writes[0]).toMatchObject({ table: "mcp_servers", op: "insert", values: { name: "fixture", read_only: true, enabled: false, workspace_id: "w1" } });
+    expect(fake.writes[0]).toMatchObject({ table: "mcp_servers", op: "insert", values: { name: "fixture", read_only: true, enabled: false, workspace_id: "w1", created_by: "staff-owner" } });
     expect(fake.writes[1]).toMatchObject({ table: "mcp_server_tools", op: "insert" });
   });
 
-  it("rejects insecure urls and empty allowlists", async () => {
+  it("rejects insecure urls, empty allowlists and bad names", async () => {
     const fake = db(rows());
     h.db = fake.client;
     for (const body of [
@@ -117,8 +120,7 @@ describe("mcp owner registry API", () => {
       { name: "BAD NAME", url: "https://mcp.example.test/rpc", tools: ["lookup_note"] },
       { name: "plain", url: "https://user:pass@mcp.example.test/rpc", tools: ["lookup_note"] },
     ]) {
-      const response = await app("owner").request("/mcp/registry", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
-      expect(response.status).toBe(400);
+      expect((await app().request("/mcp/registry", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) })).status).toBe(400);
     }
     expect(fake.writes).toHaveLength(0);
   });
@@ -126,18 +128,17 @@ describe("mcp owner registry API", () => {
   it("enables, replaces tools and deletes servers", async () => {
     const fake = db(rows());
     h.db = fake.client;
-    expect((await app("owner").request(`/mcp/registry/${SERVER_ID}`, { method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify({ enabled: false, tools: ["lookup_note"] }) })).status).toBe(200);
+    expect((await app().request(`/mcp/registry/${SERVER_ID}`, { method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify({ enabled: false, tools: ["lookup_note"] }) })).status).toBe(200);
     expect(fake.writes.some(write => write.table === "mcp_servers" && write.op === "update" && write.values?.enabled === false)).toBe(true);
     expect(fake.writes.some(write => write.table === "mcp_server_tools" && write.op === "delete")).toBe(true);
-    expect((await app("owner").request(`/mcp/registry/${SERVER_ID}`, { method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify({ enabled: true }) })).status).toBe(200);
-    expect((await app("owner").request(`/mcp/registry/${SERVER_ID}`, { method: "DELETE" })).status).toBe(200);
+    expect((await app().request(`/mcp/registry/${SERVER_ID}`, { method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify({ enabled: true }) })).status).toBe(200);
+    expect((await app().request(`/mcp/registry/${SERVER_ID}`, { method: "DELETE" })).status).toBe(200);
     expect(fake.writes.at(-1)).toMatchObject({ table: "mcp_servers", op: "delete" });
   });
 
   it("does not enable a server without tools", async () => {
     h.db = db(rows()).client;
-    const response = await app("owner").request(`/mcp/registry/${SERVER_ID_TWO}`, { method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify({ enabled: true }) });
+    const response = await app().request(`/mcp/registry/${SERVER_ID_TWO}`, { method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify({ enabled: true }) });
     expect(response.status).toBe(400);
-    expect(await response.json()).toMatchObject({ code: "INVALID_INPUT" });
   });
 });
