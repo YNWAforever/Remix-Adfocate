@@ -45,10 +45,8 @@ function PlaybooksPage() {
         <div className="s-grid">
           {visiblePlays.map((play) => (
             <article className="s-card s-stack" key={play.industry.en}>
-              <div className="s-between">
-                <h3>{play.emoji} {localized(play.industry, lang)}</h3>
-                <span className="s-tag ghost">{play.levels.map((level) => localized(level, lang)).join(" · ")}</span>
-              </div>
+              <h3>{play.emoji} {localized(play.industry, lang)}</h3>
+              <div className="s-row">{play.levels.map((level) => <span className="s-tag ghost" key={level.en}>{localized(level, lang)}</span>)}</div>
               <div className="s-stack" style={{ gap: 8 }}>
                 <span className="s-eyebrow">{tx("活動點子", "Campaign ideas")}</span>
                 <ul className="s-list-check">

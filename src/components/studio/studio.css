@@ -934,4 +934,5 @@
 .s-legal-toc { display: grid; gap: 2px; list-style: none; margin: 0; padding: 0; }
 .s-legal-toc a { display: flex; min-height: 40px; align-items: center; padding: 6px 8px; border-radius: 10px; font-size: 14px; color: var(--s-ink); }
 .s-legal-toc a:hover { background: var(--s-lilac); }
+.s-between > .s-tag { flex: none; }
 @media (min-width: 1024px) { .s-legal-grid { grid-template-columns: 260px minmax(0, 1fr); align-items: start; } .s-legal-grid > aside { order: 0; position: sticky; top: 20px; } }
