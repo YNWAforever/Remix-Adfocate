@@ -1321,23 +1321,6 @@ const REVIEWED_MIGRATIONS = [
     capabilities: CREATOR_PUBLISH_CAPABILITIES,
     transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
   },
-  {
-    version: "20261109001000", name: "assistant_tool_traces", phase: "assistant_requests",
-    dependsOn: ["20261022171843"],
-    capabilities: [
-      "table:public.assistant_tool_traces",
-      "rls:public.assistant_tool_traces",
-      "index:public.assistant_tool_traces.assistant_tool_traces_conversation_idx",
-      "grant:service_role.public.assistant_tool_traces(select)",
-      "grant:service_role.public.assistant_tool_traces(insert)",
-      "grant:service_role.public.assistant_tool_traces(update)",
-      "grant:service_role.public.assistant_tool_traces(delete)",
-      "grant-removed:anon.public.assistant_tool_traces(select)",
-      "grant-removed:authenticated.public.assistant_tool_traces(select)",
-      "grant-removed:public.public.assistant_tool_traces(select)",
-    ],
-    transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
-  },
 ] as const satisfies readonly ReviewedMigration[];
 
 const NON_RELEASE_TIMESTAMP_MIGRATIONS = new Set([

@@ -10,8 +10,8 @@ export function answerFingerprint(answer: string): string {
 
 /**
  * Best-effort persistence for the read-only tool traces behind an answer.
- * The table only exists after the optional tool-trace migration is applied; until then the
- * chat keeps working with per-turn traces only and nothing is lost.
+ * The table only exists after the optional SQL in docs/operations/assistant-tool-traces.sql is
+ * applied; until then the chat keeps working with per-turn traces only and nothing is lost.
  */
 export async function saveToolTrace(
   store: Store,
