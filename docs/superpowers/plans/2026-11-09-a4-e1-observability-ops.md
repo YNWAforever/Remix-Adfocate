@@ -16,6 +16,9 @@ Status: started 2026-11-09 (Week 4). B2/B3 are done; this stream covers the last
   skips with `mcp_disabled` when the feature is off; returns `{deleted, cutoff}`.
 - Vercel cron: `30 3 * * *` daily. Tests cover auth, skip, and the 90-day cutoff.
 
+### Creator trace detail (implemented, this slice)
+- Persisted and current-turn assistant replies now expose a "why this answer?" disclosure listing the tool names behind them (no account data, no payloads) next to the existing chips.
+
 ### Still pending
 - Creator-facing "why this answer" detail (tool names + MCP server + audit outcome, no payloads) beyond
   the existing persisted chips.

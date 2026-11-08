@@ -310,6 +310,7 @@ it("shows tools saved with an earlier reply after reload",()=>{
   expect(screen.getByText("我的任務")).toBeVisible();
   expect(screen.getByText("公開任務")).toBeVisible();
   expect(screen.getByLabelText("已查閱的資料")).toBeVisible();
+  expect(screen.getByText("為什麼這個答案？")).toBeVisible();
 });
 it("keeps the growth workspace on its own tab",()=>{
   render(<StudioWorkspace threadId="thread" skill="next_caption"/>);

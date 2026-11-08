@@ -996,3 +996,6 @@
 .studio .s-mission-facts dt{font-weight:650;color:var(--s-muted)}
 .studio .s-mission-facts dd{margin:0;min-width:0;overflow-wrap:anywhere}
 @media(max-width:420px){.studio .s-mission-facts{grid-template-columns:minmax(0,1fr)}}
+
+/* A4 creator-facing trace detail (tool names only) */
+.studio .s-why{margin-top:8px;font-size:13px}.studio .s-why summary{cursor:pointer;color:var(--s-purple);font-weight:700;min-height:32px;display:flex;align-items:center}.studio .s-why p{margin:6px 0 2px}

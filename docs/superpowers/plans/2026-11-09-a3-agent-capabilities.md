@@ -1,6 +1,6 @@
 # A3 — agent capability expansion (plan)
 
-Status: started 2026-11-09 (Week 3). **A3.1 implemented** (2026-11-09): `get_my_points_history`, `get_my_earnings_history` and `get_my_recent_threads` read-only tools, bounded and RLS-scoped, with client chips and allowlist tests. Builds on the studio tool loop (7 read-only account tools + MCP
+Status: started 2026-11-09 (Week 3). **A3.1 implemented** (2026-11-09); **A3.3 implemented** (2026-11-09): `server/test/assistant-evals.test.ts` runs six deterministic golden cases (tool choice for points/missions, write-name refusal, MCP-only exposure, bounded 10-tool allowlist, iteration limit) with a stub provider in CI: `get_my_points_history`, `get_my_earnings_history` and `get_my_recent_threads` read-only tools, bounded and RLS-scoped, with client chips and allowlist tests. Builds on the studio tool loop (7 read-only account tools + MCP
 skills), consent fencing and persisted traces. The rule stays: the assistant never mutates creator data
 without an explicit, attributed confirmation step.
 
@@ -23,7 +23,7 @@ allowlist and the client tool-label map; tests for filters, caps and unknown-too
 - No autonomous publish/reward/mission changes; write tools stay behind their own allowlist and a
   feature flag, and every execution is tied to a visible UI confirmation.
 
-## A3.3 — Evaluation harness
+## A3.3 — Evaluation harness (implemented)
 
 - Golden set of creator questions (points, missions, redemption, consent, mission scope) with expected
   tool usage and refusal cases.
