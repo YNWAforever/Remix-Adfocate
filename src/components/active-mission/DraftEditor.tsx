@@ -372,19 +372,19 @@ export function DraftEditor({
           : t("app.activeMission.editor.status.ready");
 
   return (
-    <section aria-labelledby={headingId} className="space-y-5 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 sm:p-6">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="min-w-0">
-          <p className="font-mono text-xs uppercase tracking-wider text-[var(--color-soft-ink)]">{item.platform}</p>
-          <h2 id={headingId} className="break-words font-heading text-xl font-bold text-pretty">{item.title}</h2>
+    <section aria-labelledby={headingId} className="s-card s-stack">
+      <div className="s-between" style={{ alignItems: "flex-start" }}>
+        <div className="s-stack" style={{ gap: 6 }}>
+          <span className="s-eyebrow">{item.platform}</span>
+          <h2 id={headingId} className="break-words text-pretty">{item.title}</h2>
           {item.state === "revision_requested" && revisionDeadline ? (
-            <p className="mt-1 text-sm text-[var(--color-soft-ink)]">
-              <span className="font-semibold text-[var(--color-ink)]">{t("app.activeMission.editor.revisionDeadline")}</span>{" "}
+            <p className="s-muted">
+              <span style={{ fontWeight: 700 }}>{t("app.activeMission.editor.revisionDeadline")}</span>{" "}
               <time dateTime={revisionDeadline}>{displayTime(revisionDeadline, lang === "zh" ? "zh-HK" : "en-US")}</time>
             </p>
           ) : null}
         </div>
-        <p role="status" aria-live="polite" aria-atomic="true" className="text-sm font-semibold text-[var(--color-soft-ink)]">{statusMessage}</p>
+        <p role="status" aria-live="polite" aria-atomic="true" className="s-tag mint">{statusMessage}</p>
       </div>
 
       {canEdit && (effectiveSaveStatus === "error" || conflict?.currentDraft) ? (

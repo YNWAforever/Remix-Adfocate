@@ -47,13 +47,13 @@ export function DeliverableNavigator({ items, selectedId, onSelect }: Deliverabl
   }
 
   return (
-    <nav aria-label={t("app.activeMission.deliverable.aria")} className="min-w-0">
-      <ul className="flex snap-x gap-2 overflow-x-auto overscroll-x-contain pb-2 md:flex-col md:overflow-visible md:pb-0">
+    <nav aria-label={t("app.activeMission.deliverable.aria")} className="s-deliverable-nav min-w-0">
+      <ul>
         {items.map((item, index) => {
           const selected = item.id === selectedId;
           const status = t(STATUS_KEYS[item.state]);
           return (
-            <li key={item.id} className="min-w-[12rem] snap-start md:min-w-0">
+            <li key={item.id}>
               <button
                 ref={(node) => {
                   if (node) buttonRefs.current.set(item.id, node);
@@ -64,10 +64,10 @@ export function DeliverableNavigator({ items, selectedId, onSelect }: Deliverabl
                 aria-label={`${item.title}, ${status}`}
                 onClick={() => onSelect(item.id)}
                 onKeyDown={(event) => handleKeyDown(event, index)}
-                className={`min-h-11 w-full touch-manipulation rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-3 text-left hover:bg-[var(--color-paper)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${selected ? "bg-[var(--color-acid)] shadow-[3px_3px_0_0_var(--color-ink)]" : "bg-white"}`}
+                className="touch-manipulation"
               >
-                <span className="block break-words font-heading font-bold">{item.title}</span>
-                <span className="mt-1 block text-xs font-semibold text-[var(--color-soft-ink)]">{status}</span>
+                <span className="s-deliverable-title break-words">{item.title}</span>
+                <span className={`s-tag ${selected ? "mint" : "ghost"}`}>{status}</span>
               </button>
             </li>
           );

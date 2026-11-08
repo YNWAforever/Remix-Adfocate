@@ -960,3 +960,11 @@
 .s-card-grid-4 { display: grid; gap: 16px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
 @media (max-width: 1023px) { .s-card-grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 767px) { .s-card-grid-4 { grid-template-columns: minmax(0, 1fr); } }
+/* B1.2 delivery navigator */
+.s-deliverable-nav ul{display:flex;gap:10px;overflow-x:auto;padding-bottom:8px;scroll-snap-type:x mandatory;overscroll-behavior-x:contain}
+.s-deliverable-nav li{scroll-snap-align:start;min-width:12rem;list-style:none}
+.s-deliverable-nav button{display:grid;gap:8px;justify-items:start;width:100%;padding:14px 16px;text-align:left;border:1px solid var(--s-line);border-radius:18px;background:#fff;min-height:46px;cursor:pointer}
+.s-deliverable-nav button[aria-current=step]{background:var(--s-lilac);border-color:#b99ce9;box-shadow:0 3px 0 #e5dcf4}
+.s-deliverable-nav button:focus-visible{outline:2px solid var(--s-purple);outline-offset:2px}
+.s-deliverable-title{font-weight:750;font-size:14px;line-height:1.35}
+@media(min-width:768px){.s-deliverable-nav ul{display:grid;gap:10px;overflow:visible;padding-bottom:0}.s-deliverable-nav li{min-width:0}}
