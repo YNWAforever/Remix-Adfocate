@@ -159,7 +159,7 @@ export function CreatorProfileMediaPanel() {
 
   if (media.isLoading) {
     return (
-      <section className="space-y-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4">
+      <section className="s-card s-stack">
         <h2 className="font-heading font-bold">{t("app.media.heading")}</h2>
         <p className="text-sm text-[var(--color-soft-ink)]">{t("common.loading")}</p>
       </section>
@@ -168,7 +168,7 @@ export function CreatorProfileMediaPanel() {
 
   if (media.isError || !media.data) {
     return (
-      <section className="space-y-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4">
+      <section className="s-card s-stack">
         <h2 className="font-heading font-bold">{t("app.media.heading")}</h2>
         <p className="text-sm text-[var(--color-magenta)]">{t("app.media.loadFailed")}</p>
       </section>
@@ -178,7 +178,7 @@ export function CreatorProfileMediaPanel() {
   const selectedHighlights = media.data.portfolioLinks.filter((link) => link.publicHighlight).length;
 
   return (
-    <section className="space-y-4 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 shadow-[4px_4px_0_0_var(--color-ink)]">
+    <section className="s-card s-stack">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="font-heading font-bold">{t("app.media.heading")}</h2>
         <span className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 text-sm font-bold">

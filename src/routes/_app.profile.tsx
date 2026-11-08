@@ -19,7 +19,6 @@ export const Route = createFileRoute("/_app/profile")({ component: Profile });
 
 const CATEGORIES = ["美容", "餐飲", "生活", "科技", "旅遊", "媽媽", "寵物"] as const;
 const PLATFORMS = ["Instagram", "小紅書", "TikTok", "YouTube"] as const;
-const CARD = "rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 shadow-[4px_4px_0_0_var(--color-ink)]";
 
 function Profile() {
   const { t } = useI18n();
@@ -105,9 +104,9 @@ function Profile() {
   const d = me.data;
 
   return (
-    <div className="mx-auto w-full max-w-lg space-y-6 p-4 lg:max-w-5xl">
-      <section className={`${CARD} p-5`}>
-        <div className="flex flex-wrap items-start justify-between gap-3">
+    <div className="s-stack">
+      <section className="s-card s-stack">
+        <div className="s-between" style={{ alignItems: "flex-start" }}>
           <IdentityHeader
             name={d.display_name ?? "KOC"}
             avatarUrl={d.avatar_url}
@@ -117,14 +116,14 @@ function Profile() {
                   <button
                     type="button"
                     onClick={startEdit}
-                    className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-4 py-2 text-sm font-heading font-bold"
+                    className="s-btn s-primary"
                   >
                     {t("app.profile.edit")}
                   </button>
                   <button
                     type="button"
                     onClick={signOut}
-                    className="rounded-full border-2 border-[var(--color-ink)] bg-white px-4 py-2 text-sm font-heading font-bold text-[var(--color-magenta)]"
+                    className="s-btn"
                   >
                     {t("app.profile.signOut")}
                   </button>
@@ -136,6 +135,23 @@ function Profile() {
           </IdentityHeader>
           <LangToggle />
         </div>
+        <div className="s-note" style={{ justifyContent: "space-between", flexWrap: "wrap" }}>
+          <span>
+            <span className="s-muted">{t("app.profile.referralCode")}</span>{" "}
+            <strong style={{ letterSpacing: 2 }}>{d.referral_code ?? "—"}</strong>
+          </span>
+          <button
+            type="button"
+            onClick={copyReferral}
+            disabled={!d.referral_code}
+            aria-label={t("app.profile.copyReferralAria")}
+            className="s-btn"
+            style={{ minHeight: 40, padding: "6px 14px" }}
+          >
+            {copied ? t("app.profile.copied") : t("app.profile.copyCode")}
+          </button>
+        </div>
+        <p className="s-muted">{t("app.profile.referralNote")}</p>
       </section>
 
       {me.isError ? <div role="alert" className="text-sm"><p>{t("app.social.loadError")}</p><button type="button" onClick={() => void me.refetch()}>{t("common.retry")}</button></div> : null}
@@ -144,12 +160,12 @@ function Profile() {
       {!editing ? (
         <div className="grid gap-6 lg:grid-cols-[1.2fr_1fr]">
           <div className="space-y-6">
-            <section className="space-y-2">
-              <h2 className="font-heading font-bold">{t("app.profile.categories")}</h2>
+            <section className="s-card s-stack">
+              <h2>{t("app.profile.categories")}</h2>
               {d.categories?.length ? (
                 <div className="flex flex-wrap gap-2">
                   {d.categories.map((c) => (
-                    <span key={c} className="rounded-full border-2 border-[var(--color-ink)] bg-white px-3 py-1 text-sm">
+                    <span key={c} className="s-tag ghost">
                       {t(categoryLabelKey(c))}
                     </span>
                   ))}
@@ -159,51 +175,22 @@ function Profile() {
               )}
             </section>
 
-            <section className="space-y-3">
-              <SocialTrustPanel presentations={d.social_accounts} legacyHandles={d.social_handles} />
-            </section>
+            <SocialTrustPanel presentations={d.social_accounts} legacyHandles={d.social_handles} />
           </div>
 
           <div className="space-y-6">
             <CreatorProfileMediaPanel />
 
-            <section className={`space-y-2 ${CARD}`}>
-              <h2 className="font-heading font-bold">{t("app.profile.referralCode")}</h2>
-              <div className="flex items-center gap-2">
-                <span className="font-mono text-lg font-bold tracking-widest">{d.referral_code ?? "—"}</span>
-                <button
-                  type="button"
-                  onClick={copyReferral}
-                  disabled={!d.referral_code}
-                  aria-label={t("app.profile.copyReferralAria")}
-                  className="rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] px-3 py-1 text-xs font-bold disabled:opacity-50"
-                >
-                  {copied ? t("app.profile.copied") : t("app.profile.copyCode")}
-                </button>
-              </div>
-              <p className="text-sm text-[var(--color-soft-ink)]">{t("app.profile.referralNote")}</p>
-            </section>
-
-            <section className="grid grid-cols-2 gap-3">
-              <Link
-                to="/my"
-                className="rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 text-center font-heading font-semibold"
-              >
-                {t("app.profile.myMissions")}
-              </Link>
-              <Link
-                to="/redemption/history"
-                className="rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 text-center font-heading font-semibold"
-              >
-                {t("app.profile.redemptionHistory")}
-              </Link>
-            </section>
+            <div className="s-grid">
+              <Link to="/my" className="s-btn">{t("app.profile.myMissions")}</Link>
+              <Link to="/redemption/history" className="s-btn">{t("app.profile.redemptionHistory")}</Link>
+            </div>
           </div>
         </div>
       ) : (
-        <fieldset disabled={update.isPending} aria-busy={update.isPending} className="mx-auto min-w-0 w-full max-w-lg space-y-6">
-          <section className="space-y-2">
-            <h2 className="font-heading font-bold">{t("app.profile.displayName")}</h2>
+        <fieldset disabled={update.isPending} aria-busy={update.isPending} className="s-stack">
+          <section className="s-card s-stack">
+            <h2>{t("app.profile.displayName")}</h2>
             <input
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
@@ -212,13 +199,13 @@ function Profile() {
             />
           </section>
 
-          <section className="space-y-2">
-            <h2 className="font-heading font-bold">{t("app.profile.categories")}</h2>
+          <section className="s-card s-stack">
+            <h2>{t("app.profile.categories")}</h2>
             <FilterPillsMulti options={CATEGORIES} value={categories} onChange={setCategories} renderLabel={(v) => t(categoryLabelKey(v))} />
           </section>
 
-          <section className="space-y-2">
-            <h2 className="font-heading font-bold">{t("app.profile.socialAccounts")}</h2>
+          <section className="s-card s-stack">
+            <h2>{t("app.profile.socialAccounts")}</h2>
             <p className="text-xs">{t("app.social.legacyEditHelp")}</p>
             <div className="space-y-2">
               {platforms.map((p) => (
@@ -241,7 +228,7 @@ function Profile() {
                 setEditing(false);
                 setError(null);
               }}
-              className="flex-1 rounded-full border-2 border-[var(--color-ink)] bg-white py-3 font-heading font-bold"
+              className="s-btn"
             >
               {t("common.cancel")}
             </button>
@@ -249,17 +236,17 @@ function Profile() {
               type="button"
               onClick={save}
               disabled={update.isPending}
-              className="btn-primary flex-1 rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 font-heading font-bold text-[var(--color-ink)] disabled:opacity-50"
+              className="s-btn s-primary"
             >
               {update.isPending ? t("app.profile.saving") : t("app.profile.save")}
             </button>
           </div>
         </fieldset>
       )}
-      <section className={`${CARD} p-5`}>
+      <section className="s-card">
         <MarketingConsentToggle />
       </section>
-      <section className={`${CARD} p-5`}>
+      <section className="s-card">
         <AccountDataControls />
       </section>
     </div>
