@@ -67,9 +67,9 @@ function AttemptCard({
 }) {
   const headingId = useId();
   return (
-    <article aria-labelledby={headingId} className="min-w-0 max-w-full overflow-hidden rounded-2xl border-2 border-[var(--color-ink)] bg-white p-4">
+    <article aria-labelledby={headingId} className="min-w-0 max-w-full overflow-hidden s-card s-stack">
       <div className="flex min-w-0 flex-wrap items-center justify-between gap-2">
-        <h3 id={headingId} className="min-w-0 break-words font-heading text-lg font-bold [overflow-wrap:anywhere]">
+        <h3 id={headingId} className="min-w-0 break-words [overflow-wrap:anywhere]">
           {t("app.activeMission.proofHistory.attempt", { number: attempt.attemptNumber })}
         </h3>
         <div className="flex min-w-0 flex-wrap gap-2">

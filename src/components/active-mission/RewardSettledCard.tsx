@@ -16,13 +16,13 @@ export function RewardSettledCard({ missionTitle, pendingReward }: { missionTitl
   return (
     <section
       aria-label={t("app.activeMission.rewardSettled.ariaLabel", { missionTitle })}
-      className="min-w-0 max-w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4 shadow-[4px_4px_0_0_var(--color-ink)] sm:p-6"
+      className="min-w-0 s-card s-stack"
     >
-      <p className="font-mono text-xs font-bold uppercase tracking-wider text-[var(--color-soft-ink)]">{t("app.activeMission.rewardSettled.status")}</p>
-      <h2 className="mt-2 break-words font-heading text-2xl font-black">{t("app.activeMission.rewardSettled.title")}</h2>
+      <p className="s-eyebrow">{t("app.activeMission.rewardSettled.status")}</p>
+      <h2 className="break-words text-pretty">{t("app.activeMission.rewardSettled.title")}</h2>
       {parts.length > 0 && <p className="mt-3 font-display text-lg font-bold">{parts.join(" · ")}</p>}
-      {settledAt && <p className="mt-1 text-sm text-[var(--color-soft-ink)]">{t("app.activeMission.rewardSettled.when", { date: settledAt })}</p>}
-      <Link to="/wallet" className="mt-4 inline-block text-sm font-semibold underline underline-offset-4">{t("app.activeMission.rewardSettled.walletLink")}</Link>
+      {settledAt && <p className="s-muted">{t("app.activeMission.rewardSettled.when", { date: settledAt })}</p>}
+      <Link to="/wallet" className="s-btn" style={{ justifySelf: "start" }}>{t("app.activeMission.rewardSettled.walletLink")}</Link>
     </section>
   );
 }
