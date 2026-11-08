@@ -979,3 +979,6 @@
 .studio .s-input:focus-visible{outline:2px solid var(--s-purple);outline-offset:2px}
 .studio .s-btn.s-compact{min-height:38px;padding:6px 12px;font-size:13px}
 .studio .s-subcard{border:1px solid var(--s-line);border-radius:16px;padding:14px;background:#fff;display:grid;gap:10px;min-width:0}
+
+.studio .s-subcard.s-danger{background:#fff6f4;border-color:#e2c3bf}
+@media(max-width:767px){.studio .s-subcard{padding:12px}}
