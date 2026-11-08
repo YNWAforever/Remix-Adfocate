@@ -4,6 +4,7 @@ import { serviceClient } from "../lib/supabase.js";
 import { sourceInput } from "../../src/lib/studio/policy.js";
 import { dbError } from "../lib/httpErrors.js";
 import { authorizeStudioCommand, redactRevokedIntegrationOutputs } from "../lib/integrations/evidence.js";
+import { answerFingerprint, readToolTraces } from "../lib/studio/toolTraces.js";
 import { IntegrationError } from "../lib/integrations/policy.js";
 
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -36,7 +37,13 @@ studioRoutes.get("/threads/:id", async c => {
   ]);
   const error = [sources, briefs, shares, messages].find(result => result.error)?.error;
   if (error) return dbError(c, error, "studio_unavailable", 503);
-  return c.json(redactRevokedIntegrationOutputs({ thread: thread.data, sources: sources.data ?? [], briefs: briefs.data ?? [], shares: shares.data, messages: messages.data?.reverse() ?? [],
+  const traces = await readToolTraces(client, thread.data.conversation_id);
+  const withTools = (messages.data?.reverse() ?? []).map(message => {
+    if (message.role !== "assistant" || typeof message.content !== "string") return message;
+    const tools = traces.get(answerFingerprint(message.content));
+    return tools?.length ? { ...message, tools } : message;
+  });
+  return c.json(redactRevokedIntegrationOutputs({ thread: thread.data, sources: sources.data ?? [], briefs: briefs.data ?? [], shares: shares.data, messages: withTools,
     limits: { sources: 100, versions: 20, messages: 100 } }));
 });
 studioRoutes.get("/badges", async c => {
