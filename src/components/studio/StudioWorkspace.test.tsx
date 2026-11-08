@@ -303,6 +303,14 @@ it("keeps the composer before the four growth cards on the empty Studio entry",(
   expect(document.querySelectorAll("[data-skill]")).toHaveLength(4);
 });
 
+it("shows tools saved with an earlier reply after reload",()=>{
+  h.detail={...h.detail!,messages:[{id:"m1",role:"assistant",content:"你接咗一杯茶任務。",created_at:"2026-11-09",tools:["get_my_missions","get_open_missions"]}]};
+  render(<StudioWorkspace threadId="thread"/>);
+  expect(screen.getByText("你接咗一杯茶任務。")).toBeVisible();
+  expect(screen.getByText("我的任務")).toBeVisible();
+  expect(screen.getByText("公開任務")).toBeVisible();
+  expect(screen.getByLabelText("已查閱的資料")).toBeVisible();
+});
 it("keeps the growth workspace on its own tab",()=>{
   render(<StudioWorkspace threadId="thread" skill="next_caption"/>);
   expect(screen.getByRole("tab",{name:"技能"})).toHaveAttribute("aria-selected","true");

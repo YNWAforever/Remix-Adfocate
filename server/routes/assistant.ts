@@ -8,6 +8,7 @@ import { AssistError, parseAssistContext, type AssistPrincipal } from "../lib/as
 import type { AdminEnv } from "../lib/staffAuth.js";
 import { requireCapability } from "../lib/staffCapabilities.js";
 import { authorizeIntegrationSources } from "../lib/integrations/evidence.js";
+import { saveToolTrace } from "../lib/studio/toolTraces.js";
 
 /** D20 is offline only. No request flag, env variable or configured gateway key enables this provider. */
 async function missionAssist(body: unknown, principal: AssistPrincipal, getClient: typeof serviceClient, provider?: AssistantProvider) {
@@ -125,7 +126,10 @@ export function assistantRoutes(testProvider?: AssistantProvider) {
         }
       }
       const saved = await store.rpc("save_assistant_turn", { ...identity, p_answer: result.answer, p_citations: result.citations });
-      if (!saved.error && saved.data?.persistence === "saved") return c.json({ ...saved.data, ...(result.toolsUsed?.length ? { tools_used: result.toolsUsed } : {}) });
+      if (!saved.error && saved.data?.persistence === "saved") {
+        await saveToolTrace(store, saved.data.conversation_id ?? input.conversationId, result.answer, result.toolsUsed, input.requestId);
+        return c.json({ ...saved.data, ...(result.toolsUsed?.length ? { tools_used: result.toolsUsed } : {}) });
+      }
       await markUnknown();
       if(studio?.integrationSources?.length) return c.json({code:"studio_context_changed",persistence:"failed",request_id:input.requestId,error:"來源或儲存權限已變更，已停止返回衍生回覆。"},409);
       return c.json({ ...result, conversation_id: input.conversationId ?? null, request_id: input.requestId,
