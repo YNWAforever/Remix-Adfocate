@@ -9,6 +9,12 @@ import { ConnectionConsent, D0Notice, IntegrationDialog, IntegrationError, Integ
 import { DriveSourcePicker } from "./DriveSourcePicker";
 import "./integrations.css";
 
+/** Shown while data connections are off (the default production state). No mock connect flow. */
+const COMING_PROVIDERS = [
+  ["instagram", "📸", "Instagram", "把自己的成效線索，變成下一個作品的靈感。未要求授權。", "Turn your own performance signals into the next idea. No authorization requested yet."],
+  ["google_drive", "📁", "Google Drive", "把已選定的文件帶進討論，為想法補上出處。未讀取任何檔案。", "Bring selected files into a discussion. No files are read yet."],
+] as const;
+
 function ProviderConnection({ provider, connection, enabled, mode, onLoginRequired }: { provider: ProviderId; connection?: IntegrationConnection; enabled: boolean; mode?: IntegrationList["mode"]; onLoginRequired: () => void }) {
   const tx = useStudioText();
   const connect = useIntegrationCommand(), sync = useIntegrationCommand(), lifecycle = useIntegrationCommand();
@@ -88,18 +94,26 @@ function ConnectionsForOwner() {
   const unauthorized = query.isError && query.error instanceof ApiError && query.error.status === 401;
   useEffect(() => { if (unauthorized) setLoginRequired(true); }, [unauthorized]);
   if (loginRequired || unauthorized) return <StudioLoginRequired context="connections"/>;
+  const disabled = query.data?.mode === "disabled";
   return <div className="integration-ui i-page">
-    <header className="i-hero"><div><p className="i-eyebrow">{tx("你的創作技能收藏", "Your creative skill collection")}</p><h1>{tx("把靈感，連在一起。", "Make room for more ideas.")}</h1><p>{tx("選一個小幫手，帶著自己的資料開始創作。每一步由你決定。", "Choose a little helper. Bring your own sources into your creative process, one choice at a time.")}</p><IntegrationModeBadge mode={query.data?.mode} /></div><Sprout /></header>
+    <header className="i-hero"><div><p className="i-eyebrow">{tx("你的創作技能收藏", "Your creative skill collection")}</p><h1>{tx("把靈感，連在一起。", "Make room for more ideas.")}</h1><p>{disabled ? tx("資料連接尚未開放。你仍可用手動來源創作、整理 Brief 及完成基本任務。", "Data connections are not open yet. You can still create with manual sources, build briefs and complete basic missions.") : tx("選一個小幫手，帶著自己的資料開始創作。每一步由你決定。", "Choose a little helper. Bring your own sources into your creative process, one choice at a time.")}</p>{disabled ? <span className="i-badge">{tx("規劃中 · 未開放", "Planned · not open")}</span> : <IntegrationModeBadge mode={query.data?.mode} />}</div><Sprout /></header>
     {(query.data?.pilot?.stage === "D0" || query.data?.mode === "live_pilot") && <D0Notice />}
-    <ol className="i-steps"><li><span aria-hidden>01</span>{tx("檢視連接權限", "Review access")}</li><li><span aria-hidden>02</span>{tx("挑選私人來源", "Choose private sources")}</li><li><span aria-hidden>03</span>{tx("另行確認 AI 與分享", "Decide AI & sharing")}</li></ol>
-    <p className="i-note">{tx("這裡是模擬體驗，不會連接真實平台。連接、同步及匯入不會發放積分或 XP，亦不代表帳號擁有權已核實。", "This is a mock experience with no live provider connection. Connecting, syncing and importing earn no points or XP, and do not verify account ownership.")}</p>
-    {query.isPending && <p role="status">{tx("準備模擬技能…", "Preparing mock skills…")}</p>}
+    {query.isPending && <p role="status">{tx("正在讀取資料連接狀態…", "Loading connection status…")}</p>}
     {query.isError && <IntegrationError error={query.error} onRetry={() => void query.refetch()} />}
-    {query.data?.mode === "disabled" && <p className="i-note">{tx("模擬連接尚未啟用。手動來源與基本任務仍可使用。", "Mock connections are not enabled. Manual sources and basic missions remain available.")}</p>}
-    <div className="i-grid">{(["instagram", "google_drive"] as const).map(provider => <ProviderConnection key={provider} provider={provider} mode={query.data?.mode} enabled={query.data?.mode === "mock"} connection={query.data?.connections.find(item => item.provider === provider)} onLoginRequired={() => setLoginRequired(true)} />)}</div>
+    {disabled ? <>
+      <p className="i-note">{tx("連接開放前，證據分頁仍可手動加入任務要求、公開連結或你自己的觀察。", "Until connections open, the evidence tab still accepts manual mission requirements, public links or your own observations.")}</p>
+      <div className="i-grid">
+        {query.data?.connections.map(connection => <ProviderConnection key={connection.id} provider={connection.provider} mode={query.data?.mode} enabled={false} connection={connection} onLoginRequired={() => setLoginRequired(true)} />)}
+        {COMING_PROVIDERS.filter(([provider]) => !query.data?.connections.some(connection => connection.provider === provider)).map(([provider, icon, name, zh, en]) => <section className="i-later i-coming" key={provider}><div className="i-row"><span aria-hidden className="i-provider-icon">{icon}</span><span className="i-badge">{tx("規劃中", "Planned")}</span></div><h3>{name}</h3><p>{tx(zh, en)}</p><small>{tx("未開放 · 不會要求授權 · 不會讀取帳號或文件", "Not open · no authorization requested · no account or file access")}</small></section>)}
+      </div>
+    </> : <>
+      <ol className="i-steps"><li><span aria-hidden>01</span>{tx("檢視連接權限", "Review access")}</li><li><span aria-hidden>02</span>{tx("挑選私人來源", "Choose private sources")}</li><li><span aria-hidden>03</span>{tx("另行確認 AI 與分享", "Decide AI & sharing")}</li></ol>
+      <p className="i-note">{tx("這裡是模擬體驗，不會連接真實平台。連接、同步及匯入不會發放積分或 XP，亦不代表帳號擁有權已核實。", "This is a mock experience with no live provider connection. Connecting, syncing and importing earn no points or XP, and do not verify account ownership.")}</p>
+      <div className="i-grid">{(["instagram", "google_drive"] as const).map(provider => <ProviderConnection key={provider} provider={provider} mode={query.data?.mode} enabled={query.data?.mode === "mock"} connection={query.data?.connections.find(item => item.provider === provider)} onLoginRequired={() => setLoginRequired(true)} />)}</div>
+    </>}
     <section className="i-basic"><div><h2>{tx("先創作，也很好。", "You can start right here.")}</h2><p>{tx("連接是選項，基本任務隨時可做。", "Connections are optional. Basic missions are always available.")}</p></div><Link to="/home" className="i-button i-primary">{tx("先開始創作", "Start creating now")}</Link></section>
     <section className="i-stack" aria-labelledby="later-integrations"><div><p className="i-eyebrow">{tx("下一批小幫手", "More helpers on the way")}</p><h2 id="later-integrations">{tx("慢慢擴充你的技能收藏", "Grow your skill collection")}</h2></div>
-      <div className="i-later-grid">{[["TikTok", "🎵", "短片探索", "Short video insights"], ["YouTube", "▶️", "影片洞察", "Video insights"], ["Search Console", "🔎", "搜尋線索", "Search insights"], ["Calendar", "🗓️", "創作日程", "Creator calendar"], ["Gmail", "✉️", "合作信箱（只讀）", "Collaboration inbox (read only)"], ["Telegram", "💬", "訊息線索", "Message insights"]].map(([name, icon, zh, en]) => <section className="i-later" key={name}><div className="i-row"><span aria-hidden className="i-provider-icon">{icon}</span><span className="i-badge">{tx("稍後開放", "Later")}</span></div><h3>{tx(name, name)}</h3><p>{tx(zh, en)}</p><small>{tx("未連接 · 未授權 · 未同步", "Not connected · no scopes · never synced")}</small><MockBadge /></section>)}</div>
+      <div className="i-later-grid">{[["TikTok", "🎵", "短片探索", "Short video insights"], ["YouTube", "▶️", "影片洞察", "Video insights"], ["Search Console", "🔎", "搜尋線索", "Search insights"], ["Calendar", "🗓️", "創作日程", "Creator calendar"], ["Gmail", "✉️", "合作信箱（只讀）", "Collaboration inbox (read only)"], ["Telegram", "💬", "訊息線索", "Message insights"]].map(([name, icon, zh, en]) => <section className="i-later" key={name}><div className="i-row"><span aria-hidden className="i-provider-icon">{icon}</span><span className="i-badge">{tx("稍後開放", "Later")}</span></div><h3>{tx(name, name)}</h3><p>{tx(zh, en)}</p>{disabled ? <small>{tx("未開放", "Not open")}</small> : <><small>{tx("未連接 · 未授權 · 未同步", "Not connected · no scopes · never synced")}</small><MockBadge /></>}</section>)}</div>
     </section>
   </div>;
 }

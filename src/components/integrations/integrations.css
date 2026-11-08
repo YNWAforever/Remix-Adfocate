@@ -8,3 +8,6 @@
 @media(max-width:430px){.integration-ui .i-later-grid{grid-template-columns:1fr}.integration-ui .i-hero{position:relative}.integration-ui .i-hero .s-mascot{width:46px;position:absolute;right:14px;top:14px}.integration-ui .i-hero .i-eyebrow{padding-right:36px}.integration-ui .i-hero h1{padding-top:8px}.integration-ui .i-actions>*{flex-basis:100%}.integration-ui.i-source-panel{padding:14px}.integration-ui .i-facts>div{grid-template-columns:1fr;gap:0}}
 @media(hover:hover) and (pointer:fine){.integration-ui .i-button:hover:not(:disabled){filter:brightness(.97)}.integration-ui .i-file:hover:not(:has(input:disabled)){border-color:#9674c9}}
 @media(prefers-reduced-motion:reduce){.integration-ui *{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+
+/* Planned provider cards shown while data connections are off. */
+.i-coming { background: #faf7ff; border-style: dashed; border-color: #cfc3e4; min-height: 0; }
