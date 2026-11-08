@@ -5,6 +5,7 @@ interface ChainMock {
   select: () => ChainMock;
   eq: () => ChainMock;
   order: () => ChainMock;
+  limit: () => ChainMock;
   then: (res: (value: { data: unknown; error: null }) => unknown) => Promise<unknown>;
 }
 
@@ -13,7 +14,7 @@ function clientReturning(table: string, rows: unknown) {
     from: vi.fn((t: string) => {
       expect(t).toBe(table);
       const chain: ChainMock = {
-        select: () => chain, eq: () => chain, order: () => chain,
+        select: () => chain, eq: () => chain, order: () => chain, limit: () => chain,
         then: (res) => Promise.resolve({ data: rows, error: null }).then(res),
       };
       return chain;

@@ -42,6 +42,12 @@ describe("assistant durable response boundary (offline transport)", () => {
     expect(first).toMatchObject({ persistence: "saved", request_id: requestId }); expect(second).toEqual(first);
     expect(h.generate).toHaveBeenCalledTimes(1);
   });
+  it("reports the read-only tools that backed a saved answer", async () => {
+    h.generate.mockResolvedValue({ answer: "Synthetic answer", citations: [], toolsUsed: ["get_my_missions", "get_my_points"] });
+    const body = await (await send()).json();
+    expect(body.persistence).toBe("saved");
+    expect(body.tools_used).toEqual(["get_my_missions", "get_my_points"]);
+  });
   it("rejects 4001 Unicode code points before starting a generation", async () => {
     expect((await send("😀".repeat(4001))).status).toBe(400); expect(h.generate).not.toHaveBeenCalled();
   });

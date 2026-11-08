@@ -5,8 +5,14 @@ import type { ChatMessage } from "../llm.js";
 import type { StudioSource } from "../../../src/lib/studio/types.js";
 import { authorizeIntegrationSources, integrationReadable } from "../integrations/evidence.js";
 
+/** How many saved turns of one conversation stay in the model prompt. */
+export const STUDIO_HISTORY_REQUESTS = 12;
+
 /** Private data comes from the owner-scoped service read; mission access still uses user RLS.
- * A new evidence basis excludes all prior derived replies, even requests finishing after revocation. */
+ * Derived replies stay bound to their evidence basis: when that basis changes, prior assistant
+ * answers are dropped from the prompt (a revoked source must not be reprocessed or presented as
+ * current). The creator's own earlier messages are still carried so the thread stays a
+ * conversation. */
 export async function loadStudioContext(store: Pick<SupabaseClient,"from">, user: Pick<SupabaseClient,"from">, creator: string, workspace: string, conversation: string) {
   const thread = await store.from("studio_threads").select("id,title,topic,mission_id")
     .eq("conversation_id",conversation).eq("creator_id",creator).eq("workspace_id",workspace).maybeSingle();
@@ -31,11 +37,19 @@ export async function loadStudioContext(store: Pick<SupabaseClient,"from">, user
   // revocation markers prevent an old context hash from reappearing after a source is removed.
   const contextVersion="studio:"+createHash("sha256").update(JSON.stringify({thread:thread.data.id,mission:mission.data,
     sources:rows.map(s=>s.integration?[s.id,s.revoked_at,s.integration,selected.some(value=>value.id===s.id)]:[s.id,s.revoked_at]).sort((a,b)=>String(a[0]).localeCompare(String(b[0])))})).digest("hex");
-  const prior=await user.from("assistant_requests").select("message,result")
+  // Read the conversation, not one evidence basis: answers from an older basis are dropped below
+  // so a revoked/edited source is never reprocessed, but user-authored turns keep the thread continuous.
+  const prior=await user.from("assistant_requests").select("message,result,context_version")
     .eq("creator_id",creator).eq("workspace_id",workspace).eq("conversation_id",conversation)
-    .eq("context_version",contextVersion).eq("state","saved").order("created_at",{ascending:false}).limit(10);
+    .eq("state","saved").order("created_at",{ascending:false}).limit(STUDIO_HISTORY_REQUESTS);
   if(prior.error) throw new Error("history_unavailable");
-  const history:ChatMessage[]=(prior.data??[]).reverse().flatMap(r=>typeof r.result?.answer==="string"
-    ? [{role:"user" as const,content:r.message},{role:"assistant" as const,content:r.result.answer}]:[]);
-  return {context,contextVersion,history,integrationSources:selected.filter(source=>source.integration)};
+  const history:ChatMessage[]=[];
+  let contextChanged=false;
+  for(const row of [...(prior.data ?? [])].reverse()){
+    if(typeof row.result?.answer!=="string") continue;
+    history.push({role:"user" as const,content:row.message});
+    if(row.context_version===contextVersion) history.push({role:"assistant" as const,content:row.result.answer});
+    else contextChanged=true;
+  }
+  return {context,contextVersion,history,contextChanged,integrationSources:selected.filter(source=>source.integration)};
 }

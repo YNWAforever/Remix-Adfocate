@@ -163,6 +163,28 @@ it("retains input after terminal context change and waits for a new explicit sen
   await waitFor(()=>expect(h.chat).toHaveBeenCalledTimes(2));
   expect(h.chat.mock.calls[1][0].client_request_id).not.toBe(first);
 });
+it("shows an unsaved answer and keeps the input when persistence is unresolved",async()=>{
+  h.chat.mockResolvedValue({request_id:"req-unsaved",answer:"這是未保存的建議",citations:[],persistence:"failed",code:"history_unavailable"});
+  render(<StudioWorkspace threadId="thread"/>);
+  const input=screen.getByRole("textbox",{name:"繼續討論"});
+  fireEvent.change(input,{target:{value:"點樣開始？"}});
+  fireEvent.click(screen.getByRole("button",{name:"送出"}));
+  await screen.findByText("這是未保存的建議");
+  expect(screen.getByText("未保存 · 建議內容")).toBeVisible();
+  expect(document.querySelector(".s-chat")).toHaveTextContent("點樣開始？");
+  expect(input).toHaveValue("點樣開始？");
+  expect(h.invalidate).not.toHaveBeenCalled();
+});
+it("shows which read-only data backed a saved reply",async()=>{
+  h.chat.mockResolvedValue({request_id:"req-tools",answer:"你目前有 120 分。",citations:[],persistence:"saved",tools_used:["get_my_points","get_my_missions"]});
+  render(<StudioWorkspace threadId="thread"/>);
+  fireEvent.change(screen.getByRole("textbox",{name:"繼續討論"}),{target:{value:"我有多少分？"}});
+  fireEvent.click(screen.getByRole("button",{name:"送出"}));
+  await waitFor(()=>expect(h.invalidate).toHaveBeenCalledTimes(1));
+  expect(screen.getByText("積分")).toBeVisible();
+  expect(screen.getByText("我的任務")).toBeVisible();
+  expect(screen.getByRole("textbox",{name:"繼續討論"})).toHaveValue("");
+});
 function prepare() {
   const view=render(<StudioWorkspace threadId="thread"/>);
   fireEvent.click(screen.getByRole("tab",{name:"Brief 與成果"}));
