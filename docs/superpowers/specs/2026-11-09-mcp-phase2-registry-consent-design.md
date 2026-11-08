@@ -17,11 +17,13 @@ and `STUDIO_MCP_REGISTRY=true` to make the workspace registry authoritative. Cre
 "資料技能" section that lists servers/tools, grants or revokes consent, and renders nothing while the
 feature is dark. Workspace-admin registry API (`GET|POST /admin/mcp/registry`, `PATCH|DELETE
 /admin/mcp/registry/:id`, mounted under the staff admin shell and mapped to the `access.manage`
-capability) manages servers and allowlists without SQL; the admin UI is still pending. The SQL lives in
-[`docs/operations/mcp-registry.sql`](../../operations/mcp-registry.sql) and is applied manually.
+capability) manages servers and allowlists without SQL; `/admin/skills` surfaces it with create,
+enable/disable, allowlist editing and delete. The SQL lives in
+[`docs/operations/mcp-registry.sql`](../../operations/mcp-registry.sql) and is applied manually (or by
+the release owner with database access).
 
-Still to build: admin UI for the registry API, OAuth/PKCE against provider-hosted servers with the token
-vault, consent-revocation fencing of in-flight chats, and the 90-day audit retention job.
+Still to build: OAuth/PKCE against provider-hosted servers with the token vault, consent-revocation
+fencing of in-flight chats, and the 90-day audit retention job.
 
 ## 1. Problem
 
