@@ -33,7 +33,10 @@ function SiteLayout() {
 function StudioSiteContent() {
   const { lang } = useI18n();
   const path = useRouterState({ select: state => state.location.pathname });
-  return <StudioPublicShell>{!["/", "/creators", "/brands"].includes(path) && <p role="note" className="s-notice">{lang === "en" ? "Product preview: profiles, statistics and earnings are illustrative. Pending rewards are not payments. Contact forms do not send or save data." : "產品預覽：履歷、統計及收入例子僅供示範。待處理獎勵不等於付款；聯絡表格不會發送或儲存資料。"}</p>}<Outlet/></StudioPublicShell>;
+  // Rewritten creator/brand pages carry their own honest copy; the preview notice stays
+  // only on pages that still show legacy illustrative material.
+  const showPreviewNote = path === "/playbooks";
+  return <StudioPublicShell>{showPreviewNote && <p role="note" className="s-notice">{lang === "en" ? "Product preview: profiles, statistics and earnings are illustrative. Pending rewards are not payments. Contact forms do not send or save data." : "產品預覽：履歷、統計及收入例子僅供示範。待處理獎勵不等於付款；聯絡表格不會發送或儲存資料。"}</p>}<Outlet/></StudioPublicShell>;
 }
 
 function SiteError() {
