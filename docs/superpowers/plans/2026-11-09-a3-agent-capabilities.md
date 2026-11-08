@@ -31,7 +31,7 @@ allowlist and the client tool-label map; tests for filters, caps and unknown-too
   proposal without confirmation; run in CI against the stub provider.
 - Cost/latency budget per turn documented and asserted in the loop (max iterations, timeout).
 
-## A3.4 — Trace and support UX
+## A3.4 — Trace and support UX (admin audit view implemented)
 
 - Persisted tool chips already survive reloads; add a "why this answer" detail for support: tool names,
   MCP server, audit outcome (no payloads).

@@ -29,6 +29,17 @@ cronRoutes.get("/social-refresh", async (c) => {
   return c.json(result);
 });
 
+cronRoutes.get("/mcp-audit-retention", async (c) => {
+  const expected = process.env.CRON_SECRET;
+  if (!expected || c.req.header("Authorization") !== `Bearer ${expected}`)
+    return c.json({ error: "Unauthorized", code: "unauthorized" }, 401);
+  if (process.env.STUDIO_MCP_ENABLED !== "true") return c.json({ deleted: 0, skipped: true, code: "mcp_disabled" });
+  const cutoff = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString();
+  const { error, count } = await serviceClient().from("mcp_call_audit").delete({ count: "exact" }).lt("created_at", cutoff);
+  if (error) return c.json({ deleted: 0, error: "retention_failed" }, 503);
+  return c.json({ deleted: count ?? 0, cutoff });
+});
+
 cronRoutes.get("/daily", async (c) => {
   const expected = process.env.CRON_SECRET;
   if (!expected || c.req.header("Authorization") !== `Bearer ${expected}`)

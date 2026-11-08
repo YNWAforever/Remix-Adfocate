@@ -78,7 +78,7 @@ afterEach(() => vi.unstubAllEnvs());
 
 describe("admin mcp registry API", () => {
   it("requires the access.manage capability on every mounted route", () => {
-    for (const [method, path] of [["GET", "mcp/registry"], ["POST", "mcp/registry"], ["PATCH", "mcp/registry/:id"], ["DELETE", "mcp/registry/:id"]]) {
+    for (const [method, path] of [["GET", "mcp/registry"], ["POST", "mcp/registry"], ["PATCH", "mcp/registry/:id"], ["DELETE", "mcp/registry/:id"], ["GET", "mcp/audit"]]) {
       expect(staffRouteRequirement(method, path), `${method} ${path}`).toEqual({ kind: "workspace", anyOf: ["access.manage"] });
     }
   });
@@ -134,6 +134,19 @@ describe("admin mcp registry API", () => {
     expect((await app().request(`/mcp/registry/${SERVER_ID}`, { method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify({ enabled: true }) })).status).toBe(200);
     expect((await app().request(`/mcp/registry/${SERVER_ID}`, { method: "DELETE" })).status).toBe(200);
     expect(fake.writes.at(-1)).toMatchObject({ table: "mcp_servers", op: "delete" });
+  });
+
+  it("lists recent MCP calls for the workspace without payloads", async () => {
+    const fake = db({ mcp_call_audit: [
+      { workspace_id: "w1", server_name: "notes", tool_name: "lookup_note", outcome: "ok", duration_ms: 12, created_at: "2026-11-09T00:00:00Z" },
+      { workspace_id: "w2", server_name: "other", tool_name: "read", outcome: "ok", duration_ms: 4, created_at: "2026-11-09T00:00:00Z" },
+    ] });
+    h.db = fake.client;
+    const response = await app().request("/mcp/audit");
+    expect(response.status).toBe(200);
+    const body = await response.json() as { calls: Array<Record<string, unknown>> };
+    expect(body.calls).toHaveLength(1);
+    expect(body.calls[0]).toMatchObject({ server_name: "notes", tool_name: "lookup_note", outcome: "ok", duration_ms: 12 });
   });
 
   it("does not enable a server without tools", async () => {
