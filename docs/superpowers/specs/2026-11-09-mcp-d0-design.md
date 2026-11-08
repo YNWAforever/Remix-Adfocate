@@ -61,6 +61,19 @@ Rules enforced in `server/lib/mcp/policy.ts`:
 - tools are finally passed through the studio loop's allowlist, so an unknown name is still rejected
   before execution.
 
+## 3a. Tool metadata and discovery
+
+An allowlist entry may be an object with `description` + `inputSchema`, or just a tool **name**:
+
+```jsonc
+{ "name": "fixture", "...": "...", "tools": ["lookup_note", "get_trend_brief"] }
+```
+
+Name-only entries are resolved through the server's `tools/list` on first use (cached 5 minutes per
+server), and the remote metadata cannot add tools outside the names in the allowlist. If discovery
+fails, declared tools stay available and pending names are skipped. Cached discovery is bounded to 50
+remote tools and never carries payloads.
+
 ## 4. Failure behaviour
 
 | Case | Behaviour |
