@@ -21,11 +21,11 @@ function CampaignsList() {
   if (isLoading) return <div className="p-4 text-muted-foreground">…</div>;
 
   return (
-    <div className="mx-auto max-w-3xl p-4 space-y-6">
-      <h1 className="text-2xl font-bold">{t("app.campaigns.title")}</h1>
+    <div className="s-stack">
+      <h1>{t("app.campaigns.title")}</h1>
       <RequestFeedback error={q.error} stale={Boolean(q.data && showSavedCampaigns)} retry={() => void q.refetch()} />
       {empty ? (
-        <p className="rounded-xl border border-dashed p-6 text-center text-sm text-muted-foreground">
+        <p className="s-empty">
           {t("app.campaigns.empty")}
         </p>
       ) : (
@@ -42,20 +42,15 @@ function CampaignSection({ title, items }: { title: string; items: Campaign[] })
   const { lang } = useI18n();
   if (!items.length) return null;
   return (
-    <section className="space-y-3">
-      <h2 className="text-sm font-semibold uppercase text-muted-foreground">{title}</h2>
-      {items.map((c) => (
-        <Link
-          key={c.slug}
-          to="/campaigns/$slug"
-          params={{ slug: c.slug }}
-          className="s-campaign-card block rounded-xl border p-4 hover:bg-muted/50 transition-colors"
-        >
-          <Flag className="s-card-illustration" size={26} aria-hidden />
-          <div className="font-semibold">{c.title}</div>
-          <div className="text-xs text-muted-foreground mt-1">{formatCreatorDate(c.ends_at, lang) ?? c.ends_at}</div>
+    <section className="s-stack" style={{ gap: 10 }}>
+      <h2 style={{ margin: 0 }}><span className="s-eyebrow">{title}</span></h2>
+      <div className="s-grid">{items.map((c) => (
+        <Link key={c.slug} to="/campaigns/$slug" params={{ slug: c.slug }} className="s-task">
+          <span className="s-task-icon"><Flag size={22} aria-hidden /></span>
+          <h3>{c.title}</h3>
+          <p className="s-muted">{formatCreatorDate(c.ends_at, lang) ?? c.ends_at}</p>
         </Link>
-      ))}
+      ))}</div>
     </section>
   );
 }
