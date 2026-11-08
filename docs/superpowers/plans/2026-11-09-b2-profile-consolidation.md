@@ -1,6 +1,6 @@
 # B2 — profile and account consolidation (plan)
 
-Status: started 2026-11-09 (Week 3), after B1 completed. Page: `/profile`
+Status: started 2026-11-09 (Week 3), after B1 completed. **B2.1 and B2.2 shipped**; B2.3/B2.4 pending. Page: `/profile`
 (`src/routes/_app.profile.tsx`, ~12 KB, legacy layout inside the studio shell). Goal: one coherent
 "my account" surface for identity, portfolio and privacy, without changing any account API.
 
@@ -19,7 +19,7 @@ three visual systems and leaves an empty left column on desktop.
 - Desktop: identity card spans the row; no duplicated "編輯 profile" blocks.
 - Acceptance: fixture 390/768/1440 screenshots, no overflow, one h1, existing edit/save/copy tests pass.
 
-### B2.2 — Portfolio and social presence
+### B2.2 — Portfolio and social presence (done)
 - "內容範疇" (categories) + "社交帳號" (social handles) as one two-column studio card; save buttons
   become explicit per-row actions with inline saved state.
 - "創作者媒體" (creator media) becomes a portfolio card: avatar upload, sample work (title/url/type/
