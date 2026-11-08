@@ -165,9 +165,9 @@ export function CreatorMissionWorkspace() {
   if (workspaceQuery.isLoading) {
     return (
 
-      <main aria-label={t("app.activeMission.route.loading")} role="status" className="mx-auto w-full max-w-6xl p-4 sm:p-6">
+    <div aria-label={t("app.activeMission.route.loading")} role="status" className="mx-auto w-full max-w-6xl p-4 sm:p-6">
         <div className="h-44 animate-pulse rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white" />
-      </main>
+      </div>
     );
   }
 
@@ -336,7 +336,7 @@ export function CreatorMissionWorkspace() {
 
 
   return (
-    <main className="mx-auto w-full max-w-6xl space-y-5 p-4 pb-8 sm:p-6">
+    <div className="space-y-5">
       {STUDIO_SHELL && <StudioProgress state={workspace.workflow.state} reward={workspace.pendingReward?.status} />}
       <WorkspaceHeader workspace={workspace} nextAction={nextAction} onPrimaryAction={(action) => {
 
@@ -350,8 +350,8 @@ export function CreatorMissionWorkspace() {
 
       <FulfillmentCard fulfillment={workspace.fulfillment} isConfirming={confirmReceipt.isPending} onConfirmReceipt={() => confirmReceipt.mutateAsync()} />
 
-      <div className="grid min-w-0 gap-5 md:grid-cols-[15rem_minmax(0,1fr)] md:items-start">
-        <DeliverableNavigator items={workspace.workItems} selectedId={activeItem.id} onSelect={selectItem} />
+      <div className={workspace.workItems.length > 1 ? "grid min-w-0 gap-5 md:grid-cols-[15rem_minmax(0,1fr)] md:items-start" : "min-w-0"}>
+        {workspace.workItems.length > 1 && <DeliverableNavigator items={workspace.workItems} selectedId={activeItem.id} onSelect={selectItem} />}
         <div ref={editorRef} className="min-w-0 space-y-5 scroll-mt-24">
           {showRewardExperience && pendingReward ? (
             <>
@@ -485,18 +485,18 @@ export function CreatorMissionWorkspace() {
           )}
         </div>
       </div>
-    </main>
+    </div>
   );
 }
 
 export function WorkspaceProblem({ title, body, alert = false, children }: { title: string; body: string; alert?: boolean; children?: React.ReactNode }) {
   const { t } = useI18n();
   return (
-    <main role={alert ? "alert" : undefined} className="mx-auto flex min-h-[50vh] w-full max-w-lg flex-col items-start justify-center gap-4 p-6">
+    <div role={alert ? "alert" : undefined} className="mx-auto flex min-h-[50vh] w-full max-w-lg flex-col items-start justify-center gap-4 p-6">
       <h1 className="font-heading text-2xl font-bold">{title}</h1>
       <p className="text-sm text-[var(--color-soft-ink)]">{body}</p>
       {children}
       <Link to="/my" className="min-h-11 py-2 font-bold underline">{t("app.activeMission.route.back")}</Link>
-    </main>
+    </div>
   );
 }
