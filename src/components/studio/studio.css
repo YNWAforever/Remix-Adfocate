@@ -911,3 +911,16 @@
 @media (max-width: 359px) {
   .s-tabs button { flex: 1 1 100%; }
 }
+
+/* Public sub-pages: compact card grids and check lists. */
+.s-card-grid-3 { display: grid; gap: 16px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.s-card-grid-3 .s-card { padding: 20px; }
+.s-list-check { display: grid; gap: 6px; list-style: none; margin: 0; padding: 0; }
+.s-list-check li { display: flex; gap: 8px; align-items: flex-start; font-size: 14px; line-height: 1.5; }
+.s-stack > .s-tag { justify-self: start; width: max-content; max-width: 100%; }
+@media (max-width: 1023px) {
+  .s-card-grid-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 767px) {
+  .s-card-grid-3 { grid-template-columns: minmax(0, 1fr); }
+}
