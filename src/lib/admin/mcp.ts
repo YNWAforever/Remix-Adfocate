@@ -24,8 +24,10 @@ export function deleteMcpServer(workspace: string, id: string) {
 
 export type AdminMcpCall = { server_name: string; tool_name: string; outcome: string; duration_ms: number | null; created_at: string };
 
+export type AdminMcpAuditSummary = { total: number; ok: number; errors: number; avg_duration_ms: number | null };
+
 export function fetchMcpAudit(workspace = "") {
-  return adminFetch<{ calls: AdminMcpCall[] }>(`/admin/mcp/audit${qs(workspace)}`);
+  return adminFetch<{ calls: AdminMcpCall[]; summary: AdminMcpAuditSummary }>(`/admin/mcp/audit${qs(workspace)}`);
 }
 
 export const mcpAdminKeys = {

@@ -15,7 +15,7 @@ vi.mock("@/lib/admin", () => ({
 }));
 vi.mock("@/lib/admin/mcp", () => ({
   fetchMcpServers: h.fetchMcpServers,
-  fetchMcpAudit: async () => ({ calls: [] }),
+  fetchMcpAudit: async () => ({ calls: [], summary: { total: 0, ok: 0, errors: 0, avg_duration_ms: null } }),
   createMcpServer: h.createMcpServer,
   updateMcpServer: h.updateMcpServer,
   deleteMcpServer: h.deleteMcpServer,
