@@ -37,7 +37,7 @@ claim the pilot is usable. The synthetic E2E already passed; this is the human c
 
 - A real creator in the demo workspace granted **live consent** for `workspace_missions` (not revoked), so the consent card path works for a human.
 - One human studio chat used only built-in tools (missions/open-missions/recent-threads); **no MCP call was recorded**, so the MCP chip step is still unverified by a human.
-- The studio prompt now prefers a connected skill over an equivalent built-in tool when one can answer the question (deployed after that chat). Re-run step 5 with the explicit wording to complete the smoke.
+- The studio prompt prefers a connected skill, and when a connected skill provides the same capability as a built-in tool (e.g. workspace open missions) the built-in equivalent is no longer offered while the skill is available — so re-running step 5 now exercises the MCP path deterministically. If the skill fails, the assistant says the data is unavailable instead of falling back silently.
 
 ## Operator checks after the smoke
 
