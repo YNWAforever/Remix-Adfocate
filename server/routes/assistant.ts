@@ -127,6 +127,27 @@ function proposalEnvelope(
   return { proposals };
 }
 
+/** Workspace skills the current creator has not consented/connected yet (prompt hint only, best-effort). */
+async function loadUnconnectedSkills(store: ReturnType<typeof serviceClient>, workspaceId: string, creatorId: string): Promise<string[]> {
+  try {
+    const servers = await store.from("mcp_servers").select("id,name,auth_mode").eq("workspace_id", workspaceId).eq("enabled", true).eq("read_only", true);
+    if (servers.error) return [];
+    const rows = (servers.data ?? []) as Array<{ id: string; name: string; auth_mode?: string | null }>;
+    if (!rows.length) return [];
+    const ids = rows.map(row => row.id);
+    const [consents, connections] = await Promise.all([
+      store.from("mcp_consents").select("server_id").in("server_id", ids).eq("creator_id", creatorId).eq("workspace_id", workspaceId).is("revoked_at", null),
+      store.from("mcp_oauth_connections").select("server_id").in("server_id", ids).eq("creator_id", creatorId).eq("workspace_id", workspaceId).is("revoked_at", null),
+    ]);
+    if (consents.error || connections.error) return [];
+    const consented = new Set(((consents.data ?? []) as Array<{ server_id: string }>).map(row => row.server_id));
+    const connected = new Set(((connections.data ?? []) as Array<{ server_id: string }>).map(row => row.server_id));
+    return rows.filter(row => !consented.has(row.id) || (row.auth_mode === "oauth" && !connected.has(row.id))).map(row => row.name).slice(0, 5);
+  } catch {
+    return [];
+  }
+}
+
 /** Mounted behind the existing staff identity, single membership and submission.review gates. */
 export function staffMissionAssistRoutes(testProvider?: AssistantProvider) {
   const r = new Hono<AdminEnv>();
@@ -203,12 +224,13 @@ export function assistantRoutes(testProvider?: AssistantProvider) {
     let result;
     try {
       if(studio?.integrationSources?.length) await authorizeIntegrationSources({creatorId:c.get("userId"),workspaceId},studio.integrationSources,"model",{requestId:input.requestId});
+      const unconnectedSkills = studio ? await loadUnconnectedSkills(store, workspaceId, c.get("userId")) : [];
       result = await withProviderDeadline(async (signal) => {
         if (studio) reportProgress("skills");
         const mcp = studio ? await studioMcpRuntime({ store, creatorId: c.get("userId"), workspaceId, requestId: input.requestId, signal }) : null;
         const proposalDefs = studio && process.env.STUDIO_ASSISTANT_PROPOSALS === "true" ? PROPOSAL_TOOL_DEFS : [];
         return runAssistant(client,
-          { query: input.message, locale: input.locale, workspace: workspaceId, history, studioContext:studio?.context, historyChanged: studio?.contextChanged },
+          { query: input.message, locale: input.locale, workspace: workspaceId, history, studioContext:studio?.context, historyChanged: studio?.contextChanged, unconnectedSkills },
           {
             ...(testProvider ? { provider: testProvider } : {}),
             signal,
