@@ -40,7 +40,10 @@ cronRoutes.get("/mcp-audit-retention", async (c) => {
   if (error) return c.json({ deleted: 0, error: "retention_failed" }, 503);
   const proposals = await svc.from("assistant_proposal_audit").delete({ count: "exact" }).lt("created_at", cutoff);
   if (proposals.error) return c.json({ deleted: count ?? 0, proposalsDeleted: 0, error: "proposal_retention_failed" }, 503);
-  return c.json({ deleted: count ?? 0, proposalsDeleted: proposals.count ?? 0, cutoff });
+  const progressCutoff = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+  const progress = await svc.from("assistant_progress").delete({ count: "exact" }).lt("created_at", progressCutoff);
+  if (progress.error) return c.json({ deleted: count ?? 0, proposalsDeleted: proposals.count ?? 0, progressDeleted: 0, error: "progress_retention_failed" }, 503);
+  return c.json({ deleted: count ?? 0, proposalsDeleted: proposals.count ?? 0, progressDeleted: progress.count ?? 0, cutoff, progressCutoff });
 });
 
 cronRoutes.get("/daily", async (c) => {

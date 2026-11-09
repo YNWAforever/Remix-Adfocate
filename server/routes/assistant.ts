@@ -14,6 +14,7 @@ import { loadMcpRegistry, parseMcpToolName } from "../lib/mcp/policy.js";
 import { loadWorkspaceMcpServers, recordMcpCall, runFencedMcpTool } from "../lib/mcp/registry.js";
 import { PROPOSAL_TOOL_DEFS } from "../lib/assistant/tools.js";
 import { signProposalToken } from "../lib/assistant/proposalToken.js";
+import { loadAssistantProgress, recordAssistantProgress } from "../lib/assistant/progress.js";
 
 /** D20 is offline only. No request flag, env variable or configured gateway key enables this provider. */
 async function missionAssist(body: unknown, principal: AssistPrincipal, getClient: typeof serviceClient, provider?: AssistantProvider) {
@@ -170,6 +171,7 @@ export function assistantRoutes(testProvider?: AssistantProvider) {
       catch { return c.json({code:"studio_unavailable",error:"Studio context or history unavailable"},503); }
     }
     const identity = { p_workspace: workspaceId, p_creator: c.get("userId"), p_request: input.requestId };
+    const reportProgress = (step: string) => { void recordAssistantProgress(store, { requestId: input.requestId, creatorId: c.get("userId"), workspaceId, step }); };
     const reserved = await store.rpc("reserve_assistant_request", { ...identity, p_message: input.message,
       p_locale: input.locale, p_conversation: input.conversationId ?? null, p_context_version: studio?.contextVersion ?? "r1" });
     if (reserved.error) {
@@ -202,6 +204,7 @@ export function assistantRoutes(testProvider?: AssistantProvider) {
     try {
       if(studio?.integrationSources?.length) await authorizeIntegrationSources({creatorId:c.get("userId"),workspaceId},studio.integrationSources,"model",{requestId:input.requestId});
       result = await withProviderDeadline(async (signal) => {
+        if (studio) reportProgress("skills");
         const mcp = studio ? await studioMcpRuntime({ store, creatorId: c.get("userId"), workspaceId, requestId: input.requestId, signal }) : null;
         const proposalDefs = studio && process.env.STUDIO_ASSISTANT_PROPOSALS === "true" ? PROPOSAL_TOOL_DEFS : [];
         return runAssistant(client,
@@ -209,6 +212,7 @@ export function assistantRoutes(testProvider?: AssistantProvider) {
           {
             ...(testProvider ? { provider: testProvider } : {}),
             signal,
+            onProgress: reportProgress,
             ...(mcp || proposalDefs.length ? { studioToolDefs: [...(mcp?.defs ?? []), ...proposalDefs], ...(mcp ? { runStudioTool: (name: string, args: string, abort?: AbortSignal) => mcp.run(name, args, abort) } : {}) } : {}),
           });
       });
@@ -240,6 +244,12 @@ export function assistantRoutes(testProvider?: AssistantProvider) {
       if(studio?.integrationSources?.length) return c.json({code:"studio_context_changed",persistence:"failed",request_id:input.requestId,error:"來源權限尚未確認；沒有保存或返回衍生回覆。"},409);
       return c.json({ ...result, conversation_id: input.conversationId ?? null, request_id: input.requestId, ...(result.toolsUsed?.length ? { tools_used: result.toolsUsed } : {}), ...proposalEnvelope(result, input, c.get("userId"), workspaceId), persistence: "unknown" });
     }
+  });
+  r.get("/progress/:id", async (c) => {
+    const id = c.req.param("id");
+    if (!UUID.test(id)) return c.json({ error: "Invalid request", code: "bad_request" }, 400);
+    const steps = await loadAssistantProgress(serviceClient(), id, c.get("userId"), c.get("workspaceId"));
+    return c.json({ steps });
   });
   r.get("/requests/:id", async (c) => {
     if (!UUID.test(c.req.param("id"))) return c.json({ error: "Invalid request", code: "bad_request" }, 400);
