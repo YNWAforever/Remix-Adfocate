@@ -79,6 +79,19 @@ describe("studio assistant eval harness", () => {
     expect(toolMessage.content).toContain("invalid proposal");
   });
 
+  it("replaces the built-in open-missions tool when the connected skill provides it", async () => {
+    const skillDef = [{ type: "function" as const, function: { name: "mcp__fixture__list_open_missions", description: "List open missions", parameters: { type: "object", properties: {}, additionalProperties: false } } }];
+    const chat = vi.fn()
+      .mockResolvedValueOnce({ content: null, toolCalls: [toolCall("mcp__fixture__list_open_missions")] })
+      .mockResolvedValueOnce({ content: "技能結果已整理。", toolCalls: [] });
+    const runStudioTool = vi.fn().mockResolvedValue("MCP-MISSIONS");
+    const result = await run({ provider: { chat, embed: vi.fn() }, studioToolDefs: skillDef, runStudioTool });
+    expect(result.toolsUsed).toEqual(["mcp__fixture__list_open_missions"]);
+    const offered = chat.mock.calls[1][0].tools.map((tool: { function: { name: string } }) => tool.function.name);
+    expect(offered).toContain("mcp__fixture__list_open_missions");
+    expect(offered).not.toContain("get_open_missions");
+  });
+
   it("keeps the configured tool set bounded and unchanged", () => {
     const names = STUDIO_TOOL_DEFS.map(tool => tool.function.name);
     expect(names).toHaveLength(10);
