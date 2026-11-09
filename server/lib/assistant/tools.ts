@@ -209,3 +209,20 @@ export async function runTool(name: string, argsJson: string, client: Client, sc
 
   return `unknown tool: ${name}`;
 }
+
+/** A3.2 proposal tool: records a brief proposal for explicit creator confirmation; it never writes. */
+export const PROPOSAL_TOOL_DEFS: ToolDef[] = [{
+  type: "function",
+  function: {
+    name: "propose_brief",
+    description: "Propose a private studio brief with 1-6 short paragraphs. This only records a proposal for the creator to confirm; it does not save, publish or change any data.",
+    parameters: {
+      type: "object",
+      properties: {
+        sections: { type: "array", items: { type: "string", maxLength: 3000 }, minItems: 1, maxItems: 6 },
+      },
+      required: ["sections"],
+      additionalProperties: false,
+    },
+  },
+}];
