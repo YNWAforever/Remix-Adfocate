@@ -303,6 +303,16 @@ it("keeps the composer before the four growth cards on the empty Studio entry",(
   expect(document.querySelectorAll("[data-skill]")).toHaveLength(4);
 });
 
+it("asks for confirmation before applying a proposed brief",async()=>{
+  h.chat.mockResolvedValue({persistence:"saved",request_id:"req-1",conversation_id:"conv-1",answer:"我建議兩段內容。",proposals:[{kind:"brief",sections:["第一段：真實體驗","第二段：產品限制"]}]});
+  render(<StudioWorkspace threadId="thread"/>);
+  fireEvent.change(screen.getByRole("textbox",{name:"繼續討論"}),{target:{value:"幫我擬一個 Brief"}});
+  fireEvent.click(screen.getByRole("button",{name:"送出"}));
+  expect(await screen.findByText("建議的私人 Brief")).toBeVisible();
+  expect(screen.getByText("不會自動保存；你仍可在 Brief 分頁檢查及保存。")).toBeVisible();
+  fireEvent.click(screen.getByRole("button",{name:"套用到 Brief 編輯器"}));
+  expect(await screen.findByDisplayValue("第一段：真實體驗")).toBeVisible();
+});
 it("shows tools saved with an earlier reply after reload",()=>{
   h.detail={...h.detail!,messages:[{id:"m1",role:"assistant",content:"你接咗一杯茶任務。",created_at:"2026-11-09",tools:["get_my_missions","get_open_missions"]}]};
   render(<StudioWorkspace threadId="thread"/>);

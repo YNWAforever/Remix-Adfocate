@@ -12,6 +12,7 @@ import { saveToolTrace } from "../lib/studio/toolTraces.js";
 import { createMcpRuntime } from "../lib/mcp/client.js";
 import { loadMcpRegistry, parseMcpToolName } from "../lib/mcp/policy.js";
 import { loadWorkspaceMcpServers, recordMcpCall, runFencedMcpTool } from "../lib/mcp/registry.js";
+import { PROPOSAL_TOOL_DEFS } from "../lib/assistant/tools.js";
 
 /** D20 is offline only. No request flag, env variable or configured gateway key enables this provider. */
 async function missionAssist(body: unknown, principal: AssistPrincipal, getClient: typeof serviceClient, provider?: AssistantProvider) {
@@ -176,12 +177,13 @@ export function assistantRoutes(testProvider?: AssistantProvider) {
       if(studio?.integrationSources?.length) await authorizeIntegrationSources({creatorId:c.get("userId"),workspaceId},studio.integrationSources,"model",{requestId:input.requestId});
       result = await withProviderDeadline(async (signal) => {
         const mcp = studio ? await studioMcpRuntime({ store, creatorId: c.get("userId"), workspaceId, requestId: input.requestId, signal }) : null;
+        const proposalDefs = studio && process.env.STUDIO_ASSISTANT_PROPOSALS === "true" ? PROPOSAL_TOOL_DEFS : [];
         return runAssistant(client,
           { query: input.message, locale: input.locale, workspace: workspaceId, history, studioContext:studio?.context, historyChanged: studio?.contextChanged },
           {
             ...(testProvider ? { provider: testProvider } : {}),
             signal,
-            ...(mcp ? { studioToolDefs: mcp.defs, runStudioTool: (name: string, args: string, abort?: AbortSignal) => mcp.run(name, args, abort) } : {}),
+            ...(mcp || proposalDefs.length ? { studioToolDefs: [...(mcp?.defs ?? []), ...proposalDefs], ...(mcp ? { runStudioTool: (name: string, args: string, abort?: AbortSignal) => mcp.run(name, args, abort) } : {}) } : {}),
           });
       });
     } catch {
@@ -199,7 +201,7 @@ export function assistantRoutes(testProvider?: AssistantProvider) {
       const saved = await store.rpc("save_assistant_turn", { ...identity, p_answer: result.answer, p_citations: result.citations });
       if (!saved.error && saved.data?.persistence === "saved") {
         await saveToolTrace(store, saved.data.conversation_id ?? input.conversationId, result.answer, result.toolsUsed, input.requestId);
-        return c.json({ ...saved.data, ...(result.toolsUsed?.length ? { tools_used: result.toolsUsed } : {}) });
+        return c.json({ ...saved.data, ...(result.toolsUsed?.length ? { tools_used: result.toolsUsed } : {}), ...(result.proposals?.length ? { proposals: result.proposals } : {}) });
       }
       await markUnknown();
       if(studio?.integrationSources?.length) return c.json({code:"studio_context_changed",persistence:"failed",request_id:input.requestId,error:"來源或儲存權限已變更，已停止返回衍生回覆。"},409);

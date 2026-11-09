@@ -2,7 +2,7 @@
 // asserted tool choice/refusals/bounds. No network, no model, runs in CI.
 import { describe, expect, it, vi } from "vitest";
 import { runAssistant, type AssistantProvider } from "../lib/assistant/chat";
-import { STUDIO_TOOL_DEFS } from "../lib/assistant/tools";
+import { PROPOSAL_TOOL_DEFS, STUDIO_TOOL_DEFS } from "../lib/assistant/tools";
 
 const studioContext = { title: "Eval", topic: "creation", sources: [] };
 const client = {} as Parameters<typeof runAssistant>[0];
@@ -55,6 +55,28 @@ describe("studio assistant eval harness", () => {
     expect(runStudioTool).toHaveBeenCalledTimes(1);
     expect(result.toolsUsed).toEqual(["mcp__eval__lookup"]);
     expect(chat.mock.calls[1][0].tools.map((tool: { function: { name: string } }) => tool.function.name)).toContain("mcp__eval__lookup");
+  });
+
+  it("records a brief proposal for confirmation without executing it", async () => {
+    const runToolFn = vi.fn();
+    const chat = vi.fn()
+      .mockResolvedValueOnce({ content: null, toolCalls: [toolCall("propose_brief", JSON.stringify({ sections: ["開場：真實體驗", "產品亮點與限制"] }))] })
+      .mockResolvedValueOnce({ content: "我先擬了一個兩段 Brief，確認後再套用。", toolCalls: [] });
+    const result = await run({ provider: { chat, embed: vi.fn() }, runToolFn, studioToolDefs: PROPOSAL_TOOL_DEFS });
+    expect(runToolFn).not.toHaveBeenCalled();
+    expect(result.proposals).toEqual([{ kind: "brief", sections: ["開場：真實體驗", "產品亮點與限制"] }]);
+    const toolMessage = chat.mock.calls[1][0].messages.find((message: { role: string }) => message.role === "tool");
+    expect(toolMessage.content).toContain("proposal recorded");
+  });
+
+  it("rejects an invalid proposal payload without recording it", async () => {
+    const chat = vi.fn()
+      .mockResolvedValueOnce({ content: null, toolCalls: [toolCall("propose_brief", JSON.stringify({ sections: [] }))] })
+      .mockResolvedValueOnce({ content: "未能建立草稿。", toolCalls: [] });
+    const result = await run({ provider: { chat, embed: vi.fn() }, studioToolDefs: PROPOSAL_TOOL_DEFS });
+    expect(result.proposals).toBeUndefined();
+    const toolMessage = chat.mock.calls[1][0].messages.find((message: { role: string }) => message.role === "tool");
+    expect(toolMessage.content).toContain("invalid proposal");
   });
 
   it("keeps the configured tool set bounded and unchanged", () => {
