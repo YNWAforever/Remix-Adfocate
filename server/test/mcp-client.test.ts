@@ -87,7 +87,7 @@ describe("mcp client", () => {
     const huge = await fixture((body, res) => {
       if (body.method === "initialize") return jsonrpc(res, {});
       if (body.method === "notifications/initialized") { res.writeHead(202); return res.end(); }
-      return jsonrpc(res, { content: [{ type: "text", text: "x".repeat(70000) }] });
+      return jsonrpc(res, { content: [{ type: "text", text: "x".repeat(600000) }] });
     });
     expect(await callMcpTool(config(huge), "lookup_note", "{}")).toBe("error: mcp_invalid_response");
   });
