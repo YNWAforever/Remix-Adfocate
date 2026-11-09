@@ -51,6 +51,8 @@ interface Deps {
   studioToolDefs?: ToolDef[];
   /** Dispatcher for the extra studio tools; built-in tools still use runToolFn. */
   runStudioTool?: (name: string, args: string, signal?: AbortSignal) => Promise<string>;
+  /** Coarse progress for the pending UI (thinking / tool:<name> / answering). */
+  onProgress?: (step: string) => void;
 }
 
 /** The studio brief is read-only by policy. Tools may read the creator's own account state;
@@ -110,6 +112,7 @@ export async function runAssistant(
     ];
     const allowed = new Set(toolDefs.map(tool => tool.function.name));
     const toolsUsed: string[] = [];
+    deps.onProgress?.("thinking");
     const proposals: AssistantProposal[] = [];
     let last = await provider.chat({ messages, tools: toolDefs, signal: deps.signal });
     let iterations = 0;
@@ -129,6 +132,7 @@ export async function runAssistant(
       });
       for (const call of last.toolCalls) {
         deps.signal?.throwIfAborted();
+        deps.onProgress?.(`tool:${call.name}`);
         let toolResult: string;
         if (call.name === "propose_brief") {
           const proposal = parseBriefProposal(call.arguments);
@@ -153,6 +157,7 @@ export async function runAssistant(
       last = await provider.chat({ messages, tools: toolDefs, signal: deps.signal });
       deps.signal?.throwIfAborted();
     }
+    deps.onProgress?.("answering");
     return { answer: last.content?.slice(0, 6000) || (input.locale === "en" ? "Evidence is insufficient." : "目前證據不足。"),
         citations, limitations: ["manual_evidence_unverified", "proposal_only"], ...(toolsUsed.length ? { toolsUsed } : {}), ...(proposals.length ? { proposals } : {}) };
   }

@@ -1,7 +1,7 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const OPTIONAL_SQL = ["assistant-proposal-audit.sql", "assistant-tool-traces.sql", "mcp-registry.sql", "mcp-oauth.sql"] as const;
+const OPTIONAL_SQL = ["assistant-progress.sql", "assistant-proposal-audit.sql", "assistant-tool-traces.sql", "mcp-registry.sql", "mcp-oauth.sql"] as const;
 const read = (name: string) => readFileSync(`docs/operations/${name}`, "utf8");
 
 describe("optional out-of-band SQL contract", () => {
@@ -25,6 +25,7 @@ describe("optional out-of-band SQL contract", () => {
     expect(oauth).toContain("auth_mode");
     expect(read("assistant-tool-traces.sql")).toContain("assistant_tool_traces");
     expect(read("assistant-proposal-audit.sql")).toContain("assistant_proposal_audit");
+    expect(read("assistant-progress.sql")).toContain("assistant_progress");
   });
 
   it("grants optional tables only to service_role", () => {

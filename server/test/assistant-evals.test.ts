@@ -92,6 +92,17 @@ describe("studio assistant eval harness", () => {
     expect(offered).not.toContain("get_open_missions");
   });
 
+  it("reports coarse progress for the pending UI", async () => {
+    const steps: string[] = [];
+    const runToolFn = vi.fn().mockResolvedValue('{"points":120}');
+    await run({
+      provider: provider({ content: null, toolCalls: [toolCall("get_my_points")] }, { content: "done", toolCalls: [] }),
+      runToolFn,
+      onProgress: (step: string) => steps.push(step),
+    });
+    expect(steps).toEqual(["thinking", "tool:get_my_points", "answering"]);
+  });
+
   it("keeps the configured tool set bounded and unchanged", () => {
     const names = STUDIO_TOOL_DEFS.map(tool => tool.function.name);
     expect(names).toHaveLength(10);

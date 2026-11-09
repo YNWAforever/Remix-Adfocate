@@ -546,6 +546,10 @@ export function useEarningsHistory() {
 
 export type AssistantCitation = { title: string; sourceType: string; sourceRef: string };
 export type AssistantProposal = { kind: "brief"; sections: string[]; token?: string };
+export type AssistantProgress = { steps: Array<{ step: string; created_at: string }> };
+export function fetchAssistantProgress(requestId: string) {
+  return apiFetch<AssistantProgress>("/assistant/progress/" + requestId);
+}
 export type AssistantReply = { conversation_id?: string | null; request_id: string; answer?: string; citations?: AssistantCitation[]; tools_used?: string[]; proposals?: AssistantProposal[]; code?: string; persistence: "saved" | "failed" | "unknown" };
 
 export function useAssistantChat() {
