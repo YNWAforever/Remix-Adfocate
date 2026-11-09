@@ -35,6 +35,7 @@ import { integrationNoticeRoutes } from "./routes/integrationNotices.js";
 import { mcpSkillRoutes } from "./routes/mcp.js";
 import { mcpPilotRoutes } from "./routes/mcpPilot.js";
 import { mcpOAuthCallbackRoutes, mcpOAuthRoutes } from "./routes/mcpOAuth.js";
+import { studioProposalRoutes } from "./routes/studioProposals.js";
 
 export type Env = {
   Variables: { userId: string; workspaceId: string; jwt: string };

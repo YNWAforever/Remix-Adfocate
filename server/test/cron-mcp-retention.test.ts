@@ -47,9 +47,11 @@ describe("cron mcp audit retention", () => {
   it("deletes audit rows older than 90 days", async () => {
     const response = await authed();
     expect(response.status).toBe(200);
-    const body = await response.json() as { deleted: number; cutoff: string };
+    const body = await response.json() as { deleted: number; proposalsDeleted: number; cutoff: string };
     expect(body.deleted).toBe(7);
+    expect(body.proposalsDeleted).toBe(7);
     expect(fromMock).toHaveBeenCalledWith("mcp_call_audit");
+    expect(fromMock).toHaveBeenCalledWith("assistant_proposal_audit");
     expect(deleteMock).toHaveBeenCalledWith({ count: "exact" });
     expect(ltMock).toHaveBeenCalledWith("created_at", expect.any(String));
     const cutoff = Date.parse(String(ltMock.mock.calls[0][1]));

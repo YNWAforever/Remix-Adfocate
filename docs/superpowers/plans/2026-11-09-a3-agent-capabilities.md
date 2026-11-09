@@ -1,6 +1,6 @@
 # A3 — agent capability expansion (plan)
 
-Status: started 2026-11-09 (Week 3). **A3.1 implemented** (2026-11-09); **A3.2 first slice implemented** (2026-11-09, dark behind `STUDIO_ASSISTANT_PROPOSALS`): a `propose_brief` tool records 1-6 paragraph proposals in the chat response; the studio UI shows a confirm card and only applies the proposal to the Brief editor on explicit click (nothing is saved server-side; the creator still saves). **A3.3 implemented** (2026-11-09): `server/test/assistant-evals.test.ts` runs six deterministic golden cases (tool choice for points/missions, write-name refusal, MCP-only exposure, bounded 10-tool allowlist, iteration limit) with a stub provider in CI: `get_my_points_history`, `get_my_earnings_history` and `get_my_recent_threads` read-only tools, bounded and RLS-scoped, with client chips and allowlist tests. Builds on the studio tool loop (7 read-only account tools + MCP
+Status: started 2026-11-09 (Week 3). **A3.1 implemented** (2026-11-09); **A3.2 implemented** (2026-11-09, dark behind `STUDIO_ASSISTANT_PROPOSALS` + `STUDIO_ASSISTANT_PROPOSAL_EXECUTION`): signed proposal tokens (HMAC/content-hash/expiry) + `POST /studio/proposals/execute` executes `save_brief` only after explicit UI confirmation, with idempotent request id and `assistant_proposal_audit` rows (90-day retention in the cron); first slice `STUDIO_ASSISTANT_PROPOSALS`: a `propose_brief` tool records 1-6 paragraph proposals in the chat response; the studio UI shows a confirm card and only applies the proposal to the Brief editor on explicit click (nothing is saved server-side; the creator still saves). **A3.3 implemented** (2026-11-09): `server/test/assistant-evals.test.ts` runs six deterministic golden cases (tool choice for points/missions, write-name refusal, MCP-only exposure, bounded 10-tool allowlist, iteration limit) with a stub provider in CI: `get_my_points_history`, `get_my_earnings_history` and `get_my_recent_threads` read-only tools, bounded and RLS-scoped, with client chips and allowlist tests. Builds on the studio tool loop (7 read-only account tools + MCP
 skills), consent fencing and persisted traces. The rule stays: the assistant never mutates creator data
 without an explicit, attributed confirmation step.
 
@@ -15,7 +15,7 @@ Add read-only tools that cover the remaining high-frequency questions:
 Rules: workspace/creator scoped, bounded rows (20), no integration/private payloads, all names added to the
 allowlist and the client tool-label map; tests for filters, caps and unknown-tool refusal.
 
-## A3.2 — Write actions with explicit confirmation (first slice implemented)
+## A3.2 — Write actions with explicit confirmation (implemented)
 
 - Chat can *propose* an action (e.g. "save this brief", "attach evidence to draft"): the model returns a
   structured proposal, the UI renders a confirm card, and only the confirmed request executes.
