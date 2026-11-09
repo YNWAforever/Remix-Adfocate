@@ -55,11 +55,13 @@ export function mcpSkillRoutes() {
     const consented = new Set(((consents.data ?? []) as Array<{ server_id: string }>).map(row => row.server_id));
     const oauthIds = rows.filter(row => row.auth_mode === "oauth").map(row => row.id);
     const connections = oauthIds.length
-      ? await store.from("mcp_oauth_connections").select("server_id").in("server_id", oauthIds)
+      ? await store.from("mcp_oauth_connections").select("server_id,expires_at").in("server_id", oauthIds)
           .eq("creator_id", creatorId).eq("workspace_id", workspaceId).is("revoked_at", null)
       : { data: [] as Array<{ server_id: string }>, error: null };
     if (connections.error) return c.json({ available: false, skills: [] });
-    const connected = new Set(((connections.data ?? []) as Array<{ server_id: string }>).map(row => row.server_id));
+    const connectionRows = (connections.data ?? []) as Array<{ server_id: string; expires_at?: string | null }>;
+    const liveConnections = new Set(connectionRows.filter(row => !row.expires_at || Date.parse(row.expires_at) > Date.now()).map(row => row.server_id));
+    const expiredConnections = new Set(connectionRows.filter(row => row.expires_at && Date.parse(row.expires_at) <= Date.now()).map(row => row.server_id));
     return c.json({
       available: true,
       skills: rows.map(row => ({
@@ -68,7 +70,8 @@ export function mcpSkillRoutes() {
         tools: toolsByServer.get(row.id) ?? [],
         consented: consented.has(row.id),
         auth_mode: row.auth_mode ?? "none",
-        connected: connected.has(row.id),
+        connected: liveConnections.has(row.id),
+        expired: expiredConnections.has(row.id),
       })),
     });
   });

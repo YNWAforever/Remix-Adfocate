@@ -45,6 +45,17 @@ describe("mcp data skills section", () => {
     expect(screen.getByText("Not connected")).toBeVisible();
   });
 
+  it("offers reconnect when an OAuth token expired", async () => {
+    h.apiFetch.mockImplementation(async (path: string, init?: RequestInit) => {
+      if (path === "/mcp/skills" && !init) return { available: true, skills: [{ id: SERVER_ID, name: "mysocial", tools: ["search_content"], consented: true, auth_mode: "oauth", connected: false, expired: true }] };
+      return { authorizationUrl: "https://provider.example/authorize" };
+    });
+    mount();
+    expect(await screen.findByRole("button", { name: "Reconnect" })).toBeVisible();
+    expect(screen.getByText("Reconnect needed")).toBeVisible();
+    expect(screen.queryByRole("button", { name: "Disconnect" })).toBeNull();
+  });
+
   it("revokes consent for an already-allowed skill", async () => {
     h.apiFetch.mockImplementation(async (path: string, init?: RequestInit) => {
       if (path === "/mcp/skills" && !init) return { available: true, skills: [{ id: SERVER_ID, name: "notes", tools: ["lookup_note"], consented: true }] };

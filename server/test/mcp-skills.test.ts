@@ -88,6 +88,18 @@ describe("mcp skill consent API", () => {
     expect(await response.json()).toMatchObject({ skills: [{ id: SERVER_ID, auth_mode: "oauth", consented: true, connected: true }] });
   });
 
+  it("marks an expired OAuth connection as expired instead of connected", async () => {
+    enable();
+    h.db = db({
+      mcp_servers: [{ id: SERVER_ID, name: "notes", enabled: true, read_only: true, workspace_id: "w1", auth_mode: "oauth" }],
+      mcp_server_tools: [{ server_id: SERVER_ID, tool_name: "lookup_note", enabled: true }],
+      mcp_consents: [{ server_id: SERVER_ID, creator_id: "creator", workspace_id: "w1", revoked_at: null }],
+      mcp_oauth_connections: [{ server_id: SERVER_ID, creator_id: "creator", workspace_id: "w1", revoked_at: null, expires_at: "2020-01-01T00:00:00Z" }],
+    }).client;
+    const response = await app().request("/mcp/skills");
+    expect(await response.json()).toMatchObject({ skills: [{ id: SERVER_ID, consented: true, connected: false, expired: true }] });
+  });
+
   it("grants consent for an enabled read-only workspace server", async () => {
     enable();
     const fake = db(baseRows());
