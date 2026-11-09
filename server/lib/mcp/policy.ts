@@ -5,7 +5,7 @@ export const MCP_MAX_SERVERS = 5;
 export const MCP_MAX_TOOLS_PER_SERVER = 10;
 export const MCP_MAX_TIMEOUT_MS = 15000;
 export const MCP_DEFAULT_TIMEOUT_MS = 8000;
-export const MCP_MAX_RESPONSE_BYTES = 65536;
+export const MCP_MAX_RESPONSE_BYTES = 524288;
 
 const SERVER_NAME = /^[a-z0-9_]{1,32}$/;
 const TOOL_NAME = /^[a-z0-9_]{1,64}$/;
