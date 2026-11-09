@@ -32,6 +32,7 @@ describe("studio loop with MCP skills", () => {
     expect(chat.mock.calls[1][0].tools.map((definition: { function: { name: string } }) => definition.function.name)).toContain("mcp__fixture__lookup_note");
     const system = chat.mock.calls[0][0].messages.find((message: { role: string }) => message.role === "system");
     expect(system.content).toContain("Extra skills may be available");
+    expect(system.content).toContain("prefer that skill over an equivalent built-in tool");
   });
 
   it("refuses MCP names outside the allowlist without executing them", async () => {
