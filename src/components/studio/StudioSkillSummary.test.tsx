@@ -26,7 +26,7 @@ describe("studio data-skill summary", () => {
     mount();
     expect(await screen.findByText(/mysocial/)).toHaveTextContent("已連接");
     expect(screen.getByText(/notes/)).toHaveTextContent("未允許");
-    expect(screen.getByRole("link", { name: "管理" })).toHaveAttribute("href", "/connections");
+    expect(screen.getByRole("link", { name: "管理" })).toHaveAttribute("href", "/connections#data-skills");
     expect(screen.getByText("技能會在討論中自動使用，不會列作證據來源。")).toBeVisible();
   });
 

@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { apiFetch, ApiError } from "@/lib/api";
 import { useStudioText } from "./StudioPrimitives";
 
-type Skill = { id: string; name: string; tools: string[]; consented: boolean; connected?: boolean; auth_mode?: string };
+type Skill = { id: string; name: string; tools: string[]; consented: boolean; connected?: boolean; expired?: boolean; auth_mode?: string };
 type SkillList = { available: boolean; skills: Skill[] };
 
 /** Compact skill status inside the evidence tab: data skills are not evidence sources. */
@@ -21,12 +21,12 @@ export function StudioSkillSummary() {
     <section className="s-card s-stack" aria-label={tx("資料技能", "Data skills")}>
       <div className="s-between">
         <h3>{tx("資料技能", "Data skills")}</h3>
-        <a className="s-btn" href="/connections">{tx("管理", "Manage")}</a>
+        <a className="s-btn" href="/connections#data-skills">{tx("管理", "Manage")}</a>
       </div>
       <div className="s-row">
         {skills.data.skills.map(skill => (
           <span className="s-tag" key={skill.id}>
-            {skill.name} · {skill.connected ? tx("已連接", "Connected") : skill.consented ? tx("待連接", "Not connected") : tx("未允許", "Not allowed")}
+            {skill.name} · {skill.expired ? tx("需要重新連接", "Reconnect needed") : skill.connected ? tx("已連接", "Connected") : skill.consented ? tx("待連接", "Not connected") : tx("未允許", "Not allowed")}
           </span>
         ))}
       </div>
