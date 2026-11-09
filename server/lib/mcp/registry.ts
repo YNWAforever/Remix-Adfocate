@@ -6,7 +6,7 @@ import { findOAuthProvider, loadOAuthProviders, type OAuthProviderConfig } from 
 type Store = Pick<SupabaseClient, "from">;
 
 const SERVER_NAME = /^[a-z0-9_]{1,32}$/;
-const TOOL_NAME = /^[a-z0-9_]{1,64}$/;
+const TOOL_NAME = /^[A-Za-z0-9_]{1,64}$/;
 
 const DEFAULT_TIMEOUT_MS = 8000;
 
@@ -18,12 +18,15 @@ async function refreshOAuthAccessToken(provider: OAuthProviderConfig, refreshTok
     const response = await fetch(provider.tokenUrl, {
       method: "POST",
       headers: { "content-type": "application/x-www-form-urlencoded", accept: "application/json" },
-      body: new URLSearchParams({
-        grant_type: "refresh_token",
-        refresh_token: refreshToken,
-        client_id: provider.clientId,
-        client_secret: provider.clientSecret,
-      }),
+      body: (() => {
+        const form = new URLSearchParams({
+          grant_type: "refresh_token",
+          refresh_token: refreshToken,
+          client_id: provider.clientId,
+        });
+        if (provider.clientSecret) form.set("client_secret", provider.clientSecret);
+        return form;
+      })(),
       signal: AbortSignal.timeout(10000),
     });
     if (!response.ok) return null;

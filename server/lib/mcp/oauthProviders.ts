@@ -2,7 +2,8 @@ export type OAuthProviderConfig = Readonly<{
   authorizationUrl: string;
   tokenUrl: string;
   clientId: string;
-  clientSecret: string;
+  /** Absent for public clients registered with token_endpoint_auth_method "none" (PKCE only). */
+  clientSecret?: string;
   redirectUri: string;
   scopes: readonly string[];
 }>;
@@ -44,11 +45,11 @@ export function loadOAuthProviders(raw = process.env.MCP_OAUTH_PROVIDERS): OAuth
     const scopes = Array.isArray(value.scopes)
       ? value.scopes.filter((scope): scope is string => typeof scope === "string" && scope.trim().length > 0 && scope.length <= 120)
       : [];
-    if (!authorizationUrl || !tokenUrl || !redirectUri || !clientId || !clientSecret || !scopes.length) {
-      errors.push(`oauth:${name}: authorizationUrl, tokenUrl, redirectUri, clientId, clientSecret and scopes are required`);
+    if (!authorizationUrl || !tokenUrl || !redirectUri || !clientId || !scopes.length) {
+      errors.push(`oauth:${name}: authorizationUrl, tokenUrl, redirectUri, clientId and scopes are required`);
       continue;
     }
-    providers[name] = { authorizationUrl, tokenUrl, redirectUri, clientId, clientSecret, scopes };
+    providers[name] = { authorizationUrl, tokenUrl, redirectUri, clientId, ...(clientSecret ? { clientSecret } : {}), scopes };
   }
   return { providers, errors };
 }

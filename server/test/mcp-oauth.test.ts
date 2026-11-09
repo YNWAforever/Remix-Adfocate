@@ -107,6 +107,21 @@ describe("mcp oauth crypto and provider config", () => {
     expect(challenge).toBe(createHashForTest(verifier));
   });
 
+  it("accepts public clients registered without a secret", () => {
+    const publicConfig = loadOAuthProviders(JSON.stringify({
+      public_provider: {
+        authorizationUrl: "https://auth.example.test/authorize",
+        tokenUrl: "https://auth.example.test/token",
+        redirectUri: "https://app.example.test/api/mcp-oauth/callback",
+        clientId: "client-public",
+        scopes: ["mcp:tools", "offline_access"],
+      },
+    }));
+    expect(publicConfig.errors).toEqual([]);
+    expect(publicConfig.providers.public_provider?.clientSecret).toBeUndefined();
+    expect(publicConfig.providers.public_provider?.scopes).toEqual(["mcp:tools", "offline_access"]);
+  });
+
   it("loads valid providers and rejects insecure ones", () => {
     const valid = loadOAuthProviders(PROVIDERS);
     expect(valid.errors).toEqual([]);

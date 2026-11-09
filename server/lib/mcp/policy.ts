@@ -8,7 +8,7 @@ export const MCP_DEFAULT_TIMEOUT_MS = 8000;
 export const MCP_MAX_RESPONSE_BYTES = 524288;
 
 const SERVER_NAME = /^[a-z0-9_]{1,32}$/;
-const TOOL_NAME = /^[a-z0-9_]{1,64}$/;
+const TOOL_NAME = /^[A-Za-z0-9_]{1,64}$/;
 
 export type McpRemoteTool = Readonly<{
   name: string;
