@@ -15,6 +15,16 @@ describe("studio conversation is read-only and continuous", () => {
     expect(JSON.stringify(request.messages)).toContain("一人份量");
     expect(JSON.stringify(request.messages)).toContain("方案 B：從味道開始");
   });
+  it("points unconnected workspace skills at the connection page", async () => {
+    const chat = vi.fn().mockResolvedValue({ content: "請先連接 hasdata。", toolCalls: [] });
+    await runAssistant({} as Parameters<typeof runAssistant>[0], { query: "用 hasdata 搵 TikTok", locale: "zh", workspace: "owned", history: [], studioContext: { title: "Test", topic: "performance", sources: [] }, unconnectedSkills: ["hasdata"] }, { provider: { chat, embed: vi.fn() } });
+    const system = chat.mock.calls[0][0].messages.find((message: { role: string }) => message.role === "system");
+    expect(system?.content).toContain("hasdata");
+    expect(system?.content).toContain("/connections");
+    expect(system?.content).toContain("not connected");
+    expect(system?.content).toContain("Never suggest manual scraping");
+  });
+
   it("refuses model tool calls to write paths without executing any tool", async () => {
     const runToolFn = vi.fn();
     const provider: AssistantProvider = { embed: vi.fn(), chat: vi.fn().mockResolvedValue({ content:"done", toolCalls:[{ id:"bad", name:"award_points", arguments:"{}" }] }) };
