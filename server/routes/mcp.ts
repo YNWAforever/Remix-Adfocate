@@ -9,7 +9,7 @@ function mcpRegistryEnabled() {
   return process.env.STUDIO_MCP_ENABLED === "true" && process.env.STUDIO_MCP_REGISTRY === "true";
 }
 
-type ServerRow = { id: string; name: string; enabled?: boolean; read_only?: boolean };
+type ServerRow = { id: string; name: string; enabled?: boolean; read_only?: boolean; auth_mode?: string | null };
 
 /**
  * Creator-facing MCP consent. Everything is dark unless both the MCP flag and the workspace
@@ -33,7 +33,7 @@ export function mcpSkillRoutes() {
   routes.get("/skills", async c => {
     const store = serviceClient(), workspaceId = c.get("workspaceId"), creatorId = c.get("userId");
     const servers = await store.from("mcp_servers")
-      .select("id,name,enabled,read_only").eq("workspace_id", workspaceId).eq("enabled", true).eq("read_only", true).order("name");
+      .select("id,name,enabled,read_only,auth_mode").eq("workspace_id", workspaceId).eq("enabled", true).eq("read_only", true).order("name");
     if (servers.error) return c.json({ available: false, skills: [] });
     const rows = (servers.data ?? []) as ServerRow[];
     if (!rows.length) return c.json({ available: true, skills: [] });
@@ -53,9 +53,23 @@ export function mcpSkillRoutes() {
       toolsByServer.set(tool.server_id, list);
     }
     const consented = new Set(((consents.data ?? []) as Array<{ server_id: string }>).map(row => row.server_id));
+    const oauthIds = rows.filter(row => row.auth_mode === "oauth").map(row => row.id);
+    const connections = oauthIds.length
+      ? await store.from("mcp_oauth_connections").select("server_id").in("server_id", oauthIds)
+          .eq("creator_id", creatorId).eq("workspace_id", workspaceId).is("revoked_at", null)
+      : { data: [] as Array<{ server_id: string }>, error: null };
+    if (connections.error) return c.json({ available: false, skills: [] });
+    const connected = new Set(((connections.data ?? []) as Array<{ server_id: string }>).map(row => row.server_id));
     return c.json({
       available: true,
-      skills: rows.map(row => ({ id: row.id, name: row.name, tools: toolsByServer.get(row.id) ?? [], consented: consented.has(row.id) })),
+      skills: rows.map(row => ({
+        id: row.id,
+        name: row.name,
+        tools: toolsByServer.get(row.id) ?? [],
+        consented: consented.has(row.id),
+        auth_mode: row.auth_mode ?? "none",
+        connected: connected.has(row.id),
+      })),
     });
   });
 
