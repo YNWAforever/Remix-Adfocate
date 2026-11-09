@@ -50,7 +50,7 @@ export function StudioStarter({ onLoginRequired }: { onLoginRequired?: () => voi
     if (intent.current && intent.current.fingerprint !== fingerprint) { intent.current = null; }
     intent.current ??= { fingerprint, id: crypto.randomUUID() };
     try { const response = await command.mutateAsync({ action: "create_thread", requestId: intent.current.id, payload });
-      void navigate({ to: "/studio", search: { thread: response.result.id, ...(selectedSkill ? { skill: selectedSkill } : {}) } });
+      void navigate({ to: "/studio", search: { thread: response.result.id, send: true, ...(selectedSkill ? { skill: selectedSkill } : {}) } });
     } catch (error) {
       if (error instanceof ApiError && error.status === 401) {
         intent.current = null;
