@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { McpRemoteTool, McpServerConfig } from "./policy.js";
-import { decryptSecret } from "./oauthCrypto.js";
+import { decryptSecret, encryptSecret } from "./oauthCrypto.js";
+import { findOAuthProvider, loadOAuthProviders, type OAuthProviderConfig } from "./oauthProviders.js";
 
 type Store = Pick<SupabaseClient, "from">;
 
@@ -8,6 +9,35 @@ const SERVER_NAME = /^[a-z0-9_]{1,32}$/;
 const TOOL_NAME = /^[a-z0-9_]{1,64}$/;
 
 const DEFAULT_TIMEOUT_MS = 8000;
+
+type RefreshedToken = { accessToken: string; refreshToken?: string; expiresAt: string | null };
+
+/** Best-effort refresh-token exchange; returns null on any failure (the server is then skipped). */
+async function refreshOAuthAccessToken(provider: OAuthProviderConfig, refreshToken: string): Promise<RefreshedToken | null> {
+  try {
+    const response = await fetch(provider.tokenUrl, {
+      method: "POST",
+      headers: { "content-type": "application/x-www-form-urlencoded", accept: "application/json" },
+      body: new URLSearchParams({
+        grant_type: "refresh_token",
+        refresh_token: refreshToken,
+        client_id: provider.clientId,
+        client_secret: provider.clientSecret,
+      }),
+      signal: AbortSignal.timeout(10000),
+    });
+    if (!response.ok) return null;
+    const body = await response.json() as Record<string, unknown>;
+    if (typeof body.access_token !== "string" || !body.access_token) return null;
+    return {
+      accessToken: body.access_token,
+      refreshToken: typeof body.refresh_token === "string" ? body.refresh_token : undefined,
+      expiresAt: typeof body.expires_in === "number" ? new Date(Date.now() + body.expires_in * 1000).toISOString() : null,
+    };
+  } catch {
+    return null;
+  }
+}
 
 /** Validates an owner-supplied server URL: https, or http on a loopback fixture, never with userinfo. */
 export function parseServerUrl(raw: unknown): string | null {
@@ -59,7 +89,7 @@ export async function loadWorkspaceMcpServers(
     .eq("enabled", true)
     .eq("read_only", true);
   if (servers.error) return { available: false, servers: [], serverIds: new Map(), errors: ["registry unavailable"] };
-  const rows = (servers.data ?? []) as Array<{ id: string; name: string; url: string; auth_mode?: string | null }>;
+  const rows = (servers.data ?? []) as Array<{ id: string; name: string; url: string; auth_mode?: string | null; oauth_provider?: string | null }>;
   if (!rows.length) return { available: true, servers: [], serverIds: new Map(), errors: [] };
 
   const ids = rows.map(row => row.id);
@@ -81,15 +111,25 @@ export async function loadWorkspaceMcpServers(
 
   const oauthServerIds = rows.filter(row => row.auth_mode === "oauth").map(row => row.id);
   const connections = oauthServerIds.length
-    ? await store.from("mcp_oauth_connections").select("server_id,access_token_encrypted,expires_at")
+    ? await store.from("mcp_oauth_connections").select("server_id,access_token_encrypted,refresh_token_encrypted,expires_at")
         .in("server_id", oauthServerIds).eq("creator_id", creatorId).eq("workspace_id", workspaceId).is("revoked_at", null)
     : { data: [] as Array<Record<string, unknown>>, error: null };
   if (connections.error) return { available: false, servers: [], serverIds: new Map(), errors: ["registry unavailable"] };
-  const accessTokens = new Map<string, string>();
-  for (const row of (connections.data ?? []) as Array<{ server_id: string; access_token_encrypted: string; expires_at?: string | null }>) {
-    if (row.expires_at && Date.parse(row.expires_at) <= Date.now()) continue;
-    try { accessTokens.set(row.server_id, decryptSecret(row.access_token_encrypted)); }
-    catch { /* missing key or broken cipher: fail closed, server is not exposed */ }
+  type ConnectionState = { accessToken: string | null; refreshToken: string | null; expiresAt: string | null; expired: boolean };
+  const connectionStates = new Map<string, ConnectionState>();
+  for (const row of (connections.data ?? []) as Array<{ server_id: string; access_token_encrypted: string; refresh_token_encrypted?: string | null; expires_at?: string | null }>) {
+    let accessToken: string | null = null;
+    let refreshToken: string | null = null;
+    try { accessToken = decryptSecret(row.access_token_encrypted); } catch { /* fail closed */ }
+    if (row.refresh_token_encrypted) {
+      try { refreshToken = decryptSecret(row.refresh_token_encrypted); } catch { refreshToken = null; }
+    }
+    connectionStates.set(row.server_id, {
+      accessToken,
+      refreshToken,
+      expiresAt: row.expires_at ?? null,
+      expired: Boolean(row.expires_at && Date.parse(row.expires_at) <= Date.now()),
+    });
   }
 
   const result: McpServerConfig[] = [];
@@ -101,8 +141,29 @@ export async function loadWorkspaceMcpServers(
     if (!url || !allowlistedTools.length) continue;
     let headers: Record<string, string> = {};
     if (row.auth_mode === "oauth") {
-      const token = accessTokens.get(row.id);
-      if (!token) continue;
+      const state = connectionStates.get(row.id);
+      if (!state) continue;
+      let token = state.accessToken;
+      if ((!token || state.expired) && state.refreshToken) {
+        const provider = findOAuthProvider(loadOAuthProviders(), row.oauth_provider);
+        if (provider) {
+          const refreshed = await refreshOAuthAccessToken(provider, state.refreshToken);
+          if (refreshed) {
+            token = refreshed.accessToken;
+            state.accessToken = refreshed.accessToken;
+            state.refreshToken = refreshed.refreshToken ?? state.refreshToken;
+            state.expiresAt = refreshed.expiresAt;
+            state.expired = false;
+            await store.from("mcp_oauth_connections").update({
+              access_token_encrypted: encryptSecret(refreshed.accessToken),
+              refresh_token_encrypted: state.refreshToken ? encryptSecret(state.refreshToken) : null,
+              expires_at: refreshed.expiresAt,
+              updated_at: new Date().toISOString(),
+            }).eq("server_id", row.id).eq("creator_id", creatorId).eq("workspace_id", workspaceId).is("revoked_at", null);
+          }
+        }
+      }
+      if (!token || state.expired) continue;
       headers = { Authorization: `Bearer ${token}` };
     }
     result.push({ name: row.name, url, timeoutMs: DEFAULT_TIMEOUT_MS, headers, tools: allowlistedTools });

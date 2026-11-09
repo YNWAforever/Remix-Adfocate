@@ -50,8 +50,9 @@ allowlist, not the provider's full `tools/list`.
 - [x] DCR client is confidential (`client_secret_post`); secret only in Vercel Secret; PKCE + state enforced
       by our flow; callback identifies the creator from the pending state row.
 - [x] Explicit read-only allowlist; no write tools.
-- [ ] Token refresh: not implemented yet — access tokens expire and the creator must reconnect; acceptable
-      for the pilot (documented limitation).
+- [x] Token refresh (2026-11-09): the registry loader refreshes an expired connection with the stored
+      encrypted refresh token, persists the rotated pair, and fails closed (server skipped) if refresh fails.
+      Fixture E2E covers the refresh path; a real provider refresh will be exercised when the current token expires.
 - [x] Kill switches: `STUDIO_MCP_OAUTH=false` and/or `STUDIO_MCP_ENABLED=false` (env change + redeploy).
 - [x] Audit: provider-side call record + our `mcp_call_audit` (creator/workspace/tool/outcome/duration).
 
