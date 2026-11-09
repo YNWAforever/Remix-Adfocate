@@ -50,3 +50,12 @@ verify no behaviour changed, then enable for a limited scope and watch the audit
 - Never apply optional SQL through `supabase db push` (it is deliberately out of the reviewed migration
   manifest); use the SQL editor/ops procedure and the contract test.
 - Never rotate `MCP_PILOT_TOKEN` without updating the registry URL rows.
+
+## Rotation record — MCP_PILOT_TOKEN (2026-11-09)
+
+- Generated a new 64-hex token; replaced the Vercel Production env value and stored it as **Secret** (was Config).
+- Redeployed production (Ready, aliased to `adfocate-2.vercel.app`).
+- Updated the `mcp_servers.url` row for `workspace_missions` to the new token (old token invalid after deploy).
+- Verified live: `initialize`/`tools/call` with the new token → 200 (6 missions); a wrong token → 401. Local token copies deleted.
+
+Future rotations follow the same order: env (Secret) → redeploy → registry URL rows → verify both tokens.
