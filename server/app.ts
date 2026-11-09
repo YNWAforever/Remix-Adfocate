@@ -88,6 +88,7 @@ export function createApp(options: { creatorPilot?: CreatorPilotRouteDependencie
   guarded.route("/copilot", copilotRoutes);
   guarded.route("/assistant", assistantRoutes());
   guarded.route("/studio", studioRoutes);
+  guarded.route("/studio", studioProposalRoutes());
   guarded.route("/mcp", mcpSkillRoutes());
   guarded.route("/mcp", mcpOAuthRoutes());
   // Publication is separately guarded and disabled; no service/worker is installed.
