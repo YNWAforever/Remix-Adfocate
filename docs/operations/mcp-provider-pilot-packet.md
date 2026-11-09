@@ -1,6 +1,6 @@
 # MCP provider pilot — approval packet (template)
 
-Status: draft for the first provider-hosted MCP skill (A2.3). Fill in with the chosen provider; this is
+Status: **paused 2026-11-09** — owner chose to pause A2.3 until a provider is selected; the fixture E2E and this packet are ready for that step. Fill in with the chosen provider; this is
 the owner-signed gate before anything is enabled in production.
 
 ## 1. Provider and transport
