@@ -1,6 +1,6 @@
 # Optional-schema policy (decision record)
 
-Status: **awaiting owner decision** (proposed 2026-11-09). Owner: release owner / workspace owner.
+Status: **decided 2026-11-09 — Option C (hybrid)**. Owner decision recorded; see Decision log. Owner: release owner / workspace owner.
 Related: `docs/operations/mcp-registry.sql`, `mcp-oauth.sql`, `assistant-tool-traces.sql`,
 `docs/operations/production-release-foundation.md`.
 
@@ -35,4 +35,5 @@ directory. That was correct for pilot speed, but it leaves a manual step that ca
 
 ## Decision log
 
-- 2026-11-09: options + recommendation drafted; **owner decision pending**.
+- 2026-11-09: options + recommendation drafted.
+- 2026-11-09: owner selected **Option C (hybrid)**: keep out-of-band SQL + contract-test guard for the current pilot features; consolidate into reviewed migrations at the next major release with a planned production tracker re-baseline; every new optional table requires a docs SQL file, a contract-test entry and a runbook step; quarterly audit recorded in release notes.
