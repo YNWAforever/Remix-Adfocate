@@ -121,8 +121,16 @@ adminMcpRoutes.get("/audit", async c => {
     .select("server_name,tool_name,outcome,duration_ms,created_at")
     .eq("workspace_id", scope.workspaceId)
     .order("created_at", { ascending: false }).limit(50);
-  if (rows.error) return c.json({ code: "mcp_registry_unavailable", calls: [] });
-  return c.json({ calls: rows.data ?? [] });
+  if (rows.error) return c.json({ code: "mcp_registry_unavailable", calls: [], summary: { total: 0, ok: 0, errors: 0, avg_duration_ms: null } });
+  const calls = (rows.data ?? []) as Array<{ outcome?: string | null; duration_ms?: number | null }>;
+  const durations = calls.map(call => Number(call.duration_ms)).filter(duration => Number.isFinite(duration));
+  const summary = {
+    total: calls.length,
+    ok: calls.filter(call => call.outcome === "ok").length,
+    errors: calls.filter(call => call.outcome !== "ok").length,
+    avg_duration_ms: durations.length ? Math.round(durations.reduce((sum, value) => sum + value, 0) / durations.length) : null,
+  };
+  return c.json({ calls: rows.data ?? [], summary });
 });
 
 adminMcpRoutes.delete("/registry/:id", async c => {

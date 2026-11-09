@@ -144,9 +144,10 @@ describe("admin mcp registry API", () => {
     h.db = fake.client;
     const response = await app().request("/mcp/audit");
     expect(response.status).toBe(200);
-    const body = await response.json() as { calls: Array<Record<string, unknown>> };
+    const body = await response.json() as { calls: Array<Record<string, unknown>>; summary: Record<string, unknown> };
     expect(body.calls).toHaveLength(1);
     expect(body.calls[0]).toMatchObject({ server_name: "notes", tool_name: "lookup_note", outcome: "ok", duration_ms: 12 });
+    expect(body.summary).toEqual({ total: 1, ok: 1, errors: 0, avg_duration_ms: 12 });
   });
 
   it("does not enable a server without tools", async () => {

@@ -35,6 +35,10 @@ Status: started 2026-11-09 (Week 4). B2/B3 are done; this stream covers the last
   - optional tables are granted to `service_role` only, never `anon`/`authenticated`.
 - This catches the exact drift we hit manually earlier (SQL applied but not tracked).
 
+### Environment matrix + canary runbook (implemented, this slice)
+- `docs/operations/environment-matrix.md` lists every build/server flag, defaults, blast radius and current production state.
+- `docs/operations/canary-runbook.md` covers dark deploy, limited enable, 24h watch, one-env rollback and the never-do rules.
+
 ### Still pending
 - End-state migration-tracker policy (adopt a reviewed migration flow for optional SQL instead of
   out-of-band docs) — needs an owner decision.

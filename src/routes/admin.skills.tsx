@@ -112,6 +112,9 @@ export function AdminSkillsPage() {
 
       <div className={card}>
         <h2 className="font-heading font-bold">{t("app.admin.skillsAudit")}</h2>
+        {audit.data?.summary && audit.data.summary.total > 0 ? (
+          <p className="text-sm text-[var(--color-soft-ink)]">{t("app.admin.skillsAuditSummary", { n: audit.data.summary.total, ok: audit.data.summary.ok, errors: audit.data.summary.errors, avg: audit.data.summary.avg_duration_ms ?? "-" })}</p>
+        ) : null}
         {!audit.data?.calls.length ? <p className="text-sm text-[var(--color-soft-ink)]">{t("app.admin.skillsAuditEmpty")}</p> : (
           <ul className="space-y-1 text-sm">
             {audit.data.calls.map(call => (
