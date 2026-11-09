@@ -10,7 +10,7 @@ describe("Studio route search", () => {
         image: "data:image/png;base64,private",
         url: "https://example.test/private",
       }),
-    ).toEqual({ thread: "thread-a", skill: "next_caption" });
+    ).toEqual({ thread: "thread-a", skill: "next_caption", send: false });
   });
 
   it("drops unknown, non-string, and duplicate values instead of enabling mocks", () => {
@@ -21,9 +21,15 @@ describe("Studio route search", () => {
         mock: "rue",
         url: "https://example.test/private",
       }),
-    ).toEqual({ thread: undefined, skill: undefined });
+    ).toEqual({ thread: undefined, skill: undefined, send: false });
     expect(
       parseStudioSearch({ thread: "https://example.test/private" }),
-    ).toEqual({ thread: undefined, skill: undefined });
+    ).toEqual({ thread: undefined, skill: undefined, send: false });
+  });
+
+  it("accepts the one-shot auto-send flag", () => {
+    expect(parseStudioSearch({ thread: "thread-a", send: "1" }).send).toBe(true);
+    expect(parseStudioSearch({ thread: "thread-a", send: true }).send).toBe(true);
+    expect(parseStudioSearch({ thread: "thread-a", send: "yes" }).send).toBe(false);
   });
 });
