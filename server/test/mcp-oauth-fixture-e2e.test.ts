@@ -12,6 +12,7 @@ vi.mock("../lib/supabase.js", () => ({ serviceClient: () => h.db, makeUserClient
 
 import { createMcpRuntime } from "../lib/mcp/client";
 import { loadWorkspaceMcpServers } from "../lib/mcp/registry";
+import { decryptSecret, encryptSecret } from "../lib/mcp/oauthCrypto";
 import { mcpOAuthCallbackRoutes, mcpOAuthRoutes } from "../routes/mcpOAuth";
 
 const CREATOR = "creator-1";
@@ -49,6 +50,14 @@ function fakeStore(rows: Record<string, Row[]>): Store {
       delete() { op = "delete"; writes.push({ table, op }); return q; },
       then(resolve: (value: unknown) => unknown) {
         if (op !== "select") {
+          if (op === "update") {
+            const matches = (row: Row) => Object.entries(filters).every(([key, value]) => {
+              if (Array.isArray(value)) return value.includes(row[key]);
+              if (value === null) return row[key] === null || row[key] === undefined;
+              return row[key] === value;
+            });
+            rows[table] = (rows[table] ?? []).map(row => (matches(row) ? { ...row, ...values } : row));
+          }
           const data = op === "insert" && single ? { id: `${table}-new` } : null;
           return Promise.resolve({ data, error: null }).then(resolve);
         }
@@ -80,6 +89,10 @@ async function startFixture() {
       const chunks: Buffer[] = [];
       for await (const chunk of req) chunks.push(chunk as Buffer);
       const form = new URLSearchParams(Buffer.concat(chunks).toString("utf8"));
+      if (form.get("grant_type") === "refresh_token") {
+        res.writeHead(200, { "content-type": "application/json" });
+        return res.end(JSON.stringify({ access_token: "refreshed-access", refresh_token: "fixture-refresh-2", token_type: "Bearer", expires_in: 3600, scope: "read_basic" }));
+      }
       const verifier = form.get("code_verifier") ?? "";
       if (!verifier) { res.writeHead(400); return res.end("missing verifier"); }
       res.writeHead(200, { "content-type": "application/json" });
@@ -180,6 +193,43 @@ describe("A2.3 fixture OAuth end-to-end", () => {
     const output = await runtime.run(`mcp__oauth_notes__${THREAD_TOOL}`, "{}");
     expect(output).toBe("OAUTH-FIXTURE-PAYLOAD");
     expect(seenAuth.at(-1)).toBe("Bearer fixture-access");
+  });
+
+  it("refreshes an expired OAuth connection before exposing the server", async () => {
+    const { base } = await startFixture();
+    vi.stubEnv("MCP_OAUTH_PROVIDERS", JSON.stringify({
+      fixture: {
+        authorizationUrl: `${base}/authorize`,
+        tokenUrl: `${base}/token`,
+        redirectUri: `${base}/callback`,
+        clientId: "client-1",
+        clientSecret: "secret-1",
+        scopes: ["read_basic"],
+      },
+    }));
+    const store = fakeStore({
+      mcp_servers: [{
+        id: SERVER_ID, name: "oauth_notes", url: `${base}/mcp`, enabled: true, read_only: true,
+        workspace_id: WORKSPACE, auth_mode: "oauth", oauth_provider: "fixture", oauth_scopes: ["read_basic"],
+      }],
+      mcp_server_tools: [{ server_id: SERVER_ID, tool_name: THREAD_TOOL, enabled: true }],
+      mcp_consents: [{ server_id: SERVER_ID, creator_id: CREATOR, workspace_id: WORKSPACE, revoked_at: null }],
+      mcp_oauth_connections: [{
+        server_id: SERVER_ID, creator_id: CREATOR, workspace_id: WORKSPACE, provider: "fixture",
+        access_token_encrypted: encryptSecret("expired-access"),
+        refresh_token_encrypted: encryptSecret("fixture-refresh"),
+        expires_at: new Date(Date.now() - 60_000).toISOString(), revoked_at: null,
+      }],
+      mcp_oauth_pending: [],
+    });
+    h.db = store.client;
+
+    const registry = await loadWorkspaceMcpServers(store.client as Parameters<typeof loadWorkspaceMcpServers>[0], WORKSPACE, CREATOR);
+    expect(registry.servers.map(server => server.name)).toEqual(["oauth_notes"]);
+    expect(registry.servers[0].headers).toMatchObject({ Authorization: "Bearer refreshed-access" });
+    const updated = store.rows.mcp_oauth_connections[0];
+    expect(decryptSecret(String(updated.access_token_encrypted))).toBe("refreshed-access");
+    expect(decryptSecret(String(updated.refresh_token_encrypted))).toBe("fixture-refresh-2");
   });
 
   it("rejects an unknown state and does not call the provider", async () => {
