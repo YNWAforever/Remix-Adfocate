@@ -40,8 +40,8 @@ Changing any `VITE_*` value needs a new deployment; refreshing the page is not e
 
 ## Operational notes
 
-- Production currently has `STUDIO_THREADS`, `STUDIO_MCP_ENABLED`, `STUDIO_MCP_REGISTRY` on and the
-  OAuth/proposal flags off. `VITE_STUDIO_FIXTURE` must never be set there.
+- Production currently has `STUDIO_THREADS`, `STUDIO_MCP_ENABLED`, `STUDIO_MCP_REGISTRY` and
+  `STUDIO_MCP_OAUTH` on (OAuth provider: Mysocial, read-only scope), while the proposal execution flags remain off. `VITE_STUDIO_FIXTURE` must never be set there.
 - Optional schema (MCP registry, OAuth connections, tool traces) lives in `docs/operations/*.sql` and is
   **not** part of `supabase/migrations`; `scripts/release/optional-schema-contract.test.ts` guards that.
 - Rotating `MCP_PILOT_TOKEN` requires updating both the env var and the `mcp_servers.url` row that embeds

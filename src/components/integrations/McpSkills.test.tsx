@@ -35,6 +35,16 @@ describe("mcp data skills section", () => {
     await waitFor(() => expect(h.apiFetch).toHaveBeenCalledWith(`/mcp/skills/${SERVER_ID}/consent`, { method: "POST" }));
   });
 
+  it("shows connect and disconnect actions for an OAuth skill", async () => {
+    h.apiFetch.mockImplementation(async (path: string, init?: RequestInit) => {
+      if (path === "/mcp/skills" && !init) return { available: true, skills: [{ id: SERVER_ID, name: "mysocial", tools: ["search_content"], consented: true, auth_mode: "oauth", connected: false }] };
+      return { authorizationUrl: "https://provider.example/authorize" };
+    });
+    mount();
+    expect(await screen.findByRole("button", { name: "Connect account" })).toBeVisible();
+    expect(screen.getByText("Not connected")).toBeVisible();
+  });
+
   it("revokes consent for an already-allowed skill", async () => {
     h.apiFetch.mockImplementation(async (path: string, init?: RequestInit) => {
       if (path === "/mcp/skills" && !init) return { available: true, skills: [{ id: SERVER_ID, name: "notes", tools: ["lookup_note"], consented: true }] };

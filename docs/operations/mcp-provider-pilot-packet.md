@@ -1,60 +1,73 @@
-# MCP provider pilot — approval packet (template)
+# MCP provider pilot — approval packet
 
-Status: **paused 2026-11-09** — owner chose to pause A2.3 until a provider is selected; the fixture E2E and this packet are ready for that step. Fill in with the chosen provider; this is
-the owner-signed gate before anything is enabled in production.
+Status: **configured 2026-11-09**, awaiting creator connection + sign-off. Provider selected: **Mysocial**.
 
 ## 1. Provider and transport
 
-- Provider / product:
-- MCP endpoint URL (https):
-- Transport + protocol version:
-- OAuth app (registered by): client id present? redirect URI registered?
-- Minimum read scopes requested (explicit list):
-- Token handling: encrypted with `MCP_OAUTH_ENCRYPTION_KEY`, stored in `mcp_oauth_connections`, never
-  returned to the browser (`mcp_oauth_connections` is service-role only).
+- Provider / product: Mysocial (social-media intelligence; GoldenGlow AB, Sweden) — https://mysocial.io/mcp/
+- MCP endpoint: `https://app.mysocial.io/mcp` (Streamable HTTP; also a narrower `/mcp/universe`)
+- Protocol: MCP JSON-RPC over streamable HTTP; health `GET /mcp` → `{"name":"mysocial-mcp","status":"ok"}`
+- OAuth: OAuth 2.1 + PKCE (S256) + **dynamic client registration**; no manual app console.
+- OAuth client registered via DCR on **2026-11-09**:
+  - redirect URI: `https://adfocate-2.vercel.app/api/mcp-oauth/callback` (production Hono mount is `/api/mcp-oauth`)
+  - token auth method: `client_secret_post`; client id/secret are stored only in the Vercel
+    `MCP_OAUTH_PROVIDERS` Secret (not in the repo).
+- Scopes requested: **`mcp:read` only** (provider also offers `mcp:write`/`mcp:research`; not requested).
+- Metadata: `/.well-known/oauth-protected-resource` and `/.well-known/oauth-authorization-server` verified on
+  the provider.
 
-## 2. Tools to expose
+## 2. Tools exposed (read-only allowlist)
 
-| Tool | What it reads | Data classes | Read-only guaranteed? | Notes |
-|---|---|---|---|---|
-|  |  |  |  |  |
+20 of the provider's read-only tools are allowlisted in the workspace registry; every write tool stays
+unlisted and is never offered to the assistant:
 
-Allowlist is explicit; remote `tools/list` metadata cannot widen it. Nothing write/publish-capable may be
-listed.
+`whoami`, `list_channels`, `list_workspaces`, `search_content`, `get_content`,
+`get_strategy_context`, `get_playbook`, `get_channel_analytics`, `get_post_media`, `get_topics`,
+`get_audience`, `search_universe`, `universe_content`, `get_universe_post`, `search_youtube`,
+`search_tiktok`, `search_creators`, `list_tracked_creators`, `get_channel_posts`,
+`list_brand_identities`.
+
+No write/publish/delete tool is reachable through Adfocate; the assistant's tool list is the registry
+allowlist, not the provider's full `tools/list`.
 
 ## 3. Privacy and consent
 
-- Creator consent: `/connections → 資料技能`, per server, revocable; revocation fences in-flight calls
-  (`error: consent_revoked`, audited).
-- Data classes / PII involved:
-- Data leaving Adfocate: what is sent to the provider and under which scopes:
-- Retention: provider-side retention; local retention is `mcp_call_audit` 90 days (no payloads), consent
-  and token rows until revoked.
-- Cross-border / region notes:
+- Creator consent: `/connections → 資料技能 → Mysocial` — allow read-only, then connect via OAuth
+  (provider sign-in). Both a consent row and a live connection are required before the skill is offered
+  in chat; either can be revoked.
+- Data classes read: the creator's own connected social content and derived metrics/transcripts/audience
+  summaries, brand documents and Creator Universe public research (per provider docs).
+- Not read: conversation history, assistant memory, files, any account other than the authorizing one.
+- Provider-side retention: media/analysis while post + account exist; assistant request summaries
+  90 days; revocation takes effect within 30 seconds (provider docs §9/§11).
+- Adfocate-side retention: encrypted tokens until revoked/reconnected; `mcp_call_audit` 90 days without
+  payloads; no tool arguments stored locally.
+- Cross-border: provider processes on Google Cloud (EU + US under SCCs). Owner must accept.
 
 ## 4. Security review
 
-- [ ] Endpoint is https and hosts a well-defined read-only server.
-- [ ] OAuth app reviewed; client secret stored server-side only; PKCE + state required.
-- [ ] Tool allowlist reviewed; no write tools.
-- [ ] Token refresh failure behaviour documented (`mcp_auth_required`).
-- [ ] Kill switch: `STUDIO_MCP_ENABLED=false` (one env change, redeploy).
-- [ ] Audit owner + on-call contact.
+- [x] HTTPS MCP endpoint + metadata verified.
+- [x] DCR client is confidential (`client_secret_post`); secret only in Vercel Secret; PKCE + state enforced
+      by our flow; callback identifies the creator from the pending state row.
+- [x] Explicit read-only allowlist; no write tools.
+- [ ] Token refresh: not implemented yet — access tokens expire and the creator must reconnect; acceptable
+      for the pilot (documented limitation).
+- [x] Kill switches: `STUDIO_MCP_OAUTH=false` and/or `STUDIO_MCP_ENABLED=false` (env change + redeploy).
+- [x] Audit: provider-side call record + our `mcp_call_audit` (creator/workspace/tool/outcome/duration).
 
 ## 5. Rollout
 
-- [ ] Registry row created via `/admin/skills` (disabled first).
-- [ ] Creator consent tested by a named human (record who/when).
-- [ ] One studio chat turn that uses the skill verified; `mcp_call_audit` row inspected.
-- [ ] 24h watch: outcome mix, 401/403, latency.
-- [ ] Rollback rehearsed (flag off → verify 404 `mcp_disabled`).
+- [x] Vercel env: `STUDIO_MCP_OAUTH=true`, `MCP_OAUTH_ENCRYPTION_KEY` (Secret),
+      `MCP_OAUTH_PROVIDERS` (Secret, MySocial client).
+- [x] OAuth routes live and dark-checked (`/api/mcp-oauth/callback` unknown state → `/connections?mcp=error`).
+- [ ] Registry row `mysocial` (enabled, read-only) created for the demo workspace.
+- [ ] Creator allow + connect performed by a named human.
+- [ ] One studio chat uses the skill; `mcp_call_audit` row inspected.
+- [ ] 24h watch: outcome mix, errors, latency.
+- [ ] Rollback rehearsed (flag off → 404 `mcp_disabled`).
 
 ## 6. Sign-off
 
 - Owner (workspace): __________________ date:
 - Privacy/data reviewer: __________________ date:
 - Release owner: __________________ date:
-
-## Fixture E2E (pre-provider)
-
-The OAuth + MCP path is already proven locally without a provider: `server/test/mcp-oauth-fixture-e2e.test.ts` runs a local OAuth provider and read-only MCP server through start → callback (real token exchange) → encrypted connection → registry gating → MCP call with the stored bearer token. Use it to validate the approval packet and rollout steps before registering a real provider.

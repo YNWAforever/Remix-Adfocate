@@ -76,6 +76,18 @@ describe("mcp skill consent API", () => {
     });
   });
 
+  it("reports OAuth connect state for an OAuth-mode skill", async () => {
+    enable();
+    h.db = db({
+      mcp_servers: [{ id: SERVER_ID, name: "notes", enabled: true, read_only: true, workspace_id: "w1", auth_mode: "oauth" }],
+      mcp_server_tools: [{ server_id: SERVER_ID, tool_name: "lookup_note", enabled: true }],
+      mcp_consents: [{ server_id: SERVER_ID, creator_id: "creator", workspace_id: "w1", revoked_at: null }],
+      mcp_oauth_connections: [{ server_id: SERVER_ID, creator_id: "creator", workspace_id: "w1", revoked_at: null }],
+    }).client;
+    const response = await app().request("/mcp/skills");
+    expect(await response.json()).toMatchObject({ skills: [{ id: SERVER_ID, auth_mode: "oauth", consented: true, connected: true }] });
+  });
+
   it("grants consent for an enabled read-only workspace server", async () => {
     enable();
     const fake = db(baseRows());
