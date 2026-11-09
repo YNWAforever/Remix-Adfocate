@@ -4,10 +4,10 @@ import type { StudioDetail } from "@/lib/studio/types";
 import { ApiError } from "@/lib/api";
 import * as api from "@/lib/api";
 vi.mock("../integrations/IntegrationSourcePanel",()=>({IntegrationSourcePanel:({onLoginRequired}:{onLoginRequired?:()=>void})=><button onClick={onLoginRequired}>Simulate source session loss</button>}));
-const h=vi.hoisted(()=>({historyError:null as Error|null,history:[] as {id:string;title:string}[],error:null as Error|null,refetch:vi.fn(),detail:null as StudioDetail|null,blocker:null as {shouldBlockFn:()=>boolean;enableBeforeUnload?:boolean}|null,mutate:vi.fn(),chat:vi.fn(),invalidate:vi.fn()}));
+const h=vi.hoisted(()=>({historyError:null as Error|null,history:[] as {id:string;title:string}[],error:null as Error|null,refetch:vi.fn(),detail:null as StudioDetail|null,blocker:null as {shouldBlockFn:()=>boolean;enableBeforeUnload?:boolean}|null,mutate:vi.fn(),chat:vi.fn(),pending:false,invalidate:vi.fn()}));
 vi.mock("@tanstack/react-router",()=>({useBlocker:(options:{shouldBlockFn:()=>boolean})=>{h.blocker=options;},useNavigate:()=>vi.fn(),Link:({children,to}:{children:React.ReactNode;to:string})=><a href={to}>{children}</a>}));
 vi.mock("@/lib/i18n",()=>({useI18n:()=>({lang:"zh"})}));
-vi.mock("@/lib/queries/kocmax",()=>({useAssistantChat:()=>({isPending:false,mutateAsync:h.chat}),useMe:()=>({data:{id:"creator-a"}}),useMissions:()=>({data:[]}),useMyMissions:()=>({data:[{id:"submission",creator_workflow_mode:"active_workspace",missions:{title:"Tea"}}]})}));
+vi.mock("@/lib/queries/kocmax",()=>({useAssistantChat:()=>({isPending:h.pending,mutateAsync:h.chat}),useMe:()=>({data:{id:"creator-a"}}),useMissions:()=>({data:[]}),useMyMissions:()=>({data:[{id:"submission",creator_workflow_mode:"active_workspace",missions:{title:"Tea"}}]})}));
 vi.mock("@/lib/studio/queries",()=>({studioKeys:{detail:(id:string)=>[id]},useStudioThreads:()=>({data:{threads:h.history,nextPage:null},error:h.historyError,isError:!!h.historyError}),useStudioThread:()=>({data:h.detail,isError:!!h.error,error:h.error,refetch:h.refetch}),useStudioCommand:()=>({mutateAsync:h.mutate,isPending:false})}));
 vi.mock("@tanstack/react-query",()=>({useQueryClient:()=>({invalidateQueries:h.invalidate}),useQuery:()=>({data:{workflow:{state:"drafting"},pendingReward:null,workItems:[{id:"item",title:"Reel",state:"drafting",draft:{revision:2}}]}})}));
 import { StudioWorkspace } from "./StudioWorkspace";
@@ -90,7 +90,20 @@ beforeEach(()=>{
   h.error=null;h.refetch.mockReset();
   h.historyError=null;h.history=[];
   h.chat.mockReset();
-  h.mutate.mockReset();h.detail={thread:{id:"thread",title:"Tea brief",topic:"creation",mission_id:null,conversation_id:"conversation",revision:2,created_at:"2026-10-31"},sources:[{id:"private",thread_id:"thread",title:"Private note",content:"Private observation",kind:"private",shareable:false,question:"Question",platform:"manual",region:"HK",language:"zh-Hant",observed_at:"2026-10-31T00:00:00Z",url:null,revoked_at:null,status:"unverified"}],briefs:[{id:"brief",thread_id:"thread",version:1,created_at:"2026-10-31",sections:[{id:"private-section",text:"Private observation",sourceIds:["private"]},{id:"own",text:"My own idea",sourceIds:[]}]}],shares:[],messages:[]};
+  h.pending=false;h.mutate.mockReset();h.detail={thread:{id:"thread",title:"Tea brief",topic:"creation",mission_id:null,conversation_id:"conversation",revision:2,created_at:"2026-10-31"},sources:[{id:"private",thread_id:"thread",title:"Private note",content:"Private observation",kind:"private",shareable:false,question:"Question",platform:"manual",region:"HK",language:"zh-Hant",observed_at:"2026-10-31T00:00:00Z",url:null,revoked_at:null,status:"unverified"}],briefs:[{id:"brief",thread_id:"thread",version:1,created_at:"2026-10-31",sections:[{id:"private-section",text:"Private observation",sourceIds:["private"]},{id:"own",text:"My own idea",sourceIds:[]}]}],shares:[],messages:[]};
+});
+it("auto-sends the home prompt once when opening a new thread",async()=>{
+  h.detail={...h.detail!,thread:{...h.detail!.thread,initial_prompt:"幫我看這個任務"},messages:[]} as StudioDetail;
+  h.chat.mockResolvedValue({persistence:"saved",request_id:"req-auto",conversation_id:"conversation",answer:"好的"});
+  render(<StudioWorkspace threadId="thread" autoSend/>);
+  await waitFor(()=>expect(h.chat).toHaveBeenCalledTimes(1));
+  expect(h.chat.mock.calls[0][0]).toMatchObject({message:"幫我看這個任務"});
+});
+it("shows an assistant working indicator while the reply is pending",()=>{
+  h.pending=true;
+  render(<StudioWorkspace threadId="thread"/>);
+  expect(screen.getByText("AI 正在查閱資料與技能…")).toBeVisible();
+  expect(screen.getByRole("button",{name:"等待回覆…"})).toBeDisabled();
 });
 it.each(["detail","history"])("contains cached private content when %s requires login",source=>{
   h.history=[{id:"thread",title:"PRIVATE_HISTORY_TITLE"}];

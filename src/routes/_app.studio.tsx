@@ -6,6 +6,7 @@ import { GROWTH_SKILLS, type GrowthSkillId } from "@/lib/creatorGrowth/skillMani
 export type StudioSearch = Readonly<{
   thread?: string;
   skill?: GrowthSkillId;
+  send?: boolean;
 }>;
 
 function isGrowthSkillId(value: unknown): value is GrowthSkillId {
@@ -23,6 +24,7 @@ export function parseStudioSearch(search: Record<string, unknown>): StudioSearch
   return {
     thread: parseThreadId(search.thread),
     skill: isGrowthSkillId(search.skill) ? search.skill : undefined,
+    send: search.send === true || search.send === "1" || search.send === "true",
   };
 }
 
@@ -31,8 +33,8 @@ export const Route = createFileRoute("/_app/studio")({
   component: StudioRoute,
 });
 function StudioRoute() {
-  const { thread, skill } = Route.useSearch();
+  const { thread, skill, send } = Route.useSearch();
   return STUDIO_THREADS
-    ? <StudioWorkspace threadId={thread} skill={skill}/>
+    ? <StudioWorkspace threadId={thread} skill={skill} autoSend={send}/>
     : <div className="s-card"><h1>工作室準備中 / Studio is coming</h1><Link className="s-btn" to="/my">繼續我的任務 / Continue missions</Link></div>;
 }
