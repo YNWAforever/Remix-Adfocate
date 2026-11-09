@@ -33,11 +33,14 @@ claim the pilot is usable. The synthetic E2E already passed; this is the human c
 - If anything fails: the exact step, page, and visible error; optionally the request id from the network
   response (`request_id`).
 
-## Observed 2026-11-09 (partial smoke)
+## Verified 2026-11-09 22:49 SGT (human pass)
 
-- A real creator in the demo workspace granted **live consent** for `workspace_missions` (not revoked), so the consent card path works for a human.
-- One human studio chat used only built-in tools (missions/open-missions/recent-threads); **no MCP call was recorded**, so the MCP chip step is still unverified by a human.
-- The studio prompt prefers a connected skill, and when a connected skill provides the same capability as a built-in tool (e.g. workspace open missions) the built-in equivalent is no longer offered while the skill is available — so re-running step 5 now exercises the MCP path deterministically. If the skill fails, the assistant says the data is unavailable instead of falling back silently.
+- A real creator granted live consent for `workspace_missions` at 22:42 SGT (not revoked) — the human consent card path works.
+- The same creator then asked in `/studio`: 「請用 workspace_missions 技能列出呢個工作區所有公開任務標題」.
+- The request saved at 22:49 SGT and the assistant replied “已用 **workspace_missions** 技能查詢…” with the mission table (unverified framing preserved).
+- `mcp_call_audit` row: `workspace_missions.list_open_missions`, outcome **ok**, 1098 ms, correct creator/workspace.
+- `assistant_tool_traces` row for the conversation: `["mcp__workspace_missions__list_open_missions"]` — the MCP chip path is confirmed by a human.
+- Earlier 19:02 SGT attempt on a different account had no consent, so the assistant correctly used built-in tools; that is expected behaviour, not a fault.
 
 ## Operator checks after the smoke
 
