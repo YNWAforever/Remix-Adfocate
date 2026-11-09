@@ -54,3 +54,7 @@ listed.
 - Owner (workspace): __________________ date:
 - Privacy/data reviewer: __________________ date:
 - Release owner: __________________ date:
+
+## Fixture E2E (pre-provider)
+
+The OAuth + MCP path is already proven locally without a provider: `server/test/mcp-oauth-fixture-e2e.test.ts` runs a local OAuth provider and read-only MCP server through start → callback (real token exchange) → encrypted connection → registry gating → MCP call with the stored bearer token. Use it to validate the approval packet and rollout steps before registering a real provider.
