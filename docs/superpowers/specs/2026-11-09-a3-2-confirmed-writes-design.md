@@ -1,6 +1,6 @@
 # A3.2 confirmed writes — design (implementation next phase)
 
-Status: design 2026-11-09. Today only **proposals** exist: `propose_brief` records a proposal, the UI can
+Status: **implemented 2026-11-09** (dark behind `STUDIO_ASSISTANT_PROPOSAL_EXECUTION`; signing key required). The execution endpoint, signed tokens, audit table and UI confirm button ship; A2 provider pilot remains a separate external gate. Today only **proposals** exist: `propose_brief` records a proposal, the UI can
 apply it to the editor, and nothing is written server-side. This document scopes the server-side execution
 step behind the explicit confirmation UI and its safety properties.
 

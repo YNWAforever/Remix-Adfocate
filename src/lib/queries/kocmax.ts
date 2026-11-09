@@ -545,7 +545,7 @@ export function useEarningsHistory() {
 }
 
 export type AssistantCitation = { title: string; sourceType: string; sourceRef: string };
-export type AssistantProposal = { kind: "brief"; sections: string[] };
+export type AssistantProposal = { kind: "brief"; sections: string[]; token?: string };
 export type AssistantReply = { conversation_id?: string | null; request_id: string; answer?: string; citations?: AssistantCitation[]; tools_used?: string[]; proposals?: AssistantProposal[]; code?: string; persistence: "saved" | "failed" | "unknown" };
 
 export function useAssistantChat() {

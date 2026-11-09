@@ -35,6 +35,7 @@ import { integrationNoticeRoutes } from "./routes/integrationNotices.js";
 import { mcpSkillRoutes } from "./routes/mcp.js";
 import { mcpPilotRoutes } from "./routes/mcpPilot.js";
 import { mcpOAuthCallbackRoutes, mcpOAuthRoutes } from "./routes/mcpOAuth.js";
+import { studioProposalRoutes } from "./routes/studioProposals.js";
 
 export type Env = {
   Variables: { userId: string; workspaceId: string; jwt: string };
@@ -87,6 +88,7 @@ export function createApp(options: { creatorPilot?: CreatorPilotRouteDependencie
   guarded.route("/copilot", copilotRoutes);
   guarded.route("/assistant", assistantRoutes());
   guarded.route("/studio", studioRoutes);
+  guarded.route("/studio", studioProposalRoutes());
   guarded.route("/mcp", mcpSkillRoutes());
   guarded.route("/mcp", mcpOAuthRoutes());
   // Publication is separately guarded and disabled; no service/worker is installed.

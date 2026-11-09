@@ -313,6 +313,19 @@ it("asks for confirmation before applying a proposed brief",async()=>{
   fireEvent.click(screen.getByRole("button",{name:"套用到 Brief 編輯器"}));
   expect(await screen.findByDisplayValue("第一段：真實體驗")).toBeVisible();
 });
+it("executes a signed proposal only after the confirm click",async()=>{
+  h.chat.mockResolvedValue({persistence:"saved",request_id:"req-2",conversation_id:"conv-2",answer:"我建議兩段內容。",proposals:[{kind:"brief",sections:["第一段：真實體驗"],token:"signed-token"}]});
+  const apiFetch=vi.spyOn(api,"apiFetch").mockResolvedValue({ok:true} as never);
+  render(<StudioWorkspace threadId="thread"/>);
+  fireEvent.change(screen.getByRole("textbox",{name:"繼續討論"}),{target:{value:"幫我擬一個 Brief"}});
+  fireEvent.click(screen.getByRole("button",{name:"送出"}));
+  const confirm=await screen.findByRole("button",{name:"確認並保存私人 Brief"});
+  expect(apiFetch).not.toHaveBeenCalledWith("/studio/proposals/execute",expect.anything());
+  fireEvent.click(confirm);
+  await waitFor(()=>expect(apiFetch).toHaveBeenCalledWith("/studio/proposals/execute",{method:"POST",body:JSON.stringify({token:"signed-token",sections:["第一段：真實體驗"]})}));
+  expect(await screen.findByText("已保存私人 Brief。")).toBeVisible();
+  apiFetch.mockRestore();
+});
 it("shows tools saved with an earlier reply after reload",()=>{
   h.detail={...h.detail!,messages:[{id:"m1",role:"assistant",content:"你接咗一杯茶任務。",created_at:"2026-11-09",tools:["get_my_missions","get_open_missions"]}]};
   render(<StudioWorkspace threadId="thread"/>);
