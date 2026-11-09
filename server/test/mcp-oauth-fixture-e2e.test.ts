@@ -84,11 +84,13 @@ afterEach(async () => {
 
 async function startFixture() {
   const seenAuth: string[] = [];
+  const tokenForms: URLSearchParams[] = [];
   const server = createServer(async (req, res) => {
     if (req.method === "POST" && req.url === "/token") {
       const chunks: Buffer[] = [];
       for await (const chunk of req) chunks.push(chunk as Buffer);
       const form = new URLSearchParams(Buffer.concat(chunks).toString("utf8"));
+      tokenForms.push(form);
       if (form.get("grant_type") === "refresh_token") {
         res.writeHead(200, { "content-type": "application/json" });
         return res.end(JSON.stringify({ access_token: "refreshed-access", refresh_token: "fixture-refresh-2", token_type: "Bearer", expires_in: 3600, scope: "read_basic" }));
@@ -121,7 +123,7 @@ async function startFixture() {
   await new Promise<void>(resolve => server.listen(0, "127.0.0.1", resolve));
   closeables.push(() => new Promise<void>(resolve => server.close(() => resolve())));
   const base = `http://127.0.0.1:${(server.address() as AddressInfo).port}`;
-  return { base, seenAuth };
+  return { base, seenAuth, tokenForms };
 }
 
 function guardedApp() {
@@ -193,6 +195,33 @@ describe("A2.3 fixture OAuth end-to-end", () => {
     const output = await runtime.run(`mcp__oauth_notes__${THREAD_TOOL}`, "{}");
     expect(output).toBe("OAUTH-FIXTURE-PAYLOAD");
     expect(seenAuth.at(-1)).toBe("Bearer fixture-access");
+  });
+
+  it("completes the callback for a public client without sending a client secret", async () => {
+    const { base, tokenForms } = await startFixture();
+    vi.stubEnv("MCP_OAUTH_PROVIDERS", JSON.stringify({
+      fixture: {
+        authorizationUrl: `${base}/authorize`,
+        tokenUrl: `${base}/token`,
+        redirectUri: `${base}/callback`,
+        clientId: "client-public",
+        scopes: ["read_basic"],
+      },
+    }));
+    const state = "public-state";
+    const store = fakeStore({
+      mcp_oauth_pending: [{
+        state, creator_id: CREATOR, workspace_id: WORKSPACE, server_id: SERVER_ID, provider: "fixture",
+        code_verifier_encrypted: encryptSecret("verifier"), expires_at: new Date(Date.now() + 60_000).toISOString(),
+      }],
+      mcp_oauth_connections: [],
+    });
+    h.db = store.client;
+    const response = await callbackApp().request(`/mcp-oauth/callback?code=fixture-code&state=${state}`);
+    expect(response.status).toBe(303);
+    expect(response.headers.get("location")).toBe("/connections?mcp=connected");
+    expect(tokenForms[0]?.get("client_id")).toBe("client-public");
+    expect(tokenForms[0]?.get("client_secret")).toBeNull();
   });
 
   it("refreshes an expired OAuth connection before exposing the server", async () => {

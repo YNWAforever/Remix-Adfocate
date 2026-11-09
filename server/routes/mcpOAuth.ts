@@ -136,14 +136,17 @@ export function mcpOAuthCallbackRoutes() {
       const response = await fetch(provider.tokenUrl, {
         method: "POST",
         headers: { "content-type": "application/x-www-form-urlencoded", accept: "application/json" },
-        body: new URLSearchParams({
-          grant_type: "authorization_code",
-          code,
-          redirect_uri: provider.redirectUri,
-          client_id: provider.clientId,
-          client_secret: provider.clientSecret,
-          code_verifier: verifier,
-        }),
+        body: (() => {
+          const form = new URLSearchParams({
+            grant_type: "authorization_code",
+            code,
+            redirect_uri: provider.redirectUri,
+            client_id: provider.clientId,
+            code_verifier: verifier,
+          });
+          if (provider.clientSecret) form.set("client_secret", provider.clientSecret);
+          return form;
+        })(),
         signal: AbortSignal.timeout(10000),
       });
       if (!response.ok) return c.redirect(ERROR_REDIRECT, 303);
