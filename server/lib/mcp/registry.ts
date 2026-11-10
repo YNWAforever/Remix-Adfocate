@@ -8,7 +8,7 @@ type Store = Pick<SupabaseClient, "from">;
 const SERVER_NAME = /^[a-z0-9_]{1,32}$/;
 const TOOL_NAME = /^[A-Za-z0-9_]{1,64}$/;
 
-const DEFAULT_TIMEOUT_MS = 8000;
+const DEFAULT_TIMEOUT_MS = 15000;
 
 type RefreshedToken = { accessToken: string; refreshToken?: string; expiresAt: string | null };
 

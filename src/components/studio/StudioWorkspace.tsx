@@ -192,7 +192,7 @@ function ThreadContent({ detail, skill, autoSend, identityKey, onLoginRequired }
     setEphemeral([{ id:"user-" + request.id, role:"user" as const, content: message }]);
     setUsedTools([]);
     try { await receive(await chat.mutateAsync({ message:request.message,conversation_id:detail.thread.conversation_id,client_request_id:request.id }), request.message); }
-    catch (error) { if (rejectUnauthorized(error)) return; setFeedback(tx("暫時未能回覆。輸入已保留，也可以直接整理證據與 Brief。", "No reply yet. Your input is safe; you can still work on evidence and a brief.")); }
+    catch (error) { if (rejectUnauthorized(error)) return; setFeedback(tx("暫時未能回覆（可能是資料技能查詢較慢）。輸入已保留，請再按一次送出；系統會沿用同一個要求。也可以直接整理證據與 Brief。", "No reply yet (a data-skill lookup may have been slow). Your input is safe; press Send again to retry the same request, or work on evidence and a brief.")); }
   }
   useEffect(() => {
     if (!autoSend || sentInitial.current || chat.isPending) return;
