@@ -118,6 +118,8 @@ export async function runAssistant(
     const toolsUsed: string[] = [];
     deps.onProgress?.("thinking");
     const proposals: AssistantProposal[] = [];
+    // Identical read-only lookups in one turn are reused: skill calls can cost credits and seconds.
+    const toolResultCache = new Map<string, string>();
     let softStopped = false;
     let last = await provider.chat({ messages, tools: toolDefs, signal: deps.signal });
     let iterations = 0;
@@ -147,11 +149,23 @@ export async function runAssistant(
             toolResult = "proposal recorded: show it to the creator for explicit confirmation; no action was taken.";
           }
         } else if (builtinTools.has(call.name)) {
-          try { toolResult = await runToolFn(call.name, call.arguments, client, { workspaceId: input.workspace }); }
-          catch { toolResult = "error: tool unavailable"; }
+          const cacheKey = "builtin:" + call.name + ":" + call.arguments;
+          const cached = toolResultCache.get(cacheKey);
+          if (cached !== undefined) toolResult = cached;
+          else {
+            try { toolResult = await runToolFn(call.name, call.arguments, client, { workspaceId: input.workspace }); }
+            catch { toolResult = "error: tool unavailable"; }
+            if (!toolResult.startsWith("error:")) toolResultCache.set(cacheKey, toolResult);
+          }
         } else if (deps.runStudioTool) {
-          try { toolResult = await deps.runStudioTool(call.name, call.arguments, deps.signal); }
-          catch { toolResult = "error: skill unavailable"; }
+          const cacheKey = "skill:" + call.name + ":" + call.arguments;
+          const cached = toolResultCache.get(cacheKey);
+          if (cached !== undefined) toolResult = cached;
+          else {
+            try { toolResult = await deps.runStudioTool(call.name, call.arguments, deps.signal); }
+            catch { toolResult = "error: skill unavailable"; }
+            if (!toolResult.startsWith("error:")) toolResultCache.set(cacheKey, toolResult);
+          }
         } else {
           toolResult = "error: tool_not_allowed";
         }
