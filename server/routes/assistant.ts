@@ -106,7 +106,7 @@ async function studioMcpRuntime(input: {
 /** Decorates proposals with a signed execution token when the execution flag/key are present. */
 export function proposalEnvelope(
   result: { proposals?: Array<{ kind: "brief"; sections: string[] }> },
-  input: { conversationId?: string | null; requestId: string },
+  input: { threadId: string | null; requestId: string },
   creatorId: string,
   workspaceId: string,
 ) {
@@ -116,7 +116,7 @@ export function proposalEnvelope(
     const token = execution
       ? signProposalToken({
         kind: "brief",
-        threadId: input.conversationId ?? null,
+        threadId: input.threadId,
         creatorId,
         workspaceId,
         requestId: `${input.requestId}:${index}`,
@@ -255,19 +255,18 @@ export function assistantRoutes(testProvider?: AssistantProvider) {
       const saved = await store.rpc("save_assistant_turn", { ...identity, p_answer: result.answer, p_citations: result.citations });
       if (!saved.error && saved.data?.persistence === "saved") {
         await saveToolTrace(store, saved.data.conversation_id ?? input.conversationId, result.answer, result.toolsUsed, input.requestId);
-        const savedConversationId = (saved.data as { conversation_id?: string | null } | null)?.conversation_id ?? input.conversationId ?? null;
-        return c.json({ ...saved.data, ...(result.toolsUsed?.length ? { tools_used: result.toolsUsed } : {}), ...proposalEnvelope(result, { ...input, conversationId: savedConversationId }, c.get("userId"), workspaceId) });
+        return c.json({ ...saved.data, ...(result.toolsUsed?.length ? { tools_used: result.toolsUsed } : {}), ...proposalEnvelope(result, { threadId: studio?.threadId ?? null, requestId: input.requestId }, c.get("userId"), workspaceId) });
       }
       await markUnknown();
       if(studio?.integrationSources?.length) return c.json({code:"studio_context_changed",persistence:"failed",request_id:input.requestId,error:"來源或儲存權限已變更，已停止返回衍生回覆。"},409);
       return c.json({ ...result, conversation_id: input.conversationId ?? null, request_id: input.requestId,
         ...(result.toolsUsed?.length ? { tools_used: result.toolsUsed } : {}),
-        ...proposalEnvelope(result, input, c.get("userId"), workspaceId),
+        ...proposalEnvelope(result, { threadId: studio?.threadId ?? null, requestId: input.requestId }, c.get("userId"), workspaceId),
         persistence: saved.error?.code && /^(22|23|P0)/.test(saved.error.code) ? "failed" : "unknown" });
     } catch {
       await markUnknown();
       if(studio?.integrationSources?.length) return c.json({code:"studio_context_changed",persistence:"failed",request_id:input.requestId,error:"來源權限尚未確認；沒有保存或返回衍生回覆。"},409);
-      return c.json({ ...result, conversation_id: input.conversationId ?? null, request_id: input.requestId, ...(result.toolsUsed?.length ? { tools_used: result.toolsUsed } : {}), ...proposalEnvelope(result, input, c.get("userId"), workspaceId), persistence: "unknown" });
+      return c.json({ ...result, conversation_id: input.conversationId ?? null, request_id: input.requestId, ...(result.toolsUsed?.length ? { tools_used: result.toolsUsed } : {}), ...proposalEnvelope(result, { threadId: studio?.threadId ?? null, requestId: input.requestId }, c.get("userId"), workspaceId), persistence: "unknown" });
     }
   });
   r.get("/progress/:id", async (c) => {

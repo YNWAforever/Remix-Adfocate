@@ -51,5 +51,5 @@ export async function loadStudioContext(store: Pick<SupabaseClient,"from">, user
     if(row.context_version===contextVersion) history.push({role:"assistant" as const,content:row.result.answer});
     else contextChanged=true;
   }
-  return {context,contextVersion,history,contextChanged,integrationSources:selected.filter(source=>source.integration)};
+  return {threadId:thread.data.id,context,contextVersion,history,contextChanged,integrationSources:selected.filter(source=>source.integration)};
 }
