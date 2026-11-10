@@ -63,22 +63,22 @@ export function studioProposalRoutes() {
     const body = await c.req.json().catch(() => null) as { token?: unknown; sections?: unknown } | null;
     if (!body || typeof body.token !== "string") return c.json({ code: "INVALID_PROPOSAL" }, 400);
     const payload = verifyProposalToken(body.token);
-    if (!payload) return c.json({ code: "INVALID_PROPOSAL" }, 403);
+    if (!payload) { console.info("[proposal] execute rejected invalid_token"); return c.json({ code: "INVALID_PROPOSAL" }, 403); }
 
     const userId = c.get("userId"), workspaceId = c.get("workspaceId");
     const scopedCreators = executionCreators();
-    if (scopedCreators && !scopedCreators.has(userId)) return c.json({ code: "proposal_execution_not_allowed" }, 403);
-    if (payload.creatorId !== userId || payload.workspaceId !== workspaceId) return c.json({ code: "PROPOSAL_INVALID" }, 403);
+    if (scopedCreators && !scopedCreators.has(userId)) { console.info("[proposal] execute rejected not_allowlisted"); return c.json({ code: "proposal_execution_not_allowed" }, 403); }
+    if (payload.creatorId !== userId || payload.workspaceId !== workspaceId) { console.info("[proposal] execute rejected owner_mismatch"); return c.json({ code: "PROPOSAL_INVALID" }, 403); }
     const sections = normalizeProposalSections(body.sections);
-    if (!sections || proposalContentHash(sections) !== payload.contentHash) return c.json({ code: "PROPOSAL_CONTENT_MISMATCH" }, 400);
-    if (payload.kind !== "brief" || !payload.threadId || !UUID.test(payload.threadId)) return c.json({ code: "INVALID_PROPOSAL" }, 400);
+    if (!sections || proposalContentHash(sections) !== payload.contentHash) { console.info("[proposal] execute rejected content_mismatch"); return c.json({ code: "PROPOSAL_CONTENT_MISMATCH" }, 400); }
+    if (payload.kind !== "brief" || !payload.threadId || !UUID.test(payload.threadId)) { console.info("[proposal] execute rejected bad_thread"); return c.json({ code: "INVALID_PROPOSAL" }, 400); }
 
     const started = Date.now();
     const userClient = makeUserClient(c.get("jwt"));
     const thread = await userClient.from("studio_threads").select("id,revision")
       .eq("id", payload.threadId).eq("creator_id", userId).eq("workspace_id", workspaceId).maybeSingle();
-    if (thread.error) return dbError(c, thread.error, "studio_unavailable", 503);
-    if (!thread.data) return c.json({ code: "not_found" }, 404);
+    if (thread.error) { console.info("[proposal] execute thread_unavailable"); return dbError(c, thread.error, "studio_unavailable", 503); }
+    if (!thread.data) { console.info("[proposal] execute thread_not_found"); return c.json({ code: "not_found" }, 404); }
     const revision = Number((thread.data as { revision?: number }).revision ?? 0);
 
     const command = await serviceClient().rpc("studio_command", {
@@ -93,11 +93,13 @@ export function studioProposalRoutes() {
     if (command.error) {
       const code = String(command.error.message);
       const conflict = ["IDEMPOTENCY_CONFLICT", "STALE_BRIEF", "WRONG_STATE", "STALE_THREAD"].includes(code);
+      console.info("[proposal] execute command_" + (conflict ? "rejected" : "failed") + " " + code);
       void recordProposal({ requestId: payload.requestId, creatorId: userId, workspaceId, threadId: payload.threadId, kind: payload.kind, outcome: conflict ? "rejected" : "failed", durationMs: duration });
       if (conflict) return c.json({ code }, 409);
       return dbError(c, command.error, "proposal_execution_failed", 503);
     }
 
+    console.info("[proposal] execute ok");
     void recordProposal({ requestId: payload.requestId, creatorId: userId, workspaceId, threadId: payload.threadId, kind: payload.kind, outcome: "executed", durationMs: duration });
     return c.json({ ok: true, kind: payload.kind, result: command.data ?? null });
   });
