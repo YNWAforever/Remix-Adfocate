@@ -6,6 +6,7 @@ import * as api from "@/lib/api";
 vi.mock("../integrations/IntegrationSourcePanel",()=>({IntegrationSourcePanel:({onLoginRequired}:{onLoginRequired?:()=>void})=><button onClick={onLoginRequired}>Simulate source session loss</button>}));
 const h=vi.hoisted(()=>({historyError:null as Error|null,history:[] as {id:string;title:string}[],error:null as Error|null,refetch:vi.fn(),detail:null as StudioDetail|null,blocker:null as {shouldBlockFn:()=>boolean;enableBeforeUnload?:boolean}|null,mutate:vi.fn(),chat:vi.fn(),pending:false,invalidate:vi.fn()}));
 vi.mock("@tanstack/react-router",()=>({useBlocker:(options:{shouldBlockFn:()=>boolean})=>{h.blocker=options;},useNavigate:()=>vi.fn(),Link:({children,to}:{children:React.ReactNode;to:string})=><a href={to}>{children}</a>}));
+vi.mock("@/lib/assistantStream",()=>({assistantChatWithFallback:(body:unknown)=>h.chat(body)}));
 vi.mock("@/lib/i18n",()=>({useI18n:()=>({lang:"zh"})}));
 vi.mock("@/lib/queries/kocmax",()=>({useAssistantChat:()=>({isPending:h.pending,mutateAsync:h.chat}),useMe:()=>({data:{id:"creator-a"}}),useMissions:()=>({data:[]}),useMyMissions:()=>({data:[{id:"submission",creator_workflow_mode:"active_workspace",missions:{title:"Tea"}}]})}));
 vi.mock("@/lib/studio/queries",()=>({studioKeys:{detail:(id:string)=>[id]},useStudioThreads:()=>({data:{threads:h.history,nextPage:null},error:h.historyError,isError:!!h.historyError}),useStudioThread:()=>({data:h.detail,isError:!!h.error,error:h.error,refetch:h.refetch}),useStudioCommand:()=>({mutateAsync:h.mutate,isPending:false})}));

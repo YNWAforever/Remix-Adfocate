@@ -9,7 +9,7 @@ import type { IntegrationSourceMetadata } from "../../../src/lib/integrations/ty
 
 export interface AssistantProvider {
   embed: (texts: string[], signal?: AbortSignal) => Promise<number[][]>;
-  chat: (opts: { messages: ChatMessage[]; tools?: typeof TOOL_DEFS; signal?: AbortSignal }) => Promise<{ content: string | null; toolCalls: ToolCall[] }>;
+  chat: (opts: { messages: ChatMessage[]; tools?: typeof TOOL_DEFS; signal?: AbortSignal; onDelta?: (text: string) => void | Promise<void> }) => Promise<{ content: string | null; toolCalls: ToolCall[] }>;
 }
 export const liveProvider: AssistantProvider = {
   embed: embedTexts,
@@ -43,6 +43,8 @@ export type StudioAssistantContext = { title: string; topic: string; mission?: {
 
 interface Deps {
   signal?: AbortSignal;
+  /** Streams answer text deltas while the provider generates (SSE route). */
+  onDelta?: (text: string) => void | Promise<void>;
   provider?: AssistantProvider;
   runToolFn?: (name: string, args: string, client: Pick<SupabaseClient, "rpc" | "from">, scope?: ToolScope) => Promise<string>;
   maxIterations?: number;
@@ -121,7 +123,7 @@ export async function runAssistant(
     // Identical read-only lookups in one turn are reused: skill calls can cost credits and seconds.
     const toolResultCache = new Map<string, string>();
     let softStopped = false;
-    let last = await provider.chat({ messages, tools: toolDefs, signal: deps.signal });
+    let last = await provider.chat({ messages, tools: toolDefs, signal: deps.signal, ...(deps.onDelta ? { onDelta: deps.onDelta } : {}) });
     let iterations = 0;
     while (last.toolCalls.length) {
       // A model-requested write (or any tool outside the read-only allowlist) is never executed.
@@ -174,7 +176,7 @@ export async function runAssistant(
         messages.push({ role: "tool", tool_call_id: call.id, content: toolResult });
       }
       if (deps.softStopAt && Date.now() >= deps.softStopAt) { softStopped = true; break; }
-      last = await provider.chat({ messages, tools: toolDefs, signal: deps.signal });
+      last = await provider.chat({ messages, tools: toolDefs, signal: deps.signal, ...(deps.onDelta ? { onDelta: deps.onDelta } : {}) });
       deps.signal?.throwIfAborted();
     }
     deps.onProgress?.("answering");
@@ -205,7 +207,7 @@ export async function runAssistant(
     deps.signal?.throwIfAborted();
     let reply;
     try {
-      reply = await deps.provider.chat({ tools: [], signal: deps.signal, messages: [
+      reply = await deps.provider.chat({ tools: [], signal: deps.signal, ...(deps.onDelta ? { onDelta: deps.onDelta } : {}), messages: [
         { role: "system", content: buildSystemPrompt({ locale: input.locale, context, assist: { mode: scoped.context.mode, basisVersion: scoped.basisVersion } }) },
         // Never mix general-chat history or another mission's answer into this context.
         { role: "user", content: input.query },
@@ -238,7 +240,7 @@ export async function runAssistant(
     { role: "user", content: input.query },
   ];
 
-  let last = await provider.chat({ messages, tools: TOOL_DEFS, signal: deps.signal });
+  let last = await provider.chat({ messages, tools: TOOL_DEFS, signal: deps.signal, ...(deps.onDelta ? { onDelta: deps.onDelta } : {}) });
   deps.signal?.throwIfAborted();
   let iter = 0;
   while (last.toolCalls.length && iter < maxIterations) {
@@ -254,7 +256,7 @@ export async function runAssistant(
       messages.push({ role: "tool", tool_call_id: call.id, content: result });
     }
     deps.signal?.throwIfAborted();
-    last = await provider.chat({ messages, tools: TOOL_DEFS, signal: deps.signal });
+    last = await provider.chat({ messages, tools: TOOL_DEFS, signal: deps.signal, ...(deps.onDelta ? { onDelta: deps.onDelta } : {}) });
     deps.signal?.throwIfAborted();
   }
 

@@ -8,7 +8,7 @@ import type { AssistantProvider } from "../lib/assistant/chat";
 
 const stub: AssistantProvider = {
   embed: async () => [[0.1]],
-  chat: async () => ({ content: "你好，完成任務可獲積分。", toolCalls: [] }),
+  chat: async (opts) => { if (opts.onDelta) await opts.onDelta("逐字"); return { content: "你好，完成任務可獲積分。", toolCalls: [] }; },
 };
 
 // Build the app with the stubbed provider by temporarily swapping the assistant route.
@@ -67,6 +67,19 @@ suite("assistant chat route", () => {
     expect(json.answer).toContain("積分");
     expect(json.conversation_id).toBeTruthy();
     expect(json.persistence).toBe("saved");
+  });
+
+  it("streams answer deltas and a done event over SSE", async () => {
+    const app = testApp();
+    const res = await req(app, "/assistant/chat/stream", a.jwt, {
+      method: "POST",
+      body: JSON.stringify({ client_request_id: randomUUID(), message: "暺見鞈箇???" }),
+    });
+    expect(res.headers.get("content-type")).toContain("text/event-stream");
+    const text = await res.text();
+    expect(text).toContain("event: delta");
+    expect(text).toContain("event: done");
+    expect(text).toContain('"persistence":"saved"');
   });
 
   it("does not leak another creator's conversations", async () => {
