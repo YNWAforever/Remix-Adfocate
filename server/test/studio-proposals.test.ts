@@ -91,6 +91,16 @@ describe("studio proposal execution", () => {
     expect(service.inserts[0]).toMatchObject({ request_id: "request:0", creator_id: CREATOR, workspace_id: WORKSPACE, thread_id: THREAD, kind: "brief", outcome: "executed" });
   });
 
+  it("limits execution to allowlisted creators when configured", async () => {
+    h.userClient = userClient({ id: THREAD, revision: 4, creator_id: CREATOR, workspace_id: WORKSPACE }).client;
+    const service = serviceClient();
+    h.serviceClient = service.client;
+    vi.stubEnv("STUDIO_ASSISTANT_PROPOSAL_EXECUTION_CREATORS", "00000000-0000-4000-8000-000000000099");
+    expect((await post({ token: token(), sections })).status).toBe(403);
+    vi.stubEnv("STUDIO_ASSISTANT_PROPOSAL_EXECUTION_CREATORS", CREATOR);
+    expect((await post({ token: token(), sections })).status).toBe(200);
+  });
+
   it("maps stale revisions to a retryable conflict and audits it", async () => {
     h.userClient = userClient({ id: THREAD, revision: 4, creator_id: CREATOR, workspace_id: WORKSPACE }).client;
     const service = serviceClient({ data: null, error: { message: "STALE_BRIEF" } });

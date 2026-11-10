@@ -11,6 +11,14 @@ function executionEnabled() {
   return process.env.STUDIO_ASSISTANT_PROPOSAL_EXECUTION === "true";
 }
 
+/** Optional scoped canary: when set, only these creator ids may execute proposals. */
+function executionCreators(): Set<string> | null {
+  const raw = process.env.STUDIO_ASSISTANT_PROPOSAL_EXECUTION_CREATORS;
+  if (!raw) return null;
+  const ids = raw.split(",").map(value => value.trim()).filter(Boolean);
+  return ids.length ? new Set(ids) : null;
+}
+
 function sameOrigin(c: Context<Env>): boolean {
   const origin = c.req.header("Origin");
   if (origin && origin !== new URL(c.req.url).origin) return false;
@@ -58,6 +66,8 @@ export function studioProposalRoutes() {
     if (!payload) return c.json({ code: "INVALID_PROPOSAL" }, 403);
 
     const userId = c.get("userId"), workspaceId = c.get("workspaceId");
+    const scopedCreators = executionCreators();
+    if (scopedCreators && !scopedCreators.has(userId)) return c.json({ code: "proposal_execution_not_allowed" }, 403);
     if (payload.creatorId !== userId || payload.workspaceId !== workspaceId) return c.json({ code: "PROPOSAL_INVALID" }, 403);
     const sections = normalizeProposalSections(body.sections);
     if (!sections || proposalContentHash(sections) !== payload.contentHash) return c.json({ code: "PROPOSAL_CONTENT_MISMATCH" }, 400);
