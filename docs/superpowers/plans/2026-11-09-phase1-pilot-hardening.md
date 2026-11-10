@@ -16,7 +16,7 @@ Status: in progress. Goal: a creator can connect a data skill and get a successf
 - **A3.2 confirmed writes canary**: `PROPOSAL_SIGNING_KEY` (base64 32 bytes) is stored as a Vercel Secret. Execution remains dark:
   - `STUDIO_ASSISTANT_PROPOSALS` off,
   - `STUDIO_ASSISTANT_PROPOSAL_EXECUTION` off.
-  - To canary: enable both for one pilot creator, confirm a brief save, verify `assistant_proposal_audit` row, then roll back if needed.
+  - **Canary verified 2026-11-10 19:43 UTC**: the pilot creator pressed Confirm; `assistant_proposal_audit` shows outcome `executed` (request `7e37da85-…`, 925 ms), the thread revision went 0 → 1, and `studio_briefs` gained version 1 with 3 sections. Flags stay scoped to `936b9de1…` + `006c749f…` for now; roll back by removing the flags / allowlist.
 
 ## Known limits
 
@@ -27,6 +27,6 @@ Status: in progress. Goal: a creator can connect a data skill and get a successf
 
 ## Next
 
-1. Enable A3.2 canary after owner approval; capture audit evidence.
-2. Run 24h provider watch (audit outcome mix, latency, credits) and record results.
-3. Then Phase 2: SSE streaming + provider-specific eval suites.
+1. Keep the canary scoped; collect a few more confirms and watch `assistant_proposal_audit` for failures.
+2. Run the 24h provider watch (audit outcome mix, latency, credits) and record results.
+3. Phase 2: streaming answers, provider-specific eval suites, source-link quality (started: link/unverified rule + larger skill result budget).

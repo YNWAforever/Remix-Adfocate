@@ -57,6 +57,18 @@ describe("studio assistant eval harness", () => {
     expect(chat.mock.calls[1][0].tools.map((tool: { function: { name: string } }) => tool.function.name)).toContain("mcp__eval__lookup");
   });
 
+  it("tells the model to link provider items and label them unverified", async () => {
+    const runStudioTool = vi.fn().mockResolvedValue('{"items":[{"url":"https://www.tiktok.com/@a/video/1"}]}');
+    const mcpDefs = [{ type: "function" as const, function: { name: "mcp__hasdata__search", description: "Search", parameters: { type: "object", properties: {}, additionalProperties: false } } }];
+    const chat = vi.fn()
+      .mockResolvedValueOnce({ content: null, toolCalls: [toolCall("mcp__hasdata__search", '{"keyword":"skincare"}')] })
+      .mockResolvedValueOnce({ content: "found", toolCalls: [] });
+    await run({ provider: { chat, embed: vi.fn() }, runStudioTool, studioToolDefs: mcpDefs });
+    const system = String(chat.mock.calls[0][0].messages[0].content);
+    expect(system).toContain("markdown links");
+    expect(system.toLowerCase()).toContain("unverified");
+  });
+
   it("records a brief proposal for confirmation without executing it", async () => {
     const runToolFn = vi.fn();
     const chat = vi.fn()
