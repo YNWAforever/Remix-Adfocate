@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   normalizeProposalSections,
   proposalContentHash,
+  proposalRequestId,
   proposalsConfigured,
   signProposalToken,
   verifyProposalToken,
@@ -15,6 +16,13 @@ beforeEach(() => vi.stubEnv("PROPOSAL_SIGNING_KEY", KEY));
 afterEach(() => vi.unstubAllEnvs());
 
 describe("proposal tokens", () => {
+  it("derives a deterministic UUID request id for studio_command", () => {
+    const first = proposalRequestId("6f9b4144-6dc0-4ce6-beac-dd1fef6cefd3", 0);
+    expect(first).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-5[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
+    expect(first).toBe(proposalRequestId("6f9b4144-6dc0-4ce6-beac-dd1fef6cefd3", 0));
+    expect(first).not.toBe(proposalRequestId("6f9b4144-6dc0-4ce6-beac-dd1fef6cefd3", 1));
+  });
+
   it("signs and verifies a bound proposal token", () => {
     const token = signProposalToken(base);
     expect(token).toBeTruthy();

@@ -13,7 +13,7 @@ import { createMcpRuntime } from "../lib/mcp/client.js";
 import { loadMcpRegistry, parseMcpToolName } from "../lib/mcp/policy.js";
 import { loadWorkspaceMcpServers, recordMcpCall, runFencedMcpTool } from "../lib/mcp/registry.js";
 import { PROPOSAL_TOOL_DEFS } from "../lib/assistant/tools.js";
-import { signProposalToken } from "../lib/assistant/proposalToken.js";
+import { proposalRequestId, signProposalToken } from "../lib/assistant/proposalToken.js";
 import { PROVIDER_TIMEOUT_MS } from "../lib/assistant/requestPolicy.js";
 import { loadAssistantProgress, recordAssistantProgress } from "../lib/assistant/progress.js";
 
@@ -119,7 +119,7 @@ export function proposalEnvelope(
         threadId: input.threadId,
         creatorId,
         workspaceId,
-        requestId: `${input.requestId}:${index}`,
+        requestId: proposalRequestId(input.requestId, index),
         content: proposal.sections,
       })
       : null;
