@@ -163,12 +163,13 @@ export async function embedTexts(texts: string[], signal?: AbortSignal): Promise
   return json.data.map((d) => d.embedding);
 }
 
-/** Non-streaming chat completion with optional tools. Throws on failure. */
+/** Chat completion with optional tools. Streams text deltas when onDelta is provided. Throws on failure. */
 export async function chatComplete(opts: {
   signal?: AbortSignal;
   messages: ChatMessage[];
   tools?: ToolDef[];
   temperature?: number;
+  onDelta?: (text: string) => void | Promise<void>;
 }): Promise<{ content: string | null; toolCalls: ToolCall[] }> {
   const model = process.env.AI_GATEWAY_MODEL ?? "deepseek/deepseek-v4-flash";
   const res = await fetch(`${GATEWAY}/chat/completions`, {
@@ -180,16 +181,60 @@ export async function chatComplete(opts: {
       messages: opts.messages,
       tools: opts.tools,
       temperature: opts.temperature ?? 0.3,
-      stream: false,
+      stream: Boolean(opts.onDelta),
     }),
   });
   if (!res.ok) throw new Error(`chat failed: ${res.status}`);
-  const json = (await res.json()) as {
-    choices: Array<{ message: { content: string | null; tool_calls?: Array<{ id: string; function: { name: string; arguments: string } }> } }>;
-  };
-  const msg = json.choices[0]?.message;
+  if (!opts.onDelta) {
+    const json = (await res.json()) as {
+      choices: Array<{ message: { content: string | null; tool_calls?: Array<{ id: string; function: { name: string; arguments: string } }> } }>;
+    };
+    const msg = json.choices[0]?.message;
+    return {
+      content: msg?.content ?? null,
+      toolCalls: (msg?.tool_calls ?? []).map((t) => ({ id: t.id, name: t.function.name, arguments: t.function.arguments })),
+    };
+  }
+  const body = res.body;
+  if (!body) throw new Error("chat stream missing body");
+  const reader = body.getReader();
+  const decoder = new TextDecoder();
+  const toolCalls = new Map<number, { id: string; name: string; arguments: string }>();
+  let content = "";
+  let buffer = "";
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    let index = buffer.indexOf("\n");
+    while (index >= 0) {
+      const line = buffer.slice(0, index).trim();
+      buffer = buffer.slice(index + 1);
+      index = buffer.indexOf("\n");
+      if (!line.startsWith("data:")) continue;
+      const data = line.slice(5).trim();
+      if (!data || data === "[DONE]") continue;
+      const chunk = JSON.parse(data) as {
+        choices?: Array<{ delta?: { content?: string | null; tool_calls?: Array<{ index?: number; id?: string; function?: { name?: string; arguments?: string } }> } }>;
+      };
+      const delta = chunk.choices?.[0]?.delta;
+      if (!delta) continue;
+      if (delta.content) {
+        content += delta.content;
+        await opts.onDelta(delta.content);
+      }
+      for (const [position, call] of (delta.tool_calls ?? []).entries()) {
+        const key = call.index ?? position;
+        const current = toolCalls.get(key) ?? { id: "", name: "", arguments: "" };
+        if (call.id) current.id = call.id;
+        if (call.function?.name) current.name = call.function.name;
+        if (call.function?.arguments) current.arguments += call.function.arguments;
+        toolCalls.set(key, current);
+      }
+    }
+  }
   return {
-    content: msg?.content ?? null,
-    toolCalls: (msg?.tool_calls ?? []).map((t) => ({ id: t.id, name: t.function.name, arguments: t.function.arguments })),
+    content: content || null,
+    toolCalls: [...toolCalls.entries()].sort(([a], [b]) => a - b).map(([, call]) => call).filter((call) => call.name),
   };
 }

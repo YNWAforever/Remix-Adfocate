@@ -69,6 +69,19 @@ suite("assistant chat route", () => {
     expect(json.persistence).toBe("saved");
   });
 
+  it("streams answer deltas and a done event over SSE", async () => {
+    const app = testApp();
+    const res = await req(app, "/assistant/chat/stream", a.jwt, {
+      method: "POST",
+      body: JSON.stringify({ client_request_id: randomUUID(), message: "暺見鞈箇???" }),
+    });
+    expect(res.headers.get("content-type")).toContain("text/event-stream");
+    const text = await res.text();
+    expect(text).toContain("event: delta");
+    expect(text).toContain("event: done");
+    expect(text).toContain('"persistence":"saved"');
+  });
+
   it("does not leak another creator's conversations", async () => {
     const app = testApp();
     const made = await (
