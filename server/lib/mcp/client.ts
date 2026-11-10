@@ -156,7 +156,7 @@ export async function callMcpTool(
       throw new McpError("mcp_unavailable", "Invalid tool arguments");
     }
     const call = await rpc(server, "tools/call", { name: tool, arguments: args }, signal, init.sessionId);
-    const text = formatResult(call.result).slice(0, 6000);
+    const text = formatResult(call.result).slice(0, 12000);
     console.info(`[mcp] ${server.name}.${tool} ok ${Date.now() - started}ms`);
     return text;
   } catch (error) {
