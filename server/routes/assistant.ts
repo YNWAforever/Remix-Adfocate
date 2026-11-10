@@ -14,6 +14,7 @@ import { loadMcpRegistry, parseMcpToolName } from "../lib/mcp/policy.js";
 import { loadWorkspaceMcpServers, recordMcpCall, runFencedMcpTool } from "../lib/mcp/registry.js";
 import { PROPOSAL_TOOL_DEFS } from "../lib/assistant/tools.js";
 import { signProposalToken } from "../lib/assistant/proposalToken.js";
+import { PROVIDER_TIMEOUT_MS } from "../lib/assistant/requestPolicy.js";
 import { loadAssistantProgress, recordAssistantProgress } from "../lib/assistant/progress.js";
 
 /** D20 is offline only. No request flag, env variable or configured gateway key enables this provider. */
@@ -235,6 +236,7 @@ export function assistantRoutes(testProvider?: AssistantProvider) {
             ...(testProvider ? { provider: testProvider } : {}),
             signal,
             onProgress: reportProgress,
+            softStopAt: Date.now() + PROVIDER_TIMEOUT_MS - 7000,
             ...(mcp || proposalDefs.length ? { studioToolDefs: [...(mcp?.defs ?? []), ...proposalDefs], ...(mcp ? { runStudioTool: (name: string, args: string, abort?: AbortSignal) => mcp.run(name, args, abort) } : {}) } : {}),
           });
       });

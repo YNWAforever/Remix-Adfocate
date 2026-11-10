@@ -23,6 +23,20 @@ describe("runAssistant", () => {
     expect(res.citations).toEqual([{ title: "積分規則", sourceType: "article", sourceRef: "points" }]);
   });
 
+  it("returns captured proposals with a soft-deadline note instead of overrunning the turn", async () => {
+    const client = { rpc: vi.fn(async () => ({ data: [], error: null })), from: vi.fn() } as unknown as Parameters<typeof runAssistant>[0];
+    const provider: AssistantProvider = {
+      embed: vi.fn(async () => [[0.1]]),
+      chat: vi.fn(async () => ({ content: null, toolCalls: [{ id: "p1", name: "propose_brief", arguments: JSON.stringify({ sections: ["Hook", "Proof"] }) }] })),
+    };
+    const res = await runAssistant(client, { query: "draft a brief", locale: "zh-HK", workspace: "demo", history: [], studioContext: { title: "T", topic: "t", sources: [] } },
+      { provider, softStopAt: Date.now() - 1, studioToolDefs: [{ type: "function", function: { name: "propose_brief", description: "draft", parameters: { type: "object" } } }] });
+    expect(provider.chat).toHaveBeenCalledTimes(1);
+    expect(res.proposals).toEqual([{ kind: "brief", sections: ["Hook", "Proof"] }]);
+    expect(res.limitations).toContain("soft_deadline");
+    expect(res.toolsUsed).toEqual(["propose_brief"]);
+  });
+
   it("stops at the iteration cap and returns whatever content exists", async () => {
     const client = { rpc: vi.fn(async () => ({ data: [], error: null })), from: vi.fn() } as unknown as Parameters<typeof runAssistant>[0];
     const provider: AssistantProvider = {
