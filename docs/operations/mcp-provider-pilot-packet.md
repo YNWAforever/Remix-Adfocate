@@ -11,7 +11,7 @@ Status: two providers configured 2026-11-09. **MySocial** verified end-to-end (h
   `MCP_OAUTH_PROVIDERS` Secret.
 - 20 read-only tools (`whoami`, channels, content search/analytics, audience, research, brand reads).
 - Data: the authorizing creator's own connected channels and derived analysis; no other accounts.
-- Status: **verified** — human consent, chat used `mcp__mysocial__*`, audit `ok`, trace recorded, token refresh implemented.
+- Status: **verified** — human consent, chat used `mcp__mysocial__*`, audit `ok`, trace recorded, token refresh implemented. Note: `search_tiktok` can return “Creator Universe is not available for this connection” (plan/entitlement).
 
 ### B. HasData — public social/web scraping
 - Endpoint `https://mcp.hasdata.com/api/mcp?apis=instagram,tiktok,youtube` (narrowed from the default 57 APIs
@@ -23,7 +23,7 @@ Status: two providers configured 2026-11-09. **MySocial** verified end-to-end (h
   (namespaced by the provider as `hasdata_<api>_get…`).
 - Data: **public** profiles/posts/comments/reels and search results — not the creator's private data.
   HasData bills per call in credits on the connected HasData account; see its pricing/retention docs.
-- Status: configured 2026-11-09 (DCR public client + env). Registry row + creator connect pending.
+- Status: **verified 2026-11-10** — human creator connected, `hasdata_tiktok_search_getTikTokSearch` ok 10.2 s, saved reply with real TikTok results, trace recorded; allowlist expanded to 12 tools (TikTok comments, YouTube transcript). Each call consumes HasData credits (8–10 s typical).
 
 ## Shared privacy/consent
 

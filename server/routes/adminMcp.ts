@@ -120,9 +120,11 @@ adminMcpRoutes.get("/audit", async c => {
   const rows = await store.from("mcp_call_audit")
     .select("server_name,tool_name,outcome,duration_ms,created_at")
     .eq("workspace_id", scope.workspaceId)
-    .order("created_at", { ascending: false }).limit(50);
-  if (rows.error) return c.json({ code: "mcp_registry_unavailable", calls: [], summary: { total: 0, ok: 0, errors: 0, avg_duration_ms: null } });
-  const calls = (rows.data ?? []) as Array<{ outcome?: string | null; duration_ms?: number | null }>;
+    .order("created_at", { ascending: false }).limit(200);
+  if (rows.error) return c.json({ code: "mcp_registry_unavailable", calls: [], summary: { total: 0, ok: 0, errors: 0, avg_duration_ms: null }, health: [] });
+  type AuditRow = { server_name?: string | null; outcome?: string | null; duration_ms?: number | null; created_at?: string | null };
+  const recent = (rows.data ?? []) as AuditRow[];
+  const calls = recent.slice(0, 50);
   const durations = calls.map(call => Number(call.duration_ms)).filter(duration => Number.isFinite(duration));
   const summary = {
     total: calls.length,
@@ -130,7 +132,27 @@ adminMcpRoutes.get("/audit", async c => {
     errors: calls.filter(call => call.outcome !== "ok").length,
     avg_duration_ms: durations.length ? Math.round(durations.reduce((sum, value) => sum + value, 0) / durations.length) : null,
   };
-  return c.json({ calls: rows.data ?? [], summary });
+  const byServer = new Map<string, { server_name: string; calls: number; ok: number; errors: number; total_ms: number; timed: number; last_ok_at: string | null; last_error_at: string | null }>();
+  for (const row of recent) {
+    const name = typeof row.server_name === "string" && row.server_name ? row.server_name : "unknown";
+    const entry = byServer.get(name) ?? { server_name: name, calls: 0, ok: 0, errors: 0, total_ms: 0, timed: 0, last_ok_at: null, last_error_at: null };
+    entry.calls += 1;
+    if (row.outcome === "ok") { entry.ok += 1; entry.last_ok_at = entry.last_ok_at ?? row.created_at ?? null; }
+    else { entry.errors += 1; entry.last_error_at = entry.last_error_at ?? row.created_at ?? null; }
+    const ms = Number(row.duration_ms);
+    if (Number.isFinite(ms)) { entry.total_ms += ms; entry.timed += 1; }
+    byServer.set(name, entry);
+  }
+  const health = [...byServer.values()].map(entry => ({
+    server_name: entry.server_name,
+    calls: entry.calls,
+    ok: entry.ok,
+    errors: entry.errors,
+    avg_duration_ms: entry.timed ? Math.round(entry.total_ms / entry.timed) : null,
+    last_ok_at: entry.last_ok_at,
+    last_error_at: entry.last_error_at,
+  })).sort((a, b) => b.calls - a.calls);
+  return c.json({ calls: recent.slice(0, 50), summary, health });
 });
 
 adminMcpRoutes.delete("/registry/:id", async c => {
