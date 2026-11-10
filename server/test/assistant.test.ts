@@ -8,7 +8,7 @@ import type { AssistantProvider } from "../lib/assistant/chat";
 
 const stub: AssistantProvider = {
   embed: async () => [[0.1]],
-  chat: async () => ({ content: "你好，完成任務可獲積分。", toolCalls: [] }),
+  chat: async (opts) => { if (opts.onDelta) await opts.onDelta("逐字"); return { content: "你好，完成任務可獲積分。", toolCalls: [] }; },
 };
 
 // Build the app with the stubbed provider by temporarily swapping the assistant route.
