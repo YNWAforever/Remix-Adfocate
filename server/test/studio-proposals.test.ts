@@ -86,7 +86,7 @@ describe("studio proposal execution", () => {
     expect(service.rpcCalls[0]).toMatchObject({ name: "studio_command" });
     expect(service.rpcCalls[0].args).toMatchObject({
       p_workspace: WORKSPACE, p_creator: CREATOR, p_request: "request:0", p_action: "save_brief",
-      p_payload: { threadId: THREAD, revision: 4, sections },
+      p_payload: { threadId: THREAD, revision: 4, sections: sections.map((text, index) => ({ id: `p-request0-${index}`, text, sourceIds: [] })) },
     });
     expect(service.inserts[0]).toMatchObject({ request_id: "request:0", creator_id: CREATOR, workspace_id: WORKSPACE, thread_id: THREAD, kind: "brief", outcome: "executed" });
   });

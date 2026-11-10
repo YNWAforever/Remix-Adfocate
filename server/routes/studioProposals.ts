@@ -81,12 +81,14 @@ export function studioProposalRoutes() {
     if (!thread.data) { console.info("[proposal] execute thread_not_found"); return c.json({ code: "not_found" }, 404); }
     const revision = Number((thread.data as { revision?: number }).revision ?? 0);
 
+    const sectionPrefix = payload.requestId.replace(/[^a-zA-Z0-9]/g, "").slice(0, 12) || "proposal";
+    const commandSections = sections.map((text, index) => ({ id: `p-${sectionPrefix}-${index}`, text, sourceIds: [] as string[] }));
     const command = await serviceClient().rpc("studio_command", {
       p_workspace: workspaceId,
       p_creator: userId,
       p_request: payload.requestId,
       p_action: "save_brief",
-      p_payload: { threadId: payload.threadId, revision, sections },
+      p_payload: { threadId: payload.threadId, revision, sections: commandSections },
     });
     const duration = Date.now() - started;
 
