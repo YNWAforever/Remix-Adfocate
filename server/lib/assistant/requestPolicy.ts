@@ -1,7 +1,7 @@
 export const MAX_MESSAGE_CODEPOINTS = 4000;
 export const NEW_REQUESTS_PER_MINUTE = 5;
 export const MAX_INFLIGHT = 1;
-export const PROVIDER_TIMEOUT_MS = 30000;
+export const PROVIDER_TIMEOUT_MS = 45000;
 export const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 export function validateAssistantRequest(body: { message?: unknown; client_request_id?: unknown; conversation_id?: unknown; locale?: unknown }) {
   if (typeof body.message !== "string" || !body.message.trim() || [...body.message].length > MAX_MESSAGE_CODEPOINTS
