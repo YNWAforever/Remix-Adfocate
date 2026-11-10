@@ -180,7 +180,7 @@ export async function listMcpTools(server: McpServerConfig, signal?: AbortSignal
   for (const entry of raw.slice(0, 50)) {
     if (!entry || typeof entry !== "object") continue;
     const name = (entry as { name?: unknown }).name;
-    if (typeof name !== "string" || !/^[a-z0-9_]{1,64}$/.test(name)) continue;
+    if (typeof name !== "string" || !/^[A-Za-z0-9_]{1,64}$/.test(name)) continue;
     const description = (entry as { description?: unknown }).description;
     const schema = (entry as { inputSchema?: unknown }).inputSchema;
     if (typeof description !== "string" || !description.trim()) continue;

@@ -116,6 +116,22 @@ describe("mcp client", () => {
     expect(await runtime.run("mcp__fixture__lookup_note", "{}")).toBe("DISCOVERED");
   });
 
+  it("discovers mixed-case remote tool names", async () => {
+    const remote = "hasdata_instagram_posts_getInstagramPosts";
+    const url = await fixture((body, res) => {
+      if (body.method === "initialize") return jsonrpc(res, { protocolVersion: "2025-03-26", capabilities: {} });
+      if (body.method === "notifications/initialized") { res.writeHead(202); return res.end(); }
+      if (body.method === "tools/list") return jsonrpc(res, { tools: [{ name: remote, description: "Read posts", inputSchema: { type: "object" } }] });
+      if (body.method === "tools/call") return jsonrpc(res, { content: [{ type: "text", text: "UPPER-OK" }] });
+      res.writeHead(400); res.end();
+    });
+    const runtime = createMcpRuntime([{ ...config(url), tools: [{ name: remote }] }], { ttlMs: 60_000 });
+    const defs = await runtime.prepare();
+    expect(defs.map(definition => definition.function.name)).toEqual(["mcp__fixture__" + remote]);
+    expect(defs[0].function.name.length).toBeLessThanOrEqual(64);
+    expect(await runtime.run("mcp__fixture__" + remote, "{}")).toBe("UPPER-OK");
+  });
+
   it("keeps declared tools when discovery is unavailable", async () => {
     const url = await fixture((_body, res) => { res.writeHead(500); res.end(); });
     const runtime = createMcpRuntime([{
