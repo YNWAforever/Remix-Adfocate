@@ -115,6 +115,19 @@ export function AdminSkillsPage() {
         {audit.data?.summary && audit.data.summary.total > 0 ? (
           <p className="text-sm text-[var(--color-soft-ink)]">{t("app.admin.skillsAuditSummary", { n: audit.data.summary.total, ok: audit.data.summary.ok, errors: audit.data.summary.errors, avg: audit.data.summary.avg_duration_ms ?? "-" })}</p>
         ) : null}
+        {audit.data?.health?.length ? (
+          <div className="space-y-1 text-sm" aria-label={t("app.admin.skillsHealth")}>
+            <p className="text-xs font-bold uppercase text-[var(--color-soft-ink)]">{t("app.admin.skillsHealth")}</p>
+            <ul className="space-y-1">
+              {audit.data.health.map(item => (
+                <li key={item.server_name} className="flex flex-wrap items-center justify-between gap-2">
+                  <span className="font-semibold">{item.server_name}</span>
+                  <span className="text-xs">{item.ok}/{item.calls} ok · {item.avg_duration_ms ?? "-"} ms{item.errors ? ` · ${item.errors} failed` : ""}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
         {!audit.data?.calls.length ? <p className="text-sm text-[var(--color-soft-ink)]">{t("app.admin.skillsAuditEmpty")}</p> : (
           <ul className="space-y-1 text-sm">
             {audit.data.calls.map(call => (
