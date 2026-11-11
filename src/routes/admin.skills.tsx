@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AdminAuthError, AdminRequestError } from "@/lib/admin";
-import { createMcpServer, deleteMcpServer, fetchMcpAudit, fetchMcpServers, mcpAdminKeys, updateMcpServer, type AdminMcpServer } from "@/lib/admin/mcp";
+import { createMcpServer, deleteMcpServer, fetchAssistantReliability, fetchMcpAudit, fetchMcpServers, mcpAdminKeys, updateMcpServer, type AdminMcpServer } from "@/lib/admin/mcp";
 import { useAdminAuth } from "@/components/admin/AdminAuthContext";
 import { useAdminWorkspace } from "@/components/admin/AdminWorkspaceContext";
 import { useI18n } from "@/lib/i18n";
@@ -48,6 +48,16 @@ export function AdminSkillsPage() {
   useEffect(() => {
     if (audit.error instanceof AdminAuthError) reportAuthError(audit.error);
   }, [audit.error, reportAuthError]);
+
+  const reliability = useQuery({
+    queryKey: mcpAdminKeys.reliability(workspace),
+    queryFn: () => fetchAssistantReliability(workspace),
+    enabled: authed,
+    retry: false,
+  });
+  useEffect(() => {
+    if (reliability.error instanceof AdminAuthError) reportAuthError(reliability.error);
+  }, [reliability.error, reportAuthError]);
 
   const refresh = () => client.invalidateQueries({ queryKey: mcpAdminKeys.all });
   const mutation = useMutation({
@@ -156,6 +166,15 @@ export function AdminSkillsPage() {
           </ul>
         )}
       </div>
+
+      {reliability.data ? (
+        <div className={card} aria-label={t("app.admin.assistantReliability")}>
+          <h2 className="font-heading font-bold">{t("app.admin.assistantReliability")}</h2>
+          <p className="text-sm">24h · {t("app.admin.assistantRequests", reliability.data.requests["24h"])}</p>
+          <p className="text-sm">7d · {t("app.admin.assistantRequests", reliability.data.requests["7d"])}</p>
+          <p className="text-sm">{t("app.admin.assistantProposals", reliability.data.proposals["24h"])}</p>
+        </div>
+      ) : null}
     </div>
   );
 }
