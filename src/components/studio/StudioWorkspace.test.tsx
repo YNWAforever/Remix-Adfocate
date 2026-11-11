@@ -111,6 +111,18 @@ it("offers to continue the same topic after a saved partial answer",async()=>{
   expect(h.chat.mock.calls[1][0]).toMatchObject({message:"幫我查 skincare"});
   expect(h.chat.mock.calls[1][0].client_request_id).not.toBe(h.chat.mock.calls[0][0].client_request_id);
 });
+it("retries a terminal unknown turn with a fresh request id",async()=>{
+  h.chat.mockRejectedValueOnce(new ApiError(503,"provider_outcome_unknown","unknown"));
+  h.chat.mockResolvedValueOnce({persistence:"saved",request_id:"req-retry",conversation_id:"conversation",answer:"重試後的回覆"});
+  render(<StudioWorkspace threadId="thread"/>);
+  fireEvent.change(screen.getByRole("textbox",{name:"繼續討論"}),{target:{value:"幫我查 slow skill"}});
+  fireEvent.click(screen.getByRole("button",{name:"送出"}));
+  await waitFor(()=>expect(screen.getByRole("button",{name:"重試"})).toBeVisible());
+  fireEvent.click(screen.getByRole("button",{name:"重試"}));
+  await waitFor(()=>expect(h.chat).toHaveBeenCalledTimes(2));
+  expect(h.chat.mock.calls[1][0]).toMatchObject({message:"幫我查 slow skill"});
+  expect(h.chat.mock.calls[1][0].client_request_id).not.toBe(h.chat.mock.calls[0][0].client_request_id);
+});
 it("shows an assistant working indicator while the reply is pending",()=>{
   h.pending=true;
   render(<StudioWorkspace threadId="thread"/>);
