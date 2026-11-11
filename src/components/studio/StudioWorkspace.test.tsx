@@ -100,6 +100,17 @@ it("auto-sends the home prompt once when opening a new thread",async()=>{
   await waitFor(()=>expect(h.chat).toHaveBeenCalledTimes(1));
   expect(h.chat.mock.calls[0][0]).toMatchObject({message:"幫我看這個任務"});
 });
+it("offers to continue the same topic after a saved partial answer",async()=>{
+  h.chat.mockResolvedValue({persistence:"saved",request_id:"req-soft",conversation_id:"conversation",answer:"已整理到一部分",limitations:["soft_deadline"]});
+  render(<StudioWorkspace threadId="thread"/>);
+  fireEvent.change(screen.getByRole("textbox",{name:"繼續討論"}),{target:{value:"幫我查 skincare"}});
+  fireEvent.click(screen.getByRole("button",{name:"送出"}));
+  const button=await screen.findByRole("button",{name:"繼續查詢"});
+  fireEvent.click(button);
+  await waitFor(()=>expect(h.chat).toHaveBeenCalledTimes(2));
+  expect(h.chat.mock.calls[1][0]).toMatchObject({message:"幫我查 skincare"});
+  expect(h.chat.mock.calls[1][0].client_request_id).not.toBe(h.chat.mock.calls[0][0].client_request_id);
+});
 it("shows an assistant working indicator while the reply is pending",()=>{
   h.pending=true;
   render(<StudioWorkspace threadId="thread"/>);

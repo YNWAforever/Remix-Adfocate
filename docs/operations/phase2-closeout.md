@@ -12,6 +12,7 @@ Window: 2026-11-09 → 2026-11-12 (Asia/Singapore). Production: `adfocate-2.verc
 | Reliability | Slow turns return a saved partial answer instead of aborting at the 45 s provider deadline | `unknown` rows all predate the soft-stop deploy (2026-11-11 15:09 UTC); no production activity since, so the fix is not yet exercised live |
 | Evals | Loop, MCP, and provider-shaped evals (HasData URL/counts, MySocial plan limit, timeout, injection, dedupe, budgets, SSE) | `assistant-evals`, `assistant-provider-evals`, `llm.assistant`, `assistant.test` |
 | Operator telemetry | `/admin/skills`: failure codes per server, 24 h/7 d call usage (credit proxy), avg + p95 latency; `/admin/mcp/audit` carries the maps | Admin tests |
+| Partial-answer continuation | A saved partial answer (`limitations: ["soft_deadline"]`) now renders a **繼續查詢 / Continue** action that resends the same topic as a fresh request id | Workspace test asserts the button and a new request id |
 | Creator transparency | Saved replies carry `tool_details` (tool → MCP server → audit outcome/duration, no payloads); "Why this answer?" shows it | `toolTraces` unit tests; studio suite |
 | A3.2 canary | Confirm-first proposal execution (thread-bound token, UUIDv5 command request id, save_brief section schema) | 1 `executed` audit row (925 ms), thread revision 0 → 1, brief v1 with 3 sections |
 
@@ -26,7 +27,7 @@ Window: 2026-11-09 → 2026-11-12 (Asia/Singapore). Production: `adfocate-2.verc
 1. **Canary decision** — A3.2 stays scoped to `936b9de1…` + `006c749f…` until several more clean confirms; widen only after that.
 2. **HasData `936b…`** — connection is revoked provider-side; reconnect from `/connections#data-skills` before using it again.
 3. **Reliability verification** — re-check `assistant_requests.state='unknown'` after real slow-skill traffic; expect a saved partial answer and `soft_deadline` instead of unknown.
-4. **Optional next phase** — creator-facing retry affordance for partial answers, OAuth provider expansion, or migration-tracker policy (owner decision).
+4. **Optional next phase** — OAuth provider expansion, mission-workspace follow-ups, or migration-tracker policy (owner decision).
 
 ## Rollback
 
