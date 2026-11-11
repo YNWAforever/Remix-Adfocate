@@ -16,10 +16,15 @@ vi.mock("@/lib/admin", () => ({
 vi.mock("@/lib/admin/mcp", () => ({
   fetchMcpServers: h.fetchMcpServers,
   fetchMcpAudit: async () => ({ calls: [], summary: { total: 0, ok: 0, errors: 0, avg_duration_ms: null }, health: [] }),
+  fetchAssistantReliability: async () => ({
+    requests: { "24h": { total: 0, saved: 0, unknown: 0, failed: 0, pending: 0 }, "7d": { total: 0, saved: 0, unknown: 0, failed: 0, pending: 0 } },
+    proposals: { "24h": { total: 0, executed: 0, failed: 0 }, "7d": { total: 0, executed: 0, failed: 0 } },
+    last_unknown_at: null,
+  }),
   createMcpServer: h.createMcpServer,
   updateMcpServer: h.updateMcpServer,
   deleteMcpServer: h.deleteMcpServer,
-  mcpAdminKeys: { all: ["admin", "mcp"], list: (workspace: string) => ["admin", "mcp", workspace], audit: (workspace: string) => ["admin", "mcp", "audit", workspace] },
+  mcpAdminKeys: { all: ["admin", "mcp"], list: (workspace: string) => ["admin", "mcp", workspace], audit: (workspace: string) => ["admin", "mcp", "audit", workspace], reliability: (workspace: string) => ["admin", "assistant", "reliability", workspace] },
 }));
 
 import { Route } from "./admin.skills";
