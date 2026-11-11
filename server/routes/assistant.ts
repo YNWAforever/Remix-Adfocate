@@ -267,7 +267,7 @@ export function assistantRoutes(testProvider?: AssistantProvider) {
       const saved = await store.rpc("save_assistant_turn", { ...identity, p_answer: result.answer, p_citations: result.citations });
       if (!saved.error && saved.data?.persistence === "saved") {
         await saveToolTrace(store, saved.data.conversation_id ?? input.conversationId, result.answer, result.toolsUsed, input.requestId);
-        return done({ ...saved.data, ...(result.toolsUsed?.length ? { tools_used: result.toolsUsed } : {}), ...proposalEnvelope(result, { threadId: studio?.threadId ?? null, requestId: input.requestId }, c.get("userId"), workspaceId) });
+        return done({ ...saved.data, ...(result.toolsUsed?.length ? { tools_used: result.toolsUsed } : {}), ...(result.limitations?.length ? { limitations: result.limitations } : {}), ...proposalEnvelope(result, { threadId: studio?.threadId ?? null, requestId: input.requestId }, c.get("userId"), workspaceId) });
       }
       await markUnknown();
       if(studio?.integrationSources?.length) return done({code:"studio_context_changed",persistence:"failed",request_id:input.requestId,error:"來源或儲存權限已變更，已停止返回衍生回覆。"},409);

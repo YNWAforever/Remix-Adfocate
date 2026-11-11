@@ -550,7 +550,7 @@ export type AssistantProgress = { steps: Array<{ step: string; created_at: strin
 export function fetchAssistantProgress(requestId: string) {
   return apiFetch<AssistantProgress>("/assistant/progress/" + requestId);
 }
-export type AssistantReply = { conversation_id?: string | null; request_id: string; answer?: string; citations?: AssistantCitation[]; tools_used?: string[]; proposals?: AssistantProposal[]; code?: string; persistence: "saved" | "failed" | "unknown" };
+export type AssistantReply = { conversation_id?: string | null; request_id: string; answer?: string; citations?: AssistantCitation[]; tools_used?: string[]; proposals?: AssistantProposal[]; limitations?: string[]; code?: string; persistence: "saved" | "failed" | "unknown" };
 
 export function useAssistantChat() {
   return useMutation({
