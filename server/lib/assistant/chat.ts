@@ -148,6 +148,9 @@ export async function runAssistant(
         tool_calls: last.toolCalls.map(call => ({ id: call.id, type: "function", function: { name: call.name, arguments: call.arguments } })),
       });
       for (const call of last.toolCalls) {
+        // Never start another slow skill lookup once this turn's soft budget is spent: the
+        // request would abort at the provider deadline and lose the partial answer.
+        if (deps.softStopAt && Date.now() >= deps.softStopAt) { softStopped = true; break; }
         deps.signal?.throwIfAborted();
         deps.onProgress?.(`tool:${call.name}`);
         let toolResult: string;
@@ -183,6 +186,7 @@ export async function runAssistant(
         if (!toolsUsed.includes(call.name)) toolsUsed.push(call.name);
         messages.push({ role: "tool", tool_call_id: call.id, content: toolResult });
       }
+      if (softStopped) break;
       if (deps.softStopAt && Date.now() >= deps.softStopAt) { softStopped = true; break; }
       last = await provider.chat({ messages, tools: toolDefs, signal: deps.signal, ...(deps.onDelta ? { onDelta: deps.onDelta } : {}) });
       deps.signal?.throwIfAborted();
