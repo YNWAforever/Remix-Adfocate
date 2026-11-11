@@ -78,6 +78,9 @@ function studioSystemPrompt(locale: string, historyChanged: boolean, externalToo
   return rules.join(" ");
 }
 
+/** Hard ceiling on read-only tool calls in one studio turn: bounds latency and provider credits. */
+export const MAX_STUDIO_TOOL_CALLS = 8;
+
 export async function runAssistant(
   client: Pick<SupabaseClient, "rpc" | "from">,
   input: { query: string; locale: string; workspace: string | null; history: ChatMessage[]; assistContext?: unknown; studioContext?: StudioAssistantContext; historyChanged?: boolean; unconnectedSkills?: readonly string[] },
@@ -122,6 +125,7 @@ export async function runAssistant(
     const proposals: AssistantProposal[] = [];
     // Identical read-only lookups in one turn are reused: skill calls can cost credits and seconds.
     const toolResultCache = new Map<string, string>();
+    let toolCallsUsed = 0;
     let softStopped = false;
     let last = await provider.chat({ messages, tools: toolDefs, signal: deps.signal, ...(deps.onDelta ? { onDelta: deps.onDelta } : {}) });
     let iterations = 0;
@@ -130,10 +134,14 @@ export async function runAssistant(
       if (last.toolCalls.some(call => !allowed.has(call.name))) {
         return { answer: input.locale === "en" ? "This request needs your review. No action was taken." : "這個要求需要你確認。尚未執行任何操作。", citations: [], limitations: ["tool_request_denied"] };
       }
+      if (toolCallsUsed + last.toolCalls.length > MAX_STUDIO_TOOL_CALLS) {
+        return { answer: input.locale === "en" ? "This question needs more lookups than one turn allows. Narrow it or continue in a new turn." : "這個問題需要的查詢超過單次上限。請收窄問題，或分開下一輪再問。", citations, limitations: ["manual_evidence_unverified", "proposal_only", "tool_budget_exceeded"], ...(toolsUsed.length ? { toolsUsed } : {}) };
+      }
       if (iterations >= maxIterations) {
         return { answer: input.locale === "en" ? "I need to look up more than I can right now. Please narrow the question." : "需要查閱的資料太多，暫時未能回答。請把問題縮窄一點。", citations, limitations: ["manual_evidence_unverified", "proposal_only", "tool_iteration_limit"], ...(toolsUsed.length ? { toolsUsed } : {}) };
       }
       iterations += 1;
+      toolCallsUsed += last.toolCalls.length;
       messages.push({
         role: "assistant",
         content: last.content ?? "",

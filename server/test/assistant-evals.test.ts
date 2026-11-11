@@ -69,6 +69,16 @@ describe("studio assistant eval harness", () => {
     expect(system.toLowerCase()).toContain("unverified");
   });
 
+  it("stops before exceeding the per-turn tool-call budget", async () => {
+    const runStudioTool = vi.fn().mockResolvedValue('{"ok":true}');
+    const many = Array.from({ length: 5 }, (_, i) => toolCall("mcp__hasdata__search", JSON.stringify({ keyword: "k" + i })));
+    const mcpDefs = [{ type: "function" as const, function: { name: "mcp__hasdata__search", description: "Search", parameters: { type: "object", properties: {}, additionalProperties: false } } }];
+    const chat = vi.fn().mockResolvedValue({ content: null, toolCalls: many });
+    const result = await run({ provider: { chat, embed: vi.fn() }, runStudioTool, studioToolDefs: mcpDefs });
+    expect(runStudioTool).toHaveBeenCalledTimes(5);
+    expect(result.limitations).toContain("tool_budget_exceeded");
+  });
+
   it("records a brief proposal for confirmation without executing it", async () => {
     const runToolFn = vi.fn();
     const chat = vi.fn()
