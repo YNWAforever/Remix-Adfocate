@@ -248,7 +248,7 @@ export function assistantRoutes(testProvider?: AssistantProvider) {
             signal,
             onProgress: reportProgress,
             ...(sendEvent ? { onDelta: (text: string) => sendEvent({ type: "delta", text }) } : {}),
-            softStopAt: Date.now() + PROVIDER_TIMEOUT_MS - 7000,
+            softStopAt: Date.now() + PROVIDER_TIMEOUT_MS - 15000,
             ...(mcp || proposalDefs.length ? { studioToolDefs: [...(mcp?.defs ?? []), ...proposalDefs], ...(mcp ? { runStudioTool: (name: string, args: string, abort?: AbortSignal) => mcp.run(name, args, abort) } : {}) } : {}),
           });
       });
