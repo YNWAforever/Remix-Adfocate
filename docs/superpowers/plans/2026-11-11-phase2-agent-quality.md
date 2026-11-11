@@ -19,6 +19,7 @@ Goal: make skill answers trustworthy, cheap and fast enough for daily creator us
   - MySocial plan-limit error and `mcp_timeout` are forwarded as unavailable data, never as zero results,
   - SSE route emits delta + done.
 - [x] **Admin canary telemetry**: `/admin/skills` now shows failure codes per server (e.g. `mcp_timeout 2`, `mcp_tool_error 1`) from the last 200 audit rows, so canary provider failures are visible without reading raw rows.
+- [x] **Latency percentiles**: `/admin/mcp/audit` health now includes `p50_ms`/`p95_ms`; `/admin/skills` shows avg + p95 per server, so slow provider tails are visible next to outcome codes.
 - [x] **Usage visibility (credit proxy)**: `/admin/mcp/audit` aggregates call counts over 24 h and 7 d per server plus top tools; `/admin/skills` renders "24h / 7d" and top tool counts. These are audit call counts, not provider billing.
 - [x] Soft-deadline partial answer + confirm-first proposal execution (Phase 1; A3.2 scoped to two canary creators).
 

@@ -148,7 +148,7 @@ describe("admin mcp registry API", () => {
     expect(body.calls).toHaveLength(1);
     expect(body.calls[0]).toMatchObject({ server_name: "notes", tool_name: "lookup_note", outcome: "ok", duration_ms: 12 });
     expect(body.summary).toEqual({ total: 1, ok: 1, errors: 0, avg_duration_ms: 12, outcomes: { ok: 1 } });
-    expect(body.health).toEqual([{ server_name: "notes", calls: 1, ok: 1, errors: 0, avg_duration_ms: 12, last_ok_at: "2026-11-09T00:00:00Z", last_error_at: null, outcomes: { ok: 1 } }]);
+    expect(body.health).toEqual([{ server_name: "notes", calls: 1, ok: 1, errors: 0, avg_duration_ms: 12, p50_ms: 12, p95_ms: 12, last_ok_at: "2026-11-09T00:00:00Z", last_error_at: null, outcomes: { ok: 1 } }]);
   });
 
   it("breaks failures down by outcome code per server", async () => {

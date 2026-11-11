@@ -139,25 +139,32 @@ adminMcpRoutes.get("/audit", async c => {
     avg_duration_ms: durations.length ? Math.round(durations.reduce((sum, value) => sum + value, 0) / durations.length) : null,
     outcomes,
   };
-  const byServer = new Map<string, { server_name: string; calls: number; ok: number; errors: number; total_ms: number; timed: number; last_ok_at: string | null; last_error_at: string | null; outcomes: Record<string, number> }>();
+  const byServer = new Map<string, { server_name: string; calls: number; ok: number; errors: number; total_ms: number; timed: number; durations: number[]; last_ok_at: string | null; last_error_at: string | null; outcomes: Record<string, number> }>();
   for (const row of recent) {
     const name = typeof row.server_name === "string" && row.server_name ? row.server_name : "unknown";
-    const entry = byServer.get(name) ?? { server_name: name, calls: 0, ok: 0, errors: 0, total_ms: 0, timed: 0, last_ok_at: null, last_error_at: null, outcomes: {} };
+    const entry = byServer.get(name) ?? { server_name: name, calls: 0, ok: 0, errors: 0, total_ms: 0, timed: 0, durations: [], last_ok_at: null, last_error_at: null, outcomes: {} };
     entry.calls += 1;
     const code = row.outcome || "unknown";
     entry.outcomes[code] = (entry.outcomes[code] ?? 0) + 1;
     if (row.outcome === "ok") { entry.ok += 1; entry.last_ok_at = entry.last_ok_at ?? row.created_at ?? null; }
     else { entry.errors += 1; entry.last_error_at = entry.last_error_at ?? row.created_at ?? null; }
     const ms = Number(row.duration_ms);
-    if (Number.isFinite(ms)) { entry.total_ms += ms; entry.timed += 1; }
+    if (Number.isFinite(ms)) { entry.total_ms += ms; entry.timed += 1; entry.durations.push(ms); }
     byServer.set(name, entry);
   }
+  const percentile = (values: number[], ratio: number) => {
+    if (!values.length) return null;
+    const sorted = [...values].sort((a, b) => a - b);
+    return Math.round(sorted[Math.min(sorted.length - 1, Math.max(0, Math.ceil(ratio * sorted.length) - 1))]);
+  };
   const health = [...byServer.values()].map(entry => ({
     server_name: entry.server_name,
     calls: entry.calls,
     ok: entry.ok,
     errors: entry.errors,
     avg_duration_ms: entry.timed ? Math.round(entry.total_ms / entry.timed) : null,
+    p50_ms: percentile(entry.durations, 0.5),
+    p95_ms: percentile(entry.durations, 0.95),
     last_ok_at: entry.last_ok_at,
     last_error_at: entry.last_error_at,
     outcomes: entry.outcomes,
