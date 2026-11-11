@@ -1,4 +1,4 @@
-﻿// @vitest-environment node
+// @vitest-environment node
 import { describe, expect, it } from "vitest";
 import { answerFingerprint, readToolTraces, saveToolTrace } from "../lib/studio/toolTraces";
 
@@ -54,7 +54,10 @@ describe("studio tool traces", () => {
       { answer_hash: answerFingerprint("no tools"), tools: "nope" },
     ]);
     const traces = await readToolTraces(fake.client, "conversation");
-    expect(traces.get(answerFingerprint("kept"))).toEqual(["get_my_points"]);
+    expect(traces.get(answerFingerprint("kept"))).toEqual({
+      tools: ["get_my_points"],
+      details: [{ tool: "get_my_points", server: null, outcome: null, duration_ms: null }],
+    });
     expect(traces.size).toBe(1);
   });
   it("returns no traces when the migration has not been applied", async () => {

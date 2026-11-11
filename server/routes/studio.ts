@@ -40,8 +40,8 @@ studioRoutes.get("/threads/:id", async c => {
   const traces = await readToolTraces(client, thread.data.conversation_id);
   const withTools = (messages.data?.reverse() ?? []).map(message => {
     if (message.role !== "assistant" || typeof message.content !== "string") return message;
-    const tools = traces.get(answerFingerprint(message.content));
-    return tools?.length ? { ...message, tools } : message;
+    const trace = traces.get(answerFingerprint(message.content));
+    return trace?.tools.length ? { ...message, tools: trace.tools, tool_details: trace.details } : message;
   });
   return c.json(redactRevokedIntegrationOutputs({ thread: thread.data, sources: sources.data ?? [], briefs: briefs.data ?? [], shares: shares.data, messages: withTools,
     limits: { sources: 100, versions: 20, messages: 100 } }));
