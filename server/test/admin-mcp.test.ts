@@ -164,6 +164,21 @@ describe("admin mcp registry API", () => {
     expect(body.health.find(item => item.server_name === "mysocial")?.outcomes).toEqual({ mcp_tool_error: 1 });
   });
 
+  it("reports 24h/7d call usage and top tools as a credit proxy", async () => {
+    const hourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+    const threeDaysAgo = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString();
+    h.db = db({ mcp_call_audit: [
+      { workspace_id: "w1", server_name: "hasdata", tool_name: "tiktok_search", outcome: "ok", duration_ms: 900, created_at: hourAgo },
+      { workspace_id: "w1", server_name: "hasdata", tool_name: "tiktok_search", outcome: "ok", duration_ms: 800, created_at: hourAgo },
+      { workspace_id: "w1", server_name: "hasdata", tool_name: "instagram_search", outcome: "mcp_timeout", duration_ms: 15000, created_at: threeDaysAgo },
+      { workspace_id: "w2", server_name: "other", tool_name: "read", outcome: "ok", duration_ms: 4, created_at: hourAgo },
+    ] }).client;
+    const body = await (await app().request("/mcp/audit")).json() as { usage: Array<{ server_name: string; calls_24h: number; calls_7d: number; tools: Array<{ tool_name: string; count: number }> }> };
+    expect(body.usage).toEqual([
+      { server_name: "hasdata", calls_24h: 2, calls_7d: 3, tools: [{ tool_name: "tiktok_search", count: 2 }, { tool_name: "instagram_search", count: 1 }] },
+    ]);
+  });
+
   it("does not enable a server without tools", async () => {
     h.db = db(rows()).client;
     const response = await app().request(`/mcp/registry/${SERVER_ID_TWO}`, { method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify({ enabled: true }) });

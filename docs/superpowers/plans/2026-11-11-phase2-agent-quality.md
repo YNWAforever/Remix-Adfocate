@@ -1,4 +1,4 @@
-﻿# Phase 2 ??agent quality & trust (started 2026-11-11)
+# Phase 2 ??agent quality & trust (started 2026-11-11)
 
 Goal: make skill answers trustworthy, cheap and fast enough for daily creator use.
 
@@ -19,13 +19,13 @@ Goal: make skill answers trustworthy, cheap and fast enough for daily creator us
   - MySocial plan-limit error and `mcp_timeout` are forwarded as unavailable data, never as zero results,
   - SSE route emits delta + done.
 - [x] **Admin canary telemetry**: `/admin/skills` now shows failure codes per server (e.g. `mcp_timeout 2`, `mcp_tool_error 1`) from the last 200 audit rows, so canary provider failures are visible without reading raw rows.
+- [x] **Usage visibility (credit proxy)**: `/admin/mcp/audit` aggregates call counts over 24 h and 7 d per server plus top tools; `/admin/skills` renders "24h / 7d" and top tool counts. These are audit call counts, not provider billing.
 - [x] Soft-deadline partial answer + confirm-first proposal execution (Phase 1; A3.2 scoped to two canary creators).
 
 ## Next
 
-1. **Admin canary telemetry** ??failures-by-code per server in `/admin/skills` (audit has outcomes; add breakdown).
-2. **Cost visibility** ??workspace-level skill-call counters / provider credit estimate.
-3. **Canary decision** ??after a few more confirms, keep scoped or widen A3.2; watch `assistant_proposal_audit` failures.
+1. **Canary decision** — keep scoped until a few more proposal confirms; watch `assistant_proposal_audit` failures and `unknown` requests (23 saved / 6 unknown in the last 72 h; unknown last at 2026-11-11 04:22 UTC).
+2. **Reliability follow-up** — investigate the remaining `unknown` requests (provider deadline vs persistence) with the new audit breakdown.
 
 ## Limits today
 

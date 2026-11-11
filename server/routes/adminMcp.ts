@@ -120,10 +120,11 @@ adminMcpRoutes.get("/audit", async c => {
   const rows = await store.from("mcp_call_audit")
     .select("server_name,tool_name,outcome,duration_ms,created_at")
     .eq("workspace_id", scope.workspaceId)
-    .order("created_at", { ascending: false }).limit(200);
+    .order("created_at", { ascending: false }).limit(1000);
   if (rows.error) return c.json({ code: "mcp_registry_unavailable", calls: [], summary: { total: 0, ok: 0, errors: 0, avg_duration_ms: null }, health: [] });
-  type AuditRow = { server_name?: string | null; outcome?: string | null; duration_ms?: number | null; created_at?: string | null };
-  const recent = (rows.data ?? []) as AuditRow[];
+  type AuditRow = { server_name?: string | null; tool_name?: string | null; outcome?: string | null; duration_ms?: number | null; created_at?: string | null };
+  const auditRows = (rows.data ?? []) as AuditRow[];
+  const recent = auditRows.slice(0, 200);
   const calls = recent.slice(0, 50);
   const durations = calls.map(call => Number(call.duration_ms)).filter(duration => Number.isFinite(duration));
   const outcomes: Record<string, number> = {};
@@ -161,7 +162,30 @@ adminMcpRoutes.get("/audit", async c => {
     last_error_at: entry.last_error_at,
     outcomes: entry.outcomes,
   })).sort((a, b) => b.calls - a.calls);
-  return c.json({ calls: recent.slice(0, 50), summary, health });
+  // Call counts are a credit proxy: provider dashboards hold the actual billing. 7d/24h are
+  // computed from the most recent 1000 audit rows, enough for canary volumes.
+  const now = Date.now();
+  const dayAgo = now - 24 * 60 * 60 * 1000;
+  const weekAgo = now - 7 * 24 * 60 * 60 * 1000;
+  const usageByServer = new Map<string, { server_name: string; calls_7d: number; calls_24h: number; tools: Map<string, number> }>();
+  for (const row of auditRows) {
+    const stamp = row.created_at ? Date.parse(row.created_at) : Number.NaN;
+    if (!Number.isFinite(stamp) || stamp < weekAgo) continue;
+    const name = typeof row.server_name === "string" && row.server_name ? row.server_name : "unknown";
+    const entry = usageByServer.get(name) ?? { server_name: name, calls_7d: 0, calls_24h: 0, tools: new Map<string, number>() };
+    entry.calls_7d += 1;
+    if (stamp >= dayAgo) entry.calls_24h += 1;
+    const tool = typeof row.tool_name === "string" && row.tool_name ? row.tool_name : "unknown";
+    entry.tools.set(tool, (entry.tools.get(tool) ?? 0) + 1);
+    usageByServer.set(name, entry);
+  }
+  const usage = [...usageByServer.values()].map(entry => ({
+    server_name: entry.server_name,
+    calls_7d: entry.calls_7d,
+    calls_24h: entry.calls_24h,
+    tools: [...entry.tools.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5).map(([tool_name, count]) => ({ tool_name, count })),
+  })).sort((a, b) => b.calls_7d - a.calls_7d);
+  return c.json({ calls: recent.slice(0, 50), summary, health, usage });
 });
 
 adminMcpRoutes.delete("/registry/:id", async c => {
