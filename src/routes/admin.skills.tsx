@@ -123,6 +123,7 @@ export function AdminSkillsPage() {
                 <li key={item.server_name} className="flex flex-wrap items-center justify-between gap-2">
                   <span className="font-semibold">{item.server_name}</span>
                   <span className="text-xs">{item.ok}/{item.calls} ok · {item.avg_duration_ms ?? "-"} ms{item.errors ? ` · ${item.errors} failed` : ""}</span>
+                  {item.errors ? <span className="text-xs text-[#89382f]">{Object.entries(item.outcomes).filter(([code]) => code !== "ok").map(([code, count]) => `${code} ${count}`).join(" · ")}</span> : null}
                 </li>
               ))}
             </ul>

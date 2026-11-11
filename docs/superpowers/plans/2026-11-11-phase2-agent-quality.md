@@ -18,6 +18,7 @@ Goal: make skill answers trustworthy, cheap and fast enough for daily creator us
   - provider-shaped HasData payload forwards post URLs/counts as untrusted data,
   - MySocial plan-limit error and `mcp_timeout` are forwarded as unavailable data, never as zero results,
   - SSE route emits delta + done.
+- [x] **Admin canary telemetry**: `/admin/skills` now shows failure codes per server (e.g. `mcp_timeout 2`, `mcp_tool_error 1`) from the last 200 audit rows, so canary provider failures are visible without reading raw rows.
 - [x] Soft-deadline partial answer + confirm-first proposal execution (Phase 1; A3.2 scoped to two canary creators).
 
 ## Next
