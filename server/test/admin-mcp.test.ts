@@ -147,8 +147,21 @@ describe("admin mcp registry API", () => {
     const body = await response.json() as { calls: Array<Record<string, unknown>>; summary: Record<string, unknown>; health: Array<Record<string, unknown>> };
     expect(body.calls).toHaveLength(1);
     expect(body.calls[0]).toMatchObject({ server_name: "notes", tool_name: "lookup_note", outcome: "ok", duration_ms: 12 });
-    expect(body.summary).toEqual({ total: 1, ok: 1, errors: 0, avg_duration_ms: 12 });
-    expect(body.health).toEqual([{ server_name: "notes", calls: 1, ok: 1, errors: 0, avg_duration_ms: 12, last_ok_at: "2026-11-09T00:00:00Z", last_error_at: null }]);
+    expect(body.summary).toEqual({ total: 1, ok: 1, errors: 0, avg_duration_ms: 12, outcomes: { ok: 1 } });
+    expect(body.health).toEqual([{ server_name: "notes", calls: 1, ok: 1, errors: 0, avg_duration_ms: 12, last_ok_at: "2026-11-09T00:00:00Z", last_error_at: null, outcomes: { ok: 1 } }]);
+  });
+
+  it("breaks failures down by outcome code per server", async () => {
+    h.db = db({ mcp_call_audit: [
+      { workspace_id: "w1", server_name: "hasdata", tool_name: "search", outcome: "ok", duration_ms: 900, created_at: "2026-11-10T00:00:00Z" },
+      { workspace_id: "w1", server_name: "hasdata", tool_name: "search", outcome: "mcp_timeout", duration_ms: 15000, created_at: "2026-11-10T00:00:01Z" },
+      { workspace_id: "w1", server_name: "hasdata", tool_name: "search", outcome: "mcp_timeout", duration_ms: 15000, created_at: "2026-11-10T00:00:02Z" },
+      { workspace_id: "w1", server_name: "mysocial", tool_name: "search", outcome: "mcp_tool_error", duration_ms: 200, created_at: "2026-11-10T00:00:03Z" },
+    ] }).client;
+    const body = await (await app().request("/mcp/audit")).json() as { summary: { outcomes: Record<string, number> }; health: Array<{ server_name: string; outcomes: Record<string, number> }> };
+    expect(body.summary.outcomes).toEqual({ ok: 1, mcp_timeout: 2, mcp_tool_error: 1 });
+    expect(body.health.find(item => item.server_name === "hasdata")?.outcomes).toEqual({ ok: 1, mcp_timeout: 2 });
+    expect(body.health.find(item => item.server_name === "mysocial")?.outcomes).toEqual({ mcp_tool_error: 1 });
   });
 
   it("does not enable a server without tools", async () => {

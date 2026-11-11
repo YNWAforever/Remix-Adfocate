@@ -24,8 +24,8 @@ export function deleteMcpServer(workspace: string, id: string) {
 
 export type AdminMcpCall = { server_name: string; tool_name: string; outcome: string; duration_ms: number | null; created_at: string };
 
-export type AdminMcpAuditSummary = { total: number; ok: number; errors: number; avg_duration_ms: number | null };
-export type AdminMcpServerHealth = { server_name: string; calls: number; ok: number; errors: number; avg_duration_ms: number | null; last_ok_at: string | null; last_error_at: string | null };
+export type AdminMcpAuditSummary = { total: number; ok: number; errors: number; avg_duration_ms: number | null; outcomes: Record<string, number> };
+export type AdminMcpServerHealth = { server_name: string; calls: number; ok: number; errors: number; avg_duration_ms: number | null; last_ok_at: string | null; last_error_at: string | null; outcomes: Record<string, number> };
 
 export function fetchMcpAudit(workspace = "") {
   return adminFetch<{ calls: AdminMcpCall[]; summary: AdminMcpAuditSummary; health?: AdminMcpServerHealth[] }>(`/admin/mcp/audit${qs(workspace)}`);
