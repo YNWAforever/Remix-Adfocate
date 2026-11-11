@@ -66,6 +66,8 @@ function ThreadContent({ detail, skill, autoSend, identityKey, onLoginRequired }
   const [streamPreview, setStreamPreview] = useState("");
   const [partialContinuation, setPartialContinuation] = useState<string | null>(null);
   const [retryMessage, setRetryMessage] = useState<string | null>(null);
+  const [requestCheck, setRequestCheck] = useState<{ id: string; message: string } | null>(null);
+  const [checkingRequest, setCheckingRequest] = useState(false);
   const [ephemeral, setEphemeral] = useState<Array<{ id: string; role: "user" | "assistant"; content: string }>>([]);
   const [pendingProposals, setPendingProposals] = useState<Array<{ kind: "brief"; sections: string[]; token?: string }>>([]);
   const [proposalSaving, setProposalSaving] = useState<number | null>(null);
@@ -182,15 +184,34 @@ function ThreadContent({ detail, skill, autoSend, identityKey, onLoginRequired }
     setPendingProposals(reply.proposals ?? []);
     setUsedTools(reply.tools_used ?? []);
     setPartialContinuation(reply.persistence === "saved" && reply.limitations?.includes("soft_deadline") ? sentMessage ?? null : null);
-    if (reply.persistence === "saved") { setInput(""); setPendingChat(null); setEphemeral([]); setFeedback(tx("已保存討論。回覆是建議，任務操作仍需你確認。", "Chat saved. Replies are proposals; you confirm every mission action.")); await client.invalidateQueries({ queryKey:studioKeys.detail(detail.thread.id) }); }
+    if (reply.persistence === "saved") { setInput(""); setPendingChat(null); setRequestCheck(null); setEphemeral([]); setFeedback(tx("已保存討論。回覆是建議，任務操作仍需你確認。", "Chat saved. Replies are proposals; you confirm every mission action.")); await client.invalidateQueries({ queryKey:studioKeys.detail(detail.thread.id) }); }
     else if(reply.persistence==="failed" && reply.code==="studio_context_changed") {setPendingChat(null);setFeedback(tx("來源或任務要求已更新，上次尚未開始的要求已取消。文字仍保留；核對後再按送出，會建立新的要求。", "Sources or mission rules changed. The unstarted request was cancelled. Your text is retained; review it and press Send to create a new request."));}
     else if(reply.answer) {
+      setRequestCheck(sentMessage ? { id: reply.request_id, message: sentMessage } : null);
       // Show the generated answer even when the save boundary is unresolved; the durable turn is
       // reconciled through the explicit pending-request check, never by replaying silently.
       setEphemeral(current => current.some(message => message.id === `assistant-${reply.request_id}`) ? current : [...(sentMessage ? [{ id:`user-${reply.request_id}`, role:"user" as const, content:sentMessage }] : []), { id:`assistant-${reply.request_id}`, role:"assistant" as const, content:reply.answer! }]);
       setFeedback(tx("回覆未保存。輸入仍保留；繼續前先確認這個要求。", "Reply not saved. Input retained; confirm this request before continuing."));
     }
-    else setFeedback(tx("結果尚未確認。輸入已保留，請查看同一要求。", "Outcome not confirmed. Input retained; check this request."));
+    else { setRequestCheck(sentMessage ? { id: reply.request_id, message: sentMessage } : null); setFeedback(tx("結果尚未確認。輸入已保留，請查看同一要求。", "Outcome not confirmed. Input retained; check this request.")); }
+  }
+  async function checkRequest() {
+    if (!requestCheck || checkingRequest) return;
+    setCheckingRequest(true);
+    try {
+      const status = await apiFetch<AssistantReply>("/assistant/requests/" + requestCheck.id);
+      if (status.persistence === "saved" && status.answer) {
+        setPendingChat(null); setRequestCheck(null);
+        setFeedback(tx("要求已保存；討論內容已更新。", "Request saved; the thread has been refreshed."));
+        await client.invalidateQueries({ queryKey: studioKeys.detail(detail.thread.id) });
+      } else if (status.state === "unknown" || status.persistence === "unknown") {
+        setPendingChat(null); setRequestCheck(null); setRetryMessage(requestCheck.message);
+        setFeedback(tx("要求未有結果（或逾時）。文字已保留；按「重試」會建立新要求。", "This request has no result (or timed out). Your text is kept; press Retry to create a new request."));
+      } else {
+        setFeedback(tx("要求仍在處理，請稍後再查看。", "The request is still processing; check again shortly."));
+      }
+    } catch { setFeedback(tx("暫時未能查看要求狀態。", "Request status is unavailable right now.")); }
+    finally { setCheckingRequest(false); }
   }
   async function send(text = input) {
     const message = text.trim();
@@ -198,7 +219,7 @@ function ThreadContent({ detail, skill, autoSend, identityKey, onLoginRequired }
     if (pendingChat && pendingChat.message !== message) { setFeedback(tx("請先查看上一個要求的結果。", "Check the previous request first.")); return; }
     const request = pendingChat ?? { id:crypto.randomUUID(),message }; setPendingChat(request);
     setEphemeral([{ id:"user-" + request.id, role:"user" as const, content: message }]);
-    setUsedTools([]); setStreaming(true); setStreamPreview(""); setPartialContinuation(null); setRetryMessage(null);
+    setUsedTools([]); setStreaming(true); setStreamPreview(""); setPartialContinuation(null); setRetryMessage(null); setRequestCheck(null);
     try {
       const reply = await assistantChatWithFallback({ message:request.message, conversation_id:detail.thread.conversation_id, client_request_id:request.id }, {
         onDelta: chunk => setStreamPreview(current => current + chunk),
@@ -279,6 +300,7 @@ function ThreadContent({ detail, skill, autoSend, identityKey, onLoginRequired }
       {feedback && <div role="status" className="s-note">{feedback}</div>}
       {partialContinuation && <div className="s-note s-row" role="status"><span>{tx("已先整理到一部分；可以繼續查詢相同主題。", "Partial answer kept; continue the same topic.")}</span><button className="s-btn" onClick={() => void send(partialContinuation)}>{tx("繼續查詢", "Continue")}</button></div>}
       {retryMessage && <div className="s-row"><button className="s-btn" onClick={() => void send(retryMessage)}>{tx("重試", "Retry")}</button></div>}
+      {requestCheck && <div className="s-row"><button className="s-btn ghost" onClick={() => void checkRequest()} disabled={checkingRequest}>{checkingRequest ? tx("查看中…", "Checking…") : tx("查看要求", "Check request")}</button></div>}
       {tab==="chat" && <section id="studio-panel-chat" role="tabpanel" aria-labelledby="studio-tab-chat" className="s-stack"><div className="s-chat" aria-busy={chat.isPending || streaming}>{detail.messages.length===0 && ephemeral.length===0 && <div className="s-chat-empty"><strong>🌱 {tx("一起把想法變清楚", "Let's make your idea clear")}</strong><span>{tx("先選任務或補上來源；我來整理拍攝方向。", "Pick a mission or add sources; I'll shape the direction.")}</span></div>}{detail.messages.map(m => <div className={`s-bubble ${m.role==="user"?"user":""}`} key={m.id}>{m.content}{m.role==="assistant" && (m.tools?.length ?? 0) > 0 && <><div className="s-row" style={{marginTop:8}} aria-label={tx("已查閱的資料", "Data checked")}>{m.tools!.map(name => { const label = toolLabel(name); return <span className="s-tag ghost" key={name}>{tx(label[0], label[1])}</span>; })}</div><details className="s-why"><summary>{tx("為什麼這個答案？", "Why this answer?")}</summary>{m.tool_details?.length ? <ul className="s-muted" style={{ margin: 0, paddingLeft: 18 }}>{m.tool_details.map(detail => { const label = toolLabel(detail.tool); return <li key={detail.tool}>{detail.server ? `${detail.server} · ` : ""}{tx(label[0], label[1])} · {detail.outcome ?? tx("未記錄", "not recorded")}</li>; })}</ul> : <p className="s-muted">{tx("已查閱：", "Checked: ")}{m.tools!.map(name => { const label = toolLabel(name); return tx(label[0], label[1]); }).join(" · ")}</p>}<small>{tx("只顯示工具名稱、伺服器與結果，不含帳戶資料內容。", "Tool names, server and outcome only; no account data is included.")}</small></details></>}</div>)}{ephemeral.map(m => <div className={`s-bubble ${m.role==="user"?"user":""}`} key={m.id}>{m.content}{m.role==="assistant" && <small style={{display:"block",marginTop:8}}>{tx("未保存 · 建議內容", "Not saved · proposal")}</small>}</div>)}{(chat.isPending || streaming) && <div className="s-bubble s-pending" role="status" aria-live="polite"><span className="s-typing" aria-hidden="true"><i/><i/><i/></span><small>{streamPreview || (latestStep ? progressLabel(latestStep, tx) : tx("AI 正在查閱資料與技能…", "Working with your data and skills…"))}{elapsed > 0 ? " · " + elapsed + "s" : ""}</small></div>}</div>{usedTools.length>0 && <><div className="s-row" aria-label={tx("已查閱的資料", "Data checked")}>{usedTools.map(name => { const label = toolLabel(name); return <span className="s-tag ghost" key={name}>{tx(label[0], label[1])}</span>; })}</div><details className="s-why"><summary>{tx("為什麼這個答案？", "Why this answer?")}</summary><p className="s-muted">{tx("已查閱：", "Checked: ")}{usedTools.map(name => { const label = toolLabel(name); return tx(label[0], label[1]); }).join(" · ")}</p><small>{tx("只顯示工具名稱，不含帳戶資料內容。", "Tool names only; no account data is included.")}</small></details></>}{pendingProposals.map((proposal, index) => <article className="s-card s-stack" key={`${index}-${proposal.sections[0]?.slice(0, 12)}`}><div className="s-between"><h2>{tx("建議的私人 Brief", "Proposed private brief")}</h2><span className="s-tag ghost">{tx("未保存", "Not saved")}</span></div><ol style={{ margin: 0, paddingLeft: 20, display: "grid", gap: 6 }}>{proposal.sections.map((section, sectionIndex) => <li key={sectionIndex}>{section}</li>)}</ol><div className="s-row">{proposal.token ? <button type="button" className="s-btn s-primary" disabled={proposalSaving === index} onClick={() => void executeProposal(proposal, index)}>{proposalSaving === index ? tx("保存中…", "Saving…") : tx("確認並保存私人 Brief", "Confirm and save private brief")}</button> : null}<button type="button" className="s-btn" onClick={() => applyProposal(proposal)}>{tx("套用到 Brief 編輯器", "Apply to brief editor")}</button><button type="button" className="s-btn" onClick={() => setPendingProposals(current => current.filter((_, currentIndex) => currentIndex !== index))}>{tx("忽略", "Dismiss")}</button></div><small>{tx("不會自動保存；你仍可在 Brief 分頁檢查及保存。", "Nothing is saved automatically; review and save from the Brief tab.")}</small>{proposalError && <small role="alert" style={{ color: "var(--color-danger, #89382f)" }}>{proposalError}</small>}</article>)}<form className="s-ask" onSubmit={e => {e.preventDefault();void send();}}><label htmlFor="thread-question">{tx("繼續討論", "Continue the conversation")}</label><textarea id="thread-question" value={input} maxLength={4000} onChange={e=>setInput(e.target.value)} placeholder={tx("我想拍一段…", "I would like to create…")}/><div className="s-ask-footer"><button type="button" className="s-btn" onClick={()=>setTab("evidence")}><Paperclip size={15}/>{tx("選擇來源", "Sources")}</button><button className="s-btn s-primary" disabled={!input.trim() || chat.isPending || streaming}><Send size={16}/>{(chat.isPending || streaming) ? tx("等待回覆…", "Waiting…") : tx("送出", "Send")}</button></div></form><p className="s-ask-note">{tx("回覆是建議，不會執行任務操作。", "Replies are proposals; no mission action is taken.")}</p>{pendingChat && <button className="s-btn" onClick={async()=>{try{await receive(await apiFetch<AssistantReply>(`/assistant/requests/${pendingChat.id}`), pendingChat.message);}catch(error){if(rejectUnauthorized(error))return;setFeedback(tx("尚未取得結果，請稍後再試。", "No result yet. Try again later."));}}}>{tx("查看上次要求結果", "Check last request")}</button>}</section>}
       {tab==="evidence" && <section id="studio-panel-evidence" role="tabpanel" aria-labelledby="studio-tab-evidence" className="s-stack"><div className="s-between"><div><h2>{tx("每個建議，都有出處", "Know what supports your idea")}</h2><p className="s-muted">{tx("手動與模擬內容均標示未驗證；地區和語言依實際來源顯示。", "Manual and mock evidence stay unverified; coverage follows each source.")}</p></div><button className="s-btn" onClick={()=>setSourceOpen(!sourceOpen)}>＋ {tx("加入來源", "Add source")}</button></div>{sourceOpen && <SourceForm onLoginRequired={onLoginRequired} threadId={detail.thread.id} revision={detail.thread.revision} onSaved={()=>{setSourceOpen(false);localRevision.current=detail.thread.revision+1;}}/>}
         <IntegrationSourcePanel onLoginRequired={onLoginRequired} threadId={detail.thread.id} revision={detail.thread.revision} onImported={()=>{localRevision.current=detail.thread.revision+1;setSelected([]);setConfirmed(false);}}/><StudioSkillSummary/>
