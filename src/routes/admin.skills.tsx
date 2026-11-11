@@ -129,6 +129,20 @@ export function AdminSkillsPage() {
             </ul>
           </div>
         ) : null}
+        {audit.data?.usage?.length ? (
+          <div className="space-y-1 text-sm" aria-label={t("app.admin.skillsUsage")}>
+            <p className="text-xs font-bold uppercase text-[var(--color-soft-ink)]">{t("app.admin.skillsUsage")}</p>
+            <ul className="space-y-1">
+              {audit.data.usage.map(item => (
+                <li key={item.server_name} className="flex flex-wrap items-center justify-between gap-2">
+                  <span className="font-semibold">{item.server_name}</span>
+                  <span className="text-xs">{item.calls_24h} / 24h · {item.calls_7d} / 7d</span>
+                  <span className="text-xs text-[var(--color-soft-ink)]">{item.tools.map(tool => `${tool.tool_name} ${tool.count}`).join(" · ")}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
         {!audit.data?.calls.length ? <p className="text-sm text-[var(--color-soft-ink)]">{t("app.admin.skillsAuditEmpty")}</p> : (
           <ul className="space-y-1 text-sm">
             {audit.data.calls.map(call => (
