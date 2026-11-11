@@ -150,7 +150,8 @@ export async function runAssistant(
       for (const call of last.toolCalls) {
         // Never start another slow skill lookup once this turn's soft budget is spent: the
         // request would abort at the provider deadline and lose the partial answer.
-        if (deps.softStopAt && Date.now() >= deps.softStopAt) { softStopped = true; break; }
+        const slowSkill = call.name !== "propose_brief" && !builtinTools.has(call.name);
+        if (slowSkill && deps.softStopAt && Date.now() >= deps.softStopAt) { softStopped = true; break; }
         deps.signal?.throwIfAborted();
         deps.onProgress?.(`tool:${call.name}`);
         let toolResult: string;
