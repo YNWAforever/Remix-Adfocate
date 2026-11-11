@@ -123,6 +123,18 @@ it("retries a terminal unknown turn with a fresh request id",async()=>{
   expect(h.chat.mock.calls[1][0]).toMatchObject({message:"幫我查 slow skill"});
   expect(h.chat.mock.calls[1][0].client_request_id).not.toBe(h.chat.mock.calls[0][0].client_request_id);
 });
+it("checks an unresolved request and refreshes when it was saved",async()=>{
+  vi.spyOn(api,"apiFetch").mockResolvedValue({persistence:"saved",answer:"已保存答案",request_id:"req-check"} as never);
+  h.chat.mockResolvedValue({persistence:"unknown",request_id:"req-check"});
+  render(<StudioWorkspace threadId="thread"/>);
+  fireEvent.change(screen.getByRole("textbox",{name:"繼續討論"}),{target:{value:"幫我查未完成事項"}});
+  fireEvent.click(screen.getByRole("button",{name:"送出"}));
+  fireEvent.click(await screen.findByRole("button",{name:"查看要求"}));
+  await waitFor(()=>expect(api.apiFetch).toHaveBeenCalledWith("/assistant/requests/req-check"));
+  await waitFor(()=>expect(document.body).toHaveTextContent("要求已保存"));
+  expect(h.invalidate).toHaveBeenCalledWith({queryKey:["thread"]});
+  expect(screen.queryByRole("button",{name:"查看要求"})).not.toBeInTheDocument();
+});
 it("shows an assistant working indicator while the reply is pending",()=>{
   h.pending=true;
   render(<StudioWorkspace threadId="thread"/>);
