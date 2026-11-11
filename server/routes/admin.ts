@@ -23,6 +23,7 @@ import { validateSubmissionEvidence } from "../../src/lib/submissionEvidence.js"
 import { requireCapability, requirePlatformCapability, staffRouteRequirement, StaffCapabilityError } from "../lib/staffCapabilities.js";
 import { adminStaffAccessRoutes } from "./adminStaffAccess.js";
 import { adminMcpRoutes } from "./adminMcp.js";
+import { adminAssistantRoutes } from "./adminAssistant.js";
 import { staffMissionAssistRoutes } from "./assistant.js";
 import { dbError } from "../lib/httpErrors.js";
 
@@ -143,6 +144,7 @@ adminRoutes.route("/", adminCampaignRoutes);
 adminRoutes.route("/", adminAcademyRoutes);
 adminRoutes.route("/active-missions", adminActiveMissionRoutes);
 adminRoutes.route("/mcp", adminMcpRoutes);
+adminRoutes.route("/assistant", adminAssistantRoutes);
 adminRoutes.route("/", adminRewardHandoffRoutes);
 
 // NOTE: interim — this lists submissions across ALL workspaces (filtered only by

@@ -32,8 +32,19 @@ export function fetchMcpAudit(workspace = "") {
   return adminFetch<{ calls: AdminMcpCall[]; summary: AdminMcpAuditSummary; health?: AdminMcpServerHealth[]; usage?: AdminMcpUsage[] }>(`/admin/mcp/audit${qs(workspace)}`);
 }
 
+export type AdminAssistantReliability = {
+  requests: Record<"24h" | "7d", { total: number; saved: number; unknown: number; failed: number; pending: number }>;
+  proposals: Record<"24h" | "7d", { total: number; executed: number; failed: number }>;
+  last_unknown_at: string | null;
+};
+
+export function fetchAssistantReliability(workspace = "") {
+  return adminFetch<AdminAssistantReliability>("/admin/assistant/reliability" + qs(workspace));
+}
+
 export const mcpAdminKeys = {
   all: ["admin", "mcp"] as const,
   list: (workspace: string) => ["admin", "mcp", workspace] as const,
   audit: (workspace: string) => ["admin", "mcp", "audit", workspace] as const,
+  reliability: (workspace: string) => ["admin", "assistant", "reliability", workspace] as const,
 };
