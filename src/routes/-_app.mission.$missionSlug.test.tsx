@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { afterEach, describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ApiError } from "@/lib/api";
@@ -57,6 +57,8 @@ function renderDetail() {
 }
 
 describe("Mission detail writes", () => {
+  afterEach(() => vi.unstubAllEnvs());
+
   beforeEach(() => {
     vi.clearAllMocks();
     params.mockReturnValue({ slug: "demo", missionSlug: "m1" } as never);
@@ -174,6 +176,34 @@ describe("Mission detail writes", () => {
     renderDetail();
     expect(screen.getByText(/不能再為此任務重新提交/)).toBeInTheDocument();
     expect(screen.queryByPlaceholderText(/貼上你的內容連結/)).not.toBeInTheDocument();
+  });
+
+  it("hides the support handoff when no destination is configured", () => {
+    vi.stubEnv("VITE_SUPPORT_WHATSAPP", "");
+    vi.stubEnv("VITE_SUPPORT_EMAIL", "");
+    hoisted.my.data = [{
+      id: "s1", status: "rejected", review_notes: "not accepted", resubmit_remaining: 0, resubmit_count: 2,
+      content_urls: ["https://ig.com/p/old"], points_awarded: 0, created_at: "",
+      missions: { slug: "m1", title: "美容試用", points_reward: 300, mission_type: "ugc", revision_limit: 2 },
+    }];
+    renderDetail();
+    expect(screen.queryByRole("link", { name: "需要協助？" })).not.toBeInTheDocument();
+  });
+
+  it("hands off to support with an opaque payload on a closed rejection", () => {
+    vi.stubEnv("VITE_SUPPORT_WHATSAPP", "+852 9123-4567");
+    vi.stubEnv("VITE_SUPPORT_EMAIL", "");
+    hoisted.my.data = [{
+      id: "s1", status: "rejected", review_notes: "not accepted", resubmit_remaining: 0, resubmit_count: 2,
+      content_urls: ["https://ig.com/p/old"], points_awarded: 0, created_at: "",
+      missions: { slug: "m1", title: "美容試用", points_reward: 300, mission_type: "ugc", revision_limit: 2 },
+    }];
+    renderDetail();
+    const link = screen.getByRole("link", { name: "需要協助？" });
+    const href = link.getAttribute("href") ?? "";
+    expect(href).toContain("https://wa.me/85291234567?text=");
+    expect(href).toContain(encodeURIComponent("ADFOCATE:rejected_closed:s1"));
+    expect(href).not.toContain("not%20accepted");
   });
 
   it.each([401, 403, 404])("hides saved evidence after a %s and a subsequent outage", (status) => {
