@@ -4,6 +4,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 const hoisted = vi.hoisted(() => ({
   session: null as { access_token: string } | null,
   meStatus: 200,
+  mfaRequired: false,
   lang: "en" as "en" | "zh",
 }));
 
@@ -14,6 +15,14 @@ vi.mock("@/lib/supabase", () => ({
       onAuthStateChange: vi.fn(() => ({ data: { subscription: { unsubscribe: vi.fn() } } })),
       signInWithOAuth: vi.fn(),
       signOut: vi.fn(),
+      refreshSession: vi.fn(async () => ({ data: {}, error: null })),
+      mfa: {
+        listFactors: vi.fn(async () => ({ data: { totp: [] }, error: null })),
+        enroll: vi.fn(async () => ({ data: { id: "f1", totp: { qr_code: "data:image/svg+xml;base64,PHN2Zz48L3N2Zz4=", secret: "SECRET" } }, error: null })),
+        challenge: vi.fn(async () => ({ data: { id: "c1" }, error: null })),
+        verify: vi.fn(async () => ({ data: {}, error: null })),
+        unenroll: vi.fn(async () => ({ error: null })),
+      },
     },
   },
 }));
@@ -27,9 +36,10 @@ import { StaffAuthGate } from "./StaffAuthGate";
 beforeEach(() => {
   hoisted.session = null;
   hoisted.meStatus = 200;
+  hoisted.mfaRequired = false;
   hoisted.lang = "en";
   vi.spyOn(globalThis, "fetch").mockImplementation(async () =>
-    new Response(JSON.stringify({ staff: { userId: "u1", email: "a@fimmick.com" } }), { status: hoisted.meStatus }),
+    new Response(JSON.stringify({ staff: { userId: "u1", email: "a@fimmick.com" }, mfa_required: hoisted.mfaRequired }), { status: hoisted.meStatus }),
   );
 });
 
@@ -44,6 +54,14 @@ describe("StaffAuthGate", () => {
     hoisted.session = { access_token: "jwt" };
     render(<StaffAuthGate>{() => <div>shell</div>}</StaffAuthGate>);
     await waitFor(() => expect(screen.getByText("shell")).toBeInTheDocument());
+  });
+
+  it("holds the shell behind MFA enrollment when /admin/me reports mfa_required", async () => {
+    hoisted.session = { access_token: "jwt" };
+    hoisted.mfaRequired = true;
+    render(<StaffAuthGate>{() => <div>shell</div>}</StaffAuthGate>);
+    await waitFor(() => expect(screen.getByText("Staff verification")).toBeInTheDocument());
+    expect(screen.queryByText("shell")).not.toBeInTheDocument();
   });
 
   it.each([

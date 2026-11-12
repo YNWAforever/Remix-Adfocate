@@ -354,6 +354,21 @@ suite("admin submission review", () => {
     expect((await res.json()).code).toBe("no_admin");
   });
 
+  it("enforces AAL2 for staff routes when STAFF_MFA_REQUIRED=true, keeping /me readable", async () => {
+    process.env.STAFF_MFA_REQUIRED = "true";
+    try {
+      const me = await adminreq("/admin/me");
+      expect(me.status).toBe(200);
+      expect(await me.json()).toMatchObject({ mfa_required: true, staff: { email: expect.any(String) } });
+
+      const blocked = await adminreq("/admin/submissions?status=submitted");
+      expect(blocked.status).toBe(403);
+      expect((await blocked.json()).code).toBe("mfa_required");
+    } finally {
+      delete process.env.STAFF_MFA_REQUIRED;
+    }
+  });
+
   it("lists pending submissions", async () => {
     const res = await adminreq("/admin/submissions?status=submitted");
     expect(res.status).toBe(200);

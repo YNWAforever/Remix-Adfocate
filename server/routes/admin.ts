@@ -10,6 +10,7 @@ import { persistScores } from "../lib/persistScores.js";
 import { shapeEngagedRoster, type EngagedSubmissionRow } from "../lib/engagedRoster.js";
 import { markVerified } from "../lib/social/repo.js";
 import { resolveStaff, type AdminEnv, type StaffUser } from "../lib/staffAuth.js";
+import { staffMfaPending } from "../lib/staffMfa.js";
 import { adminContentRoutes } from "./adminContent.js";
 import { adminInsightsRoutes } from "./adminInsights.js";
 import { adminRadarRoutes } from "./adminRadar.js";
@@ -62,7 +63,13 @@ adminRoutes.use("*", async (c, next) => {
     return c.json({ error: "Staff service unavailable; retry", code: "staff_unavailable" }, 503);
   }
   if (!staff) return c.json({ error: "not staff", code: "not_staff" }, 403);
-  c.set("staff", { userId: staff.user_id, email: staff.email, active: true });
+  const identity = { userId: staff.user_id, email: staff.email, active: true };
+  c.set("staff", identity);
+  const mfaPending = staffMfaPending(identity, jwt);
+  c.set("staffMfaRequired", mfaPending);
+  if (mfaPending && !/\/admin\/me\/?$/.test(new URL(c.req.url).pathname)) {
+    return c.json({ error: "Staff MFA verification required", code: "mfa_required" }, 403);
+  }
   await next();
 });
 
@@ -129,7 +136,7 @@ adminRoutes.use("*", async (c, next) => {
 
 adminRoutes.get("/me", (c) => {
   const s = c.get("staff");
-  return c.json({ staff: { userId: s.userId, email: s.email } });
+  return c.json({ staff: { userId: s.userId, email: s.email }, mfa_required: c.get("staffMfaRequired") });
 });
 
 adminRoutes.route("/", adminOperatorCrmRoutes);

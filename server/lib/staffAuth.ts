@@ -5,7 +5,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 export type StaffIdentity = { userId: string | null; email: string; viaSecret?: boolean; active?: boolean };
 
 /** Hono Env for the admin sub-apps (separate from the creator Env in server/app.ts). */
-export type AdminEnv = { Variables: { staff: StaffIdentity; authorizedWorkspace: import("./staffWorkspace.js").AuthorizedWorkspace; workspaceAccess: import("./staffCapabilities.js").WorkspaceAccess } };
+export type AdminEnv = { Variables: { staff: StaffIdentity; staffMfaRequired: boolean; authorizedWorkspace: import("./staffWorkspace.js").AuthorizedWorkspace; workspaceAccess: import("./staffCapabilities.js").WorkspaceAccess } };
 
 export type StaffUser = { user_id: string; email: string; active: boolean; created_at: string };
 
