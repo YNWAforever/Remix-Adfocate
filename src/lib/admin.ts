@@ -776,7 +776,7 @@ export function patchMissionShortlist(
 
 export const adminKeys = {
   applications: (workspace: string) => ["admin-applications", workspace] as const,
-  submissions: (status: string, workspace: string) => ["admin-submissions", status, workspace] as const,
+  submissions: (status: string, workspace: string, overdue = false) => ["admin-submissions", status, workspace, overdue] as const,
   engaged: (workspace: string) => ["admin-engaged", workspace] as const,
   insights: (workspace: string, windowDays: number) => ["admin-insights", workspace, windowDays] as const,
   radar: (workspace: string, days: number) => ["admin-radar", workspace, days] as const,
@@ -805,6 +805,8 @@ export type Submission = Application & {
   status: string;
   content_urls: string[];
   submitted_at: string | null;
+  review_deadline?: string | null;
+  overdue?: boolean;
 };
 
 // NOTE: these mirror the server-side shapes in server/lib/engagedRoster.ts
@@ -849,9 +851,9 @@ export function declineApplication(id: string, notes?: string, requestId?: strin
   });
 }
 
-export function fetchSubmissions(status = "submitted", workspace = "", submissionId = "") {
-  const parts = [`status=${encodeURIComponent(status)}`, wsq(workspace), submissionId ? `submission_id=${encodeURIComponent(submissionId)}` : ""].filter(Boolean);
-  return adminFetch<{ submissions: Submission[] }>(`/admin/submissions?${parts.join("&")}`);
+export function fetchSubmissions(status = "submitted", workspace = "", submissionId = "", overdue = false) {
+  const parts = [`status=${encodeURIComponent(status)}`, wsq(workspace), submissionId ? `submission_id=${encodeURIComponent(submissionId)}` : "", overdue ? "overdue=1" : ""].filter(Boolean);
+  return adminFetch<{ submissions: Submission[]; overdue_count?: number }>(`/admin/submissions?${parts.join("&")}`);
 }
 
 export function approveSubmission(id: string, body: { notes?: string; rating?: number }) {

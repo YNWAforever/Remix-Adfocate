@@ -162,14 +162,18 @@ adminRoutes.get("/submissions", async (c) => {
   const submissionId = c.req.query("submission_id");
   if (submissionId && !/^[0-9a-f-]{36}$/i.test(submissionId)) return c.json({ error: "Invalid submission", code: "bad_request" }, 400);
   const ws = c.req.query("workspace");
+  const overdueOnly = c.req.query("overdue") === "1";
+  const nowIso = new Date().toISOString();
   const svc = serviceClient();
   const query = () => {
     let q = svc
       .from("mission_submissions")
       .select(
-        "id, mission_id, status, content_urls, evidence_revision, legacy_evidence_sql_valid, submitted_at, created_at, creator_id, creators!inner(display_name), missions!inner(slug, title, points_reward)",
+        "id, mission_id, status, content_urls, evidence_revision, legacy_evidence_sql_valid, submitted_at, created_at, review_deadline, creator_id, creators!inner(display_name), missions!inner(slug, title, points_reward)",
       );
-    q = submissionId ? q.eq("id", submissionId) : q.eq("status", status);
+    if (submissionId) q = q.eq("id", submissionId);
+    else if (overdueOnly) q = q.in("status", ["submitted", "under_review"]).lt("review_deadline", nowIso);
+    else q = q.eq("status", status);
     if (ws) q = q.eq("missions.workspace_id", ws);
     return q.order("submitted_at", { ascending: true }).order("id");
   };
@@ -177,8 +181,23 @@ adminRoutes.get("/submissions", async (c) => {
   const { data, error } = await fetchAllPages((from, to) => query().range(from, to));
   if (error) return dbError(c, error, "db_error", 500);
   if (submissionId && !data?.length) return c.json({ error: "Not found", code: "not_found" }, 404);
+  const overdueRows = await fetchAllPages((from, to) => {
+    let q = svc
+      .from("mission_submissions")
+      .select("id, missions!inner(workspace_id)")
+      .in("status", ["submitted", "under_review"])
+      .lt("review_deadline", nowIso);
+    if (ws) q = q.eq("missions.workspace_id", ws);
+    return q.range(from, to);
+  });
+  if (overdueRows.error) return dbError(c, overdueRows.error, "db_error", 500);
   try {
-    return c.json({ submissions: await enrichAdminMissionRows(svc, data ?? []) });
+    const nowMs = Date.now();
+    const submissions = (await enrichAdminMissionRows(svc, data ?? [])).map((row) => {
+      const deadline = (row as { review_deadline?: string | null }).review_deadline;
+      return { ...row, overdue: Boolean(deadline && Date.parse(deadline) < nowMs) };
+    });
+    return c.json({ submissions, overdue_count: overdueRows.data.length });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Failed to enrich submissions";
     return dbError(c, { message }, "db_error", 500);

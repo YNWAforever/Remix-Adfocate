@@ -4,7 +4,7 @@ import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { describe, it, expect, beforeAll, afterAll, vi } from "vitest";
 import { createFixtureStaffApp as createApp } from "./fixtureStaffTransport";
-import { makeCreator, makeMission, getCreatorScores, cleanup, hasSupabaseEnv } from "./helpers";
+import { makeCreator, makeMission, getCreatorScores, cleanup, hasSupabaseEnv, serviceForTests } from "./helpers";
 
 // Make the in-process admin middleware and the test agree on the secret.
 process.env.ADMIN_SECRET = process.env.ADMIN_SECRET || "test-admin-secret";
@@ -377,6 +377,23 @@ suite("admin submission review", () => {
     expect(row).toBeTruthy();
     expect(row.creator_review).toEqual({ status: "needs_review", risk_level: "unknown" });
     expect(row.mission_shortlist).toBeNull();
+  });
+
+  it("filters overdue submissions and reports the backlog count", async () => {
+    const past = new Date(Date.now() - 3_600_000).toISOString();
+    const updated = await serviceForTests()
+      .from("mission_submissions")
+      .update({ review_deadline: past })
+      .eq("id", submissionId);
+    expect(updated.error).toBeNull();
+
+    const res = await adminreq("/admin/submissions?status=submitted&overdue=1");
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.overdue_count).toBeGreaterThanOrEqual(1);
+    const row = body.submissions.find((s: { id: string }) => s.id === submissionId);
+    expect(row).toMatchObject({ overdue: true });
+    expect(Date.parse(row.review_deadline)).toBe(Date.parse(past));
   });
 
   it("lists pending applications with creator review and shortlist metadata", async () => {
