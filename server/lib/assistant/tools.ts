@@ -100,6 +100,14 @@ export const STUDIO_TOOL_DEFS: ToolDef[] = [
       parameters: { type: "object", properties: {}, additionalProperties: false },
     },
   },
+  {
+    type: "function",
+    function: {
+      name: "get_my_saved_briefs",
+      description: "List the creator's saved private briefs with thread title, version, section count and saved time. Never includes brief text.",
+      parameters: { type: "object", properties: {}, additionalProperties: false },
+    },
+  },
 ];
 
 export type ToolScope = Readonly<{ workspaceId?: string | null }>;
@@ -131,7 +139,7 @@ export async function runTool(name: string, argsJson: string, client: Client, sc
   if (name === "get_my_missions") {
     const VALID_STATUSES = new Set(["applied", "joined", "submitted", "under_review", "approved", "rejected", "declined", "expired"]);
     let base = client.from("mission_submissions")
-      .select("status, points_awarded, submitted_at, missions(slug, title, mission_type)");
+      .select("status, points_awarded, submitted_at, missions(slug, title, mission_type, deadline)");
     const status = typeof args.status === "string" && VALID_STATUSES.has(args.status) ? args.status : undefined;
     if (status) base = base.eq("status", status);
     const { data, error } = await base.limit(50);
@@ -197,6 +205,27 @@ export async function runTool(name: string, argsJson: string, client: Client, sc
       .order("created_at", { ascending: false }).limit(20);
     if (error) return `error: ${error.message}`;
     return compact(JSON.stringify({ transactions: data ?? [] }));
+  }
+
+  if (name === "get_my_saved_briefs") {
+    const briefs = await client.from("studio_briefs")
+      .select("thread_id,version,sections,created_at")
+      .order("created_at", { ascending: false }).limit(20);
+    if (briefs.error) return `error: ${briefs.error.message}`;
+    const rows = (briefs.data ?? []) as Array<{ thread_id?: unknown; version?: unknown; sections?: unknown; created_at?: unknown }>;
+    const threadIds = [...new Set(rows.map(row => row.thread_id).filter((id): id is string => typeof id === "string"))];
+    const threads = threadIds.length
+      ? await client.from("studio_threads").select("id,title").in("id", threadIds)
+      : { data: [], error: null };
+    if (threads.error) return `error: ${threads.error.message}`;
+    const titles = new Map((threads.data ?? []).map(thread => [String((thread as { id?: unknown }).id), String((thread as { title?: unknown }).title ?? "")]));
+    const briefsOut = rows.map(row => ({
+      thread_title: typeof row.thread_id === "string" ? titles.get(row.thread_id) ?? null : null,
+      version: typeof row.version === "number" ? row.version : null,
+      section_count: Array.isArray(row.sections) ? row.sections.length : 0,
+      created_at: typeof row.created_at === "string" ? row.created_at : null,
+    }));
+    return compact(JSON.stringify({ briefs: briefsOut }));
   }
 
   if (name === "get_my_recent_threads") {
