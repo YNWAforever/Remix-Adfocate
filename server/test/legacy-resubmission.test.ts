@@ -3,14 +3,29 @@ import { randomUUID } from "node:crypto";
 import {
   cleanup,
   fixtureName,
+  FIXTURE_WORKSPACE_SLUG,
   hasSupabaseEnv,
   makeCreator,
   makeMission,
   serviceForTests,
   userForJwt,
 } from "./helpers";
+import { createApp } from "../app";
 
+const { app } = createApp();
 const suite = hasSupabaseEnv ? describe : describe.skip;
+
+function req(path: string, jwt: string, init: RequestInit = {}) {
+  return app.request(`/api${path}`, {
+    ...init,
+    headers: {
+      Authorization: `Bearer ${jwt}`,
+      "X-Workspace-Slug": FIXTURE_WORKSPACE_SLUG,
+      "Content-Type": "application/json",
+      ...(init.headers ?? {}),
+    },
+  });
+}
 
 type Creator = Awaited<ReturnType<typeof makeCreator>>;
 
@@ -181,5 +196,85 @@ suite("legacy creator resubmission", () => {
     });
     expect(result.error).not.toBeNull();
     expect(result.error?.message).toContain("wrong_state");
+  });
+});
+
+
+suite("legacy resubmission route", () => {
+  afterAll(cleanup);
+
+  it("returns revision headroom on /missions/my and accepts a resubmission through the route", async () => {
+    const { creator, mission, submission } = await rejectedSubmission("route-ok");
+    const mine = await req("/missions/my", creator.jwt);
+    expect(mine.status).toBe(200);
+    const mineBody = await mine.json();
+    const row = (mineBody.submissions as Array<Record<string, unknown>>).find((value) => value.id === submission.id);
+    expect(row).toMatchObject({ status: "rejected", resubmit_remaining: 2, resubmit_count: 0, closed: false });
+
+    const requestId = randomUUID();
+    const res = await req(`/missions/${mission.slug}/submit`, creator.jwt, {
+      method: "PUT",
+      body: JSON.stringify({
+        content_urls: ["https://example.test/route-corrected"],
+        request_id: requestId,
+      }),
+    });
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body).toMatchObject({ id: submission.id, status: "submitted", resubmit_count: 1 });
+
+    // Same request id + payload replay is idempotent at the route boundary too.
+    const replay = await req(`/missions/${mission.slug}/submit`, creator.jwt, {
+      method: "PUT",
+      body: JSON.stringify({
+        content_urls: ["https://example.test/route-corrected"],
+        request_id: requestId,
+      }),
+    });
+    expect(replay.status).toBe(200);
+    expect((await replay.json()).resubmit_count).toBe(1);
+
+    const after = await req("/missions/my", creator.jwt);
+    const afterRow = ((await after.json()).submissions as Array<Record<string, unknown>>)
+      .find((value) => value.id === submission.id);
+    expect(afterRow).toMatchObject({ resubmit_remaining: 1, resubmit_count: 1 });
+  });
+
+  it("maps revision exhaustion and idempotency conflicts to 409", async () => {
+    const { mission, creator, submission } = await rejectedSubmission("route-limit");
+    for (let attempt = 1; attempt <= 2; attempt += 1) {
+      const res = await req(`/missions/${mission.slug}/submit`, creator.jwt, {
+        method: "PUT",
+        body: JSON.stringify({ content_urls: [`https://example.test/route-${attempt}`], request_id: randomUUID() }),
+      });
+      expect(res.status).toBe(200);
+      const rejected = await serviceForTests()
+        .from("mission_submissions")
+        .update({ status: "rejected", reviewed_at: new Date().toISOString(), reviewer_notes: `round ${attempt}` })
+        .eq("id", submission.id);
+      expect(rejected.error).toBeNull();
+    }
+    const blocked = await req(`/missions/${mission.slug}/submit`, creator.jwt, {
+      method: "PUT",
+      body: JSON.stringify({ content_urls: ["https://example.test/route-3"], request_id: randomUUID() }),
+    });
+    expect(blocked.status).toBe(409);
+    expect((await blocked.json()).code).toBe("revision_limit_reached");
+  });
+
+  it("maps an idempotency conflict to 409", async () => {
+    const { mission, creator } = await rejectedSubmission("route-conflict");
+    const requestId = randomUUID();
+    const first = await req(`/missions/${mission.slug}/submit`, creator.jwt, {
+      method: "PUT",
+      body: JSON.stringify({ content_urls: ["https://example.test/conflict-one"], request_id: requestId }),
+    });
+    expect(first.status).toBe(200);
+    const conflict = await req(`/missions/${mission.slug}/submit`, creator.jwt, {
+      method: "PUT",
+      body: JSON.stringify({ content_urls: ["https://example.test/conflict-two"], request_id: requestId }),
+    });
+    expect(conflict.status).toBe(409);
+    expect((await conflict.json()).code).toBe("IDEMPOTENCY_CONFLICT");
   });
 });

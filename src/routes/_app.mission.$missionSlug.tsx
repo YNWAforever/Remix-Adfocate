@@ -125,6 +125,14 @@ function MissionDetail() {
             ) : (
               <><p className="text-sm">{sub.review_notes}</p><LegacySubmissionForm key={sub.id} missionSlug={missionSlug} initialUrls={sub.content_urls} disabled={mine.isError || mine.isFetching} /></>
             )
+          ) : sub.status === "rejected" && sub.resubmit_available !== false && (sub.resubmit_remaining ?? 0) > 0 ? (
+            <>
+              <section className="pastel-card space-y-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4">
+                <p className="break-words text-sm">{t("app.mission.reviewReason", { reason: sub.review_notes?.trim() || t("app.mission.reviewReasonMissing") })}</p>
+                <p className="text-sm text-[var(--color-soft-ink)]">{t("app.mission.revisionsLeft", { n: sub.resubmit_remaining ?? 0 })}</p>
+              </section>
+              <LegacySubmissionForm key={`${sub.id}:${sub.resubmit_count ?? 0}`} missionSlug={missionSlug} initialUrls={sub.content_urls} disabled={mine.isError || mine.isFetching} />
+            </>
           ) : (
             <section className="pastel-card flex flex-wrap items-center justify-between gap-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4">
               <span className="font-heading font-bold">{t("app.mission.statusLabel")}</span>
@@ -180,6 +188,7 @@ function LegacySubmissionForm({ missionSlug, initialUrls = [], disabled = false 
   const { t } = useI18n();
   const [urls, setUrls] = useState(initialUrls.join("\n"));
   const [validationError, setValidationError] = useState("");
+  const submitCode = submit.error instanceof ApiError ? submit.error.code : null;
 
   async function submitUrls() {
     if (disabled || submit.isPending) return;
@@ -187,7 +196,7 @@ function LegacySubmissionForm({ missionSlug, initialUrls = [], disabled = false 
     const evidence = validateSubmissionEvidence(list);
     if (!evidence.ok) { setValidationError("請填寫完整的 HTTP(S) 作品網址。 / Enter complete HTTP(S) work URLs without credentials."); return; }
     setValidationError("");
-    try { await submit.mutateAsync({ content_urls: evidence.urls }); setUrls(""); }
+    try { await submit.mutateAsync({ content_urls: evidence.urls, request_id: crypto.randomUUID() }); setUrls(""); }
     catch { /* Mutation error is rendered below; retain the input. */ }
   }
 
@@ -195,7 +204,15 @@ function LegacySubmissionForm({ missionSlug, initialUrls = [], disabled = false 
     <section className="pastel-card space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4">
       <h3 className="font-heading font-bold">{t("app.mission.submitContent")}</h3>
       {validationError && <p role="alert">{validationError}</p>}
-      <RequestFeedback error={submit.error} />
+      {submitCode === "revision_limit_reached" ? (
+        <p role="alert">{t("app.mission.errorRevisionLimit")}</p>
+      ) : submitCode === "deadline_passed" ? (
+        <p role="alert">{t("app.mission.errorDeadlinePassed")}</p>
+      ) : submitCode === "schema_not_ready" ? (
+        <p role="alert">{t("app.mission.errorNotReady")}</p>
+      ) : (
+        <RequestFeedback error={submit.error} />
+      )}
       <textarea value={urls} onChange={(event) => setUrls(event.target.value)} rows={3} placeholder={t("app.mission.urlPlaceholder")} className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm" />
       <button onClick={submitUrls} disabled={disabled || submit.isPending} className="btn-primary block w-full rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 text-center font-heading font-bold text-[var(--color-ink)]">{submit.isPending ? t("app.mission.submitting") : t("app.mission.submitContent")}</button>
     </section>
