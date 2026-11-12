@@ -53,6 +53,20 @@ describe("assistant tools", () => {
     expect(out).not.toContain("secret body");
   });
 
+  it("get_my_review_history includes reviewed feedback and skips unreviewed rows", async () => {
+    const client = clientReturning("mission_submissions", [
+      { status: "rejected", reviewed_at: "2026-11-01T00:00:00Z", quality_rating: 3, points_awarded: 0,
+        reviewer_notes: "x".repeat(700), missions: { slug: "tea", title: "Tea mission" } },
+      { status: "submitted", reviewed_at: null, reviewer_notes: "pending note", missions: { slug: "tea", title: "Tea mission" } },
+    ]);
+    const out = await runTool("get_my_review_history", "{}", client);
+    const body = JSON.parse(out) as { reviews: Array<{ mission_title: string; feedback: string }> };
+    expect(body.reviews).toHaveLength(1);
+    expect(body.reviews[0].mission_title).toBe("Tea mission");
+    expect(body.reviews[0].feedback).toHaveLength(500);
+    expect(out).not.toContain("pending note");
+  });
+
   it("returns an error string for an unknown tool", async () => {
     const out = await runTool("definitely_not_a_tool", "{}", {} as unknown as Parameters<typeof runTool>[2]);
     expect(out.toLowerCase()).toContain("unknown tool");

@@ -108,6 +108,14 @@ export const STUDIO_TOOL_DEFS: ToolDef[] = [
       parameters: { type: "object", properties: {}, additionalProperties: false },
     },
   },
+  {
+    type: "function",
+    function: {
+      name: "get_my_review_history",
+      description: "List the creator's reviewed mission submissions with status, review time, quality rating, points and up to 500 characters of reviewer feedback.",
+      parameters: { type: "object", properties: {}, additionalProperties: false },
+    },
+  },
 ];
 
 export type ToolScope = Readonly<{ workspaceId?: string | null }>;
@@ -226,6 +234,28 @@ export async function runTool(name: string, argsJson: string, client: Client, sc
       created_at: typeof row.created_at === "string" ? row.created_at : null,
     }));
     return compact(JSON.stringify({ briefs: briefsOut }));
+  }
+
+  if (name === "get_my_review_history") {
+    const { data, error } = await client.from("mission_submissions")
+      .select("status, submitted_at, reviewed_at, quality_rating, points_awarded, reviewer_notes, missions(slug, title)")
+      .order("reviewed_at", { ascending: false, nullsFirst: false }).limit(20);
+    if (error) return "error: " + error.message;
+    const rows = (data ?? []) as Array<{ status?: unknown; submitted_at?: unknown; reviewed_at?: unknown; quality_rating?: unknown; points_awarded?: unknown; reviewer_notes?: unknown; missions?: unknown }>;
+    const reviews = rows.filter(row => typeof row.reviewed_at === "string").slice(0, 10).map(row => {
+      const mission = (Array.isArray(row.missions) ? row.missions[0] : row.missions) as { slug?: unknown; title?: unknown } | null;
+      return {
+        status: typeof row.status === "string" ? row.status : null,
+        mission_title: typeof mission?.title === "string" ? mission.title : null,
+        mission_slug: typeof mission?.slug === "string" ? mission.slug : null,
+        submitted_at: typeof row.submitted_at === "string" ? row.submitted_at : null,
+        reviewed_at: row.reviewed_at,
+        quality_rating: typeof row.quality_rating === "number" ? row.quality_rating : null,
+        points_awarded: typeof row.points_awarded === "number" ? row.points_awarded : null,
+        feedback: typeof row.reviewer_notes === "string" && row.reviewer_notes.trim() ? row.reviewer_notes.trim().slice(0, 500) : null,
+      };
+    });
+    return compact(JSON.stringify({ reviews }));
   }
 
   if (name === "get_my_recent_threads") {
