@@ -1,6 +1,6 @@
 # Phase 3 closeout — launch readiness
 
-Updated 2026-11-13 (Asia/Singapore). Production main: `c0dff00`.
+Updated 2026-11-13 (Asia/Singapore). Production main: `985e572` (deployment READY, `/` 200, `/api/health` 200).
 
 ## Shipped
 
@@ -10,7 +10,7 @@ Updated 2026-11-13 (Asia/Singapore). Production main: `c0dff00`.
 | M2 operator overdue signal | #158 | Live |
 | M3 support handoff | #159 | Code live, **dark** (no channel configured) |
 | M4 staff MFA (AAL2) | #160 | Code live, **dark** (`STAFF_MFA_REQUIRED` unset) |
-| M5 production release/pilot | — | **Not started — owner-gated** |
+| M5 production release/pilot | — | **Not started — owner-gated** ([readiness bundle](phase3-pilot-rollout.md)) |
 
 Details: [creator recovery](phase3-creator-recovery.md),
 [support handoff](phase3-support-handoff.md), [staff MFA](phase3-staff-mfa.md).
