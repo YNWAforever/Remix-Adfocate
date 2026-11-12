@@ -24,23 +24,34 @@ function SubmissionsTab() {
   const { workspace } = useAdminWorkspace();
   const qc = useQueryClient();
   const submissionId = new URLSearchParams(window.location.search).get("submission_id") ?? "";
+  const [overdueOnly, setOverdueOnly] = useState(false);
   const subs = useQuery({
-    queryKey: [...adminKeys.submissions("submitted", workspace), submissionId],
-    queryFn: () => fetchSubmissions("submitted", workspace, submissionId),
+    queryKey: [...adminKeys.submissions("submitted", workspace, overdueOnly), submissionId],
+    queryFn: () => fetchSubmissions("submitted", workspace, submissionId, overdueOnly),
     enabled: authed,
     retry: false,
   });
-  const visibleSubs = useCanShowPreviousData(subs, [...adminKeys.submissions("submitted", workspace), submissionId]) ? subs.data : undefined;
+  const visibleSubs = useCanShowPreviousData(subs, [...adminKeys.submissions("submitted", workspace, overdueOnly), submissionId]) ? subs.data : undefined;
   useEffect(() => {
     if (subs.error instanceof AdminAuthError) reportAuthError(subs.error);
   }, [subs.error, reportAuthError]);
 
   if (subs.isLoading) return <p className="text-sm">{t("common.loading")}</p>;
-  if (!subs.isError && visibleSubs?.submissions.length === 0) return <p className="text-sm text-[var(--color-soft-ink)]">{t("app.admin.submissionsEmpty")}</p>;
+  const overdueCount = visibleSubs?.overdue_count ?? 0;
+  const empty = !subs.isError && visibleSubs?.submissions.length === 0;
 
   return (
     <div className="space-y-3">
+      <button
+        type="button"
+        aria-pressed={overdueOnly}
+        onClick={() => setOverdueOnly((value) => !value)}
+        className={`rounded-full border-2 border-[var(--color-ink)] px-3 py-1 text-sm font-heading font-bold ${overdueOnly ? "bg-[var(--color-magenta)] text-white" : "bg-white"}`}
+      >
+        {t("app.admin.submissionsOverdueFilter")}{overdueCount > 0 ? ` · ${overdueCount}` : ""}
+      </button>
       <RequestFeedback error={subs.error} stale={Boolean(visibleSubs)} retry={() => void subs.refetch()} />
+      {empty && <p className="text-sm text-[var(--color-soft-ink)]">{t("app.admin.submissionsEmpty")}</p>}
       {visibleSubs?.submissions.map((s) => (
         <SubmissionCard
           key={s.id}
@@ -79,7 +90,10 @@ function SubmissionCard({ submission, onDone }: { submission: Submission; onDone
   return (
     <div className="space-y-3 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <p className="font-heading font-bold">{submission.creators.display_name}</p>
+        <p className="font-heading font-bold">
+          {submission.creators.display_name}
+          {submission.overdue && <span className="ml-2 rounded-full bg-[var(--color-magenta)] px-2 py-0.5 text-xs font-bold text-white">{t("app.admin.submissionsOverdueBadge")}</span>}
+        </p>
         <p className="text-sm text-[var(--color-soft-ink)]">{submission.missions.title}</p>
       </div>
       <RequestFeedback error={approve.error ?? reject.error ?? correction.error}

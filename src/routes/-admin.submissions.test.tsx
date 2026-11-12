@@ -9,7 +9,7 @@ vi.mock("@/lib/admin", () => ({
   fetchSubmissions: h.fetchSubmissions,
   approveSubmission: h.approveSubmission,
   rejectSubmission: h.rejectSubmission,
-  adminKeys: { submissions: (status: string, ws: string) => ["admin-submissions", status, ws] },
+  adminKeys: { submissions: (status: string, ws: string, overdue = false) => ["admin-submissions", status, ws, overdue] },
   AdminAuthError: class extends Error {},
 }));
 
@@ -36,6 +36,22 @@ describe("admin submissions tab", () => {
     fireEvent.change(screen.getByLabelText("品質評分"), { target: { value: "5" } });
     fireEvent.click(screen.getByLabelText("批准"));
     await waitFor(() => expect(h.approveSubmission).toHaveBeenCalledWith("s1", { notes: undefined, rating: 5 }));
+  });
+
+  it("shows the overdue badge and filters the queue", async () => {
+    h.fetchSubmissions.mockResolvedValue({
+      submissions: [{
+        id: "s1", creator_id: "c1", status: "submitted", content_urls: ["https://ig.com/p/x"], submitted_at: null,
+        overdue: true, review_deadline: new Date(Date.now() - 3_600_000).toISOString(),
+        creators: { display_name: "Amy" }, missions: { slug: "m1", title: "夏日面膜", points_reward: 100 },
+      }],
+      overdue_count: 1,
+    });
+    r();
+    await screen.findByText("Amy");
+    expect(screen.getByText("已逾期")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /逾期/ }));
+    await waitFor(() => expect(h.fetchSubmissions).toHaveBeenCalledWith("submitted", "", "", true));
   });
 
   it("requires a reason and a confirmation before declining", async () => {
