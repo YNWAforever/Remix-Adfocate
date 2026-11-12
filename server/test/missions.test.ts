@@ -151,8 +151,36 @@ describe("mission route behavior without a live database", () => {
     expect(result).toEqual({
       data: [{ id: "submission-1", missions: { slug: "legacy-mission" } }],
       error: null,
+      resubmitAvailable: true,
     });
   });
+  it("keeps my-missions readable before the resubmission migration is applied", async () => {
+    const routes = await import("../routes/missions") as Record<string, unknown>;
+    const list = routes.listMyMissions;
+    expect(list).toBeTypeOf("function");
+    if (typeof list !== "function") return;
+
+    const selects: string[] = [];
+    const queryResults = [
+      { data: null, error: { code: "42703", message: "column mission_submissions.resubmit_count does not exist" } },
+      { data: [{ id: "submission-1", missions: { slug: "mission-1" } }], error: null },
+    ];
+    const order = vi.fn(async () => queryResults.shift());
+    const eq = vi.fn(() => ({ order }));
+    const select = vi.fn((columns: string) => {
+      selects.push(columns);
+      return { eq };
+    });
+    const from = vi.fn(() => ({ select }));
+
+    const result = await list({ from } as unknown as SupabaseClient, "creator-1", undefined);
+
+    expect(selects).toHaveLength(2);
+    expect(selects[0]).toContain("resubmit_count");
+    expect(selects[1]).not.toContain("resubmit_count");
+    expect(result).toMatchObject({ error: null, resubmitAvailable: false });
+  });
+
   it("selects workflow mode and active workflow id for creator mission entry points", () => {
     expect(MY_MISSIONS_SELECT).toContain("creator_workflow_mode");
     expect(MY_MISSIONS_SELECT).toContain("mission_workflows(id)");

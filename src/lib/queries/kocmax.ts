@@ -416,7 +416,11 @@ export type MyMission = {
   created_at: string;
   creator_workflow_mode?: "legacy" | "active_workspace";
   active_workflow_id?: string | null;
-  missions: { slug: string; title: string; category?: string; points_reward: number; mission_type: string; creator_workflow_mode?: "legacy" | "active_workspace" };
+  resubmit_count?: number;
+  resubmit_remaining?: number;
+  resubmit_available?: boolean;
+  closed?: boolean;
+  missions: { slug: string; title: string; category?: string; points_reward: number; mission_type: string; revision_limit?: number; creator_workflow_mode?: "legacy" | "active_workspace" };
 };
 
 export function useMyMissions(status?: SubmissionStatus) {
@@ -443,7 +447,7 @@ export function useJoinMission(slug: string) {
 export function useSubmitMission(slug: string) {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (body: { content_urls: string[]; submission_data?: Record<string, unknown> }) =>
+    mutationFn: (body: { content_urls: string[]; submission_data?: Record<string, unknown>; request_id?: string }) =>
       apiFetch<MyMission>(`/missions/${slug}/submit`, { method: "PUT", body: JSON.stringify(body) }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["mission", slug] });

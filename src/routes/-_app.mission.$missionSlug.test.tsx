@@ -116,7 +116,7 @@ describe("Mission detail writes", () => {
     renderDetail();
     fireEvent.change(screen.getByPlaceholderText(/貼上你的內容連結/), { target: { value: "https://ig.com/p/a" } });
     fireEvent.click(screen.getByRole("button", { name: "提交內容" }));
-    await waitFor(() => expect(hoisted.submit).toHaveBeenCalledWith({ content_urls: ["https://ig.com/p/a"] }));
+    await waitFor(() => expect(hoisted.submit).toHaveBeenCalledWith({ content_urls: ["https://ig.com/p/a"], request_id: expect.any(String) }));
   });
 
   it("retains edited correction URLs through a failed background read and recovery", async () => {
@@ -135,7 +135,7 @@ describe("Mission detail writes", () => {
     hoisted.my.error = null;
     page.refresh();
     fireEvent.click(screen.getByRole("button", { name: "提交內容" }));
-    await waitFor(() => expect(hoisted.submit).toHaveBeenCalledWith({ content_urls: ["https://ig.com/p/corrected"] }));
+    await waitFor(() => expect(hoisted.submit).toHaveBeenCalledWith({ content_urls: ["https://ig.com/p/corrected"], request_id: expect.any(String) }));
   });
 
   it("binds prefilled correction evidence to its submission when the mission changes", async () => {
@@ -149,8 +149,31 @@ describe("Mission detail writes", () => {
     page.refresh();
     expect(screen.getByRole("textbox")).toHaveValue("https://ig.com/p/mission-two");
     fireEvent.click(screen.getByRole("button", { name: "提交內容" }));
-    await waitFor(() => expect(hoisted.submit).toHaveBeenCalledWith({ content_urls: ["https://ig.com/p/mission-two"] }));
+    await waitFor(() => expect(hoisted.submit).toHaveBeenCalledWith({ content_urls: ["https://ig.com/p/mission-two"], request_id: expect.any(String) }));
     expect(hoisted.useSubmitMission).toHaveBeenLastCalledWith("m2");
+  });
+
+  it("offers a resubmission form on a rejected submission with revisions left", () => {
+    hoisted.my.data = [{
+      id: "s1", status: "rejected", review_notes: "close-up needed", resubmit_remaining: 2, resubmit_count: 0,
+      content_urls: ["https://ig.com/p/old"], points_awarded: 0, created_at: "",
+      missions: { slug: "m1", title: "美容試用", points_reward: 300, mission_type: "ugc", revision_limit: 2 },
+    }];
+    renderDetail();
+    expect(screen.getByText(/尚餘 2 次修改機會/)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/貼上你的內容連結/)).toBeInTheDocument();
+    expect(screen.queryByText(/不能再為此任務重新提交/)).not.toBeInTheDocument();
+  });
+
+  it("closes a rejected submission with no revisions left", () => {
+    hoisted.my.data = [{
+      id: "s1", status: "rejected", review_notes: "not accepted", resubmit_remaining: 0, resubmit_count: 2,
+      content_urls: ["https://ig.com/p/old"], points_awarded: 0, created_at: "",
+      missions: { slug: "m1", title: "美容試用", points_reward: 300, mission_type: "ugc", revision_limit: 2 },
+    }];
+    renderDetail();
+    expect(screen.getByText(/不能再為此任務重新提交/)).toBeInTheDocument();
+    expect(screen.queryByPlaceholderText(/貼上你的內容連結/)).not.toBeInTheDocument();
   });
 
   it.each([401, 403, 404])("hides saved evidence after a %s and a subsequent outage", (status) => {

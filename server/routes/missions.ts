@@ -10,9 +10,23 @@ import { dbError } from "../lib/httpErrors.js";
 
 export const missionRoutes = new Hono<Env>();
 export const MY_MISSIONS_SELECT =
-  "id, status, content_urls, review_notes:reviewer_notes, points_awarded, submitted_at, reviewed_at, created_at, mission_workflows(id), missions!inner(slug, title, category, points_reward, mission_type, creator_workflow_mode)";
+  "id, status, content_urls, review_notes:reviewer_notes, points_awarded, submitted_at, reviewed_at, created_at, resubmit_count, mission_workflows(id), missions!inner(slug, title, category, points_reward, mission_type, revision_limit, creator_workflow_mode)";
 export const LEGACY_MY_MISSIONS_SELECT =
+  "id, status, content_urls, review_notes:reviewer_notes, points_awarded, submitted_at, reviewed_at, created_at, resubmit_count, missions!inner(slug, title, category, points_reward, mission_type, revision_limit)";
+// Deploy-order guard: these projections keep creator history readable until the
+// resubmission migration is applied.
+export const MY_MISSIONS_NO_RESUBMIT_SELECT =
+  "id, status, content_urls, review_notes:reviewer_notes, points_awarded, submitted_at, reviewed_at, created_at, mission_workflows(id), missions!inner(slug, title, category, points_reward, mission_type, creator_workflow_mode)";
+export const LEGACY_MY_MISSIONS_NO_RESUBMIT_SELECT =
   "id, status, content_urls, review_notes:reviewer_notes, points_awarded, submitted_at, reviewed_at, created_at, missions!inner(slug, title, category, points_reward, mission_type)";
+
+function isMissingResubmitColumn(error: Pick<PostgrestError, "code" | "message"> | null) {
+  return Boolean(
+    error
+      && (error.code === "42703" || error.code === "PGRST204")
+      && error.message.includes("resubmit_count"),
+  );
+}
 
 function isMissingWorkflowMode(error: Pick<PostgrestError, "code" | "message"> | null) {
   return Boolean(
@@ -55,20 +69,27 @@ export async function listMyMissions(
   creatorId: string,
   status?: string,
 ) {
-  let currentQuery = supabase
-    .from("mission_submissions")
-    .select(MY_MISSIONS_SELECT)
-    .eq("creator_id", creatorId);
-  if (status) currentQuery = currentQuery.eq("status", status);
-  const current = await currentQuery.order("created_at", { ascending: false });
-  if (!current.error || !isMissingWorkflowMode(current.error)) return current;
+  const run = (columns: string) => {
+    let query = supabase.from("mission_submissions").select(columns).eq("creator_id", creatorId);
+    if (status) query = query.eq("status", status);
+    return query.order("created_at", { ascending: false });
+  };
 
-  let legacyQuery = supabase
-    .from("mission_submissions")
-    .select(LEGACY_MY_MISSIONS_SELECT)
-    .eq("creator_id", creatorId);
-  if (status) legacyQuery = legacyQuery.eq("status", status);
-  return legacyQuery.order("created_at", { ascending: false });
+  const current = await run(MY_MISSIONS_SELECT);
+  if (!current.error) return { ...current, resubmitAvailable: true };
+  if (isMissingResubmitColumn(current.error)) {
+    const withoutResubmit = await run(MY_MISSIONS_NO_RESUBMIT_SELECT);
+    if (!withoutResubmit.error || !isMissingWorkflowMode(withoutResubmit.error)) {
+      return { ...withoutResubmit, resubmitAvailable: false };
+    }
+    return { ...(await run(LEGACY_MY_MISSIONS_NO_RESUBMIT_SELECT)), resubmitAvailable: false };
+  }
+  if (!isMissingWorkflowMode(current.error)) return { ...current, resubmitAvailable: true };
+
+  const legacy = await run(LEGACY_MY_MISSIONS_SELECT);
+  if (!legacy.error) return { ...legacy, resubmitAvailable: true };
+  if (!isMissingResubmitColumn(legacy.error)) return { ...legacy, resubmitAvailable: true };
+  return { ...(await run(LEGACY_MY_MISSIONS_NO_RESUBMIT_SELECT)), resubmitAvailable: false };
 }
 
 // RPC raise-messages double as stable codes. Map them to HTTP; anything else is a 500.
@@ -76,10 +97,16 @@ const RPC_409 = new Set([
   "mission_full", "already_joined", "not_open", "closed",
   "level_locked", "wrong_state", "empty_urls", "not_authenticated",
   "not_application", "already_applied", "verification_required",
+  "revision_limit_reached", "deadline_passed", "IDEMPOTENCY_CONFLICT",
 ]);
+const RPC_400 = new Set(["invalid_request", "invalid_evidence"]);
+function isMissingRpc(error: { code?: string; message?: string } | null) {
+  return Boolean(error && (error.code === "PGRST202" || /could not find the function/i.test(error.message ?? "")));
+}
 function rpcError(c: Context<Env>, error: Pick<PostgrestError, "message">) {
   const msg = error.message ?? "";
   if (msg === "invalid_evidence") return c.json({ error: "Use complete HTTP(S) work URLs without credentials", code: "invalid_evidence" }, 400);
+  if (RPC_400.has(msg)) return c.json({ error: msg, code: msg }, 400);
   if (msg === "not_found") return c.json({ error: msg, code: msg }, 404);
   if (RPC_409.has(msg)) return c.json({ error: msg, code: msg }, 409);
   return dbError(c, { message: msg }, "db_error", 500);
@@ -114,22 +141,36 @@ missionRoutes.get("/", async (c) => {
 missionRoutes.get("/my", async (c) => {
   const status = c.req.query("status");
   const supabase = makeUserClient(c.get("jwt"));
-  const { data, error } = await listMyMissions(
+  const { data, error, resubmitAvailable } = await listMyMissions(
     supabase,
     c.get("userId"),
     status,
   );
   if (error) return dbError(c, error, "db_error", 500);
-  const submissions = (data ?? []).map((value) => {
-    const row = value as typeof value & {
-      mission_workflows?: { id: string } | Array<{ id: string }> | null;
-      missions?: { creator_workflow_mode?: "legacy" | "active_workspace" };
-    };
+  const rows = (data ?? []) as unknown as Array<Record<string, unknown> & {
+    status: string;
+    resubmit_count?: number | null;
+    mission_workflows?: { id: string } | Array<{ id: string }> | null;
+    missions?: { creator_workflow_mode?: "legacy" | "active_workspace"; revision_limit?: number | null };
+  }>;
+  const submissions = rows.map((row) => {
     const workflows = row.mission_workflows;
     const workflow = Array.isArray(workflows) ? workflows[0] : workflows;
     const { mission_workflows: _missionWorkflows, ...submission } = row;
     void _missionWorkflows;
-    return { ...submission, creator_workflow_mode: row.missions?.creator_workflow_mode ?? "legacy", active_workflow_id: workflow?.id ?? null };
+    const resubmitCount = Number((submission as { resubmit_count?: number | null }).resubmit_count ?? 0);
+    const revisionLimit = Number(row.missions?.revision_limit ?? 0);
+    const resubmitRemaining = Math.max(0, revisionLimit - resubmitCount);
+    return {
+      ...submission,
+      resubmit_count: resubmitCount,
+      revision_limit: revisionLimit,
+      resubmit_remaining: resubmitRemaining,
+      resubmit_available: resubmitAvailable,
+      closed: submission.status === "rejected" && (resubmitRemaining === 0 || !resubmitAvailable),
+      creator_workflow_mode: row.missions?.creator_workflow_mode ?? "legacy",
+      active_workflow_id: workflow?.id ?? null,
+    };
   });
   return c.json({ submissions });
 
@@ -175,7 +216,7 @@ missionRoutes.post("/:slug/join", async (c) => {
 
 /** Submit content for a joined mission. */
 missionRoutes.put("/:slug/submit", async (c) => {
-  const body = await c.req.json<{ content_urls: string[]; submission_data?: Record<string, unknown> }>();
+  const body = await c.req.json<{ content_urls: string[]; submission_data?: Record<string, unknown>; request_id?: string }>();
   const supabase = makeUserClient(c.get("jwt"));
   const { data: m, error: mErr } = await findMissionForMode(
     supabase,
@@ -187,7 +228,10 @@ missionRoutes.put("/:slug/submit", async (c) => {
 
   const result = await submitMissionForMode(supabase, m, body);
   if (result.mismatch) return c.json({ code: "WORKFLOW_MODE_MISMATCH" }, 409);
-  if (result.error) return rpcError(c, result.error);
+  if (result.error) {
+    if (isMissingRpc(result.error)) return c.json({ error: "schema_not_ready", code: "schema_not_ready" }, 503);
+    return rpcError(c, result.error);
+  }
   return c.json(result.data);
 });
 
@@ -215,7 +259,10 @@ type MissionMode = {
 type SubmissionBody = {
   content_urls: string[];
   submission_data?: Record<string, unknown>;
+  request_id?: string;
 };
+
+const REQUEST_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 export async function joinMissionWithWorkflowRecovery(
   supabase: ReturnType<typeof makeUserClient>,
@@ -278,10 +325,24 @@ export async function submitMissionForMode(
   const evidence = validateSubmissionEvidence(body.content_urls);
   if (!evidence.ok) return { mismatch: false, data: null,
     error: Object.assign(new Error("invalid_evidence"), { code: "22023", details: "", hint: "" }) };
-  const result = await supabase.rpc("submit_mission", {
+
+  // First submissions keep the original RPC. A rejected submission answers
+  // wrong_state there, so recover through resubmit_mission without a pre-read.
+  const submitted = await supabase.rpc("submit_mission", {
     p_mission: mission.id,
     p_urls: evidence.urls,
     p_data: body.submission_data ?? {},
   });
-  return { mismatch: false, data: result.data, error: result.error };
+  if (!submitted.error || submitted.error.message !== "wrong_state") {
+    return { mismatch: false, data: submitted.data, error: submitted.error };
+  }
+
+  const requestId = body.request_id && REQUEST_ID.test(body.request_id) ? body.request_id : crypto.randomUUID();
+  const resubmitted = await supabase.rpc("resubmit_mission", {
+    p_mission: mission.id,
+    p_urls: evidence.urls,
+    p_data: body.submission_data ?? {},
+    p_request: requestId,
+  });
+  return { mismatch: false, data: resubmitted.data, error: resubmitted.error, requestId };
 }
