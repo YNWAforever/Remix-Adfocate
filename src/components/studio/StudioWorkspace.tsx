@@ -174,6 +174,7 @@ function ThreadContent({ detail, skill, autoSend, identityKey, onLoginRequired }
     get_my_recent_threads: ["近期討論", "Recent discussions"],
     get_my_saved_briefs: ["已存 Brief", "Saved briefs"],
     get_my_review_history: ["審核記錄", "Review history"],
+    get_my_wallet_ledger: ["積分與收益", "Points & earnings"],
   };
   function toolLabel(name: string): [string, string] {
     if (name.startsWith("mcp__")) {

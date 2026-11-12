@@ -136,7 +136,8 @@ describe("studio assistant eval harness", () => {
 
   it("keeps the configured tool set bounded and unchanged", () => {
     const names = STUDIO_TOOL_DEFS.map(tool => tool.function.name);
-    expect(names).toHaveLength(12);
+    expect(names).toHaveLength(13);
+    expect(names).toContain("get_my_wallet_ledger");
     expect(names).toContain("get_my_review_history");
     expect(names).toContain("get_my_saved_briefs");
     expect(names).toContain("get_my_points_history");

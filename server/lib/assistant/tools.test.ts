@@ -67,6 +67,22 @@ describe("assistant tools", () => {
     expect(out).not.toContain("pending note");
   });
 
+  it("get_my_wallet_ledger merges point and cash entries newest first", async () => {
+    const tables: Record<string, unknown> = {
+      point_transactions: [{ type: "mission_reward", delta: 50, balance_after: 150, description: "Mission", created_at: "2026-11-10T00:00:00Z" }],
+      earnings_transactions: [{ type: "payout", amount: 10, balance_after: 20, description: "Payout", created_at: "2026-11-11T00:00:00Z" }],
+    };
+    const from = vi.fn((table: string) => {
+      const chain: Record<string, unknown> = {
+        select: () => chain, order: () => chain, limit: () => chain,
+        then: (res: (value: { data: unknown; error: null }) => unknown) => Promise.resolve({ data: tables[table], error: null }).then(res),
+      };
+      return chain;
+    });
+    const body = JSON.parse(await runTool("get_my_wallet_ledger", "{}", { from } as unknown as Parameters<typeof runTool>[2])) as { entries: Array<{ kind: string }> };
+    expect(body.entries.map(entry => entry.kind)).toEqual(["cash", "points"]);
+  });
+
   it("returns an error string for an unknown tool", async () => {
     const out = await runTool("definitely_not_a_tool", "{}", {} as unknown as Parameters<typeof runTool>[2]);
     expect(out.toLowerCase()).toContain("unknown tool");

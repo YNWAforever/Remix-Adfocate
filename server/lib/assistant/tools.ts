@@ -116,6 +116,14 @@ export const STUDIO_TOOL_DEFS: ToolDef[] = [
       parameters: { type: "object", properties: {}, additionalProperties: false },
     },
   },
+  {
+    type: "function",
+    function: {
+      name: "get_my_wallet_ledger",
+      description: "List the creator's recent point and cash ledger entries, newest first: kind (points/cash), type, signed amount or delta, balance after, reason and time.",
+      parameters: { type: "object", properties: {}, additionalProperties: false },
+    },
+  },
 ];
 
 export type ToolScope = Readonly<{ workspaceId?: string | null }>;
@@ -256,6 +264,23 @@ export async function runTool(name: string, argsJson: string, client: Client, sc
       };
     });
     return compact(JSON.stringify({ reviews }));
+  }
+
+  if (name === "get_my_wallet_ledger") {
+    const [points, earnings] = await Promise.all([
+      client.from("point_transactions").select("type,delta,balance_after,description,created_at")
+        .order("created_at", { ascending: false }).limit(20),
+      client.from("earnings_transactions").select("type,amount,balance_after,description,created_at")
+        .order("created_at", { ascending: false }).limit(20),
+    ]);
+    if (points.error) return "error: " + points.error.message;
+    if (earnings.error) return "error: " + earnings.error.message;
+    const rows: Array<Record<string, unknown>> = [
+      ...(points.data ?? []).map(row => ({ ...(row as Record<string, unknown>), kind: "points" })),
+      ...(earnings.data ?? []).map(row => ({ ...(row as Record<string, unknown>), kind: "cash" })),
+    ];
+    rows.sort((a, b) => String(b.created_at ?? "").localeCompare(String(a.created_at ?? "")));
+    return compact(JSON.stringify({ entries: rows.slice(0, 20) }));
   }
 
   if (name === "get_my_recent_threads") {
