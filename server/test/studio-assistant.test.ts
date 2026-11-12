@@ -10,7 +10,7 @@ describe("studio conversation is read-only and continuous", () => {
     const client = {} as Parameters<typeof runAssistant>[0];
     await runAssistant(client, { query: "縮短方案 B", locale:"zh", workspace:"owned", history:[{ role:"assistant", content:"方案 B：從味道開始" }], studioContext: { topic:"creation", title:"我的任務", sources:[{ id:"owned-source", title:"本人筆記", content:"一人份量", status:"unverified" }] } }, { provider });
     const request = chat.mock.calls[0][0];
-    expect(request.tools?.map((tool: { function: { name: string } }) => tool.function.name)).toEqual(["get_my_points","get_my_missions","get_my_mission_requirements","get_my_earnings","get_open_missions","get_my_redemptions","get_my_notifications","get_my_points_history","get_my_earnings_history","get_my_recent_threads","get_my_saved_briefs","get_my_review_history"]);
+    expect(request.tools?.map((tool: { function: { name: string } }) => tool.function.name)).toEqual(["get_my_points","get_my_missions","get_my_mission_requirements","get_my_earnings","get_open_missions","get_my_redemptions","get_my_notifications","get_my_points_history","get_my_earnings_history","get_my_recent_threads","get_my_saved_briefs","get_my_review_history","get_my_wallet_ledger"]);
     expect(request.tools?.some((tool: { function: { name: string } }) => /award|submit|publish|approve/.test(tool.function.name))).toBe(false);
     expect(JSON.stringify(request.messages)).toContain("一人份量");
     expect(JSON.stringify(request.messages)).toContain("方案 B：從味道開始");
