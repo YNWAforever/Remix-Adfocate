@@ -35,6 +35,24 @@ describe("assistant tools", () => {
     expect(out).toContain("1250");
   });
 
+  it("get_my_saved_briefs lists titles and section counts without brief text", async () => {
+    const tables: Record<string, unknown> = {
+      studio_briefs: [{ thread_id: "t1", version: 2, sections: [{ text: "secret body" }], created_at: "2026-11-11T00:00:00Z" }],
+      studio_threads: [{ id: "t1", title: "Skincare brief" }],
+    };
+    const from = vi.fn((table: string) => {
+      const chain: Record<string, unknown> = {
+        select: () => chain, eq: () => chain, in: () => chain, order: () => chain, limit: () => chain,
+        then: (res: (value: { data: unknown; error: null }) => unknown) => Promise.resolve({ data: tables[table], error: null }).then(res),
+      };
+      return chain;
+    });
+    const out = await runTool("get_my_saved_briefs", "{}", { from } as unknown as Parameters<typeof runTool>[2]);
+    expect(out).toContain("Skincare brief");
+    expect(out).toContain('"section_count":1');
+    expect(out).not.toContain("secret body");
+  });
+
   it("returns an error string for an unknown tool", async () => {
     const out = await runTool("definitely_not_a_tool", "{}", {} as unknown as Parameters<typeof runTool>[2]);
     expect(out.toLowerCase()).toContain("unknown tool");

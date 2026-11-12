@@ -172,6 +172,7 @@ function ThreadContent({ detail, skill, autoSend, identityKey, onLoginRequired }
     get_my_points_history: ["積分紀錄", "Point history"],
     get_my_earnings_history: ["收益紀錄", "Earnings history"],
     get_my_recent_threads: ["近期討論", "Recent discussions"],
+    get_my_saved_briefs: ["已存 Brief", "Saved briefs"],
   };
   function toolLabel(name: string): [string, string] {
     if (name.startsWith("mcp__")) {
