@@ -10,7 +10,7 @@ import { AssistError, parseAssistContext, type AssistPrincipal } from "../lib/as
 import type { AdminEnv } from "../lib/staffAuth.js";
 import { requireCapability } from "../lib/staffCapabilities.js";
 import { authorizeIntegrationSources } from "../lib/integrations/evidence.js";
-import { saveToolTrace } from "../lib/studio/toolTraces.js";
+import { readRequestToolDetails, saveToolTrace } from "../lib/studio/toolTraces.js";
 import { createMcpRuntime } from "../lib/mcp/client.js";
 import { loadMcpRegistry, parseMcpToolName } from "../lib/mcp/policy.js";
 import { loadWorkspaceMcpServers, recordMcpCall, runFencedMcpTool } from "../lib/mcp/registry.js";
@@ -256,6 +256,7 @@ export function assistantRoutes(testProvider?: AssistantProvider) {
       await markUnknown();
       return done({ error: "Generation outcome is unknown. Check this request before starting another", code: "provider_outcome_unknown", request_id: input.requestId, persistence: "unknown" }, 503);
     }
+    const toolDetails = result.toolsUsed?.length ? await readRequestToolDetails(store, input.requestId, result.toolsUsed) : [];
     try {
       if(studio?.integrationSources?.length) {
         await authorizeIntegrationSources({creatorId:c.get("userId"),workspaceId},studio.integrationSources,"read");
@@ -267,18 +268,19 @@ export function assistantRoutes(testProvider?: AssistantProvider) {
       const saved = await store.rpc("save_assistant_turn", { ...identity, p_answer: result.answer, p_citations: result.citations });
       if (!saved.error && saved.data?.persistence === "saved") {
         await saveToolTrace(store, saved.data.conversation_id ?? input.conversationId, result.answer, result.toolsUsed, input.requestId);
-        return done({ ...saved.data, ...(result.toolsUsed?.length ? { tools_used: result.toolsUsed } : {}), ...(result.limitations?.length ? { limitations: result.limitations } : {}), ...proposalEnvelope(result, { threadId: studio?.threadId ?? null, requestId: input.requestId }, c.get("userId"), workspaceId) });
+        return done({ ...saved.data, ...(result.toolsUsed?.length ? { tools_used: result.toolsUsed } : {}), ...(toolDetails.length ? { tool_details: toolDetails } : {}), ...(result.limitations?.length ? { limitations: result.limitations } : {}), ...proposalEnvelope(result, { threadId: studio?.threadId ?? null, requestId: input.requestId }, c.get("userId"), workspaceId) });
       }
       await markUnknown();
       if(studio?.integrationSources?.length) return done({code:"studio_context_changed",persistence:"failed",request_id:input.requestId,error:"來源或儲存權限已變更，已停止返回衍生回覆。"},409);
       return done({ ...result, conversation_id: input.conversationId ?? null, request_id: input.requestId,
         ...(result.toolsUsed?.length ? { tools_used: result.toolsUsed } : {}),
+        ...(toolDetails.length ? { tool_details: toolDetails } : {}),
         ...proposalEnvelope(result, { threadId: studio?.threadId ?? null, requestId: input.requestId }, c.get("userId"), workspaceId),
         persistence: saved.error?.code && /^(22|23|P0)/.test(saved.error.code) ? "failed" : "unknown" });
     } catch {
       await markUnknown();
       if(studio?.integrationSources?.length) return done({code:"studio_context_changed",persistence:"failed",request_id:input.requestId,error:"來源權限尚未確認；沒有保存或返回衍生回覆。"},409);
-      return done({ ...result, conversation_id: input.conversationId ?? null, request_id: input.requestId, ...(result.toolsUsed?.length ? { tools_used: result.toolsUsed } : {}), ...proposalEnvelope(result, { threadId: studio?.threadId ?? null, requestId: input.requestId }, c.get("userId"), workspaceId), persistence: "unknown" });
+      return done({ ...result, conversation_id: input.conversationId ?? null, request_id: input.requestId, ...(result.toolsUsed?.length ? { tools_used: result.toolsUsed } : {}), ...(toolDetails.length ? { tool_details: toolDetails } : {}), ...proposalEnvelope(result, { threadId: studio?.threadId ?? null, requestId: input.requestId }, c.get("userId"), workspaceId), persistence: "unknown" });
     }
   }
 

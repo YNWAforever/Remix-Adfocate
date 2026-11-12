@@ -42,6 +42,37 @@ type TraceRow = { answer_hash?: unknown; tools?: unknown; request_id?: unknown }
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
+/** Maps tool names to their audit rows without exposing payloads or account data. */
+export function describeTools(tools: string[], audits: AuditRow[]): ToolTraceDetail[] {
+  return tools.map(tool => {
+    const parts = tool.split("__");
+    const namespaced = tool.startsWith("mcp__") && parts.length >= 3;
+    const server = namespaced ? parts[1] : null;
+    const bare = namespaced ? parts.slice(2).join("__") : tool;
+    const audit = [...audits].reverse().find(item => typeof item.tool_name === "string"
+      && (namespaced ? item.server_name === server && item.tool_name === bare : item.tool_name === bare));
+    return {
+      tool,
+      server,
+      outcome: typeof audit?.outcome === "string" ? audit.outcome : null,
+      duration_ms: typeof audit?.duration_ms === "number" ? audit.duration_ms : null,
+    };
+  });
+}
+
+/** The current request's tool outcomes, for the unsaved live reply. */
+export async function readRequestToolDetails(store: Store, requestId: string, tools: string[]): Promise<ToolTraceDetail[]> {
+  if (!tools.length) return [];
+  try {
+    const { data, error } = await store.from("mcp_call_audit")
+      .select("request_id,tool_name,server_name,outcome,duration_ms")
+      .eq("request_id", requestId);
+    return describeTools(tools, error ? [] : (data ?? []) as AuditRow[]);
+  } catch {
+    return describeTools(tools, []);
+  }
+}
+
 /**
  * Reads saved traces for one conversation, keyed by answer fingerprint. Each tool is annotated
  * with the MCP server and audit outcome from mcp_call_audit (never payloads or account data).
@@ -78,20 +109,7 @@ export async function readToolTraces(store: Store, conversationId: string): Prom
       const tools = row.tools.filter((tool): tool is string => typeof tool === "string");
       if (!tools.length) continue;
       const audits = typeof row.request_id === "string" ? auditsByRequest.get(row.request_id) ?? [] : [];
-      const details = tools.map(tool => {
-        const parts = tool.split("__");
-        const namespaced = tool.startsWith("mcp__") && parts.length >= 3;
-        const server = namespaced ? parts[1] : null;
-        const bare = namespaced ? parts.slice(2).join("__") : tool;
-        const audit = [...audits].reverse().find(item => typeof item.tool_name === "string"
-          && (namespaced ? item.server_name === server && item.tool_name === bare : item.tool_name === bare));
-        return {
-          tool,
-          server,
-          outcome: typeof audit?.outcome === "string" ? audit.outcome : null,
-          duration_ms: typeof audit?.duration_ms === "number" ? audit.duration_ms : null,
-        };
-      });
+      const details = describeTools(tools, audits);
       traces.set(hash, { tools, details });
     }
   } catch {
