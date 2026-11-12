@@ -1,6 +1,6 @@
 // @vitest-environment node
 import { describe, expect, it } from "vitest";
-import { readToolTraces } from "./toolTraces";
+import { readRequestToolDetails, readToolTraces } from "./toolTraces";
 
 type Row = Record<string, unknown>;
 
@@ -51,6 +51,14 @@ describe("readToolTraces", () => {
       duration_ms: 900,
     });
     expect(trace?.details[1]).toEqual({ tool: "get_my_points", server: null, outcome: "mcp_tool_error", duration_ms: 12 });
+  });
+
+  it("labels the live reply's tools from its own request audit rows", async () => {
+    const details = await readRequestToolDetails(store({
+      mcp_call_audit: [{ request_id: REQUEST, server_name: "hasdata", tool_name: "tiktok_search", outcome: "mcp_timeout", duration_ms: 15000 }],
+    }), REQUEST, ["mcp__hasdata__tiktok_search", "get_my_points"]);
+    expect(details[0]).toEqual({ tool: "mcp__hasdata__tiktok_search", server: "hasdata", outcome: "mcp_timeout", duration_ms: 15000 });
+    expect(details[1]).toEqual({ tool: "get_my_points", server: null, outcome: null, duration_ms: null });
   });
 
   it("keeps tool names when audit rows are missing", async () => {

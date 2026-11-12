@@ -16,14 +16,16 @@ Window: 2026-11-09 → 2026-11-12 (Asia/Singapore). Production: `adfocate-2.verc
 | Assistant reliability panel | `/admin/skills` shows 24 h/7 d assistant request states (saved/unknown/failed/pending) and proposal outcomes from `GET /admin/assistant/reliability` (workspace-scoped, payload-free) | `admin-assistant` route test |
 | Request status check | Unresolved replies keep the text and offer **查看要求 / Check request**, which reads `GET /assistant/requests/:id`: saved → refresh the thread, unknown → offer Retry, pending → try later | Workspace test asserts the saved-refresh path |
 | Partial-answer continuation | A saved partial answer (`limitations: ["soft_deadline"]`) now renders a **繼續查詢 / Continue** action that resends the same topic as a fresh request id | Workspace test asserts the button and a new request id |
-| Creator transparency | Saved replies carry `tool_details` (tool → MCP server → audit outcome/duration, no payloads); "Why this answer?" shows it | `toolTraces` unit tests; studio suite |
+| Creator transparency | Saved **and live** replies carry `tool_details` (tool → MCP server → audit outcome/duration, no payloads); "Why this answer?" shows it immediately instead of only after a refetch | `toolTraces` unit tests; studio suite |
 | A3.2 canary | Confirm-first proposal execution (thread-bound token, UUIDv5 command request id, save_brief section schema) | 1 `executed` audit row (925 ms), thread revision 0 → 1, brief v1 with 3 sections |
 
-## Watch snapshot (last 24 h at closeout)
+## Watch snapshot (2026-11-12 09:00 SGT)
 
-- Requests: **6 saved / 1 unknown**; the unknown is `2026-11-11 04:22 UTC`, before the soft-stop deploy.
-- MCP audit 24 h: `mysocial` 4 ok (avg 806 ms, max 1410 ms), `workspace_missions` 1 ok; no HasData calls, no failures.
-- Proposal audit: 1 `executed`, 3 `failed` — all failures are the pre-fix thread/UUID/section bugs; none after the fix.
+- Requests: **3 saved / 1 unknown** in the last 24 h; the unknown is still `2026-11-11 04:22 UTC`, before the pre-tool soft-stop deploy.
+- Since the soft-stop deploy (`2026-11-11 15:09 UTC`): **1 saved, 0 unknown** (one turn, no slow-skill stress yet).
+- MCP audit 24 h: `mysocial` 4 ok (max 1410 ms), `workspace_missions` 1 ok; no HasData calls, no failures.
+- Proposal audit (7 d): 1 `executed`, 3 `failed` — all failures pre-fix; none after.
+- Studio threads (24 h): 4 created, 0 edited.
 
 ## Remaining
 

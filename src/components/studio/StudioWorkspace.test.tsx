@@ -225,7 +225,7 @@ it("shows an unsaved answer and keeps the input when persistence is unresolved",
   expect(h.invalidate).not.toHaveBeenCalled();
 });
 it("shows which read-only data backed a saved reply",async()=>{
-  h.chat.mockResolvedValue({request_id:"req-tools",answer:"你目前有 120 分。",citations:[],persistence:"saved",tools_used:["get_my_points","get_my_missions"]});
+  h.chat.mockResolvedValue({request_id:"req-tools",answer:"你目前有 120 分。",citations:[],persistence:"saved",tools_used:["get_my_points","get_my_missions"],tool_details:[{tool:"get_my_points",server:"workspace_missions",outcome:"ok",duration_ms:12}]});
   render(<StudioWorkspace threadId="thread"/>);
   fireEvent.change(screen.getByRole("textbox",{name:"繼續討論"}),{target:{value:"我有多少分？"}});
   fireEvent.click(screen.getByRole("button",{name:"送出"}));
@@ -233,6 +233,8 @@ it("shows which read-only data backed a saved reply",async()=>{
   expect(screen.getByText("積分")).toBeVisible();
   expect(screen.getByText("我的任務")).toBeVisible();
   expect(screen.getByRole("textbox",{name:"繼續討論"})).toHaveValue("");
+  expect(document.querySelector(".s-why")).toHaveTextContent("workspace_missions");
+  expect(document.querySelector(".s-why")).toHaveTextContent("ok");
 });
 function prepare() {
   const view=render(<StudioWorkspace threadId="thread"/>);
