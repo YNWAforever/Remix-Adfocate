@@ -48,11 +48,11 @@ beforeEach(() => {
   h.db = db({
     assistant_requests: [
       { workspace_id: "w1", state: "saved", created_at: iso(-60 * 60 * 1000) },
-      { workspace_id: "w1", state: "unknown", created_at: iso(-2 * 60 * 60 * 1000) },
       { workspace_id: "w1", state: "failed", created_at: iso(-3 * 60 * 60 * 1000) },
       { workspace_id: "w1", state: "saved", created_at: iso(-3 * 24 * 60 * 60 * 1000) },
       { workspace_id: "w1", state: "saved", created_at: iso(-10 * 24 * 60 * 60 * 1000) },
-      { workspace_id: "w2", state: "unknown", created_at: iso(-60 * 60 * 1000) },
+      { workspace_id: "w2", state: "unknown", created_at: iso(-60 * 60 * 1000), request_id: "22222222-2222-4222-8222-222222222222" },
+      { workspace_id: "w1", state: "unknown", created_at: iso(-2 * 60 * 60 * 1000), request_id: "11111111-1111-4111-8111-111111111111" },
     ],
     assistant_proposal_audit: [
       { workspace_id: "w1", outcome: "executed", created_at: iso(-60 * 60 * 1000) },
@@ -70,11 +70,14 @@ describe("admin assistant reliability", () => {
       requests: Record<string, { total: number; saved: number; unknown: number; failed: number; pending: number }>;
       proposals: Record<string, { total: number; executed: number; failed: number }>;
       last_unknown_at: string | null;
+      recent_unknown: Array<{ request_id: string; created_at: string }>;
     };
     expect(body.requests["24h"]).toEqual({ total: 3, saved: 1, unknown: 1, failed: 1, pending: 0 });
     expect(body.requests["7d"]).toEqual({ total: 4, saved: 2, unknown: 1, failed: 1, pending: 0 });
     expect(body.proposals["24h"]).toEqual({ total: 2, executed: 1, failed: 1 });
     expect(body.proposals["7d"]).toEqual({ total: 3, executed: 2, failed: 1 });
     expect(body.last_unknown_at).toBeTruthy();
+    expect(body.recent_unknown).toHaveLength(1);
+    expect(body.recent_unknown[0].request_id).toBe("11111111-1111-4111-8111-111111111111");
   });
 });

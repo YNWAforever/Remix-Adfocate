@@ -20,6 +20,7 @@ vi.mock("@/lib/admin/mcp", () => ({
     requests: { "24h": { total: 0, saved: 0, unknown: 0, failed: 0, pending: 0 }, "7d": { total: 0, saved: 0, unknown: 0, failed: 0, pending: 0 } },
     proposals: { "24h": { total: 0, executed: 0, failed: 0 }, "7d": { total: 0, executed: 0, failed: 0 } },
     last_unknown_at: null,
+    recent_unknown: [],
   }),
   createMcpServer: h.createMcpServer,
   updateMcpServer: h.updateMcpServer,

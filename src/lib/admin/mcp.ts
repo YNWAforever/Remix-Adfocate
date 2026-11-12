@@ -36,6 +36,7 @@ export type AdminAssistantReliability = {
   requests: Record<"24h" | "7d", { total: number; saved: number; unknown: number; failed: number; pending: number }>;
   proposals: Record<"24h" | "7d", { total: number; executed: number; failed: number }>;
   last_unknown_at: string | null;
+  recent_unknown: Array<{ request_id: string; created_at: string }>;
 };
 
 export function fetchAssistantReliability(workspace = "") {

@@ -173,6 +173,8 @@ export function AdminSkillsPage() {
           <p className="text-sm">24h · {t("app.admin.assistantRequests", reliability.data.requests["24h"])}</p>
           <p className="text-sm">7d · {t("app.admin.assistantRequests", reliability.data.requests["7d"])}</p>
           <p className="text-sm">{t("app.admin.assistantProposals", reliability.data.proposals["24h"])}</p>
+          <p className="text-sm">{t("app.admin.assistantProposals7d", reliability.data.proposals["7d"])}</p>
+          <p className="text-sm">{t("app.admin.assistantLastUnknown", { at: reliability.data.last_unknown_at ? new Date(reliability.data.last_unknown_at).toLocaleString() : t("app.admin.assistantNone") })}</p>
         </div>
       ) : null}
     </div>

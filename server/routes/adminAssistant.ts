@@ -7,7 +7,7 @@ const DAY_MS = 24 * HOUR_MS;
 
 type Window = { total: number; saved: number; unknown: number; failed: number; pending: number };
 type ProposalWindow = { total: number; executed: number; failed: number };
-type RequestRow = { state?: unknown; created_at?: unknown };
+type RequestRow = { state?: unknown; created_at?: unknown; request_id?: unknown };
 type ProposalRow = { outcome?: unknown; created_at?: unknown };
 
 function timestamp(value: unknown): number | null {
@@ -31,7 +31,7 @@ adminAssistantRoutes.get("/reliability", async c => {
   const scope = c.get("authorizedWorkspace");
   const store = serviceClient();
   const [requests, proposals] = await Promise.all([
-    store.from("assistant_requests").select("state,created_at")
+    store.from("assistant_requests").select("state,created_at,request_id")
       .eq("workspace_id", scope.workspaceId)
       .order("created_at", { ascending: false }).limit(1000),
     store.from("assistant_proposal_audit").select("outcome,created_at")
@@ -61,10 +61,13 @@ adminAssistantRoutes.get("/reliability", async c => {
     return { total: rows.length, executed, failed };
   };
 
-  const lastUnknown = ((requests.data ?? []) as RequestRow[]).find(row => row.state === "unknown");
+  const unknownRows = ((requests.data ?? []) as RequestRow[]).filter(row => row.state === "unknown");
+  const lastUnknown = unknownRows[0];
+  const recentUnknown = unknownRows.slice(0, 5).flatMap(row => (typeof row.request_id === "string" && typeof row.created_at === "string" ? [{ request_id: row.request_id, created_at: row.created_at }] : []));
   return c.json({
     requests: { "24h": requestWindow(now - DAY_MS), "7d": requestWindow(now - 7 * DAY_MS) },
     proposals: { "24h": proposalWindow(now - DAY_MS), "7d": proposalWindow(now - 7 * DAY_MS) },
     last_unknown_at: typeof lastUnknown?.created_at === "string" ? lastUnknown.created_at : null,
+    recent_unknown: recentUnknown,
   });
 });
