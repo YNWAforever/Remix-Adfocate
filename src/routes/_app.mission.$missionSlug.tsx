@@ -14,6 +14,7 @@ import { missionTypeLabelKey } from "@/lib/missionMeta";
 import { useI18n } from "@/lib/i18n";
 import { trackActivationEvent } from "@/lib/activationAnalytics";
 import { ApiError } from "@/lib/api";
+import { supportHref } from "@/lib/support";
 
 export const Route = createFileRoute("/_app/mission/$missionSlug")({ component: MissionDetail });
 function usesActiveWorkspace(submission: MyMission): boolean {
@@ -85,6 +86,7 @@ function MissionDetail() {
 
   const sub = showSavedMissions ? mine.data?.find((submission) => submission.missions.slug === missionSlug) : undefined;
   const isApplication = m.data.access_type === "application";
+  const closedSupport = sub ? supportHref({ reason: "rejected_closed", submissionId: sub.id }) : null;
 
 
   return (
@@ -131,7 +133,7 @@ function MissionDetail() {
                 <p className="break-words text-sm">{t("app.mission.reviewReason", { reason: sub.review_notes?.trim() || t("app.mission.reviewReasonMissing") })}</p>
                 <p className="text-sm text-[var(--color-soft-ink)]">{t("app.mission.revisionsLeft", { n: sub.resubmit_remaining ?? 0 })}</p>
               </section>
-              <LegacySubmissionForm key={`${sub.id}:${sub.resubmit_count ?? 0}`} missionSlug={missionSlug} initialUrls={sub.content_urls} disabled={mine.isError || mine.isFetching} />
+              <LegacySubmissionForm key={`${sub.id}:${sub.resubmit_count ?? 0}`} missionSlug={missionSlug} submissionId={sub.id} initialUrls={sub.content_urls} disabled={mine.isError || mine.isFetching} />
             </>
           ) : (
             <section className="pastel-card flex flex-wrap items-center justify-between gap-2 rounded-[var(--radius)] border-2 border-[var(--color-ink)] bg-white p-4">
@@ -139,6 +141,7 @@ function MissionDetail() {
               <span className="font-display">{STATUS_LABEL[sub.status] ?? sub.status}{sub.status === "approved" ? ` · ${t("app.mission.pointsAwarded", { n: sub.points_awarded ?? 0 })}` : ""}</span>
               {(sub.status === "declined" || sub.status === "rejected") && <p className="w-full break-words text-sm">{t("app.mission.reviewReason", { reason: sub.review_notes?.trim() || t("app.mission.reviewReasonMissing") })}</p>}
               {sub.status === "rejected" && <p className="w-full text-sm text-[var(--color-soft-ink)]">{t("app.mission.rejectedClosed")}</p>}
+              {sub.status === "rejected" && closedSupport && <a href={closedSupport} target="_blank" rel="noreferrer" className="w-full text-sm font-bold underline">{t("app.mission.supportCta")}</a>}
             </section>
           )}
 
@@ -183,12 +186,17 @@ function MissionDetail() {
   );
 }
 
-function LegacySubmissionForm({ missionSlug, initialUrls = [], disabled = false }: { missionSlug: string; initialUrls?: string[]; disabled?: boolean }) {
+function LegacySubmissionForm({ missionSlug, submissionId, initialUrls = [], disabled = false }: { missionSlug: string; submissionId?: string; initialUrls?: string[]; disabled?: boolean }) {
   const submit = useSubmitMission(missionSlug);
   const { t } = useI18n();
   const [urls, setUrls] = useState(initialUrls.join("\n"));
   const [validationError, setValidationError] = useState("");
   const submitCode = submit.error instanceof ApiError ? submit.error.code : null;
+  const errorSupport = submitCode === "deadline_passed"
+    ? supportHref({ reason: "deadline", submissionId })
+    : submitCode === "revision_limit_reached"
+      ? supportHref({ reason: "revision_limit", submissionId })
+      : null;
 
   async function submitUrls() {
     if (disabled || submit.isPending) return;
@@ -213,6 +221,7 @@ function LegacySubmissionForm({ missionSlug, initialUrls = [], disabled = false 
       ) : (
         <RequestFeedback error={submit.error} />
       )}
+      {errorSupport && <a href={errorSupport} target="_blank" rel="noreferrer" className="font-bold underline">{t("app.mission.supportCta")}</a>}
       <textarea value={urls} onChange={(event) => setUrls(event.target.value)} rows={3} placeholder={t("app.mission.urlPlaceholder")} className="w-full rounded-[var(--radius)] border-2 border-[var(--color-ink)] p-2 text-sm" />
       <button onClick={submitUrls} disabled={disabled || submit.isPending} className="btn-primary block w-full rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-acid)] py-3 text-center font-heading font-bold text-[var(--color-ink)]">{submit.isPending ? t("app.mission.submitting") : t("app.mission.submitContent")}</button>
     </section>
