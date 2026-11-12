@@ -1,7 +1,8 @@
 # Phase 3 M1 — creator recovery after rejection
 
-Status: runtime wiring complete; production schema application is an owner-gated
-release step. The runtime degrades safely while the migration is unapplied.
+Status: shipped to production. Migration applied 2026-11-13 after explicit owner
+approval; runtime merged in PR #156 (`4937b45`) and deployed to
+`https://adfocate-2.vercel.app`.
 
 ## What ships
 
@@ -27,13 +28,37 @@ release step. The runtime degrades safely while the migration is unapplied.
 
 ## Deploy order
 
-1. Apply the migration through the release foundation (owner approval).
-2. Deploy the runtime PR.
-3. Verify with a rejected test submission before inviting creators.
+1. Apply the migration (owner approval). **Done 2026-11-13.**
+2. Deploy the runtime PR. **Done in PR #156.**
+3. Verify with the first rejected submission before inviting creators. **Pending:
+   production currently has 0 rejected submissions**, so the UI stays dark until
+   an operator rejects one.
 
-Merging the runtime PR before step 1 is safe: `/missions/my` falls back to the
+Merging the runtime PR before step 1 was safe: `/missions/my` falls back to the
 pre-migration projection and hides the form (`resubmit_available: false`), and a
 rejected submission returns `schema_not_ready` rather than a false success.
+
+## Production application evidence (2026-11-13, Asia/Singapore)
+
+Production `supabase_migrations.schema_migrations` only records a subset of the
+reviewed history (several migrations were applied out of band), so the release
+foundation preflight cannot be used as-is. The migration was therefore applied
+as one `BEGIN … COMMIT` transaction over the operator database credential and
+recorded as a new history row:
+
+| Check | Result |
+| --- | --- |
+| `mission_submissions.resubmit_count` | present |
+| `mission_submission_events` + RLS policy + 2 explicit indexes | present |
+| `public.resubmit_mission(uuid,text[],jsonb,uuid)` | present, `SECURITY DEFINER`, owner `postgres` |
+| function ACL | `postgres`, `authenticated`, `service_role` = EXECUTE |
+| table ACL | `authenticated` SELECT, `service_role` ALL |
+| `schema_migrations` row `20261113090000` | present |
+| submissions before / after | 10 / 10, rejected 0 / 0 |
+| RPC probe with a missing mission (rolled back) | `wrong_state`, no writes |
+
+Production health after deployment: `/` 200, `/api/health` 200, unauthenticated
+`/api/missions` and `/api/missions/my` 401.
 
 ## Verification
 
@@ -63,11 +88,7 @@ while `mission_submission_events` rows may be needed for audit.
 
 ## Release evidence
 
-The release foundation requires an explicit owner phrase before applying to
-production:
-
-```text
-APPROVE <projectRef> <evidenceDigest>
-```
-
-No production migration has been applied as part of this change.
+The release foundation's `APPROVE <projectRef> <evidenceDigest>` phrase is still
+required for future releases that use the protected executor. This migration was
+an explicitly approved, standalone additive apply; its evidence is recorded
+above and in `supabase_migrations.schema_migrations`.
