@@ -199,7 +199,7 @@ describe("release preflight", () => {
     expect(STUDIO_CAPABILITIES).toHaveLength(56);
     expect(INTEGRATION_CAPABILITIES).toHaveLength(69);
     expect(new Set(INTEGRATION_CAPABILITIES).size).toBe(69);
-    expect(capabilities.filter((capability) => ![...REMEDIATION_CAPABILITIES, ...STUDIO_CAPABILITIES, ...INTEGRATION_CAPABILITIES, ...PILOT_CAPABILITIES, ...PRIVATE_PREPARATION_CAPABILITIES].includes(capability))).toHaveLength(620);
+    expect(capabilities.filter((capability) => ![...REMEDIATION_CAPABILITIES, ...STUDIO_CAPABILITIES, ...INTEGRATION_CAPABILITIES, ...PILOT_CAPABILITIES, ...PRIVATE_PREPARATION_CAPABILITIES].includes(capability))).toHaveLength(637);
     const claimDenials = ["authenticated", "anon", "public"].map(role => `grant-removed:${role}.public.claim_assistant_request(uuid,uuid,uuid)`);
     expect(capabilities).toEqual(expect.arrayContaining(claimDenials));
     const reviewValidityCapabilities = [
@@ -242,8 +242,8 @@ describe("release preflight", () => {
       "grant-removed:public.public.get_legacy_correction_evidence(uuid,uuid)",
     ];
     expect(capabilities).toEqual(expect.arrayContaining(repairCapabilities));
-    expect(capabilities.filter((capability) => ![...repairCapabilities, ...reviewValidityCapabilities, ...claimDenials, ...REMEDIATION_CAPABILITIES, ...STUDIO_CAPABILITIES, ...INTEGRATION_CAPABILITIES, ...PILOT_CAPABILITIES, ...PRIVATE_PREPARATION_CAPABILITIES].includes(capability))).toHaveLength(598);
-    expect(capabilities.filter((capability) => ![...applicationCapabilities, ...redemptionCapabilities, ...repairCapabilities, ...reviewValidityCapabilities, ...claimDenials, ...REMEDIATION_CAPABILITIES, ...STUDIO_CAPABILITIES, ...INTEGRATION_CAPABILITIES, ...PILOT_CAPABILITIES, ...PRIVATE_PREPARATION_CAPABILITIES].includes(capability))).toHaveLength(587);
+    expect(capabilities.filter((capability) => ![...repairCapabilities, ...reviewValidityCapabilities, ...claimDenials, ...REMEDIATION_CAPABILITIES, ...STUDIO_CAPABILITIES, ...INTEGRATION_CAPABILITIES, ...PILOT_CAPABILITIES, ...PRIVATE_PREPARATION_CAPABILITIES].includes(capability))).toHaveLength(615);
+    expect(capabilities.filter((capability) => ![...applicationCapabilities, ...redemptionCapabilities, ...repairCapabilities, ...reviewValidityCapabilities, ...claimDenials, ...REMEDIATION_CAPABILITIES, ...STUDIO_CAPABILITIES, ...INTEGRATION_CAPABILITIES, ...PILOT_CAPABILITIES, ...PRIVATE_PREPARATION_CAPABILITIES].includes(capability))).toHaveLength(604);
     expect(capabilities.filter((capability) => !hasCapabilityValidator(capability))).toEqual([]);
   });
 
