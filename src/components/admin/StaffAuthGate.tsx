@@ -2,8 +2,9 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from "react"
 import { supabase } from "@/lib/supabase";
 import { useI18n } from "@/lib/i18n";
 import type { AdminStaff } from "./AdminAuthContext";
+import { StaffMfaChallenge } from "./StaffMfaChallenge";
 
-type Phase = "loading" | "signing_out" | "sign_out_error" | "signed_out" | "not_staff" | "unavailable" | "authed";
+type Phase = "loading" | "signing_out" | "sign_out_error" | "signed_out" | "not_staff" | "unavailable" | "authed" | "mfa";
 const SIGN_OUT_PENDING_KEY = "kocmax:staff-sign-out-pending";
 
 function hasPendingSignOut() {
@@ -44,13 +45,14 @@ export function StaffAuthGate({ children, refreshKey = 0, onIdentityChange }: { 
     const res = await fetch("/api/admin/me", { headers: { Authorization: `Bearer ${token}` } });
     if (request !== sequence.current) return;
     if (res.status === 200) {
-      const body = (await res.json()) as { staff: AdminStaff };
+      const body = (await res.json()) as { staff: AdminStaff; mfa_required?: boolean };
       if (request !== sequence.current) return;
       setStaff(body.staff);
-      setPhase("authed");
+      setPhase(body.mfa_required ? "mfa" : "authed");
     } else if (res.status === 403) {
+      const body = (await res.clone().json().catch(() => null)) as { code?: string } | null;
       setStaff(null);
-      setPhase("not_staff");
+      setPhase(body?.code === "mfa_required" ? "mfa" : "not_staff");
     } else if (res.status === 401) {
       setStaff(null);
       setPhase("signed_out");
@@ -142,6 +144,10 @@ export function StaffAuthGate({ children, refreshKey = 0, onIdentityChange }: { 
     {phase === "unavailable" && unavailable}
   </>;
   if (phase === "unavailable") return unavailable;
+
+  if (phase === "mfa") {
+    return <StaffMfaChallenge onVerified={() => void check()} signOut={signOut} />;
+  }
 
   if (phase === "sign_out_error") return (
     <div role="alert" className="mx-auto max-w-sm space-y-3 p-6 text-center">
