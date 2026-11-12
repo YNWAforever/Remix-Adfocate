@@ -87,6 +87,7 @@ const REVIEWED_FILES = [
   "20261101075946_kocmax_auth_permission_boundary.sql",
   "20261103215321_kocmax_creator_growth_private.sql",
   "20261104134202_kocmax_publish_intents.sql",
+  "20261113090000_creator_resubmission.sql",
 ] as const;
 
 // Pinned by checksum in manifest.ts, so the fixture copies the repository's real bytes instead of

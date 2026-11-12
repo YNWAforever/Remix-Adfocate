@@ -13,6 +13,7 @@ export const integrationFiles = [
   "server/test/bootstrap.test.ts",
   "server/test/onboarding.test.ts",
   "server/test/missions.test.ts",
+  "server/test/legacy-resubmission.test.ts",
   "server/test/admin.test.ts",
   "server/test/admin-staff.test.ts",
   "server/test/redemption.test.ts",

@@ -1321,6 +1321,30 @@ const REVIEWED_MIGRATIONS = [
     capabilities: CREATOR_PUBLISH_CAPABILITIES,
     transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
   },
+  {
+    version: "20261113090000", name: "creator_resubmission", phase: "legacy_evidence",
+    dependsOn: ["20261028140231"],
+    capabilities: [
+      "column:public.mission_submissions.resubmit_count",
+      "constraint:public.mission_submissions.mission_submissions_resubmit_count_check",
+      "table:public.mission_submission_events",
+      "index:public.mission_submission_events.mission_submission_events_submission_idx",
+      "index:public.mission_submission_events.mission_submission_events_workspace_idx",
+      "function:public.resubmit_mission",
+      "policy:public.mission_submission_events.mission_submission_events_creator_read",
+      "rls:public.mission_submission_events",
+      "grant:authenticated.public.mission_submission_events(select)",
+      "grant:service_role.public.mission_submission_events(all)",
+      "grant:authenticated.public.resubmit_mission(uuid,text[],jsonb,uuid)",
+      "grant:service_role.public.resubmit_mission(uuid,text[],jsonb,uuid)",
+      "grant-removed:anon.public.resubmit_mission(uuid,text[],jsonb,uuid)",
+      "grant-removed:public.public.resubmit_mission(uuid,text[],jsonb,uuid)",
+      "grant-removed:authenticated.public.mission_submission_events(all)",
+      "grant-removed:anon.public.mission_submission_events(all)",
+      "grant-removed:public.public.mission_submission_events(all)",
+    ],
+    transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
+  },
 ] as const satisfies readonly ReviewedMigration[];
 
 const NON_RELEASE_TIMESTAMP_MIGRATIONS = new Set([
