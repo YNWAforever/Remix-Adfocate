@@ -164,7 +164,9 @@ Test-Case 'Unknown or differently cased profiles and all broadening parameters r
 foreach ($name in @('Get-ReviewedVerificationProfile', 'Stop-Verification', 'Normalize-LocalPath', 'Assert-Manifest', 'Assert-VerificationBranch', 'Get-ArchiveReadArguments')) {
     . (Actual-FunctionScript $archiveAst $name)
 }
-foreach ($name in @('Get-ReviewedRestoreProfile', 'Stop-Check', 'Local-Path', 'File-Hash', 'Assert-NoLink', 'Assert-CodePins', 'Normalize-Fingerprint', 'Nonnegative-Integer', 'Parse-Object', 'Capture-Time', 'Canonical-Value', 'Canonical-Json')) {
+foreach ($name in @('Get-ReviewedRestoreProfile', 'Stop-Check', 'Local-Path', 'File-Hash', 'Assert-NoLink', 'Assert-CodePins', 'Normalize-FingerprintFields', 'Normalize-Fingerprint', 'Nonnegative-Integer', 'Parse-Object', 'Capture-Time', 'Canonical-Value', 'Canonical-Json',
+    'Assert-DeltaMode', 'Assert-ExactKeys', 'Assert-StringFields', 'Assert-DeltaPreparation', 'Assert-DeltaDirectoryPath', 'Normalize-DeltaFingerprint', 'Assert-DeltaState', 'Assert-DeltaRehearsal',
+    'Get-DeltaRehearsalScript', 'Get-DeltaMountArguments', 'Get-ExpectedRestoreMounts', 'Require-NativeSuccess')) {
     . (Actual-FunctionScript $wrapperAst $name)
 }
 $projectRef = 'mhkoayftiuojxlrkollf'
@@ -338,6 +340,8 @@ $script:evidence = 'C:\synthetic-private\evidence'
 $script:runtimeOutput = 'C:\synthetic-private\evidence\container-output'
 $script:ownerToken = '0123456789abcdef0123456789abcdef'
 $script:containerName = 'kocmax-auth-restore-' + $script:ownerToken
+$deltaEnabled = $false
+$deltaMountArguments = @()
 $volumeArguments = @('--tmpfs', '/var/lib/postgresql/data:rw,nosuid,nodev,noexec,size=16m,mode=1777')
 $createScript = [scriptblock]::Create((Actual-Assignment $wrapperAst 'createArguments'))
 Test-Case 'Actual restore construction retains fixed image, nonce, six mounts, tmpfs and no source credentials' {
@@ -354,7 +358,7 @@ Test-Case 'Actual restore construction retains fixed image, nonce, six mounts, t
 }
 $isolationGuard = Actual-Guard $wrapperAst 'LOCAL_RESTORE_ISOLATION_MISMATCH'
 $mountCountGuards = @($wrapperAst.FindAll({ param($Node)
-    $Node -is [Management.Automation.Language.IfStatementAst] -and $Node.Extent.Text.StartsWith('if ($binds.Count -ne 6')
+    $Node -is [Management.Automation.Language.IfStatementAst] -and $Node.Extent.Text.StartsWith('if ($binds.Count -ne $expectedMounts.Count')
 }, $true))
 Assert-Equal $mountCountGuards.Count 1 'one actual exact mount count guard'
 $mountGuard = [scriptblock]::Create($mountCountGuards[0].Extent.Text)
@@ -363,7 +367,8 @@ $mountLoop = @($wrapperAst.FindAll({ param($Node)
 }, $true))
 Assert-Equal $mountLoop.Count 1 'one actual mount allowlist loop'
 $mountLoopScript = [scriptblock]::Create($mountLoop[0].Extent.Text)
-$mountSetup = [scriptblock]::Create((Actual-Assignment $wrapperAst 'expectedMounts') + "`n" + (Actual-Assignment $wrapperAst 'binds'))
+$mountSetup = [scriptblock]::Create((Actual-Assignment $wrapperAst 'expectedMounts') + "`n" +
+    (Actual-Assignment $wrapperAst 'binds') + "`n" + (Actual-Assignment $wrapperAst 'seenMounts'))
 $created = @{ Output = '5' * 64 }
 $cleanContainer = @{ Id = $created.Output; Config = @{ Labels = @{ 'kocmax.auth-pilot-restore' = $script:ownerToken }; User = 'postgres' }
     HostConfig = @{ NetworkMode = 'none'; LogConfig = @{ Type = 'none' }; ReadonlyRootfs = $true; Privileged = $false; PublishAllPorts = $false; PortBindings = @{} }
@@ -485,6 +490,260 @@ Test-Case 'Actual metadata guard and receipt counts follow each fixed fingerprin
         $restored.metadata.database = 'other'
         Assert-Rejected { & $metadataGuard } 'RESTORED_METADATA_MISMATCH'
     }
+}
+. ([scriptblock]::Create((Actual-Assignment $wrapperAst 'deltaSettings')))
+function New-PreparationReport {
+    return @{
+        kind = 'phase3-combined-baseline-delta-preparation'; schemaVersion = 1; decision = 'HOLD'; validReleaseEvidence = $false
+        targetProjectRef = $projectRef; createdAt = '2026-11-13T09:48:45Z'; observedAt = '2026-11-13T09:42:57Z'; catalogExpiresAt = '2026-11-13T10:42:57Z'
+        manifestDigest = 'a' * 64; baselineHistorySha256 = $deltaSettings.BaselineHistorySha256
+        baseline = @{ recordedRows = 17; combinedVersion = '20261031201901'; sourceEnvelopeCount = 62;
+            appliedSqlSha256 = '9cbecbf1b4b68c476ed8d996f8f3d1c61408e46986584c22ab0111788cd9e5a5' }
+        delta = @{ version = $deltaSettings.Version; name = $deltaSettings.Name; path = 'supabase/migrations/20261113090001_active_assignment_xp_neutrality.sql';
+            sourceSha256 = $deltaSettings.SourceSha256; packetSha256 = $deltaSettings.PacketSha256; productionApplied = $false }
+        excludedVersions = @('20261103215321','20261104134202')
+        retiredConstraint = @{ name = 'constraint-removed:public.mission_submissions.mission_submissions_creator_workspace_fk'; removalVersion = '20260720193637'; treatment = 'Synthetic scope text' }
+        currentScopedCapabilityCount = 886; catalogSha256 = 'b' * 64; automaticWrites = @(); scopeLimits = @('Preparation only')
+    }
+}
+function New-DeltaFingerprint([int] $MigrationRows = 17) {
+    return @{ application_data = @{ table_count = 104; row_count = 487; data_digest = '7' * 32 };
+        migration_count = $MigrationRows; policy_count = 90; auth_table_count = 27; storage_table_count = 10 }
+}
+function New-DeltaFixture {
+    $history = @(foreach ($index in 0..16) { @{ version = ('202610010000{0:D2}' -f $index); name = 'synthetic_' + $index;
+        statementCount = 1; statementsSha256 = '3' * 64; xmin = [string](100 + $index) } })
+    $before = @{ database = 'postgres'; currentRole = 'postgres'; sessionRole = 'postgres'; serverVersionNum = 170006; transactionReadOnly = $true;
+        migrationRows = 17; history = $history; otherCatalogDigest = 'a' * 64; storageBucketsDigest = 'b' * 64
+        functions = @(@{ signature = 'private.join_mission(uuid)'; oid = '200'; xmin = '10'; bodySha256 = '1' * 64; attributesAclDigest = 'c' * 64 },
+            @{ signature = 'public.accept_application(uuid)'; oid = '201'; xmin = '10'; bodySha256 = '1' * 64; attributesAclDigest = 'd' * 64 }) }
+    $first = Copy-Record $before
+    $first.migrationRows = 18
+    $first.history += @{ version = $deltaSettings.Version; name = $deltaSettings.Name; statementCount = 1; statementsSha256 = $deltaSettings.SourceSha256; xmin = '300' }
+    foreach ($fn in $first.functions) { $fn.xmin = '300'; $fn.bodySha256 = '2' * 64 }
+    return @{ Baseline = New-DeltaFingerprint 17; FirstFingerprint = New-DeltaFingerprint 18; ReplayFingerprint = New-DeltaFingerprint 18;
+        Before = $before; First = $first; Replay = Copy-Record $first }
+}
+function Check-DeltaFixture($Fixture) {
+    return Assert-DeltaRehearsal $Fixture.Baseline $Fixture.FirstFingerprint $Fixture.ReplayFingerprint $Fixture.Before $Fixture.First $Fixture.Replay
+}
+Test-Case 'Delta is opt-in and rejected for the historic profile before native access' {
+    Assert-DeltaMode $false 'SharedDatabaseReview'
+    Assert-DeltaMode $false 'Phase3Preparation'
+    Assert-DeltaMode $true 'Phase3Preparation'
+    Assert-Rejected { Assert-DeltaMode $true 'SharedDatabaseReview' } 'DELTA_REQUIRES_PHASE3_PROFILE'
+    Assert-Rejected { Bind-Wrapper @{ Profile = 'Phase3Preparation'; DeltaPreparationDirectory = '' } }
+    $source = $wrapperAst.Extent.Text
+    $start = $source.IndexOf('[CmdletBinding()]', [StringComparison]::Ordinal)
+    $parameters = $source.Substring($start, $wrapperAst.ParamBlock.Extent.EndOffset - $start)
+    $modeBinding = [scriptblock]::Create($parameters + "`n" + (Actual-Assignment $wrapperAst 'deltaEnabled') + "`n`$deltaEnabled")
+    $mandatory = @{ AttemptDirectory = 'C:\synthetic-private\attempt'; SourceFingerprintPath = 'C:\synthetic-source.json'; CheckpointNotBeforeUtc = [DateTimeOffset]'2026-11-13T00:00:00Z' }
+    Assert-True (-not (& $modeBinding @mandatory)) 'absent option disables mode'
+    Assert-True (& $modeBinding @mandatory -DeltaPreparationDirectory 'C:\synthetic-prepared') 'explicit preparation directory enables mode'
+    Assert-True ($source.IndexOf('Assert-DeltaMode $deltaEnabled $profileSettings.Name') -lt $source.IndexOf('$localData = Local-Path')) 'actual mode guard before host filesystem/native entrypoint'
+}
+Test-Case 'Preparation accepts only fixed reviewed packet bytes and exact non-release metadata' {
+    $profileSettings = Get-ReviewedRestoreProfile 'Phase3Preparation'
+    Assert-Equal $deltaSettings.PacketSha256 'e7ce6a847f57d05d9efde376a2a774e9f6b7310b3cb362fd979936a4891be9da' 'reviewed deterministic packet pin'
+    Assert-Equal $deltaSettings.SourceSha256 '846cf3b5afd94d38f398170308f8e62c1f90f4a9a96b516d41f185986878bae2' 'reviewed source pin'
+    Assert-DeltaPreparation (New-PreparationReport) $deltaSettings.PacketSha256
+    Assert-DeltaPreparation (Copy-Record (New-PreparationReport)) $deltaSettings.PacketSha256
+    foreach ($mutation in @(
+        { param($r) $r.kind = 'live-executor' }, { param($r) $r.targetProjectRef = 'other' },
+        { param($r) $r.decision = 'GO' }, { param($r) $r.validReleaseEvidence = $true },
+        { param($r) $r.validReleaseEvidence = 'false' }, { param($r) $r.schemaVersion = '1' },
+        { param($r) $r.decision = @('HOLD') }, { param($r) $r.baseline.sourceEnvelopeCount = '62' },
+        { param($r) $r.currentScopedCapabilityCount = '886' }, { param($r) $r.scopeLimits = @(1) },
+        { param($r) $r.delta.productionApplied = $true }, { param($r) $r.delta.version = '20261113090002' },
+        { param($r) $r.delta.name = 'other' }, { param($r) $r.delta.path = 'other.sql' },
+        { param($r) $r.delta.sourceSha256 = '0' * 64 }, { param($r) $r.delta.packetSha256 = '0' * 64 },
+        { param($r) $r.baseline.recordedRows = 18 }, { param($r) $r.baseline.recordedRows = '17' },
+        { param($r) $r.baselineHistorySha256 = '0' * 64 }, { param($r) $r.baseline.appliedSqlSha256 = '0' * 64 },
+        { param($r) $r.automaticWrites = @('apply') }, { param($r) $r.extra = 'unknown' },
+        { param($r) $r.delta.extra = 'unknown' }, { param($r) $r.excludedVersions = @() })) {
+        $report = New-PreparationReport
+        & $mutation $report
+        Assert-Rejected { Assert-DeltaPreparation $report $deltaSettings.PacketSha256 }
+    }
+    Assert-Rejected { Assert-DeltaPreparation (New-PreparationReport) ('0' * 64) } 'DELTA_PREPARATION_PIN_OR_SCOPE_MISMATCH'
+    $report = New-PreparationReport
+    $report.delta.packetSha256 = '0' * 64
+    Assert-Rejected { Assert-DeltaPreparation $report ('0' * 64) } 'DELTA_PREPARATION_PIN_OR_SCOPE_MISMATCH'
+    $report = New-PreparationReport
+    $report.createdAt = '2026-11-13T11:00:00Z'
+    Assert-Rejected { Assert-DeltaPreparation $report $deltaSettings.PacketSha256 } 'INVALID_DELTA_PREPARATION_TIMES'
+}
+Test-Case 'Delta directory must be absolute, local, outside backup inputs and free of links' {
+    Assert-Equal (Assert-DeltaDirectoryPath 'C:\synthetic-prepared' $backupRoot) 'C:\synthetic-prepared' 'public source directory permitted'
+    foreach ($path in @('relative', 'C:relative', '\\server\share', "C:\bad`npath", 'C:\comma,path')) {
+        Assert-Rejected { Assert-DeltaDirectoryPath $path $backupRoot } 'INVALID_LOCAL_PATH'
+    }
+    Assert-Rejected { Assert-DeltaDirectoryPath $backupRoot $backupRoot } 'DELTA_INPUT_INSIDE_BACKUP_ROOT'
+    Assert-Rejected { Assert-DeltaDirectoryPath ($backupRoot + '\attempt\prepared') $backupRoot } 'DELTA_INPUT_INSIDE_BACKUP_ROOT'
+    function Get-Item { param($LiteralPath, [switch] $Force) return [pscustomobject]@{ Attributes = [IO.FileAttributes]::ReparsePoint } }
+    Assert-Rejected { Assert-NoLink 'C:\synthetic-link' } 'REPARSE_POINT_REJECTED'
+    $fileCountGuard = Actual-Guard $wrapperAst 'EXACT_DELTA_PREPARATION_FILES_REQUIRED'
+    $items = @()
+    Assert-Rejected { & $fileCountGuard } 'EXACT_DELTA_PREPARATION_FILES_REQUIRED'
+    $sizeGuard = Actual-Guard $wrapperAst 'DELTA_PREPARATION_FILE_TYPE_OR_SIZE'
+    $item = [pscustomobject]@{ Length = 1 }
+    $limit = 1MB
+    Assert-Rejected { & $sizeGuard } 'DELTA_PREPARATION_FILE_TYPE_OR_SIZE'
+    $reader = Actual-Function $wrapperAst 'Read-DeltaPreparation'
+    Assert-True ($reader.Contains('1MB') -and $reader.Contains('256KB') -and $reader.Contains('$script:verifiedFiles += $record')) 'bounded files enter actual unchanged-input checks'
+}
+Test-Case 'Actual mode construction adds exactly one read-only SQL mount and preserves default six mounts' {
+    foreach ($enabled in @($false, $true)) {
+        $deltaEnabled = $enabled
+        $deltaMountArguments = @(Get-DeltaMountArguments $deltaEnabled)
+        . $createScript
+        Assert-Equal @($createArguments | Where-Object { $_ -ceq '--mount' }).Count $(if ($enabled) { 7 } else { 6 }) 'exact conditional mount count'
+        Assert-Equal @($createArguments | Where-Object { $_ -match 'target=/guarded-delta.sql,readonly$' }).Count $(if ($enabled) { 1 } else { 0 }) 'delta is read-only when present'
+        Assert-True (-not ($createArguments | Where-Object { $_ -match 'source=.*preparation.json|source=.*source.json|docker.sock|^--publish|^--network=(?!none)' })) 'no sidecar/source/credential/socket/network broadening'
+        $container = Copy-Record $cleanContainer
+        if ($enabled) { $container.Mounts += @{ Type = 'bind'; Destination = '/guarded-delta.sql'; RW = $false } }
+        . $mountSetup
+        & $mountGuard
+        & $mountLoopScript
+        if ($enabled) {
+            $container.Mounts[6].RW = $true
+            Assert-Rejected { . $mountSetup; & $mountGuard; & $mountLoopScript } 'LOCAL_RESTORE_MOUNT_MISMATCH'
+            $container = Copy-Record $cleanContainer
+            Assert-Rejected { . $mountSetup; & $mountGuard; & $mountLoopScript } 'LOCAL_RESTORE_MOUNT_MISMATCH'
+        } else {
+            $container.Mounts += @{ Type = 'bind'; Destination = '/guarded-delta.sql'; RW = $false }
+            Assert-Rejected { . $mountSetup; & $mountGuard; & $mountLoopScript } 'LOCAL_RESTORE_MOUNT_MISMATCH'
+        }
+    }
+    $deltaEnabled = $true
+    $container = Copy-Record $cleanContainer
+    $container.Mounts += @{ Type = 'bind'; Destination = '/backup'; RW = $false }
+    Assert-Rejected { . $mountSetup; & $mountGuard; & $mountLoopScript } 'LOCAL_RESTORE_MOUNT_MISMATCH'
+}
+Test-Case 'Actual entrypoint runs fixed packet twice in same local cluster with hashed catalog snapshots' {
+    $commands = Get-DeltaRehearsalScript
+    Assert-Equal ([regex]::Matches($commands, '--file=/guarded-delta.sql').Count) 2 'identical fixed SQL path for apply/replay'
+    foreach ($required in @('PGHOST=/tmp PGPORT=5432 PGUSER=postgres PGDATABASE=postgres', 'BEGIN READ ONLY;', 'SET LOCAL search_path = pg_catalog;',
+        'delta-before.json', 'delta-first.json', 'delta-replay.json', 'delta-first-fingerprint.csv', 'delta-replay-fingerprint.csv',
+        "'otherCatalogDigest'", "'storageBucketsDigest'", "'xmin',h.xmin::text", "'xmin',p.xmin::text", 'p.proacl::text', 'p.proconfig', 'pg_get_functiondef',
+        'pg_get_constraintdef', 'pg_get_indexdef', 'pg_get_triggerdef', 'pg_policies', 'pg_auth_members', 'storage.buckets', 'relrowsecurity', 'attcompression')) {
+        Assert-True ($commands.Contains($required)) 'fixed local snapshot/metadata protection exists'
+    }
+    Assert-True (-not ($commands -match 'pg_authid|rolpassword|relpages|reltuples|\bVACUUM\b|\bANALYZE\b')) 'no credential catalog or volatile physical statistics'
+    $attributeDigest = [regex]::Match($commands, "'attributesAclDigest',encode\(sha256\(convert_to\(([\s\S]+?)::text,'UTF8'\)\),'hex'\)")
+    Assert-True $attributeDigest.Success 'target attributes/ACL hash is generated inside fixed SQL'
+    foreach ($required in @('p.proowner','p.proacl::text','p.prosecdef','p.proconfig','p.prolang','p.provolatile','p.proisstrict','p.proleakproof','p.proparallel','pg_get_function_result')) {
+        Assert-True ($attributeDigest.Groups[1].Value.Contains($required)) 'raw ACL/owner/config/ordinary attributes covered'
+    }
+    Assert-True (-not ($attributeDigest.Groups[1].Value -match 'prosrc|xmin')) 'changing body and tuple version excluded from attribute invariance'
+    $entrypoint = $null
+    . ([scriptblock]::Create((Actual-Assignment $wrapperAst 'entrypoint')))
+    $writerCommand = Actual-Command $wrapperAst 'Write-PrivateText' "'entrypoint.sh'"
+    $script:entrypointText = $null
+    function Write-PrivateText { param([string] $Name, [string] $Text) $script:entrypointText = $Text }
+    $deltaCommands = ''
+    & $writerCommand
+    Assert-True (-not $script:entrypointText.Contains('--file=/guarded-delta.sql')) 'default shell omits all delta SQL'
+    $deltaCommands = $commands
+    & $writerCommand
+    $assembled = $script:entrypointText
+    $before = $assembled.IndexOf('/evidence/current-fingerprint.csv')
+    $firstApply = $assembled.IndexOf('--file=/guarded-delta.sql')
+    $replayApply = $assembled.LastIndexOf('--file=/guarded-delta.sql')
+    $stop = $assembled.IndexOf('pg_ctl -D /tmp/koc-restore-data -m fast -w stop')
+    Assert-True ($before -ge 0 -and $firstApply -gt $before -and $replayApply -gt $firstApply -and $stop -gt $replayApply) 'original fingerprint, apply, replay, then same cluster shutdown'
+    Assert-Equal ([regex]::Matches($assembled, 'pg_ctl .* -w start').Count) 1 'no second restored cluster'
+    $source = $wrapperAst.Extent.Text
+    Assert-True ($source.IndexOf("Stop-Check 'SOURCE_RESTORE_FINGERPRINT_MISMATCH'") -lt $source.IndexOf('$result.deltaRehearsal = Assert-DeltaRehearsal')) 'normal source equality remains required before accepting delta proof'
+}
+Test-Case 'Actual failed native run remains attempted and cannot produce a verified delta receipt' {
+    $attemptGuards = @($wrapperAst.FindAll({ param($Node)
+        $Node -is [Management.Automation.Language.IfStatementAst] -and $Node.Extent.Text.Contains("'ATTEMPTED_NOT_VERIFIED'")
+    }, $true))
+    Assert-Equal $attemptGuards.Count 1 'one actual attempted-status guard'
+    $deltaEnabled = $true
+    $result = @{ deltaRehearsal = @{ status = 'NOT_RUN' } }
+    & ([scriptblock]::Create($attemptGuards[0].Extent.Text))
+    Assert-Equal $result.deltaRehearsal.status 'ATTEMPTED_NOT_VERIFIED' 'attempt does not claim NOT_RUN or verified'
+    function Invoke-Docker { param([string[]] $Arguments, [string] $Label, [int] $Seconds) return @{ Code = 1; Error = 'synthetic-native-error'; Output = '' } }
+    $container = @{ Id = '5' * 64 }
+    $TimeoutSeconds = 1800
+    $nativeStart = Actual-Command $wrapperAst 'Invoke-Docker' "'restore-run'"
+    $run = & $nativeStart
+    Assert-Rejected { Require-NativeSuccess $run 'DISPOSABLE_RESTORE_FAILED' } 'DISPOSABLE_RESTORE_FAILED'
+    Assert-Equal $result.deltaRehearsal.status 'ATTEMPTED_NOT_VERIFIED' 'failure leaves proof unverified'
+}
+Test-Case 'Delta receipt proves fixed 17 to 18 to 18, preserved data/catalog and true replay no-op' {
+    $profileSettings = Get-ReviewedRestoreProfile 'Phase3Preparation'
+    $receipt = Check-DeltaFixture (New-DeltaFixture)
+    Assert-Equal $receipt.status 'DISPOSABLE_DELTA_AND_IDENTICAL_REPLAY_VERIFIED' 'disposable proof status'
+    Assert-True (-not $receipt.productionApplied -and -not $receipt.validReleaseEvidence) 'no production or release claim'
+    Assert-Equal $receipt.baselineRows 17 'baseline17'
+    Assert-Equal $receipt.afterFirst 18 'first18'
+    Assert-Equal $receipt.afterReplay 18 'replay18'
+    foreach ($key in @('applicationDataUnchanged','policyAuthStorageCountsUnchanged','replayTupleVersionsUnchanged','baselineHistoryPreserved','targetFunctionAttributesAclUnchanged','otherCatalogUnchanged','storageBucketsUnchanged')) { Assert-True $receipt[$key] 'positive proof only after actual guards' }
+    Assert-Rejected { Normalize-Fingerprint (New-DeltaFingerprint 18) } 'PHASE3_104_TABLE_17_MIGRATION_SCOPE_REQUIRED'
+    Assert-Rejected { Normalize-DeltaFingerprint (New-DeltaFingerprint 17) } 'PHASE3_DELTA_104_TABLE_18_MIGRATION_SCOPE_REQUIRED'
+    $profileSettings = Get-ReviewedRestoreProfile 'SharedDatabaseReview'
+    Assert-Rejected { Normalize-DeltaFingerprint (New-DeltaFingerprint 18) } 'DELTA_REQUIRES_PHASE3_PROFILE'
+}
+Test-Case 'Delta proof rejects changed data, counts, metadata and archived source' {
+    $profileSettings = Get-ReviewedRestoreProfile 'Phase3Preparation'
+    foreach ($mutation in @(
+        { param($f) $f.Baseline.migration_count = 18 },
+        { param($f) $f.FirstFingerprint.migration_count = 19 },
+        { param($f) $f.ReplayFingerprint.migration_count = 17 },
+        { param($f) $f.FirstFingerprint.application_data.row_count++ },
+        { param($f) $f.ReplayFingerprint.application_data.data_digest = '0' * 32 },
+        { param($f) $f.FirstFingerprint.policy_count++ },
+        { param($f) $f.ReplayFingerprint.auth_table_count++ },
+        { param($f) $f.FirstFingerprint.storage_table_count++ },
+        { param($f) $f.Before.currentRole = 'supabase_admin' },
+        { param($f) $f.Before.currentRole = @('postgres') },
+        { param($f) $f.First.migrationRows = '18' },
+        { param($f) $f.First.serverVersionNum = '170006' },
+        { param($f) $f.First.sessionRole = 'other' },
+        { param($f) $f.Replay.transactionReadOnly = $false },
+        { param($f) $f.First.history[17].statementsSha256 = '0' * 64 },
+        { param($f) $f.First.history[17].statementCount = 2 },
+        { param($f) $f.First.history[17].name = 'other' },
+        { param($f) $f.First.history[0].name = 'changed-baseline' },
+        { param($f) $f.Replay.functions[0].signature = 'public.other(uuid)' })) {
+        $fixture = New-DeltaFixture
+        & $mutation $fixture
+        Assert-Rejected { Check-DeltaFixture $fixture }
+    }
+}
+Test-Case 'Delta proof rejects replay writes, hidden catalog drift, bucket drift and unproven first changes' {
+    $profileSettings = Get-ReviewedRestoreProfile 'Phase3Preparation'
+    foreach ($mutation in @(
+        { param($f) $f.Replay.functions[0].xmin = '301' },
+        { param($f) $f.Replay.functions[1].oid = '999' },
+        { param($f) $f.Replay.functions[0].bodySha256 = 'f' * 64 },
+        { param($f) $f.Replay.history[17].xmin = '301' },
+        { param($f) $f.Replay.history[0].xmin = '301' })) {
+        $fixture = New-DeltaFixture
+        & $mutation $fixture
+        Assert-Rejected { Check-DeltaFixture $fixture } 'DELTA_REPLAY_TUPLE_VERSIONS_CHANGED'
+    }
+    foreach ($phase in @('First','Replay')) {
+        foreach ($key in @('otherCatalogDigest','storageBucketsDigest')) {
+            $fixture = New-DeltaFixture
+            $fixture[$phase][$key] = 'c' * 64
+            Assert-Rejected { Check-DeltaFixture $fixture } 'DELTA_OTHER_CATALOG_OR_BUCKETS_CHANGED'
+        }
+    }
+    foreach ($phase in @('First','Replay')) {
+        foreach ($index in @(0,1)) {
+            $fixture = New-DeltaFixture
+            $fixture[$phase].functions[$index].attributesAclDigest = 'f' * 64
+            Assert-Rejected { Check-DeltaFixture $fixture } 'DELTA_TARGET_FUNCTION_ATTRIBUTES_OR_ACL_CHANGED'
+        }
+    }
+    $fixture = New-DeltaFixture
+    $fixture.First.functions[0].xmin = $fixture.Before.functions[0].xmin
+    $fixture.Replay = Copy-Record $fixture.First
+    Assert-Rejected { Check-DeltaFixture $fixture } 'DELTA_FIRST_FUNCTION_CHANGE_NOT_PROVEN'
 }
 Test-Case 'Reviewed code pins match actual final source bytes and unchanged SQL and shell pins' {
     . ([scriptblock]::Create((Actual-Assignment $wrapperAst 'pins')))

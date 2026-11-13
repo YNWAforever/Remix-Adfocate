@@ -5,7 +5,8 @@ Offline host wrapper for one explicit fresh restore checkpoint and fixed profile
 .DESCRIPTION
 Runs the existing full-read verifier first, then the unchanged disposable restore
 script in the installed pinned Supabase image. No remote connections, credentials,
-ports, image pulls, migrations or Auth tests. Prints one sanitized JSON receipt.
+ports, image pulls or Auth tests. Optional Phase3-only delta/replay SQL runs only
+inside that same owned disposable cluster. Prints one sanitized JSON receipt.
 See verify-auth-pilot-restore.md for the source-fingerprint input contract.
 #>
 [CmdletBinding()]
@@ -16,7 +17,8 @@ param(
     [Nullable[DateTimeOffset]] $SourceCapturedUtc = $null,
     [ValidateRange(60, 7200)] [int] $TimeoutSeconds = 1800,
     [ValidateSet('SharedDatabaseReview', 'Phase3Preparation', IgnoreCase = $false)]
-    [string] $Profile = 'SharedDatabaseReview'
+    [string] $Profile = 'SharedDatabaseReview',
+    [ValidateNotNullOrEmpty()] [string] $DeltaPreparationDirectory
 )
 
 Set-StrictMode -Version Latest
@@ -66,6 +68,13 @@ $pins = @{
     'verify-local-backup.ps1' = '4694570dcf4f80e82f9b370407312c263f5aebd398094a187ccea46b2515b399'
     'verify-backup-disposable-restore.sh' = 'f94b0c9981f32219bcb269db4aa76251bb6d54483c7a33655b470605eab7edb3'
     'auth-pilot-fingerprint.sql' = 'a1f11eb1db5dc83cd4c4a04321d191d1943fd1866a1981354e583a32f7861383'
+}
+$deltaEnabled = $PSBoundParameters.ContainsKey('DeltaPreparationDirectory')
+$deltaSettings = @{
+    Version = '20261113090001'; Name = 'active_assignment_xp_neutrality'
+    SourceSha256 = '846cf3b5afd94d38f398170308f8e62c1f90f4a9a96b516d41f185986878bae2'
+    PacketSha256 = 'e7ce6a847f57d05d9efde376a2a774e9f6b7310b3cb362fd979936a4891be9da'
+    BaselineHistorySha256 = '8f73e44618f9af60644527e44e0a78e735d7d23fe1b9fc6fc64ee3e4dc339467'
 }
 $utf8 = [Text.UTF8Encoding]::new($false)
 $script:failure = 'LOCAL_PRECHECK_FAILED'
@@ -247,7 +256,7 @@ function Nonnegative-Integer($Value) {
     catch { Stop-Check 'INVALID_FINGERPRINT_COUNT' }
 }
 
-function Normalize-Fingerprint($Row) {
+function Normalize-FingerprintFields($Row) {
     if ($Row -isnot [Collections.IDictionary]) { Stop-Check 'INVALID_FINGERPRINT_ROW' }
     $keys = @('application_data', 'migration_count', 'policy_count', 'auth_table_count', 'storage_table_count')
     if ($Row.Count -ne $keys.Count) { Stop-Check 'INVALID_FINGERPRINT_COLUMNS' }
@@ -266,10 +275,342 @@ function Normalize-Fingerprint($Row) {
         auth_table_count = Nonnegative-Integer $Row.auth_table_count
         storage_table_count = Nonnegative-Integer $Row.storage_table_count
     }
+    return $normalized
+}
+
+function Normalize-Fingerprint($Row) {
+    $normalized = Normalize-FingerprintFields $Row
     if ($normalized.application_data.table_count -ne $profileSettings.ApplicationTables -or
         $normalized.migration_count -ne $profileSettings.MigrationRows -or
         $normalized.auth_table_count -eq 0 -or $normalized.storage_table_count -eq 0) { Stop-Check $profileSettings.ScopeFailure }
     return $normalized
+}
+
+function Assert-DeltaMode([bool] $Enabled, [string] $SelectedProfile) {
+    if ($Enabled -and $SelectedProfile -cne 'Phase3Preparation') { Stop-Check 'DELTA_REQUIRES_PHASE3_PROFILE' }
+}
+
+function Assert-ExactKeys($Value, [string[]] $Keys, [string] $Code) {
+    if ($Value -isnot [Collections.IDictionary] -or $Value.Count -ne $Keys.Count) { Stop-Check $Code }
+    foreach ($key in $Keys) { if (@($Value.Keys) -cnotcontains $key) { Stop-Check $Code } }
+}
+
+function Assert-StringFields($Value, [string[]] $Keys, [string] $Code) {
+    foreach ($key in $Keys) {
+        if ($Value[$key] -isnot [string] -or [string]::IsNullOrWhiteSpace($Value[$key])) { Stop-Check $Code }
+    }
+}
+
+function Assert-DeltaPreparation($Report, [string] $PacketHash) {
+    Assert-DeltaMode $true $profileSettings.Name
+    Assert-ExactKeys $Report @('kind','schemaVersion','decision','validReleaseEvidence','targetProjectRef','createdAt','observedAt',
+        'catalogExpiresAt','manifestDigest','baselineHistorySha256','baseline','delta','excludedVersions','retiredConstraint',
+        'currentScopedCapabilityCount','catalogSha256','automaticWrites','scopeLimits') 'INVALID_DELTA_PREPARATION_FIELDS'
+    Assert-ExactKeys $Report.baseline @('recordedRows','combinedVersion','sourceEnvelopeCount','appliedSqlSha256') 'INVALID_DELTA_BASELINE_FIELDS'
+    Assert-ExactKeys $Report.delta @('version','name','path','sourceSha256','packetSha256','productionApplied') 'INVALID_DELTA_FIELDS'
+    Assert-ExactKeys $Report.retiredConstraint @('name','removalVersion','treatment') 'INVALID_DELTA_RETIRED_CONSTRAINT'
+    Assert-StringFields $Report @('kind','decision','targetProjectRef','manifestDigest','baselineHistorySha256','catalogSha256') 'INVALID_DELTA_PREPARATION_TYPES'
+    Assert-StringFields $Report.baseline @('combinedVersion','appliedSqlSha256') 'INVALID_DELTA_PREPARATION_TYPES'
+    Assert-StringFields $Report.delta @('version','name','path','sourceSha256','packetSha256') 'INVALID_DELTA_PREPARATION_TYPES'
+    Assert-StringFields $Report.retiredConstraint @('name','removalVersion','treatment') 'INVALID_DELTA_PREPARATION_TYPES'
+    if ($Report.kind -cne 'phase3-combined-baseline-delta-preparation' -or
+        ($Report.schemaVersion -isnot [int] -and $Report.schemaVersion -isnot [long]) -or $Report.schemaVersion -ne 1 -or
+        $Report.decision -cne 'HOLD' -or $Report.validReleaseEvidence -isnot [bool] -or $Report.validReleaseEvidence -or
+        $Report.targetProjectRef -cne $projectRef -or $Report.delta.productionApplied -isnot [bool] -or $Report.delta.productionApplied -or
+        $Report.delta.version -cne $deltaSettings.Version -or $Report.delta.name -cne $deltaSettings.Name -or
+        $Report.delta.path -cne 'supabase/migrations/20261113090001_active_assignment_xp_neutrality.sql' -or
+        $Report.delta.sourceSha256 -cne $deltaSettings.SourceSha256 -or
+        $Report.delta.packetSha256 -cne $deltaSettings.PacketSha256 -or $PacketHash -cne $deltaSettings.PacketSha256 -or
+        $Report.baselineHistorySha256 -cne $deltaSettings.BaselineHistorySha256 -or
+        ($Report.baseline.recordedRows -isnot [int] -and $Report.baseline.recordedRows -isnot [long]) -or $Report.baseline.recordedRows -ne 17 -or
+        $Report.baseline.combinedVersion -cne '20261031201901' -or
+        ($Report.baseline.sourceEnvelopeCount -isnot [int] -and $Report.baseline.sourceEnvelopeCount -isnot [long]) -or $Report.baseline.sourceEnvelopeCount -ne 62 -or
+        ($Report.currentScopedCapabilityCount -isnot [int] -and $Report.currentScopedCapabilityCount -isnot [long]) -or $Report.currentScopedCapabilityCount -le 0 -or
+        $Report.baseline.appliedSqlSha256 -cne '9cbecbf1b4b68c476ed8d996f8f3d1c61408e46986584c22ab0111788cd9e5a5' -or
+        $Report.manifestDigest -cnotmatch '^[0-9a-f]{64}$' -or $Report.catalogSha256 -cnotmatch '^[0-9a-f]{64}$' -or
+        $Report.automaticWrites -isnot [array] -or $Report.automaticWrites.Count -ne 0 -or
+        (Canonical-Json $Report.excludedVersions) -cne '["20261103215321","20261104134202"]' -or
+        $Report.retiredConstraint.name -cne 'constraint-removed:public.mission_submissions.mission_submissions_creator_workspace_fk' -or
+        $Report.retiredConstraint.removalVersion -cne '20260720193637' -or
+        $Report.scopeLimits -isnot [array] -or $Report.scopeLimits.Count -eq 0 -or $Report.scopeLimits.Count -gt 16) { Stop-Check 'DELTA_PREPARATION_PIN_OR_SCOPE_MISMATCH' }
+    foreach ($limit in $Report.scopeLimits) {
+        if ($limit -isnot [string] -or [string]::IsNullOrWhiteSpace($limit) -or $limit.Length -gt 2048) { Stop-Check 'INVALID_DELTA_PREPARATION_TYPES' }
+    }
+    # These timestamps describe preparation provenance, not current live evidence.
+    $observed = Capture-Time $Report.observedAt
+    $created = Capture-Time $Report.createdAt
+    $expires = Capture-Time $Report.catalogExpiresAt
+    if ($created -lt $observed -or $created -gt $expires -or $expires -le $observed) { Stop-Check 'INVALID_DELTA_PREPARATION_TIMES' }
+}
+
+function Assert-DeltaDirectoryPath([string] $Directory, [string] $BackupDirectory) {
+    $path = Local-Path $Directory
+    if ($path.Equals($BackupDirectory, [StringComparison]::OrdinalIgnoreCase) -or
+        $path.StartsWith($BackupDirectory + '\', [StringComparison]::OrdinalIgnoreCase)) { Stop-Check 'DELTA_INPUT_INSIDE_BACKUP_ROOT' }
+    return $path
+}
+
+function Read-DeltaPreparation([string] $Directory) {
+    $path = Assert-DeltaDirectoryPath $Directory $backupRoot
+    Assert-NoLink $path
+    if ((Get-Item -LiteralPath $path) -isnot [IO.DirectoryInfo]) { Stop-Check 'DELTA_PREPARATION_DIRECTORY_REQUIRED' }
+    $items = @(Get-ChildItem -LiteralPath $path -Force)
+    if ($items.Count -ne 2) { Stop-Check 'EXACT_DELTA_PREPARATION_FILES_REQUIRED' }
+    $records = @{}
+    foreach ($item in $items) {
+        if ($item.Name -cnotin @('guarded-delta.sql','preparation.json')) { Stop-Check 'EXACT_DELTA_PREPARATION_FILES_REQUIRED' }
+        Assert-NoLink $item.FullName
+        $limit = if ($item.Name -ceq 'guarded-delta.sql') { 1MB } else { 256KB }
+        if ($item -isnot [IO.FileInfo] -or $item.Length -le 0 -or $item.Length -gt $limit) { Stop-Check 'DELTA_PREPARATION_FILE_TYPE_OR_SIZE' }
+        $records[$item.Name] = @{ path = $item.FullName; bytes = $item.Length; sha256 = File-Hash $item.FullName; private = $false }
+    }
+    $report = Parse-Object ([IO.File]::ReadAllText($records['preparation.json'].path)) 'INVALID_DELTA_PREPARATION_JSON'
+    Assert-DeltaPreparation $report $records['guarded-delta.sql'].sha256
+    foreach ($record in $records.Values) {
+        if ((File-Hash $record.path) -cne $record.sha256 -or (Get-Item -LiteralPath $record.path).Length -ne $record.bytes) { Stop-Check 'DELTA_PREPARATION_CHANGED_DURING_READ' }
+        $script:verifiedFiles += $record
+    }
+    return [pscustomobject]@{ Report = $report; SqlPath = $records['guarded-delta.sql'].path; PacketSha256 = $records['guarded-delta.sql'].sha256 }
+}
+
+function Normalize-DeltaFingerprint($Row) {
+    Assert-DeltaMode $true $profileSettings.Name
+    $normalized = Normalize-FingerprintFields $Row
+    if ($normalized.application_data.table_count -ne 104 -or $normalized.migration_count -ne 18 -or
+        $normalized.auth_table_count -eq 0 -or $normalized.storage_table_count -eq 0) { Stop-Check 'PHASE3_DELTA_104_TABLE_18_MIGRATION_SCOPE_REQUIRED' }
+    return $normalized
+}
+
+function Assert-DeltaState($State, [ValidateSet('Before','First','Replay', IgnoreCase = $false)] [string] $Phase) {
+    Assert-ExactKeys $State @('database','currentRole','sessionRole','serverVersionNum','transactionReadOnly','migrationRows','history','functions',
+        'otherCatalogDigest','storageBucketsDigest') 'INVALID_DELTA_STATE_FIELDS'
+    Assert-StringFields $State @('database','currentRole','sessionRole','otherCatalogDigest','storageBucketsDigest') 'DELTA_STATE_IDENTITY_OR_COUNT_MISMATCH'
+    $count = if ($Phase -ceq 'Before') { 17 } else { 18 }
+    if ($State.database -cne 'postgres' -or $State.currentRole -cne 'postgres' -or $State.sessionRole -cne 'postgres' -or
+        ($State.serverVersionNum -isnot [int] -and $State.serverVersionNum -isnot [long]) -or $State.serverVersionNum -ne 170006 -or
+        $State.transactionReadOnly -isnot [bool] -or -not $State.transactionReadOnly -or
+        ($State.migrationRows -isnot [int] -and $State.migrationRows -isnot [long]) -or $State.migrationRows -ne $count -or $State.history -isnot [array] -or $State.history.Count -ne $count -or
+        $State.functions -isnot [array] -or $State.functions.Count -ne 2 -or
+        $State.otherCatalogDigest -isnot [string] -or $State.otherCatalogDigest -cnotmatch '^[0-9a-f]{64}$' -or
+        $State.storageBucketsDigest -isnot [string] -or $State.storageBucketsDigest -cnotmatch '^[0-9a-f]{64}$') { Stop-Check 'DELTA_STATE_IDENTITY_OR_COUNT_MISMATCH' }
+    $versions = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+    foreach ($row in $State.history) {
+        Assert-ExactKeys $row @('version','name','statementCount','statementsSha256','xmin') 'INVALID_DELTA_HISTORY_FIELDS'
+        if ($row.version -isnot [string] -or $row.version -cnotmatch '^\d{4}(?:\d{10})?$' -or -not $versions.Add($row.version) -or
+            ($null -ne $row.name -and $row.name -isnot [string]) -or
+            ($row.statementCount -isnot [int] -and $row.statementCount -isnot [long]) -or $row.statementCount -lt 0 -or
+            ($null -ne $row.statementsSha256 -and ($row.statementsSha256 -isnot [string] -or $row.statementsSha256 -cnotmatch '^[0-9a-f]{64}$')) -or
+            ($row.statementCount -gt 0 -and $null -eq $row.statementsSha256) -or
+            $row.xmin -isnot [string] -or $row.xmin -cnotmatch '^[0-9]+$') { Stop-Check 'INVALID_DELTA_HISTORY_STATE' }
+    }
+    $deltaRows = @($State.history | Where-Object { $_.version -ceq $deltaSettings.Version })
+    if ($Phase -ceq 'Before') {
+        if ($deltaRows.Count -ne 0) { Stop-Check 'DELTA_ALREADY_PRESENT_BEFORE_REHEARSAL' }
+    } elseif ($deltaRows.Count -ne 1 -or $deltaRows[0].name -cne $deltaSettings.Name -or
+        $deltaRows[0].statementCount -ne 1 -or $deltaRows[0].statementsSha256 -cne $deltaSettings.SourceSha256) { Stop-Check 'DELTA_ARCHIVED_SOURCE_MISMATCH' }
+    $signatures = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+    foreach ($function in $State.functions) {
+        Assert-ExactKeys $function @('signature','oid','xmin','bodySha256','attributesAclDigest') 'INVALID_DELTA_FUNCTION_FIELDS'
+        if ($function.signature -cnotin @('private.join_mission(uuid)','public.accept_application(uuid)') -or -not $signatures.Add($function.signature) -or
+            $function.oid -isnot [string] -or $function.oid -cnotmatch '^[1-9][0-9]*$' -or
+            $function.xmin -isnot [string] -or $function.xmin -cnotmatch '^[0-9]+$' -or
+            $function.bodySha256 -isnot [string] -or $function.bodySha256 -cnotmatch '^[0-9a-f]{64}$' -or
+            $function.attributesAclDigest -isnot [string] -or $function.attributesAclDigest -cnotmatch '^[0-9a-f]{64}$') { Stop-Check 'INVALID_DELTA_FUNCTION_STATE' }
+    }
+}
+
+function Assert-DeltaRehearsal($Baseline, $AfterFirst, $AfterReplay, $BeforeState, $FirstState, $ReplayState) {
+    $before = Normalize-Fingerprint $Baseline
+    $first = Normalize-DeltaFingerprint $AfterFirst
+    $replay = Normalize-DeltaFingerprint $AfterReplay
+    foreach ($row in @($first, $replay)) {
+        foreach ($key in @('application_data','policy_count','auth_table_count','storage_table_count')) {
+            if ((Canonical-Json $row[$key]) -cne (Canonical-Json $before[$key])) { Stop-Check 'DELTA_APPLICATION_FINGERPRINT_CHANGED' }
+        }
+    }
+    Assert-DeltaState $BeforeState Before
+    Assert-DeltaState $FirstState First
+    Assert-DeltaState $ReplayState Replay
+    foreach ($state in @($FirstState, $ReplayState)) {
+        foreach ($function in $state.functions) {
+            $previous = @($BeforeState.functions | Where-Object { $_.signature -ceq $function.signature })[0]
+            if ($function.attributesAclDigest -cne $previous.attributesAclDigest) { Stop-Check 'DELTA_TARGET_FUNCTION_ATTRIBUTES_OR_ACL_CHANGED' }
+        }
+    }
+    $oldRows = @($FirstState.history | Where-Object { $_.version -cne $deltaSettings.Version })
+    if ((Canonical-Json $oldRows) -cne (Canonical-Json $BeforeState.history)) { Stop-Check 'DELTA_BASELINE_HISTORY_CHANGED' }
+    if ((Canonical-Json $FirstState.history) -cne (Canonical-Json $ReplayState.history) -or
+        (Canonical-Json $FirstState.functions) -cne (Canonical-Json $ReplayState.functions)) { Stop-Check 'DELTA_REPLAY_TUPLE_VERSIONS_CHANGED' }
+    foreach ($state in @($FirstState, $ReplayState)) {
+        if ($state.otherCatalogDigest -cne $BeforeState.otherCatalogDigest -or
+            $state.storageBucketsDigest -cne $BeforeState.storageBucketsDigest) { Stop-Check 'DELTA_OTHER_CATALOG_OR_BUCKETS_CHANGED' }
+    }
+    foreach ($function in $FirstState.functions) {
+        $previous = @($BeforeState.functions | Where-Object { $_.signature -ceq $function.signature })[0]
+        if ($previous.oid -cne $function.oid -or $previous.xmin -ceq $function.xmin -or $previous.bodySha256 -ceq $function.bodySha256) { Stop-Check 'DELTA_FIRST_FUNCTION_CHANGE_NOT_PROVEN' }
+    }
+    return [ordered]@{
+        status = 'DISPOSABLE_DELTA_AND_IDENTICAL_REPLAY_VERIFIED'; productionApplied = $false; validReleaseEvidence = $false
+        version = $deltaSettings.Version; sourceSha256 = $deltaSettings.SourceSha256; packetSha256 = $deltaSettings.PacketSha256
+        baselineRows = 17; afterFirst = 18; afterReplay = 18; baselineHistoryPreserved = $true
+        applicationDataUnchanged = $true; policyAuthStorageCountsUnchanged = $true
+        replayTupleVersionsUnchanged = $true; targetFunctionAttributesAclUnchanged = $true
+        otherCatalogUnchanged = $true; storageBucketsUnchanged = $true
+        otherCatalogDigest = $BeforeState.otherCatalogDigest; storageBucketsDigest = $BeforeState.storageBucketsDigest
+        otherCatalogScope = @('public/private/auth/storage relations, columns, defaults, constraints, indexes, policies and triggers',
+            'Other function definitions/attributes/owners/ACL/config; aggregate source metadata only',
+            'Schema/default ACLs, role attributes/memberships and event-trigger metadata; no physical statistics')
+        functionTupleVersions = @($FirstState.functions | ForEach-Object { [ordered]@{ signature = $_.signature; oid = $_.oid; xmin = $_.xmin; attributesAclDigest = $_.attributesAclDigest } })
+    }
+}
+
+function Get-DeltaRehearsalScript {
+    return @'
+  # Fixed metadata only: definitions and bucket rows are hashed inside Postgres.
+  delta_state() {
+    PGHOST=/tmp PGPORT=5432 PGUSER=postgres PGDATABASE=postgres psql -X -w -q -t -A --set=ON_ERROR_STOP=1 <<'DELTA_STATE_SQL'
+BEGIN READ ONLY;
+SET LOCAL search_path = pg_catalog;
+SET LOCAL timezone = 'UTC';
+SET LOCAL datestyle = 'ISO, YMD';
+SET LOCAL lock_timeout = '2s';
+SET LOCAL statement_timeout = '30s';
+WITH scoped_relations AS (
+  SELECT c.*, n.nspname, r.rolname AS owner_name
+  FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+  JOIN pg_catalog.pg_roles r ON r.oid=c.relowner
+  WHERE n.nspname IN ('public','private','auth','storage')
+), catalog_inventory AS (
+  SELECT pg_catalog.jsonb_build_object(
+    'schemas', (SELECT coalesce(jsonb_agg(jsonb_build_object('name',n.nspname,'owner',r.rolname,'acl',n.nspacl::text) ORDER BY n.nspname COLLATE "C"),'[]'::jsonb)
+      FROM pg_namespace n JOIN pg_roles r ON r.oid=n.nspowner WHERE n.nspname IN ('public','private','auth','storage')),
+    'relations', (SELECT coalesce(jsonb_agg(jsonb_build_object('schema',c.nspname,'name',c.relname,'kind',c.relkind,'owner',c.owner_name,
+      'acl',c.relacl::text,'options',c.reloptions,'persistence',c.relpersistence,'rowSecurity',c.relrowsecurity,'forceRowSecurity',c.relforcerowsecurity,
+      'replicaIdentity',c.relreplident,'partitionBound',pg_get_expr(c.relpartbound,c.oid),
+      'view',CASE WHEN c.relkind IN ('v','m') THEN pg_get_viewdef(c.oid,true) ELSE NULL END) ORDER BY c.nspname COLLATE "C",c.relname COLLATE "C"),'[]'::jsonb) FROM scoped_relations c),
+    'columns', (SELECT coalesce(jsonb_agg(jsonb_build_object('schema',c.nspname,'relation',c.relname,'number',a.attnum,'name',a.attname,
+      'type',format_type(a.atttypid,a.atttypmod),'notNull',a.attnotnull,'identity',a.attidentity,'generated',a.attgenerated,'dropped',a.attisdropped,
+      'acl',a.attacl::text,'options',a.attoptions,'storage',a.attstorage,'compression',a.attcompression,
+      'collation',CASE WHEN a.attcollation=0 THEN NULL ELSE a.attcollation::regcollation::text END,
+      'default',pg_get_expr(d.adbin,d.adrelid)) ORDER BY c.nspname COLLATE "C",c.relname COLLATE "C",a.attnum),'[]'::jsonb)
+      FROM scoped_relations c JOIN pg_attribute a ON a.attrelid=c.oid AND a.attnum>0 LEFT JOIN pg_attrdef d ON d.adrelid=c.oid AND d.adnum=a.attnum),
+    'constraints', (SELECT coalesce(jsonb_agg(jsonb_build_object('schema',n.nspname,'relation',c.relname,'name',k.conname,'type',k.contype,
+      'validated',k.convalidated,'deferrable',k.condeferrable,'deferred',k.condeferred,'definition',pg_get_constraintdef(k.oid,true))
+      ORDER BY n.nspname COLLATE "C",c.relname COLLATE "C",k.conname COLLATE "C"),'[]'::jsonb)
+      FROM pg_constraint k JOIN pg_namespace n ON n.oid=k.connamespace LEFT JOIN pg_class c ON c.oid=k.conrelid WHERE n.nspname IN ('public','private','auth','storage')),
+    'indexes', (SELECT coalesce(jsonb_agg(jsonb_build_object('schema',c.nspname,'relation',c.relname,'name',idx.relname,
+      'definition',pg_get_indexdef(i.indexrelid),'valid',i.indisvalid,'ready',i.indisready,'live',i.indislive,'replicaIdentity',i.indisreplident,
+      'clustered',i.indisclustered,'nullsNotDistinct',i.indnullsnotdistinct) ORDER BY c.nspname COLLATE "C",c.relname COLLATE "C",idx.relname COLLATE "C"),'[]'::jsonb)
+      FROM scoped_relations c JOIN pg_index i ON i.indrelid=c.oid JOIN pg_class idx ON idx.oid=i.indexrelid),
+    'policies', (SELECT coalesce(jsonb_agg(jsonb_build_object('schema',schemaname,'relation',tablename,'name',policyname,'permissive',permissive,
+      'roles',roles,'command',cmd,'using',qual,'check',with_check) ORDER BY schemaname COLLATE "C",tablename COLLATE "C",policyname COLLATE "C"),'[]'::jsonb)
+      FROM pg_policies WHERE schemaname IN ('public','private','auth','storage')),
+    'triggers', (SELECT coalesce(jsonb_agg(jsonb_build_object('schema',c.nspname,'relation',c.relname,'name',t.tgname,'enabled',t.tgenabled,
+      'internal',t.tgisinternal,'definition',pg_get_triggerdef(t.oid,true)) ORDER BY c.nspname COLLATE "C",c.relname COLLATE "C",t.tgname COLLATE "C"),'[]'::jsonb)
+      FROM scoped_relations c JOIN pg_trigger t ON t.tgrelid=c.oid),
+    'functions', (SELECT coalesce(jsonb_agg(jsonb_build_object('schema',n.nspname,'name',p.proname,'arguments',pg_get_function_identity_arguments(p.oid),
+      'result',pg_get_function_result(p.oid),'kind',p.prokind,'language',l.lanname,'owner',r.rolname,'acl',p.proacl::text,'config',p.proconfig,
+      'definition',CASE WHEN p.prokind='a' THEN p.prosrc ELSE pg_get_functiondef(p.oid) END,'binary',p.probin,
+      'definer',p.prosecdef,'strict',p.proisstrict,'leakproof',p.proleakproof,'volatility',p.provolatile,'parallel',p.proparallel,'cost',p.procost,'rows',p.prorows)
+      ORDER BY n.nspname COLLATE "C",p.proname COLLATE "C",pg_get_function_identity_arguments(p.oid) COLLATE "C"),'[]'::jsonb)
+      FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace JOIN pg_roles r ON r.oid=p.proowner JOIN pg_language l ON l.oid=p.prolang
+      WHERE n.nspname IN ('public','private','auth','storage') AND p.oid NOT IN (to_regprocedure('private.join_mission(uuid)'),to_regprocedure('public.accept_application(uuid)'))),
+    'defaultAcls', (SELECT coalesce(jsonb_agg(jsonb_build_object('owner',r.rolname,'schema',n.nspname,'type',a.defaclobjtype,'acl',a.defaclacl::text)
+      ORDER BY r.rolname COLLATE "C",n.nspname COLLATE "C",a.defaclobjtype),'[]'::jsonb)
+      FROM pg_default_acl a JOIN pg_roles r ON r.oid=a.defaclrole LEFT JOIN pg_namespace n ON n.oid=a.defaclnamespace WHERE a.defaclnamespace=0 OR n.nspname IN ('public','private','auth','storage')),
+    'roles', (SELECT coalesce(jsonb_agg(jsonb_build_object('name',rolname,'superuser',rolsuper,'inherit',rolinherit,'createRole',rolcreaterole,
+      'createDb',rolcreatedb,'login',rolcanlogin,'replication',rolreplication,'connectionLimit',rolconnlimit,'validUntil',rolvaliduntil,
+      'bypassRls',rolbypassrls,'config',rolconfig) ORDER BY rolname COLLATE "C"),'[]'::jsonb) FROM pg_roles),
+    'roleMembership', (SELECT coalesce(jsonb_agg(jsonb_build_object('role',r.rolname,'member',m.rolname,'grantor',g.rolname,
+      'admin',a.admin_option,'inherit',a.inherit_option,'set',a.set_option) ORDER BY r.rolname COLLATE "C",m.rolname COLLATE "C",g.rolname COLLATE "C"),'[]'::jsonb)
+      FROM pg_auth_members a JOIN pg_roles r ON r.oid=a.roleid JOIN pg_roles m ON m.oid=a.member JOIN pg_roles g ON g.oid=a.grantor),
+    'eventTriggers', (SELECT coalesce(jsonb_agg(jsonb_build_object('name',e.evtname,'event',e.evtevent,'owner',r.rolname,
+      'function',e.evtfoid::regprocedure::text,'enabled',e.evtenabled,'tags',e.evttags) ORDER BY e.evtname COLLATE "C"),'[]'::jsonb)
+      FROM pg_event_trigger e JOIN pg_roles r ON r.oid=e.evtowner)
+  ) AS inventory
+)
+SELECT json_build_object(
+  'database',current_database(),'currentRole',current_user,'sessionRole',session_user,'serverVersionNum',current_setting('server_version_num')::int,
+  'transactionReadOnly',current_setting('transaction_read_only')='on',
+  'migrationRows',(SELECT count(*) FROM supabase_migrations.schema_migrations),
+  'history',(SELECT coalesce(json_agg(json_build_object('version',h.version,'name',h.name,'statementCount',coalesce(cardinality(h.statements),0),
+    'statementsSha256',CASE WHEN h.statements IS NULL THEN NULL ELSE encode(sha256(convert_to(array_to_string(h.statements,E'\n'),'UTF8')),'hex') END,
+    'xmin',h.xmin::text) ORDER BY h.version COLLATE "C"),'[]'::json) FROM supabase_migrations.schema_migrations h),
+  'functions',(SELECT json_agg(json_build_object('signature',e.signature,'oid',p.oid::text,'xmin',p.xmin::text,
+    'bodySha256',encode(sha256(convert_to(p.prosrc,'UTF8')),'hex'),
+    'attributesAclDigest',encode(sha256(convert_to(jsonb_build_object('owner',pg_get_userbyid(p.proowner),'acl',p.proacl::text,
+      'securityDefiner',p.prosecdef,'config',p.proconfig,'language',(SELECT lanname FROM pg_language WHERE oid=p.prolang),
+      'volatility',p.provolatile,'strict',p.proisstrict,'leakproof',p.proleakproof,'parallel',p.proparallel,'kind',p.prokind,
+      'returnsSet',p.proretset,'result',pg_get_function_result(p.oid),'arguments',pg_get_function_identity_arguments(p.oid),
+      'cost',p.procost,'rows',p.prorows)::text,'UTF8')),'hex')) ORDER BY e.signature COLLATE "C")
+    FROM (VALUES ('private.join_mission(uuid)'),('public.accept_application(uuid)')) e(signature) JOIN pg_proc p ON p.oid=to_regprocedure(e.signature)),
+  'otherCatalogDigest',(SELECT encode(sha256(convert_to(inventory::text,'UTF8')),'hex') FROM catalog_inventory),
+  'storageBucketsDigest',(SELECT encode(sha256(convert_to(coalesce(jsonb_agg(to_jsonb(b) ORDER BY b.id)::text,'[]'),'UTF8')),'hex') FROM storage.buckets b)
+);
+ROLLBACK;
+DELTA_STATE_SQL
+  }
+  delta_fingerprint() {
+    PGHOST=/tmp PGPORT=5432 PGUSER=postgres PGDATABASE=postgres psql -X -w -q -t --csv --set=ON_ERROR_STOP=1 --file=/current-fingerprint.sql
+  }
+  if test "$code" = 0; then
+    delta_state >/evidence/delta-before.json 2>/evidence/delta-before.error || code=31
+    if test -s /evidence/delta-before.error; then code=32; fi
+  fi
+  if test "$code" = 0; then
+    PGHOST=/tmp PGPORT=5432 PGUSER=postgres PGDATABASE=postgres psql -X -w -q --set=ON_ERROR_STOP=1 --file=/guarded-delta.sql >/evidence/delta-first.stdout 2>/evidence/delta-first.stderr || code=33
+    if test -s /evidence/delta-first.stdout || test -s /evidence/delta-first.stderr; then code=34; fi
+  fi
+  if test "$code" = 0; then
+    delta_state >/evidence/delta-first.json 2>/evidence/delta-first.error || code=35
+    if test -s /evidence/delta-first.error; then code=36; fi
+  fi
+  if test "$code" = 0; then
+    delta_fingerprint >/evidence/delta-first-fingerprint.csv 2>/evidence/delta-first-fingerprint.error || code=37
+    if test -s /evidence/delta-first-fingerprint.error; then code=38; fi
+  fi
+  if test "$code" = 0; then
+    PGHOST=/tmp PGPORT=5432 PGUSER=postgres PGDATABASE=postgres psql -X -w -q --set=ON_ERROR_STOP=1 --file=/guarded-delta.sql >/evidence/delta-replay.stdout 2>/evidence/delta-replay.stderr || code=39
+    if test -s /evidence/delta-replay.stdout || test -s /evidence/delta-replay.stderr; then code=40; fi
+  fi
+  if test "$code" = 0; then
+    delta_state >/evidence/delta-replay.json 2>/evidence/delta-replay.error || code=41
+    if test -s /evidence/delta-replay.error; then code=42; fi
+  fi
+  if test "$code" = 0; then
+    delta_fingerprint >/evidence/delta-replay-fingerprint.csv 2>/evidence/delta-replay-fingerprint.error || code=43
+    if test -s /evidence/delta-replay-fingerprint.error; then code=44; fi
+  fi
+'@
+}
+
+function Get-DeltaMountArguments([bool] $Enabled) {
+    if ($Enabled) { return @('--mount', "type=bind,source=$script:evidence/guarded-delta.sql,target=/guarded-delta.sql,readonly") }
+    return @()
+}
+
+function Get-ExpectedRestoreMounts([bool] $Enabled) {
+    $mounts = @{ '/backup' = $false; '/checks.sql' = $false; '/current-fingerprint.sql' = $false; '/review/restore.sh' = $false; '/review/entrypoint.sh' = $false; '/evidence' = $true }
+    if ($Enabled) { $mounts['/guarded-delta.sql'] = $false }
+    return $mounts
+}
+
+function Read-RuntimeFingerprint([string] $Name) {
+    $path = Join-Path $script:runtimeOutput $Name
+    Assert-Private $path
+    if ((Get-Item -LiteralPath $path).Length -gt 1MB) { Stop-Check 'DELTA_FINGERPRINT_TOO_LARGE' }
+    $rows = @(ConvertFrom-Csv -InputObject ([IO.File]::ReadAllText($path)) -Header @('application_data','migration_count','policy_count','auth_table_count','storage_table_count'))
+    if ($rows.Count -ne 1) { Stop-Check 'EXACTLY_ONE_DELTA_FINGERPRINT_ROW_REQUIRED' }
+    $row = @{}
+    foreach ($property in $rows[0].PSObject.Properties) { $row[$property.Name] = $property.Value }
+    return $row
+}
+
+function Read-DeltaState([string] $Name) {
+    $path = Join-Path $script:runtimeOutput $Name
+    Assert-Private $path
+    if ((Get-Item -LiteralPath $path).Length -gt 1MB) { Stop-Check 'DELTA_STATE_TOO_LARGE' }
+    return Parse-Object ([IO.File]::ReadAllText($path)) 'INVALID_DELTA_STATE_JSON'
 }
 
 function Assert-InputsUnchanged {
@@ -307,7 +648,8 @@ function Remove-OwnedContainer {
 }
 
 $result = [ordered]@{
-    wrapperVersion = '2-fixed-profiles-20261113'; status = $profileSettings.FailureStatus
+    wrapperVersion = '3-optional-disposable-delta-20261113'
+    status = if ($deltaEnabled) { 'PHASE3_DISPOSABLE_DELTA_REHEARSAL_NOT_VERIFIED' } else { $profileSettings.FailureStatus }
     profile = $profileSettings.Name; profileBranch = $profileSettings.Branch
     projectRef = $projectRef; attempt = $null; failureCode = $null; failureDiagnostics = $null
     checkpointNotBeforeUtc = $CheckpointNotBeforeUtc.ToUniversalTime().ToString('o')
@@ -328,8 +670,13 @@ $result = [ordered]@{
         'Original owner/ACL/grantor commands are retained by restore; this fingerprint is not a separate catalog or privilege-equivalence audit.',
         'Opaque MD5 comparison is a consistency check, not a cryptographic authenticity proof.')
 }
+if ($deltaEnabled) {
+    $result['deltaRehearsal'] = [ordered]@{ status = 'NOT_RUN'; productionApplied = $false; validReleaseEvidence = $false;
+        version = $deltaSettings.Version; packetSha256 = $deltaSettings.PacketSha256 }
+}
 $passed = $false
 try {
+    Assert-DeltaMode $deltaEnabled $profileSettings.Name
     if (-not $IsWindows) { Stop-Check 'WINDOWS_HOST_REQUIRED' }
     $localData = Local-Path ([Environment]::GetFolderPath([Environment+SpecialFolder]::LocalApplicationData))
     $privateRoot = Local-Path (Join-Path $localData 'KOCmax/PrivateBackups')
@@ -417,6 +764,7 @@ try {
         $result.sourceCaptureTiming = if ($sourceTime -ge $finished) { 'AFTER_CAPTURE' } else { 'BEFORE_OR_DURING_CAPTURE' }
     }
     $result.sourceFingerprintSha256 = $script:sourceHash
+    if ($deltaEnabled) { $deltaPreparation = Read-DeltaPreparation $DeltaPreparationDirectory }
     $toc = [IO.File]::ReadAllText((Join-Path $attempt 'toc.list'))
     if ($toc -match '(?m)^\d+;[^\r\n]* MATERIALIZED VIEW DATA ') { Stop-Check 'EXISTING_RESTORE_REQUIRES_MATVIEW_TAIL_PASS' }
     $script:dockerExe = (Get-Command docker.exe -CommandType Application -ErrorAction Stop).Source
@@ -435,6 +783,16 @@ try {
     [IO.File]::WriteAllBytes((Join-Path $script:evidence 'restore.sh'), [IO.File]::ReadAllBytes($restorePath))
     [IO.File]::WriteAllBytes((Join-Path $script:evidence 'checks.sql'), [IO.File]::ReadAllBytes($baselineQueryPath))
     [IO.File]::WriteAllBytes((Join-Path $script:evidence 'current-fingerprint.sql'), [IO.File]::ReadAllBytes($queryPath))
+    if ($deltaEnabled) {
+        Assert-InputsUnchanged
+        $privateDeltaPath = Join-Path $script:evidence 'guarded-delta.sql'
+        [IO.File]::WriteAllBytes($privateDeltaPath, [IO.File]::ReadAllBytes($deltaPreparation.SqlPath))
+        Assert-Private $privateDeltaPath
+        if ((File-Hash $privateDeltaPath) -cne $deltaSettings.PacketSha256) { Stop-Check 'PRIVATE_DELTA_COPY_HASH_MISMATCH' }
+        $script:verifiedFiles += @{ path = $privateDeltaPath; bytes = (Get-Item -LiteralPath $privateDeltaPath).Length; sha256 = $deltaSettings.PacketSha256; private = $true }
+    }
+    $deltaCommands = if ($deltaEnabled) { Get-DeltaRehearsalScript } else { '' }
+    $deltaMountArguments = @(Get-DeltaMountArguments $deltaEnabled)
     $script:runtimeOutput = Join-Path $script:evidence 'container-output'
     New-PrivateDirectory $script:runtimeOutput
     $entrypoint = @'
@@ -462,6 +820,7 @@ if test "$code" = 0; then
       psql -X -w -q -t --csv --set=ON_ERROR_STOP=1 --file=/current-fingerprint.sql >/evidence/current-fingerprint.csv 2>/evidence/current-fingerprint.error || code=22
     if test -s /evidence/current-fingerprint.error; then code=23; fi
   fi
+  # OPTIONAL_DELTA_REHEARSAL
   if test "$code" = 0; then
     pg_ctl -D /tmp/koc-restore-data -m fast -w stop >/tmp/host-stop.log 2>&1 || code=24
     if test "$code" = 0; then trap - EXIT; fi
@@ -474,7 +833,7 @@ for name in init.log start.log server.log bootstrap.error roles.error createdb.e
 done
 exit "$code"
 '@
-    Write-PrivateText 'entrypoint.sh' ($entrypoint.Replace("`r`n", "`n") + "`n")
+    Write-PrivateText 'entrypoint.sh' ($entrypoint.Replace("`r`n", "`n").Replace('  # OPTIONAL_DELTA_REHEARSAL', $deltaCommands) + "`n")
     foreach ($name in @('restore.sh', 'checks.sql', 'current-fingerprint.sql')) { Assert-Private (Join-Path $script:evidence $name) }
     if ((File-Hash (Join-Path $script:evidence 'restore.sh')) -cne $pins['verify-backup-disposable-restore.sh'] -or
         (File-Hash (Join-Path $script:evidence 'checks.sql')) -cne $baselineQueryHash -or
@@ -492,7 +851,7 @@ exit "$code"
         '--mount', "type=bind,source=$script:evidence/checks.sql,target=/checks.sql,readonly",
         '--mount', "type=bind,source=$script:evidence/current-fingerprint.sql,target=/current-fingerprint.sql,readonly",
         '--mount', "type=bind,source=$script:evidence/entrypoint.sh,target=/review/entrypoint.sh,readonly",
-        '--mount', "type=bind,source=$script:runtimeOutput,target=/evidence") + $volumeArguments + @('--entrypoint', '/bin/sh', $restoreImage, '/review/entrypoint.sh')
+        '--mount', "type=bind,source=$script:runtimeOutput,target=/evidence") + $deltaMountArguments + $volumeArguments + @('--entrypoint', '/bin/sh', $restoreImage, '/review/entrypoint.sh')
     $result.containerCleanup = 'PENDING'
     $script:createIssued = $true
     $created = Invoke-Docker $createArguments 'restore-create'
@@ -508,12 +867,15 @@ exit "$code"
         -not $container.HostConfig.ReadonlyRootfs -or $container.HostConfig.Privileged -or
         $container.HostConfig.PublishAllPorts -or ($null -ne $container.HostConfig.PortBindings -and $container.HostConfig.PortBindings.Count -ne 0) -or
         $container.Config.User -cne 'postgres') { Stop-Check 'LOCAL_RESTORE_ISOLATION_MISMATCH' }
-    $expectedMounts = @{ '/backup' = $false; '/checks.sql' = $false; '/current-fingerprint.sql' = $false; '/review/restore.sh' = $false; '/review/entrypoint.sh' = $false; '/evidence' = $true }
+    $expectedMounts = Get-ExpectedRestoreMounts $deltaEnabled
     $binds = @($container.Mounts | Where-Object { $_.Type -ceq 'bind' })
-    if ($binds.Count -ne 6 -or @($container.Mounts | Where-Object { $_.Type -cnotin @('bind', 'tmpfs') }).Count -ne 0) { Stop-Check 'LOCAL_RESTORE_MOUNT_MISMATCH' }
+    $seenMounts = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+    if ($binds.Count -ne $expectedMounts.Count -or @($container.Mounts | Where-Object { $_.Type -cnotin @('bind', 'tmpfs') }).Count -ne 0) { Stop-Check 'LOCAL_RESTORE_MOUNT_MISMATCH' }
     foreach ($mount in $binds) {
-        if (-not $expectedMounts.ContainsKey($mount.Destination) -or $mount.RW -ne $expectedMounts[$mount.Destination]) { Stop-Check 'LOCAL_RESTORE_MOUNT_MISMATCH' }
+        if (@($expectedMounts.Keys) -cnotcontains $mount.Destination -or -not $seenMounts.Add($mount.Destination) -or
+            $mount.RW -ne $expectedMounts[$mount.Destination]) { Stop-Check 'LOCAL_RESTORE_MOUNT_MISMATCH' }
     }
+    if ($deltaEnabled) { $result.deltaRehearsal.status = 'ATTEMPTED_NOT_VERIFIED' }
     $run = Invoke-Docker @('container', 'start', '--attach', $container.Id) 'restore-run' $TimeoutSeconds
     Require-NativeSuccess $run 'DISPOSABLE_RESTORE_FAILED'
     if (-not [string]::IsNullOrWhiteSpace($run.Output)) { Stop-Check 'UNEXPECTED_RESTORE_CONSOLE_OUTPUT' }
@@ -553,6 +915,14 @@ exit "$code"
         applicationRows = $actual.application_data.row_count; policies = $actual.policy_count;
         authTables = $restored.metadata.auth_tables; storageTables = $restored.metadata.storage_tables; eventTriggers = $restored.metadata.event_triggers }
     $result.matchedDataDigest = $actual.application_data.data_digest
+    if ($deltaEnabled) {
+        $firstFingerprint = Read-RuntimeFingerprint 'delta-first-fingerprint.csv'
+        $replayFingerprint = Read-RuntimeFingerprint 'delta-replay-fingerprint.csv'
+        $beforeState = Read-DeltaState 'delta-before.json'
+        $firstState = Read-DeltaState 'delta-first.json'
+        $replayState = Read-DeltaState 'delta-replay.json'
+        $result.deltaRehearsal = Assert-DeltaRehearsal $actual $firstFingerprint $replayFingerprint $beforeState $firstState $replayState
+    }
     $passed = $true
 } catch {
     $result.failureCode = $script:failure
@@ -579,11 +949,18 @@ exit "$code"
         }
         catch { $passed = $false; $result.failureCode = 'EVIDENCE_ACL_OR_FILE_TYPE_MISMATCH' }
     }
-    if ($passed) { $result.status = $profileSettings.SuccessStatus; $result.failureCode = $null }
+    if ($passed) {
+        $result.status = if ($deltaEnabled) { 'PHASE3_DISPOSABLE_DELTA_REPLAY_VERIFIED_AUTH_NOT_TESTED' } else { $profileSettings.SuccessStatus }
+        $result.failureCode = $null
+    }
     $result.finishedUtc = [DateTime]::UtcNow.ToString('o')
     if ($null -ne $script:evidence) {
         try { Write-PrivateText 'receipt.json' ($result | ConvertTo-Json -Depth 12) }
-        catch { $passed = $false; $result.status = $profileSettings.FailureStatus; $result.failureCode = 'PRIVATE_RECEIPT_WRITE_FAILED' }
+        catch {
+            $passed = $false
+            $result.status = if ($deltaEnabled) { 'PHASE3_DISPOSABLE_DELTA_REHEARSAL_NOT_VERIFIED' } else { $profileSettings.FailureStatus }
+            $result.failureCode = 'PRIVATE_RECEIPT_WRITE_FAILED'
+        }
     }
 }
 $result | ConvertTo-Json -Depth 12

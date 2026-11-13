@@ -1,0 +1,1637 @@
+{
+  "projectRef": "mhkoayftiuojxlrkollf",
+  "connection": {
+    "verifiedServerCertificate": true,
+    "endpoint": "session_pooler",
+    "usernameProjectRefBound": true
+  },
+  "history": [
+    {
+      "name": "init",
+      "version": "20260613123947",
+      "statementCount": 1,
+      "statementsSha256": "a6c03aa53d7bfa9c0faaa09c0aa80cf9fcb00936bf191148f62b96c207d9586c"
+    },
+    {
+      "name": "harden_rls",
+      "version": "20260613124252",
+      "statementCount": 1,
+      "statementsSha256": "e16b2adc916eedff4ef88c4f3ba18e18a2ec0d2ac2cedb3405e7f0c5fed11db6"
+    },
+    {
+      "name": "slice9_applications",
+      "version": "20260616122212",
+      "statementCount": 1,
+      "statementsSha256": "874832a26b0743b3e1401381a5a7b377eb647a568870dd79bf5e86ce7d650331"
+    },
+    {
+      "name": "mission_brief",
+      "version": "20260616171712",
+      "statementCount": 1,
+      "statementsSha256": "caca67aea9920f21eb337d932177ad7bf877545638242473be39c3ea941ca09b"
+    },
+    {
+      "name": "0012_trust_profile_bundle",
+      "version": "20260618181926",
+      "statementCount": 1,
+      "statementsSha256": "01501933f930788c17b974e9cba61bebe3e5880ad4cab43f8dce2d3f2953eda6"
+    },
+    {
+      "name": "0013_operator_creator_selection_crm",
+      "version": "20260618181954",
+      "statementCount": 1,
+      "statementsSha256": "403403bd890aafc24a05897d6c383417ad591dee2b4f488a89f6fecac6d3efbb"
+    },
+    {
+      "name": "0014_operator_crm_workspace_guard",
+      "version": "20260618182014",
+      "statementCount": 1,
+      "statementsSha256": "c97c0391694d1e53d6a764abbec83fc2896052054c8973bde3f358d1f2cdb2e7"
+    },
+    {
+      "name": "0015_creator_profile_media",
+      "version": "20260618182057",
+      "statementCount": 1,
+      "statementsSha256": "d7b63e97d19ce226d9d8f3465b35026cd067ba4ceb99ebd896571fa5a4752895"
+    },
+    {
+      "name": "20260618135028_profile_media_private_grants",
+      "version": "20260618182116",
+      "statementCount": 1,
+      "statementsSha256": "704527e363bf6e43378f8671df004620dfbb0ae04628dbc55bd13638e5adf6cc"
+    },
+    {
+      "name": "20260619013000_profile_media_url_validation",
+      "version": "20260618182132",
+      "statementCount": 1,
+      "statementsSha256": "22dec0c7f27b2026c997cf1a7e298f38df2370f9e2601f8e85c1dec735dde976"
+    },
+    {
+      "name": "0016_assistant",
+      "version": "20260619123106",
+      "statementCount": 1,
+      "statementsSha256": "cc2c8b25cfcb772f30667616782928c48ac7f5cb7814816d47e0fd75864000c9"
+    },
+    {
+      "name": "0017_social_verification",
+      "version": "20260621175440",
+      "statementCount": 1,
+      "statementsSha256": "416d7784b29cd69f3c9dfb8c74f4ada44e93af093b2083e92a44b663c4499451"
+    },
+    {
+      "name": "0021_content_hub",
+      "version": "20260623152437",
+      "statementCount": 1,
+      "statementsSha256": "0187acf1b3c9949b2032ca0ae01e1f7a564faca1b1b21e7613a4ee9e8f723dec"
+    },
+    {
+      "name": "0022_notifications",
+      "version": "20260623155639",
+      "statementCount": 1,
+      "statementsSha256": "dec2044111a9ef115547f007bf28bcc9f384dd949c53f3a33a11009bbc513311"
+    },
+    {
+      "name": "kocmax_studio_shared_review_c879b204",
+      "version": "20261031201901",
+      "statementCount": 1,
+      "statementsSha256": "9cbecbf1b4b68c476ed8d996f8f3d1c61408e46986584c22ab0111788cd9e5a5"
+    },
+    {
+      "name": "kocmax_auth_permission_boundary",
+      "version": "20261101075946",
+      "statementCount": 1,
+      "statementsSha256": "ae276f3dfc22539b48e482dceb1aeab8de2774c75f32816fe58665bfef8b7b8d"
+    },
+    {
+      "name": "creator_resubmission",
+      "version": "20261113090000",
+      "statementCount": 0,
+      "statementsSha256": null
+    }
+  ],
+  "database": "postgres",
+  "triggers": [
+    {
+      "name": "RI_ConstraintTrigger_a_17666",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_cascade_del",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "point_balances_creator_id_fkey",
+      "definitionSha256": "14ff97fb633614e8c8e5476e1da9f372c3bdc1e98d86b197466a4536daf32d7d"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_17667",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "point_balances_creator_id_fkey",
+      "definitionSha256": "6e972ab858b9d20ab414a9137eef6c53da2c82a35bdfae576de2e8d4977ec336"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_17686",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_cascade_del",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "point_transactions_creator_id_fkey",
+      "definitionSha256": "b98a302c052a8acf9be27ffb73c7f16300eb08e68015df9589eed443bf4ed90a"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_17687",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "point_transactions_creator_id_fkey",
+      "definitionSha256": "e71263991e77e9894aff57254d4b82557075007055c673267bae4f05eef7184b"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_17748",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_del",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "creators_referred_by_fkey",
+      "definitionSha256": "8a06db34ddeb8f4b2be24f0601aaaf1c2879f95022c168da43bb4e2e5a6c64c0"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_17749",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "creators_referred_by_fkey",
+      "definitionSha256": "39691cf761534f1a5ef4552d9c9c1e77b9ae8fe080309167bfc4a5bbce66e54d"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_17782",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_cascade_del",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "mission_submissions_creator_id_fkey",
+      "definitionSha256": "22c87489f6f081bd8f077d28e10166870f2ce036367ef722fcce1823f0734ceb"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_17783",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "mission_submissions_creator_id_fkey",
+      "definitionSha256": "91601fbd1aa04bf8ef22892837c48c535412f24dfd04aa071f7116a95f6e6d45"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_17822",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_del",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "redemption_codes_issued_to_fkey",
+      "definitionSha256": "894f41fb343285acb0ec0a1013dacd35df1639f44674b2103ceb8b772ff81898"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_17823",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "redemption_codes_issued_to_fkey",
+      "definitionSha256": "bee4b2e584616f1789e0bf87191a35ad14599a990390cbe3d749aa7c1cb7555e"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_17840",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_cascade_del",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "redemptions_creator_id_fkey",
+      "definitionSha256": "a2afca8b9a1be1d095227924098ef163f71e2da284e6144b79445ae7a7dbc8a0"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_17841",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "redemptions_creator_id_fkey",
+      "definitionSha256": "3a3d7b70e505d417934a4ef3ac282c0e163a65eac0034e88ec8bc7f71be2c21b"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_17873",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_cascade_del",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "earnings_balances_creator_id_fkey",
+      "definitionSha256": "6d60590feb6dfe16900267ead4799f3a776eab78e29e6a89402ba6b7fae3e4be"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_17874",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "earnings_balances_creator_id_fkey",
+      "definitionSha256": "e171a77e34e15b53faf53277b46e7337ea0be64578dea150602bb16c8e4904d9"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_17893",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_cascade_del",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "earnings_transactions_creator_id_fkey",
+      "definitionSha256": "bc63fe420da755ee873d7cd1379ea5355fb811494ab5ae9b853acb00e0192cd2"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_17894",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "earnings_transactions_creator_id_fkey",
+      "definitionSha256": "b53edb31eff3ad23b6652cd16e5199833f3031fb7409dd174a583308629b90de"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_18090",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_cascade_del",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "creator_social_accounts_creator_id_fkey",
+      "definitionSha256": "36098d2b4fdc533f3132e06a7558c477255409f5ce0466aba22e015c83b6ad7f"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_18091",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "creator_social_accounts_creator_id_fkey",
+      "definitionSha256": "810192bc125feb50526b0a784ee429cd2c95a1a0e3d1aaaf43575adc1f6111ba"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_18136",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_cascade_del",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "creator_public_passports_creator_id_fkey",
+      "definitionSha256": "bdcb966e837fe06e1c37625969d4b8e7d8556315a4ced416cd52629aadbd69c9"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_18137",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "creator_public_passports_creator_id_fkey",
+      "definitionSha256": "99ff448d7a7ed8614aaeca68efd36a7122deae15389b317ee10c43d1183cacf3"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_18166",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_cascade_del",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "creator_review_statuses_creator_id_fkey",
+      "definitionSha256": "52c90794362275b08f0270f4a7ecca77e00c27dcdc5ece0af2291c7528245b3e"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_18167",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "creator_review_statuses_creator_id_fkey",
+      "definitionSha256": "30dc42c585e7ce65ce2cb3518447fedc074a7dd18839719b500f6951c9a5cce3"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_18187",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_cascade_del",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "creator_review_notes_creator_id_fkey",
+      "definitionSha256": "6958bc84af36491ecdcd57165fb56a694ab967d6c564e6cd911187367c31c871"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_18188",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "creator_review_notes_creator_id_fkey",
+      "definitionSha256": "406725745739d391fbe5e77c5731c45b80f9f52f8e8e461352e6fe8a06dd9816"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_18219",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_cascade_del",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "mission_shortlists_creator_id_fkey",
+      "definitionSha256": "29aec335872d34a38eede4c411af269f9bb80a035e38bd158dfc63d23563f59e"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_18220",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "mission_shortlists_creator_id_fkey",
+      "definitionSha256": "940c71111a54b45a2c0440d223d8567247a422e8723985a9538cee7a411ab0ae"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_18246",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_setnull_del",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "operator_audit_events_creator_id_fkey",
+      "definitionSha256": "a2ee247a54a128bd21d09d74add9a238936a35784415818ccbf950ba1145397e"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_18247",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "operator_audit_events_creator_id_fkey",
+      "definitionSha256": "4e65669da6875f25fcc72383245e62939d16880fe33a8a60aff584270d59ffb1"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_18279",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_cascade_del",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "creator_portfolio_links_creator_id_fkey",
+      "definitionSha256": "855a3c95d2d045dce40ed37b0664fc005463ed152c7339c86146ba0913644405"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_18280",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "creator_portfolio_links_creator_id_fkey",
+      "definitionSha256": "219086bbba38bfd7d4b5c467b8e03c26e69dffe72ffef8231fc2f7601c704bdb"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_18303",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_cascade_del",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "creator_public_profile_snapshots_creator_id_fkey",
+      "definitionSha256": "3666c9096697371cb3e1cc56c935f4c7695db557b1e48b47030d3fbacda6a24b"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_18304",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "creator_public_profile_snapshots_creator_id_fkey",
+      "definitionSha256": "67160f77fa95a7a489c598c37ee0e400330f9c9e0c6e0c1534b9a1da6355f5f8"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_18313",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_cascade_del",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "creator_public_profile_snapshots_published_by_fkey",
+      "definitionSha256": "3b7f139beb4c0b7b0220be2c02622d75caaf0bb6ef7e578fc68314ae21aa5b9c"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_18314",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "creator_public_profile_snapshots_published_by_fkey",
+      "definitionSha256": "9a835ff270f230cb3c33a28a81f545e42ba7c2ccf08d5d23d7db95d2b231a752"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_18953",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_cascade_del",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "notifications_user_id_fkey",
+      "definitionSha256": "4931dac5d7bb20e10757dc606d019eaef2eb6549414b02ef748ed2a563623294"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_18954",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "notifications_user_id_fkey",
+      "definitionSha256": "92fba1d549d84bc7cacc13abd50cbb2e0cb188462fe0ab43298ad88800c36a07"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_19221",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_cascade_del",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "campaign_participants_creator_id_fkey",
+      "definitionSha256": "0d109c2b9acebd784c0fc74c7fd60f9957007ca7604ece39145645fa805e0a65"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_19222",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "campaign_participants_creator_id_fkey",
+      "definitionSha256": "f56be0f201bb3a981ed503a68ead7f8007ff4882e1ed6b164ee7c4125880b3b1"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_20993",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_cascade_del",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "mission_draft_assets_creator_id_fkey",
+      "definitionSha256": "e8a075b67b296cd01a5836cdb7b925a7699085766410d844376573794bc426aa"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_20994",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "mission_draft_assets_creator_id_fkey",
+      "definitionSha256": "c345a9ce2f9ffe26bdda15676e17398cc8d6ecf4566eb4082653e18d881d955f"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_21344",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_cascade_del",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "mission_draft_assets_creator_workspace_fk",
+      "definitionSha256": "ed134f83c96d62b43d35ec9c8de3c7075d8c6082eb58d0d860d44f55136c65cc"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_21345",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "mission_draft_assets_creator_workspace_fk",
+      "definitionSha256": "68de2a8c38b6ac5244cdbf58cf7667d12494f1f38c666f108f1ea7ae66d44a62"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_21560",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_del",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "mission_publication_proof_attempts_submitter_workspace_fk",
+      "definitionSha256": "82274a062c5b264515e0f1ccbd81401c668b4e28bef4de2ee54438f5f3ab6cc0"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_21561",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "mission_publication_proof_attempts_submitter_workspace_fk",
+      "definitionSha256": "4eedd69149345b2782c00ab8a632967bc8ee401d9e91b1704736e4338aba20ee"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_21766",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_cascade_del",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "mission_publication_proof_assets_creator_workspace_fk",
+      "definitionSha256": "9567c1413dcc87c672e52112e2af19c940296ad9770b8145b5d33091adcc40ea"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_21767",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "mission_publication_proof_assets_creator_workspace_fk",
+      "definitionSha256": "b6af961025f96b0939adde10784b61fdd6d6964aa5cd558b98af9f35663df00f"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_21931",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_del",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "mission_pending_rewards_creator_id_fkey",
+      "definitionSha256": "2f745c19346173ab2126fcfdf62cf97e1698464b81e071e369d5b430fe34bdea"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_21932",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "mission_pending_rewards_creator_id_fkey",
+      "definitionSha256": "85bfef8a7d1b2381e522fb29f0d27b08e4ffae2993ea5358235f9be77671f74c"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_22082",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_del",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "assistant_requests_creator_id_fkey",
+      "definitionSha256": "041c3843ff2a40272ce45d00e34ab3fbe371d7b0cbf0427049ce1246289fe7d6"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_22083",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "assistant_requests_creator_id_fkey",
+      "definitionSha256": "f48ceeee974bf47b603fcb34c5da61749793dc88397a49b4c9eda284aaa1ba77"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_22158",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_restrict_del",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "creator_lesson_progress_creator_id_fkey",
+      "definitionSha256": "d556e9a1c52f62d1201889095c17c748728bb3e557d4617a32aa67fdbd0347c7"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_22159",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "creator_lesson_progress_creator_id_fkey",
+      "definitionSha256": "de1d6a6b1001850308ab9f4bfe7e98649f18f1c478d8581c22fa6141d772dd0a"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_22330",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_cascade_del",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "creator_consents_creator_id_fkey",
+      "definitionSha256": "f3508476ac7ad00ef3c8968f32c9b49185c2f1af63f1f8f7631aafa118a675a2"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_22331",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "creator_consents_creator_id_fkey",
+      "definitionSha256": "59e2b5c4e84ca3914fffa0c005499fbf7d658e8614ca51e26cb5738511bad9e9"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_22369",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_del",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "studio_threads_creator_id_fkey",
+      "definitionSha256": "8af4a27422261fd32639e7052109f774c62ef45aa8a80e144c45536f79860d41"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_22370",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "studio_threads_creator_id_fkey",
+      "definitionSha256": "46302fdbf788856fde4956d52cd73431774579b61748b4065942290ed73b8984"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_22486",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_del",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "studio_badges_creator_id_fkey",
+      "definitionSha256": "0d2eb5bf67300b46c1edb85520816d3f64f965b5f9900a1511425f0ced20b52b"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_22487",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "studio_badges_creator_id_fkey",
+      "definitionSha256": "8957d0795e6444db327ed64aa6937043c06e72d40341b66cbad91a5bb4beb02f"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_22526",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_del",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "integration_connections_creator_id_workspace_id_fkey",
+      "definitionSha256": "4383e03f02ad0bb7e352d21e6b09147b1378869a8e20d991257875706d3da8e5"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_22527",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "integration_connections_creator_id_workspace_id_fkey",
+      "definitionSha256": "fb3b96289b1f13f1164dde38c4d28ebe0fd7bc1ddc71e43ecb6e9e04359c9ca7"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_22628",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_del",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "integration_oauth_states_creator_id_workspace_id_fkey",
+      "definitionSha256": "7a8433eb6f495fbaed4c479ef6dc258898ea35f9979f0efda4938eaee4e21ea4"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_22629",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "integration_oauth_states_creator_id_workspace_id_fkey",
+      "definitionSha256": "607acef2bf37c57bc07fe3ea8baa62beeba1f8a6ab80f773442d10daffffbd97"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_22643",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_del",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "integration_commands_creator_id_workspace_id_fkey",
+      "definitionSha256": "35479d0abcd032cc24dcd089dc9ce28cfcd18c530e1155e06b79393a1d20d843"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_22644",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "integration_commands_creator_id_workspace_id_fkey",
+      "definitionSha256": "950ec2f75401aad9c6f4bf3f2c209a253e81ce5fb0214391c3d4185e250fe50d"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_22759",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_del",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "integration_pilot_bindings_creator_id_workspace_id_fkey",
+      "definitionSha256": "07cdcb2492d591518750c5d2105c48b7657e863fde0802e3360ad751adf2b8f4"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_22760",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "integration_pilot_bindings_creator_id_workspace_id_fkey",
+      "definitionSha256": "c8598c4a5dbdb6184582e475ea90e0fc7876b45a3c2c51c1bf28e57925529709"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_22779",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_del",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "integration_pilot_oauth_creator_id_workspace_id_fkey",
+      "definitionSha256": "ec5f2461793ee29a3696edf4e1b018ce4cea42d42e5b7c9cf5171886b02d9de8"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_22780",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "integration_pilot_oauth_creator_id_workspace_id_fkey",
+      "definitionSha256": "e394ec9c1712fa4f3e6e1adc850231d0c0720232762253c6daf08ff1d02c01b0"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_23328",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_cascade_del",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "mission_submission_events_creator_id_fkey",
+      "definitionSha256": "a9ae18539f848101c904e27504e97f119fda3f19fb60335a25ff56a0232e4b57"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_23329",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "mission_submission_events_creator_id_fkey",
+      "definitionSha256": "744e8d8f9b3cc9a60041e26ace07303a31ee9065092a5eb7acfc835cd96499f4"
+    },
+    {
+      "name": "RI_ConstraintTrigger_c_17605",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_check_ins",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "creators_id_fkey",
+      "definitionSha256": "4337ce34df23dda2a1be5c8dbc5479dc14603c5779f6a8fc213c51d8177fce2f"
+    },
+    {
+      "name": "RI_ConstraintTrigger_c_17606",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_check_upd",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "creators_id_fkey",
+      "definitionSha256": "9cf37601d3129ec70da07e129bf5e5259024f6ed132f360ec55d2ceeb6d5d548"
+    },
+    {
+      "name": "RI_ConstraintTrigger_c_17610",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_check_ins",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "creators_workspace_id_fkey",
+      "definitionSha256": "1f19be4dc620e13d203be4059fdbce68c523a264371876764574ecffc80be625"
+    },
+    {
+      "name": "RI_ConstraintTrigger_c_17611",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_check_upd",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "creators_workspace_id_fkey",
+      "definitionSha256": "bed9325bde5b6e6167ed9c74d015d7447dbf53159344004f19f42b20a403a4f3"
+    },
+    {
+      "name": "RI_ConstraintTrigger_c_17750",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_check_ins",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "creators_referred_by_fkey",
+      "definitionSha256": "a79ce8314e7c5f010b3d029482b40cf06fdd3a3b5595bdc4d375a28d5d6564ec"
+    },
+    {
+      "name": "RI_ConstraintTrigger_c_17751",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_check_upd",
+      "internal": true,
+      "relation": "creators",
+      "constraintName": "creators_referred_by_fkey",
+      "definitionSha256": "8ca072c4f92088b2b08791453e0558fa4632411e8c799121b48ce3b42c38140a"
+    },
+    {
+      "name": "creators_set_level",
+      "enabled": "O",
+      "function": "public.set_level_from_xp",
+      "internal": false,
+      "relation": "creators",
+      "constraintName": null,
+      "definitionSha256": "affe4967f769360fee9f9300e6c6d2905040faf9aa69c339dcb1c2176eaf6387"
+    },
+    {
+      "name": "integration_account_cleanup",
+      "enabled": "O",
+      "function": "private.integration_account_cleanup",
+      "internal": false,
+      "relation": "creators",
+      "constraintName": null,
+      "definitionSha256": "495820c191673b7984fdf7ce6ffda2360d5a59a41f683985a914019245c28d6a"
+    },
+    {
+      "name": "integration_pilot_account_tombstone",
+      "enabled": "O",
+      "function": "private.integration_pilot_tombstone",
+      "internal": false,
+      "relation": "creators",
+      "constraintName": null,
+      "definitionSha256": "fb5a8e1cfa186efc10d99caeec1b9700df5ffbb8615a2c0c07b12bc374c339b3"
+    },
+    {
+      "name": "notifications_on_level_up",
+      "enabled": "O",
+      "function": "public.notify_on_level_up",
+      "internal": false,
+      "relation": "creators",
+      "constraintName": null,
+      "definitionSha256": "c6b2754b6c05e0a458c07db7d0a7421557f0ac0bbee3d2b499fa77b87a1c61dd"
+    },
+    {
+      "name": "studio_account_cleanup",
+      "enabled": "O",
+      "function": "private.studio_account_cleanup",
+      "internal": false,
+      "relation": "creators",
+      "constraintName": null,
+      "definitionSha256": "94c51ebdc0cb4760cb13f9465e4d4cc3f4beea5e02552746008cae64e3ff923f"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_21296",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_cascade_del",
+      "internal": true,
+      "relation": "mission_submissions",
+      "constraintName": "mission_workflows_submission_workspace_fk",
+      "definitionSha256": "6e0cd43c20c981b2103d9eb3eb435de64baa7a3ba3c44ead4f0c83578d09475a"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_21297",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "mission_submissions",
+      "constraintName": "mission_workflows_submission_workspace_fk",
+      "definitionSha256": "7de2475a65fdde492c8aa96ab5f97f5f19f62d3af706784ef2a2a90c90d2aaa4"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_21751",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_cascade_del",
+      "internal": true,
+      "relation": "mission_submissions",
+      "constraintName": "mission_publication_proof_assets_submission_workspace_fk",
+      "definitionSha256": "fb5e4864143146d590302d72fc1a334d47efdc239d69b4b9437d7ac9574433da"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_21752",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "mission_submissions",
+      "constraintName": "mission_publication_proof_assets_submission_workspace_fk",
+      "definitionSha256": "773fcaf25b53f52221e9f094a31d77fedbe9e9dede15dcbf940638bf7c0e487b"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_21839",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_del",
+      "internal": true,
+      "relation": "mission_submissions",
+      "constraintName": "mission_reward_contracts_mission_submission_id_fkey",
+      "definitionSha256": "d93fab054fc9b351ac06bc96c10816ef3934cecaea7b93be2d3916c9c9172c9d"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_21840",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "mission_submissions",
+      "constraintName": "mission_reward_contracts_mission_submission_id_fkey",
+      "definitionSha256": "af5a3e641ccb3fe96de31a615872bc0cc22d1716d40ee8122a054c781fc6177f"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_21926",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_del",
+      "internal": true,
+      "relation": "mission_submissions",
+      "constraintName": "mission_pending_rewards_mission_submission_id_fkey",
+      "definitionSha256": "71d73472c531ee6c3b4205c970fbf96a1ad13f441e04f84f1b412287bf3b4cef"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_21927",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "mission_submissions",
+      "constraintName": "mission_pending_rewards_mission_submission_id_fkey",
+      "definitionSha256": "3035ce38c09f71e363edb4b8f3c18d2e77737a01f7b35fc9c0d6bc24d2190380"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_22032",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_del",
+      "internal": true,
+      "relation": "mission_submissions",
+      "constraintName": "legacy_evidence_corrections_submission_id_fkey",
+      "definitionSha256": "6977ac33fd2f09678364b479d808d8bfe3653e18102a2e3a734a24bc12d6acfb"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_22033",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "mission_submissions",
+      "constraintName": "legacy_evidence_corrections_submission_id_fkey",
+      "definitionSha256": "2a740b65976ea6bae4e691ee76a8631b65f1bebdcc9415ab7eedbc7e18fd6e36"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_22444",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_del",
+      "internal": true,
+      "relation": "mission_submissions",
+      "constraintName": "studio_shares_submission_id_fkey",
+      "definitionSha256": "eecd14ae0f0e40432ac531fcc33e12a9ec74cc046cd52defaf9ac423416c8158"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_22445",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "mission_submissions",
+      "constraintName": "studio_shares_submission_id_fkey",
+      "definitionSha256": "5660beb9720d1ea9c9376e77028a59208429b886bf13e36c9a6575b078fb26c2"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_23323",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_cascade_del",
+      "internal": true,
+      "relation": "mission_submissions",
+      "constraintName": "mission_submission_events_mission_submission_id_fkey",
+      "definitionSha256": "01dd7e8a6f964bf245c94b5b3977fc958cd5bc9224885d4638a889644dfc76c8"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_23324",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "mission_submissions",
+      "constraintName": "mission_submission_events_mission_submission_id_fkey",
+      "definitionSha256": "b5fd61b9ae37452dfddff68bd01509cecfa8f021871249db98da9375968dc795"
+    },
+    {
+      "name": "RI_ConstraintTrigger_c_17784",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_check_ins",
+      "internal": true,
+      "relation": "mission_submissions",
+      "constraintName": "mission_submissions_creator_id_fkey",
+      "definitionSha256": "c21126ee2b379bdfe61861bc646a2286e40f7b84224177c692ccd0218b81ded2"
+    },
+    {
+      "name": "RI_ConstraintTrigger_c_17785",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_check_upd",
+      "internal": true,
+      "relation": "mission_submissions",
+      "constraintName": "mission_submissions_creator_id_fkey",
+      "definitionSha256": "5bae3724fc73dc353df0dafa708a56a75da26a0c973ed9db9514d21517b76436"
+    },
+    {
+      "name": "RI_ConstraintTrigger_c_17789",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_check_ins",
+      "internal": true,
+      "relation": "mission_submissions",
+      "constraintName": "mission_submissions_workspace_id_fkey",
+      "definitionSha256": "921246a46a5feabb4d25d44f7b8b75d921bd013a3e7f9b7f39448c7c112df438"
+    },
+    {
+      "name": "RI_ConstraintTrigger_c_17790",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_check_upd",
+      "internal": true,
+      "relation": "mission_submissions",
+      "constraintName": "mission_submissions_workspace_id_fkey",
+      "definitionSha256": "3911242f9c63de9c633a90bb9b93cb7f0df35004beeeb70878da2407f998492d"
+    },
+    {
+      "name": "RI_ConstraintTrigger_c_21278",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_check_ins",
+      "internal": true,
+      "relation": "mission_submissions",
+      "constraintName": "mission_submissions_mission_workspace_fk",
+      "definitionSha256": "1dd775badfbcd1ca671bd2b706362abc4041012d3c2c6e7a7a81ac4621bc826a"
+    },
+    {
+      "name": "RI_ConstraintTrigger_c_21279",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_check_upd",
+      "internal": true,
+      "relation": "mission_submissions",
+      "constraintName": "mission_submissions_mission_workspace_fk",
+      "definitionSha256": "f48d6473f64a82d675f6ce258c6efa306c68c389717b39f3bb9978c095f8f334"
+    },
+    {
+      "name": "campaign_progress_on_approval",
+      "enabled": "O",
+      "function": "public.campaign_progress_on_approval",
+      "internal": false,
+      "relation": "mission_submissions",
+      "constraintName": null,
+      "definitionSha256": "ac77a07e10e7259b9b9a9d27c63d27e1d2285d163111f895f473296821275d5d"
+    },
+    {
+      "name": "legacy_submission_evidence_guard",
+      "enabled": "O",
+      "function": "private.guard_legacy_submission_evidence",
+      "internal": false,
+      "relation": "mission_submissions",
+      "constraintName": null,
+      "definitionSha256": "289db2888d7ef4babe27efc7602bfedd50253cdd4c6714e858f6323a5f4d0d8b"
+    },
+    {
+      "name": "notifications_on_submission_change",
+      "enabled": "O",
+      "function": "public.notify_on_submission_change",
+      "internal": false,
+      "relation": "mission_submissions",
+      "constraintName": null,
+      "definitionSha256": "cba1552d2a83aa352290e120b23c4f8d7078b9132bd1459414ff5556b1c77b8a"
+    },
+    {
+      "name": "studio_legacy_badge",
+      "enabled": "O",
+      "function": "private.studio_legacy_badge",
+      "internal": false,
+      "relation": "mission_submissions",
+      "constraintName": null,
+      "definitionSha256": "72ddeb1900b8e9a4cbc5cb5d7c08fcefc6087a671a09f3a86c6f51e7d694feed"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_20883",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_cascade_del",
+      "internal": true,
+      "relation": "mission_workflows",
+      "constraintName": "mission_work_items_mission_workflow_id_fkey",
+      "definitionSha256": "f96c2a14bad2e2cc356e00f9f593c610782b363cf4c6c212359de3887a1fa6ef"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_20884",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "mission_workflows",
+      "constraintName": "mission_work_items_mission_workflow_id_fkey",
+      "definitionSha256": "2b5a0402636d58efd269fcf22aa1b620ebc192fa330b4bb2849f74b44c0376d0"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_21110",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_cascade_del",
+      "internal": true,
+      "relation": "mission_workflows",
+      "constraintName": "mission_fulfillments_mission_workflow_id_fkey",
+      "definitionSha256": "6ac8ba9cd4eaa953b7f95ec7cef8fe43cbfdff5f5b96480d1b09d635fe7bf36e"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_21111",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "mission_workflows",
+      "constraintName": "mission_fulfillments_mission_workflow_id_fkey",
+      "definitionSha256": "6a0a8fe76326265b3e9c3389db85a2a5730d7c950bfc484cccaf3d1a62a5544c"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_21143",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_cascade_del",
+      "internal": true,
+      "relation": "mission_workflows",
+      "constraintName": "mission_workflow_events_mission_workflow_id_fkey",
+      "definitionSha256": "267d86224297dfe6f5d403df4a0c1927ca9ca950233fb85666ca5af86745f3d1"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_21144",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "mission_workflows",
+      "constraintName": "mission_workflow_events_mission_workflow_id_fkey",
+      "definitionSha256": "0ed2e87782b0f4bb0f2fccc3b7242e93a71025ef44b1034576248260e4b54cb2"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_21301",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_cascade_del",
+      "internal": true,
+      "relation": "mission_workflows",
+      "constraintName": "mission_work_items_workflow_workspace_fk",
+      "definitionSha256": "cb8d9452da6311388cac7ca982c0a7a70d3f91dd15b8697ef204b8d620abc007"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_21302",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "mission_workflows",
+      "constraintName": "mission_work_items_workflow_workspace_fk",
+      "definitionSha256": "0c2bcf96cb2c1ffe59c8c31ac9658bb5733aaef98f4163997dc92d6e413117bc"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_21326",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_cascade_del",
+      "internal": true,
+      "relation": "mission_workflows",
+      "constraintName": "mission_fulfillments_workflow_workspace_fk",
+      "definitionSha256": "008ef221c3b929e4b4b9792c8e579fa42df7eda3e0d12cfc1ab4562897386398"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_21327",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "mission_workflows",
+      "constraintName": "mission_fulfillments_workflow_workspace_fk",
+      "definitionSha256": "150ef23db91e2c5b815ce3e8e9bcee6c1786c4df8746c1b5738bc956c6c013f4"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_21331",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_cascade_del",
+      "internal": true,
+      "relation": "mission_workflows",
+      "constraintName": "mission_events_workflow_workspace_fk",
+      "definitionSha256": "1efddeddfb397510d1a31db0ec2f0b554ab65672b09cd01e74f58214ff23f362"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_21332",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "mission_workflows",
+      "constraintName": "mission_events_workflow_workspace_fk",
+      "definitionSha256": "a9e9e11ae7edb837af1b865f8ad88aa86574add0fd0b03fd66dc31e589e8410d"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_21349",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_cascade_del",
+      "internal": true,
+      "relation": "mission_workflows",
+      "constraintName": "mission_draft_assets_workflow_workspace_fk",
+      "definitionSha256": "c3d5c5d976fe5cc7889934ef88b67b239b1cc460c34063c9bb1e8cbd775347c4"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_21350",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "mission_workflows",
+      "constraintName": "mission_draft_assets_workflow_workspace_fk",
+      "definitionSha256": "fc8ad260b3a9ea81e810aec82dff665740e5d8e0489a1283afe4e6961f501a71"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_21756",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_cascade_del",
+      "internal": true,
+      "relation": "mission_workflows",
+      "constraintName": "mission_publication_proof_assets_workflow_workspace_fk",
+      "definitionSha256": "89b673a4a69f3a7bbc4d4ccc39b06632922d90460dbc83acbfc3b7521a995c11"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_21757",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "mission_workflows",
+      "constraintName": "mission_publication_proof_assets_workflow_workspace_fk",
+      "definitionSha256": "0856e054af5e9f5e436de3f8c613d1a93ec269fdc53e77345fe392ce554d786a"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_21834",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_del",
+      "internal": true,
+      "relation": "mission_workflows",
+      "constraintName": "mission_reward_contracts_mission_workflow_id_fkey",
+      "definitionSha256": "8f0ad4e7ed8965946d9985fddfe90117dde61970b9e02b5024924d19716a561b"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_21835",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "mission_workflows",
+      "constraintName": "mission_reward_contracts_mission_workflow_id_fkey",
+      "definitionSha256": "1a73af91b7ab18a81744b9bfe73236486e03a9fc6dbb118fdaa8aee496639071"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_21876",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_del",
+      "internal": true,
+      "relation": "mission_workflows",
+      "constraintName": "mission_completion_decisions_mission_workflow_id_fkey",
+      "definitionSha256": "ea686396d19c6110cf0646c9fc9496596c23381000036341be4f185bf9bf41fc"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_21877",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "mission_workflows",
+      "constraintName": "mission_completion_decisions_mission_workflow_id_fkey",
+      "definitionSha256": "190f186afb8d1d63fb3433614006fda6fe5917ed35a639be1236e4286c2dac0b"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_21921",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_del",
+      "internal": true,
+      "relation": "mission_workflows",
+      "constraintName": "mission_pending_rewards_mission_workflow_id_fkey",
+      "definitionSha256": "258798a30cce06c4571d66735a149576aa8ac9efcc85e526a35c3d47ffec4f61"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_21922",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "mission_workflows",
+      "constraintName": "mission_pending_rewards_mission_workflow_id_fkey",
+      "definitionSha256": "9f2baa7577590f7f44eb1c620bb52f95134455ef46abc98b9609bc02867c6923"
+    },
+    {
+      "name": "RI_ConstraintTrigger_c_20850",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_check_ins",
+      "internal": true,
+      "relation": "mission_workflows",
+      "constraintName": "mission_workflows_workspace_id_fkey",
+      "definitionSha256": "28e23b6651da8d34853692641377fde3566f7553196ab7a86d5b7be4410938cd"
+    },
+    {
+      "name": "RI_ConstraintTrigger_c_20851",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_check_upd",
+      "internal": true,
+      "relation": "mission_workflows",
+      "constraintName": "mission_workflows_workspace_id_fkey",
+      "definitionSha256": "911bc08392bbf5f2e177c2d0fc679e30e77884c5c3755482671ee281409c580b"
+    },
+    {
+      "name": "RI_ConstraintTrigger_c_21298",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_check_ins",
+      "internal": true,
+      "relation": "mission_workflows",
+      "constraintName": "mission_workflows_submission_workspace_fk",
+      "definitionSha256": "9fcd75446df7673b3f1c49f79cb350dd7a1197969c028815c6d5b92ca126a6cc"
+    },
+    {
+      "name": "RI_ConstraintTrigger_c_21299",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_check_upd",
+      "internal": true,
+      "relation": "mission_workflows",
+      "constraintName": "mission_workflows_submission_workspace_fk",
+      "definitionSha256": "ee948b71f79feff7c24f5a88ff9b6b478ca9033791d4bc44ee77258fa2d385e2"
+    },
+    {
+      "name": "mission_workflow_state_notifications",
+      "enabled": "O",
+      "function": "private.notify_mission_workflow_transition",
+      "internal": false,
+      "relation": "mission_workflows",
+      "constraintName": null,
+      "definitionSha256": "7c667e87d8e6e5b2e95de5039cc0e9a38f186e6609a11dcb5694a58e2c194984"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_18214",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_cascade_del",
+      "internal": true,
+      "relation": "missions",
+      "constraintName": "mission_shortlists_mission_id_fkey",
+      "definitionSha256": "a3329a42ca3695007e2ed03d7baf2fd86002b9920070fd9b372dc06dcce9cbb4"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_18215",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "missions",
+      "constraintName": "mission_shortlists_mission_id_fkey",
+      "definitionSha256": "5a9f7d566f8931173d592f5eab870f5db8911bdca868316c008292453e18e6b3"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_18251",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_setnull_del",
+      "internal": true,
+      "relation": "missions",
+      "constraintName": "operator_audit_events_mission_id_fkey",
+      "definitionSha256": "e1709d4a835b06c4ccf3840c1fa4da59e85da492f466b6b80b314d299600dc01"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_18252",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "missions",
+      "constraintName": "operator_audit_events_mission_id_fkey",
+      "definitionSha256": "706f5018fa1172037b175f645d96a3b604e64dff6957ea141a79537dc7f7aa26"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_19204",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_cascade_del",
+      "internal": true,
+      "relation": "missions",
+      "constraintName": "campaign_missions_workspace_id_mission_id_fkey",
+      "definitionSha256": "e1c139185836c192f651905d382de3735dc51479bf50e85967ec1bc5233e8f04"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_19205",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "missions",
+      "constraintName": "campaign_missions_workspace_id_mission_id_fkey",
+      "definitionSha256": "6683861c6b39156f17de1a9c5ed8ad433817c1209c3e6abb1a878439fc8f6e20"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_20801",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_cascade_del",
+      "internal": true,
+      "relation": "missions",
+      "constraintName": "mission_deliverable_templates_mission_id_fkey",
+      "definitionSha256": "75eb546e146e4f24ec7b18d7324b8595a3cab858a1f4f7c75ab419e3ab841b0b"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_20802",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "missions",
+      "constraintName": "mission_deliverable_templates_mission_id_fkey",
+      "definitionSha256": "e8de23bb0814d9aadc3010e5adb219281531910f799d6236db7a2106664495bc"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_21276",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_cascade_del",
+      "internal": true,
+      "relation": "missions",
+      "constraintName": "mission_submissions_mission_workspace_fk",
+      "definitionSha256": "3954bbb663b42d154048b3ed216dd3906e4b60b873454cb621248cf56de7ec18"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_21277",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "missions",
+      "constraintName": "mission_submissions_mission_workspace_fk",
+      "definitionSha256": "21d0b0888949ec2693337f4d8ce15a75a15736608133ed788545404a7243f66b"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_21286",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_cascade_del",
+      "internal": true,
+      "relation": "missions",
+      "constraintName": "mission_templates_mission_workspace_fk",
+      "definitionSha256": "0dfd7fca9bf95cd4b41cf6744b2beb394864bdc46d80090663cd73f9b657fd5b"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_21287",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "missions",
+      "constraintName": "mission_templates_mission_workspace_fk",
+      "definitionSha256": "15c569c8128c06a1cbcf706ded26e4cc479dbac0ceae5806c9283fe45e03c080"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_21844",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_del",
+      "internal": true,
+      "relation": "missions",
+      "constraintName": "mission_reward_contracts_mission_id_fkey",
+      "definitionSha256": "90a35d6245f800408b57a577ff33ac4907ad2d4e3ccabe6b410e615279bcb3f7"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_21845",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "missions",
+      "constraintName": "mission_reward_contracts_mission_id_fkey",
+      "definitionSha256": "9811e4c694f4c6e21ecb241296ecae54178ffbb0a0af92312374db4c1529ee15"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_21936",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_del",
+      "internal": true,
+      "relation": "missions",
+      "constraintName": "mission_pending_rewards_mission_id_fkey",
+      "definitionSha256": "af5f1905a5e09513a28890489ba6f0404d7a3941742fd05ea2012f03312b1994"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_21937",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "missions",
+      "constraintName": "mission_pending_rewards_mission_id_fkey",
+      "definitionSha256": "3d8a596b157235d46168fcf24b437a3d6ac20dd7d91921107c62b186588fccfd"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_22374",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_del",
+      "internal": true,
+      "relation": "missions",
+      "constraintName": "studio_threads_mission_id_fkey",
+      "definitionSha256": "9aeb2723044598650a590903816235e590b5009dbbbd60f25c406243108be6ed"
+    },
+    {
+      "name": "RI_ConstraintTrigger_a_22375",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_noaction_upd",
+      "internal": true,
+      "relation": "missions",
+      "constraintName": "studio_threads_mission_id_fkey",
+      "definitionSha256": "4784fc5befe2454842ac5909c55f2049a8d2191fb76b6aa66f4c386200857f8a"
+    },
+    {
+      "name": "RI_ConstraintTrigger_c_17634",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_check_ins",
+      "internal": true,
+      "relation": "missions",
+      "constraintName": "missions_workspace_id_fkey",
+      "definitionSha256": "328403b8550225663216c12bc1221e930df1cf97239898f4c0ef7ae5ef1e833a"
+    },
+    {
+      "name": "RI_ConstraintTrigger_c_17635",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_check_upd",
+      "internal": true,
+      "relation": "missions",
+      "constraintName": "missions_workspace_id_fkey",
+      "definitionSha256": "06b34ac89831548a71fb36fa842fdea62084ff25b5a44764901f9edd45b8d587"
+    },
+    {
+      "name": "RI_ConstraintTrigger_c_18815",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_check_ins",
+      "internal": true,
+      "relation": "missions",
+      "constraintName": "missions_created_by_fkey",
+      "definitionSha256": "5fd65d1ea1bd523e846d76ad4cdf038b537c664eb12b811f6a1a290a8a566f9b"
+    },
+    {
+      "name": "RI_ConstraintTrigger_c_18816",
+      "enabled": "O",
+      "function": "pg_catalog.RI_FKey_check_upd",
+      "internal": true,
+      "relation": "missions",
+      "constraintName": "missions_created_by_fkey",
+      "definitionSha256": "d48458218d969980d40fe7c724df513db735c39708a628ba8ac03d281a0059c6"
+    }
+  ],
+  "functions": [
+    {
+      "owner": "postgres",
+      "config": [
+        "search_path=public"
+      ],
+      "execute": {
+        "anon": false,
+        "public": false,
+        "service_role": true,
+        "authenticated": false
+      },
+      "signature": "public.accept_application(uuid)",
+      "attributes": {
+        "kind": "f",
+        "strict": false,
+        "language": "plpgsql",
+        "parallel": "u",
+        "leakproof": false,
+        "returnsSet": false,
+        "volatility": "v",
+        "resultTypeMatches": true
+      },
+      "bodySha256": "b4504940a4e0579f0ce2f4fb7e349a7abb6fd2333a722d5f15f62a78ac055829",
+      "securityDefiner": true
+    },
+    {
+      "owner": "postgres",
+      "config": [
+        "search_path=public"
+      ],
+      "execute": {
+        "anon": false,
+        "public": false,
+        "service_role": false,
+        "authenticated": false
+      },
+      "signature": "private.join_mission(uuid)",
+      "attributes": {
+        "kind": "f",
+        "strict": false,
+        "language": "plpgsql",
+        "parallel": "u",
+        "leakproof": false,
+        "returnsSet": false,
+        "volatility": "v",
+        "resultTypeMatches": true
+      },
+      "bodySha256": "c6e2dbf25154897e2aa80cf2366de5c7134e1dae54b61ba77f246bc24197795b",
+      "securityDefiner": true
+    }
+  ],
+  "extensions": [
+    {
+      "name": "pg_stat_statements",
+      "schema": "extensions",
+      "version": "1.11"
+    },
+    {
+      "name": "pgcrypto",
+      "schema": "extensions",
+      "version": "1.3"
+    },
+    {
+      "name": "plpgsql",
+      "schema": "pg_catalog",
+      "version": "1.0"
+    },
+    {
+      "name": "supabase_vault",
+      "schema": "vault",
+      "version": "0.3.1"
+    },
+    {
+      "name": "uuid-ossp",
+      "schema": "extensions",
+      "version": "1.1"
+    },
+    {
+      "name": "vector",
+      "schema": "public",
+      "version": "0.8.0"
+    }
+  ],
+  "observedAt": "2026-11-13T09:42:57.37909+00:00",
+  "currentRole": "postgres",
+  "foreignKeys": [
+    {
+      "name": "mission_submissions_creator_id_fkey",
+      "type": "f",
+      "deferred": false,
+      "relation": "mission_submissions",
+      "validated": true,
+      "deferrable": false,
+      "definition": "FOREIGN KEY (creator_id) REFERENCES creators(id) ON DELETE CASCADE"
+    },
+    {
+      "name": "mission_submissions_mission_workspace_fk",
+      "type": "f",
+      "deferred": false,
+      "relation": "mission_submissions",
+      "validated": true,
+      "deferrable": false,
+      "definition": "FOREIGN KEY (mission_id, workspace_id) REFERENCES missions(id, workspace_id) ON DELETE CASCADE"
+    },
+    {
+      "name": "mission_submissions_workspace_id_fkey",
+      "type": "f",
+      "deferred": false,
+      "relation": "mission_submissions",
+      "validated": true,
+      "deferrable": false,
+      "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id)"
+    },
+    {
+      "name": "mission_workflows_submission_workspace_fk",
+      "type": "f",
+      "deferred": false,
+      "relation": "mission_workflows",
+      "validated": true,
+      "deferrable": false,
+      "definition": "FOREIGN KEY (mission_submission_id, workspace_id) REFERENCES mission_submissions(id, workspace_id) ON DELETE CASCADE"
+    },
+    {
+      "name": "mission_workflows_workspace_id_fkey",
+      "type": "f",
+      "deferred": false,
+      "relation": "mission_workflows",
+      "validated": true,
+      "deferrable": false,
+      "definition": "FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON DELETE CASCADE"
+    }
+  ],
+  "sessionRole": "postgres",
+  "serverVersionNum": "170006",
+  "transactionReadOnly": true
+}
