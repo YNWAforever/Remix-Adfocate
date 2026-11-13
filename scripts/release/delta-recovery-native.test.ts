@@ -6,7 +6,7 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { digestDeltaProofPayload } from "./delta-evidence";
 import { nativeOwnedResource } from "./delta-native-collectors";
-import { assertPairedRecoveryOwnedContainer, classifyOwnedRecoveryPsqlStderr, pairedRecoveryNativeMain, pairedRecoverySafeFailure } from "./delta-recovery-native";
+import { assertPairedRecoveryOwnedContainer, classifyOwnedRecoveryPsqlStderr, createOwnedTemplateDropProbe, pairedRecoveryNativeMain, pairedRecoverySafeFailure } from "./delta-recovery-native";
 import { PairedRecoveryFailure } from "./delta-recovery";
 import { PsqlTransportError } from "./delta-psql-session";
 import { deltaFixtureHash as h } from "./delta-release.fixture";
@@ -59,7 +59,7 @@ describe("owned native recovery guards, metadata only and no operations", () => 
   });
   it("keeps the recorded native proof bound to its exact code and nested private manifest digests", async () => {
     const root = fileURLToPath(new URL("../../", import.meta.url));
-    const proof = JSON.parse(await readFile(resolve(root, "docs/verification/phase3-paired-recovery/native-20261114-restored.json"), "utf8"));
+    const proof = JSON.parse(await readFile(resolve(root, "docs/verification/phase3-paired-recovery/native-20261114-fault-confirmed.json"), "utf8"));
     const { contentDigest, ...body } = proof; expect(digestDeltaProofPayload(body)).toBe(contentDigest);
     expect(proof).toMatchObject({ status: "NATIVE_FIXTURE_PASSED_RELEASE_HOLD", validReleaseEvidence: false, productionEquivalent: false, sourceCommitSynthetic: true,
       sourceLedgerSynthetic: true, providerAuthTested: false, databaseRoleFixtureSuperuser: true, inputHashesUnchanged: true, physicalEnumOidsDiffer: true, ownedSourceAndTargetsCleanup: "confirmed" });
@@ -81,7 +81,18 @@ describe("owned native recovery guards, metadata only and no operations", () => 
     expect(observation.sourceBefore.fingerprint.snapshotBindingHash).toBe(observation.sourceSnapshotBindingHash);
     expect(observation.sourceBefore.fingerprint.targetBindingHash).not.toBe(observation.restoredBefore.fingerprint.targetBindingHash);
     expect(observation.sourceBefore.fingerprint.snapshotBindingHash).not.toBe(observation.restoredBefore.fingerprint.snapshotBindingHash);
-    expect(proof.cases).toHaveLength(7); expect(proof.cases.filter((item: { result: string }) => item.result === "REJECTED_HOLD")).toHaveLength(6);
+    expect(proof.cases).toHaveLength(9); expect(proof.cases.filter((item: { result: string }) => item.result === "REJECTED_HOLD")).toHaveLength(8);
+    expect(proof.cases).toContainEqual({ case: "archive-tamper", result: "REJECTED_HOLD", stage: "private-read",
+      faultEvidence: { archiveCopyTamperedAfterRead: true, roleInputDelivered: true, restoreAttempted: false } });
+    expect(proof.cases).toContainEqual({ case: "restore-error", result: "REJECTED_HOLD", stage: "restore",
+      faultEvidence: { templateFaultAcknowledged: true, restoreCommandSpawned: true, expectedTemplateDropErrorObserved: true } });
+  });
+  it("recognizes only the exact expected template-drop error across private stderr chunks", () => {
+    const expected = "cannot drop a template database";
+    for (let split = 0; split <= expected.length; split++) {
+      const probe = createOwnedTemplateDropProbe(); probe.observe(Buffer.from("private prefix " + expected.slice(0, split))); probe.observe(Buffer.from(expected.slice(split) + " private suffix")); expect(probe.seen()).toBe(true);
+    }
+    const absent = createOwnedTemplateDropProbe(); absent.observe(Buffer.from("Docker spawn/role bootstrap/timeout/private-path failure")); expect(absent.seen()).toBe(false);
   });
   it("exposes only safe known failure codes and cleanup facts", () => {
     expect(pairedRecoverySafeFailure(new Error("private row / SQL / credential / host path"))).toEqual({ phase: "unverified-native-operation" });

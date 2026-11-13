@@ -32,6 +32,16 @@ export function classifyOwnedRecoveryPsqlStderr(chunk: unknown) {
   if (/WARNING:/i.test(text)) return "server-warning";
   return "unclassified-stderr";
 }
+export function createOwnedTemplateDropProbe() {
+  const expected = Buffer.from("cannot drop a template database", "ascii"); let offset = 0, observed = false;
+  return { seen: () => observed, observe: (chunk: unknown) => {
+    if (!Buffer.isBuffer(chunk)) return;
+    for (const byte of chunk) {
+      offset = byte === expected[offset] ? offset + 1 : byte === expected[0] ? 1 : 0;
+      if (offset === expected.length) { observed = true; offset = 0; }
+    }
+  } };
+}
 export function pairedRecoverySafeFailure(error: unknown) {
   const operation = nativeOperation === "not-started" ? {} : { nativeOperation, ...(nativePsqlDiagnostic ? { nativePsqlDiagnostic } : {}) };
   if (error instanceof PairedRecoveryFailure) return { ...operation, phase: error.stage, outcome: error.outcome };
@@ -129,7 +139,7 @@ async function session(cluster: Cluster): Promise<FramedPsqlSession> {
   try { await opened.query("SET client_min_messages='warning';"); return opened; }
   catch (error) { await opened.close(); throw error; }
 }
-async function command(cluster: Cluster, commandName: "schema" | "archive" | "roles" | "inventory" | "restore", input: Buffer = Buffer.alloc(0), snapshot?: string): Promise<Buffer> {
+async function command(cluster: Cluster, commandName: "schema" | "archive" | "roles" | "inventory" | "restore", input: Buffer = Buffer.alloc(0), snapshot?: string, observer?: { invoked: () => void; stderr: (chunk: unknown) => void }): Promise<Buffer> {
   await inspect(cluster.server); await inspect(cluster.tool);
   if (["schema", "archive"].includes(commandName) && !/^[a-fA-F0-9-]{1,100}$/.test(snapshot ?? "")) stop("exported-snapshot");
   const connection = ["-w", "-h", "127.0.0.1", "-U", "postgres", "-d", "postgres"];
@@ -139,7 +149,10 @@ async function command(cluster: Cluster, commandName: "schema" | "archive" | "ro
     : commandName === "inventory" ? ["pg_restore", "--list"]
     : ["pg_restore", "-w", "-h", "127.0.0.1", "-U", "postgres", "-d", "template1", "--exit-on-error", "--clean", "--if-exists", "--create"];
   const pgOptions = commandName === "restore" ? "-c client_min_messages=warning" : "-c default_transaction_read_only=on -c row_security=off -c client_min_messages=warning";
-  try { return await runDeltaPrivateBinary("docker", dockerArgs(["exec", "-i", "--user=100:101", "--env=PGPASSFILE=/tmp/paired-no-credential", "--env=PGSERVICEFILE=/tmp/paired-no-service", "--env", `PGOPTIONS=${pgOptions}`, cluster.tool.id!, ...args]), input, 64 * 1024 * 1024, childEnv); }
+  try { return await runDeltaPrivateBinary("docker", dockerArgs(["exec", "-i", "--user=100:101", "--env=PGPASSFILE=/tmp/paired-no-credential", "--env=PGSERVICEFILE=/tmp/paired-no-service", "--env", `PGOPTIONS=${pgOptions}`, cluster.tool.id!, ...args]), input, 64 * 1024 * 1024, childEnv,
+    observer ? { spawn: (file, argv, options) => {
+      const child = spawn(file, argv, options); child.once("spawn", observer.invoked); child.stderr?.on("data", observer.stderr); return child;
+    } } : undefined); }
   finally { input.fill(0); }
 }
 const sourceFixture = `CREATE SCHEMA extensions;CREATE SCHEMA vault;CREATE SCHEMA auth;CREATE SCHEMA storage;CREATE SCHEMA supabase_migrations;
@@ -159,7 +172,7 @@ CREATE TABLE supabase_migrations.schema_migrations(version varchar PRIMARY KEY,n
 INSERT INTO supabase_migrations.schema_migrations SELECT '202610010000'||lpad(i::text,2,'0'),'synthetic_executed_'||i,ARRAY['SELECT '||i||'::integer;'] FROM generate_series(0,16)i;
 REVOKE ALL ON public.paired_rows FROM PUBLIC;GRANT SELECT ON public.paired_rows TO service_role;
 `;
-export type PairedNativeDrift = "none" | "restored-row" | "restored-sequence" | "restored-role" | "restored-schema" | "source-sequence" | "source-role";
+export type PairedNativeDrift = "none" | "restored-row" | "restored-sequence" | "restored-role" | "restored-schema" | "source-sequence" | "source-role" | "archive-tamper" | "restore-error";
 const targetDrift: Partial<Record<PairedNativeDrift, string>> = {
   "restored-row": "UPDATE public.paired_rows SET raw_json='{\"a\":2,\"a\":1}' WHERE id=1;",
   "restored-sequence": "SELECT nextval('public.paired_sequence');", "restored-role": "ALTER ROLE service_role NOBYPASSRLS;",
@@ -206,21 +219,33 @@ export async function runOwnedPairedRecovery(rootInput: string) {
     nativeOperation = "source-preflight"; const preflight = await openSource(context, "none");
     const before = await preflight.inspect(); await preflight.close();
     Object.assign(context, { beforeRoot: before.fingerprint.rootSha256, extensionProfileHash: before.fingerprint.environment.extensionProfileHash });
-    const cases: { case: string; result: string; stage?: string }[] = [];
+    const cases: { case: string; result: string; stage?: string; faultEvidence?: Record<string, boolean> }[] = [];
     let successful: Awaited<ReturnType<typeof capturePairedRecovery>> | undefined;
-    for (const drift of ["none", "restored-row", "restored-sequence", "restored-role", "restored-schema", "source-sequence", "source-role"] as const) {
+    for (const drift of ["none", "restored-row", "restored-sequence", "restored-role", "restored-schema", "archive-tamper", "restore-error", "source-sequence", "source-role"] as const) {
       // Each case is an independent bounded fixture attempt with its own actual exported snapshot.
       Object.assign(context, { expiresAt: new Date(Date.now() + 900_000).toISOString() });
       nativeOperation = `case-${drift}`; const privateStore = await createPrivateRecoveryAttempt({ repoRoot: root });
       let archiveCluster = sourceCluster;
+      let tamperApplied = false, roleInputDelivered = false, restoreFaultInstalled = false, restoreCommandInvoked = false;
+      const templateDrop = createOwnedTemplateDropProbe();
       try {
-        const observation = await capturePairedRecovery(context, { now: () => new Date(), store: privateStore,
+        const store = drift === "archive-tamper" ? { write: privateStore.write, seal: privateStore.seal,
+          read: async (name: "database.dump" | "roles.sql" | "toc.list") => { const bytes = await privateStore.read(name);
+            if (name === "database.dump") { bytes[bytes.length - 1] = bytes[bytes.length - 1]! ^ 1; tamperApplied = true; }
+            if (name === "roles.sql") roleInputDelivered = true; return bytes; } } : privateStore;
+        const observation = await capturePairedRecovery(context, { now: () => new Date(), store,
           openSource: () => openSource(context, drift), inventoryArchive: input => command(archiveCluster, "inventory", input),
           createOwnedTarget: async (): Promise<PairedRecoveryOwnedTarget> => {
             const target = await createCluster(); archiveCluster = target;
             return { restore: async (archive, roles) => {
-              const roleSession = await session(target); try { await roleSession.query(restoreRoleDefinitions(roles)); } finally { await roleSession.close(); }
-              const restoreOutput = await command(target, "restore", archive); restoreOutput.fill(0);
+              const roleSession = await session(target); try {
+                await roleSession.query(restoreRoleDefinitions(roles));
+                // Closed owned-fixture fault: pg_restore must fail to DROP this template database.
+                if (drift === "restore-error") { await roleSession.query('ALTER DATABASE "postgres" IS_TEMPLATE true;'); restoreFaultInstalled = true; }
+              } finally { await roleSession.close(); }
+              const restoreOutput = await command(target, "restore", archive, undefined, drift === "restore-error" ? {
+                invoked: () => { restoreCommandInvoked = true; }, stderr: templateDrop.observe,
+              } : undefined); restoreOutput.fill(0);
               if (targetDrift[drift]) { const mutate = await session(target); try { await mutate.query(targetDrift[drift]!); } finally { await mutate.close(); } }
             }, inspect: async () => {
               const targetSession = await session(target);
@@ -236,11 +261,16 @@ export async function runOwnedPairedRecovery(rootInput: string) {
       } catch (error) {
         if (drift === "none" || !(error instanceof PairedRecoveryFailure)) throw error;
         if (error.outcome.containmentRequired) stop("native-cleanup-uncertainty");
-        if (error.stage !== (drift === "source-sequence" || drift === "source-role" ? "source-after" : "restored-inspection")) stop("unexpected-native-rejection-stage");
-        cases.push({ case: drift, result: "REJECTED_HOLD", stage: error.stage });
+        const expectedStage = drift === "source-sequence" || drift === "source-role" ? "source-after" : drift === "archive-tamper" ? "private-read" : drift === "restore-error" ? "restore" : "restored-inspection";
+        if (error.stage !== expectedStage || error.outcome.targetRestoreAttempted !== (drift !== "archive-tamper" && drift !== "source-sequence" && drift !== "source-role")) stop("unexpected-native-rejection-stage");
+        if (drift === "archive-tamper" && (!tamperApplied || !roleInputDelivered)) stop("archive-fault-not-exercised");
+        if (drift === "restore-error" && (!restoreFaultInstalled || !restoreCommandInvoked || !templateDrop.seen())) stop("restore-command-fault-not-exercised");
+        cases.push({ case: drift, result: "REJECTED_HOLD", stage: error.stage,
+          ...(drift === "archive-tamper" ? { faultEvidence: { archiveCopyTamperedAfterRead: true, roleInputDelivered: true, restoreAttempted: false } } : {}),
+          ...(drift === "restore-error" ? { faultEvidence: { templateFaultAcknowledged: true, restoreCommandSpawned: true, expectedTemplateDropErrorObserved: true } } : {}) });
       }
     }
-    if (!successful || cases.length !== 7 || !physicalEnumOidsDiffer) stop("native-case-coverage");
+    if (!successful || cases.length !== 9 || !physicalEnumOidsDiffer) stop("native-case-coverage");
     await removeCluster(sourceCluster); cleaned = true;
     const afterHashes = Object.fromEntries(await Promise.all(paths.map(async path => [path, hash((await readFile(join(root, path), "utf8")).replace(/\r\n?/g, "\n"))] as const)));
     if (canonicalDeltaJson(afterHashes) !== canonicalDeltaJson(hashes)) stop("input-source-drift");

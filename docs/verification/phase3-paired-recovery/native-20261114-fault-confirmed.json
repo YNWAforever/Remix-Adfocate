@@ -1,0 +1,326 @@
+{
+  "schemaVersion": 1,
+  "kind": "owned-native-paired-recovery-rehearsal",
+  "status": "NATIVE_FIXTURE_PASSED_RELEASE_HOLD",
+  "validReleaseEvidence": false,
+  "productionEquivalent": false,
+  "sourceLedgerSynthetic": true,
+  "sourceCommitSynthetic": true,
+  "providerAuthTested": false,
+  "databaseRoleFixtureSuperuser": true,
+  "startedAt": "2026-11-13T23:11:08.413Z",
+  "finishedAt": "2026-11-13T23:16:28.186Z",
+  "serverVersionNum": "170006",
+  "dumpVersion": "17.11",
+  "serverImage": "public.ecr.aws/supabase/postgres@sha256:b7c9e3315b351a747af1763d3e78e990b2ae97fbdcf5d538d08a3dd6723a88a4",
+  "toolImage": "public.ecr.aws/supabase/postgres@sha256:06ddc7962e11ab0f4f0334fd05671e97c30ea202f6e6a7113800bd3d6e416108",
+  "sourceRowValuesPublic": false,
+  "archiveContentsPublic": false,
+  "ownedSourceAndTargetsCleanup": "confirmed",
+  "codeInputs": {
+    "scripts/release/delta-recovery.ts": "bafc3d300922ed2516459f0b093916a28304efb8d96804fb45bed1dc3380b65b",
+    "scripts/release/delta-recovery-inspector.ts": "325add36f6802d5897bd8b0f274591b9225625a8e82969692c8ee2afb26b1811",
+    "scripts/release/delta-recovery-native.ts": "8b6698d56c1b971edb9c78f29ff78abc908c26c1d2fe9d88bc14974dde8d5893",
+    "scripts/release/delta-recovery-data.ts": "2cf6300734189d4e43d59596d7b1faa349e4346144473c1b2401047d19983b25",
+    "scripts/release/delta-recovery-data.sql": "3b210c44d0d91f7ab67e04325fbb1fb019a47cc0d2b6cec155d2b83e941e15d4",
+    "scripts/release/delta-private-binary.ts": "7cf32744c539da44fc5dc8e927e2bd4ed926a5506a3575d8c99c7d272c05002d",
+    "scripts/release/delta-private-artifacts.ts": "a2b7d6982b05c286cd72430cd14e8252a1e11e73668265910b7ac9641e8d6ac2",
+    "scripts/release/delta-private-artifacts.ps1": "dc5818f8842d32dafedbd5f5a82abeadd2f943174469e486eb659eb254efae6e",
+    "scripts/release/delta-semantic-capture.sql": "f0f6578e09e8f88418f06b687e41c47ce3c471c0f1711ff94215a66763a5a435",
+    "scripts/release/delta-fingerprint.ts": "073ae7584ea37d6e8c0bf8a915f3b78fa58184d322d0714e18c333b32ce6a0c2"
+  },
+  "inputHashesUnchanged": true,
+  "physicalEnumOidsDiffer": true,
+  "cases": [
+    {
+      "case": "none",
+      "result": "ACTUAL_PRIVATE_ARCHIVE_RESTORED_EQUAL"
+    },
+    {
+      "case": "restored-row",
+      "result": "REJECTED_HOLD",
+      "stage": "restored-inspection"
+    },
+    {
+      "case": "restored-sequence",
+      "result": "REJECTED_HOLD",
+      "stage": "restored-inspection"
+    },
+    {
+      "case": "restored-role",
+      "result": "REJECTED_HOLD",
+      "stage": "restored-inspection"
+    },
+    {
+      "case": "restored-schema",
+      "result": "REJECTED_HOLD",
+      "stage": "restored-inspection"
+    },
+    {
+      "case": "archive-tamper",
+      "result": "REJECTED_HOLD",
+      "stage": "private-read",
+      "faultEvidence": {
+        "archiveCopyTamperedAfterRead": true,
+        "roleInputDelivered": true,
+        "restoreAttempted": false
+      }
+    },
+    {
+      "case": "restore-error",
+      "result": "REJECTED_HOLD",
+      "stage": "restore",
+      "faultEvidence": {
+        "templateFaultAcknowledged": true,
+        "restoreCommandSpawned": true,
+        "expectedTemplateDropErrorObserved": true
+      }
+    },
+    {
+      "case": "source-sequence",
+      "result": "REJECTED_HOLD",
+      "stage": "source-after"
+    },
+    {
+      "case": "source-role",
+      "result": "REJECTED_HOLD",
+      "stage": "source-after"
+    }
+  ],
+  "pairedObservation": {
+    "schemaVersion": 1,
+    "kind": "paired-snapshot-recovery-observation",
+    "status": "HOLD",
+    "validReleaseEvidence": false,
+    "projectRef": "mhkoayftiuojxlrkollf",
+    "sourceCommit": "ac1b5b88962646f1ddb2a2f171e687849897a262",
+    "scopeDigest": "73ed3da37855006ab661b894f77dc1608696eab6c2abdcafc89e6134e25a36d2",
+    "targetBindingHash": "3d2f831cec6cc8c4a04e0adf451d114e3356dce9ce791c1793857b1989d1c268",
+    "sourceSnapshotBindingHash": "07c5271b4f4cdc6fbcf8c5a2a8809efff8346126c99ab6fc4291d8eb7bf91d8a",
+    "sourceBefore": {
+      "data": {
+        "algorithm": "pg17-portable-data-v1",
+        "collectorSha256": "3b210c44d0d91f7ab67e04325fbb1fb019a47cc0d2b6cec155d2b83e941e15d4",
+        "normalizerSha256": "2cf6300734189d4e43d59596d7b1faa349e4346144473c1b2401047d19983b25",
+        "rootSha256": "4d787bf2e152397f9e06d8454652f02a9932f16a3d0d9c2761909bb1830e83d4",
+        "rowCount": 25,
+        "sequenceCount": 1,
+        "tableCount": 7
+      },
+      "fingerprint": {
+        "algorithm": "pg17-canonical-export-v1",
+        "canonicalizerSha256": "073ae7584ea37d6e8c0bf8a915f3b78fa58184d322d0714e18c333b32ce6a0c2",
+        "collectorSha256": "f0f6578e09e8f88418f06b687e41c47ce3c471c0f1711ff94215a66763a5a435",
+        "components": [
+          {
+            "category": "database-role-settings",
+            "coverage": "complete",
+            "objectCount": 1,
+            "sha256": "f2849d0a72ecd538b8aac3c7a8104f20b95194b43e6ba7373f02659c63a0664b"
+          },
+          {
+            "category": "extension-configuration",
+            "coverage": "complete",
+            "objectCount": 1,
+            "sha256": "75226d1521bea3bb33cf861e283860bc14128e0f4a8d710b79ab5f4c1d238f4c"
+          },
+          {
+            "category": "extension-members",
+            "coverage": "complete",
+            "objectCount": 1725,
+            "sha256": "e09854d17099c945cd6ae50cfaa154ab7db2e07e6befd6892dbad42c389f9747"
+          },
+          {
+            "category": "migration-history",
+            "coverage": "complete",
+            "objectCount": 17,
+            "sha256": "29bd96588512c5a71944beebe14b739469933e89f4556d820fd28166884b684d"
+          },
+          {
+            "category": "roles-and-memberships",
+            "coverage": "complete",
+            "objectCount": 27,
+            "sha256": "2c70650bd697a2b8539e211ded9dd67c54fb9822bdd04ae57b55aee7cf286bbe"
+          },
+          {
+            "category": "schema-export",
+            "coverage": "complete",
+            "objectCount": 73,
+            "sha256": "cc8c8e73628be18d3a0766565b79875d4e759c5220afe363ba92c81721d25a40"
+          },
+          {
+            "category": "storage-configuration",
+            "coverage": "complete",
+            "objectCount": 1,
+            "sha256": "ff8fc9c1b7ba505d00dee6bbb87e90bd0fd99c3476b08fc64d61bd85cfcb9fd1"
+          }
+        ],
+        "environment": {
+          "databaseName": "postgres",
+          "dumpVersion": "17.11",
+          "extensionProfileHash": "551dd3071d315926dc6af77a3c207434f2314f0c89a0c772474a87e3a1790705",
+          "serverVersionNum": "170006"
+        },
+        "expiresAt": "2026-11-13T23:26:19.706Z",
+        "observedAt": "2026-11-13T23:11:21.997Z",
+        "rootSha256": "0d6261e6f3605fa541d7df4e742836335cb18d20eb4529305342026ebf87accb",
+        "schemaVersion": 1,
+        "scopeDigest": "73ed3da37855006ab661b894f77dc1608696eab6c2abdcafc89e6134e25a36d2",
+        "snapshotBindingHash": "07c5271b4f4cdc6fbcf8c5a2a8809efff8346126c99ab6fc4291d8eb7bf91d8a",
+        "targetBindingHash": "3d2f831cec6cc8c4a04e0adf451d114e3356dce9ce791c1793857b1989d1c268"
+      },
+      "globalStateHash": "5bfe72351c982c3a40c3a95a48feab6978541c3bd076bb139f757db01b545f3c"
+    },
+    "restoredBefore": {
+      "data": {
+        "algorithm": "pg17-portable-data-v1",
+        "collectorSha256": "3b210c44d0d91f7ab67e04325fbb1fb019a47cc0d2b6cec155d2b83e941e15d4",
+        "normalizerSha256": "2cf6300734189d4e43d59596d7b1faa349e4346144473c1b2401047d19983b25",
+        "rootSha256": "4d787bf2e152397f9e06d8454652f02a9932f16a3d0d9c2761909bb1830e83d4",
+        "rowCount": 25,
+        "sequenceCount": 1,
+        "tableCount": 7
+      },
+      "fingerprint": {
+        "algorithm": "pg17-canonical-export-v1",
+        "canonicalizerSha256": "073ae7584ea37d6e8c0bf8a915f3b78fa58184d322d0714e18c333b32ce6a0c2",
+        "collectorSha256": "f0f6578e09e8f88418f06b687e41c47ce3c471c0f1711ff94215a66763a5a435",
+        "components": [
+          {
+            "category": "database-role-settings",
+            "coverage": "complete",
+            "objectCount": 1,
+            "sha256": "f2849d0a72ecd538b8aac3c7a8104f20b95194b43e6ba7373f02659c63a0664b"
+          },
+          {
+            "category": "extension-configuration",
+            "coverage": "complete",
+            "objectCount": 1,
+            "sha256": "75226d1521bea3bb33cf861e283860bc14128e0f4a8d710b79ab5f4c1d238f4c"
+          },
+          {
+            "category": "extension-members",
+            "coverage": "complete",
+            "objectCount": 1725,
+            "sha256": "e09854d17099c945cd6ae50cfaa154ab7db2e07e6befd6892dbad42c389f9747"
+          },
+          {
+            "category": "migration-history",
+            "coverage": "complete",
+            "objectCount": 17,
+            "sha256": "29bd96588512c5a71944beebe14b739469933e89f4556d820fd28166884b684d"
+          },
+          {
+            "category": "roles-and-memberships",
+            "coverage": "complete",
+            "objectCount": 27,
+            "sha256": "2c70650bd697a2b8539e211ded9dd67c54fb9822bdd04ae57b55aee7cf286bbe"
+          },
+          {
+            "category": "schema-export",
+            "coverage": "complete",
+            "objectCount": 73,
+            "sha256": "cc8c8e73628be18d3a0766565b79875d4e759c5220afe363ba92c81721d25a40"
+          },
+          {
+            "category": "storage-configuration",
+            "coverage": "complete",
+            "objectCount": 1,
+            "sha256": "ff8fc9c1b7ba505d00dee6bbb87e90bd0fd99c3476b08fc64d61bd85cfcb9fd1"
+          }
+        ],
+        "environment": {
+          "databaseName": "postgres",
+          "dumpVersion": "17.11",
+          "extensionProfileHash": "551dd3071d315926dc6af77a3c207434f2314f0c89a0c772474a87e3a1790705",
+          "serverVersionNum": "170006"
+        },
+        "expiresAt": "2026-11-13T23:26:19.706Z",
+        "observedAt": "2026-11-13T23:11:50.707Z",
+        "rootSha256": "0d6261e6f3605fa541d7df4e742836335cb18d20eb4529305342026ebf87accb",
+        "schemaVersion": 1,
+        "scopeDigest": "73ed3da37855006ab661b894f77dc1608696eab6c2abdcafc89e6134e25a36d2",
+        "snapshotBindingHash": "960f48bee32b9ef807abce7ec2c7d63fd5b980694553a6e430a8afe4bd5d5e11",
+        "targetBindingHash": "6d50474f177343b66f2906cdefb04547c74bfa6c41ce8add51068af555970cc1"
+      },
+      "globalStateHash": "5bfe72351c982c3a40c3a95a48feab6978541c3bd076bb139f757db01b545f3c"
+    },
+    "artifacts": [
+      {
+        "name": "database.dump",
+        "bytes": 13294,
+        "sha256": "7d732b1dfae0597f10a3860a9ba3c8cd30e3324828109f5c44beb5644898da9b"
+      },
+      {
+        "name": "roles.sql",
+        "bytes": 926,
+        "sha256": "a3ad99aa4bebb7026aa064edc70ddac52f88444af70a02069360767bb00a86ad"
+      },
+      {
+        "name": "toc.list",
+        "bytes": 2391,
+        "sha256": "9a1626e1956f500342bc93f17f388c1f986c5f57093027d66f22d6acda7d440e"
+      }
+    ],
+    "captureStartedAt": "2026-11-13T23:11:21.750Z",
+    "captureFinishedAt": "2026-11-13T23:11:44.378Z",
+    "restoreStartedAt": "2026-11-13T23:11:44.378Z",
+    "restoreFinishedAt": "2026-11-13T23:11:59.751Z",
+    "measuredRestoreMilliseconds": 15373,
+    "expiresAt": "2026-11-13T23:26:19.706Z",
+    "snapshotConsistency": "exported-database-snapshot-with-global-state-recheck",
+    "globalStateBeforeHash": "5bfe72351c982c3a40c3a95a48feab6978541c3bd076bb139f757db01b545f3c",
+    "globalStateAfterHash": "5bfe72351c982c3a40c3a95a48feab6978541c3bd076bb139f757db01b545f3c",
+    "toolProfileHash": "a3bfe3f3255c5837c5be0afa11b6c0b02db16d83cc534a41004d46075f56cd88",
+    "changeControlReferenceHash": "5d3cea8a807275aaf9812d2434128beb72d51b3dc88f6254cac7c97148bcdef1",
+    "sourceCleanupConfirmed": true,
+    "ownedContainerCleanup": "confirmed",
+    "coverage": [
+      {
+        "category": "database-schema",
+        "result": "verified"
+      },
+      {
+        "category": "database-rows",
+        "result": "verified"
+      },
+      {
+        "category": "role-definitions-without-passwords",
+        "result": "verified"
+      },
+      {
+        "category": "storage-configuration",
+        "result": "verified"
+      },
+      {
+        "category": "storage-object-bytes",
+        "result": "not-covered"
+      },
+      {
+        "category": "role-passwords",
+        "result": "not-covered"
+      },
+      {
+        "category": "platform-encryption-keys",
+        "result": "not-covered"
+      },
+      {
+        "category": "wal-pitr",
+        "result": "not-covered"
+      },
+      {
+        "category": "extension-binaries",
+        "result": "not-covered"
+      }
+    ],
+    "reference": "private-recovery:6fcfa1e4-de71-4c85-ad45-56d2858c20f8",
+    "manifestSha256": "fc7242502c363e3f16fd51332e55d16c5d590c3211c5cc01b01c58fafe0d9871",
+    "contentDigest": "a6e4cc8b6314cbfe18a2c25be9b8538719222292b25c7aadf4d3c674e774088b"
+  },
+  "storageObjectBytesCovered": false,
+  "rolePasswordsCovered": false,
+  "platformEncryptionKeysCovered": false,
+  "walPitrCovered": false,
+  "extensionBinariesRecoveredFromArchive": false,
+  "contentDigest": "8da85170bf9500b326f5794e0afef6acc7a6ae4f80873869e7e24fa557994d76"
+}
