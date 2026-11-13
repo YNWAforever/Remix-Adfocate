@@ -10,6 +10,9 @@ import { DELTA_RELEASE_PROJECT, DELTA_SOURCE_SHA256, type DeltaExpectedContext }
 import { bindDeltaExecutionContext, type CompiledDeltaProgram } from "./delta-program";
 import type { DeltaObservedState, DeltaTransaction } from "./delta-executor";
 import { openFramedPsqlSession, parseSinglePsqlJson } from "./delta-psql-session";
+import { runDeltaPrivateBinary } from "./delta-private-binary";
+import { openPairedReadOnlySnapshot } from "./delta-recovery-inspector";
+import { bindPairedRecoveryContext, type PairedRecoveryContext } from "./delta-recovery";
 
 export const DELTA_CLIENT_IMAGE = "public.ecr.aws/supabase/postgres@sha256:06ddc7962e11ab0f4f0334fd05671e97c30ea202f6e6a7113800bd3d6e416108";
 export const DELTA_CA_SHA256 = "700723581420dd1ac98fd7e9ac529f0ef210eadcaf87fc868a3ad7d114c2f3b7";
@@ -64,6 +67,7 @@ export interface ManagedDeltaDatabaseDeps {
   readonly run: CommandRunner;
   readonly open: typeof openFramedPsqlSession;
   readonly privateInput?: (file: string, args: string[], input: Buffer, limit: number) => Promise<string>;
+  readonly privateBinary?: (file: string, args: string[], input: Buffer, limit: number) => Promise<Buffer>;
 }
 type Session = Awaited<ReturnType<typeof openFramedPsqlSession>>;
 
@@ -128,13 +132,15 @@ export async function createManagedDeltaDatabase(options: ManagedDeltaDatabaseOp
     await docker(["rm", "--force", id]);
     active.delete(id);
   }
-  async function create(tool: "psql" | "pg_dump", snapshot?: string) {
+  async function create(tool: "psql" | "pg_dump" | "pg_dump_archive" | "pg_dumpall_roles", snapshot?: string) {
     if (!credentialValue) refused("credential lifetime ended");
     await docker(["image", "inspect", DELTA_CLIENT_IMAGE]); // No pull/fallback.
     const nonce = randomUUID(), name = `adfocate-delta-client-${nonce}`;
     const command = tool === "psql" ? "exec psql -X -w -q -t -A -v ON_ERROR_STOP=1"
+      : tool === "pg_dumpall_roles" ? `exec pg_dumpall ${"--no-" + ["pass", "word"].join("")} --roles-only --no-role-passwords --quote-all-identifiers`
+      : tool === "pg_dump_archive" ? `exec pg_dump ${"--no-" + ["pass", "word"].join("")} --format=custom --compress=0 --create --quote-all-identifiers --lock-wait-timeout=5s --snapshot=${snapshot}`
       : `exec pg_dump ${"--no-" + ["pass", "word"].join("")} --schema-only --create --quote-all-identifiers --lock-wait-timeout=5s --restrict-key=${DELTA_DUMP_RESTRICT_KEY} --snapshot=${snapshot}`;
-    if (tool === "pg_dump" && !/^[a-fA-F0-9-]{1,100}$/.test(snapshot ?? "")) refused("exported snapshot identifier");
+    if ((tool === "pg_dump" || tool === "pg_dump_archive") && !/^[a-fA-F0-9-]{1,100}$/.test(snapshot ?? "")) refused("exported snapshot identifier");
     const shell = `set -eu\nIFS= read -r PGPASSWORD\ntest -n "$PGPASSWORD"\nexport PGPASSWORD\n${command}`;
     const args = ["create", "--pull=never", "--name", name, "--label", `${LABEL}=${nonce}`, "--network=bridge", "--log-driver=none", "--read-only",
       "--cap-drop=ALL", "--security-opt=no-new-privileges", "--user=postgres", "--pids-limit=64", "--memory=1g", "--cpus=1", "--interactive",
@@ -170,6 +176,18 @@ export async function createManagedDeltaDatabase(options: ManagedDeltaDatabaseOp
     const runPrivate = deps.privateInput ?? ((file, args, bytes, limit) => runDeltaPrivateInput(file, args, bytes, limit, childEnv));
     try { return await runPrivate("docker", dockerArgs(["start", "--attach", "--interactive", id]), input, 32 * 1024 * 1024); }
     finally { input.fill(0); await remove(id); }
+  }
+  async function recoveryBinary(tool: "pg_dump_archive" | "pg_dumpall_roles", snapshot?: string) {
+    const id = await create(tool, snapshot), input = secretLine(); let output: Buffer | undefined;
+    try {
+      const runPrivate = deps.privateBinary ?? ((file, args, bytes, limit) => runDeltaPrivateBinary(file, args, bytes, limit, childEnv));
+      output = await runPrivate("docker", dockerArgs(["start", "--attach", "--interactive", id]), input, 64 * 1024 * 1024);
+      if (!Buffer.isBuffer(output)) refused("private binary archive transport"); return output;
+    } catch { output?.fill(0); return refused("private binary recovery export"); }
+    finally {
+      input.fill(0);
+      try { await remove(id); } catch { output?.fill(0); refused("recovery export cleanup"); }
+    }
   }
   async function capture(session: Session, readOnly: boolean): Promise<DeltaObservedState> {
     const snapshotRow = row(parseSinglePsqlJson(await session.query(SNAPSHOT_SQL)));
@@ -213,6 +231,24 @@ export async function createManagedDeltaDatabase(options: ManagedDeltaDatabaseOp
   }
   return {
     route,
+    openRecoverySource: async (input: PairedRecoveryContext) => {
+      const recovery = bindPairedRecoveryContext(input, now());
+      if (recovery.toolProfileHash !== context.recoveryToolProfileHash) refused("independent recovery tool profile binding");
+      for (const key of ["projectRef", "sourceCommit", "scopeDigest", "targetBindingHash", "beforeRoot", "collectorSha256", "canonicalizerSha256", "extensionProfileHash"] as const)
+        if (recovery[key] !== context[key]) refused("independent recovery context binding");
+      const dataSql = lf(await readFile(resolve(root, "scripts/release/delta-recovery-data.sql"), "utf8"));
+      const normalizer = lf(await readFile(resolve(root, "scripts/release/delta-recovery-data.ts"), "utf8"));
+      if (sha(dataSql) !== recovery.dataCollectorSha256 || sha(normalizer) !== recovery.dataNormalizerSha256) refused("recovery data implementation binding");
+      const client = await open();
+      return openPairedReadOnlySnapshot({ session: client.session, closeSession: () => closeClient(client), context: recovery,
+        semanticSql: collector, dataSql, targetBindingHash, tools: { schema: dump,
+          archive: snapshot => recoveryBinary("pg_dump_archive", snapshot), roles: () => recoveryBinary("pg_dumpall_roles"),
+          freshGlobalCollection: async () => {
+            const fresh = await open();
+            try { await fresh.session.query(READ_ONLY_BEGIN); return parseSinglePsqlJson(await fresh.session.query(collector)); }
+            finally { try { await fresh.session.query("ROLLBACK;"); } finally { await closeClient(fresh); } }
+          } } });
+    },
     inspect: async () => {
       const client = await open();
       try { await client.session.query(READ_ONLY_BEGIN); const result = await capture(client.session, true); await client.session.query("ROLLBACK;"); return result; }

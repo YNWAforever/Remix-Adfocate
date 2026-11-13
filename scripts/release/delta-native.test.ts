@@ -12,6 +12,7 @@ import { DELTA_EXPORT_COMPONENTS, type DeltaExpectedContext } from "./delta-rele
 import { bindDeltaExecutionContext, type CompiledDeltaProgram } from "./delta-program";
 import { makeDeltaReleaseFixture, DELTA_FIXTURE_NOW as NOW, deltaFixtureHash as h } from "./delta-release.fixture";
 import type { FramedPsqlSession } from "./delta-psql-session";
+import type { PairedRecoveryContext } from "./delta-recovery";
 
 const processBoundary = vi.hoisted(() => ({ spawn: vi.fn() }));
 vi.mock("node:child_process", () => ({ spawn: processBoundary.spawn }));
@@ -118,7 +119,47 @@ async function fixture() {
     mutateInspect: (fn: (value: Row) => void) => { inspectMutation = fn; }, failQuery: (sql: string) => { queryFailure = sql; }, failOpen: () => { openFailure = true; },
     outputId: (value: string) => { createdOutput = value; }, globalDrift: () => { semanticDrift = true; } };
 }
+async function recoveryContext(f: Awaited<ReturnType<typeof fixture>>): Promise<PairedRecoveryContext> {
+  return { schemaVersion: 1, projectRef: MH, sourceCommit: f.context.sourceCommit, scopeDigest: f.context.scopeDigest, targetBindingHash: f.context.targetBindingHash,
+    beforeRoot: f.context.beforeRoot, collectorSha256: f.context.collectorSha256, canonicalizerSha256: f.context.canonicalizerSha256,
+    dataCollectorSha256: sha(lf(await readFile(resolve(ROOT, "scripts/release/delta-recovery-data.sql"), "utf8"))),
+    dataNormalizerSha256: sha(lf(await readFile(resolve(ROOT, "scripts/release/delta-recovery-data.ts"), "utf8"))),
+    extensionProfileHash: f.context.extensionProfileHash, toolProfileHash: f.context.recoveryToolProfileHash, changeControlReferenceHash: h("synthetic-recovery-freeze"),
+    expiresAt: new Date(NOW.getTime() + 60000).toISOString(), maximumCaptureMs: 30000, maximumRestoreMs: 30000, maximumArchiveBytes: 1024 * 1024 };
+}
 afterEach(() => { processBoundary.spawn.mockReset(); vi.useRealTimers(); });
+
+describe("paired RO recovery on the fixed managed adapter, all process/DB operations mocked", () => {
+  it.each(["sourceCommit", "scopeDigest", "targetBindingHash", "beforeRoot", "collectorSha256", "canonicalizerSha256", "extensionProfileHash", "toolProfileHash", "dataCollectorSha256", "dataNormalizerSha256"] as const)("refuses independent recovery %s drift before creating a client", async key => {
+    const f = await fixture(), context = await recoveryContext(f), db = await f.create();
+    Object.assign(context, { [key]: h("different-recovery-binding") });
+    await expect(db.openRecoverySource(context)).rejects.toThrow(); expect(f.run).not.toHaveBeenCalled(); await db.close();
+  });
+  it("refuses expired or arbitrary recovery overrides before a client is created", async () => {
+    const f = await fixture(), context = await recoveryContext(f), db = await f.create();
+    await expect(db.openRecoverySource({ ...context, expiresAt: new Date(NOW.getTime() - 1).toISOString() })).rejects.toThrow();
+    await expect(db.openRecoverySource({ ...context, sql: "unreviewed SQL" } as PairedRecoveryContext)).rejects.toThrow();
+    expect(f.run).not.toHaveBeenCalled(); await db.close();
+  });
+  it("sends binary custom archive and credential-free role commands on the same one RO exported snapshot", async () => {
+    const f = await fixture(), context = await recoveryContext(f);
+    const originalQuery = f.query.getMockImplementation()!;
+    f.query.mockImplementation(async sql => sql.includes("pg_catalog.pg_export_snapshot()") ? [JSON.stringify({ snapshot: "00000003-0000001B-1", backendPid: 123,
+      database: "postgres", role: "postgres", sessionRole: "postgres", version: "170006", isolation: "repeatable read", readOnly: "on", observedAt: NOW.toISOString() })] : originalQuery(sql));
+    const privateBinary = vi.fn<NonNullable<ManagedDeltaDatabaseDeps["privateBinary"]>>(async (_file, _args, input) => { input.fill(0); return Buffer.from("PGDMP synthetic private archive"); });
+    const db = await f.create({ privateBinary }), source = await db.openRecoverySource(context);
+    const archive = await source.dumpArchive(), roles = await source.dumpRolesWithoutCredentials();
+    const commands = f.run.mock.calls.filter(([, args]) => args[2] === "create").map(([, args]) => args.at(-1)!);
+    expect(commands.some(command => command.includes("pg_dump --no-" + ["pass", "word"].join("")) && command.includes("--format=custom") && command.includes("--snapshot=00000003-0000001B-1"))).toBe(true);
+    expect(commands.some(command => command.includes("pg_dumpall") && command.includes("--roles-only --no-role-passwords"))).toBe(true);
+    expect(commands.join("\n")).not.toContain(SECRET); expect(commands.join("\n")).not.toContain(URL_VALUE);
+    expect(f.query.mock.calls.filter(([sql]) => sql.includes("pg_catalog.pg_export_snapshot()"))).toHaveLength(1);
+    expect(f.query.mock.calls.some(([sql]) => sql.includes("BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY"))).toBe(true);
+    expect(privateBinary).toHaveBeenCalledTimes(2); expect(privateBinary.mock.calls.every(([, , bytes]) => bytes.every(byte => byte === 0))).toBe(true);
+    archive.fill(0); roles.fill(0); await source.close(); await db.close(); expect(f.initialReferences.every(bytes => bytes.every(byte => byte === 0))).toBe(true);
+    expect(f.query.mock.calls.map(([sql]) => sql).join("\n")).not.toMatch(/\b(?:COMMIT|INSERT|UPDATE|DELETE|ALTER|DROP)\b/);
+  });
+});
 
 describe("fixed managed project route", () => {
   it("accepts only pinned direct/session routes and upgrades input require to verify-full with the checked CA", () => {
