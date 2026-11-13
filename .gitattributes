@@ -1,0 +1,5 @@
+# Keep the reviewed Phase 3 report and its source/checksum bytes reproducible.
+/docs/operations/phase3-pilot-rollout.md text eol=lf
+/docs/operations/phase3-closeout.md text eol=lf
+/docs/verification/2026-11-13-phase3-readiness-hold.json text eol=lf
+/docs/verification/2026-11-13-phase3-readiness-hold.json.sha256 text eol=lf

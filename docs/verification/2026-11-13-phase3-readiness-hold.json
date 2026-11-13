@@ -1,0 +1,410 @@
+{
+  "reportType": "phase3-readiness-hold-report",
+  "reportVersion": 1,
+  "createdAt": "2026-11-13T05:31:36.845Z",
+  "targetProjectRef": "mhkoayftiuojxlrkollf",
+  "decision": "HOLD",
+  "validReleaseEvidence": false,
+  "releaseEvidenceDigest": null,
+  "approvalReceived": {
+    "projectRef": "mhkoayftiuojxlrkollf",
+    "digestStatus": "literal-placeholder",
+    "applicablePilotApproval": false
+  },
+  "productionMutationCalls": 0,
+  "observationMethod": {
+    "transaction": "REPEATABLE READ READ ONLY; ROLLBACK",
+    "certificateVerification": true,
+    "certificateFile": "scripts/integrations/certs/supabase-prod-ca-2021.crt",
+    "exportedData": "Structural counts, opaque mission/workspace IDs, migration versions, signatures, booleans, deployment metadata, status codes only"
+  },
+  "blockers": [
+    {
+      "code": "APPROVAL_HAS_NO_ACTUAL_DIGEST",
+      "detail": "The received approval contains a literal placeholder. No passing release evidence bundle exists to review or approve."
+    },
+    {
+      "code": "RELEASE_AND_PILOT_APPROVALS_ARE_DISTINCT",
+      "detail": "APPROVE gates a protected release. Pilot enablement requires separate exact workspace/mission-scoped ENABLE PILOT approval after inspection."
+    },
+    {
+      "code": "NO_ELIGIBLE_PILOT_CANDIDATE",
+      "detail": "All six existing missions are active legacy missions with submissions. None is an empty draft legacy candidate. No mission/cohort authoring or admission scope has been approved."
+    },
+    {
+      "code": "MIGRATION_HISTORY_DIVERGENCE",
+      "detail": "64 of 66 reviewed manifest versions have no recorded row; history has 17 rows. This does not prove missing schema. Do not replay migrations or mark them applied without reviewed reconciliation."
+    },
+    {
+      "code": "JOIN_XP_CONFLICT",
+      "detail": "Deployed function-body checks confirm active join invokes private.join_mission and that body adds 10 XP. Current observer contains on XP movement; zero completion-contract XP does not resolve join mutation."
+    },
+    {
+      "code": "REQUIRED_RELEASE_GATES_OUTSTANDING",
+      "detail": "Pinned Node 22 local gates, complete schema/capability preflight, empty/shaped disposable rehearsals, recovery reference, role assignments, containment plan, approved scope, and evidence expiry are not all established."
+    }
+  ],
+  "checks": [
+    {
+      "name": "release:manifest:check",
+      "status": "passed",
+      "manifestDigest": "c35a8a60bf3fbb7949de33f8b73f3726f1559256c7ce0f1d4bab61c332770ca5"
+    },
+    {
+      "name": "focused release policy contracts",
+      "status": "passed",
+      "files": 4,
+      "tests": 22,
+      "testFiles": [
+        "scripts/release/pilot.test.ts",
+        "scripts/release/evidence.test.ts",
+        "scripts/release/executor.test.ts",
+        "scripts/release/release-acceptance.test.ts"
+      ]
+    },
+    {
+      "name": "deployed main CI",
+      "status": "passed",
+      "commit": "159361980dd968580c7aa457328dd05f5b5c0e70",
+      "url": "https://github.com/YNWAforever/Remix-Adfocate/actions/runs/43306452594"
+    },
+    {
+      "name": "production schema fingerprint and full capability preflight",
+      "status": "not_completed"
+    },
+    {
+      "name": "empty and production-shaped disposable rehearsal",
+      "status": "not_completed"
+    },
+    {
+      "name": "pilot candidate inspection with all gates",
+      "status": "not_completed"
+    }
+  ],
+  "corrections": [
+    "Separate legacy M1 resubmission from active-workspace work-item/proof correction.",
+    "Prepare draft legacy candidate, inspect then atomically switch mode; publishing is separate.",
+    "Stop active completion at one pending reward; do not settle or issue funds/points.",
+    "Do not change live mission revision limits to test snapshotted workflow exhaustion.",
+    "Scope workflow SQL through mission_submission_id; no mission_id column exists on mission_workflows.",
+    "Quota is capacity, not approved-creator admission control."
+  ],
+  "evidenceSources": [
+    {
+      "path": "docs/operations/phase3-pilot-rollout.md",
+      "fileSha256": "2d5c9ed225375c58a2cd51110f32e6087fbe22e43d7b46a539ce4485a5b4fbfc"
+    },
+    {
+      "path": "docs/operations/phase3-closeout.md",
+      "fileSha256": "b605ded95a028a529e9767b29dd3a8cb4e6e68f35b81fae30300a18ef94f3daa"
+    }
+  ],
+  "observations": {
+    "reportType": "phase3-readiness-observations-not-release-evidence",
+    "observedAt": "2026-11-13T05:30:07.835Z",
+    "projectRef": "mhkoayftiuojxlrkollf",
+    "productionWrites": 0,
+    "localRuntime": "v26.13.0",
+    "manifestFileSha256": "eac6ff39a6e336ffb9aa6f5a63e880fea74e4d4dbd4a3fcfe14416d7bd31b9f5",
+    "reviewedManifestMigrations": 66,
+    "database": {
+      "status": "observed",
+      "transaction": {
+        "read_only": "on",
+        "observed_at": "2026-11-13T05:30:10.264Z"
+      },
+      "missions": [
+        {
+          "id": "0e9570a7-08d0-4903-ae0a-1fc308a97736",
+          "workspace_id": "00000000-0000-0000-0000-0000000000aa",
+          "slug": "ugc-cafe",
+          "status": "active",
+          "creator_workflow_mode": "legacy",
+          "revision_limit": 2,
+          "review_sla_hours": 48,
+          "deadline": null,
+          "quota": 30,
+          "points_reward": 150,
+          "cash_reward": null,
+          "submissions": 2,
+          "workflows": 0,
+          "templates": 0
+        },
+        {
+          "id": "6fe3f2a1-0130-44d3-842f-e5488ff14899",
+          "workspace_id": "00000000-0000-0000-0000-0000000000aa",
+          "slug": "koc-trial-mask",
+          "status": "active",
+          "creator_workflow_mode": "legacy",
+          "revision_limit": 2,
+          "review_sla_hours": 48,
+          "deadline": null,
+          "quota": 10,
+          "points_reward": 250,
+          "cash_reward": null,
+          "submissions": 2,
+          "workflows": 0,
+          "templates": 0
+        },
+        {
+          "id": "7decf6f1-9512-40fc-8e4c-3ccbf3cfcc48",
+          "workspace_id": "00000000-0000-0000-0000-0000000000aa",
+          "slug": "koc-trial-serum",
+          "status": "active",
+          "creator_workflow_mode": "legacy",
+          "revision_limit": 2,
+          "review_sla_hours": 48,
+          "deadline": null,
+          "quota": 20,
+          "points_reward": 300,
+          "cash_reward": null,
+          "submissions": 1,
+          "workflows": 0,
+          "templates": 0
+        },
+        {
+          "id": "ac4fe0cf-4ad7-4117-903a-d91851d3d35d",
+          "workspace_id": "00000000-0000-0000-0000-0000000000aa",
+          "slug": "ugc-pet",
+          "status": "active",
+          "creator_workflow_mode": "legacy",
+          "revision_limit": 2,
+          "review_sla_hours": 48,
+          "deadline": null,
+          "quota": 25,
+          "points_reward": 120,
+          "cash_reward": null,
+          "submissions": 2,
+          "workflows": 0,
+          "templates": 0
+        },
+        {
+          "id": "b7d3af2b-1f38-4d41-80a4-2ebf1a6772ef",
+          "workspace_id": "00000000-0000-0000-0000-0000000000aa",
+          "slug": "clip-skincare",
+          "status": "active",
+          "creator_workflow_mode": "legacy",
+          "revision_limit": 2,
+          "review_sla_hours": 48,
+          "deadline": null,
+          "quota": 15,
+          "points_reward": 200,
+          "cash_reward": null,
+          "submissions": 2,
+          "workflows": 0,
+          "templates": 0
+        },
+        {
+          "id": "e5013f3f-6f22-466c-add8-f61cd6fd2c70",
+          "workspace_id": "00000000-0000-0000-0000-0000000000aa",
+          "slug": "ugc-travel",
+          "status": "active",
+          "creator_workflow_mode": "legacy",
+          "revision_limit": 2,
+          "review_sla_hours": 48,
+          "deadline": null,
+          "quota": 20,
+          "points_reward": 180,
+          "cash_reward": null,
+          "submissions": 1,
+          "workflows": 0,
+          "templates": 0
+        }
+      ],
+      "structurallyEligibleDraftLegacyMissions": [],
+      "submissions": [
+        {
+          "status": "joined",
+          "count": 9
+        },
+        {
+          "status": "submitted",
+          "count": 1
+        }
+      ],
+      "workflowCount": 0,
+      "resubmissionEventCount": 0,
+      "workflowColumns": [
+        "id",
+        "workspace_id",
+        "mission_submission_id",
+        "state",
+        "accepted_at",
+        "deadline",
+        "fulfillment_required",
+        "revision_limit",
+        "review_sla_hours",
+        "revision_response_hours",
+        "created_at",
+        "updated_at",
+        "revision"
+      ],
+      "migrationHistory": {
+        "recordedCount": 17,
+        "reviewedCount": 66,
+        "reviewedVersionsMissingHistory": [
+          "20260715163350",
+          "20260717190420",
+          "20260718134500",
+          "20260718193000",
+          "20260718210000",
+          "20260718213000",
+          "20260719133000",
+          "20260719160000",
+          "20260719200000",
+          "20260719220000",
+          "20260720033542",
+          "20260720175319",
+          "20260720193637",
+          "20260723090000",
+          "20260723170000",
+          "20260725090000",
+          "20260725110000",
+          "20260725130000",
+          "20260725140000",
+          "20260725143000",
+          "20260725150000",
+          "20260727120000",
+          "20260727130000",
+          "20260728135000",
+          "20260729010000",
+          "20260731100000",
+          "20260731110000",
+          "20260731120000",
+          "20260731130000",
+          "20260731140000",
+          "20260731150000",
+          "20260805120000",
+          "20261022170454",
+          "20261022170751",
+          "20261022171111",
+          "20261022171843",
+          "20261022182544",
+          "20261023091050",
+          "20261023093445",
+          "20261023095521",
+          "20261023124149",
+          "20261023192141",
+          "20261025120934",
+          "20261025194402",
+          "20261028140231",
+          "20261028140709",
+          "20261028155000",
+          "20261029000000",
+          "20261029100000",
+          "20261029110000",
+          "20261029120000",
+          "20261029130000",
+          "20261029140000",
+          "20261029150000",
+          "20261029160000",
+          "20261029170000",
+          "20261029180000",
+          "20261030195424",
+          "20261031120000",
+          "20261031121000",
+          "20261031122000",
+          "20261031123000",
+          "20261103215321",
+          "20261104134202"
+        ],
+        "unreviewedHistoryVersions": [
+          "20260613123947",
+          "20260613124252",
+          "20260616122212",
+          "20260616171712",
+          "20260618181926",
+          "20260618181954",
+          "20260618182014",
+          "20260618182057",
+          "20260618182116",
+          "20260618182132",
+          "20260619123106",
+          "20260621175440",
+          "20260623152437",
+          "20260623155639",
+          "20261031201901"
+        ],
+        "note": "Version comparison only; not a schema fingerprint, checksum verification, or passing preflight."
+      },
+      "functions": [
+        {
+          "name": "create_mission_workflow",
+          "signature": "p_submission uuid",
+          "security_definer": true,
+          "service_role_execute": true
+        },
+        {
+          "name": "enable_pilot_if_empty",
+          "signature": "p_workspace_id uuid, p_mission_id uuid, p_expected_workflow_mode text, p_next_workflow_mode text, p_expected_status text, p_reject_if_submission_exists boolean",
+          "security_definer": true,
+          "service_role_execute": true
+        },
+        {
+          "name": "join_active_mission",
+          "signature": "p_mission uuid",
+          "security_definer": true,
+          "service_role_execute": false
+        },
+        {
+          "name": "resubmit_mission",
+          "signature": "p_mission uuid, p_urls text[], p_data jsonb, p_request uuid",
+          "security_definer": true,
+          "service_role_execute": true
+        },
+        {
+          "name": "submit_mission_publication_proof",
+          "signature": "p_submission uuid, p_creator uuid, p_workspace uuid, p_work_item uuid, p_expected_state text, p_expected_revision integer, p_idempotency_key uuid, p_proof jsonb, p_evidence_asset_ids uuid[]",
+          "security_definer": true,
+          "service_role_execute": true
+        },
+        {
+          "name": "verify_publication_proof",
+          "signature": "p_workspace uuid, p_workflow uuid, p_work_item uuid, p_attempt uuid, p_expected_state text, p_expected_revision integer, p_operator uuid, p_idempotency_key uuid, p_checklist jsonb, p_summary text",
+          "security_definer": true,
+          "service_role_execute": true
+        }
+      ],
+      "liveCodeSignals": {
+        "activeJoinCallsPrivateJoin": true,
+        "privateJoinAddsTenXp": true,
+        "legacyResubmitRejectsActiveWorkspace": true,
+        "note": "Read-only function-body pattern checks; no function invoked or body exported."
+      }
+    },
+    "deployment": {
+      "status": "observed",
+      "deploymentId": "dpl_4Kpee2iANUW92WaP8je8HyFD4wce",
+      "projectId": "prj_tBHX5vuMvZ4dEbQJpzhkM3VRJd0g",
+      "readyState": "READY",
+      "target": "production",
+      "url": "adfocate-2-pj4oqxcbv-ynwaforevers-projects.vercel.app",
+      "aliases": [
+        "adfocate-2.vercel.app",
+        "adfocate-2-ynwaforevers-projects.vercel.app",
+        "adfocate-2-git-main-ynwaforevers-projects.vercel.app"
+      ],
+      "commit": "159361980dd968580c7aa457328dd05f5b5c0e70",
+      "branch": "main"
+    },
+    "http": [
+      {
+        "route": "/",
+        "status": 200
+      },
+      {
+        "route": "/api/health",
+        "status": 200
+      },
+      {
+        "route": "/api/admin/me",
+        "status": 401
+      },
+      {
+        "route": "/api/missions/my",
+        "status": 401
+      }
+    ]
+  },
+  "digestUsage": "The accompanying .sha256 verifies this HOLD report file only. It is not a release or pilot approval digest and must not be substituted into an approval phrase."
+}

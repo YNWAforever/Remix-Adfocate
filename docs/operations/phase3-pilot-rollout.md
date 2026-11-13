@@ -1,119 +1,188 @@
-# Phase 3 M5 — pilot rollout readiness (owner-gated)
+# Phase 3 M5 — pilot preparation and approval boundaries
 
-Status: **not authorised, not started.** M1–M4 are live. This document is the
-preparation bundle for the one-mission pilot; executing it needs the owner's
-separate release approval.
+Status: **HOLD; no production pilot has been authorised or enabled.** Reviewed
+2026-11-13 (Asia/Singapore). The earlier version of this runbook conflated the
+legacy creator recovery flow with active-workspace publication proof, and used
+the release approval phrase for pilot enablement. Those instructions are
+superseded by the gates and separate flows below.
 
-Production deployment verified for main `985e572` (Vercel production READY,
-`/` 200, `/api/health` 200).
+Follow [production release foundation](production-release-foundation.md),
+[active workspace operations](active-mission-workspace.md), and
+[publication proof operations](publication-proof-release-runbook.md).
 
-## Production snapshot (2026-11-13, read-only)
+## Current evidence
 
-| Check | Value |
+Read-only inspection on 2026-11-13 confirmed production deployment commit
+`159361980dd968580c7aa457328dd05f5b5c0e70`, READY, with `/` and `/api/health`
+returning 200. Unauthenticated `/api/admin/me` and `/api/missions/my` returned
+401. These checks establish availability and deployment identity only.
+
+The database inspection used a repeatable-read, read-only transaction with TLS
+certificate verification and returned:
+
+| Check | Observed value |
 | --- | --- |
-| Missions | 6, all `creator_workflow_mode = legacy` |
-| Active-workspace missions | 0 |
-| `mission_workflows` rows | 0 |
-| Submissions | 9 `joined`, 1 `submitted`, 0 `rejected` |
-| `mission_submission_events` rows | 0 |
-| `schema_migrations` rows | 17 (incomplete; earlier history was out-of-band) |
+| Missions | 6; all active, legacy, with existing submissions |
+| Eligible draft legacy candidates | 0 |
+| Workflows / resubmission events | 0 / 0 |
+| Submissions | 9 joined, 1 submitted, 0 rejected |
+| Recorded migration versions | 17 |
+| Reviewed manifest versions | 66; 64 absent from recorded history |
 
-Consequences:
+Missing history does not prove a migration is unapplied. Do not replay old SQL,
+insert history rows, reset the target, or infer a passing schema preflight from
+this version comparison. Required capability verification, schema fingerprint,
+rehearsals, and recovery evidence are still outstanding.
 
-- No `active_workspace` mission exists, so the pilot requires authoring one
-  first. It cannot reuse the live legacy missions.
-- No `mission_workflows` rows means the active-workspace review routing has not
-  run in production yet.
-- Zero rejected submissions means M1's creator recovery is untested against a
-  real creator; the pilot should deliberately exercise one reject → resubmit →
-  approve cycle.
-- The incomplete migration history is a release-foundation risk. The M1
-  migration was applied with an operator-approved atomic transaction; a future
-  protected release needs the history reconciled first.
+## Distinct authorisations
 
-## Authorisation gate
+1. **Preparation:** local plans and read-only observations do not authorise
+   creation of a production draft, templates, memberships, or submissions.
+   Draft creation needs a separately scoped instruction identifying the
+   workspace and approved mission specification. Prepare the specification
+   locally first; production authoring is a write.
+2. **Protected release:** after the passing preflight, disposable rehearsals,
+   evidence review, expiry, recovery, and containment gates, the executor uses
+   `APPROVE <projectRef> <evidenceDigest>`. This authorises the reviewed release
+   only; it does not authorise pilot enablement or direct database writes.
+3. **Pilot enablement:** inspect an exact workspace/mission pair. After review,
+   the existing pilot command requires
+   `ENABLE PILOT <workspaceId> <missionId> <evidenceDigest>`. Its digest must be
+   the actual approved 64-character hexadecimal value. The command repeats
+   inspection and calls the service-role atomic enable RPC, affecting one row.
+4. **Publication and participation:** the atomic RPC switches mode on a draft;
+   it does not publish. Publication, the admission mechanism, the named creator,
+   creator actions, and operator review actions must be explicitly included in
+   the approved pilot scope. Credentials do not imply permission to impersonate
+   a creator.
 
-Plan approval is **not** release approval. To start the pilot the owner must
-provide:
+A literal `<evidenceDigest>`, the manifest digest, or the file hash of a HOLD
+report cannot replace valid release evidence. Do not produce a passing release
+bundle by filling missing fingerprints, rehearsal results, role assignments, or
+expiry checks with invented values.
 
-```text
-APPROVE <projectRef> <evidenceDigest>
-```
+## Conditions before a pilot can be approved
 
-plus the pilot mission choice and cohort size. `evidenceDigest` is the SHA-256
-of the evidence bundle produced in step 2. Until then, no production mission,
-workflow, membership, or submission is created or changed.
+- Resolve migration-history divergence through a separately reviewed recovery
+  plan. Do not repair history during pilot enablement.
+- Complete the pinned-toolchain, schema/capability, compatibility, disposable
+  rehearsal, recovery, containment, and evidence-expiry gates in the foundation
+  runbook. Passing unit tests and a READY deployment alone are insufficient.
+- Resolve the join-XP conflict: the deployed active join calls
+  `private.join_mission`, which adds 10 XP. The observer treats XP movement as a
+  containment condition. A zero-XP completion reward contract does not remove
+  join XP. Establish a reviewed compatible contract or implementation before
+  launch; do not hide the mutation by starting the baseline after joining.
+- Specify one workspace, one fresh mission, one approved creator, one required
+  deliverable, publication policy, deadline, revision limit, review and response
+  SLAs, reward contract, and containment owner. One creator is the initial scope;
+  the current seven-day exit expects one completed workflow and one pending
+  reward.
+- Prove admission control for that creator before publication. Quota 1 limits
+  capacity; it does not reserve the place for an approved identity. Do not
+  assume workspace membership or a small quota provides creator isolation.
+- Author a **draft legacy** candidate with no submissions or workflows and no
+  other active-workspace pilot in the workspace. Save and validate all required
+  templates and publication instructions before guarded mode enablement. Zero
+  workflows alone does not make an already active legacy mission eligible.
 
-## Pilot scope
+## Active-workspace sequence after all applicable approvals
 
-- One mission only, `creator_workflow_mode = active_workspace`.
-- Small cohort: 1–3 creators already in the workspace.
-- Publication proof required (so the proof policy is exercised end to end).
-- Short review SLA (e.g. 24–48 h) to make the overdue signal observable without
-  waiting days.
-- Do not expand A3.2 or other canaries from this pilot.
+1. Re-read the approved draft candidate, templates, capabilities, deployment,
+   evidence creation/expiry, and exact target IDs. Stop on any mismatch.
+2. Use guarded pilot inspection and atomic enablement with the exact pilot
+   phrase. Do not bypass it with a direct table update or by authoring the draft
+   directly in active-workspace mode. Confirm exactly one row changed and the
+   mission is still draft.
+3. Apply the approved admission control and publish through the validated
+   mission-authoring route. Confirm only the approved creator can obtain the
+   assignment before requesting their participation.
+4. Join through `join_active_mission`; replay once to verify no duplicate
+   workflow or additional XP. Compare the pre-join balance and anchor snapshots
+   against the resolved, approved join-XP contract.
+5. Submit an active work-item draft. Review through the active queue: start
+   review, request a revision if required, submit a new version, then approve
+   that exact version to publish. Preserve state/revision/idempotency anchors.
+   Revision limits are snapshotted at join; do not lower mission limits to try
+   to close an existing workflow.
+6. The creator follows the approved publication instructions and submits proof.
+   Use proof-review start/corrections/verify, with the current attempt, state,
+   revision, checklist, and idempotency key. A correction produces another proof
+   attempt and workflow events; it does not use `resubmit_mission` or increment
+   legacy `resubmit_count`.
+7. Confirm required work items are `proof_verified`. Through the separate
+   completion-review path, create one pending reward and reach `reward_pending`.
+   Do not invoke settlement, issue rewards, credit ledgers, debit budget, or
+   trigger payout/withdrawal as part of this pilot.
+8. Inspect active queue due times (`mission_work_items.review_due_at` and proof
+   response/publication deadlines). Do not use the legacy
+   `mission_submissions.review_deadline` as active review evidence or backdate
+   production rows to manufacture an overdue badge.
+9. Observe the exact scope for seven consecutive days using the existing
+   observer and exit evaluator. Any integrity, tenant, unexpected reward/XP, or
+   queue incident requires containment. No expansion is implied.
 
-## Runbook (after approval)
+## Separate legacy M1 recovery verification
 
-1. **Author the pilot mission** in the admin console: active workspace, small
-   quota (≤ 3), deadline, publication proof, revision limit 1–2.
-2. **Capture evidence:** mission id/slug, workflow mode, revision limit, SLA,
-   deadline. Export the sanitised JSON bundle and compute its SHA-256.
-3. **Join the cohort** (1–3 creators) and confirm they see the mission.
-4. **Submit proof** as creator 1. Confirm it lands in the operator queue with
-   `submitted` and a future `review_deadline`.
-5. **Reject with notes.** Confirm the creator sees the reason, remaining
-   revisions, and the resubmission form.
-6. **Resubmit once.** Confirm: `resubmit_count = 1`, one
-   `mission_submission_events` row, `review_deadline` reset, no XP/points/
-   earnings written.
-7. **Exhaust or close:** set the revision limit to 1 and confirm the closed
-   state hides the form and (if configured) shows the support link.
-8. **Approve.** Confirm XP/points are awarded once and the workflow reaches its
-   terminal state.
-9. **Operator signal:** a past `review_deadline` appears under the overdue
-   filter with a correct count.
-10. **Stop** if any step mutates XP/earnings twice, exposes another creator's
-    data, or leaves the queue inconsistent. Keep the mission paused; do not
-    delete rows.
+M1 resubmission is a different flow. `resubmit_mission` rejects active-workspace
+missions. A separately authorised disposable legacy assignment may exercise
+rejection, remaining revisions, resubmission, event history, and exhaustion.
+Verify resubmission adds no XP, points, earnings, or budget movement. Use a
+preconfigured exhaustion fixture in a disposable environment rather than
+editing live limits or deadlines. This is not evidence that active publication
+proof passed, and it does not authorise rejecting a real creator's work.
 
-## Acceptance evidence template
+## Read-only evidence query pattern
 
-Read-only, sanitised (no emails, no evidence URLs, no notes):
+Use bound UUID parameters for the approved workspace (`$1`) and mission (`$2`)
+in a read-only transaction. Export structural data only; omit creator IDs,
+authored content, reviewer notes, proof URLs, and credentials.
 
 ```sql
-select id, slug, status, creator_workflow_mode, revision_limit,
-       review_sla_hours, deadline
-from public.missions where slug = '<pilot-slug>';
+select m.id, m.workspace_id, m.status, m.creator_workflow_mode,
+       m.revision_limit, m.review_sla_hours, m.deadline
+from public.missions m
+where m.workspace_id = $1 and m.id = $2;
 
-select status, count(*)::int
-from public.mission_submissions
-where mission_id = '<mission-id>' group by status;
+select s.status, count(*)::int
+from public.mission_submissions s
+where s.workspace_id = $1 and s.mission_id = $2
+ group by s.status;
 
-select id, status, resubmit_count, review_deadline
-from public.mission_submissions where mission_id = '<mission-id>';
+-- mission_workflows has no mission_id column; scope through its anchor.
+select w.id, w.state, w.revision
+from public.mission_workflows w
+join public.mission_submissions s
+  on s.id = w.mission_submission_id and s.workspace_id = w.workspace_id
+where w.workspace_id = $1 and s.mission_id = $2;
 
-select event, count(*)::int
-from public.mission_submission_events
-where mission_submission_id = '<submission-id>' group by event;
-
-select count(*)::int from public.mission_workflows
-where mission_id = '<mission-id>';
+select i.state, count(*)::int
+from public.mission_work_items i
+join public.mission_workflows w
+  on w.id = i.mission_workflow_id and w.workspace_id = i.workspace_id
+join public.mission_submissions s
+  on s.id = w.mission_submission_id and s.workspace_id = w.workspace_id
+where w.workspace_id = $1 and s.mission_id = $2
+ group by i.state;
 ```
 
-Plus: creator-facing screenshots of the rejected/closed states, the operator
-overdue filter, and curl-style HTTP evidence for the affected routes (status
-codes only).
+Capture separate legacy resubmission evidence only when that test is in scope.
+A complete release bundle must also contain the actual commit, manifest digest,
+schema fingerprint, preflight and rehearsal hashes, role assignments, recovery
+reference, expiry, proposed commands, and containment commands. A snapshot
+report with failed or unexecuted gates is a HOLD report, not that bundle.
 
-## Rollback
+## Containment
 
-No destructive rollback is needed: resubmission history is append-only and
-approvals are idempotent. To stop the pilot, pause/close the pilot mission and
-leave its rows intact. Report the failure point and evidence digest in the
-closeout.
+Use the approved mission close route to stop new entry when applicable (supported
+statuses are draft, active, closed). Closing a mission does not freeze in-flight
+workflow mutations; follow the publication-proof route/RPC containment procedure
+separately. Preserve assignments, proof attempts, workflow events, and reward
+records. Do not delete history, rewrite balances, or return a mission with any
+workflow to legacy mode. Record the failure point and ownership for recovery.
 
 ## Ledger
 
-| Date | Action | Evidence digest | Result |
+| Date (Asia/Singapore) | Action | Release/pilot evidence | Result |
 | --- | --- | --- | --- |
-| — | Not started | — | — |
+| 2026-11-13 | Read-only readiness review; correct prior runbook | No valid release bundle generated | HOLD; no production writes |
