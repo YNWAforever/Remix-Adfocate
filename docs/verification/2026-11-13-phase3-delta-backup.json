@@ -1,0 +1,61 @@
+{
+  "artifactType": "phase3-read-only-backup-capture-reference",
+  "decision": "HOLD",
+  "validReleaseEvidence": false,
+  "productionWrites": 0,
+  "projectRef": "mhkoayftiuojxlrkollf",
+  "privateAttemptRef": "20261113T092852Z-b107cffbb4164728872591a1b3a73a77",
+  "manifestSha256": "62f6432485ef9327a61559ce931fdeb1b27c8812c78d2a1b2cd415f7098c909f",
+  "captureStatus": "CAPTURED_INVENTORIED_RESTORE_NOT_TESTED",
+  "startedUtc": "2026-11-13T09:28:52.0690901Z",
+  "finishedUtc": "2026-11-13T09:31:04.9708569Z",
+  "helperVersion": "5-separated-tls-tools-20261113",
+  "profile": "Phase3Preparation",
+  "branch": "codex/phase3-delta-rehearsal",
+  "sourceHead": "d9312b222845fd30fa94bc94f99d6fe952f139db",
+  "helperPhysicalSha256": "a1c44e07b62438ede3e3fbffcb271ed0d2f95a92a83bb3d66d44784e0794099d",
+  "toolImage": "public.ecr.aws/supabase/postgres@sha256:06ddc7962e11ab0f4f0334fd05671e97c30ea202f6e6a7113800bd3d6e416108",
+  "tlsPreflightImage": "node@sha256:9d266751ca3d7fdbe651c878ffd5ad0a42fed49a18c283509267c97f025b7496",
+  "pgDumpVersion": "pg_dump (PostgreSQL) 17.11",
+  "tls": "verify-full",
+  "tlsPreflightStatus": "VERIFIED_CHAIN_AND_HOSTNAME_NO_AUTH",
+  "remoteReadOnly": true,
+  "readOnlyStrategy": {
+    "metadata": "explicit_read_only_transaction",
+    "databaseDump": "pg_dump_17_11_native_read_only_transaction",
+    "rolesDump": "pg_dumpall_17_11_catalog_select_only",
+    "startupOptions": "requested_not_relied_on"
+  },
+  "caFileSha256": "700723581420dd1ac98fd7e9ac529f0ef210eadcaf87fc868a3ad7d114c2f3b7",
+  "serverVersionNum": 170006,
+  "metadataTransactionReadOnly": "on",
+  "artifacts": [
+    {
+      "name": "database.dump",
+      "bytes": 1882542,
+      "sha256": "4b538e9c1ac2666676a1c155e43d4dcb98bda320affae887dca6129464abd677"
+    },
+    {
+      "name": "roles.sql",
+      "bytes": 5370,
+      "sha256": "f818c7d885d9470489f7942488fb5e6d7660839ab0cd33130237db123581c6c7"
+    },
+    {
+      "name": "toc.list",
+      "bytes": 202332,
+      "sha256": "a7fcaddefb9f1c4e3e3538077f7a51014da0ca5e7948ca40575b45588fd488a7"
+    }
+  ],
+  "coverage": "One unrestricted pg_dump custom archive; separately timed roles without login passwords; native extension semantics.",
+  "excluded": [
+    "Storage object bytes",
+    "role passwords",
+    "other databases",
+    "tablespace definitions and cluster parameter grants",
+    "WAL/PITR",
+    "platform settings and encryption root keys",
+    "extension binaries"
+  ],
+  "archiveContentsPublished": false,
+  "laterVerification": "See separate restore and delta-replay receipts; original capture manifest remains unchanged."
+}

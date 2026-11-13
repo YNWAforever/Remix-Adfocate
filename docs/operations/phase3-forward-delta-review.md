@@ -36,13 +36,13 @@ npx vite-node --script scripts/release/delta-preparation.ts `
   --output <new-review-directory>
 ```
 
-The frozen reviewed packet's byte SHA256 is `e7ce6a847f57d05d9efde376a2a774e9f6b7310b3cb362fd979936a4891be9da`. Its baseline history digest is `8f73e44618f9af60644527e44e0a78e735d7d23fe1b9fc6fc64ee3e4dc339467`. Neither is a release approval digest. A change in baseline, source or packet requires renewed review; refreshing timestamps is not a substitute.
+The [frozen reviewed packet](../verification/phase3-delta-proposals/20261113-xp-neutrality/guarded-delta.sql) and [preparation metadata](../verification/phase3-delta-proposals/20261113-xp-neutrality/preparation.json) bind packet byte SHA256 `e7ce6a847f57d05d9efde376a2a774e9f6b7310b3cb362fd979936a4891be9da` and baseline history digest `8f73e44618f9af60644527e44e0a78e735d7d23fe1b9fc6fc64ee3e4dc339467`. Neither is a release approval digest. A change in baseline, source or packet requires renewed review; refreshing timestamps is not a substitute.
 
 ## Fresh recovery checkpoint
 
 [The fixed read-only capture helper](../../scripts/integrations/backup-shared-db.ps1) now has explicit `SharedDatabaseReview` and `Phase3Preparation` profiles. Original defaults retain their old branch/image restrictions. Phase 3 pins its branch, PG 17.11 client image and a separate cached image solely for credential-free OpenSSL preflight. The first attempted capture stopped before credential access because the database image had no OpenSSL executable. The corrected preflight verified TLS 1.3, the hostname and the original pinned CA; certificate verification was not relaxed. Public CA and byte-pinned restore scripts/queries have explicit LF attributes.
 
-The successful private attempt is `20261113T092852Z-b107cffbb4164728872591a1b3a73a77`, captured from `09:28:52Z` to `09:31:04Z` on 2026-11-13. Database dump, password-free roles and TOC remain under the existing private ACL root outside the repository. No backup contents were copied into these artifacts. Manifest SHA256 is `62f6432485ef9327a61559ce931fdeb1b27c8812c78d2a1b2cd415f7098c909f`.
+The successful private attempt is `20261113T092852Z-b107cffbb4164728872591a1b3a73a77`, captured from `09:28:52Z` to `09:31:04Z` on 2026-11-13. Database dump, password-free roles and TOC remain under the existing private ACL root outside the repository. No backup contents were copied into these artifacts. Manifest SHA256 is `62f6432485ef9327a61559ce931fdeb1b27c8812c78d2a1b2cd415f7098c909f`; [the sanitized capture reference](../verification/2026-11-13-phase3-delta-backup.json) publishes all three artifact sizes/checksums and the capture tool/TLS/read-only facts.
 
 [The archive verifier](../../scripts/integrations/verify-local-backup.ps1) read the whole unfiltered custom archive offline and checked exact artifact hashes/ACLs before and after. [The disposable restore wrapper](../../scripts/integrations/verify-auth-pilot-restore.ps1) then restored every TOC entry, including managed event triggers under their original owners, using a cached pinned PG 17.6 image. The sole omitted role command in a temporary copy was the redundant `CREATE ROLE supabase_admin` already performed by `initdb`; original ALTER, membership, grantor, ownership and ACL commands remained. Source files stayed read-only.
 
@@ -69,7 +69,33 @@ These are separately sampled snapshots, not a synchronized exported snapshot. MD
 
 The preparation-specific optional mode accepts only the frozen packet, runs it solely in the owned restored database and repeats the same packet. Its required result is 17 → 18 → 18 ledger rows, full source archival, unchanged prior ledger rows, unchanged application data, unchanged other catalog/bucket state, and unchanged function/history tuple versions on replay. All source backup inputs remain read-only and hash-stable. A seventh read-only packet mount is permitted only in this mode; the default six-mount restore path remains intact.
 
-The result of this step must be recorded separately from the successful recovery receipt above. It does not grant production authorization or imply hosted Auth/pilot acceptance.
+The actual native run completed at `2026-11-13T10:40:22Z`; [its sanitized delta/replay receipt](../verification/2026-11-13-phase3-delta-rehearsal.json) reports `PHASE3_DISPOSABLE_DELTA_REPLAY_VERIFIED_AUTH_NOT_TESTED`:
+
+- Ledger rows were exactly **17 → 18 → 18**; the old 17 rows, including their tuple versions, remained unchanged.
+- Both target function bodies changed on the first application. Their OIDs remained stable, and body/tuple versions were unchanged on replay, proving the second invocation performed no DDL or receipt write.
+- Full target-function owner/ACL/grantor/grant-option/configuration/ordinary-attribute digests matched before, after and on replay.
+- The 104-table/487-row application fingerprint, declared policy/Auth/Storage counts, scoped other-catalog digest and local Storage bucket metadata digest remained unchanged.
+- All source input hashes remained unchanged; owned container cleanup was confirmed. Network, published ports and source credentials were absent.
+
+The scoped catalog digest covers the relations/columns/defaults/constraints/indexes/policies/triggers and other function definitions/attributes/ACLs/configuration in public/private/auth/storage, plus schema/default ACLs, role attributes/memberships and event-trigger metadata. It excludes physical statistics and is not asserted as a universal source-catalog or hosted-platform equivalence proof.
+
+For an intentional local rerun, use the reviewed PowerShell 7 runtime and the existing private backup attempt. The wrapper reads the complete archive again and creates a new owned disposable cluster:
+
+```powershell
+$phase3Pwsh = Join-Path $env:USERPROFILE '.cache\codex-runtimes\codex-primary-runtime\dependencies\native\powershell\pwsh.exe'
+$phase3Attempt = Join-Path $env:LOCALAPPDATA 'KOCmax\PrivateBackups\mhkoayftiuojxlrkollf\20261113T092852Z-b107cffbb4164728872591a1b3a73a77'
+$phase3Package = (Resolve-Path -LiteralPath 'docs/verification/phase3-delta-proposals/20261113-xp-neutrality').Path
+$phase3Fingerprint = (Resolve-Path -LiteralPath 'docs/verification/2026-11-13-phase3-delta-source-fingerprint.json').Path
+& $phase3Pwsh -NoProfile -File scripts/integrations/verify-auth-pilot-restore.ps1 `
+  -Profile Phase3Preparation `
+  -AttemptDirectory $phase3Attempt `
+  -SourceFingerprintPath $phase3Fingerprint `
+  -CheckpointNotBeforeUtc '2026-11-13T09:28:00Z' `
+  -SourceCapturedUtc '2026-11-13T09:42:56.865Z' `
+  -DeltaPreparationDirectory $phase3Package
+```
+
+These historical times identify this checkpoint; a new live release requires new fresh evidence. This local result does not grant production authorization or imply hosted Auth/pilot acceptance.
 
 ## Remaining release and pilot inputs
 
