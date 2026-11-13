@@ -1,6 +1,9 @@
 # Phase 3 closeout — launch readiness
 
-Updated 2026-11-13 (Asia/Singapore). Production main: `985e572` (deployment READY, `/` 200, `/api/health` 200).
+Updated 2026-11-13 (Asia/Singapore). Production main verified at `1593619`
+(deployment READY, `/` 200, `/api/health` 200). M5 readiness is **HOLD**; the
+[corrected pilot runbook](phase3-pilot-rollout.md) supersedes its earlier
+mixed legacy/active-workspace instructions.
 
 ## Shipped
 
@@ -42,10 +45,15 @@ Details: [creator recovery](phase3-creator-recovery.md),
    `VITE_SUPPORT_EMAIL` in Vercel Production and redeploy. Hidden while unset.
 3. **Staff MFA (M4):** enable Supabase TOTP, set `STAFF_MFA_REQUIRED=true`, and
    have staff enrol factors before enforcing elsewhere.
-4. **M5 pilot (separate authorization):** choose the one pilot legacy mission,
-   run the publication-proof/release runbooks, and provide the explicit
-   `APPROVE <projectRef> <evidenceDigest>` release approval. Plan approval alone
-   does not authorize this rollout.
+4. **M5 pilot (HOLD):** resolve migration-history and join-XP/observer
+   conflicts, prepare one draft legacy candidate with no submissions/workflows,
+   prove admission control for one approved creator, and complete the release
+   evidence/rehearsal gates. `APPROVE <projectRef> <evidenceDigest>` applies to
+   the protected release only. Pilot mode enablement separately requires
+   `ENABLE PILOT <workspaceId> <missionId> <evidenceDigest>`, followed by
+   explicitly scoped publication and participation. The legacy M1 resubmission
+   flow is a separate test; active-workspace completion stops at a pending
+   reward with no settlement.
 
 ## Notes / risks
 
