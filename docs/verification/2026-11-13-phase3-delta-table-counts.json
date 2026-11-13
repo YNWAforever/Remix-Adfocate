@@ -1,0 +1,14 @@
+{
+  "projectRef": "mhkoayftiuojxlrkollf",
+  "tables": {
+    "auth": 27,
+    "public": 90,
+    "private": 14,
+    "storage": 10
+  },
+  "observedAt": "2026-11-13T09:53:04.605608+00:00",
+  "currentRole": "postgres",
+  "sessionRole": "postgres",
+  "migrationRows": 17,
+  "transactionReadOnly": true
+}

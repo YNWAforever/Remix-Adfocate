@@ -1,0 +1,45 @@
+{
+  "kind": "phase3-combined-baseline-delta-preparation",
+  "schemaVersion": 1,
+  "decision": "HOLD",
+  "validReleaseEvidence": false,
+  "targetProjectRef": "mhkoayftiuojxlrkollf",
+  "createdAt": "2026-11-13T10:32:37.205Z",
+  "observedAt": "2026-11-13T09:42:57.37909+00:00",
+  "catalogExpiresAt": "2026-11-13T10:42:57.379Z",
+  "manifestDigest": "cc41fb8ccabc9cd72b1015964a5bd605f77b8f07cc243454c0071c27d832edab",
+  "baselineHistorySha256": "8f73e44618f9af60644527e44e0a78e735d7d23fe1b9fc6fc64ee3e4dc339467",
+  "baseline": {
+    "recordedRows": 17,
+    "combinedVersion": "20261031201901",
+    "sourceEnvelopeCount": 62,
+    "appliedSqlSha256": "9cbecbf1b4b68c476ed8d996f8f3d1c61408e46986584c22ab0111788cd9e5a5"
+  },
+  "delta": {
+    "version": "20261113090001",
+    "name": "active_assignment_xp_neutrality",
+    "path": "supabase/migrations/20261113090001_active_assignment_xp_neutrality.sql",
+    "sourceSha256": "846cf3b5afd94d38f398170308f8e62c1f90f4a9a96b516d41f185986878bae2",
+    "packetSha256": "e7ce6a847f57d05d9efde376a2a774e9f6b7310b3cb362fd979936a4891be9da",
+    "productionApplied": false
+  },
+  "excludedVersions": [
+    "20261103215321",
+    "20261104134202"
+  ],
+  "retiredConstraint": {
+    "name": "constraint-removed:public.mission_submissions.mission_submissions_creator_workspace_fk",
+    "removalVersion": "20260720193637",
+    "treatment": "Do not reinstate; cross-workspace legacy campaigns remain supported."
+  },
+  "currentScopedCapabilityCount": 886,
+  "catalogSha256": "a5f22b2ad6c8ec333a0debf7252913bb6daa6c4d4716a6f62180e1c619a4502c",
+  "automaticWrites": [],
+  "scopeLimits": [
+    "Preparation only; no network, database client, approval phrase or apply mode.",
+    "Connection fields are operator assertions, not SQL target attestation or release authorization.",
+    "Packet guards cover exact migration history and the two changed functions; they do not replace complete schema/ACL/policy/storage preflight.",
+    "Fresh private backup/restore and disposable delta/replay checks must be supplied separately.",
+    "The protected live executor remains unchanged; this artifact cannot serve as its release evidence."
+  ]
+}

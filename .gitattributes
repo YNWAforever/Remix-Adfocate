@@ -5,3 +5,16 @@
 /docs/verification/2026-11-13-phase3-readiness-hold.json.sha256 text eol=lf
 /docs/verification/2026-11-13-phase3-migration-history.json text eol=lf
 /docs/verification/2026-11-13-phase3-migration-history.snapshot.json text eol=lf
+# The read-only backup helper pins the public CA's exact 1367-byte PEM representation.
+/scripts/integrations/certs/supabase-prod-ca-2021.crt text eol=lf
+# Restore verification compares exact reviewed script/query byte hashes.
+/scripts/integrations/verify-local-backup.ps1 text eol=lf
+/scripts/integrations/verify-auth-pilot-restore.ps1 text eol=lf
+/scripts/integrations/test-restore-profile.ps1 text eol=lf
+/scripts/integrations/verify-backup-disposable-restore.sh text eol=lf
+/scripts/integrations/auth-pilot-fingerprint.sql text eol=lf
+/docs/review/kocmax-stage-4d/d1/shared-database/execution/existing-data-fingerprint.sql text eol=lf
+/scripts/release/delta-catalog-capture.sql text eol=lf
+/docs/operations/phase3-forward-delta-review.md text eol=lf
+/docs/verification/2026-11-13-phase3-delta-*.json text eol=lf
+/docs/verification/phase3-delta-proposals/** text eol=lf
