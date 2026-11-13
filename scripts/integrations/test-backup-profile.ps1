@@ -62,10 +62,10 @@ $parameters = $source.Substring($parameterStart, $helperAst.ParamBlock.Extent.En
 $setup = @($helperAst.EndBlock.Statements | Where-Object {
     ($_ -is [Management.Automation.Language.AssignmentStatementAst] -and
         $_.Left -is [Management.Automation.Language.VariableExpressionAst] -and
-        $_.Left.VariablePath.UserPath -cin @('projectRef', 'profileSettings', 'approvedImage', 'approvedBranch')) -or
+        $_.Left.VariablePath.UserPath -cin @('projectRef', 'profileSettings', 'approvedImage', 'approvedBranch', 'tlsPreflightImage')) -or
     ($_ -is [Management.Automation.Language.IfStatementAst] -and $_.Extent.Text.Contains("PSBoundParameters.ContainsKey('PostgresImage')"))
 })
-Assert-Equal $setup.Count 5 'exact fixed-profile setup selection'
+Assert-Equal $setup.Count 6 'exact fixed-profile setup selection'
 $bindingScript = [scriptblock]::Create(($parameters + "`n" +
     (Get-HelperFunction 'Get-ReviewedBackupProfile') + "`n" +
     (Get-HelperFunction 'Assert-Target') + "`n" +
@@ -74,7 +74,7 @@ $bindingScript = [scriptblock]::Create(($parameters + "`n" +
 
 Assert-Target
 Assert-BackupBranch -Branch $testBranch -GitExitCode $testGitExitCode
-[pscustomobject]@{ Profile = $profileSettings.Name; Branch = $approvedBranch; Image = $PostgresImage;
+[pscustomobject]@{ Profile = $profileSettings.Name; Branch = $approvedBranch; Image = $PostgresImage; TlsImage = $tlsPreflightImage;
     Project = $projectRef; Host = $DbHost; Port = $DbPort; User = $DbUser; Database = $Database }
 '@))
 function Invoke-ProfileBinding([hashtable] $Parameters, [string] $ActualBranch = 'codex/kocmax-studio-stages-1-2', [int] $GitExitCode = 0) {
@@ -85,11 +85,13 @@ function Invoke-ProfileBinding([hashtable] $Parameters, [string] $ActualBranch =
 $originalImage = 'postgres@sha256:f4c66b820c6f974249089d3d16d86a3698eae11e8746eb6644b2271031e91232'
 $phase3Image = 'public.ecr.aws/supabase/postgres@sha256:06ddc7962e11ab0f4f0334fd05671e97c30ea202f6e6a7113800bd3d6e416108'
 $phase3Branch = 'codex/phase3-delta-rehearsal'
+$phase3TlsImage = 'node@sha256:9d266751ca3d7fdbe651c878ffd5ad0a42fed49a18c283509267c97f025b7496'
 
 Test-Case 'Original default preserves fixed target, branch and image' {
     $result = Invoke-ProfileBinding @{}
     Assert-Equal $result.Profile 'SharedDatabaseReview' 'original default profile'
     Assert-Equal $result.Image $originalImage 'original image unchanged'
+    Assert-Equal $result.TlsImage $originalImage 'original TLS tool image unchanged'
     Assert-Equal $result.Branch 'codex/kocmax-studio-stages-1-2' 'original branch unchanged'
     Assert-Equal $result.Project 'mhkoayftiuojxlrkollf' 'fixed project'
     Assert-Equal $result.Host 'aws-1-ap-northeast-1.pooler.supabase.com' 'fixed session pooler'
@@ -100,6 +102,7 @@ Test-Case 'Original default preserves fixed target, branch and image' {
 Test-Case 'Phase3 profile selects its exact reviewed image and branch' {
     $result = Invoke-ProfileBinding @{ Profile = 'Phase3Preparation' } $phase3Branch
     Assert-Equal $result.Image $phase3Image 'Phase3 image pin'
+    Assert-Equal $result.TlsImage $phase3TlsImage 'separate fixed credential-free TLS tool image'
     Assert-Equal $result.Branch $phase3Branch 'Phase3 branch pin'
     Assert-Equal $result.Project 'mhkoayftiuojxlrkollf' 'Phase3 target unchanged'
     Assert-Equal (Invoke-ProfileBinding @{ Profile = 'Phase3Preparation'; PostgresImage = $phase3Image } $phase3Branch).Image $phase3Image 'explicit same pin accepted'
@@ -253,6 +256,7 @@ function Invoke-DockerCapture {
     return [pscustomobject]@{ Code = 0; Output = ''; Error = '' }
 }
 $PostgresImage = $phase3Image
+$tlsPreflightImage = $phase3TlsImage
 $DbHost = 'aws-1-ap-northeast-1.pooler.supabase.com'
 $DbPort = 5432
 $DbUser = 'postgres.mhkoayftiuojxlrkollf'
@@ -282,6 +286,7 @@ try {
             Assert-True ($required -cin $call.Arguments) 'remote security/full-dump argument retained'
         }
         Assert-True ([object]::ReferenceEquals($call.Secret, $script:dbSecret)) 'secret uses separate stdin transport'
+        Assert-True ($phase3TlsImage -cnotin $call.Arguments) 'credential-bearing process never uses TLS probe image'
         Assert-True (-not ($call.Arguments | Where-Object { $_ -match '^PGPASSWORD=|^--(?:exclude|table|schema|section|data-only|schema-only|no-owner|no-acl)' })) 'no secret argument or partial-dump fallback'
         Assert-Equal $call.Arguments[([array]::IndexOf($call.Arguments, '--network') + 1)] 'bridge' 'remote network intentional'
         Assert-True ($call.Arguments -ccontains "type=bind,source=$caFile,target=/tls/supabase-root.crt,readonly") 'CA mounted read-only'
@@ -316,6 +321,8 @@ try {
         & (Get-HelperCommand 'tls_preflight') | Out-Null
         $call = Get-RunCall
         Assert-True ($null -eq $call.Secret) 'TLS preflight has no credential'
+        Assert-True ($phase3TlsImage -cin $call.Arguments) 'TLS probe uses its pinned OpenSSL image'
+        Assert-True ($phase3Image -cnotin $call.Arguments) 'TLS probe does not assume database image contains OpenSSL'
         Assert-True (-not ($call.Arguments | Where-Object { $_ -match 'PGHOST=|target=/backup' })) 'TLS preflight has no backup mount or DB session options'
         foreach ($required in @('openssl', '-verify_hostname', $DbHost, '-verify_return_error', '-CAfile', '/tls/supabase-root.crt', '-no-CApath', '-no-CAstore')) {
             Assert-True ($required -cin $call.Arguments) 'strict credential-free TLS argument retained'
@@ -354,7 +361,8 @@ Test-Case 'Metadata checks require explicit read-only PG17 identity and complete
     Assert-True ($source.Replace("`r`n", "`n").Contains("BEGIN READ ONLY;`nSET LOCAL row_security = off;")) 'metadata transaction remains explicit read-only'
 }
 Test-Case 'Receipts identify the fixed profile and new helper version without claiming restore validation' {
-    Assert-True ($source.Contains("helperVersion = '4-reviewed-profiles-20261113'")) 'helper version updated'
+    Assert-True ($source.Contains("helperVersion = '5-separated-tls-tools-20261113'")) 'helper version updated'
+    Assert-True ($source.Contains('tlsPreflightImage = $tlsPreflightImage')) 'separate fixed TLS tool image recorded'
     Assert-True ($source.Contains('profile = $profileSettings.Name; profileBranch = $approvedBranch')) 'profile and branch receipt fields'
     Assert-True ($source.Contains("restoreRehearsal = 'NOT_RUN'; migrationAuthorization = 'NOT_ASSESSED_BY_BACKUP'")) 'capture does not authorize migration or attest restore'
 }

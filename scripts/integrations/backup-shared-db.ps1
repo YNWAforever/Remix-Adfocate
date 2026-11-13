@@ -35,6 +35,7 @@ function Get-ReviewedBackupProfile([string] $Name) {
                 Name = 'SharedDatabaseReview'
                 Branch = 'codex/kocmax-studio-stages-1-2'
                 Image = 'postgres@sha256:f4c66b820c6f974249089d3d16d86a3698eae11e8746eb6644b2271031e91232'
+                TlsImage = 'postgres@sha256:f4c66b820c6f974249089d3d16d86a3698eae11e8746eb6644b2271031e91232'
             }
         }
         'Phase3Preparation' {
@@ -42,6 +43,9 @@ function Get-ReviewedBackupProfile([string] $Name) {
                 Name = 'Phase3Preparation'
                 Branch = 'codex/phase3-delta-rehearsal'
                 Image = 'public.ecr.aws/supabase/postgres@sha256:06ddc7962e11ab0f4f0334fd05671e97c30ea202f6e6a7113800bd3d6e416108'
+                # The cached database image supplies libpq but no OpenSSL executable.
+                # This separate fixed image is used only for the credential-free TLS handshake.
+                TlsImage = 'node@sha256:9d266751ca3d7fdbe651c878ffd5ad0a42fed49a18c283509267c97f025b7496'
             }
         }
         default { throw 'Unknown reviewed backup profile; stop.' }
@@ -52,6 +56,7 @@ $projectRef = 'mhkoayftiuojxlrkollf'
 $profileSettings = Get-ReviewedBackupProfile $Profile
 $approvedImage = $profileSettings.Image
 $approvedBranch = $profileSettings.Branch
+$tlsPreflightImage = $profileSettings.TlsImage
 # Preserve the original parameter default; explicit image arguments still face Assert-Target.
 if (-not $PSBoundParameters.ContainsKey('PostgresImage')) { $PostgresImage = $approvedImage }
 $caFile = Join-Path $PSScriptRoot 'certs/supabase-prod-ca-2021.crt'
@@ -471,7 +476,8 @@ function Invoke-PgTool {
             'backup-stdin', $Tool)
         $secret = $script:dbSecret
     } else {
-        $arguments += @('--entrypoint', $Tool, $PostgresImage)
+        $toolImage = if ($TlsPreflight) { $tlsPreflightImage } else { $PostgresImage }
+        $arguments += @('--entrypoint', $Tool, $toolImage)
     }
     try {
         $timeoutSeconds = if ($TlsPreflight) { 30 } else { $CommandTimeoutSeconds }
@@ -537,8 +543,9 @@ New-PrivateDirectory $script:runDir
 $script:manifest = [ordered]@{
     status = 'IN_PROGRESS'; phase = 'local_precheck'; startedUtc = [DateTime]::UtcNow.ToString('o'); updatedUtc = $null
     projectRef = $projectRef; host = $DbHost; port = $DbPort; user = $DbUser; database = $Database; backupRoot = $backupRoot
-    helperVersion = '4-reviewed-profiles-20261113'
+    helperVersion = '5-separated-tls-tools-20261113'
     profile = $profileSettings.Name; profileBranch = $approvedBranch
+    tlsPreflightImage = $tlsPreflightImage
     credentialSource = if ($UseStoredCredential) { 'windows_credential_manager' } else { 'interactive_prompt' }
     branch = $branch; head = $head; scriptSha256 = (Get-FileHash -LiteralPath $PSCommandPath -Algorithm SHA256).Hash.ToLowerInvariant()
     image = $PostgresImage; imageId = $image.Output.Trim(); dockerEndpoint = $dockerPipe
