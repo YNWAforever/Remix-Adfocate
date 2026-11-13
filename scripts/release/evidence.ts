@@ -119,7 +119,7 @@ function asRecord(value: unknown): Record<string, unknown> | undefined {
     : undefined;
 }
 
-function nonEmptyString(value: unknown) {
+function nonEmptyString(value: unknown): value is string {
   return typeof value === "string" && value.trim().length > 0;
 }
 
@@ -410,8 +410,7 @@ export async function runEvidenceCli(
 
 const defaultCliDeps: EvidenceCliDeps = { ...defaultFilesystem, readFile };
 
-const isViteNodeCli = /(?:^|[\\/])vite-node(?:\.mjs)?$/i.test(process.argv[1] ?? "");
 const isDirectNodeCli = process.argv[1] !== undefined && resolve(process.argv[1]) === fileURLToPath(import.meta.url);
-if (isViteNodeCli || isDirectNodeCli) {
+if (isDirectNodeCli) {
   process.stdout.write(`${JSON.stringify(await runEvidenceCli(process.argv.slice(2), process.cwd(), defaultCliDeps))}\n`);
 }

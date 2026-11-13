@@ -2,6 +2,14 @@ name: Supabase Production Release
 on:
   workflow_dispatch:
     inputs:
+      release_profile:
+        description: Explicit reviewed source-range or combined-baseline delta release
+        required: true
+        type: choice
+        default: reviewed-source-range-v1
+        options:
+          - reviewed-source-range-v1
+          - phase3-combined62-xp-v1
       bundle_path:
         description: Committed sanitized evidence bundle path
         required: true
@@ -19,20 +27,34 @@ on:
         required: true
         type: string
 
+concurrency:
+  group: supabase-production-release
+  cancel-in-progress: false
+
 jobs:
   migrate:
+    if: ${{ github.repository == 'YNWAforever/Remix-Adfocate' && github.ref == 'refs/heads/main' }}
     environment: production
+    timeout-minutes: 30
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      actions: read
+      deployments: read
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
           cache: npm
       - run: npm ci
+      - name: Prepare the pinned PostgreSQL 17.11 client
+        if: inputs.release_profile == 'phase3-combined62-xp-v1'
+        run: docker --host unix:///var/run/docker.sock pull public.ecr.aws/supabase/postgres@sha256:06ddc7962e11ab0f4f0334fd05671e97c30ea202f6e6a7113800bd3d6e416108
       - name: Verify evidence and execute approved migration range
+        if: inputs.release_profile == 'reviewed-source-range-v1'
         run: >-
           npm run release:execute --
           --bundle "$BUNDLE_PATH"
@@ -48,3 +70,23 @@ jobs:
           RELEASE_DATABASE_URL: "${{ secrets.SUPABASE_DB_URL }}"
           RELEASE_PROJECT_REF: "${{ vars.SUPABASE_PROJECT_REF }}"
           RELEASE_APPLICATION_COMMIT: "${{ github.sha }}"
+      - name: Verify the combined baseline and execute the approved XP delta
+        if: inputs.release_profile == 'phase3-combined62-xp-v1'
+        run: >-
+          npm run release:delta:execute --
+          --bundle "$BUNDLE_PATH"
+          --bundle-digest "$BUNDLE_DIGEST"
+          --project-ref "$PROJECT_REF"
+          --approval "$APPROVAL"
+          --apply
+        env:
+          BUNDLE_PATH: "${{ inputs.bundle_path }}"
+          BUNDLE_DIGEST: "${{ inputs.bundle_digest }}"
+          PROJECT_REF: "${{ inputs.project_ref }}"
+          APPROVAL: "${{ inputs.approval }}"
+          RELEASE_DATABASE_URL: "${{ secrets.SUPABASE_DB_URL }}"
+          RELEASE_PROJECT_REF: "${{ vars.SUPABASE_PROJECT_REF }}"
+          RELEASE_DELTA_POLICY_JSON: "${{ vars.PHASE3_DELTA_POLICY_JSON }}"
+          GITHUB_TOKEN: "${{ github.token }}"
+          VERCEL_TOKEN: "${{ secrets.VERCEL_TOKEN }}"
+          VERCEL_AUTOMATION_BYPASS_SECRET: "${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}"

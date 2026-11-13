@@ -18,3 +18,14 @@
 /docs/operations/phase3-forward-delta-review.md text eol=lf
 /docs/verification/2026-11-13-phase3-delta-*.json text eol=lf
 /docs/verification/phase3-delta-proposals/** text eol=lf
+# Retained authority receipts bind these exact LF Git blobs on every platform.
+/docs/verification/D19-B2-runtime-manifest-neutrality-guard.json text eol=lf
+/docs/review/kocmax-stage-4d/d1/auth-permission-execution/fixture-manifest.prepared.json text eol=lf
+/docs/verification/D19-application-decisions-20261025/before/docs/verification/code-fingerprint.json text eol=lf
+# Protected v2 fingerprints bind exact reviewed collector/program bytes and JSON blobs.
+/scripts/release/delta-*.ts text eol=lf
+/scripts/release/delta-*.mjs text eol=lf
+/scripts/release/delta-*.sql text eol=lf
+/docs/verification/phase3-protected-delta/** text eol=lf
+/docs/verification/releases/** text eol=lf
+/docs/operations/phase3-protected-delta.md text eol=lf

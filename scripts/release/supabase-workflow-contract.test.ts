@@ -18,6 +18,8 @@ type Scalar = {
 
 const guardedExecutor =
   'npm run release:execute -- --bundle "$BUNDLE_PATH" --bundle-digest "$BUNDLE_DIGEST" --project-ref "$PROJECT_REF" --approval "$APPROVAL" --apply';
+const guardedDeltaExecutor = guardedExecutor.replace("release:execute", "release:delta:execute");
+const pinnedClientPull = "docker --host unix:///var/run/docker.sock pull public.ecr.aws/supabase/postgres@sha256:06ddc7962e11ab0f4f0334fd05671e97c30ea202f6e6a7113800bd3d6e416108";
 
 function indentation(line: string) {
   return line.length - line.trimStart().length;
@@ -149,12 +151,24 @@ function expectProductionWorkflowContract(candidate: string) {
     "bundle_digest",
     "bundle_path",
     "project_ref",
+    "release_profile",
   ]);
 
+  const profile = mappingBlock(inputs, "release_profile", 6);
+  expect(scalarValue(profile, "type")).toBe("choice");
+  expect(scalarValue(profile, "default")).toBe("reviewed-source-range-v1");
+  expect(profile.filter(line => line.trim().startsWith("- ")).map(line => line.trim())).toEqual(["- reviewed-source-range-v1", "- phase3-combined62-xp-v1"]);
+  const concurrency = mappingBlock(lines, "concurrency", 0);
+  expect(scalarValue(concurrency, "group")).toBe("supabase-production-release");
+  expect(scalarValue(concurrency, "cancel-in-progress")).toBe("false");
   const jobs = mappingBlock(lines, "jobs", 0);
   expect(directMappingKeys(jobs, 2)).toEqual(["migrate"]);
   const migrate = mappingBlock(jobs, "migrate", 2);
   expect(scalarValue(migrate, "environment")).toBe("production");
+  expect(scalarValue(migrate.filter(line => indentation(line) === 4), "if")).toBe("${{ github.repository == 'YNWAforever/Remix-Adfocate' && github.ref == 'refs/heads/main' }}");
+  const permissions = mappingBlock(migrate, "permissions", 4);
+  expect(directMappingKeys(permissions, 6).sort()).toEqual(["actions", "contents", "deployments"]);
+  for (const key of ["actions", "contents", "deployments"]) expect(scalarValue(permissions, key)).toBe("read");
 
   const steps = executableSteps(mappingBlock(migrate, "steps", 4));
   // Actions expands ${{ }} into the shell source before bash parses it, so dispatch
@@ -166,12 +180,19 @@ function expectProductionWorkflowContract(candidate: string) {
     "actions/checkout@v4",
     "actions/setup-node@v4",
     "npm ci",
+    pinnedClientPull,
     guardedExecutor,
+    guardedDeltaExecutor,
   ]);
+  expect(scalarValue(steps[0].lines, "fetch-depth")).toBe("0");
+  expect(scalarValue(steps[3].lines, "if")).toBe("inputs.release_profile == 'phase3-combined62-xp-v1'");
+  expect(scalarValue(steps[4].lines, "if")).toBe("inputs.release_profile == 'reviewed-source-range-v1'");
+  expect(scalarValue(steps[5].lines, "if")).toBe("inputs.release_profile == 'phase3-combined62-xp-v1'");
   expect(scalarValue(steps[1].lines, "node-version")).toBe('"22"');
   expect(scalarValue(steps[1].lines, "cache")).toBe("npm");
   expect(steps[2].env).toEqual({});
-  expect(steps[3].env).toEqual({
+  expect(steps[3].env).toEqual({});
+  expect(steps[4].env).toEqual({
     BUNDLE_PATH: '"${{ inputs.bundle_path }}"',
     BUNDLE_DIGEST: '"${{ inputs.bundle_digest }}"',
     PROJECT_REF: '"${{ inputs.project_ref }}"',
@@ -180,9 +201,21 @@ function expectProductionWorkflowContract(candidate: string) {
     RELEASE_PROJECT_REF: '"${{ vars.SUPABASE_PROJECT_REF }}"',
     RELEASE_APPLICATION_COMMIT: '"${{ github.sha }}"',
   });
+  expect(steps[5].env).toEqual({
+    BUNDLE_PATH: '"${{ inputs.bundle_path }}"', BUNDLE_DIGEST: '"${{ inputs.bundle_digest }}"',
+    PROJECT_REF: '"${{ inputs.project_ref }}"', APPROVAL: '"${{ inputs.approval }}"',
+    RELEASE_DATABASE_URL: '"${{ secrets.SUPABASE_DB_URL }}"', RELEASE_PROJECT_REF: '"${{ vars.SUPABASE_PROJECT_REF }}"',
+    RELEASE_DELTA_POLICY_JSON: '"${{ vars.PHASE3_DELTA_POLICY_JSON }}"',
+    GITHUB_TOKEN: '"${{ github.token }}"', VERCEL_TOKEN: '"${{ secrets.VERCEL_TOKEN }}"',
+    VERCEL_AUTOMATION_BYPASS_SECRET: '"${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}"',
+  });
 }
 
 const unsafeMutations = [
+  ["unguarded delta mode", workflow.replace("        if: inputs.release_profile == 'phase3-combined62-xp-v1'\n        run: >-", "        run: >-")],
+  ["unprotected branch", workflow.replace("github.ref == 'refs/heads/main'", "github.ref != 'refs/heads/main'")],
+  ["cancelling an active release", workflow.replace("cancel-in-progress: false", "cancel-in-progress: true")],
+  ["unreviewed client image", workflow.replace(pinnedClientPull, "docker pull public.ecr.aws/supabase/postgres:latest")],
   [
     "a scheduled trigger",
     workflow.replace("on:\n", 'on:\n  schedule:\n    - cron: "0 0 * * *"\n'),
@@ -215,7 +248,7 @@ const unsafeMutations = [
 ] as const;
 
 describe("Supabase production workflow", () => {
-  it("delegates the only write to the guarded executor", () => {
+  it("delegates writes to exactly one explicitly selected guarded executor", () => {
     expectProductionWorkflowContract(workflow);
   });
 
