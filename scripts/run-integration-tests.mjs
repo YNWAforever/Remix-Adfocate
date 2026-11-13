@@ -35,6 +35,7 @@ export const integrationFiles = [
   "server/test/adminContent.test.ts",
   "server/test/content.test.ts",
   "server/test/active-mission-schema.test.ts",
+  "server/test/active-assignment-neutrality.test.ts",
   "server/test/active-missions.test.ts",
   "server/test/reward-contracts.test.ts",
   "server/test/reward-handoffs.test.ts",

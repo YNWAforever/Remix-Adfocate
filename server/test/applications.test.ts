@@ -210,7 +210,8 @@ suite("application-gated missions", () => {
     expect(repeatedBody.submission.id).toBe(firstBody.submission.id);
     expect(repeatedBody.workflow.id).toBe(firstBody.workflow.id);
     const after = await creatorRewardSnapshot(active.creator.id);
-    expect(after.xp - before.xp).toBe(10);
+    expect(after).toEqual(before);
+    expect(firstBody.submission.xp_awarded).toBe(0);
     const mission = await svc.from("missions").select("filled").eq("id", active.mission.id).single();
     expect(mission.error).toBeNull();
     expect(mission.data?.filled).toBe(1);

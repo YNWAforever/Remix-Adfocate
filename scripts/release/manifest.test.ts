@@ -88,6 +88,7 @@ const REVIEWED_FILES = [
   "20261103215321_kocmax_creator_growth_private.sql",
   "20261104134202_kocmax_publish_intents.sql",
   "20261113090000_creator_resubmission.sql",
+  "20261113090001_active_assignment_xp_neutrality.sql",
 ] as const;
 
 // Pinned by checksum in manifest.ts, so the fixture copies the repository's real bytes instead of
@@ -175,6 +176,21 @@ async function fixture(
 }
 
 describe("release migration manifest", () => {
+  it("classifies neutral assignment primitives after the recorded release head without widening ACLs", async () => {
+    const manifest = await buildManifest(resolve("."));
+    const neutral = manifest.migrations.at(-1)!;
+    expect(neutral.version).toBe("20261113090001");
+    expect(neutral.name).toBe("active_assignment_xp_neutrality");
+    expect(neutral.dependsOn).toEqual(["20260805120000", "20261029120000", "20261113090000"]);
+    expect(neutral.capabilities).toEqual([
+      "function:private.join_mission", "function:public.accept_application",
+      ...["public", "anon", "authenticated", "service_role"].map(role => `grant-removed:${role}.private.join_mission(uuid)`),
+      ...["public", "anon", "authenticated"].map(role => `grant-removed:${role}.public.accept_application(uuid)`),
+      "grant:service_role.public.accept_application(uuid)",
+    ]);
+    expect(await validateManifest(manifest, resolve("."))).toEqual([]);
+  });
+
   it("classifies private preparation without granting browser or direct service table access", async () => {
     const manifest = await buildManifest(resolve("."));
     const growth = manifest.migrations.find(item => item.version === "20261103215321")!;

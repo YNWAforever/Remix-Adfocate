@@ -2421,6 +2421,32 @@
       ],
       "transactionExpectation": "transactional",
       "replayExpectation": "migration_history_noop"
+    },
+    {
+      "version": "20261113090001",
+      "name": "active_assignment_xp_neutrality",
+      "path": "supabase/migrations/20261113090001_active_assignment_xp_neutrality.sql",
+      "sha256": "846cf3b5afd94d38f398170308f8e62c1f90f4a9a96b516d41f185986878bae2",
+      "phase": "active_mission",
+      "dependsOn": [
+        "20260805120000",
+        "20261029120000",
+        "20261113090000"
+      ],
+      "capabilities": [
+        "function:private.join_mission",
+        "function:public.accept_application",
+        "grant-removed:public.private.join_mission(uuid)",
+        "grant-removed:anon.private.join_mission(uuid)",
+        "grant-removed:authenticated.private.join_mission(uuid)",
+        "grant-removed:service_role.private.join_mission(uuid)",
+        "grant-removed:public.public.accept_application(uuid)",
+        "grant-removed:anon.public.accept_application(uuid)",
+        "grant-removed:authenticated.public.accept_application(uuid)",
+        "grant:service_role.public.accept_application(uuid)"
+      ],
+      "transactionExpectation": "transactional",
+      "replayExpectation": "migration_history_noop"
     }
   ]
 }

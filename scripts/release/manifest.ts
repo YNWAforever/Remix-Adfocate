@@ -1345,6 +1345,18 @@ const REVIEWED_MIGRATIONS = [
     ],
     transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
   },
+  {
+    version: "20261113090001", name: "active_assignment_xp_neutrality", phase: "active_mission",
+    dependsOn: ["20260805120000", "20261029120000", "20261113090000"],
+    capabilities: [
+      "function:private.join_mission",
+      "function:public.accept_application",
+      ...["public", "anon", "authenticated", "service_role"].map(role => `grant-removed:${role}.private.join_mission(uuid)`),
+      ...["public", "anon", "authenticated"].map(role => `grant-removed:${role}.public.accept_application(uuid)`),
+      "grant:service_role.public.accept_application(uuid)",
+    ],
+    transactionExpectation: "transactional", replayExpectation: "migration_history_noop",
+  },
 ] as const satisfies readonly ReviewedMigration[];
 
 const NON_RELEASE_TIMESTAMP_MIGRATIONS = new Set([

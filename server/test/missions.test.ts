@@ -386,8 +386,8 @@ suite("mission join", () => {
     expect(workflows.error).toBeNull();
     expect(workflows.data).toHaveLength(1);
     const afterRepeated = await creatorRewardSnapshot(active.creator.id);
-    expect(afterFirst.xp - before.xp).toBe(10);
-    expect(afterFirst.points).toBe(before.points);
+    expect(afterFirst).toEqual(before);
+    expect(body.submission.xp_awarded).toBe(0);
     expect(afterRepeated).toEqual(afterFirst);
     const missionAfterRepeated = await svc.from("missions").select("filled").eq("id", active.mission.id).single();
     expect(missionAfterRepeated.error).toBeNull();

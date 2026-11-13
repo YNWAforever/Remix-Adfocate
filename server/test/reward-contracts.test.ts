@@ -194,10 +194,8 @@ integrationSuite(integrationSuiteName, () => {
     });
     expect(joined.error).toBeNull();
     const afterJoinRewards = await creatorRewardSnapshot(seeded.creator.userId);
-    expect(afterJoinRewards).toEqual({
-      ...beforeRewards,
-      xp: beforeRewards.xp + 10,
-    });
+    expect(afterJoinRewards).toEqual(beforeRewards);
+    expect(joined.data.submission.xp_awarded).toBe(0);
 
     const workflow = joined.data.workflow as { id: string };
     const service = serviceForTests();
