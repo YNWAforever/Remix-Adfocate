@@ -1673,7 +1673,7 @@ export async function validateManifest(
   const inspection = await inspectRepository(rootDir);
   const errors = [...inspection.errors];
   const versions = parsed.migrations.map((migration) => migration.version);
-  const expectedVersions = REVIEWED_MIGRATIONS.map((migration) => migration.version);
+  const expectedVersions: readonly string[] = REVIEWED_MIGRATIONS.map((migration) => migration.version);
   const currentByVersion = new Map(
     inspection.migrations.map((migration) => [migration.version, migration]),
   );

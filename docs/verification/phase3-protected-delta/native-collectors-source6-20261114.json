@@ -1,0 +1,491 @@
+{
+  "schemaVersion": 1,
+  "kind": "owned-native-collector-fixture",
+  "validReleaseEvidence": false,
+  "productionApplied": false,
+  "productionEquivalent": false,
+  "status": "NATIVE_SQL_EXPORT_AND_DELTA_REPLAY_VERIFIED",
+  "profile": "source6-17.6.1.081",
+  "startedAt": "2026-11-13T19:47:26.714Z",
+  "images": {
+    "server": "public.ecr.aws/supabase/postgres@sha256:b7c9e3315b351a747af1763d3e78e990b2ae97fbdcf5d538d08a3dd6723a88a4",
+    "tool": "public.ecr.aws/supabase/postgres@sha256:06ddc7962e11ab0f4f0334fd05671e97c30ea202f6e6a7113800bd3d6e416108"
+  },
+  "inputSha256": {
+    "scripts/release/delta-fingerprint.ts": "073ae7584ea37d6e8c0bf8a915f3b78fa58184d322d0714e18c333b32ce6a0c2",
+    "scripts/release/delta-fingerprint.test.ts": "3a04906f12358ac91646f6a005f99ce5cf49ee74818ad1d4d2d5cb75d5dfe38e",
+    "scripts/release/delta-semantic-capture.sql": "f0f6578e09e8f88418f06b687e41c47ce3c471c0f1711ff94215a66763a5a435",
+    "scripts/release/delta-invariant-capture.sql": "91669cfd30f1f6c9ad50be20d56c0639df22d9109262f7680b688a4fc326cdb5",
+    "scripts/release/delta-native-collectors.ts": "9741c085f90e58f6929a36333c114efea46a9e49ff1be0bcbb3210be4e5399d8",
+    "supabase/migrations/20261113090001_active_assignment_xp_neutrality.sql": "846cf3b5afd94d38f398170308f8e62c1f90f4a9a96b516d41f185986878bae2",
+    "supabase/migrations/20260805120000_review_hardening.sql": "0528a032ba8988e3e966ce19dc3e76975569a78576a336b31e715caa6e3e4592",
+    "supabase/migrations/0010_applications.sql": "17f5d84d483158e52d3529dd3a7a65f70a9e3320b47c993ac0ffb817f52d88b9",
+    "docs/verification/2026-11-13-phase3-delta-catalog.snapshot.json": "7c0ae9e42370381e1fc8dc4d94f178c4e4b2e126d75321bbeea10083598d9782",
+    "scripts/release/delta-packet.ts": "661c4bc05ad9597034f46acd4612f1c23513a0c07ea886be4bffd357beaa15f4",
+    "scripts/release/delta-release-contracts.ts": "3e6e00102c1b9dfc7a49ab2b55005f6952dfda458668f33410246f5adb2eb68d",
+    "scripts/release/delta-evidence.ts": "08ccccf209655481740030d8ec899e6e8987b2e80d850c725ed911cb7b4d87e7",
+    "scripts/release/delta-psql-session.ts": "62fb0c77a35b503126109d27a7d9b861f31019cdafbdd3d2944d810d882fe1b5",
+    "scripts/release/delta-program.ts": "5c16b8b5192c6d8c306fb0a04fee269889e02212c777690b0f599d33bc11e8c9"
+  },
+  "scope": {
+    "syntheticOnly": true,
+    "sourceDatabaseContacted": false,
+    "privateArchiveRead": false,
+    "credentialsSuppliedToFixture": false,
+    "network": "effective-external-none",
+    "serverNetworkMode": "none",
+    "toolNetworkMode": "container:owned-server",
+    "providerAuthTested": false,
+    "actualProductionBaseline": false,
+    "syntheticCheckpointCount": 17,
+    "checkpointStatementsActuallyExecuted": true,
+    "fixturePostgresSuperuser": true
+  },
+  "checks": {
+    "isolation": {
+      "network": "none",
+      "readOnlyRoot": true,
+      "noHostMounts": true,
+      "noPorts": true,
+      "capDropAll": true,
+      "noNewPrivileges": true,
+      "logDriver": "none",
+      "uid": 100,
+      "gid": 101,
+      "ownershipVerified": true
+    },
+    "identity": {
+      "database": "postgres",
+      "superuser": true,
+      "currentRole": "postgres",
+      "sessionRole": "postgres",
+      "serverVersionNum": "170006"
+    },
+    "syntheticHistory": {
+      "rows": 17,
+      "kind": "actually-executed-select-checkpoints",
+      "metadataSha256": "d4dc31dad5fd572756267e0258851ad5905c12a6b302a8119cf8ff77041586b7",
+      "productionEquivalent": false
+    },
+    "extensionAvailability": {
+      "expected": [
+        {
+          "name": "pg_stat_statements",
+          "schema": "extensions",
+          "version": "1.11"
+        },
+        {
+          "name": "pgcrypto",
+          "schema": "extensions",
+          "version": "1.3"
+        },
+        {
+          "name": "plpgsql",
+          "schema": "pg_catalog",
+          "version": "1.0"
+        },
+        {
+          "name": "supabase_vault",
+          "schema": "vault",
+          "version": "0.3.1"
+        },
+        {
+          "name": "uuid-ossp",
+          "schema": "extensions",
+          "version": "1.1"
+        },
+        {
+          "name": "vector",
+          "schema": "public",
+          "version": "0.8.0"
+        }
+      ],
+      "available": [
+        {
+          "name": "pg_stat_statements",
+          "version": "1.10"
+        },
+        {
+          "name": "pg_stat_statements",
+          "version": "1.11"
+        },
+        {
+          "name": "pg_stat_statements",
+          "version": "1.4"
+        },
+        {
+          "name": "pg_stat_statements",
+          "version": "1.5"
+        },
+        {
+          "name": "pg_stat_statements",
+          "version": "1.6"
+        },
+        {
+          "name": "pg_stat_statements",
+          "version": "1.7"
+        },
+        {
+          "name": "pg_stat_statements",
+          "version": "1.8"
+        },
+        {
+          "name": "pg_stat_statements",
+          "version": "1.9"
+        },
+        {
+          "name": "pgcrypto",
+          "version": "1.3"
+        },
+        {
+          "name": "plpgsql",
+          "version": "1.0"
+        },
+        {
+          "name": "supabase_vault",
+          "version": "0.2.8"
+        },
+        {
+          "name": "supabase_vault",
+          "version": "0.3.0"
+        },
+        {
+          "name": "supabase_vault",
+          "version": "0.3.1"
+        },
+        {
+          "name": "uuid-ossp",
+          "version": "1.1"
+        },
+        {
+          "name": "vector",
+          "version": "0.5.1"
+        },
+        {
+          "name": "vector",
+          "version": "0.6.0"
+        },
+        {
+          "name": "vector",
+          "version": "0.6.1"
+        },
+        {
+          "name": "vector",
+          "version": "0.6.2"
+        },
+        {
+          "name": "vector",
+          "version": "0.7.0"
+        },
+        {
+          "name": "vector",
+          "version": "0.7.1"
+        },
+        {
+          "name": "vector",
+          "version": "0.7.2"
+        },
+        {
+          "name": "vector",
+          "version": "0.7.3"
+        },
+        {
+          "name": "vector",
+          "version": "0.7.4"
+        },
+        {
+          "name": "vector",
+          "version": "0.8.0"
+        }
+      ],
+      "missing": [],
+      "sourceProfileVerified": true
+    },
+    "installedExtensions": [
+      {
+        "name": "pg_stat_statements",
+        "schema": "extensions",
+        "version": "1.11"
+      },
+      {
+        "name": "pgcrypto",
+        "schema": "extensions",
+        "version": "1.3"
+      },
+      {
+        "name": "plpgsql",
+        "schema": "pg_catalog",
+        "version": "1.0"
+      },
+      {
+        "name": "supabase_vault",
+        "schema": "vault",
+        "version": "0.3.1"
+      },
+      {
+        "name": "uuid-ossp",
+        "schema": "extensions",
+        "version": "1.1"
+      },
+      {
+        "name": "vector",
+        "schema": "public",
+        "version": "0.8.0"
+      }
+    ],
+    "nativeSemanticUnsupportedBefore": [],
+    "nativeSqlSemanticBefore": {
+      "components": [
+        {
+          "category": "database-role-settings",
+          "coverage": "complete",
+          "objectCount": 1,
+          "sha256": "f2849d0a72ecd538b8aac3c7a8104f20b95194b43e6ba7373f02659c63a0664b"
+        },
+        {
+          "category": "extension-configuration",
+          "coverage": "complete",
+          "objectCount": 1,
+          "sha256": "75226d1521bea3bb33cf861e283860bc14128e0f4a8d710b79ab5f4c1d238f4c"
+        },
+        {
+          "category": "extension-members",
+          "coverage": "complete",
+          "objectCount": 1725,
+          "sha256": "e09854d17099c945cd6ae50cfaa154ab7db2e07e6befd6892dbad42c389f9747"
+        },
+        {
+          "category": "migration-history",
+          "coverage": "complete",
+          "objectCount": 17,
+          "sha256": "ff261fe2aee71133f34bb63eb8acc3ef47b7787d4830f0a25efc54fed95b383a"
+        },
+        {
+          "category": "roles-and-memberships",
+          "coverage": "complete",
+          "objectCount": 27,
+          "sha256": "2c70650bd697a2b8539e211ded9dd67c54fb9822bdd04ae57b55aee7cf286bbe"
+        },
+        {
+          "category": "storage-configuration",
+          "coverage": "complete",
+          "objectCount": 1,
+          "sha256": "de33c00383100f7d4b05360d116a5079bee7be29537403ff49a2e26232c42fef"
+        }
+      ],
+      "extensionProfileHash": "551dd3071d315926dc6af77a3c207434f2314f0c89a0c772474a87e3a1790705"
+    },
+    "dumpNetwork": {
+      "serverMode": "none",
+      "toolMode": "container:inspect-verified-owned-server",
+      "onlyLoopback": true,
+      "externalRoutes": 0,
+      "namespaceHash": "12a1804ae2e0eda45d52b1669a7fd82c4c4c2818a083d5badd3f6eb3446c56e2",
+      "sameNamespaceVerified": true
+    },
+    "dumpBinarySha256": "5d3ffa18f39ce5cf9ee23f82cc65fcd79f32bdc65000834a1eb5ad327f3a9e9b",
+    "dumpVersion": "17.11",
+    "dumpEnvelope": {
+      "bytes": 12600,
+      "sha256": "e04519b0cd98f9a8d8ef04c07a806848f774368a03e600766af7cd5b4ebc06c1",
+      "simpleConnect": false,
+      "quotedConnect": true,
+      "reuseQuotedConninfo": false,
+      "framingSequence": [
+        "restrict",
+        "unrestrict",
+        "connect-postgres",
+        "restrict",
+        "unrestrict"
+      ]
+    },
+    "first": {
+      "beforeRows": 17,
+      "afterRows": 18,
+      "assertedBeforeCommit": true,
+      "constraintsFinalizedBeforeInvariant": true,
+      "finalizeConstraintsSha256": "ba9bd7a1dc576127a8132d0fbada1e9242c2b2b8441f29a131eed0537bbbdfc8",
+      "algorithm": "pg17-same-database-invariant-v1",
+      "unchangedCatalogReceiptHash": "4842658f62f0605bc6bd8ad64912062874c7a2cf29ec01480db692476dc76e3b",
+      "unchangedDataReceiptHash": "29ed0beaa508aab6d19815b0a98f86cd83ee216b93e9e068fd01bf4f6dbb34a2",
+      "targetAttributesAclReceiptHash": "12545752aa17e4eb0ad46e44a14f43f26812295c0d30a4b4815de9cb6ddafcb7",
+      "replayTupleReceiptHash": null
+    },
+    "replay": {
+      "beforeRows": 18,
+      "afterRows": 18,
+      "assertedBeforeCommit": true,
+      "constraintsFinalizedBeforeInvariant": true,
+      "finalizeConstraintsSha256": "ba9bd7a1dc576127a8132d0fbada1e9242c2b2b8441f29a131eed0537bbbdfc8",
+      "algorithm": "pg17-same-database-invariant-v1",
+      "unchangedCatalogReceiptHash": "4842658f62f0605bc6bd8ad64912062874c7a2cf29ec01480db692476dc76e3b",
+      "unchangedDataReceiptHash": "29ed0beaa508aab6d19815b0a98f86cd83ee216b93e9e068fd01bf4f6dbb34a2",
+      "targetAttributesAclReceiptHash": "12545752aa17e4eb0ad46e44a14f43f26812295c0d30a4b4815de9cb6ddafcb7",
+      "replayTupleReceiptHash": "e99b9f0192b5e388c0bfc45a815ca59f3c46c6e477a718832ccd6b73b2d4f3a6"
+    },
+    "semanticRoots": {
+      "before": "4dd3aa3e7930c40eb34c77e6fb50266bf33791e3ceacd898a4e5d5827c51a3a8",
+      "after": "34e0e0e082913d325c6e1caa7c1199b801fc4aed1dfcc89064aadb5106714b66",
+      "replay": "34e0e0e082913d325c6e1caa7c1199b801fc4aed1dfcc89064aadb5106714b66",
+      "algorithm": "pg17-canonical-export-v1",
+      "snapshotBound": true
+    },
+    "driftRejection": [
+      {
+        "case": "catalog-type",
+        "result": "REJECTED_BEFORE_COMMIT",
+        "rollbackAcknowledged": true
+      },
+      {
+        "case": "data",
+        "result": "REJECTED_BEFORE_COMMIT",
+        "rollbackAcknowledged": true
+      },
+      {
+        "case": "array-lower-bound",
+        "result": "REJECTED_BEFORE_COMMIT",
+        "rollbackAcknowledged": true
+      },
+      {
+        "case": "json-duplicate-key",
+        "result": "REJECTED_BEFORE_COMMIT",
+        "rollbackAcknowledged": true
+      },
+      {
+        "case": "regproc-scalar",
+        "result": "REJECTED_BEFORE_COMMIT",
+        "rollbackAcknowledged": true
+      },
+      {
+        "case": "regproc-composite",
+        "result": "REJECTED_BEFORE_COMMIT",
+        "rollbackAcknowledged": true
+      },
+      {
+        "case": "regproc-array",
+        "result": "REJECTED_BEFORE_COMMIT",
+        "rollbackAcknowledged": true
+      },
+      {
+        "case": "regproc-domain",
+        "result": "REJECTED_BEFORE_COMMIT",
+        "rollbackAcknowledged": true
+      },
+      {
+        "case": "deferred-constraint-trigger",
+        "result": "REJECTED_BEFORE_COMMIT",
+        "rollbackAcknowledged": true,
+        "withoutFlushInvariantPassed": true,
+        "flushChangedApplicationData": true,
+        "restoredAfterRollback": true,
+        "finalizeConstraintsSha256": "ba9bd7a1dc576127a8132d0fbada1e9242c2b2b8441f29a131eed0537bbbdfc8"
+      }
+    ],
+    "source": {
+      "sha256": "846cf3b5afd94d38f398170308f8e62c1f90f4a9a96b516d41f185986878bae2",
+      "packetSha256": "b85313010ced5bc54a6b7b7107d641104a5dbc7a302ec689c88e9dac36b45124",
+      "doSha256": "ac841c61032f629061b1c1fc98b9e7aee39c6751d62283f361e7458d11d73ec7",
+      "applySqlSha256": "d42a77ef3ab0c8ff603e2ffed2d21a330dcd65ad4127bf21556edc88da0f271f",
+      "finalizeConstraintsExport": "DELTA_FINALIZE_CONSTRAINTS_SQL",
+      "finalizeConstraintsSha256": "ba9bd7a1dc576127a8132d0fbada1e9242c2b2b8441f29a131eed0537bbbdfc8",
+      "predecessorBodySha256": [
+        {
+          "signature": "private.join_mission(uuid)",
+          "sha256": "c6e2dbf25154897e2aa80cf2366de5c7134e1dae54b61ba77f246bc24197795b"
+        },
+        {
+          "signature": "public.accept_application(uuid)",
+          "sha256": "b4504940a4e0579f0ce2f4fb7e349a7abb6fd2333a722d5f15f62a78ac055829"
+        }
+      ],
+      "packetWrapperCommitExecuted": false
+    },
+    "inputHashesAfter": "UNCHANGED"
+  },
+  "limitations": [
+    "Synthetic checkpoint history is not the approved production 62-source/17-row baseline.",
+    "initdb creates a local postgres superuser; this is not production-role privilege or provider HTTP/Auth proof.",
+    "External schema-change control, recovery, deployment and release/pilot approval remain separate gates."
+  ],
+  "cleanup": {
+    "containers": [
+      {
+        "role": "tool",
+        "resourceHash": "e705d46c6eca3e95a3b4bb87740b90be07bf857dd20670922755cccbb8ad0830",
+        "confirmed": true
+      },
+      {
+        "role": "server",
+        "resourceHash": "b6267f8da5b1081c1e72389b0eaf8b73a733390b54a031b17939a59f1d4af70a",
+        "confirmed": true
+      }
+    ],
+    "publicTemporaryFiles": "NOT_USED_SHARED_NATIVE_NAMESPACE"
+  },
+  "finishedAt": "2026-11-13T19:47:46.467Z",
+  "previousAttempts": [
+    {
+      "startedAt": "2026-11-13T18:31:14.626Z",
+      "finishedAt": "2026-11-13T18:31:53.054Z",
+      "status": "HOLD",
+      "failure": {
+        "stage": "native-semantic-before",
+        "code": "collector-or-fixture-verification"
+      },
+      "contentDigest": "b5b63fad0e4e270a9a49d2c325373659e56057dfdfe8838d134a441d6a364ff4",
+      "cleanup": {
+        "containers": [
+          {
+            "role": "server",
+            "resourceHash": "881335552e9fb628b4594a67ddbb2663ddf8829693e93bd5e0e8e31c41a0ffa9",
+            "confirmed": true
+          }
+        ],
+        "publicTemporaryFiles": "NOT_USED_SHARED_NATIVE_NAMESPACE"
+      }
+    },
+    {
+      "startedAt": "2026-11-13T18:41:30.983Z",
+      "finishedAt": "2026-11-13T18:41:35.323Z",
+      "status": "HOLD",
+      "failure": {
+        "stage": "native-semantic-before",
+        "code": "collector-or-fixture-verification"
+      },
+      "contentDigest": "1626b8d9fd03fd9ecb30936bc0863fd11d7569914549b3f7ff9888c8251eff9b",
+      "cleanup": {
+        "containers": [
+          {
+            "role": "server",
+            "resourceHash": "703fda7ec35b5981fffe59dad2f777d7617abf19bf06c9c4a4471d18b6ff299c",
+            "confirmed": true
+          }
+        ],
+        "publicTemporaryFiles": "NOT_USED_SHARED_NATIVE_NAMESPACE"
+      }
+    },
+    {
+      "startedAt": "2026-11-13T19:08:58.258Z",
+      "finishedAt": "2026-11-13T19:09:16.391Z",
+      "status": "NATIVE_SQL_EXPORT_AND_DELTA_REPLAY_VERIFIED",
+      "failure": null,
+      "contentDigest": "2f5fa46526a07ecca49a2d856116b27798d9f9a3cb36ce9f322e71570549bd90",
+      "cleanup": {
+        "containers": [
+          {
+            "role": "tool",
+            "resourceHash": "08ce90ce3db49b503228769652e3e14be5da842d27bd4870d351b4d4710505b7",
+            "confirmed": true
+          },
+          {
+            "role": "server",
+            "resourceHash": "ad15bb0c4ed2512a1f215c49849b365c2f3dc7a65d839fee408c0149f02259e2",
+            "confirmed": true
+          }
+        ],
+        "publicTemporaryFiles": "NOT_USED_SHARED_NATIVE_NAMESPACE"
+      }
+    }
+  ],
+  "contentDigest": "d85fd36c73b7d789ca4bae60323a6fccf373bee621a7de9ee649b6307e16e10c"
+}

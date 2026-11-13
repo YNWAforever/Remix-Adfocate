@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
 import { GENERIC_ERROR, logServerError } from "./lib/httpErrors.js";
+import { deploymentHealthMetadata } from "./lib/releaseHealth.js";
 import { workspaceAuth } from "./middleware/workspace.js";
 import { workspaceRoutes } from "./routes/workspace.js";
 import { meBootstrap, meRoutes } from "./routes/me.js";
@@ -43,7 +44,11 @@ export type Env = {
 
 export function createApp(options: { creatorPilot?: CreatorPilotRouteDependencies } = {}) {
   const app = new Hono<Env>().basePath("/api");
-  app.get("/health", (c) => c.json({ ok: true }));
+  const releaseIdentity = deploymentHealthMetadata();
+  app.get("/health", (c) => {
+    c.header("Cache-Control", "no-store");
+    return c.json({ ok: true, ...releaseIdentity });
+  });
   // Last resort for unhandled exceptions: structured log, generic JSON body. A malformed JSON
   // request body (c.req.json() SyntaxError) is the client's fault, so it answers 400.
   app.onError((err, c) => {
