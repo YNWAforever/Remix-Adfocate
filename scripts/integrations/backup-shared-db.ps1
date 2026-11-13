@@ -20,14 +20,40 @@ param(
     [switch] $GuiPrompt,
     [switch] $UseStoredCredential,
     [string] $StoredCredentialTarget = 'KOCmax/Remix-Adfocate/database',
-    [switch] $ValidateStoredCredentialOnly
+    [switch] $ValidateStoredCredentialOnly,
+    [ValidateSet('SharedDatabaseReview', 'Phase3Preparation', IgnoreCase = $false)]
+    [string] $Profile = 'SharedDatabaseReview'
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
+function Get-ReviewedBackupProfile([string] $Name) {
+    switch -CaseSensitive ($Name) {
+        'SharedDatabaseReview' {
+            return [pscustomobject]@{
+                Name = 'SharedDatabaseReview'
+                Branch = 'codex/kocmax-studio-stages-1-2'
+                Image = 'postgres@sha256:f4c66b820c6f974249089d3d16d86a3698eae11e8746eb6644b2271031e91232'
+            }
+        }
+        'Phase3Preparation' {
+            return [pscustomobject]@{
+                Name = 'Phase3Preparation'
+                Branch = 'codex/phase3-delta-rehearsal'
+                Image = 'public.ecr.aws/supabase/postgres@sha256:06ddc7962e11ab0f4f0334fd05671e97c30ea202f6e6a7113800bd3d6e416108'
+            }
+        }
+        default { throw 'Unknown reviewed backup profile; stop.' }
+    }
+}
+
 $projectRef = 'mhkoayftiuojxlrkollf'
-$approvedImage = 'postgres@sha256:f4c66b820c6f974249089d3d16d86a3698eae11e8746eb6644b2271031e91232'
+$profileSettings = Get-ReviewedBackupProfile $Profile
+$approvedImage = $profileSettings.Image
+$approvedBranch = $profileSettings.Branch
+# Preserve the original parameter default; explicit image arguments still face Assert-Target.
+if (-not $PSBoundParameters.ContainsKey('PostgresImage')) { $PostgresImage = $approvedImage }
 $caFile = Join-Path $PSScriptRoot 'certs/supabase-prod-ca-2021.crt'
 $caFileSha256 = '700723581420dd1ac98fd7e9ac529f0ef210eadcaf87fc868a3ad7d114c2f3b7'
 $caCertificateSha256 = '807025ad50d4ed219d2c9c7d299c004f824eb00cf7f65afef607d07b72e6cafa'
@@ -197,6 +223,20 @@ function Assert-Target {
         $DbPort -ne 5432 -or $DbUser -cne "postgres.$projectRef" -or
         $Database -cne 'postgres' -or $PostgresImage -cne $approvedImage) {
         throw 'Target/image mismatch. Only the reviewed session pooler, project user, database and image digest are allowed.'
+    }
+}
+
+function Assert-BackupBranch([string] $Branch, [int] $GitExitCode) {
+    if ($GitExitCode -ne 0 -or $Branch -cne $approvedBranch) { throw 'Unexpected branch; stop.' }
+}
+
+function Assert-BackupInputMode([bool] $InputRedirected, [Threading.ApartmentState] $ApartmentState) {
+    # Stored credentials never enter either interactive prompt path.
+    if (-not $UseStoredCredential) {
+        if (-not $GuiPrompt -and $InputRedirected) { throw 'Use a visible interactive console for secure input.' }
+        if ($GuiPrompt -and $ApartmentState -ne [Threading.ApartmentState]::STA) {
+            throw 'GUI input requires pwsh -STA. No database connection opened.'
+        }
     }
 }
 
@@ -457,7 +497,7 @@ Assert-NoReparsePoint $backupRoot
 Assert-PinnedCa
 if ($backupRoot -match ',') { throw 'Docker bind mount source must not contain commas.' }
 $branch = (& git -C $repoRoot branch --show-current).Trim()
-if ($LASTEXITCODE -ne 0 -or $branch -cne 'codex/kocmax-studio-stages-1-2') { throw 'Unexpected branch; stop.' }
+Assert-BackupBranch -Branch $branch -GitExitCode $LASTEXITCODE
 $head = (& git -C $repoRoot rev-parse HEAD).Trim()
 if ($LASTEXITCODE -ne 0) { throw 'Cannot record current HEAD.' }
 if ($ValidateOnly) {
@@ -479,10 +519,7 @@ if ($ValidateStoredCredentialOnly) {
     }
     return
 }
-if (-not $GuiPrompt -and [Console]::IsInputRedirected) { throw 'Use a visible interactive console for secure input.' }
-if ($GuiPrompt -and [Threading.Thread]::CurrentThread.GetApartmentState() -ne 'STA') {
-    throw 'GUI input requires pwsh -STA. No database connection opened.'
-}
+Assert-BackupInputMode -InputRedirected ([Console]::IsInputRedirected) -ApartmentState ([Threading.Thread]::CurrentThread.GetApartmentState())
 $script:dockerExe = (Get-Command docker.exe -CommandType Application -ErrorAction Stop).Source
 $engine = Invoke-DockerCapture -DockerArguments @('info', '--format', '{{.OSType}}')
 Assert-CommandResult $engine 'Local Docker engine'
@@ -500,7 +537,8 @@ New-PrivateDirectory $script:runDir
 $script:manifest = [ordered]@{
     status = 'IN_PROGRESS'; phase = 'local_precheck'; startedUtc = [DateTime]::UtcNow.ToString('o'); updatedUtc = $null
     projectRef = $projectRef; host = $DbHost; port = $DbPort; user = $DbUser; database = $Database; backupRoot = $backupRoot
-    helperVersion = '3-native-readonly-20261108'
+    helperVersion = '4-reviewed-profiles-20261113'
+    profile = $profileSettings.Name; profileBranch = $approvedBranch
     credentialSource = if ($UseStoredCredential) { 'windows_credential_manager' } else { 'interactive_prompt' }
     branch = $branch; head = $head; scriptSha256 = (Get-FileHash -LiteralPath $PSCommandPath -Algorithm SHA256).Hash.ToLowerInvariant()
     image = $PostgresImage; imageId = $image.Output.Trim(); dockerEndpoint = $dockerPipe
