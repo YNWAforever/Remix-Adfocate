@@ -107,6 +107,7 @@ describe("migration history audit", () => {
 
   it("writes a new report from sanitized local data and refuses overwrite, apply, and migration paths", async () => {
     const root = await mkdtemp(join(tmpdir(), "history-audit-"));
+    if (!root.startsWith(join(tmpdir(), "history-audit-"))) throw new Error("unexpected test cleanup path");
     try {
       await mkdir(join(root, "supabase/migrations"), { recursive: true });
       await writeFile(join(root, source.path), sql.replaceAll("\n", "\r\n"));
@@ -123,19 +124,18 @@ describe("migration history audit", () => {
       await expect(readFile(join(root, "supabase/migrations/report.json"))).rejects.toMatchObject({ code: "ENOENT" });
       expect(await readFile(join(root, source.path), "utf8")).toBe(sql.replaceAll("\n", "\r\n"));
     } finally {
-      if (!root.startsWith(join(tmpdir(), "history-audit-"))) throw new Error("unexpected test cleanup path");
       await rm(root, { recursive: true, force: true });
     }
   });
 
   it("matches manifest hashing for a lone-CR source checkout", async () => {
     const root = await mkdtemp(join(tmpdir(), "history-audit-"));
+    if (!root.startsWith(join(tmpdir(), "history-audit-"))) throw new Error("unexpected test cleanup path");
     try {
       await mkdir(join(root, "supabase/migrations"), { recursive: true });
       await writeFile(join(root, source.path), sql.replaceAll("\n", "\r"));
       expect(await readMigrationSources(root)).toEqual([source]);
     } finally {
-      if (!root.startsWith(join(tmpdir(), "history-audit-"))) throw new Error("unexpected test cleanup path");
       await rm(root, { recursive: true, force: true });
     }
   });
