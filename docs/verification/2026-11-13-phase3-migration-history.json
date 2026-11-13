@@ -1,0 +1,197 @@
+{
+  "reportType": "phase3-migration-history-review-summary",
+  "schemaVersion": 1,
+  "decision": "HOLD",
+  "validReleaseEvidence": false,
+  "targetProjectRef": "mhkoayftiuojxlrkollf",
+  "observedAt": "2026-11-13T08:08:50.432Z",
+  "createdAt": "2026-11-13T08:25:57.314Z",
+  "productionWrites": 0,
+  "manifestDigest": "cc41fb8ccabc9cd72b1015964a5bd605f77b8f07cc243454c0071c27d832edab",
+  "counts": {
+    "recordedHistory": 17,
+    "sourceFiles": 97,
+    "reviewedMigrations": 67,
+    "reviewedHistoryRecorded": 2,
+    "reviewedHistoryMissing": 65,
+    "outsideManifestHistory": 15,
+    "missingHistoryWithSomeObjectsPresent": 60,
+    "missingHistoryWithSomeObjectsAbsent": 3
+  },
+  "snapshot": {
+    "path": "docs/verification/2026-11-13-phase3-migration-history.snapshot.json",
+    "sha256": "8bf6f77745c0d0bbe7973a271d6012d83bc3d8b55d787d77376c305f465d3823",
+    "catalogObjects": 2882,
+    "transactionReadOnly": true,
+    "serverCertificateVerified": true
+  },
+  "baselinePacket": {
+    "recordedVersion": "20261031201901",
+    "recordedName": "kocmax_studio_shared_review_c879b204",
+    "sourceEnvelopeCount": 62,
+    "archivedAppliedSqlSha256": "9cbecbf1b4b68c476ed8d996f8f3d1c61408e46986584c22ab0111788cd9e5a5",
+    "archivedSqlHashMatchesReceipt": true,
+    "historyPolicy": "One new named migration; preserve 14 previous entries. Never claim the 62 raw source files were applied unmodified.",
+    "note": "Approved derived source envelope; never infer separately applied raw source files."
+  },
+  "unrecordedOutsidePacket": [
+    {
+      "version": "20261103215321",
+      "name": "kocmax_creator_growth_private",
+      "listedObjectCounts": {
+        "present": 0,
+        "absent": 104,
+        "unchecked": 301
+      }
+    },
+    {
+      "version": "20261104134202",
+      "name": "kocmax_publish_intents",
+      "listedObjectCounts": {
+        "present": 0,
+        "absent": 36,
+        "unchecked": 84
+      }
+    },
+    {
+      "version": "20261113090001",
+      "name": "active_assignment_xp_neutrality",
+      "listedObjectCounts": {
+        "present": 2,
+        "absent": 0,
+        "unchecked": 8
+      }
+    }
+  ],
+  "namedObjectGaps": [
+    {
+      "version": "20260715163350",
+      "name": "active_mission_workspace",
+      "absentCount": 1,
+      "examples": [
+        "constraint:public.mission_submissions.mission_submissions_creator_workspace_fk"
+      ],
+      "note": "Named-object existence only; do not infer semantic absence or execution state."
+    },
+    {
+      "version": "20261103215321",
+      "name": "kocmax_creator_growth_private",
+      "absentCount": 104,
+      "examples": [
+        "table:private.creator_growth_assets",
+        "rls:private.creator_growth_assets",
+        "table:private.creator_growth_media_sources",
+        "rls:private.creator_growth_media_sources",
+        "table:private.creator_growth_consents"
+      ],
+      "note": "Named-object existence only; do not infer semantic absence or execution state."
+    },
+    {
+      "version": "20261104134202",
+      "name": "kocmax_publish_intents",
+      "absentCount": 36,
+      "examples": [
+        "table:private.creator_publish_intents",
+        "rls:private.creator_publish_intents",
+        "table:private.creator_publish_approvals",
+        "rls:private.creator_publish_approvals",
+        "table:private.creator_publish_commands"
+      ],
+      "note": "Named-object existence only; do not infer semantic absence or execution state."
+    }
+  ],
+  "functionPreconditions": {
+    "projectRef": "mhkoayftiuojxlrkollf",
+    "observedAt": "2026-11-13T08:21:09.049Z",
+    "readOnly": true,
+    "functions": [
+      {
+        "signature": "private.join_mission(uuid)",
+        "source": "supabase/migrations/20260805120000_review_hardening.sql",
+        "sourceBodySha256": "c6e2dbf25154897e2aa80cf2366de5c7134e1dae54b61ba77f246bc24197795b",
+        "observed": {
+          "definer": true,
+          "config": [
+            "search_path=public"
+          ],
+          "owner": "postgres",
+          "body_sha256": "c6e2dbf25154897e2aa80cf2366de5c7134e1dae54b61ba77f246bc24197795b",
+          "anon_execute": false,
+          "authenticated_execute": false,
+          "service_role_execute": false
+        },
+        "bodyMatchesCanonicalSource": true
+      },
+      {
+        "signature": "public.accept_application(uuid)",
+        "source": "supabase/migrations/0010_applications.sql",
+        "sourceBodySha256": "b4504940a4e0579f0ce2f4fb7e349a7abb6fd2333a722d5f15f62a78ac055829",
+        "observed": {
+          "definer": true,
+          "config": [
+            "search_path=public"
+          ],
+          "owner": "postgres",
+          "body_sha256": "b4504940a4e0579f0ce2f4fb7e349a7abb6fd2333a722d5f15f62a78ac055829",
+          "anon_execute": false,
+          "authenticated_execute": false,
+          "service_role_execute": true
+        },
+        "bodyMatchesCanonicalSource": true
+      }
+    ]
+  },
+  "proposedDelta": {
+    "version": "20261113090001",
+    "path": "supabase/migrations/20261113090001_active_assignment_xp_neutrality.sql",
+    "sha256": "846cf3b5afd94d38f398170308f8e62c1f90f4a9a96b516d41f185986878bae2",
+    "productionApplied": false,
+    "changes": [
+      "Active joins add no XP and begin with zero awarded XP.",
+      "Active application acceptance preserves existing earned XP.",
+      "Legacy joins and acceptance keep the one-time +10 award."
+    ],
+    "backfill": false
+  },
+  "validation": {
+    "offlineAssignmentSqlCasesPassed": 21,
+    "historyAuditCasesPassed": 18,
+    "reviewFindingsResolved": [
+      "Canonical output parent containment, including junctions.",
+      "Manifest-compatible LF, CRLF and lone-CR hashing."
+    ],
+    "fullHostedAuthOrRecoveryRehearsal": false
+  },
+  "remainingGates": [
+    "Baseline-aware, scoped forward-delta release/rehearsal profile; no raw history repair/replay.",
+    "Fresh schema/ACL/policy fingerprint, recovery reference and disposable production-shape rehearsal.",
+    "Exact release approval bound to concrete evidence and commit.",
+    "One scoped draft candidate and creator admission control, separate pilot enablement approval."
+  ],
+  "scopeLimits": [
+    "Absent migration history does not prove absent schema or justify replaying old SQL.",
+    "Object existence does not verify function bodies, policy expressions, ACLs, constraints, indexes, or migration execution.",
+    "Statements hashes identify archived split statements; they are not comparable to migration file hashes.",
+    "History outside this feature manifest may belong to earlier baseline releases; it is not automatically unreviewed.",
+    "Name candidates are leads for manual comparison only; never mark a migration applied from a name match.",
+    "This report is always HOLD and never replaces full preflight, rehearsal, recovery review, or scoped approval."
+  ],
+  "sourceFiles": [
+    {
+      "path": "scripts/release/history-audit.ts",
+      "lfNormalizedTextSha256": "38dfa8e14638375e90dc8b08af23eb6d5c6073dee5d56b0ac23dc67e8efab0e0"
+    },
+    {
+      "path": "scripts/release/history-audit-capture.sql",
+      "lfNormalizedTextSha256": "7a88aa61be2a2c1f771c19ea5a40346be78723441e86c380065f86875f43a1b5"
+    },
+    {
+      "path": "docs/review/kocmax-stage-4d/d1/shared-database/execution/application-manifest.json",
+      "lfNormalizedTextSha256": "cf95fd22011b2a1ce701e0f40d1a29b2c189c13376fece19b3a34d323e326d72"
+    },
+    {
+      "path": "docs/review/kocmax-stage-4d/d1/shared-database/selected-migrations.json",
+      "lfNormalizedTextSha256": "74523003b231a07e7de34afbee1470ce4f5aa82193a09101eaecf3a8914e2de4"
+    }
+  ]
+}

@@ -49,17 +49,17 @@ async function counts() { return value<{ xp: number; filled: number; receipts: n
 beforeAll(async () => {
   expect(target).toEqual({ storage: "memory://", transport: "in-process-wasm", network: "none" });
   const { PGlite: Engine } = await import("@electric-sql/pglite"); db = await Engine.create(target.storage); await db.exec(base);
-  for (const file of ["0013_operator_creator_selection_crm.sql", "0010_applications.sql", "20261022170751_audit_crm_commands.sql", "20261025120934_application_decisions.sql"]) await db.exec(await readFile(`supabase/migrations/${file}`, "utf8"));
+  for (const file of ["0013_operator_creator_selection_crm.sql", "0010_applications.sql", "20261022170751_audit_crm_commands.sql", "20261025120934_application_decisions.sql", "20261113090001_active_assignment_xp_neutrality.sql"]) await db.exec(await readFile(`supabase/migrations/${file}`, "utf8"));
   await db.exec(`insert into public.mission_submissions(id,workspace_id,mission_id,creator_id,status)values('${submission}','${A}','${mission}','${creator}','applied')`);
 }, 60000);
 beforeEach(async () => { await db.exec("begin"); }); afterEach(async () => { await db.exec("rollback"); }); afterAll(async () => { await db?.close(); });
 
 describe("UC-C25/UC-A10 owned-memory application command", () => {
-  it("records actor/time, one workflow, audit and receipt while retaining the original one-time XP/quota semantics", async () => {
+  it("records actor/time, one workflow, audit and receipt with neutral active XP and one-time quota", async () => {
     const first = await value<{ decision: { actorId: string; decidedAt: string } }>(sql, args());
     expect(first.decision.actorId).toBe(actor); expect(Date.parse(first.decision.decidedAt)).not.toBeNaN();
     expect(await value(sql, args())).toEqual(first);
-    expect(await counts()).toEqual({ xp: 10, filled: 1, receipts: 1, audit: 1, workflows: 1, status: "joined" });
+    expect(await counts()).toEqual({ xp: 0, filled: 1, receipts: 1, audit: 1, workflows: 1, status: "joined" });
   });
   it("persists a decline reason without quota, workflow or XP changes", async () => {
     const result = await value<{ decision: { action: string; reason: string } }>(sql, args("decline", "Please improve the portfolio"));
@@ -71,7 +71,7 @@ describe("UC-C25/UC-A10 owned-memory application command", () => {
     const first = await value<{ decision: unknown }>(sql, args());
     const second = await value(sql, args("decline", "Retained local reason", other));
     expect(second).toEqual({ conflict: true, decision: first.decision });
-    expect(await counts()).toEqual({ xp: 10, filled: 1, receipts: 1, audit: 1, workflows: 1, status: "joined" });
+    expect(await counts()).toEqual({ xp: 0, filled: 1, receipts: 1, audit: 1, workflows: 1, status: "joined" });
   });
   it("rejects key reuse with a different payload and keeps the first reason", async () => {
     await value(sql, args("decline", "First reason"));
@@ -108,6 +108,6 @@ describe("UC-C25/UC-A10 owned-memory application command", () => {
     await db.exec("set local role service_role");
     expect(await value(sql, args())).toMatchObject({ decision: { actorId: actor, revision: 1 } });
     await db.exec("reset role");
-    expect(await counts()).toEqual({ xp: 10, filled: 1, receipts: 1, audit: 1, workflows: 1, status: "joined" });
+    expect(await counts()).toEqual({ xp: 0, filled: 1, receipts: 1, audit: 1, workflows: 1, status: "joined" });
   });
 });
