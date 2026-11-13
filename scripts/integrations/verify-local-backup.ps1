@@ -10,15 +10,43 @@ pg_restore emits the entire unfiltered custom archive to /dev/null, offline.
 [CmdletBinding()]
 param(
     [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [string] $AttemptDirectory,
-    [ValidateRange(60, 7200)] [int] $TimeoutSeconds = 1800
+    [ValidateRange(60, 7200)] [int] $TimeoutSeconds = 1800,
+    [ValidateSet('SharedDatabaseReview', 'Phase3Preparation', IgnoreCase = $false)]
+    [string] $Profile = 'SharedDatabaseReview'
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
+function Get-ReviewedVerificationProfile([string] $Name) {
+    switch -CaseSensitive ($Name) {
+        'SharedDatabaseReview' {
+            return [pscustomobject]@{
+                Name = 'SharedDatabaseReview'; Branch = 'codex/kocmax-studio-stages-1-2'
+                Image = 'postgres@sha256:f4c66b820c6f974249089d3d16d86a3698eae11e8746eb6644b2271031e91232'
+                HelperVersion = '3-native-readonly-20261101'
+                FailureStatus = 'ARCHIVE_VERIFICATION_FAILED'
+                SuccessStatus = 'ARCHIVE_FULL_READ_OK_RESTORE_NOT_TESTED'
+            }
+        }
+        'Phase3Preparation' {
+            return [pscustomobject]@{
+                Name = 'Phase3Preparation'; Branch = 'codex/phase3-delta-rehearsal'
+                Image = 'public.ecr.aws/supabase/postgres@sha256:06ddc7962e11ab0f4f0334fd05671e97c30ea202f6e6a7113800bd3d6e416108'
+                TlsImage = 'node@sha256:9d266751ca3d7fdbe651c878ffd5ad0a42fed49a18c283509267c97f025b7496'
+                HelperVersion = '5-separated-tls-tools-20261113'
+                FailureStatus = 'PHASE3_ARCHIVE_VERIFICATION_FAILED'
+                SuccessStatus = 'PHASE3_ARCHIVE_FULL_READ_OK_RESTORE_NOT_TESTED'
+            }
+        }
+        default { throw 'Unknown reviewed verification profile; stop.' }
+    }
+}
+
 $projectRef = 'mhkoayftiuojxlrkollf'
-$expectedBranch = 'codex/kocmax-studio-stages-1-2'
-$toolImage = 'postgres@sha256:f4c66b820c6f974249089d3d16d86a3698eae11e8746eb6644b2271031e91232'
+$profileSettings = Get-ReviewedVerificationProfile $Profile
+$expectedBranch = $profileSettings.Branch
+$toolImage = $profileSettings.Image
 $dockerPipe = 'npipe:////./pipe/dockerDesktopLinuxEngine'
 $artifactNames = @('database.dump', 'roles.sql', 'toc.list')
 $repoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../..'))
@@ -28,6 +56,12 @@ $script:dockerExe = $null
 function Stop-Verification([string] $Code) {
     $script:failureCode = $Code
     throw 'Verification stopped; native diagnostics and file contents are not disclosed.'
+}
+
+function Assert-VerificationBranch([string[]] $Branch, [int] $GitExitCode) {
+    if ($GitExitCode -ne 0 -or $Branch.Count -ne 1 -or $Branch[0] -cne $expectedBranch) {
+        Stop-Verification 'WORKTREE_BRANCH_MISMATCH'
+    }
 }
 
 function Normalize-LocalPath([string] $Path) {
@@ -89,7 +123,12 @@ function Assert-Manifest($Manifest) {
         projectRef = $projectRef; host = 'aws-1-ap-northeast-1.pooler.supabase.com'
         user = 'postgres.mhkoayftiuojxlrkollf'; database = 'postgres'; image = $toolImage
         branch = $expectedBranch; status = 'CAPTURED_INVENTORIED_RESTORE_NOT_TESTED'
-        phase = 'finished'; helperVersion = '3-native-readonly-20261101'; tls = 'verify-full'; restoreRehearsal = 'NOT_RUN'
+        phase = 'finished'; helperVersion = $profileSettings.HelperVersion; tls = 'verify-full'; restoreRehearsal = 'NOT_RUN'
+    }
+    if ($profileSettings.Name -ceq 'Phase3Preparation') {
+        $expected.profile = $profileSettings.Name
+        $expected.profileBranch = $expectedBranch
+        $expected.tlsPreflightImage = $profileSettings.TlsImage
     }
     foreach ($key in $expected.Keys) {
         if (-not $Manifest.Contains($key) -or $Manifest[$key] -isnot [string] -or $Manifest[$key] -cne $expected[$key]) {
@@ -120,6 +159,21 @@ function Assert-Manifest($Manifest) {
     }
     if ($metadata.transaction_read_only -cne 'on' -or $metadata.row_security -cne 'off' -or
         @('on','off') -cnotcontains $metadata.default_read_only) { Stop-Verification 'MANIFEST_READONLY_METADATA_MISMATCH' }
+    if ($profileSettings.Name -ceq 'Phase3Preparation') {
+        if (-not $Manifest.Contains('pgDumpVersion') -or $Manifest.pgDumpVersion -isnot [string] -or
+            $Manifest.pgDumpVersion -cnotmatch '^pg_dump \(PostgreSQL\) 17\.11(?:\s|$)' -or
+            ($metadata.server_version_num -isnot [long] -and $metadata.server_version_num -isnot [int]) -or
+            $metadata.server_version_num -ne 170006 -or $metadata.database -cne 'postgres' -or
+            $metadata.user -cne 'postgres' -or $metadata.session_user -cne 'postgres') {
+            Stop-Verification 'PHASE3_CAPTURE_VERSION_OR_IDENTITY_MISMATCH'
+        }
+        if ($metadata.schemas -isnot [array] -or
+            @('public','auth','storage' | Where-Object { $_ -cnotin $metadata.schemas }).Count -ne 0 -or
+            $metadata.unreadable_tables -ne 0 -or $metadata.missing_schema_usage -ne 0 -or
+            $metadata.foreign_tables -ne 0 -or $metadata.extra_tablespaces -ne 0) {
+            Stop-Verification 'PHASE3_CAPTURE_COVERAGE_MISMATCH'
+        }
+    }
     if ($Manifest.port -isnot [long] -and $Manifest.port -isnot [int]) { Stop-Verification 'INVALID_MANIFEST_PORT' }
     if ($Manifest.port -ne 5432 -or $Manifest.remoteReadOnly -isnot [bool] -or -not $Manifest.remoteReadOnly -or
         $Manifest.imageId -cnotmatch '^sha256:[0-9a-f]{64}$' -or $Manifest.head -cnotmatch '^[0-9a-f]{40}$' -or
@@ -208,7 +262,8 @@ function Get-ArchiveReadArguments([string] $Directory, [string] $ContainerName) 
 }
 
 $result = [ordered]@{
-    verifierVersion = '1-archive-read-20261101'; status = 'ARCHIVE_VERIFICATION_FAILED'
+    verifierVersion = '2-fixed-profiles-20261113'; status = $profileSettings.FailureStatus
+    profile = $profileSettings.Name; profileBranch = $expectedBranch
     projectRef = $projectRef; attempt = $null; failureCode = $null; checkedUtc = $null
     manifestSha256 = $null; captureScriptSha256 = $null; artifacts = @(); image = $toolImage
     fullArchiveRead = 'NOT_RUN'; hashesAfter = 'NOT_RUN'; containerCleanup = 'NOT_NEEDED'
@@ -227,7 +282,7 @@ try {
     $result.attempt = [IO.Path]::GetFileName($attempt)
     # Git output is retained privately; only a fixed failure code is emitted on mismatch.
     $branch = @(& git -C $repoRoot branch --show-current 2>$null)
-    if ($LASTEXITCODE -ne 0 -or $branch.Count -ne 1 -or $branch[0] -cne $expectedBranch) { Stop-Verification 'WORKTREE_BRANCH_MISMATCH' }
+    Assert-VerificationBranch -Branch $branch -GitExitCode $LASTEXITCODE
     $before = Read-VerifiedSnapshot $attempt
     $result.manifestSha256 = $before.ManifestHash
     $result.captureScriptSha256 = $before.Manifest.scriptSha256
@@ -257,7 +312,7 @@ try {
         # Both snapshots validate the exact three files against the same immutable manifest hash.
         $result.hashesAfter = 'UNCHANGED'
     }
-    $result.status = 'ARCHIVE_FULL_READ_OK_RESTORE_NOT_TESTED'
+    $result.status = $profileSettings.SuccessStatus
     $exitCode = 0
 } catch {
     $result.failureCode = $script:failureCode

@@ -1,7 +1,7 @@
 #requires -Version 7.2
 <#
 .SYNOPSIS
-Offline host wrapper for one explicit fresh Auth-pilot restore checkpoint.
+Offline host wrapper for one explicit fresh restore checkpoint and fixed profile.
 .DESCRIPTION
 Runs the existing full-read verifier first, then the unchanged disposable restore
 script in the installed pinned Supabase image. No remote connections, credentials,
@@ -14,15 +14,48 @@ param(
     [Parameter(Mandatory)] [ValidateNotNullOrEmpty()] [string] $SourceFingerprintPath,
     [Parameter(Mandatory)] [DateTimeOffset] $CheckpointNotBeforeUtc,
     [Nullable[DateTimeOffset]] $SourceCapturedUtc = $null,
-    [ValidateRange(60, 7200)] [int] $TimeoutSeconds = 1800
+    [ValidateRange(60, 7200)] [int] $TimeoutSeconds = 1800,
+    [ValidateSet('SharedDatabaseReview', 'Phase3Preparation', IgnoreCase = $false)]
+    [string] $Profile = 'SharedDatabaseReview'
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
+function Get-ReviewedRestoreProfile([string] $Name) {
+    switch -CaseSensitive ($Name) {
+        'SharedDatabaseReview' {
+            return [pscustomobject]@{
+                Name = 'SharedDatabaseReview'; Branch = 'codex/kocmax-studio-stages-1-2'
+                Image = 'public.ecr.aws/supabase/postgres@sha256:658d1c9b09ae4f61b8e95087b6859181b4b7d6940d769cf7b605609c8aad43e9'
+                ArchiveImage = 'postgres@sha256:f4c66b820c6f974249089d3d16d86a3698eae11e8746eb6644b2271031e91232'
+                ArchiveStatus = 'ARCHIVE_FULL_READ_OK_RESTORE_NOT_TESTED'
+                FailureStatus = 'AUTH_PILOT_RESTORE_NOT_VERIFIED'
+                SuccessStatus = 'AUTH_PILOT_CURRENT_RESTORE_VERIFIED'
+                ApplicationTables = 94; PublicTables = 80; PrivateTables = 14; MigrationRows = 15
+                ScopeFailure = 'CURRENT_94_TABLE_15_MIGRATION_SCOPE_REQUIRED'
+            }
+        }
+        'Phase3Preparation' {
+            return [pscustomobject]@{
+                Name = 'Phase3Preparation'; Branch = 'codex/phase3-delta-rehearsal'
+                Image = 'public.ecr.aws/supabase/postgres@sha256:f371b5f3f2ac0a05703f33d6e6134515fb2498cab708fb948a0aeb7481467c00'
+                ArchiveImage = 'public.ecr.aws/supabase/postgres@sha256:06ddc7962e11ab0f4f0334fd05671e97c30ea202f6e6a7113800bd3d6e416108'
+                ArchiveStatus = 'PHASE3_ARCHIVE_FULL_READ_OK_RESTORE_NOT_TESTED'
+                FailureStatus = 'PHASE3_PREPARATION_RESTORE_NOT_VERIFIED'
+                SuccessStatus = 'PHASE3_PREPARATION_RESTORE_VERIFIED_AUTH_NOT_TESTED'
+                ApplicationTables = 104; PublicTables = 90; PrivateTables = 14; MigrationRows = 17
+                ScopeFailure = 'PHASE3_104_TABLE_17_MIGRATION_SCOPE_REQUIRED'
+            }
+        }
+        default { throw 'Unknown reviewed restore profile; stop.' }
+    }
+}
+
 $projectRef = 'mhkoayftiuojxlrkollf'
+$profileSettings = Get-ReviewedRestoreProfile $Profile
 $dockerPipe = 'npipe:////./pipe/dockerDesktopLinuxEngine'
-$restoreImage = 'public.ecr.aws/supabase/postgres@sha256:658d1c9b09ae4f61b8e95087b6859181b4b7d6940d769cf7b605609c8aad43e9'
+$restoreImage = $profileSettings.Image
 $repoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../..'))
 $verifierPath = Join-Path $PSScriptRoot 'verify-local-backup.ps1'
 $restorePath = Join-Path $PSScriptRoot 'verify-backup-disposable-restore.sh'
@@ -30,7 +63,7 @@ $queryPath = Join-Path $PSScriptRoot 'auth-pilot-fingerprint.sql'
 $baselineQueryPath = Join-Path $repoRoot 'docs/review/kocmax-stage-4d/d1/shared-database/execution/existing-data-fingerprint.sql'
 $baselineQueryHash = 'f021185484b84b07030a1d81a2f2a8a7ba0b37282f4011b73d7432659725b009'
 $pins = @{
-    'verify-local-backup.ps1' = '203ed187f0e8966e987d5f6e9b0ce4d670c7425e5b09c7997857c5f48ced847c'
+    'verify-local-backup.ps1' = '4694570dcf4f80e82f9b370407312c263f5aebd398094a187ccea46b2515b399'
     'verify-backup-disposable-restore.sh' = 'f94b0c9981f32219bcb269db4aa76251bb6d54483c7a33655b470605eab7edb3'
     'auth-pilot-fingerprint.sql' = 'a1f11eb1db5dc83cd4c4a04321d191d1943fd1866a1981354e583a32f7861383'
 }
@@ -233,8 +266,9 @@ function Normalize-Fingerprint($Row) {
         auth_table_count = Nonnegative-Integer $Row.auth_table_count
         storage_table_count = Nonnegative-Integer $Row.storage_table_count
     }
-    if ($normalized.application_data.table_count -ne 94 -or $normalized.migration_count -ne 15 -or
-        $normalized.auth_table_count -eq 0 -or $normalized.storage_table_count -eq 0) { Stop-Check 'CURRENT_94_TABLE_15_MIGRATION_SCOPE_REQUIRED' }
+    if ($normalized.application_data.table_count -ne $profileSettings.ApplicationTables -or
+        $normalized.migration_count -ne $profileSettings.MigrationRows -or
+        $normalized.auth_table_count -eq 0 -or $normalized.storage_table_count -eq 0) { Stop-Check $profileSettings.ScopeFailure }
     return $normalized
 }
 
@@ -273,7 +307,8 @@ function Remove-OwnedContainer {
 }
 
 $result = [ordered]@{
-    wrapperVersion = '1-auth-pilot-current-20261101'; status = 'AUTH_PILOT_RESTORE_NOT_VERIFIED'
+    wrapperVersion = '2-fixed-profiles-20261113'; status = $profileSettings.FailureStatus
+    profile = $profileSettings.Name; profileBranch = $profileSettings.Branch
     projectRef = $projectRef; attempt = $null; failureCode = $null; failureDiagnostics = $null
     checkpointNotBeforeUtc = $CheckpointNotBeforeUtc.ToUniversalTime().ToString('o')
     backupStartedUtc = $null; backupFinishedUtc = $null; sourceCapturedUtc = $null
@@ -327,10 +362,13 @@ try {
     $result.evidenceDirectory = $script:evidence
     $shellPath = Join-Path $PSHOME 'pwsh.exe'
     $fullRead = Invoke-Captured -Program $shellPath -Arguments @('-NoProfile', '-File', $verifierPath,
-        '-AttemptDirectory', $attempt, '-TimeoutSeconds', [string]$TimeoutSeconds) -Label 'archive-verifier' -Seconds 0
+        '-AttemptDirectory', $attempt, '-TimeoutSeconds', [string]$TimeoutSeconds, '-Profile', $profileSettings.Name) -Label 'archive-verifier' -Seconds 0
     Require-NativeSuccess $fullRead 'EXISTING_ARCHIVE_VERIFIER_FAILED'
     $full = Parse-Object $fullRead.Output 'INVALID_ARCHIVE_VERIFIER_RECEIPT'
-    if ($full.status -cne 'ARCHIVE_FULL_READ_OK_RESTORE_NOT_TESTED' -or $full.projectRef -cne $projectRef -or
+    if ($full.verifierVersion -cne '2-fixed-profiles-20261113' -or
+        $full.profile -cne $profileSettings.Name -or $full.profileBranch -cne $profileSettings.Branch -or
+        $full.image -cne $profileSettings.ArchiveImage -or
+        $full.status -cne $profileSettings.ArchiveStatus -or $full.projectRef -cne $projectRef -or
         $full.attempt -cne $result.attempt -or $full.fullArchiveRead -cne 'PASSED' -or
         $full.hashesAfter -cne 'UNCHANGED' -or $full.containerCleanup -cne 'CONFIRMED') { Stop-Check 'ARCHIVE_VERIFIER_DID_NOT_PASS' }
     $result.fullArchiveRead = 'PASSED'
@@ -505,11 +543,13 @@ exit "$code"
     $actual = Normalize-Fingerprint $row
     if ((Canonical-Json $expected) -cne (Canonical-Json $actual)) { Stop-Check 'SOURCE_RESTORE_FINGERPRINT_MISMATCH' }
     if ($restored.metadata.database -cne 'postgres' -or $restored.metadata.server_version_num -ne 170006 -or
-        $restored.metadata.public_tables -ne 80 -or $restored.metadata.migration_rows -ne 15 -or
+        $restored.metadata.public_tables -ne $profileSettings.PublicTables -or
+        $restored.metadata.migration_rows -ne $profileSettings.MigrationRows -or
         $restored.metadata.auth_tables -ne $actual.auth_table_count -or
         $restored.metadata.storage_tables -ne $actual.storage_table_count) { Stop-Check 'RESTORED_METADATA_MISMATCH' }
     $result.comparison = 'ALL_DECLARED_FIELDS_MATCHED_TO_SUPPLIED_BASELINE'
-    $result.matchedCounts = @{ applicationTables = 94; publicTables = 80; privateTables = 14; migrationRows = 15;
+    $result.matchedCounts = @{ applicationTables = $actual.application_data.table_count;
+        publicTables = $restored.metadata.public_tables; privateTables = $profileSettings.PrivateTables; migrationRows = $actual.migration_count;
         applicationRows = $actual.application_data.row_count; policies = $actual.policy_count;
         authTables = $restored.metadata.auth_tables; storageTables = $restored.metadata.storage_tables; eventTriggers = $restored.metadata.event_triggers }
     $result.matchedDataDigest = $actual.application_data.data_digest
@@ -539,11 +579,11 @@ exit "$code"
         }
         catch { $passed = $false; $result.failureCode = 'EVIDENCE_ACL_OR_FILE_TYPE_MISMATCH' }
     }
-    if ($passed) { $result.status = 'AUTH_PILOT_CURRENT_RESTORE_VERIFIED'; $result.failureCode = $null }
+    if ($passed) { $result.status = $profileSettings.SuccessStatus; $result.failureCode = $null }
     $result.finishedUtc = [DateTime]::UtcNow.ToString('o')
     if ($null -ne $script:evidence) {
         try { Write-PrivateText 'receipt.json' ($result | ConvertTo-Json -Depth 12) }
-        catch { $passed = $false; $result.status = 'AUTH_PILOT_RESTORE_NOT_VERIFIED'; $result.failureCode = 'PRIVATE_RECEIPT_WRITE_FAILED' }
+        catch { $passed = $false; $result.status = $profileSettings.FailureStatus; $result.failureCode = 'PRIVATE_RECEIPT_WRITE_FAILED' }
     }
 }
 $result | ConvertTo-Json -Depth 12
