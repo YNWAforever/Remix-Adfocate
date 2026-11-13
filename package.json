@@ -31,6 +31,7 @@
     "release:delta:evidence": "node scripts/release/delta-runner.mjs evidence",
     "release:delta:verify": "node scripts/release/delta-runner.mjs verify",
     "release:delta:execute": "node scripts/release/delta-runner.mjs execute",
+    "release:delta:recovery:native": "node scripts/release/delta-recovery-runner.mjs",
     "release:verify-deployment": "vite-node --script scripts/release/deployment.ts",
     "release:pilot:inspect": "vite-node --script scripts/release/pilot-cli.ts inspect",
     "release:pilot:enable": "vite-node --script scripts/release/pilot-cli.ts enable",

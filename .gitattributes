@@ -29,3 +29,6 @@
 /docs/verification/phase3-protected-delta/** text eol=lf
 /docs/verification/releases/** text eol=lf
 /docs/operations/phase3-protected-delta.md text eol=lf
+/scripts/release/delta-private-artifacts.ps1 text eol=lf
+/docs/verification/phase3-paired-recovery/** text eol=lf
+/docs/operations/phase3-paired-recovery.md text eol=lf
