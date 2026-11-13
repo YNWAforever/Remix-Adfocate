@@ -137,7 +137,8 @@ export async function runDeltaCli(args: readonly string[], env: NodeJS.ProcessEn
   if (env.RELEASE_PROJECT_REF !== DELTA_RELEASE_PROJECT || policy.context.projectRef !== DELTA_RELEASE_PROJECT
     || !/^[a-f0-9]{40}$/.test(env.GITHUB_SHA ?? "")) refused("independent protected project and execution commit");
   const github = createGitHubDeltaReaders({ token: env.GITHUB_TOKEN ?? "", rootDir: root, sourceCiRunId: policy.sourceCiRunId, environment: env,
-    vercel: { token: env.VERCEL_TOKEN ?? "", projectId: policy.vercel.projectId, teamId: policy.vercel.teamId } });
+    vercel: { token: env.VERCEL_TOKEN ?? "", projectId: policy.vercel.projectId, teamId: policy.vercel.teamId },
+    ...(env.VERCEL_AUTOMATION_BYPASS_SECRET ? { deploymentProtectionSecret: env.VERCEL_AUTOMATION_BYPASS_SECRET } : {}) });
   let database: Awaited<ReturnType<typeof createManagedDeltaDatabase>> | undefined;
   const db = async () => database ??= await createManagedDeltaDatabase({ databaseUrl: env.RELEASE_DATABASE_URL ?? "", rootDir: root, context: policy.context });
   const compile = () => compileDeltaProgram(root, { sourceCommit: policy.context.sourceCommit, targetBindingHash: policy.context.targetBindingHash,

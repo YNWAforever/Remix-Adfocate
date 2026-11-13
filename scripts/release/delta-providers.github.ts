@@ -25,6 +25,7 @@ export interface GitHubDeltaReaderOptions {
   readonly sourceCiRunId: string;
   readonly environment: NodeJS.ProcessEnv;
   readonly vercel?: DeltaVercelOptions;
+  readonly deploymentProtectionSecret?: string;
 }
 export interface GitHubDeltaReaderDeps {
   readonly fetch: typeof fetch;
@@ -42,7 +43,8 @@ export function createGitHubDeltaReaders(options: GitHubDeltaReaderOptions, deps
   const environment = Object.fromEntries(["GITHUB_ACTIONS", "GITHUB_REPOSITORY", "GITHUB_REF", "GITHUB_EVENT_NAME", "GITHUB_RUN_ID", "GITHUB_RUN_ATTEMPT", "GITHUB_SHA"]
     .map(key => [key, options.environment[key]]));
   const vercel = options.vercel ? { ...options.vercel } : undefined;
-  const token = options.token, rootDir = options.rootDir;
+  const token = options.token, rootDir = options.rootDir, protectionSecret = options.deploymentProtectionSecret;
+  if (protectionSecret !== undefined && (typeof protectionSecret !== "string" || !/^[!-~]{1,4096}$/.test(protectionSecret))) refused("deployment automation credential unavailable");
   async function get(path: string) {
     if (!path.startsWith("/") || path.includes("..") || path.includes("#")) refused("fixed API route");
     let response: Response;
@@ -85,7 +87,11 @@ export function createGitHubDeltaReaders(options: GitHubDeltaReaderOptions, deps
       async function publicSite(base: string) {
         const fetchSafe = async (suffix: string) => {
           let response: Response;
-          try { response = await deps.fetch(`${base.replace(/\/$/, "")}${suffix}`, { method: "GET", redirect: "error", signal: AbortSignal.timeout(15_000) }); }
+          // The authenticated alias API has already pinned this generated
+          // origin/project/commit. Keep automation access out of URLs, cookies,
+          // public-alias requests and provider API requests.
+          const headers = base === binding.url && protectionSecret !== undefined ? { "x-vercel-protection-bypass": protectionSecret } : undefined;
+          try { response = await deps.fetch(`${base.replace(/\/$/, "")}${suffix}`, { method: "GET", redirect: "error", signal: AbortSignal.timeout(15_000), ...(headers ? { headers } : {}) }); }
           catch { return refused("production site read"); }
           if (response.status !== 200) refused("production site status");
           let body: string;

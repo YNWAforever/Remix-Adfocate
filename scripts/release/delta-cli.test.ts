@@ -41,6 +41,7 @@ vi.mock("./delta-executor", async importOriginal => {
 const ROOT = fileURLToPath(new URL("../../", import.meta.url));
 const BUNDLE = "docs/verification/releases/synthetic-cli.json", MH = "mhkoayftiuojxlrkollf";
 const GH_TOKEN = "fixture-private-github-cli-value", VERCEL_TOKEN = "fixture-private-vercel-cli-value";
+const PROTECTION_SECRET = "fixture-private-cli-deployment-protection-value";
 const PRIVATE_URL = "postgresql://fixture-private-db-value@synthetic.invalid/postgres";
 const originalExitCode = process.exitCode;
 function fixture() {
@@ -108,6 +109,24 @@ describe("offline preparation and execution preconditions (all provider/process 
     await runDeltaCli(f.args("execute"), f.env, ROOT); expect(boundaries.execute.mock.calls.at(-1)![0].apply).toBe(false);
     await runDeltaCli(f.args("execute", true), f.env, ROOT); expect(boundaries.execute.mock.calls.at(-1)![0]).toMatchObject({ apply: true, approval: `APPROVE ${MH} ${f.digest}` });
     expect(boundaries.native).not.toHaveBeenCalled(); expect(boundaries.spawn).not.toHaveBeenCalled();
+  });
+  it.each([{ label: "unset", value: undefined }, { label: "empty", value: "" }, { label: "configured", value: PROTECTION_SECRET }])("passes optional deployment protection from protected environment only: $label", async ({ value }) => {
+    const f = fixture(); f.env.VERCEL_AUTOMATION_BYPASS_SECRET = value; boundaries.execute.mockResolvedValue(f.receipt);
+    await runDeltaCli(f.args("verify"), f.env, ROOT);
+    const readerOptions = boundaries.github.mock.calls[0]![0];
+    expect(readerOptions.deploymentProtectionSecret).toBe(value || undefined);
+    expect(Object.hasOwn(readerOptions, "deploymentProtectionSecret")).toBe(Boolean(value));
+    expect(JSON.stringify(f.policy)).not.toContain(PROTECTION_SECRET); expect(boundaries.bytes.toString()).not.toContain(PROTECTION_SECRET);
+    expect(JSON.stringify(readerOptions.vercel)).not.toContain(PROTECTION_SECRET); expect(boundaries.native).not.toHaveBeenCalled();
+  });
+  it.each(["policy", "bundle"])("rejects deployment protection credentials placed in %s metadata", async location => {
+    const f = fixture();
+    if (location === "policy") f.env.RELEASE_DELTA_POLICY_JSON = JSON.stringify({ ...f.policy, deploymentProtectionSecret: PROTECTION_SECRET });
+    else boundaries.bytes = Buffer.from(JSON.stringify({ ...f.evidence, deploymentProtectionSecret: PROTECTION_SECRET }));
+    await expect(runDeltaCli(f.args(), f.env, ROOT)).rejects.toThrow(); expect(boundaries.github).not.toHaveBeenCalled(); expect(boundaries.native).not.toHaveBeenCalled();
+  });
+  it("does not accept a deployment-protection credential as a command-line argument", () => {
+    const f = fixture(); expect(() => parseDeltaCliArguments([...f.args(), "--deployment-protection-secret", PROTECTION_SECRET])).toThrow("unknown or duplicate");
   });
   it("uses the actual controller to refuse missing exact approval before provenance or database access", async () => {
     const f = fixture(); const args = f.args("execute", true); args[args.length - 1] = "APPROVE without exact digest";

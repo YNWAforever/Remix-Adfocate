@@ -207,6 +207,7 @@ function expectProductionWorkflowContract(candidate: string) {
     RELEASE_DATABASE_URL: '"${{ secrets.SUPABASE_DB_URL }}"', RELEASE_PROJECT_REF: '"${{ vars.SUPABASE_PROJECT_REF }}"',
     RELEASE_DELTA_POLICY_JSON: '"${{ vars.PHASE3_DELTA_POLICY_JSON }}"',
     GITHUB_TOKEN: '"${{ github.token }}"', VERCEL_TOKEN: '"${{ secrets.VERCEL_TOKEN }}"',
+    VERCEL_AUTOMATION_BYPASS_SECRET: '"${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}"',
   });
 }
 

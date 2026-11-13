@@ -14,6 +14,8 @@ const GENERATED = "https://adfocate-2-fixture123-ynwaforevers-projects.vercel.ap
 const A = h("github-source").slice(0, 40), B = h("github-evidence").slice(0, 40), C = h("github-unapproved").slice(0, 40);
 const TOKEN = "fixture-private-bearer-value-never-report";
 const VERCEL_TOKEN = "fixture-private-vercel-value-never-report";
+const PROTECTION_SECRET = "fixture-private-deployment-protection-value";
+const PROTECTION_HEADER = "x-vercel-protection-bypass";
 const PROJECT = "prj_fixtureAdfocate", TEAM = "team_fixture", DPL = "dpl_fixtureBinding";
 const VERCEL_API = "https://api.vercel.com";
 const MH = "mhkoayftiuojxlrkollf";
@@ -22,13 +24,13 @@ const BYTES = Buffer.from('{"synthetic":true}\n');
 const HTML = '<html><script src="/assets/fixture.js"></script></html>';
 const WORKFLOW = "concurrency:\n  group: supabase-production-release\n  cancel-in-progress: false\njobs:\n  release:\n    if: github.ref == 'refs/heads/main'\n";
 type Body = Record<string, unknown>;
-interface Reply { body?: unknown; raw?: string; status?: number; fetchError?: Error; bodyError?: Error }
+interface Reply { body?: unknown; raw?: string; status?: number; headers?: HeadersInit; fetchError?: Error; bodyError?: Error; requiredProtectionSecret?: string }
 function set(value: unknown, path: string, replacement: unknown) {
   const parts = path.split("."); let current = value as Body;
   for (const part of parts.slice(0, -1)) current = current[part] as Body;
   current[parts.at(-1)!] = replacement;
 }
-function fixture() {
+function fixture(deploymentProtectionSecret?: string) {
   const sourceRun = { id: 1001, repository: { full_name: REPO }, head_sha: A, head_branch: "main", event: "push", path: ".github/workflows/ci.yml",
     status: "completed", conclusion: "success", created_at: at(-20) };
   const jobs = { total_count: 2, jobs: [
@@ -62,18 +64,19 @@ function fixture() {
       gitSource: { type: "github", sha: A }, meta: { githubCommitSha: A },
     } }],
   ]);
-  const fetchMock = vi.fn(async (input: Parameters<typeof fetch>[0], _init?: RequestInit): Promise<Response> => {
-    void _init;
+  const fetchMock = vi.fn(async (input: Parameters<typeof fetch>[0], init?: RequestInit): Promise<Response> => {
     const url = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
     const reply = replies.get(url);
     if (!reply) throw new Error("unexpected synthetic GET");
+    if (reply.requiredProtectionSecret !== undefined && new Headers(init?.headers).get(PROTECTION_HEADER) !== reply.requiredProtectionSecret)
+      return new Response(`synthetic protected deployment ${PROTECTION_SECRET}`, { status: 401 });
     if (reply.fetchError) throw reply.fetchError;
     if (reply.bodyError) {
       const response = new Response("", { status: reply.status ?? 200 });
       vi.spyOn(response, "text").mockRejectedValue(reply.bodyError);
       return response;
     }
-    return new Response(reply.raw ?? JSON.stringify(reply.body), { status: reply.status ?? 200 });
+    return new Response(reply.raw ?? JSON.stringify(reply.body), { status: reply.status ?? 200, headers: reply.headers });
   });
   let statusOutput = "", workflow = WORKFLOW;
   let runError: Error | undefined;
@@ -93,7 +96,7 @@ function fixture() {
   });
   const environment = { GITHUB_ACTIONS: "true", GITHUB_REPOSITORY: REPO, GITHUB_REF: "refs/heads/main", GITHUB_EVENT_NAME: "workflow_dispatch",
     GITHUB_RUN_ID: "2001", GITHUB_RUN_ATTEMPT: "2", GITHUB_SHA: B };
-  const options = { token: TOKEN, rootDir: "fixture-repository", sourceCiRunId: "1001", environment,
+  const options = { token: TOKEN, rootDir: "fixture-repository", sourceCiRunId: "1001", environment, deploymentProtectionSecret,
     vercel: { token: VERCEL_TOKEN, projectId: PROJECT, teamId: TEAM } };
   const create = () => createGitHubDeltaReaders(options, { fetch: fetchMock, run: runMock });
   const expectedCi: DeltaSourceCiRecord = { repository: REPO, runId: "1001", commit: A, branch: "main", event: "push", workflowPath: ".github/workflows/ci.yml",
@@ -110,7 +113,7 @@ async function safeRejected(promise: Promise<unknown>, reason?: string) {
   const failure = await promise.then(() => undefined, failure => failure as Error);
   expect(failure).toBeInstanceOf(Error);
   if (reason) expect(failure!.message).toContain(reason);
-  expect(`${failure!.message}\n${failure!.stack}`).not.toContain(TOKEN);
+  for (const privateValue of [TOKEN, VERCEL_TOKEN, PROTECTION_SECRET]) expect(`${failure!.message}\n${failure!.stack}`).not.toContain(privateValue);
   return failure!;
 }
 
@@ -291,5 +294,82 @@ describe("current production deployment observations (synthetic provider data)",
       const f = fixture(); f.replies.set(`${GENERATED}/api/health`, reply); await safeRejected(f.create().currentProductionDeployment([A]));
     }
     const root = fixture(); root.replies.set(`${GENERATED}/`, { bodyError: new Error(TOKEN) }); await safeRejected(root.create().currentProductionDeployment([A]));
+  });
+});
+
+function protectedImmutable(f: ReturnType<typeof fixture>, expected = PROTECTION_SECRET) {
+  for (const path of [`${GENERATED}/`, `${GENERATED}/api/health`]) f.replies.get(path)!.requiredProtectionSecret = expected;
+}
+function assertBypassScope(f: ReturnType<typeof fixture>, expected?: string) {
+  for (const [input, init] of f.fetchMock.mock.calls) {
+    const url = new URL(String(input)), headers = new Headers(init?.headers);
+    const immutable = url.origin === new URL(GENERATED).origin;
+    expect(headers.get(PROTECTION_HEADER)).toBe(immutable && expected !== undefined ? expected : null);
+    expect(init?.method).toBe("GET"); expect(init?.redirect).toBe("error");
+    expect(headers.has("cookie")).toBe(false); expect(headers.has("x-vercel-set-bypass-cookie")).toBe(false);
+    expect(url.searchParams.has(PROTECTION_HEADER)).toBe(false); expect(String(input)).not.toContain(PROTECTION_SECRET);
+    if (url.origin !== "https://api.github.com" && url.origin !== VERCEL_API) expect(headers.has("authorization")).toBe(false);
+  }
+}
+describe("deployment protection bypass stays on the authenticated immutable origin (synthetic secret only)", () => {
+  it("uses the optional header for protected immutable root and health while retaining all identity checks", async () => {
+    const f = fixture(PROTECTION_SECRET); protectedImmutable(f);
+    await f.verify(); expect((await f.create().currentProductionDeployment([A, B])).commit).toBe(A); assertBypassScope(f, PROTECTION_SECRET);
+    expect(f.fetchMock.mock.calls.filter(([url]) => String(url).startsWith(`${GENERATED}/`))).toHaveLength(2);
+    expect(f.fetchMock.mock.calls.filter(([url]) => String(url).startsWith(`${CANONICAL}/`))).toHaveLength(2);
+  });
+  it("uses the authenticated immutable binding when the GitHub status URL names the canonical alias", async () => {
+    const f = fixture(PROTECTION_SECRET); f.statuses[0]!.environment_url = CANONICAL; protectedImmutable(f);
+    expect((await f.create().currentProductionDeployment([A])).commit).toBe(A); assertBypassScope(f, PROTECTION_SECRET);
+  });
+  it("omits the header entirely when no deployment-protection secret was configured", async () => {
+    const f = fixture(); expect((await f.create().currentProductionDeployment([A])).commit).toBe(A); assertBypassScope(f);
+  });
+  it.each([{ label: "missing", secret: undefined }, { label: "wrong", secret: "fixture-wrong-protection-value" }])("keeps a protected deployment on HOLD for $label credentials", async ({ secret }) => {
+    const f = fixture(secret); protectedImmutable(f); const error = await safeRejected(f.create().currentProductionDeployment([A]), "site status");
+    if (secret !== undefined) expect(`${error.message}\n${error.stack}`).not.toContain(secret);
+    assertBypassScope(f, secret); expect(f.fetchMock.mock.calls.some(([url]) => String(url).startsWith(CANONICAL))).toBe(false);
+    expect(f.fetchMock.mock.calls.filter(([url]) => String(url).startsWith(`${GENERATED}/`))).toHaveLength(1);
+  });
+  it.each([`${GENERATED}/`, `${GENERATED}/api/health`, `${CANONICAL}/`, `${CANONICAL}/api/health`])("still rejects HTTP 401 at %s when a secret is configured", async path => {
+    const f = fixture(PROTECTION_SECRET); f.replies.set(path, { status: 401, raw: PROTECTION_SECRET });
+    await safeRejected(f.create().currentProductionDeployment([A])); assertBypassScope(f, PROTECTION_SECRET);
+  });
+  it("captures the configured secret before caller mutation and sends only the original value", async () => {
+    const f = fixture(PROTECTION_SECRET); protectedImmutable(f); const readers = f.create();
+    f.options.deploymentProtectionSecret = "changed-fixture-value";
+    expect((await readers.currentProductionDeployment([A])).commit).toBe(A); assertBypassScope(f, PROTECTION_SECRET);
+  });
+  it("refuses redirect responses and never sends the header to the redirect destination", async () => {
+    const f = fixture(PROTECTION_SECRET); f.replies.set(`${GENERATED}/`, { status: 302, raw: PROTECTION_SECRET, headers: { location: "https://untrusted.invalid/" } });
+    await safeRejected(f.create().currentProductionDeployment([A]), "site status"); assertBypassScope(f, PROTECTION_SECRET);
+    expect(f.fetchMock.mock.calls.some(([url]) => String(url).includes("untrusted.invalid"))).toBe(false);
+  });
+  it.each(["wrong-vercel-commit", "different-generated-status-url"])("sends no secret before authoritative binding fails: %s", async failure => {
+    const f = fixture(PROTECTION_SECRET);
+    if (failure === "wrong-vercel-commit") {
+      const reply = f.replies.get(`${VERCEL_API}/v13/deployments/${DPL}?withGitRepoInfo=true&teamId=${TEAM}`)!;
+      set(reply.body, "gitSource.sha", C); set(reply.body, "meta.githubCommitSha", C);
+    } else f.statuses[0]!.environment_url = "https://adfocate-2-other123-ynwaforevers-projects.vercel.app";
+    await safeRejected(f.create().currentProductionDeployment([A, B])); assertBypassScope(f, PROTECTION_SECRET);
+    expect(f.fetchMock.mock.calls.every(([url]) => String(url).startsWith(API) || String(url).startsWith(VERCEL_API))).toBe(true);
+  });
+  it.each(["fetch", "body"] as const)("redacts a private secret in a protected target %s failure", async source => {
+    const f = fixture(PROTECTION_SECRET); f.replies.set(`${GENERATED}/`, { [source === "fetch" ? "fetchError" : "bodyError"]: new Error(PROTECTION_SECRET) });
+    await safeRejected(f.create().currentProductionDeployment([A])); assertBypassScope(f, PROTECTION_SECRET);
+  });
+  it.each([
+    { label: "empty", value: "" }, { label: "space", value: " " }, { label: "newline", value: "private\nvalue" },
+    { label: "carriage-return", value: "private\rvalue" }, { label: "tab", value: "private\tvalue" }, { label: "nul", value: "private\0value" },
+    { label: "DEL", value: "private\u007fvalue" }, { label: "non-ASCII", value: "privaté" }, { label: "too-long", value: "x".repeat(4097) },
+    { label: "number", value: 42 }, { label: "false", value: false }, { label: "null", value: null }, { label: "object", value: {} },
+  ])("rejects invalid optional secret $label before making any provider request", ({ value }) => {
+    const f = fixture(); set(f.options, "deploymentProtectionSecret", value);
+    const error = (() => { try { f.create(); } catch (error) { return error as Error; } })();
+    expect(error).toBeInstanceOf(Error); expect(`${error!.message}\n${error!.stack}`).not.toContain(PROTECTION_SECRET); expect(f.fetchMock).not.toHaveBeenCalled();
+  });
+  it.each([1, 4096])("accepts a printable secret of length %s and keeps its header on the verified origin", async length => {
+    const value = "x".repeat(length), f = fixture(value); protectedImmutable(f, value);
+    expect((await f.create().currentProductionDeployment([A])).commit).toBe(A); assertBypassScope(f, value);
   });
 });
