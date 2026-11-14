@@ -20,6 +20,8 @@ The placeholder above is documentation, never approval. A core digest, historica
 
 ## Offline commands
 
+Before complete live inputs exist, the [offline rehearsal preflight](phase3-rehearsal-preflight.md) validates an explicitly incomplete public owner worksheet and lists missing decisions. It has no capture or execution mode; even a complete declaration remains HOLD and is rejected as v2 release evidence.
+
 ```bash
 npm run release:delta:plan
 npm run release:delta:plan -- --bindings /absolute/path/reviewed-metadata-bindings.json

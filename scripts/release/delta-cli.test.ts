@@ -91,6 +91,14 @@ describe("closed protected delta CLI argument surface", () => {
     for (const extra of [["--apply"], ["--approval", "anything"], ["--bindings", "anything"], ["--bundle", BUNDLE], ["--project-ref", MH]]) expect(() => parseDeltaCliArguments([...args, ...extra])).toThrow();
     for (const path of ["../private.json", "C:/private.json", input.replace("selection-", "../selection-"), input.replace("phase3-release-review", "releases")]) expect(() => parseDeltaCliArguments(["review", "--input", path, "--output", output])).toThrow();
   });
+  it("keeps rehearsal planning in its public worksheet namespace without execution flags", () => {
+    const subject = h("offline-owner-source").slice(0, 40), input = `docs/verification/phase3-rehearsal-preflight/worksheet-${subject}.json`;
+    const output = `docs/verification/phase3-rehearsal-preflight/plan-${subject}-owner-review1.json`, args = ["rehearsal-plan", "--input", input, "--output", output];
+    expect(parseDeltaCliArguments(args)).toEqual({ command: "rehearsal-plan", input, output, approval: "", apply: false });
+    for (const extra of [["--apply"], ["--approval", "anything"], ["--bundle", BUNDLE], ["--bindings", "file"], ["--project-ref", MH], ["--database-url", PRIVATE_URL], ["--input", input]]) expect(() => parseDeltaCliArguments([...args, ...extra])).toThrow();
+    for (const path of ["../private.json", "C:/private.json", input.replace("worksheet-", "../worksheet-"), input.replace("phase3-rehearsal-preflight", "releases")]) expect(() => parseDeltaCliArguments(["rehearsal-plan", "--input", path, "--output", output])).toThrow();
+    for (const path of [output.replace(subject, h("other-subject").slice(0, 40)), output.replace("owner-review1", "../private"), output.replace("owner-review1", "a".repeat(33)), output.replace("phase3-rehearsal-preflight", "releases")]) expect(() => parseDeltaCliArguments(["rehearsal-plan", "--input", input, "--output", path])).toThrow();
+  });
   it.each([
     [], ["apply"], ["evidence"], ["evidence", "--apply"], ["plan", "--output", BUNDLE],
     ["evidence", "--input", "x", "--output", BUNDLE, "--bundle", BUNDLE], ["plan", "--apply"], ["verify", "--apply"], ["plan", "--sql", "arbitrary.sql"], ["plan", "--include-all"],

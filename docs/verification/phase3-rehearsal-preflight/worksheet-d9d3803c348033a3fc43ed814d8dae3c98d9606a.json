@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "kind": "phase3-owner-rehearsal-worksheet",
+  "projectRef": "mhkoayftiuojxlrkollf",
+  "sourceCommit": "d9d3803c348033a3fc43ed814d8dae3c98d9606a",
+  "githubReviewerId": "201698560",
+  "roles": {
+    "executor": null,
+    "observer": null,
+    "containmentOwner": null,
+    "productOwner": null,
+    "approver": null
+  },
+  "recoveryAcceptedBy": null,
+  "budgets": {
+    "maximumRpoSeconds": null,
+    "maximumRtoSeconds": null,
+    "maximumEvidenceAgeMs": null,
+    "maximumEvidenceLifetimeMs": null,
+    "maximumProofAgeMs": null
+  },
+  "recoveryCoverage": [
+    { "category": "database-schema", "decision": "verify", "acceptanceReference": null },
+    { "category": "database-rows", "decision": "verify", "acceptanceReference": null },
+    { "category": "role-definitions-without-passwords", "decision": "verify", "acceptanceReference": null },
+    { "category": "storage-configuration", "decision": "verify", "acceptanceReference": null },
+    { "category": "storage-object-bytes", "decision": null, "acceptanceReference": null },
+    { "category": "role-passwords", "decision": null, "acceptanceReference": null },
+    { "category": "platform-encryption-keys", "decision": null, "acceptanceReference": null },
+    { "category": "wal-pitr", "decision": null, "acceptanceReference": null },
+    { "category": "extension-binaries", "decision": null, "acceptanceReference": null }
+  ],
+  "freeze": {
+    "startsAt": null,
+    "expiresAt": null,
+    "changeControlReference": null,
+    "allDdlWritersFrozen": null,
+    "globalCatalogControlled": null,
+    "sequenceAndApplicationWritersQuiesced": null,
+    "deploymentsAndConfigurationFrozen": null
+  },
+  "planReferences": {
+    "captureScope": null,
+    "containment": null,
+    "forwardRecovery": null
+  }
+}
