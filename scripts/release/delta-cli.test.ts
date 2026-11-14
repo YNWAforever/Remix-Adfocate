@@ -84,6 +84,13 @@ describe("closed protected delta CLI argument surface", () => {
     for (const command of ["verify", "execute"] as const) expect(parseDeltaCliArguments(f.args(command)).apply).toBe(false);
     expect(parseDeltaCliArguments(f.args("execute", true))).toMatchObject({ command: "execute", apply: true, approval: `APPROVE ${MH} ${f.digest}` });
   });
+  it("keeps review metadata in its public namespace with no apply or approval authority", () => {
+    const subject = "a".repeat(40), input = `docs/verification/phase3-release-review/selection-${subject}.json`, output = `docs/verification/phase3-release-review/review-${subject}.json`;
+    const args = ["review", "--input", input, "--output", output];
+    expect(parseDeltaCliArguments(args)).toEqual({ command: "review", input, output, approval: "", apply: false });
+    for (const extra of [["--apply"], ["--approval", "anything"], ["--bindings", "anything"], ["--bundle", BUNDLE], ["--project-ref", MH]]) expect(() => parseDeltaCliArguments([...args, ...extra])).toThrow();
+    for (const path of ["../private.json", "C:/private.json", input.replace("selection-", "../selection-"), input.replace("phase3-release-review", "releases")]) expect(() => parseDeltaCliArguments(["review", "--input", path, "--output", output])).toThrow();
+  });
   it.each([
     [], ["apply"], ["evidence"], ["evidence", "--apply"], ["plan", "--output", BUNDLE],
     ["evidence", "--input", "x", "--output", BUNDLE, "--bundle", BUNDLE], ["plan", "--apply"], ["verify", "--apply"], ["plan", "--sql", "arbitrary.sql"], ["plan", "--include-all"],

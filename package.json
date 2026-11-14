@@ -28,6 +28,7 @@
     "release:evidence": "vite-node --script scripts/release/evidence.ts",
     "release:execute": "vite-node --script scripts/release/executor.ts",
     "release:delta:plan": "node scripts/release/delta-runner.mjs plan",
+    "release:delta:review": "node scripts/release/delta-runner.mjs review",
     "release:delta:evidence": "node scripts/release/delta-runner.mjs evidence",
     "release:delta:verify": "node scripts/release/delta-runner.mjs verify",
     "release:delta:execute": "node scripts/release/delta-runner.mjs execute",
