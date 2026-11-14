@@ -1,6 +1,6 @@
 // @vitest-environment node
 import { createHash, createHmac } from "node:crypto";
-import type { SupabaseClient } from "@supabase/supabase-js";
+import { AuthSessionMissingError, createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { describe, expect, it } from "vitest";
 import { providerTotpCode, runProviderAuthMfa } from "./delta-provider-auth";
 import { ProviderRehearsalFailure, type ProviderActor, type ProviderRehearsalRuntime } from "./delta-provider-contracts";
@@ -20,6 +20,9 @@ interface Options {
   revokedProviderAccepted?: boolean; revokedAppAccepted?: boolean; expiredNotExpired?: boolean; noMembershipNotStaff?: boolean;
   creatorFixtureForeign?: boolean; foreignMissing?: boolean; foreignWrongId?: boolean; foreignPrimarySlug?: boolean; foreignEmptySlug?: boolean;
   creatorPrimaryDenied?: boolean; creatorForeignAccepted?: boolean; creatorForeignMfa?: boolean; creatorForeignMembership?: boolean;
+  revokedSdkNormalized?: boolean; revokedSdkPrivateError?: boolean; revokedWireStatus?: number; revokedWireCode?: unknown;
+  revokedWireMissingCode?: boolean; revokedWireMalformed?: boolean; revokedWireBeforeStatus?: number; revokedWireBeforeWrongUser?: boolean;
+  revokedAppStatus?: number; revokedAppCode?: unknown; revokedAppMalformed?: boolean; revokedAppBeforeDenied?: boolean; revokedShortLived?: boolean;
 }
 function fixture(options: Options = {}) {
   let requests = 0;
@@ -41,14 +44,16 @@ function fixture(options: Options = {}) {
   const actors = Object.fromEntries(names.map((name, index) => {
     const actor = { id: id(index + 1), email: `${name}-${PRIVATE}`, password: "unit-only-private-password",
       client: {} as SupabaseClient, accessToken: mint({ sub: id(index + 1), iss: options.wrongIssuer ? "https://wrong.invalid/auth/v1" : "http://127.0.0.1:54321/auth/v1",
-        exp: Math.floor(Date.now() / 1000) + 3600, iat: Math.floor(Date.now() / 1000), session_id: id(index + 20), role: "authenticated", aud: "authenticated", aal: "aal1" }) };
+        exp: Math.floor(Date.now() / 1000) + (name === "revoked" && options.revokedShortLived ? 5 : 3600), iat: Math.floor(Date.now() / 1000), session_id: id(index + 20), role: "authenticated", aud: "authenticated", aal: "aal1" }) };
     const factorId = id(index + 100), challengeId = id(index + 200);
     const operation = (method: string) => { calls.push({ name, method }); tick(); if (options.sdkThrow) throw new Error(PRIVATE); };
     actor.client = { auth: {
       getUser: async (token: string) => {
         operation("getUser"); const decoded = decode(token);
         if (decoded.invalid) return { data: { user: null }, error: { status: 403, code: "bad_jwt", message: PRIVATE } };
-        if (revoked.has(String(decoded.jwt.session_id)) && !options.revokedProviderAccepted) return { data: { user: null }, error: { status: 403, code: "session_not_found", message: PRIVATE } };
+        if (revoked.has(String(decoded.jwt.session_id)) && !options.revokedProviderAccepted) return { data: { user: null }, error: options.revokedSdkNormalized ? new AuthSessionMissingError()
+          : options.revokedSdkPrivateError ? { status: Number.MAX_SAFE_INTEGER, code: PRIVATE, name: PRIVATE, message: PRIVATE }
+            : { status: 403, code: "session_not_found", message: PRIVATE } };
         return { data: { user: { id: options.wrongUser ? id(999) : actor.id, email: PRIVATE } }, error: null };
       },
       signOut: async ({ scope }: { scope: string }) => { operation("signOut"); expect(scope).toBe("local"); revoked.add(String(payload(actor.accessToken).session_id)); return { error: null }; },
@@ -85,11 +90,28 @@ function fixture(options: Options = {}) {
     service: { from: query } as unknown as SupabaseClient, anonymous: {} as SupabaseClient,
     get httpRequests() { return requests; }, assertOwned: async () => {}, sql: async () => { throw new Error("unit SQL unavailable"); },
     expiredSignedAccessToken: async actor => { tick(); return mint({ ...payload(actor.accessToken), exp: Math.floor(Date.now() / 1000) + (options.expiredNotExpired ? 600 : -60), iat: Math.floor(Date.now() / 1000) - 120 }); },
+    providerUser: async actor => {
+      tick(); expect(actor).toBe(actors.revoked); const afterLogout = revoked.has(String(payload(actor.accessToken).session_id));
+      calls.push({ name: "revoked", method: afterLogout ? "wire-after-logout" : "wire-before-logout" });
+      if (!afterLogout) return response(options.revokedWireBeforeStatus ?? 200, { id: options.revokedWireBeforeWrongUser ? id(999) : actor.id, email: PRIVATE });
+      const status = options.revokedProviderAccepted ? 200 : options.revokedWireStatus ?? 403;
+      if (options.revokedWireMalformed) return new Response(PRIVATE, { status });
+      return response(status, status === 200 ? { id: actor.id, email: PRIVATE } : {
+        ...(options.revokedWireMissingCode ? {} : { code: options.revokedWireCode ?? "session_not_found" }), message: PRIVATE,
+      });
+    },
     request: async (actor, path, init) => {
       tick(); if (!actor) return response(401, { code: "no_auth" });
       const { jwt, invalid } = decode(actor.accessToken);
-      if (invalid || revoked.has(String(jwt.session_id)) && !options.revokedAppAccepted) return response(401, { code: "bad_token" });
+      if (invalid) return response(401, { code: "bad_token" });
       const name = names.find(value => actors[value].id === actor.id)!;
+      if (revoked.has(String(jwt.session_id))) {
+        calls.push({ name, method: "app-after-logout" });
+        const status = options.revokedAppAccepted ? 200 : options.revokedAppStatus ?? 401;
+        if (options.revokedAppMalformed) return new Response(PRIVATE, { status });
+        return response(status, status === 200 ? { submissions: [] } : { code: options.revokedAppCode ?? "bad_token", message: PRIVATE });
+      }
+      if (name === "revoked" && options.revokedAppBeforeDenied) return response(403, { code: "forbidden" });
       if (path.startsWith("/api/admin/")) {
         if (options.noMembershipNotStaff && name === "noMembership") return response(403, { code: "no_admin" });
         const pending = jwt.aal !== "aal2";
@@ -167,15 +189,71 @@ describe("offline Auth/MFA orchestration, never provider acceptance evidence", (
     ["cross-tenant request allowed", { crossTenantAllowed: true }, "auth-staff-tenant"],
     ["unexpected active membership", { membershipPresent: true }, "auth-staff-membership"],
     ["MFA failure masquerades as membership failure", { wrongMembershipCode: true }, "auth-staff-membership"],
-    ["revoked provider token still accepted", { revokedProviderAccepted: true }, "auth-revoked-provider-session-denial"],
-    ["revoked app token still accepted", { revokedAppAccepted: true }, "auth-revoked-app-session-denial"],
+    ["revoked provider token still accepted", { revokedProviderAccepted: true }, "auth-revoked-provider-session-denial-w200-missing-sok-none-a401-bad_token"],
+    ["revoked app token still accepted", { revokedAppAccepted: true }, "auth-revoked-app-session-denial-w403-session_not_found-s403-snf-a200-missing"],
   ] as const)("holds rather than recording a false pass: %s", async (_label, options, code) => {
     const f = fixture(options); const error = await runProviderAuthMfa(f.runtime).catch(error => error as unknown);
     expect(error).toBeInstanceOf(ProviderRehearsalFailure); expect((error as ProviderRehearsalFailure).code).toBe(code);
     expect(String(error)).toBe("ProviderRehearsalFailure: Provider rehearsal held");
   });
+  it.each([401, 403])("requires actual wire denial %i without interpreting SDK status 400 as wire metadata", async status => {
+    const f = fixture({ revokedSdkNormalized: true, revokedWireStatus: status });
+    expect((await runProviderAuthMfa(f.runtime)).map(row => row.name)).toContain("provider-auth-revoked-session-denied");
+    const result = f.facts.find(row => row.name === "provider-auth-revoked-session-denied")!.facts;
+    expect(result).toMatchObject({ validProviderWireBefore: 200, providerWireStatus: status, providerWireCode: "session_not_found", sdkNormalizedStatus: "400", sdkFixedCode: "smiss", appStatus: 401, appCode: "bad_token" });
+  });
+  it.each([
+    ["successful provider despite normalized SDK missing session", { revokedSdkNormalized: true, revokedWireStatus: 200 }, "auth-revoked-provider-session-denial", "w200-missing-s400-smiss-a401-bad_token"],
+    ["wire 400 is never reinterpreted as 403", { revokedSdkNormalized: true, revokedWireStatus: 400 }, "auth-revoked-provider-session-denial", "w400-session_not_found-s400-smiss-a401-bad_token"],
+    ["wire 404", { revokedWireStatus: 404 }, "auth-revoked-provider-session-denial", "w404-session_not_found-s403-snf-a401-bad_token"],
+    ["wire 500", { revokedWireStatus: 500 }, "auth-revoked-provider-session-denial", "w500-session_not_found-s403-snf-a401-bad_token"],
+    ["wire bad_jwt does not prove revoked session", { revokedWireStatus: 401, revokedWireCode: "bad_jwt" }, "auth-revoked-provider-session-denial", "w401-bad_jwt-s403-snf-a401-bad_token"],
+    ["missing wire code", { revokedWireMissingCode: true }, "auth-revoked-provider-session-denial", "w403-missing-s403-snf-a401-bad_token"],
+    ["malformed wire body", { revokedWireMalformed: true }, "auth-revoked-provider-session-denial", "w403-malformed-s403-snf-a401-bad_token"],
+    ["app forbidden is the wrong denial", { revokedAppStatus: 403, revokedAppCode: "forbidden" }, "auth-revoked-app-session-denial", "w403-session_not_found-s403-snf-a403-forbidden"],
+    ["app MFA is the wrong denial", { revokedAppStatus: 403, revokedAppCode: "mfa_required" }, "auth-revoked-app-session-denial", "w403-session_not_found-s403-snf-a403-mfa_required"],
+    ["app membership is the wrong denial", { revokedAppStatus: 403, revokedAppCode: "WORKSPACE_MEMBERSHIP_REQUIRED" }, "auth-revoked-app-session-denial", "w403-session_not_found-s403-snf-a403-membership"],
+    ["app malformed body", { revokedAppMalformed: true }, "auth-revoked-app-session-denial", "w403-session_not_found-s403-snf-a401-malformed"],
+    ["private/unknown metadata", { revokedSdkPrivateError: true, revokedWireCode: PRIVATE, revokedAppCode: PRIVATE }, "auth-revoked-provider-session-denial", "w403-other-s0-other-a401-other"],
+    ["maximum fixed diagnostic fields", { revokedWireCode: "unexpected_failure", revokedAppStatus: 503, revokedAppCode: "owned_http_refusal" }, "auth-revoked-provider-session-denial", "w403-unexpected_failure-s403-snf-a503-http_refusal"],
+  ] as const)("fails closed with bounded diagnostics: %s", async (_label, options, prefix, suffix) => {
+    const f = fixture(options), error = await runProviderAuthMfa(f.runtime).catch(error => error as unknown) as ProviderRehearsalFailure;
+    expect(error).toBeInstanceOf(ProviderRehearsalFailure); expect(error.code).toBe(`${prefix}-${suffix}`);
+    expect(error.code).toMatch(/^[a-zA-Z0-9_-]{1,100}$/); expect(JSON.stringify(error)).not.toContain(PRIVATE);
+    expect(f.calls.filter(call => call.method === "wire-after-logout")).toHaveLength(1);
+    expect(f.calls.filter(call => call.method === "app-after-logout")).toHaveLength(1);
+    expect(f.facts.some(row => row.name === "provider-auth-revoked-session-denied")).toBe(false);
+  });
+  it.each([
+    ["raw positive returns wrong user", { revokedWireBeforeWrongUser: true }],
+    ["raw positive is not 200", { revokedWireBeforeStatus: 403 }],
+    ["app positive denied", { revokedAppBeforeDenied: true }],
+    ["JWT has insufficient remaining validity", { revokedShortLived: true }],
+  ] as const)("requires revocation prerequisites: %s", async (_label, options) => {
+    const f = fixture(options), error = await runProviderAuthMfa(f.runtime).catch(error => error as unknown) as ProviderRehearsalFailure;
+    expect(error.code).toBe("auth-session-revoked"); expect(f.calls.some(call => call.method === "signOut")).toBe(false);
+    expect(f.facts.some(row => row.name === "provider-auth-revoked-session-denied")).toBe(false);
+  });
   it("drops private SDK error/cause details and performs no further cases", async () => {
     const f = fixture({ sdkThrow: true }), error = await runProviderAuthMfa(f.runtime).catch(error => error as unknown) as Error;
     expect(`${error.message}\n${error.stack}`).not.toContain(PRIVATE); expect(error).not.toHaveProperty("cause"); expect(f.facts).toEqual([]);
+  });
+});
+
+describe("pinned SDK normalization through an offline fetch stub", () => {
+  it.each([401, 403])("normalizes actual SDK input status %i session_not_found without exposing the wire status", async status => {
+    let stubCalls = 0;
+    const client = createClient("http://127.0.0.1:54321", "unit-only-anon-key", {
+      auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false, storageKey: `unit-normalization-${status}` },
+      global: { fetch: async input => {
+        stubCalls++; expect(new URL(typeof input === "string" ? input : input instanceof URL ? input.href : input.url).pathname).toBe("/auth/v1/user");
+        return new Response(JSON.stringify({ code: "session_not_found", message: PRIVATE }), { status, headers: { "content-type": "application/json", "x-supabase-api-version": "2024-01-01" } });
+      } },
+    });
+    try {
+      const result = await client.auth.getUser("unit.header.signature");
+      expect(stubCalls).toBe(1); expect(result.data.user).toBeNull(); expect(result.error).toBeInstanceOf(AuthSessionMissingError);
+      expect(result.error?.status).toBe(400); expect(result.error?.code).toBeUndefined(); expect(result.error?.name).toBe("AuthSessionMissingError");
+    } finally { await client.auth.stopAutoRefresh(); await client.removeAllChannels(); }
   });
 });

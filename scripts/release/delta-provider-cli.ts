@@ -40,15 +40,30 @@ export async function providerRehearsalMain(args: readonly string[]): Promise<vo
     phase("creating-local-fixtures-and-http-application"); runtime = await createProviderRuntime(stack, sourceCommit); applicationCleanup = "unknown";
     const health = await runtime.request(null, "/api/health"); const healthBody = await health.json();
     check(health.status === 200 && healthBody.ok === true && healthBody.applicationCommit === sourceCommit && healthBody.apiProjectRef === null, "actual-application-identity");
-    phase("auth-and-mfa"); checks.push(...await runProviderAuthMfa(runtime));
-    phase("creator-and-operator-journeys"); checks.push(...await runProviderJourneys(runtime));
-    phase("storage-provider-and-isolation"); checks.push(...await runProviderStorage(runtime));
-    phase("egress-refusal-prerequisites");
-    const before = runtime.httpRequests, positive = await runtime.request(null, "/api/health"); check(positive.status === 200, "egress-positive-prerequisite");
-    const count = runtime.httpRequests, blockedBefore = runtime.externalRequestsBlocked(); let refused = false;
-    try { await fetch("https://owned-provider-egress.invalid/forbidden"); } catch (error) { refused = error instanceof ProviderRehearsalFailure && error.code === "external-egress-disabled"; }
-    check(refused && runtime.httpRequests === count && runtime.externalRequestsBlocked() === blockedBefore + 1, "egress-fault-not-delivered");
-    checks.push(runtime.record("provider-hosted-origin-refused", { positiveActualHttp: true, blockedBeforeRequest: true, externalResponses: 0 }, before));
+    const live = runtime, owned = stack, failures: string[] = [];
+    async function runModule(name: string, run: () => Promise<ProviderCaseResult[]>) {
+      // An ownership failure aborts the whole run. Case failures retain HOLD while
+      // independent modules still exercise their own positive prerequisites.
+      await owned.assertOwned(); phase(name);
+      try {
+        const result = await run(); checks.push(...result);
+        process.stdout.write(JSON.stringify({ kind: "owned-provider-module", module: name, completedCases: result.length, validReleaseEvidence: false }) + "\n");
+      } catch (error) {
+        const code = safeReason(error); failures.push(code);
+        process.stdout.write(JSON.stringify({ kind: "owned-provider-module", module: name, status: "HOLD", reasonCode: code, validReleaseEvidence: false }) + "\n");
+      }
+    }
+    await runModule("auth-and-mfa", () => runProviderAuthMfa(live));
+    await runModule("creator-and-operator-journeys", () => runProviderJourneys(live));
+    await runModule("storage-provider-and-isolation", () => runProviderStorage(live));
+    await runModule("egress-refusal-prerequisites", async () => {
+      const before = live.httpRequests, positive = await live.request(null, "/api/health"); check(positive.status === 200, "egress-positive-prerequisite");
+      const count = live.httpRequests, blockedBefore = live.externalRequestsBlocked(); let refused = false;
+      try { await fetch("https://owned-provider-egress.invalid/forbidden"); } catch (error) { refused = error instanceof ProviderRehearsalFailure && error.code === "external-egress-disabled"; }
+      check(refused && live.httpRequests === count && live.externalRequestsBlocked() === blockedBefore + 1, "egress-fault-not-delivered");
+      return [live.record("provider-hosted-origin-refused", { positiveActualHttp: true, blockedBeforeRequest: true, externalResponses: 0 }, before)];
+    });
+    if (failures.length) throw new ProviderRehearsalFailure(failures[0]!);
     check(checks.length === PROVIDER_CASE_NAMES.length && new Set(checks.map(row => row.name)).size === checks.length && checks.every(row => PROVIDER_CASE_NAMES.includes(row.name)), "provider-case-inventory");
     await stack.assertOwned();
     check((await git(["rev-parse", "HEAD"])) === sourceCommit && !(await git(["status", "--porcelain", "--untracked-files=all"])), "provider-source-changed-during-run");

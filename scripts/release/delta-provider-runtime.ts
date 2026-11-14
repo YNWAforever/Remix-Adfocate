@@ -109,6 +109,11 @@ export async function createProviderRuntime(stack: OwnedProviderStack, sourceCom
         if (!headers.has("X-Workspace-Slug")) headers.set("X-Workspace-Slug", workspaceSlug); if (!headers.has("Content-Type")) headers.set("Content-Type", "application/json");
         headers.set("Origin", appOrigin); return guardedFetch(new URL(path, appOrigin), { ...init, headers });
       },
+      async providerUser(selected) {
+        const canonicalActor = Object.values(actors).find(value => value.id === selected.id);
+        check(canonicalActor && selected === canonicalActor, "owned-provider-user-actor");
+        return guardedFetch(`${stack.apiOrigin}/auth/v1/user`, { method: "GET", headers: { apikey: stack.anonKey, Authorization: `Bearer ${canonicalActor.accessToken}`, "X-Supabase-Api-Version": "2024-01-01" } });
+      },
       async expiredSignedAccessToken(selected) {
         await stack.assertOwned(); const canonicalActor = Object.values(actors).find(value => value.id === selected.id);
         check(canonicalActor && selected === canonicalActor && stack.jwtSecret.length >= 32, "owned-expired-signer");

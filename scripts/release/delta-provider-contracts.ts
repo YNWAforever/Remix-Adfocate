@@ -40,6 +40,8 @@ export interface ProviderRehearsalRuntime {
   assertOwned(): Promise<void>;
   /** Expiry-only negative: signed with the verified owned local provider key; explicitly not provider-issued. */
   expiredSignedAccessToken(actor: ProviderActor): Promise<string>;
+  /** Raw provider GET /auth/v1/user for an exact owned actor, preserving wire status before SDK normalization. */
+  providerUser(actor: ProviderActor): Promise<Response>;
   /** Exact local HTTP origin; no redirects, hosted targets or external provider calls. */
   request(actor: ProviderActor | null, path: string, init?: RequestInit): Promise<Response>;
   /** Trusted repository fixture SQL only; no CLI-supplied SQL or target override exists. */

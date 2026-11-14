@@ -63,9 +63,32 @@ async function body(response: Response): Promise<PrivateObject> {
   requireProviderFact(value && typeof value === "object" && !Array.isArray(value), "auth-app-response");
   return value as PrivateObject;
 }
-function deniedProvider(result: { data: { user: unknown }; error: { status?: number; code?: string } | null }, code?: string): boolean {
+type ProviderUserResult = { data: { user: unknown }; error: { status?: number; code?: string; name?: string } | null };
+function deniedProvider(result: ProviderUserResult, code?: string): boolean {
   return !result.data.user && Boolean(result.error) && [401, 403].includes(result.error?.status ?? 0)
     && (code === undefined || result.error?.code === code);
+}
+function diagnosticStatus(status: unknown): string {
+  // Zero means absent/invalid metadata, never a claimed HTTP response.
+  return typeof status === "number" && Number.isInteger(status) && status >= 100 && status <= 599 ? String(status) : "0";
+}
+function providerCode(code: unknown): string {
+  return typeof code === "string" && ["session_not_found", "bad_jwt", "user_not_found", "no_authorization", "session_expired", "unexpected_failure", "malformed"].includes(code)
+    ? code : code === undefined ? "missing" : "other";
+}
+function sdkDiagnostic(provider: ProviderUserResult) {
+  // "ok" is SDK success, not a fabricated wire status. smiss denotes the SDK
+  // AuthSessionMissingError normalization (status 400/code absent in 2.108.1).
+  const status = provider.error ? diagnosticStatus(provider.error.status) : provider.data.user ? "ok" : "empty";
+  const code = !provider.error ? "none" : provider.error.name === "AuthSessionMissingError" ? "smiss"
+    : ({ session_not_found: "snf", bad_jwt: "bjwt", user_not_found: "unf", no_authorization: "nauth", session_expired: "sexp", unexpected_failure: "fail" } as Record<string, string>)[providerCode(provider.error.code)] ?? providerCode(provider.error.code);
+  return { status, code };
+}
+function revocationDiagnostic(wireStatus: number, wireCode: unknown, sdk: ProviderUserResult, appStatus: number, appCode: unknown): string {
+  const normalized = sdkDiagnostic(sdk);
+  const safeAppCode = appCode === "WORKSPACE_MEMBERSHIP_REQUIRED" ? "membership" : appCode === "owned_http_refusal" ? "http_refusal"
+    : typeof appCode === "string" && ["bad_token", "no_auth", "forbidden", "mfa_required", "malformed"].includes(appCode) ? appCode : appCode === undefined ? "missing" : "other";
+  return `w${diagnosticStatus(wireStatus)}-${providerCode(wireCode)}-s${normalized.status}-${normalized.code}-a${diagnosticStatus(appStatus)}-${safeAppCode}`;
 }
 
 /** Actual provider Auth/MFA and real app HTTP, not an application test injection. */
@@ -188,14 +211,26 @@ export async function runProviderAuthMfa(runtime: ProviderRehearsalRuntime): Pro
       requireProviderFact(jwt.exp * 1000 > Date.now() + 30_000, failure);
       const before = await runtime.request(actor, CREATOR_PATH), beforeBody = await body(before);
       requireProviderFact(before.status === 200 && Array.isArray(beforeBody.submissions), failure);
+      const wireBefore = await runtime.providerUser(actor), wireBeforeBody = await body(wireBefore);
+      requireProviderFact(wireBefore.status === 200 && wireBeforeBody.id === actor.id && actor.accessToken === original, failure);
       await runtime.assertOwned(); const logout = await actor.client.auth.signOut({ scope: "local" }); requireProviderFact(!logout.error, failure);
-      const provider = await actor.client.auth.getUser(original);
-      const response = await runtime.request({ ...actor, accessToken: original }, CREATOR_PATH), value = await body(response);
-      failure = "auth-revoked-provider-session-denial";
-      requireProviderFact(deniedProvider(provider, "session_not_found") && jwt.exp * 1000 > Date.now(), failure);
-      failure = "auth-revoked-app-session-denial";
+      requireProviderFact(actor.accessToken === original, failure);
+      const sdk = await actor.client.auth.getUser(original), wire = await runtime.providerUser(actor);
+      const response = await runtime.request({ ...actor, accessToken: original }, CREATOR_PATH);
+      // Read both actual responses before judging either denial. Malformed bodies
+      // retain only a fixed enum; SDK/body messages and credential bytes never escape.
+      let wireValue: PrivateObject = { code: "malformed" }, value: PrivateObject = { code: "malformed" };
+      try { wireValue = await body(wire); } catch { /* fixed malformed diagnostic */ }
+      try { value = await body(response); } catch { /* fixed malformed diagnostic */ }
+      const diagnostic = revocationDiagnostic(wire.status, wireValue.code, sdk, response.status, value.code);
+      failure = `auth-revoked-provider-session-denial-${diagnostic}`;
+      requireProviderFact([401, 403].includes(wire.status) && wireValue.code === "session_not_found" && jwt.exp * 1000 > Date.now(), failure);
+      failure = `auth-revoked-app-session-denial-${diagnostic}`;
       requireProviderFact(response.status === 401 && value.code === "bad_token", failure);
-      return { validAppBefore: before.status, providerSessionMissing: true, jwtNotYetExpired: true, appStatus: response.status, appCode: value.code };
+      const normalized = sdkDiagnostic(sdk);
+      return { validAppBefore: before.status, validProviderWireBefore: wireBefore.status, providerSessionMissing: true, jwtNotYetExpired: true,
+        providerWireStatus: wire.status, providerWireCode: "session_not_found", sdkNormalizedStatus: normalized.status, sdkFixedCode: normalized.code,
+        appStatus: response.status, appCode: value.code };
     });
     return results;
   } catch { throw new ProviderRehearsalFailure(failure); }
