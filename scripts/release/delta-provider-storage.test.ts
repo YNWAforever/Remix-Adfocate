@@ -8,16 +8,19 @@ import type { ProviderJourneyFixture } from "./delta-provider-journey-fixtures";
 
 // These are explicitly synthetic unit HTTP adapters, NOT provider acceptance evidence.
 const shared = vi.hoisted(() => ({ fixture: vi.fn() }));
-vi.mock("./delta-provider-journey-fixtures", () => ({ createProviderJourneyFixture: shared.fixture }));
+vi.mock("./delta-provider-journey-fixtures", async importOriginal => ({ ...await importOriginal<typeof import("./delta-provider-journey-fixtures")>(), createProviderJourneyFixture: shared.fixture }));
 const API = "http://127.0.0.1:54321", APP = "http://127.0.0.1:54322";
 const PRIVATE = "synthetic-private-response-never-export";
 const MAX = 20_971_520;
 const MIMES = ["image/jpeg", "image/png", "image/webp", "image/gif", "video/mp4", "video/quicktime", "video/webm"];
 const id = (n: number) => `00000000-0000-4000-8000-${String(n).padStart(12, "0")}`;
 type Call = { kind: string; actor: string; path: string; signed?: boolean; contentType?: string; byteLength?: number };
-type Rejection = { status: number; code?: string; message?: string };
+type Rejection = { status: number; wireStatus?: number; code?: string; message?: string };
 interface Options {
   bucket?: Record<string, unknown>;
+  bucketError?: Rejection;
+  grantError?: Rejection;
+  legacyEnvelopes?: boolean;
   mime?: Rejection;
   size?: Rejection;
   readError?: Rejection;
@@ -36,7 +39,7 @@ interface Options {
   thrownPrivate?: "sdk" | "app" | "body";
 }
 function response(value: unknown, status = 200) { return new Response(JSON.stringify(value), { status, headers: { "content-type": "application/json" } }); }
-function rejection(value: Rejection) { return response({ ...(value.code ? { code: value.code } : {}), message: value.message ?? PRIVATE }, value.status); }
+function rejection(value: Rejection) { return response({ ...(value.wireStatus === undefined ? {} : { statusCode: String(value.status) }), ...(value.code ? { code: value.code } : {}), message: value.message ?? PRIVATE }, value.wireStatus ?? value.status); }
 function bytes(init: RequestInit | undefined): Uint8Array {
   const body = init?.body;
   if (body instanceof Uint8Array) return body;
@@ -50,6 +53,7 @@ function fixture(options: Options = {}) {
   const grants = new Map<string, { id: string; token: string; size: number; kind: string; finalized: boolean }>();
   const actorIds = { creator: id(1), otherCreator: id(2), operator: id(3), reviewer: id(4), staff: id(5), revoked: id(6), noMembership: id(7) };
   const register = (call: Call) => { calls.push(call); if (options.noHttpFor !== call.kind) counter++; };
+  const rejected = (value: Rejection) => rejection(options.legacyEnvelopes && [403, 404, 413, 415].includes(value.status) && value.wireStatus === undefined ? { ...value, wireStatus: 400 } : value);
   const fetch: typeof globalThis.fetch = async (input, init) => {
     const url = new URL(typeof input === "string" ? input : input instanceof URL ? input : input.url);
     if (url.origin !== API) throw new Error("Synthetic fetch refused an external target");
@@ -60,6 +64,7 @@ function fixture(options: Options = {}) {
     }
     if (url.pathname.startsWith("/storage/v1/bucket/")) {
       register({ kind: "bucket", actor, path: url.pathname });
+      if (options.bucketError) return rejected(options.bucketError);
       const name = decodeURIComponent(url.pathname.slice("/storage/v1/bucket/".length));
       return response({ id: name, name, public: false, file_size_limit: MAX, allowed_mime_types: MIMES, ...options.bucket });
     }
@@ -71,13 +76,13 @@ function fixture(options: Options = {}) {
       const data = bytes(init), contentType = new Headers(init?.headers).get("content-type") ?? "";
       register({ kind: "upload", actor, path, signed, contentType, byteLength: data.byteLength });
       const grant = grants.get(path);
-      if (!grant) return rejection({ status: 403, code: "AccessDenied" });
-      if (signed && (options.signingFails || url.searchParams.get("token") !== grant.token)) return rejection({ status: 403, code: "InvalidSignature" });
-      if (!signed && actor !== "creator" && !options.foreignWrite) return rejection({ status: 403, code: "AccessDenied" });
-      if (!MIMES.includes(contentType)) return rejection(options.mime ?? { status: 400, code: "InvalidMimeType", message: "mime type application/octet-stream is not supported" });
-      if (data.byteLength > MAX) return rejection(options.size ?? { status: 413, code: "EntityTooLarge", message: "The object exceeded the maximum allowed size" });
-      if (options.ownerUploadFails && actor === "creator") return rejection({ status: 503, code: "InternalError" });
-      if (objects.has(path)) return rejection({ status: 409, code: "ResourceAlreadyExists" });
+      if (!grant) return rejected({ status: 403, code: "AccessDenied" });
+      if (signed && (options.signingFails || url.searchParams.get("token") !== grant.token)) return rejected({ status: 403, code: "InvalidSignature" });
+      if (!signed && actor !== "creator" && !options.foreignWrite) return rejected({ status: 403, code: "AccessDenied" });
+      if (!MIMES.includes(contentType)) return rejected(options.mime ?? { status: 400, code: "InvalidMimeType", message: "mime type application/octet-stream is not supported" });
+      if (data.byteLength > MAX) return rejected(options.size ?? { status: 413, code: "EntityTooLarge", message: "The object exceeded the maximum allowed size" });
+      if (options.ownerUploadFails && actor === "creator") return rejected({ status: 503, code: "InternalError" });
+      if (objects.has(path)) return rejected({ status: 409, code: "ResourceAlreadyExists" });
       objects.set(path, Buffer.from(data));
       return response({ Id: id(3000 + grantCount), Key: path });
     }
@@ -94,9 +99,9 @@ function fixture(options: Options = {}) {
     if (url.pathname.startsWith(marker)) {
       const path = decodeURIComponent(url.pathname.slice(marker.length));
       register({ kind: "download", actor, path });
-      if (options.readError && actor !== "creator") return rejection(options.readError);
+      if (options.readError && actor !== "creator") return rejected(options.readError);
       const data = objects.get(path), grant = grants.get(path);
-      if (actor !== "creator" || !data || !grant?.finalized) return rejection({ status: 404, code: "NoSuchKey", message: "Object not found" });
+      if (actor !== "creator" || !data || !grant?.finalized) return rejected({ status: 404, code: "NoSuchKey", message: "Object not found" });
       return new Response(new Uint8Array(options.corruptDownload ? Buffer.alloc(data.byteLength, 99) : data), { headers: { "content-type": "image/png" } });
     }
     throw new Error("Unexpected synthetic SDK route");
@@ -113,19 +118,21 @@ function fixture(options: Options = {}) {
     async assertOwned() { assertions++; if (options.cleanupOwnershipFails && records.length === 6) throw new Error(PRIVATE); },
     async sql() { throw new Error("Synthetic Storage unit adapter must not execute SQL"); },
     async expiredSignedAccessToken() { throw new Error("Storage cases must not mint an Auth token"); },
+    async providerUser() { throw new Error("Storage cases retain their existing SDK identity prerequisite"); },
     async request(actor, path, init) {
       if (options.thrownPrivate === "app") throw new Error(PRIVATE);
       const body = JSON.parse(String(init?.body)) as Record<string, unknown>;
       const kind = path.includes("/publication/") ? "proof" : "draft", name = kind === "draft" ? "mission-draft-assets" : "mission-publication-proof-assets";
       if (path.endsWith("/upload-grant")) {
         register({ kind: "app-grant", actor: "creator", path });
+        if (options.grantError) return rejected(options.grantError);
         if (body.contentType !== "image/png" || Number(body.sizeBytes) > MAX) return response({ code: options.metadataCode ?? "VALIDATION_FAILED" }, options.metadataStatus ?? 400);
         grantCount++;
         const asset = id(2000 + grantCount), work = kind === "draft" ? id(1002) : id(1005), workflow = kind === "draft" ? id(1001) : id(1004);
         const suffix = kind === "draft" ? `${asset}.png` : `proof-evidence/${new Headers(init?.headers).get("Idempotency-Key")}.png`;
         const objectPath = options.grantPath ?? `${actor!.id}/${workflow}/${work}/${suffix}`, token = `unit-private-grant-${asset}`;
         grants.set(`${name}/${objectPath}`, { id: asset, token, size: Number(body.sizeBytes), kind, finalized: false });
-        if (options.thrownPrivate === "body") return { ok: true, text: async () => { throw new Error(PRIVATE); } } as unknown as Response;
+        if (options.thrownPrivate === "body") { const broken = response({}); vi.spyOn(broken, "text").mockRejectedValue(new Error(PRIVATE)); return broken; }
         return response({ asset: { id: asset, storageObjectPath: objectPath, uploadState: "pending", contentType: "image/png", sizeBytes: body.sizeBytes }, token, expiresInSeconds: 600, upload: { path: objectPath, token, upsert: false } });
       }
       register({ kind: "app-finalize", actor: "creator", path });
@@ -149,10 +156,13 @@ function fixture(options: Options = {}) {
 async function failure(promise: Promise<unknown>, code: string) {
   const caught = await promise.then(() => null, error => error as Error & { code?: string });
   expect(caught).toBeInstanceOf(ProviderRehearsalFailure);
-  expect(caught?.code).toBe(code);
+  expect(caught?.code?.split("_AT_")[0]).toBe(code);
+  expect(caught?.code).toMatch(/^[A-Za-z0-9_-]{1,100}$/);
+  expect(caught?.code).not.toContain(PRIVATE);
   expect(caught?.message).toBe("Provider rehearsal held");
   expect(caught?.stack).not.toContain(PRIVATE);
   expect(caught).not.toHaveProperty("cause");
+  return caught!.code!;
 }
 beforeEach(() => { shared.fixture.mockReset(); });
 
@@ -257,5 +267,77 @@ describe("Storage rehearsal module with real SDK serialization and synthetic HTT
   });
   it("verifies removal through an actual owner read instead of trusting an empty remove response", async () => {
     const f = fixture({ removeNoop: true }); await failure(runProviderStorage(f.runtime), "STORAGE_CLEANUP"); expect(f.objects.size).toBe(6);
+  });
+  it("identifies a shared active-fixture SQL failure instead of erasing its validated transport and SQLSTATE", async () => {
+    const f = fixture();
+    shared.fixture.mockRejectedValue(new ProviderRehearsalFailure("journey-fixture-mission-active-psql-stderr-output-23514"));
+    const code = await failure(runProviderStorage(f.runtime), "STORAGE_FIXTURE");
+    expect(code).toBe("STORAGE_FIXTURE_AT_D_FIXTURE_F_mission-active-psql-stderr-output-23514_H0_S0_Cnone");
+    expect(f.records).toEqual([]); expect(f.calls.some(call => call.kind === "app-grant")).toBe(false);
+  });
+  it("identifies the proof-fixture stage and still cleans all earlier draft objects on failure", async () => {
+    const f = fixture(), create = shared.fixture.getMockImplementation()!;
+    shared.fixture.mockImplementation(async (runtime, options) => {
+      if (options.state === "approved_to_publish") throw new ProviderRehearsalFailure("journey-fixture-mission-active-psql-stderr-output-23514");
+      return create(runtime, options);
+    });
+    const code = await failure(runProviderStorage(f.runtime), "STORAGE_FIXTURE");
+    expect(code).toBe("STORAGE_FIXTURE_AT_P_FIXTURE_F_mission-active-psql-stderr-output-23514_H0_S0_Cnone");
+    expect(f.records).toHaveLength(3); expect(f.calls.filter(call => call.kind === "remove")).toHaveLength(3); expect(f.objects.size).toBe(0);
+  });
+  it.each([
+    "journey-fixture-mission-active-psql-private-value",
+    "journey-fixture-mission-active-psql-stderr-output-23514-extra",
+    "journey-fixture-unknown-stage-psql-busy-23514",
+    "journey-fixture-mission-active-psql-unknown-23514",
+    "journey-fixture-mission-active-psql-stderr-output-a2345",
+    `journey-fixture-mission-active-psql-stderr-output-${PRIVATE}`,
+  ])("never echoes a fabricated or extended fixture diagnostic %s", injected => {
+    const f = fixture(); shared.fixture.mockRejectedValue(new ProviderRehearsalFailure(injected));
+    return failure(runProviderStorage(f.runtime), "STORAGE_REQUEST_FAILED").then(code => {
+      expect(code).toBe("STORAGE_REQUEST_FAILED_AT_D_FIXTURE_H0_S0_Cnone"); expect(code).not.toContain(injected); expect(f.records).toEqual([]);
+    });
+  });
+  it("does not trust a plain error with an apparently valid fixture code", async () => {
+    const f = fixture(); shared.fixture.mockRejectedValue(Object.assign(new Error(PRIVATE), { code: "journey-fixture-mission-active-psql-stderr-output-23514" }));
+    expect(await failure(runProviderStorage(f.runtime), "STORAGE_REQUEST_FAILED")).toBe("STORAGE_REQUEST_FAILED_AT_D_FIXTURE_H0_S0_Cnone");
+  });
+  it("keeps wire status separate from the storage-api 1.66.4 legacy body status", async () => {
+    const f = fixture({ bucketError: { status: 403, wireStatus: 400, code: "AccessDenied", message: PRIVATE } });
+    expect(await failure(runProviderStorage(f.runtime), "STORAGE_BUCKET_PROFILE")).toBe("STORAGE_BUCKET_PROFILE_AT_D_BUCKET_H400_S403_Cmissing");
+    expect(f.records).toEqual([]);
+  });
+  it("retains only a closed provider error enum in an SDK failure diagnostic", async () => {
+    const f = fixture({ bucketError: { status: 503, code: "DatabaseReadOnly", message: PRIVATE } });
+    expect(await failure(runProviderStorage(f.runtime), "STORAGE_BUCKET_PROFILE")).toBe("STORAGE_BUCKET_PROFILE_AT_D_BUCKET_H503_S503_CDatabaseReadOnly");
+  });
+  it.each([PRIVATE, `https://private.invalid/object?token=${PRIVATE}`, "storage.draft.secret", "InternalError_EXTRA"])("bounds an unknown SDK provider code without serializing it: %s", injected => {
+    const f = fixture({ bucketError: { status: 503, code: injected, message: PRIVATE } });
+    return failure(runProviderStorage(f.runtime), "STORAGE_BUCKET_PROFILE").then(code => {
+      expect(code).toBe("STORAGE_BUCKET_PROFILE_AT_D_BUCKET_H503_S503_Cother"); expect(code).not.toContain(injected);
+    });
+  });
+  it("reports the app grant stage, actual HTTP status and bounded code without its private body", async () => {
+    const f = fixture({ grantError: { status: 503, code: "InternalError", message: `https://private.invalid/${PRIVATE}` } });
+    expect(await failure(runProviderStorage(f.runtime), "STORAGE_GRANT")).toBe("STORAGE_GRANT_AT_D_GRANT_H503_S0_CInternalError");
+    expect(f.calls.some(call => call.kind === "upload")).toBe(false);
+  });
+  it("does not invent an HTTP 200 from a successful SDK result whose metadata fails the profile check", async () => {
+    const f = fixture({ bucket: { public: true } });
+    expect(await failure(runProviderStorage(f.runtime), "STORAGE_BUCKET_PROFILE")).toBe("STORAGE_BUCKET_PROFILE_AT_D_BUCKET_H0_S0_Cnone");
+  });
+  it("distinguishes a raw app-body exception after a real 200 response", async () => {
+    const f = fixture({ thrownPrivate: "body" });
+    expect(await failure(runProviderStorage(f.runtime), "STORAGE_REQUEST_FAILED")).toBe("STORAGE_REQUEST_FAILED_AT_D_GRANT_H200_S0_Cnone");
+  });
+  it("preserves cleanup failure and its exact removal stage over otherwise completed cases", async () => {
+    const f = fixture({ removeFails: true });
+    expect(await failure(runProviderStorage(f.runtime), "STORAGE_CLEANUP")).toBe("STORAGE_CLEANUP_AT_D_REMOVE_H0_S0_Cmissing");
+  });
+  it("still requires all six cases with the pinned provider's wire-400/body-403-404-415-413 envelopes", async () => {
+    const f = fixture({ legacyEnvelopes: true, mime: { status: 415, code: "InvalidMimeType", message: "mime type application/octet-stream is not supported" } });
+    const results = await runProviderStorage(f.runtime);
+    expect(results).toHaveLength(6); expect(f.records).toHaveLength(6); expect(f.objects.size).toBe(0);
+    expect(f.calls.filter(call => call.kind === "upload" && call.byteLength === MAX + 1)).toHaveLength(2);
   });
 });

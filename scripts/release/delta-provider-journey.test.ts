@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import { describe, expect, it, vi } from "vitest";
 import { ProviderRehearsalFailure, type ProviderActor, type ProviderRehearsalRuntime } from "./delta-provider-contracts";
 import { PROVIDER_JOURNEY_CASES, runProviderJourneys } from "./delta-provider-journey";
+import { PsqlTransportError } from "./delta-psql-session";
 const IDS = { run: "11111111-1111-4111-8111-111111111111", workspace: "22222222-2222-4222-8222-222222222222", creator: "33333333-3333-4333-8333-333333333333", other: "44444444-4444-4444-8444-444444444444", submission: "55555555-5555-4555-8555-555555555555" };
 const PRIVATE = "nonsecret-private-provider-session";
 function offlineRuntime(status: number, applyXp: boolean) {
@@ -56,7 +57,16 @@ describe("provider journey evidence preconditions (offline, not provider evidenc
     const f = offlineRuntime(200, true); f.assertOwned.mockRejectedValue(new Error(PRIVATE)); await failure(runProviderJourneys(f.runtime), "journey-runtime"); expect(f.sql).not.toHaveBeenCalled(); expect(f.record).not.toHaveBeenCalled();
   });
   it("sanitizes private fixture transport errors without successful case records", async () => {
-    const f = offlineRuntime(200, true); f.sql.mockRejectedValue(new Error(PRIVATE)); await failure(runProviderJourneys(f.runtime), "journey-fixture-sql"); expect(f.record).not.toHaveBeenCalled();
+    const f = offlineRuntime(200, true); f.sql.mockRejectedValue(new Error(PRIVATE)); await failure(runProviderJourneys(f.runtime), "journey-fixture-mission-legacy-failed"); expect(f.record).not.toHaveBeenCalled();
+  });
+  it("retains SQLSTATE and the legacy mission stage before publishing any journey record", async () => {
+    const f = offlineRuntime(200, true); f.sql.mockRejectedValue(new PsqlTransportError("stderr-output", "23514"));
+    await failure(runProviderJourneys(f.runtime), "journey-fixture-mission-legacy-psql-stderr-output-23514"); expect(f.record).not.toHaveBeenCalled(); expect(f.request).not.toHaveBeenCalled();
+  });
+  it("distinguishes a later issued-history fixture failure from mission creation with no false HTTP evidence", async () => {
+    const f = offlineRuntime(200, true), original = f.sql.getMockImplementation()!;
+    f.sql.mockImplementation(async text => { if (text.includes("synthetic prior-issued")) throw new PsqlTransportError("stderr-output", "23503"); return original(text); });
+    await failure(runProviderJourneys(f.runtime), "journey-fixture-issued-history-psql-stderr-output-23503"); expect(f.sql).toHaveBeenCalledTimes(2); expect(f.record).not.toHaveBeenCalled(); expect(f.request).not.toHaveBeenCalled();
   });
   it("has inert imports and does not reuse historical app.request or fixture authorization guards", async () => {
     for (const path of ["./delta-provider-journey.ts", "./delta-provider-journey-fixtures.ts"]) {

@@ -1,8 +1,10 @@
 // @vitest-environment node
+import { readFile } from "node:fs/promises";
 import { describe, expect, it, vi } from "vitest";
+import { PsqlTransportError, type PsqlTransportFailureCode } from "./delta-psql-session";
 import type { ActiveMissionWorkspace } from "../../src/lib/activeMission";
 import { ProviderRehearsalFailure, type ProviderActor, type ProviderRehearsalRuntime } from "./delta-provider-contracts";
-import { createProviderJourneyFixture, createProviderMission, prepareProviderActiveFixture, providerFixtureJson, providerFixtureUuid, providerJourneyRequest, providerNeutrality, seedProviderIssuedHistory } from "./delta-provider-journey-fixtures";
+import { createProviderJourneyFixture, createProviderMission, prepareProviderActiveFixture, providerFixtureJson, providerFixtureUuid, providerJourneyRequest, providerNeutrality, seedProviderIssuedHistory, PROVIDER_FIXTURE_SQL_STAGES, providerFixtureDiagnosticCode, providerJourneyDiagnostic } from "./delta-provider-journey-fixtures";
 const IDS = { run: "11111111-1111-4111-8111-111111111111", workspace: "22222222-2222-4222-8222-222222222222", creator: "33333333-3333-4333-8333-333333333333", submission: "44444444-4444-4444-8444-444444444444", workflow: "55555555-5555-4555-8555-555555555555", item: "66666666-6666-4666-8666-666666666666", version: "77777777-7777-4777-8777-777777777777" };
 const PRIVATE = "nonsecret-private-journey-fixture";
 function fixture() {
@@ -17,12 +19,12 @@ function fixture() {
 async function held(promise: Promise<unknown>, code?: string) {
   const failure = await promise.then(() => undefined, error => error as ProviderRehearsalFailure);
   expect(failure).toBeInstanceOf(ProviderRehearsalFailure); if (code) expect(failure!.code).toBe(code);
-  expect(`${failure!.message}\n${failure!.stack}`).not.toContain(PRIVATE); expect(failure).not.toHaveProperty("cause");
+  expect(`${failure!.message}\n${failure!.stack}`).not.toContain(PRIVATE); expect(failure).not.toHaveProperty("cause"); return failure!;
 }
 describe("owned provider journey fixture boundaries (offline only)", () => {
   it.each(["", "' OR true;--", "../escape", "00000000-0000-0000-0000-000000000000"])("rejects non-UUID fixture identity before SQL: %s", value => { expect(() => providerFixtureUuid(value)).toThrow(ProviderRehearsalFailure); });
   it("does not issue SQL if current owned identity cannot be reverified", async () => {
-    const f = fixture(); f.assertOwned.mockRejectedValue(new Error(PRIVATE)); await held(createProviderMission(f.runtime, "active_workspace"), "journey-fixture-sql"); expect(f.sql).not.toHaveBeenCalled();
+    const f = fixture(); f.assertOwned.mockRejectedValue(new Error(PRIVATE)); await held(createProviderMission(f.runtime, "active_workspace"), "journey-fixture-mission-active-failed"); expect(f.sql).not.toHaveBeenCalled();
   });
   it.each([0, 4, -1, 1.5])("refuses an unbounded quota %s before SQL", async quota => {
     const f = fixture(); await held(createProviderMission(f.runtime, "active_workspace", { quota }), "journey-fixture-options"); expect(f.sql).not.toHaveBeenCalled();
@@ -45,6 +47,62 @@ describe("owned provider journey fixture boundaries (offline only)", () => {
   });
   it("validates snapshot identities before composing private SQL", async () => {
     const f = fixture(); const runtime = { ...f.runtime, workspaceId: "' OR true;--" }; await held(providerNeutrality(runtime), "journey-fixture-identity"); expect(f.sql).not.toHaveBeenCalled();
+  });
+});
+function publicationValues(sql: string): Array<{ disclosures: unknown; policy: unknown }> {
+  const templateInsert = sql.split("insert into public.mission_deliverable_templates")[1]?.split("insert into public.mission_deliverable_requirements")[0] ?? "";
+  return [...templateInsert.matchAll(/never publish',72,'([^']+)'(?:::jsonb)?,'([^']+)'(?:::jsonb)?/g)].map(match => ({ disclosures: JSON.parse(match[1]!), policy: JSON.parse(match[2]!) }));
+}
+describe("migrated local fixture JSON contract and bounded SQL diagnostics (offline only)", () => {
+  it("matches the actual migrated disclosure-array and proof-policy-object constraints for both templates", async () => {
+    const migration = await readFile(new URL("../../supabase/migrations/20260723090000_publication_proof_validation.sql", import.meta.url), "utf8");
+    expect(migration).toMatch(/required_disclosures jsonb[^;]+jsonb_typeof\(required_disclosures\) = 'array'/);
+    expect(migration).toMatch(/proof_evidence_policy jsonb[^;]+jsonb_typeof\(proof_evidence_policy\) = 'object'/);
+    const f = fixture(); await createProviderMission(f.runtime, "active_workspace"); const values = publicationValues(f.sql.mock.calls[0]![0]);
+    expect(values).toHaveLength(2); expect(values.map(value => value.disclosures)).toEqual([[], []]); expect(values.map(value => value.policy)).toEqual([{}, {}]);
+  });
+  it("has a valid positive fixture prerequisite before rejecting the former object-for-array mutation", async () => {
+    const f = fixture(), original = f.sql.getMockImplementation()!;
+    f.sql.mockImplementation(async text => {
+      for (const input of publicationValues(text)) if (!Array.isArray(input.disclosures) || !input.policy || Array.isArray(input.policy) || typeof input.policy !== "object") throw new PsqlTransportError("stderr-output", "23514");
+      return original(text);
+    });
+    await createProviderMission(f.runtime, "active_workspace"); expect(f.sql).toHaveBeenCalledOnce();
+    const wrong = f.sql.mock.calls[0]![0].replaceAll("'[]'::jsonb", "'{}'::jsonb"); expect(publicationValues(wrong).map(value => value.disclosures)).toEqual([{}, {}]);
+    await held(providerFixtureJson(f.runtime, wrong, "mission-active"), "journey-fixture-mission-active-psql-stderr-output-23514"); expect(f.record).not.toHaveBeenCalled(); expect(f.request).not.toHaveBeenCalled();
+  });
+  it.each(PROVIDER_FIXTURE_SQL_STAGES)("retains SQLSTATE with a closed %s stage and no original private error", async stage => {
+    const f = fixture(), original = new PsqlTransportError("stderr-output", "23514"); original.message = PRIVATE; original.stack = PRIVATE;
+    f.sql.mockRejectedValue(original); const error = await held(providerFixtureJson(f.runtime, "select fixed_json;", stage), `journey-fixture-${stage}-psql-stderr-output-23514`);
+    expect(providerFixtureDiagnosticCode(error.code)).toBe(true); expect(providerJourneyDiagnostic(error)).toBe(`${stage}-psql-stderr-output-23514`); expect(error.code.length).toBeLessThanOrEqual(100);
+  });
+  it("preserves every actual closed psql transport classification even when no SQLSTATE is available", async () => {
+    const codes = ["invalid-options", "invalid-query", "spawn-failed", "process-error", "unexpected-exit", "protocol-error", "query-timeout", "output-limit", "stdin-error", "stderr-output", "busy", "closed", "aborted", "close-timeout", "json-result"] satisfies PsqlTransportFailureCode[];
+    for (const code of codes) {
+      const f = fixture(); f.sql.mockRejectedValue(new PsqlTransportError(code));
+      const error = await held(providerFixtureJson(f.runtime, "select fixed_json;", "issued-history"), `journey-fixture-issued-history-psql-${code}`);
+      expect(providerFixtureDiagnosticCode(error.code)).toBe(true); expect(providerJourneyDiagnostic(error)).toBe(`issued-history-psql-${code}`);
+    }
+  });
+  it("keeps an owned-identity ProviderRehearsalFailure unchanged rather than calling it a SQL failure", async () => {
+    const f = fixture(), original = new ProviderRehearsalFailure("owned-stack-identity-held"); f.assertOwned.mockRejectedValue(original);
+    expect(await held(createProviderMission(f.runtime, "active_workspace"), original.code)).toBe(original); expect(f.sql).not.toHaveBeenCalled();
+  });
+  it("separates closed row cardinality, JSON and unknown SQL failures", async () => {
+    const f = fixture(); f.sql.mockResolvedValueOnce([]); await held(providerFixtureJson(f.runtime, "select fixed_json;", "neutrality"), "journey-fixture-neutrality-row");
+    f.sql.mockResolvedValueOnce([PRIVATE]); await held(providerFixtureJson(f.runtime, "select fixed_json;", "issued-anchor"), "journey-fixture-issued-anchor-json");
+    f.sql.mockRejectedValueOnce({ code: "23514", message: PRIVATE, details: PRIVATE }); await held(providerFixtureJson(f.runtime, "select fixed_json;", "legacy-events"), "journey-fixture-legacy-events-failed");
+  });
+  it("does not reinterpret raw code-like fields or invalid psql classifications as trusted diagnostics", async () => {
+    const f = fixture(); f.sql.mockRejectedValue(new PsqlTransportError(PRIVATE as PsqlTransportFailureCode, "23514"));
+    await held(providerFixtureJson(f.runtime, "select fixed_json;", "pending-counts"), "journey-fixture-pending-counts-failed");
+    expect(providerJourneyDiagnostic({ code: "journey-fixture-mission-active-psql-stderr-output-23514" })).toBeUndefined();
+  });
+  it.each([PRIVATE, "journey-fixture-untrusted-psql-stderr-output-23514", "journey-fixture-mission-active-psql-unknown-23514", "journey-fixture-mission-active-psql-stderr-output-23514-private", "journey-fixture-mission-active-psql-stderr-output-23p01", "journey-http-999", null, 23514])("rejects nonclosed diagnostic token %s", value => {
+    expect(providerFixtureDiagnosticCode(value)).toBe(false); if (typeof value === "string") expect(providerJourneyDiagnostic(new ProviderRehearsalFailure(value))).toBeUndefined();
+  });
+  it("rejects an unrecognized stage before SQL and never copies it to the failure code", async () => {
+    const f = fixture(); await held(providerFixtureJson(f.runtime, "select fixed_json;", PRIVATE as never), "journey-fixture-stage"); expect(f.sql).not.toHaveBeenCalled();
   });
 });
 describe("full app HTTP capability fixture adapter (offline responses are not provider evidence)", () => {
