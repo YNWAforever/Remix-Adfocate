@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 import { deltaChildEnvironment } from "./delta-child-process";
 import { canonicalDeltaJson, digestDeltaProofPayload } from "./delta-evidence";
 import { ProviderRehearsalFailure, requireProviderFact as check, type ProviderCaseResult } from "./delta-provider-contracts";
-import { createOwnedProviderStack, captureProviderTool, type OwnedProviderStack } from "./delta-provider-stack";
+import { createOwnedProviderStack, captureProviderTool, ProviderStackBootstrapFailure, type OwnedProviderStack } from "./delta-provider-stack";
 import { createProviderRuntime } from "./delta-provider-runtime";
 import { runProviderAuthMfa } from "./delta-provider-auth";
 import { runProviderJourneys } from "./delta-provider-journey";
@@ -32,7 +32,7 @@ export async function providerRehearsalMain(args: readonly string[]): Promise<vo
   check(!sourceDirty, "provider-source-not-committed");
   const codeHashes: Record<string, string> = {};
   for (const name of CODE) { const relative = `scripts/release/${name}`; codeHashes[relative] = createHash("sha256").update(await readFile(join(root, relative))).digest("hex"); }
-  const startedAt = new Date().toISOString(), attemptId = randomUUID(); let stack: OwnedProviderStack | undefined, runtime: Awaited<ReturnType<typeof createProviderRuntime>> | undefined;
+  const startedAt = new Date().toISOString(); let attemptId: string = randomUUID(); let stack: OwnedProviderStack | undefined, runtime: Awaited<ReturnType<typeof createProviderRuntime>> | undefined;
   let checks: ProviderCaseResult[] = [], reasonCode: string | null = null, actualHttpResponses = 0, externalRequestsBlocked = 0;
   let applicationCleanup: "verified" | "not-started" | "unknown" = "not-started", namespaceCleanup: "verified" | "unknown" = "unknown";
   try {
@@ -53,7 +53,10 @@ export async function providerRehearsalMain(args: readonly string[]): Promise<vo
     await stack.assertOwned();
     check((await git(["rev-parse", "HEAD"])) === sourceCommit && !(await git(["status", "--porcelain", "--untracked-files=all"])), "provider-source-changed-during-run");
     actualHttpResponses = runtime.httpRequests; externalRequestsBlocked = runtime.externalRequestsBlocked();
-  } catch (error) { reasonCode = safeReason(error); checks = []; }
+  } catch (error) {
+    reasonCode = safeReason(error); checks = [];
+    if (error instanceof ProviderStackBootstrapFailure) { attemptId = error.runId; namespaceCleanup = error.namespaceCleanupVerified ? "verified" : "unknown"; }
+  }
   finally {
     if (runtime) { actualHttpResponses = runtime.httpRequests; externalRequestsBlocked = runtime.externalRequestsBlocked(); try { await runtime.close(); applicationCleanup = "verified"; } catch { applicationCleanup = "unknown"; reasonCode = "provider-app-cleanup-unverified"; checks = []; } }
     phase("cleaning-owned-namespace");
@@ -65,7 +68,7 @@ export async function providerRehearsalMain(args: readonly string[]): Promise<vo
     platform: process.platform as "linux" | "win32", startedAt, finishedAt: new Date().toISOString(), codeHashes,
     ownedStack: stack ? { projectId: stack.projectId, sourceProfileHash: stack.sourceProfileHash, configurationHash: stack.configurationHash, apiOrigin: stack.apiOrigin,
       applicationOrigin: runtime?.appOrigin ?? null, targetIdentityHash: digestDeltaProofPayload(stack.identities.map(row => ({ id: row.id, image: row.image, networks: row.networks, ports: row.ports }))),
-      containers: stack.identities.map(row => ({ id: row.id, image: row.image, imageRef: row.imageRef })), network: "internal-bridge-loopback-published" } : null,
+      containers: stack.identities.map(row => ({ id: row.id, image: row.image, imageRef: row.imageRef })), network: "owned-bridge-loopback-published" } : null,
     checks, actualHttpResponses, externalRequestsBlocked, cleanup: { application: applicationCleanup, namespace: namespaceCleanup }, notCovered: PROVIDER_NOT_COVERED,
   };
   const report = validateProviderObservation({ ...payload, contentDigest: digestDeltaProofPayload(payload) });

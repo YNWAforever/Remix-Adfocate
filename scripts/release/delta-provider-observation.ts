@@ -8,7 +8,7 @@ export const PROVIDER_CASE_NAMES = Object.freeze([
   "storage.draft.owner-access-isolation", "storage.draft.signed-upload", "storage.draft.mime-size-enforcement", "storage.proof.owner-access-isolation", "storage.proof.signed-upload", "storage.proof.mime-size-enforcement", "provider-hosted-origin-refused",
 ]);
 export const PROVIDER_NOT_COVERED = Object.freeze([
-  "production-provider-equivalence", "historical-null-mode-provider-join", "actual-legacy-reward-issuance", "actual-active-reward-settlement", "external-publication-or-proof-metadata", "cross-tenant-storage-write", "signed-capability-nontransferability", "storage-overwrite-and-delete-permissions", "owner-release-acceptance-and-rpo-rto",
+  "production-provider-equivalence", "historical-null-mode-provider-join", "actual-legacy-reward-issuance", "actual-active-reward-settlement", "external-publication-or-proof-metadata", "cross-tenant-storage-write", "signed-capability-nontransferability", "storage-overwrite-and-delete-permissions", "provider-container-egress-firewall", "owner-release-acceptance-and-rpo-rto",
 ]);
 export interface ProviderObservation {
   readonly schemaVersion: 1; readonly kind: "phase3-owned-provider-observation";
@@ -20,7 +20,7 @@ export interface ProviderObservation {
   readonly ownedStack: null | { readonly projectId: string; readonly sourceProfileHash: string; readonly configurationHash: string;
     readonly apiOrigin: string; readonly applicationOrigin: string | null; readonly targetIdentityHash: string;
     readonly containers: readonly { readonly id: string; readonly image: string; readonly imageRef: string }[];
-    readonly network: "internal-bridge-loopback-published" };
+    readonly network: "owned-bridge-loopback-published" };
   readonly checks: readonly ProviderCaseResult[]; readonly actualHttpResponses: number; readonly externalRequestsBlocked: number;
   readonly cleanup: { readonly application: "verified" | "not-started" | "unknown"; readonly namespace: "verified" | "unknown" };
   readonly notCovered: readonly string[]; readonly contentDigest: string;
@@ -53,7 +53,7 @@ export function validateProviderObservation(input: unknown): ProviderObservation
     exactKeys(stack, ["projectId", "sourceProfileHash", "configurationHash", "apiOrigin", "applicationOrigin", "targetIdentityHash", "containers", "network"]);
     for (const row of stack.containers) exactKeys(row, ["id", "image", "imageRef"]);
     check(/^adfocate-provider-[a-f0-9]{32}$/.test(stack.projectId) && SHA.test(stack.sourceProfileHash) && SHA.test(stack.configurationHash) && SHA.test(stack.targetIdentityHash)
-      && stack.network === "internal-bridge-loopback-published" && /^http:\/\/127\.0\.0\.1:\d{4,5}$/.test(stack.apiOrigin)
+      && stack.network === "owned-bridge-loopback-published" && /^http:\/\/127\.0\.0\.1:\d{4,5}$/.test(stack.apiOrigin)
       && (stack.applicationOrigin === null || /^http:\/\/127\.0\.0\.1:\d{4,5}$/.test(stack.applicationOrigin)), "provider-observation-target");
     check(Array.isArray(stack.containers) && stack.containers.length >= 5 && stack.containers.every(row => /^[a-f0-9]{64}$/.test(row.id) && /^sha256:[a-f0-9]{64}$/.test(row.image)
       && /^(?:public\.ecr\.aws\/supabase|supabase|postgrest|kong)\/[a-z0-9_.-]+:[a-zA-Z0-9_.-]+$/.test(row.imageRef)), "provider-observation-images");

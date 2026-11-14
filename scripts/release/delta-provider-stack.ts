@@ -36,6 +36,12 @@ export function classifyProviderToolFailure(bytes: Buffer): string {
     if (/npipe|dockerDesktopLinuxEngine/i.test(text)) return "daemon-pipe-access";
     return "access-denied";
   }
+  if (/failed to connect to postgres|failed to connect to.*database=|postgres.*connection refused/i.test(text)) return "postgres-connect";
+  if (/127\.0\.0\.1|localhost/i.test(text) && /connection refused|connectex|failed to connect/i.test(text)) return "loopback-connect";
+  if (/health.?check|unhealthy|not healthy/i.test(text)) return "service-health";
+  if (/no route to host|network is unreachable/i.test(text)) return "network-route";
+  if (/client version|minimum supported API version|API version.*too old/i.test(text)) return "docker-api-version";
+  if (/failed to (?:pull|download).*image|pull access denied|registry.*(?:timeout|failed)|public\.ecr\.aws.*(?:timeout|failed)/i.test(text)) return "image-pull";
   if (/failed to connect|cannot connect|is the docker daemon running|system cannot find the file/i.test(text)) return "daemon-connect";
   if (/invalid.*(?:option|argument)|unknown flag/i.test(text)) return "network-option";
   if (/failed to parse config|decoding failed|invalid keys|unknown.*(?:config|field|key)/i.test(text)) return "config-schema";
@@ -119,6 +125,9 @@ async function freePorts(count: number) {
     return ports;
   } finally { await Promise.all(sockets.map(server => new Promise<void>(ok => server.close(() => ok())))); }
 }
+export class ProviderStackBootstrapFailure extends ProviderRehearsalFailure {
+  constructor(code: string, readonly runId: string, readonly namespaceCleanupVerified: boolean) { super(code); }
+}
 export interface OwnedProviderStack {
   readonly runId: string; readonly projectId: string; readonly sourceProfileHash: string; readonly configurationHash: string;
   readonly apiOrigin: string; readonly anonKey: string; readonly serviceKey: string; readonly jwtSecret: string;
@@ -194,7 +203,7 @@ export async function createOwnedProviderStack(rootInput: string): Promise<Owned
   async function assertOwned() {
     check(started && !closed && networkId, "active-owned-stack"); await assertPrivateIdentity();
     const network = object(JSON.parse(await dockerText(["network", "inspect", "--format", '{"id":{{json .Id}},"owner":{{json (index .Labels "adfocate.provider-run")}},"driver":{{json .Driver}},"internal":{{json .Internal}},"options":{{json .Options}},"containers":{{json .Containers}}}', networkId])));
-    check(network.id === networkId && network.owner === runId && network.driver === "bridge" && network.internal === true
+    check(network.id === networkId && network.owner === runId && network.driver === "bridge" && network.internal === false
       && object(network.options)["com.docker.network.bridge.host_binding_ipv4"] === "127.0.0.1" && object(network.options)["com.docker.network.bridge.enable_ip_masquerade"] === "false", "owned-network-identity");
     const current = await containers();
     check(current.length === identities.length && current.every(row => identities.some(expected => expected.id === row.id && expected.image === row.image && expected.name === row.name)), "owned-inventory-drift");
@@ -224,6 +233,10 @@ export async function createOwnedProviderStack(rootInput: string): Promise<Owned
         check((await dockerText(["network", "rm", networkId])) === networkId, "owned-network-cleanup");
       } catch { failed = true; }
     }
+    try {
+      check(!(await dockerText(["network", "ls", "--filter", `label=com.supabase.cli.project=${projectId}`, "--format", "{{.ID}}"])), "unexpected-project-network-remains");
+      await privateAttempt.privateDirectory();
+    } catch { failed = true; }
     closed = !failed; if (failed) throw new ProviderRehearsalFailure("owned-stack-cleanup-unverified");
   }
   try {
@@ -233,11 +246,11 @@ export async function createOwnedProviderStack(rootInput: string): Promise<Owned
     const ipamRows = (await dockerText(["network", "inspect", "--format", "{{json .IPAM.Config}}", ...allNetworks])).split(/\r?\n/).filter(Boolean);
     const occupiedSubnets = ipamRows.flatMap(row => (JSON.parse(row) ?? []) as { Subnet?: string }[]).flatMap(row => row.Subnet ? [row.Subnet] : []);
     const subnet = chooseProviderSubnet(occupiedSubnets);
-    networkId = await dockerText(["network", "create", "--driver", "bridge", "--internal", "--subnet", subnet, "--label", `adfocate.provider-run=${runId}`, "--opt", "com.docker.network.bridge.host_binding_ipv4=127.0.0.1", "--opt", "com.docker.network.bridge.enable_ip_masquerade=false", networkName]);
+    networkId = await dockerText(["network", "create", "--driver", "bridge", "--subnet", subnet, "--label", `adfocate.provider-run=${runId}`, "--opt", "com.docker.network.bridge.host_binding_ipv4=127.0.0.1", "--opt", "com.docker.network.bridge.enable_ip_masquerade=false", networkName]);
     check(/^[a-f0-9]{64}$/.test(networkId), "owned-network-create");
     // All names are current-run nonce names. Mark before start so a partially started stack is cleaned.
     started = true;
-    const output = await tool(cli, ["start", "--workdir", workdir, "--network-id", networkId, "--exclude", PROVIDER_EXCLUDED_SERVICES], undefined, 600_000); output.fill(0);
+    const output = await tool(cli, ["start", "--workdir", workdir, "--network-id", networkName, "--exclude", PROVIDER_EXCLUDED_SERVICES], undefined, 600_000); output.fill(0);
     identities = await containers(); check(identities.length >= 5, "full-provider-stack"); await assertOwned();
     const statusBytes = await tool(cli, ["status", "--workdir", workdir, "--output", "json"]); let status: Row;
     try { status = object(JSON.parse(statusBytes.toString("utf8"))); } finally { statusBytes.fill(0); }
@@ -250,5 +263,9 @@ export async function createOwnedProviderStack(rootInput: string): Promise<Owned
           { spawn: (file, args, options) => spawn(file, [...args], { ...options, env }) });
         try { await session.query("SET client_min_messages='warning';"); return await session.query(query); } finally { await session.close(); }
       } };
-  } catch (error) { try { await close(); } catch { throw new ProviderRehearsalFailure("owned-stack-cleanup-unverified"); } throw error; }
+  } catch (error) {
+    try { await close(); } catch { throw new ProviderStackBootstrapFailure("owned-stack-cleanup-unverified", runId, false); }
+    const code = error instanceof ProviderRehearsalFailure && /^[a-zA-Z0-9_-]{1,100}$/.test(error.code) ? error.code : "owned-stack-bootstrap-failed";
+    throw new ProviderStackBootstrapFailure(code, runId, true);
+  }
 }
