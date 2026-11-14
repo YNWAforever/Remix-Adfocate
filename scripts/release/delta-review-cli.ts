@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { lstat, mkdir, readFile, realpath, writeFile } from "node:fs/promises";
+import { lstat, mkdir, readFile, readdir, realpath, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { assertSanitized } from "./evidence";
 import { canonicalDeltaJson } from "./delta-evidence";
@@ -12,13 +12,14 @@ interface ArtifactReference { readonly path: string; readonly sha256: string; re
 const SHA = /^[a-f0-9]{64}$/;
 const DOC = /^docs\/verification\/(?:phase3-provider-rehearsal|phase3-paired-recovery|phase3-release-review)\/[a-zA-Z0-9._-]+\.json$/;
 const SOURCE = /^scripts\/release\/delta-[a-z0-9-]+\.(?:ts|mjs|ps1|sql)$/;
+const MIGRATION = /^supabase\/migrations\/(?:\d{4}|\d{14})_[a-z0-9_]+\.sql$/;
 function held(): never { throw new Error("Offline release review rejected"); }
 function object(value: unknown, keys: readonly string[]) {
   if (!value || typeof value !== "object" || Array.isArray(value)) held(); const row = value as Record<string, unknown>;
   if (Object.keys(row).sort().join() !== [...keys].sort().join()) held(); return row;
 }
 async function boundedPublicFile(root: string, relative: string, maximum: number): Promise<Buffer> {
-  if (!DOC.test(relative) && !SOURCE.test(relative) && relative !== "supabase/release-manifest.json") held(); const path = resolve(root, relative);
+  if (!DOC.test(relative) && !SOURCE.test(relative) && !MIGRATION.test(relative) && relative !== "supabase/release-manifest.json") held(); const path = resolve(root, relative);
   let ancestor = dirname(path);
   for (;;) {
     const stat = await lstat(ancestor); if (!stat.isDirectory() || stat.isSymbolicLink() || await realpath(ancestor) !== ancestor) held();
@@ -26,6 +27,16 @@ async function boundedPublicFile(root: string, relative: string, maximum: number
   }
   const stat = await lstat(path); if (!stat.isFile() || stat.isSymbolicLink() || stat.size < 1 || stat.size > maximum || await realpath(path) !== path) held();
   const bytes = await readFile(path); if (bytes.length < 1 || bytes.length > maximum) held(); return bytes;
+}
+async function preflightMigrations(root: string) {
+  const directory = resolve(root, "supabase/migrations"), stat = await lstat(directory);
+  if (!stat.isDirectory() || stat.isSymbolicLink() || await realpath(directory) !== directory) held();
+  const names = await readdir(directory); if (names.length > 256) held();
+  const sql = names.filter(name => name.endsWith(".sql")); if (!sql.length || sql.length > 120) held();
+  for (const name of sql) {
+    const relative = `supabase/migrations/${name}`; if (!MIGRATION.test(relative)) held();
+    await boundedPublicFile(root, relative, 2 * 1024 * 1024);
+  }
 }
 function reference(value: unknown): ArtifactReference {
   const row = object(value, ["path", "sha256", "contentDigest"]);
@@ -36,6 +47,7 @@ function reference(value: unknown): ArtifactReference {
 export async function runPhase3ReviewCli(rootInput: string, input: string, output: string, now = new Date()) {
   const root = await realpath(rootInput);
   const manifest = parseReleaseManifest(JSON.parse((await boundedPublicFile(root, "supabase/release-manifest.json", 512 * 1024)).toString("utf8")));
+  await preflightMigrations(root);
   if ((await validateManifest(manifest, root)).length) held();
   if (!/^docs\/verification\/phase3-release-review\/selection-[a-f0-9]{40}\.json$/.test(input) || !Number.isFinite(now.getTime())) held();
   const selection = object(JSON.parse((await boundedPublicFile(root, input, 64 * 1024)).toString("utf8")), ["schemaVersion", "sourceCommit", "provider", "pairedRecovery", "sourceCi"]); assertSanitized(selection);
