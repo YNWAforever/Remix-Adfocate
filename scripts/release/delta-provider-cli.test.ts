@@ -7,7 +7,7 @@ function sample() {
   const payload = { schemaVersion: 1, kind: "phase3-owned-provider-observation", status: "HOLD", validReleaseEvidence: false, productionEquivalent: false, ownerAccepted: false, engineeringStatus: "passed", reasonCode: null,
     runId: "00000000-0000-4000-8000-000000000001", sourceCommit: "a".repeat(40), sourceDirty: false, platform: "linux", startedAt: "2026-11-14T00:00:00.000Z", finishedAt: "2026-11-14T00:01:00.000Z",
     codeHashes: Object.fromEntries(Array.from({ length: 15 }, (_, index) => [`scripts/release/delta-synthetic-${index}.ts`, "b".repeat(64)])),
-    ownedStack: { projectId: `adfocate-provider-${"a".repeat(32)}`, sourceProfileHash: "b".repeat(64), configurationHash: "c".repeat(64), targetIdentityHash: "d".repeat(64), apiOrigin: "http://127.0.0.1:54321", applicationOrigin: "http://127.0.0.1:54322", network: "owned-bridge-loopback-published",
+    ownedStack: { projectId: `adfp-${"a".repeat(32)}`, sourceProfileHash: "b".repeat(64), configurationHash: "c".repeat(64), targetIdentityHash: "d".repeat(64), apiOrigin: "http://127.0.0.1:54321", applicationOrigin: "http://127.0.0.1:54322", network: "owned-bridge-loopback-published",
       containers: Array.from({ length: 5 }, (_, index) => ({ id: String(index).repeat(64), image: `sha256:${"a".repeat(64)}`, imageRef: "public.ecr.aws/supabase/postgres:17.6.1.079" })) },
     checks: PROVIDER_CASE_NAMES.map(name => ({ name, status: "passed", actualHttpRequests: 1, evidenceSha256: "e".repeat(64) })), actualHttpResponses: 100, externalRequestsBlocked: 3,
     cleanup: { application: "verified", namespace: "verified" }, notCovered: PROVIDER_NOT_COVERED };

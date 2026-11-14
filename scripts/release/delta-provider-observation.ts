@@ -52,7 +52,7 @@ export function validateProviderObservation(input: unknown): ProviderObservation
     const stack = report.ownedStack;
     exactKeys(stack, ["projectId", "sourceProfileHash", "configurationHash", "apiOrigin", "applicationOrigin", "targetIdentityHash", "containers", "network"]);
     for (const row of stack.containers) exactKeys(row, ["id", "image", "imageRef"]);
-    check(/^adfocate-provider-[a-f0-9]{32}$/.test(stack.projectId) && SHA.test(stack.sourceProfileHash) && SHA.test(stack.configurationHash) && SHA.test(stack.targetIdentityHash)
+    check(/^adfp-[a-f0-9]{32}$/.test(stack.projectId) && SHA.test(stack.sourceProfileHash) && SHA.test(stack.configurationHash) && SHA.test(stack.targetIdentityHash)
       && stack.network === "owned-bridge-loopback-published" && /^http:\/\/127\.0\.0\.1:\d{4,5}$/.test(stack.apiOrigin)
       && (stack.applicationOrigin === null || /^http:\/\/127\.0\.0\.1:\d{4,5}$/.test(stack.applicationOrigin)), "provider-observation-target");
     check(Array.isArray(stack.containers) && stack.containers.length >= 5 && stack.containers.every(row => /^[a-f0-9]{64}$/.test(row.id) && /^sha256:[a-f0-9]{64}$/.test(row.image)

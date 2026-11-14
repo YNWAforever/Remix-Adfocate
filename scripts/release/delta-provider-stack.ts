@@ -18,6 +18,12 @@ const dockerArgs = (args: string[]) => ["--host", endpoint, ...args];
 const sha = (value: string | Buffer) => createHash("sha256").update(value).digest("hex");
 type Row = Record<string, unknown>;
 function object(value: unknown): Row { check(value && typeof value === "object" && !Array.isArray(value), "stack-metadata"); return value as Row; }
+export function providerProjectId(runId: string): string {
+  check(/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/.test(runId), "provider-run-nonce");
+  // Pinned CLI 2.110.0 sanitizes/truncates project IDs to 40 characters.
+  const projectId = `adfp-${runId.replaceAll("-", "")}`;
+  check(projectId.length <= 40 && /^[a-z0-9][a-z0-9_-]*$/.test(projectId), "provider-project-identity"); return projectId;
+}
 export function providerLoopbackOrigin(value: unknown): string {
   check(typeof value === "string", "local-origin"); let url: URL;
   try { url = new URL(value); } catch { throw new ProviderRehearsalFailure("local-origin"); }
@@ -176,7 +182,7 @@ export async function createOwnedProviderStack(rootInput: string): Promise<Owned
     const bytes = await readFile(source); sourceHashes[name] = sha(bytes.toString("utf8").replace(/\r\n?/g, "\n"));
     await writeFile(join(workdir, "supabase/migrations", name), bytes, { flag: "wx", mode: 0o600 }); bytes.fill(0);
   }
-  const runId = randomUUID(), projectId = `adfocate-provider-${runId.replaceAll("-", "")}`, networkName = `${projectId}-network`;
+  const runId = randomUUID(), projectId = providerProjectId(runId), networkName = `${projectId}-network`;
   let config = (await readFile(join(root, "supabase/config.toml"), "utf8")).replace(/\r\n?/g, "\n");
   config = config.replace(/^project_id\s*=.*$/m, `project_id = "${projectId}"`)
     .replace(/(\[db.seed\][\s\S]*?enabled\s*=\s*)true/, "$1false")
@@ -189,6 +195,8 @@ export async function createOwnedProviderStack(rootInput: string): Promise<Owned
   const apiPort = Number(/\[api\][\s\S]*?^port\s*=\s*(\d+)/m.exec(config)?.[1]);
   const apiOrigin = providerLoopbackOrigin(`http://127.0.0.1:${apiPort}`);
   config = config.replace(/^# external_url =.*$/m, `external_url = "${apiOrigin}/auth/v1"`).replace(/^# jwt_issuer =.*$/m, `jwt_issuer = "${apiOrigin}/auth/v1"`);
+  const namespaceLines = config.match(/^project_id\s*=.*$/gm);
+  check(namespaceLines?.length === 1 && namespaceLines[0] === `project_id = "${projectId}"`, "provider-config-namespace");
   await writeFile(join(workdir, "supabase/config.toml"), config, { flag: "wx", mode: 0o600 });
   const configurationHash = sha(config), sourceProfileHash = digestDeltaProofPayload({ cliVersion: PROVIDER_CLI_VERSION, configurationHash, sourceHashes });
   let networkId: string | undefined, started = false, identities: ProviderContainerIdentity[] = [], closed = false;

@@ -7,7 +7,7 @@ npm run release:provider:plan
 npm run release:provider:owned
 ```
 
-The plan command is offline. The owned command requires a committed source tree, Node 22, Docker's local engine and the locked Supabase CLI 2.110.0 package. There are no URL, project, credential, fixture SQL, source binding or output overrides. It allocates a fresh project, private working directory, free loopback ports and an owned bridge with an explicit non-overlapping subnet, loopback-only published ports and disabled masquerading. Existing projects and volumes are never adopted. No migration is sent to a hosted database.
+The plan command is offline. The owned command requires a committed source tree, Node 22, Docker's local engine and the locked Supabase CLI 2.110.0 package. There are no URL, project, credential, fixture SQL, source binding or output overrides. It allocates a fresh project (`adfp-` plus the complete UUID without separators, 37 characters, within the pinned CLI's 40-character project-ID limit), private working directory, free loopback ports and an owned bridge with an explicit non-overlapping subnet, loopback-only published ports and disabled masquerading. Existing projects and volumes are never adopted. No migration is sent to a hosted database.
 
 The full local forward schema includes the legacy foundation files and the complete current manifest. The source profile records normalized hashes of every copied migration. This fresh local history is distinct from the protected production baseline's seventeen recorded ledger rows; it provides no production-history or recovery-equivalence claim. Normal seed execution is disabled. Immutable rows in reviewed migrations remain part of the local baseline.
 
