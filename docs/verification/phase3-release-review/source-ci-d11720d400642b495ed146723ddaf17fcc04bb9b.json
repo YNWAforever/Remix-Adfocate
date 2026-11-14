@@ -1,0 +1,27 @@
+{
+  "repository": "YNWAforever/Remix-Adfocate",
+  "workflow": "CI",
+  "branch": "main",
+  "runId": "43565710614",
+  "sourceCommit": "d11720d400642b495ed146723ddaf17fcc04bb9b",
+  "event": "push",
+  "url": "https://github.com/YNWAforever/Remix-Adfocate/actions/runs/43565710614",
+  "conclusion": "success",
+  "jobs": [
+    {
+      "name": "build-test",
+      "sourceCommit": "d11720d400642b495ed146723ddaf17fcc04bb9b",
+      "conclusion": "success"
+    },
+    {
+      "name": "integration",
+      "sourceCommit": "d11720d400642b495ed146723ddaf17fcc04bb9b",
+      "conclusion": "success"
+    },
+    {
+      "name": "provider-acceptance",
+      "sourceCommit": "d11720d400642b495ed146723ddaf17fcc04bb9b",
+      "conclusion": "success"
+    }
+  ]
+}
