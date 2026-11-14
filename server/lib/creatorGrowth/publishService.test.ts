@@ -18,6 +18,28 @@ const assetId = "00000000-0000-4000-8000-000000000031";
 const target = { connectionId: "00000000-0000-4000-8000-000000000041", accountSubject: "123456789", grantGeneration: 1 };
 const bytes = new Uint8Array([255, 216, 255, 217]); // Explicit synthetic fixture, no real user's image.
 const sha = (value: string | Uint8Array) => createHash("sha256").update(value).digest("hex");
+const dtoPrivateFixture = {
+  token: "SECRET-publish-dto-canary-a923557c-7c4b-422c-a6db",
+  storageUrl: "https://private.invalid/publish-fixture/a923557c",
+  missionProof: "PRIVATE-mission-proof-canary-f5161e99-58eb-4c0a",
+};
+const dtoPrivateValues = [...Object.values(dtoPrivateFixture), actor.sessionHash, bytes, Array.from(bytes)];
+function expectSafePublishDtos(value: unknown, privateValues: readonly unknown[]) {
+  function visit(current: unknown) {
+    for (const privateValue of privateValues) {
+      expect(current).not.toEqual(privateValue);
+      if (typeof current === "string" && typeof privateValue === "string") expect(current).not.toContain(privateValue);
+    }
+    if (current === null || typeof current !== "object") return;
+    for (const [key, child] of Object.entries(current)) {
+      const words = key.replace(/([A-Z])([A-Z][a-z])/g, "$1_$2").replace(/([a-z0-9])([A-Z])/g, "$1_$2").toLowerCase().split(/[^a-z0-9]+/);
+      expect(words.some(word => ["secret", "token", "bytes", "points", "xp"].includes(word))).toBe(false);
+      expect(["storageurl", "sessionhash", "missionproof"].includes(words.join(""))).toBe(false);
+      visit(child);
+    }
+  }
+  visit(value);
+}
 
 function fixture(options: Partial<MockPublisherOptions> = {}) {
   let time = Date.parse("2026-11-04T12:00:00.000Z");
@@ -282,13 +304,41 @@ describe("durable worker orchestration", () => {
   it("returns safe DTOs and bounded errors without a network transport", async () => {
     const fetch = vi.fn(() => { throw new Error("NETWORK_FORBIDDEN"); }); vi.stubGlobal("fetch", fetch);
     const f = fixture();
-    Object.assign(f.resolved, { token: "SECRET", storageUrl: "https://private.invalid/path", bytes });
+    Object.assign(f.resolved, { ...dtoPrivateFixture, bytes, sessionHash: actor.sessionHash, points: 12345, XP: 67890 });
+    const open = vi.spyOn(f.lease, "open");
     const p = await f.service.prepare(actor, draftId); const i = await f.approve();
     const done = await f.service.execute(owner, i.id);
-    expect(JSON.stringify([p, i, done])).not.toMatch(/SECRET|storageUrl|private\.invalid|bytes|sessionHash|missionProof|points|XP|mock-lease:/);
-    f.resolveDraft.mockRejectedValue(new Error("SECRET https://private.invalid/path"));
+    expect(open).toHaveBeenCalledTimes(1);
+    const lease = await open.mock.results[0]!.value;
+    expect(lease.handle).toMatch(/^mock-lease:/);
+    expectSafePublishDtos([p, i, done], [...dtoPrivateValues, lease.handle]);
+    f.resolveDraft.mockRejectedValue(new Error(`${dtoPrivateFixture.token} ${dtoPrivateFixture.storageUrl}`));
     await expect(f.service.prepare(actor, draftId)).rejects.toThrow(/^PUBLISH_UNAVAILABLE$/);
     expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it("allows XP inside an actual public approval nonce without treating it as a financial field", async () => {
+    const f = fixture(), nonce = `XPEC${"a".repeat(39)}`;
+    const repo = new MemoryPublishRepository({ database: f.database, enabled: true, now: f.deps.now, nonceFactory: () => nonce });
+    const service = new PublishService({ ...f.deps, repo });
+    const preview = await service.prepare(actor, draftId);
+    expect(preview.nonce).toBe(nonce);
+    expectSafePublishDtos(preview, dtoPrivateValues);
+  });
+
+  it.each(["SECRET", "token", "access_token", "storageUrl", "storage_url", "bytes", "sessionHash", "missionProof", "points", "pointsAwarded", "XP", "xp_awarded", "creatorXP"])("rejects a nested private DTO field %s even when its value is unrelated", key => {
+    expect(() => expectSafePublishDtos({ nonce: `XPEC${"a".repeat(39)}`, nested: [{ [key]: "unrelated-placeholder" }] }, dtoPrivateValues)).toThrow();
+  });
+
+  it.each(dtoPrivateValues.map((value, index) => ({ value, index })))("rejects exact private fixture value $index under an otherwise public field", ({ value }) => {
+    expect(() => expectSafePublishDtos({ nested: [{ caption: value }] }, dtoPrivateValues)).toThrow();
+  });
+
+  it("rejects the complete private token or lease capability embedded in a public string", () => {
+    const handle = `mock-lease:${"b".repeat(43)}`;
+    for (const value of [dtoPrivateFixture.token, handle]) {
+      expect(() => expectSafePublishDtos({ caption: `prefix ${value} suffix` }, [...dtoPrivateValues, handle])).toThrow();
+    }
   });
 
   it.each(["container", "publish"])("retains returned %s ID when receipt persistence fails without replaying writes", async boundary => {

@@ -16,6 +16,26 @@ jobs:
       - run: npm run lint
       - run: npm test
       - run: npm run build
+  provider-acceptance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@v4
+        with: { node-version: "22", cache: "npm" }
+      - run: npm ci
+      - name: Exercise newly owned local Auth MFA Storage and application HTTP
+        run: npm run release:provider:owned
+      - name: Retain sanitized local provider observation
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: owned-provider-${{ github.run_id }}-${{ github.run_attempt }}
+          path: docs/verification/phase3-provider-rehearsal/owned-*.json
+          if-no-files-found: warn
+          retention-days: 14
   integration:
     # PR #68 is applications-only; current-source C2 runtime approval is separate.
     # This broad live runner has no approved target/fixture setup for that scope.
