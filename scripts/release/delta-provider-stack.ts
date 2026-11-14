@@ -200,6 +200,20 @@ export async function createOwnedProviderStack(rootInput: string): Promise<Owned
     if (!list) return []; const ids = list.split(/\r?\n/); check(ids.length <= 12 && ids.every(id => /^[a-f0-9]{64}$/.test(id)), "owned-inventory");
     return Promise.all(ids.map(async id => parseContainer(JSON.parse(await dockerText(["inspect", "--format", metadataFormat, id])), projectId, networkId!, workdir, allowStopped)));
   }
+  async function emitBootstrapDiagnostics(reasonCode: string) {
+    try {
+      const ids = (await dockerText(["ps", "--all", "--no-trunc", "--filter", `label=com.supabase.cli.project=${projectId}`, "--format", "{{.ID}}"])).split(/\r?\n/).filter(Boolean);
+      check(ids.length <= 12 && ids.every(id => /^[a-f0-9]{64}$/.test(id)), "bounded-bootstrap-diagnostics");
+      const summary = await Promise.all(ids.map(async id => {
+        const row = object(JSON.parse(await dockerText(["inspect", "--format", metadataFormat, id]))), networks = object(row.networks ?? {}), mounts = Array.isArray(row.mounts) ? row.mounts.map(object) : [];
+        const bindings = Object.values(object(row.ports ?? {})).flatMap(value => Array.isArray(value) ? value.map(object) : []);
+        return { running: row.running === true, projectMatches: row.project === projectId, nameMatches: typeof row.name === "string" && row.name.endsWith(`_${projectId}`),
+          networkCount: Object.keys(networks).length, networkMatches: Object.values(networks).every(value => object(value).NetworkID === networkId),
+          loopbackBindings: bindings.every(value => value.HostIp === "127.0.0.1"), mountCount: mounts.length, namedMountsScoped: mounts.every(value => value.Type === "volume" && String(value.Name).endsWith(`_${projectId}`)) };
+      }));
+      process.stdout.write(JSON.stringify({ kind: "owned-provider-bootstrap-diagnostics", reasonCode, containers: summary, validReleaseEvidence: false }) + "\n");
+    } catch { process.stdout.write(JSON.stringify({ kind: "owned-provider-bootstrap-diagnostics", reasonCode, metadataUnavailable: true, validReleaseEvidence: false }) + "\n"); }
+  }
   async function assertOwned() {
     check(started && !closed && networkId, "active-owned-stack"); await assertPrivateIdentity();
     const network = object(JSON.parse(await dockerText(["network", "inspect", "--format", '{"id":{{json .Id}},"owner":{{json (index .Labels "adfocate.provider-run")}},"driver":{{json .Driver}},"internal":{{json .Internal}},"options":{{json .Options}},"containers":{{json .Containers}}}', networkId])));
@@ -264,8 +278,9 @@ export async function createOwnedProviderStack(rootInput: string): Promise<Owned
         try { await session.query("SET client_min_messages='warning';"); return await session.query(query); } finally { await session.close(); }
       } };
   } catch (error) {
-    try { await close(); } catch { throw new ProviderStackBootstrapFailure("owned-stack-cleanup-unverified", runId, false); }
-    const code = error instanceof ProviderRehearsalFailure && /^[a-zA-Z0-9_-]{1,100}$/.test(error.code) ? error.code : "owned-stack-bootstrap-failed";
+    const code = error instanceof ProviderRehearsalFailure && /^[a-zA-Z0-9_-]{1,75}$/.test(error.code) ? error.code : "owned-stack-bootstrap-failed";
+    await emitBootstrapDiagnostics(code);
+    try { await close(); } catch { throw new ProviderStackBootstrapFailure(`${code}-cleanup-unverified`, runId, false); }
     throw new ProviderStackBootstrapFailure(code, runId, true);
   }
 }
