@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "d11720d400642b495ed146723ddaf17fcc04bb9b",
+  "provider": {
+    "path": "docs/verification/phase3-provider-rehearsal/owned-d11720d40064-0066b82f-df25-4427-94d3-a33552efa497.json",
+    "sha256": "d900a68343adaf00e6b0c5cf0a8e0bb06c3a36c99681c9f7d58efa05098b64ec",
+    "contentDigest": "49d03082b692c557f5d6895dce7c58d5dccfa65c9129ab09174f97c824a3a14e"
+  },
+  "pairedRecovery": {
+    "path": "docs/verification/phase3-paired-recovery/native-20261114-fault-confirmed.json",
+    "sha256": "4044bbc331fd7f84b3500dd21f26405692716337f895514d60fced78b01964b1",
+    "contentDigest": "8da85170bf9500b326f5794e0afef6acc7a6ae4f80873869e7e24fa557994d76"
+  },
+  "sourceCi": {
+    "path": "docs/verification/phase3-release-review/source-ci-d11720d400642b495ed146723ddaf17fcc04bb9b.json",
+    "sha256": "9be5048e5c336cbb814f5cc5576e7164e8945447d2ae172feac2d70521042528",
+    "contentDigest": "d3419b9b3e17563ce17a6f801a0b70cef8e5290c169c14181b8652b4059cc877"
+  }
+}

@@ -8,6 +8,12 @@ The recovery input is the frozen public nine-case receipt under `docs/verificati
 
 The subject commit M is the commit tested by the provider runner. Complete engineering preparation requires supplied metadata for a successful `CI` workflow on a `push` to `main`, with `build-test`, `integration` and `provider-acceptance` all successful at M. The preparer must authenticate these facts and the downloaded provider artifact against GitHub. The offline command validates the supplied metadata and byte bindings; it does not authenticate a producer or contact GitHub. Green jobs grant no owner acceptance or protected-policy authority.
 
+## Prepared engineering packet
+
+The committed [review packet](../verification/phase3-release-review/review-d11720d400642b495ed146723ddaf17fcc04bb9b.json) binds main subject `d11720d400642b495ed146723ddaf17fcc04bb9b` to [successful main CI 43565710614](https://github.com/YNWAforever/Remix-Adfocate/actions/runs/43565710614), the native 27-case provider observation with 884 actual HTTP responses and verified cleanup, and the frozen nine-case paired-recovery observation. Its canonical content digest is `16a69f17ba30c568b8cecf62355be7826a583998ee04e3192f4439763287df5c`.
+
+Engineering status is complete. All sixteen gates remain HOLD, every acceptance flag is false, and owner roles, freeze, RPO/RTO, report set and outer approval remain null. The committed-artifact regression rebuilds the packet from its exact public input bytes and fixed current source set; it performs no provider or database operation.
+
 ## Prepare the packet
 
 Commit the sanitized provider observation and source-CI metadata with the review. The CI metadata has exactly these fields: `repository`, `workflow`, `branch`, `runId`, `sourceCommit`, `event`, `url`, `conclusion` and `jobs`. Each job has `name`, `sourceCommit` and `conclusion`. Use the actual main-push run, rather than inferring a main checkout from a pull-request run.
@@ -32,7 +38,7 @@ Run from this checkout, with M replaced by the same actual commit:
 npm run release:delta:review -- --input docs/verification/phase3-release-review/selection-M.json --output docs/verification/phase3-release-review/review-M.json
 ```
 
-The command reuses the existing manifest validator for the 67-source release plan, checks M is an ancestor of the current checkout, reads only bounded regular public JSON and the fixed 23 public source files, checks canonical parent paths, and writes the new output exclusively. Existing output is never overwritten. The current source bytes must match both producers' recorded inputs. The recovery's synthetic commit is never substituted for M. No database, provider, private recovery store, publication or approval operation is constructed.
+The command bounds and checks every migration SQL file before invoking the existing validator for the 67-source release plan. It checks M is an ancestor of the current checkout, reads bounded regular public JSON and the fixed 23 public producer sources, checks canonical parent paths, and writes the new output exclusively. Existing output is never overwritten. The current source bytes must match both producers' recorded inputs. The recovery's synthetic commit is never substituted for M. No database, provider, private recovery store, publication or approval operation is constructed.
 
 ## Owner preparation still required
 
