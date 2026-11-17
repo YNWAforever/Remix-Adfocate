@@ -123,6 +123,19 @@ export type ActivationEventMap = {
   social_profile_added: { locale: string; platform: string };
   onboarding_completed: { locale: string; rewardType: "welcome_points" };
   dashboard_viewed: { locale: string; creatorLevel?: string };
+  template_applied: {
+    locale: PublicationAnalyticsLocale;
+    templateId: string;
+    topic: "missions" | "creation" | "performance" | "rewards";
+  };
+  continue_clicked: {
+    locale: PublicationAnalyticsLocale;
+    target: "workspace" | "mission";
+  };
+  reward_card_clicked: {
+    locale: PublicationAnalyticsLocale;
+    rewardKind: "claimable" | "next" | "empty";
+  };
   activation_action_viewed: { locale: string; actionKind: string };
   activation_action_clicked: { locale: string; actionKind: string };
   mission_recommendation_viewed: {
@@ -271,6 +284,9 @@ const ACTIVATION_PROPERTY_KEYS = {
   social_profile_added: ["locale", "platform"],
   onboarding_completed: ["locale", "rewardType"],
   dashboard_viewed: ["locale", "creatorLevel"],
+  template_applied: ["locale", "templateId", "topic"],
+  continue_clicked: ["locale", "target"],
+  reward_card_clicked: ["locale", "rewardKind"],
   activation_action_viewed: ["locale", "actionKind"],
   activation_action_clicked: ["locale", "actionKind"],
   mission_recommendation_viewed: ["locale", "missionId", "missionType"],

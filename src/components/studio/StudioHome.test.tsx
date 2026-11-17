@@ -1,20 +1,41 @@
 import { beforeEach, expect, it, vi } from "vitest";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { ApiError } from "@/lib/api";
-const h=vi.hoisted(()=>({meError:null as Error|null,balanceError:null as Error|null,historyError:null as Error|null,enabled:true,mutate:vi.fn(),navigate:vi.fn(),historyOptions:vi.fn()}));
-vi.mock("@tanstack/react-router",()=>({useNavigate:()=>h.navigate,Link:({children,to}:{children:React.ReactNode;to:string})=><a href={to}>{children}</a>}));
-vi.mock("@/lib/i18n",()=>({useI18n:()=>({lang:"zh"})}));
+const LEVEL_LABELS: Record<string, string> = {
+  "app.level.l0": "訪客",
+  "app.level.l1": "KOC 新手",
+  "app.level.l2": "KOC 見習",
+  "app.level.l3": "KOC 成長",
+  "app.level.l4": "KOC 進階",
+  "app.level.l5": "KOC 專業",
+  "app.level.l6": "KOC 大師",
+};
+const h=vi.hoisted(()=>({meError:null as Error|null,balanceError:null as Error|null,historyError:null as Error|null,enabled:true,mutate:vi.fn(),navigate:vi.fn(),historyOptions:vi.fn(),lang:"zh",track:[] as Array<[string,unknown]>,
+  balance:98765,
+  gifts:[] as Array<Record<string,unknown>>,
+  missions:[] as Array<Record<string,unknown>>,
+  myMissions:[] as Array<Record<string,unknown>>,
+  badges:[] as Array<Record<string,unknown>>,
+}));
+vi.mock("@tanstack/react-router",()=>({useNavigate:()=>h.navigate,Link:({children,to,onClick}:{children:React.ReactNode;to:string;onClick?:()=>void})=><a href={to} onClick={event=>{event.preventDefault();onClick?.();}}>{children}</a>}));
+vi.mock("@/lib/activationAnalytics",()=>({trackActivationEvent:(name:string,properties:unknown)=>{h.track.push([name,properties]);return true;}}));
+vi.mock("@/lib/i18n",()=>({useI18n:()=>({lang:h.lang,t:(key:string)=>LEVEL_LABELS[key]??key})}));
 vi.mock("@/lib/features",()=>({get STUDIO_THREADS(){return h.enabled;}}));
-vi.mock("@/lib/queries/kocmax",()=>({useMe:()=>({data:{id:"owner",level:"PRIVATE_LEVEL",xp:12345},isError:!!h.meError,error:h.meError,refetch:vi.fn()}),useBalance:()=>({data:{balance:98765},isError:!!h.balanceError,error:h.balanceError}),useMissions:()=>({data:[]})}));
-vi.mock("@/lib/studio/queries",()=>({useStudioThreads:(...args:unknown[])=>{h.historyOptions(...args);return {data:{threads:[{id:"private",title:"PRIVATE_HISTORY_TITLE"}],nextPage:null},isError:!!h.historyError,error:h.historyError,refetch:vi.fn()};},useStudioCommand:()=>({mutateAsync:h.mutate,isPending:false})}));
-vi.mock("@tanstack/react-query",()=>({useQuery:()=>({data:{badges:[]}})}));
+vi.mock("@/lib/queries/kocmax",()=>({
+  useMe:()=>({data:{id:"owner",display_name:"阿明",level:"L1",effective_level:"L1",xp:12345},isError:!!h.meError,error:h.meError,refetch:vi.fn()}),
+  useBalance:()=>({data:{balance:h.balance},isError:!!h.balanceError,error:h.balanceError,refetch:vi.fn()}),
+  useMissions:()=>({data:h.missions,refetch:vi.fn()}),
+  useGifts:()=>({data:h.gifts,isError:false,refetch:vi.fn()}),
+  useMyMissions:()=>({data:h.myMissions,isError:false,refetch:vi.fn()}),
+}));
+vi.mock("@/lib/studio/queries",()=>({useStudioThreads:(...args:unknown[])=>{h.historyOptions(...args);return {data:{threads:[{id:"private",title:"PRIVATE_HISTORY_TITLE",topic:"creation",created_at:"2026-11-01T00:00:00.000Z"}],nextPage:null},isError:!!h.historyError,error:h.historyError,refetch:vi.fn()};},useStudioBadges:()=>({data:{badges:h.badges}}),useStudioCommand:()=>({mutateAsync:h.mutate,isPending:false})}));
 import { StudioHome, StudioStarter } from "./StudioHome";
-beforeEach(()=>{h.meError=null;h.balanceError=null;h.historyError=null;h.enabled=true;h.mutate.mockReset();h.navigate.mockReset();h.historyOptions.mockReset();});
+beforeEach(()=>{h.meError=null;h.balanceError=null;h.historyError=null;h.enabled=true;h.mutate.mockReset();h.navigate.mockReset();h.historyOptions.mockReset();h.lang="zh";h.track.length=0;h.balance=98765;h.gifts=[];h.missions=[];h.myMissions=[];h.badges=[];});
 it.each(["meError","balanceError","historyError"] as const)("hides cached home data and actions after %s 401",key=>{
   h[key]=new ApiError(401,"no_auth","PRIVATE_SERVER_TEXT");
   render(<StudioHome/>);
   expect(screen.getByRole("link",{name:"前往登入"})).toHaveAttribute("href","/login");
-  for(const text of ["PRIVATE_LEVEL","PRIVATE_HISTORY_TITLE","98,765","PRIVATE_SERVER_TEXT"])expect(document.body).not.toHaveTextContent(text);
+  for(const text of ["PRIVATE_LEVEL","PRIVATE_HISTORY_TITLE","KOC 新手","12,345","98,765","PRIVATE_SERVER_TEXT"])expect(document.body).not.toHaveTextContent(text);
   expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
   expect(screen.queryByRole("button",{name:"開始討論"})).not.toBeInTheDocument();
 });
@@ -26,6 +47,7 @@ it("hides the entire home after a create command requires login without replay",
   await screen.findByRole("link",{name:"前往登入"});
   expect(document.body).not.toHaveTextContent("PRIVATE_HISTORY_TITLE");
   expect(document.body).not.toHaveTextContent("PRIVATE_LEVEL");
+  expect(document.body).not.toHaveTextContent("KOC 新手");
   expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
   expect(h.mutate).toHaveBeenCalledTimes(1);expect(h.navigate).not.toHaveBeenCalled();
 });
@@ -74,4 +96,97 @@ it("keeps threads disabled and ignores their stale error when the rollout flag i
   expect(screen.getByText("工作室對話尚未開放，你仍可完成所有原有任務。")).toBeVisible();
   expect(h.historyOptions).toHaveBeenCalledWith(0,false);
   expect(screen.queryByRole("link",{name:"前往登入"})).not.toBeInTheDocument();
+});
+it("shows the localized level name and links the tile to the passport",()=>{
+  render(<StudioHome/>);
+  expect(screen.getByRole("link",{name:/KOC 新手/})).toHaveAttribute("href","/passport");
+});
+it("greets the creator by name",()=>{
+  render(<StudioHome/>);
+  expect(screen.getByRole("heading",{level:1,name:/阿明，今天想創作些甚麼？/})).toBeInTheDocument();
+});
+it("counts the verified badges next to the recent threads",()=>{
+  h.badges=[{id:"b1"},{id:"b2"}];
+  render(<StudioHome/>);
+  expect(screen.getByText(/2 個已核實徽章/)).toBeInTheDocument();
+});
+it("spells out the experience left before the next level",()=>{
+  render(<StudioHome/>);
+  expect(screen.getByText(/還差 2,655 XP 到/)).toBeInTheDocument();
+});
+it("shows how many points are left before the next reward",()=>{
+  h.balance=98765;
+  h.gifts=[{id:"g1",name:"咖啡券",points_cost:100000,stock_remaining:5,status:"available",gift_type:"voucher"}];
+  render(<StudioHome/>);
+  expect(screen.getByText("咖啡券")).toBeInTheDocument();
+  expect(screen.getByText("還差 1,235 分")).toBeInTheDocument();
+});
+it("offers the claim action as soon as a reward is affordable",()=>{
+  h.gifts=[{id:"g1",name:"咖啡券",points_cost:500,stock_remaining:5,status:"available",gift_type:"voucher"}];
+  render(<StudioHome/>);
+  expect(screen.getByRole("link",{name:/去兌換/})).toHaveAttribute("href","/redemption");
+});
+it("shows the level gate and deadline on today's missions",()=>{
+  h.missions=[{id:"m1",slug:"tasting",title:"試飲任務",points_reward:200,required_level:"L2",deadline:"2026-12-01T00:00:00.000Z"}];
+  render(<StudioHome/>);
+  expect(screen.getByText("L2")).toBeInTheDocument();
+  expect(screen.getByText("2026-12-01")).toBeInTheDocument();
+});
+it("surfaces one unfinished mission above the composer",()=>{
+  h.myMissions=[{id:"s1",status:"joined",missions:{slug:"tasting",title:"試飲任務",points_reward:200},creator_studio_available:false}];
+  render(<StudioHome/>);
+  expect(screen.getByRole("heading",{name:"試飲任務"})).toBeInTheDocument();
+  expect(screen.getByRole("link",{name:"繼續"})).toBeInTheDocument();
+});
+it("renders English skill titles when the interface is English",()=>{
+  h.lang="en";
+  render(<StudioStarter/>);
+  expect(screen.getByText("Read the image")).toBeInTheDocument();
+  expect(screen.queryByText("看懂圖片問題")).not.toBeInTheDocument();
+});
+it("marks the applied idea and restores the previous draft on undo",()=>{
+  render(<StudioStarter/>);
+  const box=screen.getByRole("textbox",{name:"想問甚麼？"});
+  const idea=screen.getByRole("button",{name:/挑一個適合我的任務/});
+  fireEvent.click(idea);
+  expect(idea).toHaveAttribute("aria-pressed","true");
+  expect(box).toHaveValue("這週哪些任務最適合我的時間和內容方向？");
+  fireEvent.click(screen.getByRole("button",{name:"還原"}));
+  expect(box).toHaveValue("");
+  expect(screen.queryByRole("button",{name:"還原"})).not.toBeInTheDocument();
+});
+it("clears the applied marker once the creator edits the prompt",()=>{
+  render(<StudioStarter/>);
+  const box=screen.getByRole("textbox",{name:"想問甚麼？"});
+  fireEvent.click(screen.getByRole("button",{name:/挑一個適合我的任務/}));
+  expect(screen.getByRole("button",{name:"還原"})).toBeInTheDocument();
+  fireEvent.change(box,{target:{value:"改寫一下"}});
+  expect(screen.queryByRole("button",{name:"還原"})).not.toBeInTheDocument();
+});
+it("starts the chat with Ctrl+Enter from the question box",async()=>{
+  render(<StudioStarter/>);
+  const box=screen.getByRole("textbox",{name:"想問甚麼？"});
+  fireEvent.change(box,{target:{value:"幫我寫下一篇文案"}});
+  fireEvent.keyDown(box,{key:"Enter",code:"Enter",ctrlKey:true});
+  await waitFor(()=>expect(h.mutate).toHaveBeenCalledTimes(1));
+});
+it("counts characters only as the prompt nears the limit",()=>{
+  render(<StudioStarter/>);
+  const box=screen.getByRole("textbox",{name:"想問甚麼？"});
+  expect(screen.queryByText(/\/4000$/)).not.toBeInTheDocument();
+  fireEvent.change(box,{target:{value:"a".repeat(3700)}});
+  expect(screen.getByText("3700/4000")).toBeInTheDocument();
+});
+it("emits activation events for the template, continue and reward actions",()=>{
+  h.myMissions=[{id:"s1",status:"joined",missions:{slug:"tasting",title:"試飲任務",points_reward:200},creator_studio_available:false}];
+  h.gifts=[{id:"g1",name:"咖啡券",points_cost:500,stock_remaining:5,status:"available",gift_type:"voucher"}];
+  render(<StudioHome/>);
+  fireEvent.click(screen.getByRole("button",{name:/挑一個適合我的任務/}));
+  fireEvent.click(screen.getByRole("link",{name:"繼續"}));
+  fireEvent.click(screen.getByRole("link",{name:/去兌換/}));
+  expect(h.track).toEqual([
+    ["template_applied",{locale:"zh",templateId:"pick",topic:"missions"}],
+    ["continue_clicked",{locale:"zh",target:"mission"}],
+    ["reward_card_clicked",{locale:"zh",rewardKind:"claimable"}],
+  ]);
 });
