@@ -26,8 +26,10 @@ function opaque(value:string) {if(typeof value!=="string"||! /^[a-zA-Z0-9_-]{43}
 /** All protocol work is injectable. D0 accepts fixture transports only, including callbacks. */
 export class OAuthCoordinator {
   constructor(private store:OAuthStore,private vault:CredentialStore,private providers:Record<ProviderId,IntegrationProvider>,
-    private configs:Record<ProviderId,OAuthConfig>,private persist:(actor:Actor,provider:ProviderId,grant:ProviderGrant,expectedGeneration:number)=>Promise<ConnectionReceipt>,private clock:()=>Date=()=>new Date()) {
-    for(const provider of Object.values(providers)) if(provider.mode!=="mock"&&(provider.mode!=="live_pilot"||provider.sampleOnly!==true))throw new IntegrationError("LIVE_PROVIDER_DISABLED",503);
+    private configs:Record<ProviderId,OAuthConfig>,private persist:(actor:Actor,provider:ProviderId,grant:ProviderGrant,expectedGeneration:number)=>Promise<ConnectionReceipt>,private clock:()=>Date=()=>new Date(),
+    private options:{externalAccess?:boolean}={}) {
+    // D0 admits fixtures only. A live composition root must pass externalAccess explicitly.
+    for(const provider of Object.values(providers)) if(provider.mode!=="mock"&&!(provider.mode==="live_pilot"&&(provider.sampleOnly===true||this.options.externalAccess===true)))throw new IntegrationError("LIVE_PROVIDER_DISABLED",503);
     for(const [id,config] of Object.entries(configs)) {
       let url:URL;try{url=new URL(config.redirectUri);}catch{throw new IntegrationError("OAUTH_CONFIG_INVALID",503);}
       if(!config.clientId||config.clientId.length>256||url.protocol!=="https:"||url.username||url.password||url.search||url.hash||url.pathname!==`/api/integration-oauth/${id}/callback`)throw new IntegrationError("OAUTH_CONFIG_INVALID",503);
@@ -47,7 +49,7 @@ export class OAuthCoordinator {
       url.searchParams.set("code_challenge_method","S256");url.searchParams.set("nonce",nonce);
       url.searchParams.set("access_type","offline");url.searchParams.set("prompt","consent select_account");url.searchParams.set("include_granted_scopes","false");
     }
-    return {authorizationUrl:url.href,expiresAt,provider,scopes,sampleOnly:true as const};
+    return {authorizationUrl:url.href,expiresAt,provider,scopes,sampleOnly:this.providers[provider].sampleOnly};
   }
   async callback(provider:ProviderId,url:URL) {
     const config=this.configs[provider],registered=new URL(config.redirectUri);
@@ -79,6 +81,6 @@ export class OAuthCoordinator {
     const allowed=requiredScopes(provider,"live_pilot");
     if(!grant.subject||!Array.isArray(grant.scopes)||grant.scopes.some(scope=>!allowed.includes(scope))||!Number.isFinite(Date.parse(grant.expiresAt))||Date.parse(grant.expiresAt)<=this.clock().getTime())throw new IntegrationError("OAUTH_IDENTITY_INVALID",403);
     const connection=await this.persist(actor,provider,grant,claim.expectedGeneration);
-    return {connection:{id:connection.id,generation:connection.generation},returnPath:validateReturnPath(claim.returnPath),sampleOnly:true as const};
+    return {connection:{id:connection.id,generation:connection.generation},returnPath:validateReturnPath(claim.returnPath),sampleOnly:this.providers[provider].sampleOnly};
   }
 }

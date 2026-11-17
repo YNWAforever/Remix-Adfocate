@@ -33,6 +33,9 @@ import { createCreatorPilotRoutes, type CreatorPilotRouteDependencies } from "./
 import { integrationRoutes } from "./routes/integrations.js";
 import { integrationOAuthCallbacks, integrationOAuthRoutes } from "./routes/integrationOAuth.js";
 import { integrationNoticeRoutes } from "./routes/integrationNotices.js";
+import { getIntegrationService } from "./lib/integrations/runtime.js";
+import { integrationMode } from "./lib/integrations/policy.js";
+import type { LiveIntegrationRuntime } from "./lib/integrations/liveRuntime.js";
 import { mcpSkillRoutes } from "./routes/mcp.js";
 import { mcpPilotRoutes } from "./routes/mcpPilot.js";
 import { mcpOAuthCallbackRoutes, mcpOAuthRoutes } from "./routes/mcpOAuth.js";
@@ -42,9 +45,14 @@ export type Env = {
   Variables: { userId: string; workspaceId: string; jwt: string };
 };
 
-export function createApp(options: { creatorPilot?: CreatorPilotRouteDependencies } = {}) {
+export function createApp(options: { creatorPilot?: CreatorPilotRouteDependencies; liveIntegrations?: LiveIntegrationRuntime | null } = {}) {
   const app = new Hono<Env>().basePath("/api");
   const releaseIdentity = deploymentHealthMetadata();
+  // Opt-in live package only. Absent or incomplete, every integration surface stays closed.
+  // The production entry passes a runtime only when the deployment supplies the complete live package.
+  const live = options.liveIntegrations ?? null;
+  const liveMode = live?.mode;
+  const liveOrigin = live?.origin;
   app.get("/health", (c) => {
     c.header("Cache-Control", "no-store");
     return c.json({ ok: true, ...releaseIdentity });
@@ -66,8 +74,8 @@ export function createApp(options: { creatorPilot?: CreatorPilotRouteDependencie
   app.route("/brand", brandRoutes);
   app.route("/public", publicRoutes);
   app.route("/cron", cronRoutes);
-  // D0: these surfaces remain inactive; no real coordinator/client is constructed.
-  app.route("/integration-oauth", integrationOAuthCallbacks());
+  // Real provider redirect reachable only when the deployment supplies a complete live package.
+  app.route("/integration-oauth", integrationOAuthCallbacks({ approvedOrigin: liveOrigin, getCoordinator: () => live?.coordinator ?? null }));
   // Read-only MCP pilot server reached by the studio chat over MCP (token + workspace scoped).
   app.route("/mcp-pilot", mcpPilotRoutes());
   // Provider OAuth callback (browser redirect); state row identifies the creator.
@@ -80,8 +88,8 @@ export function createApp(options: { creatorPilot?: CreatorPilotRouteDependencie
   guarded.route("/me", meRoutes);
   guarded.route("/me/profile-media", profileMediaRoutes);
   guarded.route("/me/consents", consentRoutes);
-  guarded.route("/me/integrations", integrationRoutes());
-  guarded.route("/me/integration-oauth", integrationOAuthRoutes());
+  guarded.route("/me/integrations", integrationRoutes({ getService: () => live?.service ?? getIntegrationService(), mode: () => liveMode ?? integrationMode(process.env) }));
+  guarded.route("/me/integration-oauth", integrationOAuthRoutes({ approvedOrigin: liveOrigin, getCoordinator: () => live?.coordinator ?? null, currentConnection: live?.currentConnection, picker: live?.picker }));
   guarded.route("/me", accountRoutes);
   guarded.route("/onboarding", onboardingRoutes);
   guarded.route("/wallet", walletRoutes);
