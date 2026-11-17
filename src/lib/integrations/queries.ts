@@ -186,8 +186,10 @@ export function useIntegrationCommand() {
       if (!lifecycle && live && command.action !== "sync" && command.action !== "import") {
         throw new ApiError(403, "MOCK_ONLY", "Mock connections unavailable in live mode");
       }
-      if (!lifecycle && !live && list?.mode !== "mock") {
-        throw new ApiError(404, "INTEGRATIONS_DISABLED", "Mock connections unavailable");
+      if (!lifecycle && !live) {
+        // A live-shaped list without the runtime flag keeps the D0 disclosure instead of downgrading it.
+        if (list?.mode === "live_pilot") throw new ApiError(403, "D0_EXTERNAL_ACCESS_DISABLED", "External access disabled");
+        if (list?.mode !== "mock") throw new ApiError(404, "INTEGRATIONS_DISABLED", "Mock connections unavailable");
       }
       if ((command.action === "start" || command.action === "complete") && revocationUnresolved(list?.connections.find(item => item.provider === command.provider))) {
         throw new ApiError(409, "REVOCATION_PENDING", "Resolve revocation before reconnecting");
