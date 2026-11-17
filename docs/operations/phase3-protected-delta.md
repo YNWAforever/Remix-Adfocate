@@ -20,6 +20,8 @@ The placeholder above is documentation, never approval. A core digest, historica
 
 ## Offline commands
 
+Before complete live inputs exist, the [offline rehearsal preflight](phase3-rehearsal-preflight.md) validates an explicitly incomplete public owner worksheet and lists missing decisions. It has no capture or execution mode; even a complete declaration remains HOLD and is rejected as v2 release evidence.
+
 ```bash
 npm run release:delta:plan
 npm run release:delta:plan -- --bindings /absolute/path/reviewed-metadata-bindings.json
@@ -53,11 +55,15 @@ vercel:
 
 The `context` includes independent plan/program/source/capability/collector pins, expected before/after roots, exact extension profile, role assignments, recovery reference/tool profile/owner acceptance, maximum ages/lifetime, accepted RPO/RTO limits and required/accepted-uncovered recovery categories. Copying these fields from an unreviewed bundle does not create independent acceptance.
 
+`beforeRoot` and `afterRoot` are canonical 64-character semantic roots that must differ (`delta-evidence.ts`). No current release command derives a fresh production pair. The reviewed semantic collector `delta-semantic-capture.sql` is executed only inside the managed database adapter (`delta-native.ts`), and that adapter requires an already-complete `DeltaExpectedContext`, including both roots (`delta-cli.ts`, `delta-native.ts`). `verify` and `execute` obtain the context only from `RELEASE_DELTA_POLICY_JSON`. The existing reviewed read-only production helper `scripts/integrations/backup-shared-db.ps1` produces a custom-format archive and a catalog-only roles export; it does not compute these semantic roots. Therefore the pair must come from a separately reviewed read-only observation that does not yet exist as a release command, or from a documented derivation the independent reviewer accepts. Historical fixture before/after roots, the synthetic checkpoint ledger and prior partial observations cannot supply it. Until that observation exists and is reviewed, the context cannot be completed and the release remains HOLD; inventing shape-valid roots is prohibited.
+
 The workflow also needs the existing `SUPABASE_DB_URL` secret and project-reference variable, its read-only `GITHUB_TOKEN`, and a `VERCEL_TOKEN` with read rights for the pinned project's production deployment and alias. Do not place credentials in the policy JSON or evidence. The native database adapter accepts only the exact project direct endpoint or reviewed session pooler on port 5432, with the pinned public CA and `verify-full`.
 
 The immutable production deployment currently requires Vercel Authentication, even though the canonical production alias is public. For that protected origin, configure the project's `VERCEL_AUTOMATION_BYPASS_SECRET` as a protected GitHub environment secret using [Vercel's automation access mechanism](https://vercel.com/docs/deployment-protection/methods-to-bypass-deployment-protection/protection-bypass-automation). The reader snapshots and validates it, then sends only an `x-vercel-protection-bypass` header to the exact generated deployment origin already authenticated by the alias API. It does not put it in a URL, cookie, provider API request, public-alias request or receipt, and refuses redirects. Missing access or a continued 401 remains HOLD. This supports the existing deployment protection; it does not change its settings or remove either origin's root/API identity checks.
 
-The actual main branch must be protected. The production environment must restrict deployment to main and configure the individual required reviewer used by the policy. The adapter reads the real configuration and approval history; names and labels do not substitute for policy. Team-only reviewer rules are currently unsupported and HOLD. The read-only inspection on 14 November 2026 found main unprotected, no required-reviewer rule and no deployment-branch policy. Those settings were not changed by this implementation.
+The actual main branch must be protected. The production environment must restrict deployment to main and configure the individual required reviewer used by the policy. The adapter reads the real configuration and approval history; names and labels do not substitute for policy. Team-only reviewer rules are currently unsupported and HOLD.
+
+On 14 November 2026, with explicit owner approval, main protection and the production environment were configured and read back: main is protected, the environment permits only the `main` branch, and exactly one required-reviewer rule names the individual user YNWAforever (GitHub ID 201698560) with self-review prevented. The strict adapter's reads (`/branches/main` `protected`, one individual `required_reviewers` rule, and a single `main` branch policy) match that configuration; it does not constrain the additional required checks. Because self-review is prevented, the account that dispatches the protected release must be a different actor from the approving reviewer. Re-read the live configuration before an execution attempt and reconcile any change.
 
 ## Complete gate reports
 
@@ -111,6 +117,8 @@ A precommit failure requests ROLLBACK in the same backend and records acknowledg
 ```bash
 npm run release:delta:verify -- --bundle docs/verification/releases/xp-neutrality.json --bundle-digest ACTUAL_OUTER_DIGEST --project-ref mhkoayftiuojxlrkollf
 ```
+
+This command shares the executor's verification path, including provenance authentication that requires the current protected `workflow_dispatch` run to be in progress (`delta-provenance.ts`). It therefore cannot complete as a standalone pre-flight outside an in-progress protected run, and `supabase.yml` has no verify-only dispatch mode: its delta step always passes `--apply`, and `supabase-workflow-contract.test.ts` pins that single guarded executor. In the current design the protected verification is the phase of the approved apply run that runs before the first write: provenance, proof resolution, program derivation and the read-only before inspection (`delta-executor.ts` authenticate and classify) all complete before the dry-run receipt point and before any write transaction. A separate read-only production rehearsal would require an owner-approved workflow change and a review of the additional read exposure; it is not part of this implementation.
 
 The protected `supabase.yml` workflow selects `phase3-combined62-xp-v1` explicitly, serializes both release profiles, checks out full history and invokes `release:delta:execute` with the exact approval and `--apply`. This implementation session does not dispatch it. Only after every independent input and live gate passes can that command attempt the two-function delta and one genuine history insertion.
 

@@ -12,9 +12,10 @@ import { canonicalEvidencePath, verifyDeltaProvenance, verifyEvidenceFilePath } 
 import { DELTA_RELEASE_PROFILE, DELTA_RELEASE_PROJECT, DELTA_REQUIRED_GATES, DELTA_SOURCE_SHA256, type DeltaExpectedContext, type DeltaReleaseEvidence } from "./delta-release-contracts";
 import { parseReleaseManifest, validateManifest } from "./manifest";
 import { runPhase3ReviewCli } from "./delta-review-cli";
+import { rehearsalPreflightPaths, runPhase3RehearsalPlanCli } from "./delta-rehearsal-cli";
 
 export interface DeltaCliArguments {
-  readonly command: "plan" | "review" | "evidence" | "verify" | "execute";
+  readonly command: "plan" | "review" | "rehearsal-plan" | "evidence" | "verify" | "execute";
   readonly input?: string;
   readonly output?: string;
   readonly bundle?: string;
@@ -27,7 +28,7 @@ export interface DeltaCliArguments {
 function refused(reason: string): never { throw new Error(`protected delta CLI rejected: ${reason}`); }
 export function parseDeltaCliArguments(args: readonly string[]): DeltaCliArguments {
   const command = args[0];
-  if (command !== "plan" && command !== "review" && command !== "evidence" && command !== "verify" && command !== "execute") refused("explicit command");
+  if (command !== "plan" && command !== "review" && command !== "rehearsal-plan" && command !== "evidence" && command !== "verify" && command !== "execute") refused("explicit command");
   const values = new Map<string, string>(); let apply = false;
   for (let index = 1; index < args.length; index++) {
     const flag = args[index]!;
@@ -40,6 +41,11 @@ export function parseDeltaCliArguments(args: readonly string[]): DeltaCliArgumen
   if (command === "plan") {
     if ([...values.keys()].some(key => key !== "--bindings")) refused("offline plan options");
     return { command, approval: "", apply: false, bindings: values.get("--bindings") };
+  }
+  if (command === "rehearsal-plan") {
+    if ([...values.keys()].some(key => !["--input", "--output"].includes(key))) refused("offline rehearsal options");
+    rehearsalPreflightPaths(values.get("--input") ?? "", values.get("--output") ?? "");
+    return { command, approval: "", apply: false, input: values.get("--input"), output: values.get("--output") };
   }
   if (command === "review") {
     if ([...values.keys()].some(key => !["--input", "--output"].includes(key)) || !/^docs\/verification\/phase3-release-review\/selection-[a-f0-9]{40}\.json$/.test(values.get("--input") ?? "")
@@ -89,6 +95,7 @@ async function boundedJson(path: string, limit: number) {
 export async function runDeltaCli(args: readonly string[], env: NodeJS.ProcessEnv = process.env, rootDir = fileURLToPath(new URL("../../", import.meta.url))) {
   const options = parseDeltaCliArguments(args);
   const root = await realpath(rootDir);
+  if (options.command === "rehearsal-plan") return runPhase3RehearsalPlanCli(root, options.input!, options.output!);
   if (options.command === "review") return runPhase3ReviewCli(root, options.input!, options.output!);
   if (options.command === "plan") {
     const manifest = parseReleaseManifest(JSON.parse(await readFile(resolve(root, "supabase/release-manifest.json"), "utf8")));

@@ -36,3 +36,5 @@
 /docs/operations/phase3-provider-rehearsal.md text eol=lf
 /docs/verification/phase3-release-review/** text eol=lf
 /docs/operations/phase3-release-review.md text eol=lf
+/docs/verification/phase3-rehearsal-preflight/** text eol=lf
+/docs/operations/phase3-rehearsal-preflight.md text eol=lf
