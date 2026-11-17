@@ -134,8 +134,9 @@ deployment: revoke the app's access in the Meta/Google consoles if a creator req
 
 ## 7. Remaining work before real creators
 
-- Browser live flow: the `/connections` UI still renders the D0 experience. It needs real consent
-  dialogs (open `authorizationUrl`), `#ticket` callback completion, and live Picker wiring.
+- Browser live flow: the Instagram connect/sync/revoke path and the generic provider connect consent
+  are implemented; live Google Drive file selection (Picker) and live resource viewing are still
+  mock-only and need their own UI pass.
 - Instagram IG-01…IG-05 evidence (see [instagram-blockers](../d1/instagram-blockers.md)).
 - Google live Picker UI and its API key; the current Picker catalogue is mock-only.
 - D2 approval with named participants, live smoke, soak window and cleanup owner, as required by
