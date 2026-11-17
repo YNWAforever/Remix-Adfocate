@@ -1024,3 +1024,6 @@
 @keyframes s-skeleton{0%{background-position:100% 0}100%{background-position:-100% 0}}
 /* --- home: applied prompt template --------------------------------------- */
 .studio .s-task[data-applied="true"]{border-color:#7145cc;box-shadow:0 0 0 2px #7145cc26}
+/* --- home: disabled primary action --------------------------------------- */
+/* A disabled primary keeps a visible label instead of fading to 50% opacity. */
+.studio .s-primary:disabled{opacity:1;background:var(--s-lilac);border-color:#cfc3ea;color:#665d78;box-shadow:none}
