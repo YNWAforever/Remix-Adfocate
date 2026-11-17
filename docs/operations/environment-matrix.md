@@ -36,6 +36,13 @@ Changing any `VITE_*` value needs a new deployment; refreshing the page is not e
 |---|---|---|
 | `PUBLIC_MISSION_PUBLIC_PREVIEW` | off | Public mission preview server gate. |
 | `INTEGRATIONS_MODE` | `disabled` | `disabled` = honest planning UI; `mock`/`live_pilot` enable sample journeys. |
+| `INTEGRATIONS_ENABLED` | unset | Opt-in live package; only with `INTEGRATIONS_MODE=live_pilot`. See `docs/review/kocmax-stage-4d/d2/live-connections-runbook.md`. |
+| `INTEGRATIONS_LIVE_ORIGIN` | unset | Fixed https origin used for OAuth redirect URIs and Picker tokens. |
+| `INTEGRATIONS_KEYRING` | unset | JSON keyring (`activeKeyId` plus base64 32-byte keys) for grant encryption. |
+| `INSTAGRAM_CONNECTIONS_ENABLED` | unset | Live provider flag; also requires `INSTAGRAM_APP_ID`/`INSTAGRAM_APP_SECRET`. |
+| `DRIVE_CONNECTIONS_ENABLED` | unset | Live provider flag; also requires the Google OAuth client and project number. |
+| `GOOGLE_OAUTH_CLIENT_ID` / `GOOGLE_OAUTH_CLIENT_SECRET` | unset | Web OAuth client for Drive (`drive.file` + `openid`). |
+| `GOOGLE_CLOUD_PROJECT_NUMBER` | unset | Numeric project number for live Picker and identity checks. |
 | `ADMIN_SECRET` | unset | Break-glass operator secret (remove in B3b). |
 
 ## Operational notes

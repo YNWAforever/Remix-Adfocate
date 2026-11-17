@@ -2,10 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Sprout, StudioLoginRequired, useStudioText } from "@/components/studio/StudioPrimitives";
 import { ApiError } from "@/lib/api";
-import { useConnections, useIntegrationCommand, useIntegrationIdentity } from "@/lib/integrations/queries";
+import { useConnections, useIntegrationCommand, useIntegrationIdentity, useLiveComplete } from "@/lib/integrations/queries";
 import type { IntegrationConnection, IntegrationList, ProviderId, StartConnection } from "@/lib/integrations/types";
 import { ConnectionCard } from "./ConnectionCard";
-import { ConnectionConsent, D0Notice, IntegrationDialog, IntegrationError, IntegrationModeBadge, MockBadge } from "./ConnectionConsent";
+import { ConnectionConsent, D0Notice, IntegrationDialog, IntegrationError, IntegrationModeBadge, LivePilotNotice, MockBadge } from "./ConnectionConsent";
+import { LiveProviders } from "./LiveConnections";
 import { DriveSourcePicker } from "./DriveSourcePicker";
 import { McpSkills } from "./McpSkills";
 import "./integrations.css";
@@ -94,11 +95,26 @@ function ConnectionsForOwner() {
   const [loginRequired, setLoginRequired] = useState(false);
   const unauthorized = query.isError && query.error instanceof ApiError && query.error.status === 401;
   useEffect(() => { if (unauthorized) setLoginRequired(true); }, [unauthorized]);
+  const [liveNotice, setLiveNotice] = useState("");
+  const live = query.data?.live === true;
+  const complete = useLiveComplete();
+  useEffect(() => {
+    if (!live || typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+    const provider = params.get("integration"), ticket = params.get("ticket");
+    if (!ticket || (provider !== "instagram" && provider !== "google_drive")) return;
+    window.history.replaceState(null, "", window.location.pathname + window.location.search);
+    complete.mutate({ provider, ticket }, { onSuccess: () => setLiveNotice(tx("平台帳戶已連接。", "Provider account connected.")) });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [live]);
   if (loginRequired || unauthorized) return <StudioLoginRequired context="connections"/>;
   const disabled = query.data?.mode === "disabled";
   return <div className="integration-ui i-page">
     <header className="i-hero"><div><p className="i-eyebrow">{tx("你的創作技能收藏", "Your creative skill collection")}</p><h1>{tx("把靈感，連在一起。", "Make room for more ideas.")}</h1><p>{disabled ? tx("資料連接尚未開放。你仍可用手動來源創作、整理 Brief 及完成基本任務。", "Data connections are not open yet. You can still create with manual sources, build briefs and complete basic missions.") : tx("選一個小幫手，帶著自己的資料開始創作。每一步由你決定。", "Choose a little helper. Bring your own sources into your creative process, one choice at a time.")}</p>{disabled ? <span className="i-badge">{tx("規劃中 · 未開放", "Planned · not open")}</span> : <IntegrationModeBadge mode={query.data?.mode} />}</div><Sprout /></header>
-    {(query.data?.pilot?.stage === "D0" || query.data?.mode === "live_pilot") && <D0Notice />}
+    {query.data?.mode === "live_pilot" && !live && <D0Notice />}
+    {live && <LivePilotNotice />}
+    {liveNotice && <p role="status" className="i-note">{liveNotice}</p>}
+    {complete.isError && <IntegrationError error={complete.error} />}
     {query.isPending && <p role="status">{tx("正在讀取資料連接狀態…", "Loading connection status…")}</p>}
     {query.isError && <IntegrationError error={query.error} onRetry={() => void query.refetch()} />}
     {disabled ? <>
@@ -109,8 +125,8 @@ function ConnectionsForOwner() {
       </div>
     </> : <>
       <ol className="i-steps"><li><span aria-hidden>01</span>{tx("檢視連接權限", "Review access")}</li><li><span aria-hidden>02</span>{tx("挑選私人來源", "Choose private sources")}</li><li><span aria-hidden>03</span>{tx("另行確認 AI 與分享", "Decide AI & sharing")}</li></ol>
-      <p className="i-note">{tx("這裡是模擬體驗，不會連接真實平台。連接、同步及匯入不會發放積分或 XP，亦不代表帳號擁有權已核實。", "This is a mock experience with no live provider connection. Connecting, syncing and importing earn no points or XP, and do not verify account ownership.")}</p>
-      <div className="i-grid">{(["instagram", "google_drive"] as const).map(provider => <ProviderConnection key={provider} provider={provider} mode={query.data?.mode} enabled={query.data?.mode === "mock"} connection={query.data?.connections.find(item => item.provider === provider)} onLoginRequired={() => setLoginRequired(true)} />)}</div>
+      {!live && <p className="i-note">{tx("這裡是模擬體驗，不會連接真實平台。連接、同步及匯入不會發放積分或 XP，亦不代表帳號擁有權已核實。", "This is a mock experience with no live provider connection. Connecting, syncing and importing earn no points or XP, and do not verify account ownership.")}</p>}
+      {live ? <LiveProviders connections={query.data?.connections ?? []} /> : <div className="i-grid">{(["instagram", "google_drive"] as const).map(provider => <ProviderConnection key={provider} provider={provider} mode={query.data?.mode} enabled={query.data?.mode === "mock"} connection={query.data?.connections.find(item => item.provider === provider)} onLoginRequired={() => setLoginRequired(true)} />)}</div>}
     </>}
     <section className="i-basic"><div><h2>{tx("先創作，也很好。", "You can start right here.")}</h2><p>{tx("連接是選項，基本任務隨時可做。", "Connections are optional. Basic missions are always available.")}</p></div><Link to="/home" className="i-button i-primary">{tx("先開始創作", "Start creating now")}</Link></section>
     <McpSkills />

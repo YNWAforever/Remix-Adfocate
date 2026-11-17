@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import type { Env } from "../app.js";
-import { boundedText, integrationMode, IntegrationError, requireRequestId, validateProvider, validateSelection } from "../lib/integrations/policy.js";
+import { boundedText, integrationMode, IntegrationError, requireRequestId, validateProvider, validateSelection, type IntegrationMode } from "../lib/integrations/policy.js";
 import { getIntegrationService, manageDisabledConnection } from "../lib/integrations/runtime.js";
 import type { IntegrationService } from "../lib/integrations/service.js";
 import type { Actor } from "../lib/integrations/types.js";
@@ -8,10 +8,10 @@ import type { IntegrationImport } from "../../src/lib/integrations/types.js";
 import { listManagedConnections } from "../lib/integrations/lifecycle.js";
 import { serviceClient } from "../lib/supabase.js";
 
-export type IntegrationRouteDeps = { getService?: () => IntegrationService | null; environment?: Record<string, string | undefined>; disabledManagement?: typeof manageDisabledConnection };
+export type IntegrationRouteDeps = { getService?: () => IntegrationService | null; mode?: () => IntegrationMode; environment?: Record<string, string | undefined>; disabledManagement?: typeof manageDisabledConnection };
 export function integrationRoutes(deps: IntegrationRouteDeps = {}) {
   const routes = new Hono<Env>(), env = deps.environment ?? process.env, getService = deps.getService ?? getIntegrationService;
-  const mode = () => integrationMode(env);
+  const mode = deps.mode ?? (() => integrationMode(env));
   const actor = (c: { get: (key: "userId" | "workspaceId") => string }): Actor => ({ creatorId: c.get("userId"), workspaceId: c.get("workspaceId") });
   const service = () => { const value = getService(); if (!value) throw new IntegrationError("INTEGRATIONS_DISABLED", 404); return value; };
   const requireProvider = (provider: unknown) => { const value = validateProvider(provider); if (env[value === "instagram" ? "INSTAGRAM_CONNECTIONS_ENABLED" : "DRIVE_CONNECTIONS_ENABLED"] !== "true") throw new IntegrationError("INTEGRATIONS_DISABLED", 404); return value; };
@@ -30,12 +30,18 @@ export function integrationRoutes(deps: IntegrationRouteDeps = {}) {
       try { const parsed = JSON.parse(raw || "{}"); if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) throw new Error(); } catch { return c.json({ code: "INVALID_INPUT", error: "請檢查資料" }, 400); }
     }
     const management = c.req.method === "POST" && /\/(revoke|purge)$/.test(c.req.path);
-    if (mode() !== "mock" && !management) {
+    const current = mode();
+    if (current === "disabled" && !management) {
       if (c.req.method === "GET" && /\/integrations\/?$/.test(c.req.path)) {
         const available = getService();
         return c.json({ mode: "disabled", connections: available ? await available.list(actor(c)) : await listManagedConnections(serviceClient(), actor(c)) });
       }
       return c.json({ code: "INTEGRATIONS_DISABLED", error: "資料技能尚未開放，基本任務仍可使用" }, 404);
+    }
+    // Live connections use the dedicated OAuth and Picker-token channels; the mock-only
+    // consent and picker-catalogue endpoints must not answer in live mode.
+    if (current === "live_pilot" && !management && (c.req.method === "POST" && /\/[^/]+\/(start|complete)$/.test(c.req.path) || c.req.method === "GET" && /\/picker$/.test(c.req.path))) {
+      return c.json({ code: "OAUTH_REQUIRED", error: "請使用供應商授權完成連接" }, 409);
     }
     await next();
   });
@@ -43,7 +49,7 @@ export function integrationRoutes(deps: IntegrationRouteDeps = {}) {
     const known = error instanceof IntegrationError ? error : new IntegrationError("INTEGRATIONS_UNAVAILABLE", 503);
     return c.json({ code: known.code, error: "暫未完成。請檢查授權或來源，原有草稿仍保留。" }, known.status as 400 | 401 | 403 | 404 | 409 | 413 | 429 | 503);
   });
-  routes.get("/", async c => c.json({ mode: "mock", connections: await service().list(actor(c)) }));
+  routes.get("/", async c => c.json({ mode: mode(), ...(mode() === "live_pilot" ? { live: true } : {}), connections: await service().list(actor(c)) }));
   routes.post("/:provider/start", async c => {
     const p = await c.req.json(); return c.json(await service().beginConnection(actor(c), requireProvider(c.req.param("provider")), c.get("jwt"), String(p.returnPath ?? "/connections")));
   });

@@ -1,11 +1,12 @@
 import { handle } from "hono/vercel";
 import { createPilotApp } from "../server/pilotApp.js";
+import { getLiveIntegrationRuntime } from "../server/lib/integrations/liveRuntime.js";
 
 export const config = { runtime: "nodejs" };
 
 // An explicit pilot marker only closes the original runtime. No env flag admits a target.
 const app = process.env.INTEGRATIONS_PILOT_STAGE !== undefined && process.env.INTEGRATIONS_PILOT_STAGE !== "D0"
-  ? createPilotApp() : (await import("../server/app.js")).createApp().app;
+  ? createPilotApp() : (await import("../server/app.js")).createApp({ liveIntegrations: getLiveIntegrationRuntime() }).app;
 
 export const GET = handle(app);
 export const POST = handle(app);

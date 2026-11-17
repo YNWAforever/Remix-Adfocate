@@ -7,6 +7,8 @@ export const CONSENT_VERSION = "kocmax-integrations-mock-2026-10-31";
 export const MAX_FILE_BYTES = 5 * 1024 * 1024;
 export const MAX_SOURCE_CHARS = 8000;
 export const SYNC_COOLDOWN_MS = 60 * 60 * 1000;
+/** D0 reports mock or disabled. A complete live environment package may report live_pilot. */
+export type IntegrationMode = "mock" | "disabled" | "live_pilot";
 export function integrationMode(env: Record<string, string | undefined>): "mock" | "disabled" {
   return env.NODE_ENV !== "production" && env.INTEGRATIONS_ENABLED === "true" && env.INTEGRATIONS_MODE === "mock" ? "mock" : "disabled";
 }

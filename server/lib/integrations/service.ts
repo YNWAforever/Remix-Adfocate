@@ -21,15 +21,17 @@ export class IntegrationService {
   private refreshes = new Map<string, Promise<ProviderGrant>>();
   private controllers = new Map<string, Set<AbortController>>();
   private lease: RepositoryRefreshLease | undefined;
-  constructor(private repo: IntegrationRepository, private providers: Record<ProviderId, IntegrationProvider>, private vault: CredentialStore, private clock: () => Date = () => new Date(), private options: {offlineAdapters?:boolean;refreshLease?:RepositoryRefreshLease} = {}) {
-    if (Object.values(providers).some(provider => provider.mode !== "mock" && !(options.offlineAdapters && provider.mode === "live_pilot" && provider.sampleOnly === true))) throw new IntegrationError("LIVE_PROVIDER_DISABLED", 503);
+  constructor(private repo: IntegrationRepository, private providers: Record<ProviderId, IntegrationProvider>, private vault: CredentialStore, private clock: () => Date = () => new Date(), private options: {offlineAdapters?:boolean;externalAccess?:boolean;refreshLease?:RepositoryRefreshLease} = {}) {
+    // D0 admits offline fixtures only. The live composition root must pass externalAccess explicitly.
+    if (Object.values(providers).some(provider => provider.mode !== "mock"
+      && !(provider.mode === "live_pilot" && (options.externalAccess === true || (options.offlineAdapters === true && provider.sampleOnly === true))))) throw new IntegrationError("LIVE_PROVIDER_DISABLED", 503);
     this.lease=options.refreshLease ?? (Object.values(providers).some(provider=>provider.mode==="live_pilot") ? new RepositoryRefreshLease(repo,crypto.randomUUID()) : undefined);
   }
   async list(actor: Actor) { return (await this.repo.list(actor)).map(connectionDTO); }
   private async owned(actor: Actor, id: string, generation?: number, active = true): Promise<ConnectionRecord> {
     const row = await this.repo.connection(actor, id);
     if (!row || row.creatorId !== actor.creatorId || row.workspaceId !== actor.workspaceId) throw new IntegrationError("NOT_FOUND", 404);
-    if (active && row.sampleOnly !== true) throw new IntegrationError("LIVE_PROVIDER_DISABLED",503);
+    if (active && row.sampleOnly !== true && this.options.externalAccess !== true) throw new IntegrationError("LIVE_PROVIDER_DISABLED",503);
     if ((generation !== undefined && row.generation !== generation) || (active && row.status === "revoked")) throw new IntegrationError("STALE_CONNECTION", 409);
     if (active && row.status === "reauth_required") throw new IntegrationError("REAUTH_REQUIRED", 403);
     return row;
@@ -57,14 +59,14 @@ export class IntegrationService {
   }
   /** Only a verified server OAuth exchange supplies this grant; HTTP bodies never do. */
   async acceptAuthorizedGrant(actor:Actor,provider:ProviderId,grant:ProviderGrant,expectedGeneration:number):Promise<IntegrationConnection> {
-    if(!this.options.offlineAdapters||this.providers[provider].mode!=="live_pilot"||this.providers[provider].sampleOnly!==true)throw new IntegrationError("LIVE_PROVIDER_DISABLED",503);
+    if(!(this.options.offlineAdapters||this.options.externalAccess)||this.providers[provider].mode!=="live_pilot"||(this.providers[provider].sampleOnly!==true&&this.options.externalAccess!==true))throw new IntegrationError("LIVE_PROVIDER_DISABLED",503);
     if(!Number.isSafeInteger(expectedGeneration)||expectedGeneration<0||typeof grant.subject!=="string"||!grant.subject||grant.subject.length>255||!Array.isArray(grant.scopes)
       ||grant.scopes.some(scope=>!requiredScopes(provider,"live_pilot").includes(scope))||!Number.isFinite(Date.parse(grant.expiresAt))||Date.parse(grant.expiresAt)<=this.clock().getTime())throw new IntegrationError("OAUTH_IDENTITY_INVALID",403);
     const existing=(await this.repo.list(actor)).find(row=>row.provider===provider);
     if(existing&&["pending","manual_action"].includes(existing.providerRevocation))throw new IntegrationError("REVOCATION_PENDING",409);
     const connection:ConnectionRecord={...actor,id:existing?.id??crypto.randomUUID(),provider,subject:grant.subject,label:boundedText(grant.label,160),generation:expectedGeneration+1,
       scopes:[...grant.scopes],status:hasScopes(provider,grant.scopes,"live_pilot")?"connected":"partial",expiresAt:grant.expiresAt,lastSyncAt:null,lastError:null,
-      sampleOnly:true,providerRevocation:"not_requested",consentVersion:"kocmax-integrations-offline-adapter-2026-10-31"};
+      sampleOnly:this.providers[provider].sampleOnly ?? true,providerRevocation:"not_requested",consentVersion:"kocmax-integrations-offline-adapter-2026-10-31"};
     const result=await this.repo.command(actor,crypto.randomUUID(),"connect",{connection,credential:await this.vault.seal(grant,refKey(connection)),expectedGeneration});
     return connectionDTO(result.connection as ConnectionRecord);
   }
@@ -174,7 +176,7 @@ export class IntegrationService {
       const partial = inWindow.length > 50 || inWindow.length !== snapshots.length || snapshots.some(value => value.coverage.partial);
       const resources: ResourceRecord[] = selected.map(snapshot => ({ ...actor, id: identities.find(value => value.externalId === snapshot.resourceId)?.id ?? crypto.randomUUID(), connectionId: id, externalId: snapshot.resourceId,
         title: snapshot.title, mimeType: "application/instagram-insights", version: snapshot.sourceVersion, selected: true, canDownload: true, rights: "owned", generation: row.generation,
-        contentHash: snapshot.contentHash, availability: "available", excerpt: snapshot.excerpt, metrics: snapshot.metrics, observedAt: snapshot.observedAt, fetchedAt: snapshot.fetchedAt, coverage: { ...snapshot.coverage, partial }, sizeBytes: 0, sampleOnly: true, ...(snapshot.evidence?{evidence:snapshot.evidence}:{}) }));
+        contentHash: snapshot.contentHash, availability: "available", excerpt: snapshot.excerpt, metrics: snapshot.metrics, observedAt: snapshot.observedAt, fetchedAt: snapshot.fetchedAt, coverage: { ...snapshot.coverage, partial }, sizeBytes: 0, sampleOnly: this.providers[row.provider].sampleOnly ?? true, ...(snapshot.evidence?{evidence:snapshot.evidence}:{}) }));
       await this.owned(actor, id, row.generation);
       const result = await this.repo.command(actor, crypto.randomUUID(), "resources", { id, generation: row.generation, resources, lastSyncAt: this.clock().toISOString() });
       const complete = { status: partial ? "partial" as const : "completed" as const, resources: result.resources as ResourceRecord[] };
@@ -195,7 +197,7 @@ export class IntegrationService {
   /** Dedicated no-store channel only, never returned in normal connection DTOs or queries. */
   async pickerAccessGrant(actor:Actor,id:string,generation:number){
     const row=await this.owned(actor,id,generation);
-    if(!this.options.offlineAdapters||row.provider!=="google_drive"||this.providers.google_drive.mode!=="live_pilot")throw new IntegrationError("PILOT_APPROVAL_REQUIRED",503);
+    if(!(this.options.offlineAdapters||this.options.externalAccess)||row.provider!=="google_drive"||this.providers.google_drive.mode!=="live_pilot")throw new IntegrationError("PILOT_APPROVAL_REQUIRED",503);
     const grant=await this.grant(row);await this.owned(actor,id,generation);
     return {accessToken:grant.accessToken,expiresAt:grant.expiresAt,scopes:[...grant.scopes]};
   }
@@ -211,7 +213,7 @@ export class IntegrationService {
       resources.push({ ...actor, id: identities.find(value => value.externalId === externalId)?.id ?? crypto.randomUUID(), connectionId: id, externalId,
         title: file.title, mimeType: file.mimeType, version: file.version, selected: true, canDownload: file.canDownload, rights: file.rights, generation: row.generation,
         contentHash: snapshot.contentHash, availability: "available", excerpt: snapshot.excerpt, metrics: {}, observedAt: snapshot.observedAt, fetchedAt: snapshot.fetchedAt,
-        coverage: snapshot.coverage, sizeBytes: file.sizeBytes, sampleOnly: true,
+        coverage: snapshot.coverage, sizeBytes: file.sizeBytes, sampleOnly: provider.sampleOnly ?? true,
         ...(provider.mode==="live_pilot"?{evidence:{apiVersion:"v3",endpoint:"drive/v3/files",measurementPeriod:"document_version"}}:{}) });
     }
     await this.owned(actor, id, row.generation);

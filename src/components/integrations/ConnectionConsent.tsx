@@ -125,3 +125,17 @@ export function ConnectionConsent({ request, busy, error, onCancel, onComplete }
     </div>
   </IntegrationDialog>;
 }
+
+export function LiveBadge() {
+  const tx = useStudioText();
+  return <span className="i-badge i-ready">{tx("即時連線", "Live connection")}</span>;
+}
+
+export function LivePilotNotice() {
+  const tx = useStudioText();
+  return <aside role="note" aria-label={tx("即時連線試點", "Live connection pilot")} className="i-note">
+    <strong>{tx("即時連線已啟用", "Live connections are on")}</strong>
+    <p>{tx("連接會讀取平台帳戶在你授權範圍內的資料；連接本身不賺取積分，也不會替你完成任務。可隨時撤銷。", "Connecting reads the provider data covered by the scopes you approve. Connecting earns nothing and completes no mission; you can revoke at any time.")}</p>
+    <small>{tx("私人草稿與手動來源仍然可用；撤銷後已匯入的內容可一併刪除。", "Private drafts and manual sources stay available; imported content can be deleted after revoking.")}</small>
+  </aside>;
+}
