@@ -49,7 +49,7 @@ export function integrationRoutes(deps: IntegrationRouteDeps = {}) {
     const known = error instanceof IntegrationError ? error : new IntegrationError("INTEGRATIONS_UNAVAILABLE", 503);
     return c.json({ code: known.code, error: "暫未完成。請檢查授權或來源，原有草稿仍保留。" }, known.status as 400 | 401 | 403 | 404 | 409 | 413 | 429 | 503);
   });
-  routes.get("/", async c => c.json({ mode: mode(), connections: await service().list(actor(c)) }));
+  routes.get("/", async c => c.json({ mode: mode(), ...(mode() === "live_pilot" ? { live: true } : {}), connections: await service().list(actor(c)) }));
   routes.post("/:provider/start", async c => {
     const p = await c.req.json(); return c.json(await service().beginConnection(actor(c), requireProvider(c.req.param("provider")), c.get("jwt"), String(p.returnPath ?? "/connections")));
   });

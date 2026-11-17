@@ -112,7 +112,7 @@ describe("live integration routes", () => {
     const app = new Hono<Env>();
     app.use("*", async (c, next) => { c.set("userId", actor.creatorId); c.set("workspaceId", actor.workspaceId); c.set("jwt", "session"); await next(); });
     app.route("/api/me/integrations", integrationRoutes({ getService: () => service, mode: () => "live_pilot", environment: env }));
-    expect(await (await app.request("http://localhost/api/me/integrations")).json()).toEqual({ mode: "live_pilot", connections: [] });
+    expect(await (await app.request("http://localhost/api/me/integrations")).json()).toEqual({ mode: "live_pilot", live: true, connections: [] });
     const start = await app.request("http://localhost/api/me/integrations/instagram/start", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" });
     expect(start.status).toBe(409);
     expect(await start.json()).toMatchObject({ code: "OAUTH_REQUIRED" });

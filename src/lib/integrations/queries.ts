@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient, type QueryClient } from "@tansta
 import { useCallback, useSyncExternalStore } from "react";
 import { ApiError, apiFetch, getWorkspaceSlug } from "@/lib/api";
 import type { StudioSource } from "@/lib/studio/types";
-import type { IntegrationConnection, IntegrationImport, IntegrationList, IntegrationResource, ProviderId, StartConnection } from "./types";
+import type { IntegrationConnection, IntegrationImport, IntegrationList, IntegrationResource, LiveAuthorization, LiveConnectionResult, ProviderId, StartConnection } from "./types";
 
 const root = () => ["integrations", getWorkspaceSlug()] as const;
 export const integrationKeys = {
@@ -72,10 +72,14 @@ function clearPrivate(client: QueryClient, id?: string, except?: readonly unknow
 }
 
 export function canReadConnection(connection?: IntegrationConnection) {
+  return Boolean(connection?.sampleOnly === true && canUseConnection(connection));
+}
+/** Live connections carry no sample data; scope, status, expiry and revocation checks still apply. */
+export function canUseConnection(connection?: IntegrationConnection) {
   const required = connection?.provider === "instagram"
     ? ["instagram_business_basic", "instagram_business_manage_insights"]
     : ["https://www.googleapis.com/auth/drive.file"];
-  return Boolean(connection?.sampleOnly === true && connection.providerRevocation === "not_requested" && (connection.status === "connected" || connection.status === "partial")
+  return Boolean(connection && connection.providerRevocation === "not_requested" && (connection.status === "connected" || connection.status === "partial")
     && Date.parse(connection.expiresAt) > Date.now() && required.every(scope => connection.scopes.includes(scope)));
 }
 
@@ -177,17 +181,21 @@ export function useIntegrationCommand() {
       const lifecycle = command.action === "revoke" || command.action === "purge";
       if (owner !== currentOwner(client) || workspace !== getWorkspaceSlug()) throw stale();
       const list = client.getQueryData<IntegrationList>(listKey);
-      if (list?.mode === "live_pilot" && !lifecycle) throw new ApiError(403, "D0_EXTERNAL_ACCESS_DISABLED", "External access disabled");
-      if (!lifecycle && list?.mode !== "mock") {
+      const live = list?.mode === "live_pilot" && list.live === true;
+      // Live sync/import go through the real service; mock consent and mock picker stay closed.
+      if (!lifecycle && live && command.action !== "sync" && command.action !== "import") {
+        throw new ApiError(403, "MOCK_ONLY", "Mock connections unavailable in live mode");
+      }
+      if (!lifecycle && !live && list?.mode !== "mock") {
         throw new ApiError(404, "INTEGRATIONS_DISABLED", "Mock connections unavailable");
       }
       if ((command.action === "start" || command.action === "complete") && revocationUnresolved(list?.connections.find(item => item.provider === command.provider))) {
         throw new ApiError(409, "REVOCATION_PENDING", "Resolve revocation before reconnecting");
       }
-      if ("connectionId" in command && list?.connections.find(item => item.id === command.connectionId)?.sampleOnly !== true) {
+      if (!live && "connectionId" in command && list?.connections.find(item => item.id === command.connectionId)?.sampleOnly !== true) {
         throw new ApiError(403, "D0_EXTERNAL_ACCESS_DISABLED", "External access disabled");
       }
-      if (!lifecycle && "connectionId" in command && !canReadConnection(client.getQueryData<IntegrationList>(listKey)?.connections.find(item => item.id === command.connectionId))) {
+      if (!lifecycle && "connectionId" in command && !(live ? canUseConnection : canReadConnection)(list?.connections.find(item => item.id === command.connectionId))) {
         throw new ApiError(403, "SOURCE_UNAVAILABLE", "Connection access unavailable");
       }
       const started = epoch(client);
@@ -231,5 +239,40 @@ export function useIntegrationCommand() {
         client.setQueryData<IntegrationList>(listKey, previous => ({ mode: "disabled", connections: previous?.connections ?? [] }));
       }
     },
+  });
+}
+
+export function useLiveStart() {
+  const client = useQueryClient();
+  const owner = useOwnerId(), workspace = getWorkspaceSlug();
+  return useMutation({
+    retry: false,
+    mutationFn: async (provider: ProviderId): Promise<LiveAuthorization> => {
+      if (owner !== currentOwner(client) || workspace !== getWorkspaceSlug()) throw stale();
+      const list = client.getQueryData<IntegrationList>(integrationKeys.list(owner));
+      if (list?.mode !== "live_pilot" || list.live !== true) throw new ApiError(403, "LIVE_CONNECTIONS_UNAVAILABLE", "Live connections unavailable");
+      const result = await apiFetch<LiveAuthorization>(`/me/integration-oauth/${encodeURIComponent(provider)}/start`, { method: "POST", body: JSON.stringify({ returnPath: "/connections" }) });
+      if (result.sampleOnly !== false || !/^https:\/\//.test(result.authorizationUrl)) throw new ApiError(403, "LIVE_CONNECTIONS_UNAVAILABLE", "Live connection unavailable");
+      return result;
+    },
+  });
+}
+
+export function useLiveComplete() {
+  const client = useQueryClient();
+  const owner = useOwnerId(), workspace = getWorkspaceSlug();
+  const listKey = integrationKeys.list(owner);
+  return useMutation({
+    retry: false,
+    mutationFn: async ({ provider, ticket }: { provider: ProviderId; ticket: string }): Promise<LiveConnectionResult> => {
+      if (owner !== currentOwner(client) || workspace !== getWorkspaceSlug()) throw stale();
+      const list = client.getQueryData<IntegrationList>(listKey);
+      if (list?.mode !== "live_pilot" || list.live !== true) throw new ApiError(403, "LIVE_CONNECTIONS_UNAVAILABLE", "Live connections unavailable");
+      if (!ticket) throw new ApiError(400, "INVALID_INPUT", "Missing ticket");
+      const result = await apiFetch<LiveConnectionResult>(`/me/integration-oauth/${encodeURIComponent(provider)}/complete`, { method: "POST", body: JSON.stringify({ ticket, confirmAccount: true }) });
+      if (result.sampleOnly !== false) throw new ApiError(403, "LIVE_CONNECTIONS_UNAVAILABLE", "Live connection unavailable");
+      return result;
+    },
+    onSuccess: async () => { await client.invalidateQueries({ queryKey: listKey }); await refreshStudio(client); },
   });
 }

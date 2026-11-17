@@ -19,8 +19,10 @@ export type IntegrationResource = {
   observedAt: string; fetchedAt: string; coverage: { region: string | null; language: string | null; partial: boolean };
   sampleOnly: boolean; evidence?: IntegrationEvidence;
 };
-export type IntegrationList = { mode: "mock" | "disabled" | "live_pilot"; connections: IntegrationConnection[]; pilot?: {stage:"D0";externalAccess:false;reason?:string} };
+export type IntegrationList = { mode: "mock" | "disabled" | "live_pilot"; live?: boolean; connections: IntegrationConnection[]; pilot?: {stage:"D0";externalAccess:false;reason?:string} };
 export type StartConnection = { state: string; expiresAt: string; provider: ProviderId; scopes: string[]; sampleOnly: boolean };
+export type LiveAuthorization = { authorizationUrl: string; expiresAt: string; provider: ProviderId; scopes: string[]; sampleOnly: boolean };
+export type LiveConnectionResult = { connection: { id: string; generation: number }; returnPath: string; sampleOnly: boolean };
 export type IntegrationImport = {
   threadId: string; revision: number; resourceIds: string[]; question: string;
   modelConsent: boolean; processingRights: boolean; shareRights: boolean; requestId: string;
