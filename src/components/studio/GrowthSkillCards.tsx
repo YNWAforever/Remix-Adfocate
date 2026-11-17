@@ -12,30 +12,11 @@ type GrowthSkillCardsProps = {
   disabled?: boolean;
 };
 
-const CARD_DETAILS: Record<
-  GrowthSkillId,
-  Readonly<{ icon: string; promptZh: string; promptEn: string }>
-> = {
-  image_diagnosis: {
-    icon: "🖼️",
-    promptZh: "幫我看這張圖，指出構圖、文字和可改善的地方。",
-    promptEn: "Review this image for composition, visible text and improvements.",
-  },
-  post_review: {
-    icon: "📈",
-    promptZh: "幫我檢討這篇貼文；缺少的數字要清楚標示。",
-    promptEn: "Review this post and clearly mark unavailable metrics.",
-  },
-  next_caption: {
-    icon: "✍️",
-    promptZh: "根據這張圖，替我整理一篇真實、不誇大的下一篇文案。",
-    promptEn: "Draft a truthful next-post caption from this image.",
-  },
-  next_growth_step: {
-    icon: "🧭",
-    promptZh: "根據已確認的檢討，安排下一步可以實行的成長行動。",
-    promptEn: "Turn confirmed findings into one practical next growth step.",
-  },
+const CARD_ICONS: Record<GrowthSkillId, string> = {
+  image_diagnosis: "🖼️",
+  post_review: "📈",
+  next_caption: "✍️",
+  next_growth_step: "🧭",
 };
 
 const SOURCE_SKILL_LABELS: Record<string, string> = {
@@ -107,7 +88,7 @@ export function GrowthSkillCards({
       </div>
       <div className="s-growth-card-grid">
         {GROWTH_SKILLS.map((card, index) => {
-          const details = CARD_DETAILS[card.id];
+          const icon = CARD_ICONS[card.id];
           const selected = selectedSkillId === card.id;
           return (
             <article
@@ -127,14 +108,14 @@ export function GrowthSkillCards({
                   {String(index + 1).padStart(2, "0")}
                 </span>
                 <span className="s-growth-card-icon" aria-hidden>
-                  {details.icon}
+                  {icon}
                 </span>
                 <span className="s-growth-card-copy">
-                  <strong>{card.titleZh}</strong>
-                  <span>{tx(details.promptZh, details.promptEn)}</span>
+                  <strong>{tx(card.titleZh, card.titleEn)}</strong>
+                  <span>{tx(card.summaryZh, card.summaryEn)}</span>
                 </span>
                 <span className="s-growth-card-meta">
-                  <span className="s-tag">{card.difficulty}</span>
+                  <span className="s-tag">{tx(card.difficulty, card.difficultyEn)}</span>
                   <span className="s-tag ghost">{card.estimatedMinutes} {tx("分鐘", "min")}</span>
                   <span
                     className={`s-source-badge ${card.provenance.kind === "native" ? "native" : "curated"}`}
@@ -150,7 +131,7 @@ export function GrowthSkillCards({
             </article>
           );
         })}
-      </div>
+      </div>
     </section>
   );
 }
