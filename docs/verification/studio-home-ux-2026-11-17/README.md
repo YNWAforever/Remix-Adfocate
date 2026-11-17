@@ -14,6 +14,7 @@ Branch `codex/studio-home-ux` (PR #171), captured from the fixture-backed dev se
 - No horizontal overflow at either width: `scrollWidth === clientWidth` (1440/1440, 390/390).
 - Stat row: three tiles from 768px up, two columns plus a full-width third tile at 767px and below, single column at 359px and below.
 - Order and content match the plan: stat row, welcome hero, unfinished-mission card, composer, growth skill deck, idea deck, then today's missions, recent threads and the reward card.
+- The hero greets the creator by `display_name` (the fixture renders `阿晴，今天想創作些甚麼？`), and a verified badge count appears under recent threads when the account has badges.
 - Disabled primary submit keeps a legible label: `#665d78` on `--s-lilac` is 5.11:1.
 - Token contrast (WCAG AA): muted `#706881` 5.05–5.27:1, purple `#7145cc` 5.88–6.13:1, ink `#302a45` 13.05:1.
 - Console output only contains the fixture-mode Supabase "auth is disabled" notice, which is expected without env keys.
