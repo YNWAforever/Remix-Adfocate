@@ -2,6 +2,8 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import type { Gift } from "@/lib/queries/kocmax";
 import { useBalance, useGifts } from "@/lib/queries/kocmax";
+import { useI18n } from "@/lib/i18n";
+import { trackActivationEvent } from "@/lib/activationAnalytics";
 import { StudioSkeleton } from "./StudioSkeleton";
 import { StudioError, useStudioText } from "./StudioPrimitives";
 
@@ -17,6 +19,7 @@ function availableGifts(gifts: Gift[] | undefined): Gift[] {
  */
 export function StudioRewardCard() {
   const tx = useStudioText();
+  const { lang } = useI18n();
   const gifts = useGifts();
   const balance = useBalance();
   const points = balance.data?.balance;
@@ -25,6 +28,7 @@ export function StudioRewardCard() {
   const next = points === undefined ? [] : catalogue.filter((gift) => gift.points_cost > points);
   const claimable = affordable.at(-1);
   const upcoming = next[0];
+  const rewardKind = claimable ? "claimable" : upcoming ? "next" : "empty";
 
   return (
     <section className="s-card peach s-stack">
@@ -68,7 +72,11 @@ export function StudioRewardCard() {
         </p>
       )}
 
-      <Link to="/redemption" className="s-btn">
+      <Link
+        to="/redemption"
+        className="s-btn"
+        onClick={() => trackActivationEvent("reward_card_clicked", { locale: lang, rewardKind })}
+      >
         {claimable ? tx("去兌換", "Claim now") : tx("逛逛獎賞商店", "Explore rewards")}
         <ArrowRight size={16} />
       </Link>

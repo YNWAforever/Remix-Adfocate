@@ -10,13 +10,14 @@ const LEVEL_LABELS: Record<string, string> = {
   "app.level.l5": "KOC 專業",
   "app.level.l6": "KOC 大師",
 };
-const h=vi.hoisted(()=>({meError:null as Error|null,balanceError:null as Error|null,historyError:null as Error|null,enabled:true,mutate:vi.fn(),navigate:vi.fn(),historyOptions:vi.fn(),lang:"zh",
+const h=vi.hoisted(()=>({meError:null as Error|null,balanceError:null as Error|null,historyError:null as Error|null,enabled:true,mutate:vi.fn(),navigate:vi.fn(),historyOptions:vi.fn(),lang:"zh",track:[] as Array<[string,unknown]>,
   balance:98765,
   gifts:[] as Array<Record<string,unknown>>,
   missions:[] as Array<Record<string,unknown>>,
   myMissions:[] as Array<Record<string,unknown>>,
 }));
-vi.mock("@tanstack/react-router",()=>({useNavigate:()=>h.navigate,Link:({children,to}:{children:React.ReactNode;to:string})=><a href={to}>{children}</a>}));
+vi.mock("@tanstack/react-router",()=>({useNavigate:()=>h.navigate,Link:({children,to,onClick}:{children:React.ReactNode;to:string;onClick?:()=>void})=><a href={to} onClick={event=>{event.preventDefault();onClick?.();}}>{children}</a>}));
+vi.mock("@/lib/activationAnalytics",()=>({trackActivationEvent:(name:string,properties:unknown)=>{h.track.push([name,properties]);return true;}}));
 vi.mock("@/lib/i18n",()=>({useI18n:()=>({lang:h.lang,t:(key:string)=>LEVEL_LABELS[key]??key})}));
 vi.mock("@/lib/features",()=>({get STUDIO_THREADS(){return h.enabled;}}));
 vi.mock("@/lib/queries/kocmax",()=>({
@@ -29,7 +30,7 @@ vi.mock("@/lib/queries/kocmax",()=>({
 vi.mock("@/lib/studio/queries",()=>({useStudioThreads:(...args:unknown[])=>{h.historyOptions(...args);return {data:{threads:[{id:"private",title:"PRIVATE_HISTORY_TITLE",topic:"creation",created_at:"2026-11-01T00:00:00.000Z"}],nextPage:null},isError:!!h.historyError,error:h.historyError,refetch:vi.fn()};},useStudioCommand:()=>({mutateAsync:h.mutate,isPending:false})}));
 vi.mock("@tanstack/react-query",()=>({useQuery:()=>({data:{badges:[]}})}));
 import { StudioHome, StudioStarter } from "./StudioHome";
-beforeEach(()=>{h.meError=null;h.balanceError=null;h.historyError=null;h.enabled=true;h.mutate.mockReset();h.navigate.mockReset();h.historyOptions.mockReset();h.lang="zh";h.balance=98765;h.gifts=[];h.missions=[];h.myMissions=[];});
+beforeEach(()=>{h.meError=null;h.balanceError=null;h.historyError=null;h.enabled=true;h.mutate.mockReset();h.navigate.mockReset();h.historyOptions.mockReset();h.lang="zh";h.track.length=0;h.balance=98765;h.gifts=[];h.missions=[];h.myMissions=[];});
 it.each(["meError","balanceError","historyError"] as const)("hides cached home data and actions after %s 401",key=>{
   h[key]=new ApiError(401,"no_auth","PRIVATE_SERVER_TEXT");
   render(<StudioHome/>);
@@ -166,4 +167,17 @@ it("counts characters only as the prompt nears the limit",()=>{
   expect(screen.queryByText(/\/4000$/)).not.toBeInTheDocument();
   fireEvent.change(box,{target:{value:"a".repeat(3700)}});
   expect(screen.getByText("3700/4000")).toBeInTheDocument();
+});
+it("emits activation events for the template, continue and reward actions",()=>{
+  h.myMissions=[{id:"s1",status:"joined",missions:{slug:"tasting",title:"試飲任務",points_reward:200},creator_studio_available:false}];
+  h.gifts=[{id:"g1",name:"咖啡券",points_cost:500,stock_remaining:5,status:"available",gift_type:"voucher"}];
+  render(<StudioHome/>);
+  fireEvent.click(screen.getByRole("button",{name:/挑一個適合我的任務/}));
+  fireEvent.click(screen.getByRole("link",{name:"繼續"}));
+  fireEvent.click(screen.getByRole("link",{name:/去兌換/}));
+  expect(h.track).toEqual([
+    ["template_applied",{locale:"zh",templateId:"pick",topic:"missions"}],
+    ["continue_clicked",{locale:"zh",target:"mission"}],
+    ["reward_card_clicked",{locale:"zh",rewardKind:"claimable"}],
+  ]);
 });

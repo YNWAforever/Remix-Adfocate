@@ -491,3 +491,37 @@ describe("reward handoff analytics privacy contract", () => {
     });
   });
 });
+
+describe("studio home analytics", () => {
+  afterEach(() => {
+    setActivationAnalyticsSink(null);
+  });
+
+  it("keeps the studio home events inside the allowlisted properties", () => {
+    const sink = vi.fn<(event: unknown) => boolean>(() => true);
+    setActivationAnalyticsSink(sink);
+
+    trackActivationEvent("template_applied", {
+      locale: "zh",
+      templateId: "pick",
+      topic: "missions",
+      prompt: "raw creator text",
+    } as never);
+    trackActivationEvent("continue_clicked", {
+      locale: "en",
+      target: "workspace",
+      missionTitle: "raw mission title",
+    } as never);
+    trackActivationEvent("reward_card_clicked", {
+      locale: "zh",
+      rewardKind: "next",
+      giftName: "raw gift name",
+    } as never);
+
+    expect(sink.mock.calls.map(([event]) => event)).toEqual([
+      { name: "template_applied", properties: { locale: "zh", templateId: "pick", topic: "missions" } },
+      { name: "continue_clicked", properties: { locale: "en", target: "workspace" } },
+      { name: "reward_card_clicked", properties: { locale: "zh", rewardKind: "next" } },
+    ]);
+  });
+});

@@ -6,6 +6,8 @@ import { ApiError } from "@/lib/api";
 import { STUDIO_THREADS } from "@/lib/features";
 import { STUDIO_TEMPLATES } from "@/lib/studio/templates";
 import { useStudioCommand, useStudioThreads } from "@/lib/studio/queries";
+import { useI18n } from "@/lib/i18n";
+import { trackActivationEvent } from "@/lib/activationAnalytics";
 import type { StudioThread, StudioTopic } from "@/lib/studio/types";
 import type { GrowthSkillId } from "@/lib/creatorGrowth/skillManifest";
 import { GROWTH_SKILLS } from "@/lib/creatorGrowth/skillManifest";
@@ -61,6 +63,7 @@ type TemplateDraft = { prompt: string; topic: StudioTopic; skill: GrowthSkillId 
 
 export function StudioStarter({ onLoginRequired }: { onLoginRequired?: () => void } = {}) {
   const tx = useStudioText(), navigate = useNavigate(), missions = useMissions();
+  const { lang } = useI18n();
   const [prompt, setPrompt] = useState(""), [missionId, setMissionId] = useState(""), [topic, setTopic] = useState<StudioTopic>("creation");
   const [selectedSkill, setSelectedSkill] = useState<GrowthSkillId | null>(null);
   const [showAllTemplates, setShowAllTemplates] = useState(false);
@@ -124,6 +127,7 @@ export function StudioStarter({ onLoginRequired }: { onLoginRequired?: () => voi
     setPrompt(tx(...template.prompt));
     setTopic(template.topic);
     setAppliedTemplate(template.id);
+    trackActivationEvent("template_applied", { locale: lang, templateId: template.id, topic: template.topic });
     focusQuestion();
   }
 
