@@ -1,6 +1,4 @@
 import { Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
-import { apiFetch } from "@/lib/api";
 import { useI18n } from "@/lib/i18n";
 import { useStudioThreads } from "@/lib/studio/queries";
 import type { StudioTopic } from "@/lib/studio/types";
@@ -27,14 +25,10 @@ function shortDate(value: string, lang: string): string {
  * The last three discussions, so the page can pick up where the creator left
  * off instead of starting cold every visit.
  */
-export function StudioRecentThreads() {
+export function StudioRecentThreads({ badgeCount = 0 }: { badgeCount?: number } = {}) {
   const tx = useStudioText();
   const { lang } = useI18n();
   const threads = useStudioThreads();
-  const badges = useQuery({
-    queryKey: ["studio", "badges"],
-    queryFn: () => apiFetch<{ badges: Array<{ id: string }> }>("/studio/badges"),
-  });
   const rows = threads.data?.threads.slice(0, 3) ?? [];
 
   return (
@@ -73,8 +67,10 @@ export function StudioRecentThreads() {
       )}
 
       <Link to="/studio" className="s-btn">{tx("所有討論與成果", "All chats & briefs")}</Link>
-      {badges.data?.badges.length ? (
-        <div className="s-achievement">🏅 {tx("第一份核實成果", "First verified creation")}</div>
+      {badgeCount > 0 ? (
+        <div className="s-achievement">
+          🏅 {tx(`${badgeCount} 個已核實徽章`, `${badgeCount} verified ${badgeCount === 1 ? "badge" : "badges"}`)}
+        </div>
       ) : null}
     </section>
   );

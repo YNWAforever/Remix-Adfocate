@@ -15,22 +15,22 @@ const h=vi.hoisted(()=>({meError:null as Error|null,balanceError:null as Error|n
   gifts:[] as Array<Record<string,unknown>>,
   missions:[] as Array<Record<string,unknown>>,
   myMissions:[] as Array<Record<string,unknown>>,
+  badges:[] as Array<Record<string,unknown>>,
 }));
 vi.mock("@tanstack/react-router",()=>({useNavigate:()=>h.navigate,Link:({children,to,onClick}:{children:React.ReactNode;to:string;onClick?:()=>void})=><a href={to} onClick={event=>{event.preventDefault();onClick?.();}}>{children}</a>}));
 vi.mock("@/lib/activationAnalytics",()=>({trackActivationEvent:(name:string,properties:unknown)=>{h.track.push([name,properties]);return true;}}));
 vi.mock("@/lib/i18n",()=>({useI18n:()=>({lang:h.lang,t:(key:string)=>LEVEL_LABELS[key]??key})}));
 vi.mock("@/lib/features",()=>({get STUDIO_THREADS(){return h.enabled;}}));
 vi.mock("@/lib/queries/kocmax",()=>({
-  useMe:()=>({data:{id:"owner",level:"L1",effective_level:"L1",xp:12345},isError:!!h.meError,error:h.meError,refetch:vi.fn()}),
+  useMe:()=>({data:{id:"owner",display_name:"阿明",level:"L1",effective_level:"L1",xp:12345},isError:!!h.meError,error:h.meError,refetch:vi.fn()}),
   useBalance:()=>({data:{balance:h.balance},isError:!!h.balanceError,error:h.balanceError,refetch:vi.fn()}),
   useMissions:()=>({data:h.missions,refetch:vi.fn()}),
   useGifts:()=>({data:h.gifts,isError:false,refetch:vi.fn()}),
   useMyMissions:()=>({data:h.myMissions,isError:false,refetch:vi.fn()}),
 }));
-vi.mock("@/lib/studio/queries",()=>({useStudioThreads:(...args:unknown[])=>{h.historyOptions(...args);return {data:{threads:[{id:"private",title:"PRIVATE_HISTORY_TITLE",topic:"creation",created_at:"2026-11-01T00:00:00.000Z"}],nextPage:null},isError:!!h.historyError,error:h.historyError,refetch:vi.fn()};},useStudioCommand:()=>({mutateAsync:h.mutate,isPending:false})}));
-vi.mock("@tanstack/react-query",()=>({useQuery:()=>({data:{badges:[]}})}));
+vi.mock("@/lib/studio/queries",()=>({useStudioThreads:(...args:unknown[])=>{h.historyOptions(...args);return {data:{threads:[{id:"private",title:"PRIVATE_HISTORY_TITLE",topic:"creation",created_at:"2026-11-01T00:00:00.000Z"}],nextPage:null},isError:!!h.historyError,error:h.historyError,refetch:vi.fn()};},useStudioBadges:()=>({data:{badges:h.badges}}),useStudioCommand:()=>({mutateAsync:h.mutate,isPending:false})}));
 import { StudioHome, StudioStarter } from "./StudioHome";
-beforeEach(()=>{h.meError=null;h.balanceError=null;h.historyError=null;h.enabled=true;h.mutate.mockReset();h.navigate.mockReset();h.historyOptions.mockReset();h.lang="zh";h.track.length=0;h.balance=98765;h.gifts=[];h.missions=[];h.myMissions=[];});
+beforeEach(()=>{h.meError=null;h.balanceError=null;h.historyError=null;h.enabled=true;h.mutate.mockReset();h.navigate.mockReset();h.historyOptions.mockReset();h.lang="zh";h.track.length=0;h.balance=98765;h.gifts=[];h.missions=[];h.myMissions=[];h.badges=[];});
 it.each(["meError","balanceError","historyError"] as const)("hides cached home data and actions after %s 401",key=>{
   h[key]=new ApiError(401,"no_auth","PRIVATE_SERVER_TEXT");
   render(<StudioHome/>);
@@ -100,6 +100,15 @@ it("keeps threads disabled and ignores their stale error when the rollout flag i
 it("shows the localized level name and links the tile to the passport",()=>{
   render(<StudioHome/>);
   expect(screen.getByRole("link",{name:/KOC 新手/})).toHaveAttribute("href","/passport");
+});
+it("greets the creator by name",()=>{
+  render(<StudioHome/>);
+  expect(screen.getByRole("heading",{level:1,name:/阿明，今天想創作些甚麼？/})).toBeInTheDocument();
+});
+it("counts the verified badges next to the recent threads",()=>{
+  h.badges=[{id:"b1"},{id:"b2"}];
+  render(<StudioHome/>);
+  expect(screen.getByText(/2 個已核實徽章/)).toBeInTheDocument();
 });
 it("spells out the experience left before the next level",()=>{
   render(<StudioHome/>);

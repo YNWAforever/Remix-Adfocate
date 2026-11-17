@@ -5,7 +5,7 @@ import { useBalance, useMe, useMissions } from "@/lib/queries/kocmax";
 import { ApiError } from "@/lib/api";
 import { STUDIO_THREADS } from "@/lib/features";
 import { STUDIO_TEMPLATES } from "@/lib/studio/templates";
-import { useStudioCommand, useStudioThreads } from "@/lib/studio/queries";
+import { useStudioBadges, useStudioCommand, useStudioThreads } from "@/lib/studio/queries";
 import { useI18n } from "@/lib/i18n";
 import { trackActivationEvent } from "@/lib/activationAnalytics";
 import type { StudioThread, StudioTopic } from "@/lib/studio/types";
@@ -22,6 +22,8 @@ import { Sprout, StudioError, StudioLoginRequired, useStudioText } from "./Studi
 export function StudioHome() {
   const tx = useStudioText(), me = useMe(), balance = useBalance();
   const history = useStudioThreads(0, STUDIO_THREADS);
+  const badges = useStudioBadges();
+  const name = me.data?.display_name?.trim();
   const [loginRequired, setLoginRequired] = useState(false);
   const sessionQueries = STUDIO_THREADS ? [me, balance, history] : [me, balance];
   const readLoginRequired = sessionQueries.some(query => query.isError && query.error instanceof ApiError && query.error.status === 401);
@@ -36,7 +38,7 @@ export function StudioHome() {
         <div className="s-between s-welcome">
           <div>
             <span className="s-eyebrow">YOUR NEXT LITTLE WIN</span>
-            <h1>{tx("今天，想創作些甚麼？", "What will you create today?")}</h1>
+            <h1>{name ? tx(`${name}，今天想創作些甚麼？`, `What will you create today, ${name}?`) : tx("今天，想創作些甚麼？", "What will you create today?")}</h1>
             <p>{tx("問一句，我們一起把靈感變成成果。", "Ask a question. Turn your idea into something real.")}</p>
           </div>
           <Sprout/>
@@ -52,7 +54,7 @@ export function StudioHome() {
       </div>
       <aside className="s-stack">
         <StudioTodayStep/>
-        {STUDIO_THREADS && <StudioRecentThreads/>}
+        {STUDIO_THREADS && <StudioRecentThreads badgeCount={badges.data?.badges.length ?? 0}/>}
         <StudioRewardCard/>
       </aside>
     </div>
